@@ -37,15 +37,15 @@ def run_comprehensive_tests():
     print("=" * 80)
     print("CODEDEDUPLICATIONAGENT COMPREHENSIVE TEST SUITE")
     print("=" * 80)
-    
+
     # Initialize agent
     print("\n[1/5] Initializing CodeDeduplicationAgent...")
     agent = CodeDeduplicationAgent(similarity_threshold=0.98, min_lines=8)
-    
+
     print(f"  ✓ Threshold: {agent.threshold:.0%}")
     print(f"  ✓ Min lines: {agent.min_lines}")
     print(f"  ✓ Tree-sitter: {'Available' if agent.ts_parser else 'Fallback to AST'}")
-    
+
     # Phase 1: Self-tests
     print("\n[2/5] Running self-tests...")
     try:
@@ -54,53 +54,53 @@ def run_comprehensive_tests():
     except AssertionError as e:
         print(f"  ✗ Self-test failed: {e}")
         return False
-    
+
     # Phase 2: Scan for code block duplicates
     print("\n[3/5] Scanning for code block duplicates...")
     # Phase 6.9 Sub-50: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_python_files
-    python_files = [str(f) for f in get_python_files(project_root) 
-                   if f.is_file() 
+    python_files = [str(f) for f in get_python_files(project_root)
+                   if f.is_file()
                    and ARCHIVES_DIR not in str(f)
                    and ".venv" not in str(f)
                    and "__pycache__" not in str(f)]
-    
+
     print(f"  Scanning {len(python_files)} Python files...")
     agent.scan_for_duplicates(python_files)
-    
+
     print(f"  ✓ Code block duplicate groups found: {len(agent.duplicate_groups)}")
-    
+
     # Phase 3: Scan for whole-file duplicates
     print("\n[4/5] Scanning for whole-file duplicates...")
     python_paths = [Path(f) for f in python_files]
     agent.scan_file_level_duplicates(python_paths)
-    
+
     print(f"  ✓ Whole-file duplicate groups found: {len(agent.file_duplicate_groups)}")
-    
+
     # Phase 4: Scan for filename duplicates
     print("\n[5/5] Scanning for filename duplicates...")
     agent.scan_filename_duplicates(python_paths, project_root)
-    
+
     print(f"  ✓ Filename duplicate groups found: {len(agent.filename_duplicates)}")
-    
+
     # Summary
     print("\n" + "=" * 80)
     print("TEST SUMMARY")
     print("=" * 80)
-    
+
     total_tests = 5
     passed_tests = 5  # All phases completed
-    
+
     print(f"Total Tests: {total_tests}")
     print(f"Passed: {passed_tests}")
     print(f"Failed: {total_tests - passed_tests}")
     print(f"Pass Rate: {passed_tests / total_tests * 100:.1f}%")
-    
+
     # Detailed results
     print("\n" + "=" * 80)
     print("DETAILED RESULTS")
     print("=" * 80)
-    
+
     print(f"\n📊 Code Block Duplicates:")
     if agent.duplicate_groups:
         for key, members in list(agent.duplicate_groups.items())[:3]:
@@ -112,7 +112,7 @@ def run_comprehensive_tests():
             print(f"  ... and {len(agent.duplicate_groups) - 3} more groups")
     else:
         print("  ✓ No code block duplicates detected")
-    
+
     print(f"\n📁 Whole-File Duplicates:")
     if agent.file_duplicate_groups:
         for hash_key, paths in list(agent.file_duplicate_groups.items())[:3]:
@@ -124,7 +124,7 @@ def run_comprehensive_tests():
             print(f"  ... and {len(agent.file_duplicate_groups) - 3} more groups")
     else:
         print("  ✓ No whole-file duplicates detected")
-    
+
     print(f"\n🏷️  Filename Duplicates:")
     if agent.filename_duplicates:
         for basename, entries in list(agent.filename_duplicates.items())[:3]:
@@ -137,7 +137,7 @@ def run_comprehensive_tests():
             print(f"  ... and {len(agent.filename_duplicates) - 3} more groups")
     else:
         print("  ✓ No filename duplicates detected")
-    
+
     print(f"\n⚠️  Errors:")
     if agent.errors:
         for error in agent.errors[:5]:
@@ -146,40 +146,40 @@ def run_comprehensive_tests():
             print(f"  ... and {len(agent.errors) - 5} more errors")
     else:
         print("  ✓ No errors encountered")
-    
+
     # Final validation
     print("\n" + "=" * 80)
     print("VALIDATION")
     print("=" * 80)
-    
+
     validations = []
-    
+
     # Validation 1: Agent initialized correctly
     validations.append(("Agent initialization", agent.threshold == 0.98))
-    
+
     # Validation 2: Self-tests passed
     validations.append(("Self-tests", True))
-    
+
     # Validation 3: Scan methods executed without crashes
     validations.append(("Code block scan", True))
     validations.append(("File-level scan", True))
     validations.append(("Filename scan", True))
-    
+
     # Validation 6: New fuzzy matching method exists
     validations.append(("Fuzzy matching method", hasattr(agent, '_block_similarity')))
-    
+
     # Validation 7: Threshold increased to 98%
     validations.append(("Conservative threshold (98%)", agent.threshold >= 0.98))
-    
+
     passed_validations = sum(1 for _, result in validations if result)
     total_validations = len(validations)
-    
+
     for name, result in validations:
         status = "✓" if result else "✗"
         print(f"  {status} {name}")
-    
+
     print(f"\nValidation Pass Rate: {passed_validations}/{total_validations} ({passed_validations/total_validations*100:.1f}%)")
-    
+
     if passed_validations == total_validations:
         print("\n" + "=" * 80)
         print("✅ ALL TESTS PASSED - CODEDEDUPLICATIONAGENT READY FOR PRODUCTION")

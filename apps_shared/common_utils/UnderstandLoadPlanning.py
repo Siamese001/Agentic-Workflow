@@ -130,61 +130,61 @@ class ObservabilityLoadPlanner:
 
     def plan_load(self, load_request: Dict[str, Any]) -> ObservabilityLoadResult:
         """Plan observability data loading operations.
-        
+
         Args:
             load_request: Dictionary containing load requirements and queries
-            
+
         Returns:
             ObservabilityLoadResult: Complete planning result with load plan
         """
         self.logger.info(f"Starting observability load planning for: {load_request.get('plan_name', 'unknown')}")
-        
+
         try:
             # Validate input request
             self._validate_request(load_request)
-            
+
             # Parse request type
             request_type = self._parse_request_type(load_request)
-            
+
             # Parse data source
             data_source = self._parse_data_source(load_request)
-            
+
             # Parse metrics if enabled
             metrics = (
-                self._parse_metrics(load_request) 
+                self._parse_metrics(load_request)
                 if self.config.enable_metrics else []
             )
-            
+
             # Parse log queries if enabled
             log_queries = (
-                self._parse_log_queries(load_request) 
+                self._parse_log_queries(load_request)
                 if self.config.enable_logs else []
             )
-            
+
             # Parse trace queries if enabled
             trace_queries = (
-                self._parse_trace_queries(load_request) 
+                self._parse_trace_queries(load_request)
                 if self.config.enable_traces else []
             )
-            
+
             # Create load plan
             load_plan = self._create_load_plan(
                 load_request, request_type, data_source,
                 metrics, log_queries, trace_queries
             )
-            
+
             # Estimate data points
             estimated_data_points = self._estimate_data_points(load_plan)
-            
+
             # Count queries
             query_count = len(metrics) + len(log_queries) + len(trace_queries)
-            
+
             # Estimate load time
             load_time = self._estimate_load_time(load_plan)
-            
+
             # Estimate memory usage
             memory_estimate = self._estimate_memory_usage(load_plan)
-            
+
             result = ObservabilityLoadResult(
                 success=True,
                 load_plan=load_plan,
@@ -200,13 +200,13 @@ class ObservabilityLoadPlanner:
                     "planner": "ObservabilityLoadPlanner"
                 }
             )
-            
+
             self.logger.info(
                 f"Successfully planned observability load: "
                 f"{query_count} queries, ~{estimated_data_points} data points"
             )
             return result
-            
+
         except Exception as e:
             self.logger.error(f"Observability load planning failed: {str(e)}")
             return ObservabilityLoadResult(
@@ -222,10 +222,10 @@ class ObservabilityLoadPlanner:
         """Validate observability load planning request."""
         if not request:
             raise ValueError("Observability load planning request cannot be empty")
-        
+
         if "plan_name" not in request:
             raise ValueError("Plan name is required in observability load planning request")
-        
+
         if "request_type" not in request:
             raise ValueError("Request type is required in observability load planning request")
 
@@ -238,7 +238,7 @@ class ObservabilityLoadPlanner:
             "aggregation": RequestType.AGGREGATION,
             "anomaly_detection": RequestType.ANOMALY_DETECTION
         }
-        
+
         request_type_str = request.get("request_type", "metric_query")
         return type_mapping.get(request_type_str, RequestType.METRIC_QUERY)
 
@@ -252,7 +252,7 @@ class ObservabilityLoadPlanner:
             "grafana": DataSource.GRAFANA,
             "datadog": DataSource.DATADOG
         }
-        
+
         source_str = request.get("data_source", "prometheus")
         return source_mapping.get(source_str, DataSource.PROMETHEUS)
 
@@ -260,7 +260,7 @@ class ObservabilityLoadPlanner:
         """Parse metrics from request."""
         metrics = []
         raw_metrics = request.get("metrics", [])
-        
+
         for raw_metric in raw_metrics:
             if isinstance(raw_metric, dict):
                 # Parse aggregation if present
@@ -278,7 +278,7 @@ class ObservabilityLoadPlanner:
                         raw_metric.get("aggregation"),
                         AggregationType.AVG
                     )
-                
+
                 metric = MetricDefinition(
                     name=raw_metric.get("name", "unnamed"),
                     query=raw_metric.get("query", ""),
@@ -288,21 +288,21 @@ class ObservabilityLoadPlanner:
                     step=raw_metric.get("step", 60)
                 )
                 metrics.append(metric)
-        
+
         # Validate metric count
         if len(metrics) > self.config.max_queries_per_plan:
             raise ValueError(
                 f"Number of metrics ({len(metrics)}) exceeds maximum "
                 f"({self.config.max_queries_per_plan})"
             )
-        
+
         return metrics
 
     def _parse_log_queries(self, request: Dict[str, Any]) -> List[LogQuery]:
         """Parse log queries from request."""
         queries = []
         raw_queries = request.get("log_queries", [])
-        
+
         for raw_query in raw_queries:
             if isinstance(raw_query, dict):
                 query = LogQuery(
@@ -315,21 +315,21 @@ class ObservabilityLoadPlanner:
                     sort_order=raw_query.get("sort_order", "desc")
                 )
                 queries.append(query)
-        
+
         # Validate query count
         if len(queries) > self.config.max_queries_per_plan:
             raise ValueError(
                 f"Number of log queries ({len(queries)}) exceeds maximum "
                 f"({self.config.max_queries_per_plan})"
             )
-        
+
         return queries
 
     def _parse_trace_queries(self, request: Dict[str, Any]) -> List[TraceQuery]:
         """Parse trace queries from request."""
         queries = []
         raw_queries = request.get("trace_queries", [])
-        
+
         for raw_query in raw_queries:
             if isinstance(raw_query, dict):
                 query = TraceQuery(
@@ -341,14 +341,14 @@ class ObservabilityLoadPlanner:
                     limit=raw_query.get("limit", 100)
                 )
                 queries.append(query)
-        
+
         # Validate query count
         if len(queries) > self.config.max_queries_per_plan:
             raise ValueError(
                 f"Number of trace queries ({len(queries)}) exceeds maximum "
                 f"({self.config.max_queries_per_plan})"
             )
-        
+
         return queries
 
     def _create_load_plan(
@@ -379,24 +379,24 @@ class ObservabilityLoadPlanner:
     def _estimate_data_points(self, plan: ObservabilityLoadPlan) -> int:
         """Estimate total number of data points."""
         total_points = 0
-        
+
         # Estimate metric data points
         for metric in plan.metrics:
             # Rough estimate: 1 data point per step
             time_range_minutes = self._parse_time_range(metric.time_range)
             points_per_metric = time_range_minutes * 60 // metric.step
             total_points += points_per_metric
-        
+
         # Estimate log entries
         for query in plan.log_queries:
             # Assume average of 1000 results per query
             total_points += query.size
-        
+
         # Estimate trace spans
         for query in plan.trace_queries:
             # Assume average of 50 spans per trace
             total_points += query.limit * 50
-        
+
         return total_points
 
     def _parse_time_range(self, time_range: str) -> int:
@@ -413,38 +413,38 @@ class ObservabilityLoadPlanner:
     def _estimate_load_time(self, plan: ObservabilityLoadPlan) -> int:
         """Estimate load time in seconds."""
         base_time = 5  # Base setup time
-        
+
         # Add time per query
         query_time = (len(plan.metrics) + len(plan.log_queries) + len(plan.trace_queries)) * 2
-        
+
         # Add time for data processing
         data_points = self._estimate_data_points(plan)
         processing_time = data_points * 0.001  # 1ms per data point
-        
+
         total_time = base_time + query_time + processing_time
-        
+
         return int(total_time)
 
     def _estimate_memory_usage(self, plan: ObservabilityLoadPlan) -> int:
         """Estimate memory usage in MB."""
         # Base memory usage
         base_memory = 50  # 50MB base
-        
+
         # Memory for metrics (assume 100 bytes per data point)
         metric_memory = 0
         for metric in plan.metrics:
             time_range_minutes = self._parse_time_range(metric.time_range)
             points_per_metric = time_range_minutes * 60 // metric.step
             metric_memory += points_per_metric * 100
-        
+
         # Memory for logs (assume 1KB per log entry)
         log_memory = sum(query.size * 1024 for query in plan.log_queries)
-        
+
         # Memory for traces (assume 500 bytes per span)
         trace_memory = sum(query.limit * 50 * 500 for query in plan.trace_queries)
-        
+
         total_memory_bytes = base_memory * 1024 * 1024 + metric_memory + log_memory + trace_memory
-        
+
         return total_memory_bytes // (1024 * 1024)  # Convert to MB
 
 
@@ -476,7 +476,7 @@ def plan_observability_load(
     config: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
     """Plan observability data load from simple parameters.
-    
+
     Args:
         plan_name: Name of the load plan
         request_type: Type of observability request
@@ -485,7 +485,7 @@ def plan_observability_load(
         log_queries: Optional list of log query definitions
         trace_queries: Optional list of trace query definitions
         config: Optional planner configuration overrides
-        
+
     Returns:
         Dict: Planning result with load plan and resource requirements
     """
@@ -498,12 +498,12 @@ def plan_observability_load(
         "log_queries": log_queries or [],
         "trace_queries": trace_queries or []
     }
-    
+
     # Create planner and execute
     planner_config = ObservabilityLoadConfig(**config) if config else None
     planner = ObservabilityLoadPlanner(planner_config)
     result = planner.plan_load(request)
-    
+
     # Convert result to dict for JSON serialization
     return {
         "success": result.success,

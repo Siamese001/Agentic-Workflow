@@ -31,7 +31,7 @@ LEGACY_L3_ORCHESTRATORS: List[str] = [
     "IntelligentOrchestratorAgent.py",
     "HardenedWorkflowOrchestratorAgent.py",
     "ConsolidatedOrchestratorAgent.py",
-    
+
     # Other legacy orchestrators
     "OrchestratorAgentAndScopeManagerAgent.py",
     "ScriptsPlanningOrchestratorAgent.py",
@@ -61,30 +61,30 @@ def find_orchestrator(filename: str) -> Path | None:
     for path in (PROJECT_ROOT / "agentic_core" / "L3_orchestration").rglob(filename):
         if "__pycache__" not in str(path) and "unified" not in str(path).lower():
             return path
-    
+
     # Search in apps_lic
     for path in (PROJECT_ROOT / "apps_lic").rglob(filename):
         if "__pycache__" not in str(path):
             return path
-    
+
     # Search in apps_rg
     for path in (PROJECT_ROOT / "apps_rg").rglob(filename):
         if "__pycache__" not in str(path):
             return path
-    
+
     return None
 
 
 def archive_file(source: Path, dry_run: bool = False) -> Tuple[bool, str]:
     """Archive a single file."""
     target = ARCHIVE_DIR / source.name
-    
+
     if target.exists():
         return False, "Already archived"
-    
+
     if dry_run:
         return True, f"Would archive to {target.relative_to(PROJECT_ROOT)}"
-    
+
     try:
         ARCHIVE_DIR.mkdir(parents=True, exist_ok=True)
         shutil.move(str(source), str(target))
@@ -97,31 +97,31 @@ def main():
     parser = argparse.ArgumentParser(description='Archive legacy orchestrators')
     parser.add_argument('--dry-run', action='store_true', help='Show what would be done')
     args = parser.parse_args()
-    
+
     print("=" * 70)
     print("Phase 1 Orchestrator Liquidation - Legacy Archive")
     print("=" * 70)
-    
+
     if args.dry_run:
         print("\n[DRY RUN MODE]\n")
-    
+
     archived = 0
     skipped = 0
     not_found = 0
-    
+
     all_orchestrators = LEGACY_L3_ORCHESTRATORS + LEGACY_APPS_ORCHESTRATORS
-    
+
     print("\n--- L3 Orchestrators ---")
     for filename in LEGACY_L3_ORCHESTRATORS:
         source = find_orchestrator(filename)
-        
+
         if source is None:
             print(f"  ⊘ NOT FOUND: {filename}")
             not_found += 1
             continue
-        
+
         success, message = archive_file(source, args.dry_run)
-        
+
         if success:
             icon = "○" if args.dry_run else "✓"
             print(f"  {icon} {filename}")
@@ -132,18 +132,18 @@ def main():
                 skipped += 1
             else:
                 print(f"  ✗ ERROR: {filename} - {message}")
-    
+
     print("\n--- Apps Orchestrators ---")
     for filename in LEGACY_APPS_ORCHESTRATORS:
         source = find_orchestrator(filename)
-        
+
         if source is None:
             print(f"  ⊘ NOT FOUND: {filename}")
             not_found += 1
             continue
-        
+
         success, message = archive_file(source, args.dry_run)
-        
+
         if success:
             icon = "○" if args.dry_run else "✓"
             print(f"  {icon} {filename}")
@@ -154,18 +154,18 @@ def main():
                 skipped += 1
             else:
                 print(f"  ✗ ERROR: {filename} - {message}")
-    
+
     print(f"\n{'=' * 70}")
     print("Summary:")
     print(f"  Archived:  {archived}")
     print(f"  Skipped:   {skipped}")
     print(f"  Not Found: {not_found}")
-    
+
     if args.dry_run:
         print("\n[DRY RUN COMPLETE]")
     else:
         print("\n✓ ORCHESTRATOR LIQUIDATION COMPLETE")
-    
+
     return 0
 
 

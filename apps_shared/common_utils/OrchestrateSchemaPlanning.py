@@ -99,37 +99,37 @@ class SchemaPlanningOrchestrator:
 
     def execute(self, schema_request: Dict[str, Any]) -> SchemaPlanningResult:
         """Execute the schema planning orchestration.
-        
+
         Args:
             schema_request: Dictionary containing schema requirements and definitions
-            
+
         Returns:
             SchemaPlanningResult: Complete planning result with validated schemas and transformations
         """
         self.logger.info(f"Starting schema planning for: {schema_request.get('operation', 'unknown')}")
-        
+
         try:
             # Validate input request
             self._validate_request(schema_request)
-            
+
             # Parse and validate schemas
             validated_schemas = []
             if self.config.enable_validation:
                 validated_schemas = self._validate_schemas(schema_request)
-            
+
             # Plan transformations if enabled
             transformation_plans = []
             if self.config.enable_transformation:
                 transformation_plans = self._plan_transformations(schema_request, validated_schemas)
-            
+
             # Check compatibility if enabled
             compatibility_report = {}
             if self.config.enable_compatibility_check:
                 compatibility_report = self._check_compatibility(validated_schemas)
-            
+
             # Collect validation errors
             validation_errors = self._collect_validation_errors(schema_request)
-            
+
             result = SchemaPlanningResult(
                 success=len(validation_errors) == 0,
                 validated_schemas=validated_schemas,
@@ -144,10 +144,10 @@ class SchemaPlanningOrchestrator:
                     "orchestrator": "SchemaPlanningOrchestrator"
                 }
             )
-            
+
             self.logger.info(f"Successfully planned schemas: {len(validated_schemas)} validated, {len(transformation_plans)} transformations")
             return result
-            
+
         except Exception as e:
             self.logger.error(f"Schema planning failed: {str(e)}")
             return SchemaPlanningResult(
@@ -163,10 +163,10 @@ class SchemaPlanningOrchestrator:
         """Validate schema planning request."""
         if not request:
             raise ValueError("Schema request cannot be empty")
-        
+
         if "operation" not in request:
             raise ValueError("Operation type is required in schema request")
-        
+
         if "schemas" not in request:
             raise ValueError("Schemas are required in schema request")
 
@@ -174,7 +174,7 @@ class SchemaPlanningOrchestrator:
         """Validate and parse schemas from request."""
         schemas = []
         raw_schemas = request.get("schemas", [])
-        
+
         for raw_schema in raw_schemas:
             if isinstance(raw_schema, dict):
                 schema = SchemaDefinition(
@@ -187,14 +187,14 @@ class SchemaPlanningOrchestrator:
                     tags=raw_schema.get("tags", [])
                 )
                 schemas.append(schema)
-        
+
         return schemas
 
     def _plan_transformations(self, request: Dict[str, Any], schemas: List[SchemaDefinition]) -> List[TransformationPlan]:
         """Plan schema transformations based on request."""
         plans = []
         transformations = request.get("transformations", [])
-        
+
         for transform in transformations:
             plan = TransformationPlan(
                 transformation_type=TransformationType(transform.get("type", "format_conversion")),
@@ -204,7 +204,7 @@ class SchemaPlanningOrchestrator:
                 dependencies=transform.get("dependencies", [])
             )
             plans.append(plan)
-        
+
         return plans
 
     def _check_compatibility(self, schemas: List[SchemaDefinition]) -> Dict[str, Any]:
@@ -214,7 +214,7 @@ class SchemaPlanningOrchestrator:
             "issues": [],
             "warnings": []
         }
-        
+
         # Simple compatibility check
         if len(schemas) > 1:
             for i, schema1 in enumerate(schemas):
@@ -223,25 +223,25 @@ class SchemaPlanningOrchestrator:
                         report["warnings"].append(
                             f"Schema type mismatch: {schema1.name} ({schema1.schema_type}) vs {schema2.name} ({schema2.schema_type})"
                         )
-        
+
         return report
 
     def _collect_validation_errors(self, request: Dict[str, Any]) -> List[str]:
         """Collect validation errors from schemas."""
         errors = []
         schemas = request.get("schemas", [])
-        
+
         for schema in schemas:
             if not isinstance(schema, dict):
                 errors.append("Invalid schema format")
                 continue
-            
+
             if "name" not in schema:
                 errors.append("Schema missing name")
-            
+
             if "type" not in schema:
                 errors.append("Schema missing type")
-        
+
         return errors
 
 # Factory function for easy instantiation
@@ -265,13 +265,13 @@ def plan_schema_operations(
     config: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
     """Plan schema operations from simple parameters.
-    
+
     Args:
         operation: Type of operation (validate, transform, migrate)
         schemas: List of schema definitions
         transformations: Optional list of transformation definitions
         config: Optional configuration overrides
-        
+
     Returns:
         Dict: Planning result with schemas and transformations
     """
@@ -281,12 +281,12 @@ def plan_schema_operations(
         "schemas": schemas,
         "transformations": transformations or []
     }
-    
+
     # Create orchestrator and execute
     orchestrator_config = SchemaPlanningConfig(**config) if config else None
     orchestrator = SchemaPlanningOrchestrator(orchestrator_config)
     result = orchestrator.execute(request)
-    
+
     # Convert result to dict for JSON serialization
     return {
         "success": result.success,
@@ -329,7 +329,7 @@ if __name__ == "__main__":
             "content": {"type": "object", "properties": {"id": {"type": "string"}}}
         }
     ]
-    
+
     result = plan_schema_operations(
         operation="validate",
         schemas=example_schemas

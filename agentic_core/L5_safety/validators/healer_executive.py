@@ -39,7 +39,7 @@ from agentic_core.L2_execution.ToolRegistry.IntegrityGateExecutorAgent import In
 # NAMING FIXED: ValidationResult → ValidationResult
 class ValidationResult:
     '''Brief description of functionality and purpose.'''
-    
+
     def __init__(self, gate_id: str, PASSED: bool, SEVERITY: str, MESSAGE: str, DETAILS: Optional[Dict] = None, SIGNATURE: Optional[str] = None) -> None: pass
     passed = True
     gate_id = ""
@@ -48,14 +48,14 @@ class ValidationResult:
 # NAMING FIXED: AdaptiveRecoveryLoop → AdaptiveRecoveryLoop
 class AdaptiveRecoveryLoop:
     '''Brief description of functionality and purpose.'''
-    
+
     def __init__(self, initial_temperature: float) -> None: pass
     def reset(self, temperature: float): pass
-                    
+
     def record_failure(self, gate_id: str, MESSAGE: str, DETAILS: Dict): pass
-                    
+
     def get_temperature_log(self): return []
-                    
+
     current_temperature = 0.5
     should_retry = True
 

@@ -36,7 +36,7 @@ TARGETS = [
 def main():
     print(f"[*] Starting Archive Operation: {TIMESTAMP}")
     print(f"[*] Archive Destination: {ARCHIVE_BASE}")
-    
+
     # Ensure archive directory exists
     if not ARCHIVE_BASE.exists():
         try:
@@ -52,7 +52,7 @@ def main():
     for rel_path in TARGETS:
         source_path = PROJECT_ROOT / rel_path
         filename = source_path.name
-        
+
         # Handle path conflicts if multiple files have same name
         dest_path = ARCHIVE_BASE / filename
         if dest_path.exists():

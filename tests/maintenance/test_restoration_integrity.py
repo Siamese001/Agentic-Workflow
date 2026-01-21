@@ -26,7 +26,7 @@ RESTORED_AGENTS_MAP = [
 ]
 
 class TestRestorationIntegrity:
-    
+
     def test_terminal_colors_migration(self):
         """
         TC-001: Verifies terminal_colors is accessible in its new home.
@@ -71,7 +71,7 @@ class TestRestorationIntegrity:
         try:
             module = importlib.import_module(module_path)
             agent_class = getattr(module, class_name)
-            
+
             # 1. Check MRO for deprecated mixins
             mro_names = [c.__name__ for c in inspect.getmro(agent_class)]
             if "MCPHardenedMixin" in mro_names:

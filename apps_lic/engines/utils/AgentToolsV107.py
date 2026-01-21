@@ -284,30 +284,30 @@ class HyDETool(BaseTool):
     async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
         self.log_info(f"Tool: Running HyDE (v10.7)...")
         client = self.get_model_client("hyde_model")
-        
+
         query = tool_input.get("query", "")
         if not query:
             return {"status": "error", "hypothetical_document": "No query provided."}
 
         prompt_template = self.prompt_manager.get_template("hyde_generation")
-        
+
         # v10.7 REFACTOR: Use centralized async formatter
         prompt = await _format_prompt_with_defaults(
             prompt_template, tool_input, self.budget_manager,
             client.goal_state, client.top_failures
         )
-        
+
         response = await client.chat_completion_async(
             messages=[{"role": "user", "content": prompt}],
             temperature=self.config.model_config.hyde_model.temperature,
             response_format="json_object"
         )
-        
+
         validated_output, error = self.validator.validate(response["content"], self.HyDEOutput)
         if error:
             self.log_warning(f"HyDE validation failed: {error}. Using raw query.")
             return {"status": "error", "hypothetical_document": query} # Fallback
-            
+
         return {"status": "success", "hypothetical_document": validated_output.hypothetical_document}
 
 
@@ -321,7 +321,7 @@ class ChromaDBSearchTool(BaseTool):
         self.embedding_function = self.context.embedding_function
         self.collection_name = self.config.chromadb_config.default_collection_name
         self.chroma_client = self.context.chromadb_client
-        
+
     @track_metrics('run_chroma_tool')
     async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
         query = tool_input.get("query", "")
@@ -332,18 +332,18 @@ class ChromaDBSearchTool(BaseTool):
                 name=self.collection_name,
                 embedding_function=self.embedding_function
             )
-            
+
             results = await asyncio.to_thread(
                 collection.query,
                 query_texts=[query],
                 n_results=5,
                 where={"workflow_id": workflow_id}
             )
-            
+
             search_results = []
             documents = results.get('documents', [[]])[0]
             metadatas = results.get('metadatas', [[]])[0]
-            
+
             for doc, meta in zip(documents, metadatas):
                 experience_obj_str = meta.get("experience_object")
                 if experience_obj_str:
@@ -351,7 +351,7 @@ class ChromaDBSearchTool(BaseTool):
 
             self.log_feedback(workflow_id, "chroma_search", "success", {"results_found": len(search_results)})
             return {"search_results": search_results}
-            
+
         except Exception as e:
             self.log_error(f"Failed to run ChromaDB search: {e}")
             return {"search_results": []}
@@ -364,12 +364,12 @@ class BM25SearchTool(BaseTool):
         super().__init__(context, debug_mode)
         if not BM25_AVAILABLE:
             self.log_error("BM25SearchTool disabled: 'rank_bm25' not installed.")
-    
+
     @track_metrics('run_bm25_tool')
     async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
         if not BM25_AVAILABLE:
             return {"search_results": []}
-            
+
         query = tool_input.get("query", "")
         corpus_text = tool_input.get("corpus_text", [])
         corpus_metadata = tool_input.get("corpus_metadata", [])
@@ -389,12 +389,12 @@ class BM25SearchTool(BaseTool):
                 indexed_scores.sort(key=lambda x: x[1], reverse=True)
                 search_results = [corpus_metadata[i] for i, score in indexed_scores[:5] if score > 0]
                 return search_results
-            
+
             search_results = await asyncio.to_thread(do_bm25_search)
 
             self.log_feedback(workflow_id, "bm25_search", "success", {"results_found": len(search_results)})
             return {"search_results": search_results}
-            
+
         except Exception as e:
             self.log_error(f"Failed to run BM25 search: {e}")
             return {"search_results": []}
@@ -421,17 +421,17 @@ class QABaseValidatorTool(BaseTool):
             prompt_template, tool_input, self.budget_manager,
             client.goal_state, client.top_failures
         )
-        
+
         response = await client.chat_completion_async(
             messages=[{"role": "user", "content": prompt}],
             temperature=self.config.model_config.qa_validator_model.temperature,
             response_format="json_object"
         )
-        
+
         validated_output, error = self.validator.validate(response["content"], self.output_model)
         if error:
             raise PydanticSchemaError(f"Tool {self.tool_name} failed validation: {error}")
-            
+
         return validated_output.model_dump()
 
 class QAClaimValidatorTool(QABaseValidatorTool):
@@ -499,30 +499,30 @@ class QAMissedOpportunityTool(QABaseValidatorTool):
 class QAAdversarialReviewerTool(BaseTool):
     """(Claude 4.1 Opus) Acts as a skeptical hiring manager to find flaws."""
     tool_name = "adversarial_review"
-    output_model = QAAdversarialOutput 
+    output_model = QAAdversarialOutput
 
     @track_metrics('tool_qa_adversarial')
     async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
         self.log_info(f"Tool: Running Adversarial Review (v10.7)...")
         client = self.get_model_client("qa_adversarial_model")
         prompt_template = self.prompt_manager.get_template(self.tool_name)
-        
+
         # v10.7 REFACTOR: Use centralized async formatter
         prompt = await _format_prompt_with_defaults(
             prompt_template, tool_input, self.budget_manager,
             client.goal_state, client.top_failures
         )
-        
+
         response = await client.chat_completion_async(
             messages=[{"role": "user", "content": prompt}],
             temperature=self.config.model_config.qa_adversarial_model.temperature,
             response_format="json_object"
         )
-        
+
         validated_output, error = self.validator.validate(response["content"], self.output_model)
         if error:
             raise PydanticSchemaError(f"Tool {self.tool_name} failed validation: {error}")
-            
+
         return validated_output.model_dump()
 
 class QABiasDetectorTool(BaseTool):
@@ -537,17 +537,17 @@ class QABiasDetectorTool(BaseTool):
 
         # v10.7 (FIX): Call the sync function in a thread to avoid blocking
         result_dict = await asyncio.to_thread(detect_bias, self.context, draft_text, workflow_id)
-        
+
         validated_output, error = self.validator.validate(result_dict, self.output_model)
         if error:
             raise PydanticSchemaError(f"Tool {self.tool_name} failed validation: {error}")
-            
+
         return validated_output.model_dump()
 
 class QAWordCountValidatorTool(BaseTool):
     """(Local) Runs deterministic word count check."""
     tool_name = "validate_word_count"
-    
+
     class WordCountOutput(BaseToolOutput):
         validation_passed: bool
         message: str
@@ -558,14 +558,14 @@ class QAWordCountValidatorTool(BaseTool):
     @track_metrics('tool_qa_word_count')
     async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
         self.log_info(f"Tool: Running Word Count Validator (v10.7)...")
-        
+
         text_to_check = tool_input.get("text_to_check", "")
         min_words = tool_input.get("min_words", 50)
         max_words = tool_input.get("max_words", 150)
         llm_reported_count = tool_input.get("llm_reported_count")
-        
+
         validator = self.context.semantic_validator
-        
+
         validation_passed, message = validator.check_word_count(
             text=text_to_check,
             min_words=min_words,
@@ -573,7 +573,7 @@ class QAWordCountValidatorTool(BaseTool):
             llm_reported_count=llm_reported_count,
             workflow_id=workflow_id
         )
-        
+
         result_dict = {
             "status": "success",
             "validation_passed": validation_passed,
@@ -584,7 +584,7 @@ class QAWordCountValidatorTool(BaseTool):
         validated_output, error = self.validator.validate(result_dict, self.output_model)
         if error:
             raise PydanticSchemaError(f"Tool {self.tool_name} failed its own output validation: {error}")
-            
+
         return validated_output.model_dump()
 
 # ============================================================================
@@ -600,12 +600,12 @@ class UIUpdateElementTool(BaseTool):
     async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
         element_id = tool_input.get("element_id", "unknown")
         content = tool_input.get("content", "")
-        
+
         self.log_info(f"Tool: UI STUB >> Updating element '{element_id}' with content: '{content[:30]}...'")
-        
+
         # In a real system, this would dispatch an event.
         # For v10.7, we just log and return success.
-        
+
         return {"status": "success"}
 
 class UIFireEventTool(BaseTool):
@@ -617,9 +617,9 @@ class UIFireEventTool(BaseTool):
     async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
         event_name = tool_input.get("event_name", "unknown_event")
         payload = tool_input.get("payload", {})
-        
+
         self.log_info(f"Tool: UI STUB >> Firing event '{event_name}' with payload: {payload}")
-        
+
         return {"status": "success"}
 
 # ============================================================================

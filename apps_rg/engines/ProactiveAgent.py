@@ -21,10 +21,10 @@ class ProactiveAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
     def __init__(self, ctx: ResumeEngineContext) -> None:
         """
         Initialize proactive agent.
-        
+
         Args:
             ctx: Resume engine context for coordination
-        
+
         Sets up proactive scheduler, predictive handoff, and capability monitoring.
         """
         super().__init__(ctx)
@@ -36,7 +36,7 @@ class ProactiveAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
     def record_result(self, passed: bool, details: str = "") -> Any:
         """
         Record the agent's execution result.
-        
+
         Args:
             passed: Whether execution passed
             details: Optional details about the result
@@ -46,7 +46,7 @@ class ProactiveAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
     def add_signal(self, signal: str) -> Any:
         """
         Add a signal to the context.
-        
+
         Args:
             signal: Signal name to add
         """
@@ -56,7 +56,7 @@ class ProactiveAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
     async def execute(self) -> None:
         """
         Execute proactive analysis and task execution.
-        
+
         Identifies proactive tasks, checks for handoff needs, and executes
         auto-executable tasks while recording results.
         """
@@ -95,7 +95,7 @@ class ProactiveAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
     def heal_repository(self) -> dict:
         """
         Invoke healing chain via super().
-        
+
         Returns:
             Dictionary with healing results including violations, fixed, errors, skipped
         """

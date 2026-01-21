@@ -38,13 +38,13 @@ def get_project_root() -> Path:
 def validate_sandbox(path: str) -> Path:
     """
     Validates that a given path is within the project's sandbox (project root).
-    
+
     Args:
         path: The path to validate, relative to the project root.
-        
+
     Returns:
         The absolute, resolved path within the sandbox.
-        
+
     Raises:
         ValueError: If the path attempts to escape the project root.
     """
@@ -67,10 +67,10 @@ DANGEROUS_COMMANDS: List[str] = ['rm', 'del', 'rmdir', 'format', 'dd', 'mkfs', '
 def is_command_allowed(command: str) -> bool:
     """
     Check if a command is allowed to execute.
-    
+
     Args:
         command: Command to check
-        
+
     Returns:
         True if command is allowed, False otherwise
     """
@@ -88,17 +88,17 @@ def is_command_allowed(command: str) -> bool:
 def execute_with_timeout(command: List[str], timeout: int=30, cwd: Optional[str]=None, capture_output: bool=True, check: bool=False) -> subprocess.CompletedProcess:
     """
     Execute a command with timeout protection.
-    
+
     Args:
         command: Command and arguments as list
         timeout: Timeout in seconds (max 300)
         cwd: Working directory (relative to project root)
         capture_output: Capture stdout and stderr
         check: Raise exception on non-zero exit code
-        
+
     Returns:
         CompletedProcess instance
-        
+
     Raises:
         ExecutionTimeoutError: If command exceeds timeout
         ExecutionError: If command fails and check=True
@@ -124,13 +124,13 @@ def execute_with_timeout(command: List[str], timeout: int=30, cwd: Optional[str]
 def execute_command(args: ExecuteCommandArgs) -> Tuple[int, str, str]:
     """
     Execute a shell command with sandbox validation and timeout protection.
-    
+
     Args:
         args: ExecuteCommandArgs with command, args, and options
-        
+
     Returns:
         Tuple of (return_code, stdout, stderr)
-        
+
     Raises:
         ExecutionTimeoutError: If command exceeds timeout
         ExecutionError: If command is not allowed
@@ -147,10 +147,10 @@ def execute_command(args: ExecuteCommandArgs) -> Tuple[int, str, str]:
 def check_tool_installed(tool_name: str) -> bool:
     """
     Check if a tool is installed and available.
-    
+
     Args:
         tool_name: Name of the tool to check
-        
+
     Returns:
         True if tool is installed, False otherwise
     """
@@ -172,7 +172,7 @@ def run_linter(tool: str, target_path: str='.', extra_args: Optional[List[str]]=
         tool: Linter tool name ('isort', 'autoflake', 'black', 'flake8', 'mypy')
         target_path: Path to lint (relative to project root)
         extra_args: Additional arguments for the linter
-        
+
     Returns:
         Tuple of (success, output)
     """
@@ -194,10 +194,10 @@ def run_linter(tool: str, target_path: str='.', extra_args: Optional[List[str]]=
 def run_autofix_tools(target_path: str='.') -> Dict[str, bool]:
     """
     Run auto-fix tools (isort, autoflake) on the codebase.
-    
+
     Args:
         target_path: Path to fix (relative to project root)
-        
+
     Returns:
         Dictionary of tool results
     """

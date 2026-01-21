@@ -36,7 +36,7 @@ try:
     PROMPT_GOVERNOR_AVAILABLE: Any = True
 except ImportError:
     PROMPT_GOVERNOR_AVAILABLE: Any = False
-    
+
 Logger: Any = logging.getLogger(__name__)
 
 class SubAtomicEngine:
@@ -51,7 +51,7 @@ class SubAtomicEngineImpl:
     def __init__(self, gemini_client: Optional[Any]=None, redis_client: Optional[Any]=None, pinecone_index: Optional[Any]=None):
         """
         Initialize SubAtomicEngine with Meta-Learning storage.
-        
+
         Args:
             gemini_client: Optional Gemini client (creates new if None)
             redis_client: Optional Redis client for L3 Failure Tracking
@@ -74,7 +74,7 @@ class SubAtomicEngineImpl:
             self._client = genai.Client(api_key=api_key)
         self.chat_sessions: Dict[str, Any] = {}
         self.pinecone = None
-        
+
         # [HARDENING 8] Initialize prompt governor for centralized prompt management
         if PROMPT_GOVERNOR_AVAILABLE:
             self.prompt_gov = PromptGovernor()
@@ -82,17 +82,17 @@ class SubAtomicEngineImpl:
         else:
             self.prompt_gov = None
             print('   [!] SubAtomicEngine: Prompt governance unavailable')
-        
+
         print('   [OK] SubAtomicEngine: Hybrid routing deferred (lazy init)')
 
     @staticmethod
     def get_safe_config(is_fission: bool=False) -> Any:
         """
         Get safe Gemini configuration with hardened thinking budget.
-        
+
         Args:
             is_fission: Whether this is for fission mode (uses max budget)
-            
+
         Returns:
             GenerateContentConfig with safe thinking budget
         """
@@ -105,10 +105,10 @@ class SubAtomicEngineImpl:
     def parse_fission_output(output: str) -> Dict[str, str]:
         """
         Extracts JSON file map from AI response.
-        
+
         Args:
             output: Raw output from Gemini
-            
+
         Returns:
             Dictionary mapping file paths to content
         """
@@ -158,7 +158,7 @@ class SubAtomicEngineImpl:
 
     async def _resilient_mutation_impl(self, file_path: str, code: str, Task: str, round_num: int=1, fission_active: bool=False, system_prompt: Optional[str]=None, **kwargs) -> str:
         """Execute resilient mutation with exponential backoff retry.
-        
+
         Args:
             file_path: Path to the file being mutated
             code: Code content to mutate
@@ -204,14 +204,14 @@ class SubAtomicEngineImpl:
                             context_str = "\n\n".join(context_chunks)
                     except Exception as e:
                         Logger.warning(f'Vector memory retrieval failed: {e}')
-                
+
                 prompt_dict = self.prompt_gov.build_healing_prompt(
                     Task=Task if not system_prompt else system_prompt,
                     code=code,
                     file_path=file_path,
                     context=context_str
                 )
-            
+
             # Use system prompt from governor
             prompt = f"{prompt_dict['system']}\n\n{prompt_dict['user']}"
         else:
@@ -251,7 +251,7 @@ class SubAtomicEngineImpl:
             if duration < 0.1 and (not raw_output or len(raw_output) < 50):
                 Logger.error(f'   [X] HALLUCINATION REJECTED (Latency: {duration:.3f}s).')
                 return code
-            
+
             # [HARDENING 8] Use PromptGovernor to enforce output format
             if self.prompt_gov and not fission_active:
                 try:
@@ -265,29 +265,29 @@ class SubAtomicEngineImpl:
                 # Fallback: Extract code block if fenced (common LLM output format)
                 code_match = re.search(r'```python\n(.*?)\n```', raw_output, re.DOTALL)
                 healed_code = code_match.group(1) if code_match else raw_output
-            
+
             # [HARDENING] Stage 1: Post-LLM Validation Pipeline
             if not fission_active:
                 try:
                     from agentic_core.L5_safety.validators.heal_validator_1 import HealValidatorAgent
                     validator = HealValidatorAgent(Path('.'))
                     ValidationResult = validator.validate_healed_code(code, healed_code, Path(file_path))
-                    
+
                     if not ValidationResult['valid']:
                         Logger.error(f"   [X] HEAL REJECTED ({ValidationResult['stage']}): {ValidationResult['reason']}")
                         if self.redis_client:
                             self.redis_client.incr(f'fail_count:{file_path}')
                         return code
-                    
+
                     Logger.info(f"   [✓] Heal validated: {os.path.basename(file_path)}")
                 except ImportError as e:
                     Logger.warning(f'   [!] HealValidatorAgent unavailable: {e}')
                 except Exception as e:
                     Logger.error(f'   [!] Validation failed: {e}')
                     return code
-            
+
             output = healed_code
-            
+
             # Legacy truncation check (now redundant with HealValidatorAgent but kept for defense-in-depth)
             if not fission_active and '...' in output and (len(output) < len(code) * 0.8):
                 Logger.warning('   [X] TRUNCATION DETECTED. Rejecting mutation.')

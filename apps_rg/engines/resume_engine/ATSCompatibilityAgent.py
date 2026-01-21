@@ -43,12 +43,12 @@ class ATSCompatibilityAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin
     async def execute(self) -> None:
         """
         Execute ATS compatibility check.
-        
+
         Validates resume for:
         - ATS-unfriendly formatting patterns
         - Standard section headers
         - Keyword optimization against job description
-        
+
         Raises:
             ATS_FAILURE signal if compatibility issues found
         """
@@ -102,11 +102,11 @@ class ATSCompatibilityAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin
     def _calculate_keyword_score(self, resume: Dict[str, any], job_desc: str) -> float:
         """
         Calculate keyword match score between resume and job description.
-        
+
         Args:
             resume: Resume data dictionary
             job_desc: Job description text
-        
+
         Returns:
             Float between 0.0 and 1.0 representing keyword match percentage
         """
@@ -129,12 +129,12 @@ class ATSCompatibilityAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, int]:
         """
         Autonomous healing method (Canon Key 51 compliance).
-        
+
         Args:
             dry_run: If True, only report violations without fixing
             execute: If True, apply fixes
             **kwargs: Additional healing parameters
-        
+
         Returns:
             Dict with healing summary (violations, fixed, errors)
         """

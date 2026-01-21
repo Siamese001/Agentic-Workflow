@@ -30,11 +30,11 @@ class IndustrySensitivity(str, Enum):
 
 class RiskProfile(BaseModel):
     """Risk profile for target company and role."""
-    
+
     industry_sensitivity: IndustrySensitivity = Field(..., description="Industry risk level")
     compliance_keywords: List[str] = Field(default_factory=list, description="Required compliance frameworks")
     data_sensitivity: List[str] = Field(default_factory=list, description="Sensitive data types")
-    
+
     @property
     def is_high_risk(self) -> bool:
         """Check if this is a high-risk profile."""
@@ -43,12 +43,12 @@ class RiskProfile(BaseModel):
 
 class SafetyProtocol(BaseModel):
     """Safety protocol for AI systems."""
-    
+
     validation_strategy: str = Field(..., description="Model validation approach")
     data_privacy_approach: str = Field(..., description="Data privacy protection method")
     human_in_the_loop_policy: str = Field(..., description="Human oversight requirements")
     compliance_frameworks: List[str] = Field(default_factory=list, description="Compliance standards")
-    
+
     @property
     def is_comprehensive(self) -> bool:
         """Check if protocol covers all major areas."""
@@ -61,7 +61,7 @@ class SafetyProtocol(BaseModel):
 
 class GovernanceShieldAgent:
     """Audits and upgrades content for risk maturity."""
-    
+
     def __init__(self):
         """Initialize the governance shield agent."""
         # Naive claim patterns to detect and replace
@@ -93,7 +93,7 @@ class GovernanceShieldAgent:
                 r"100% secure"
             ]
         }
-        
+
         # Senior replacements for naive claims
         self.senior_replacements = {
             "absolute_accuracy": [
@@ -117,7 +117,7 @@ class GovernanceShieldAgent:
                 "comprehensive security controls and monitoring"
             ]
         }
-        
+
         # Industry-specific compliance requirements
         self.compliance_requirements = {
             "healthcare": ["HIPAA", "HITECH", "FDA 21 CFR Part 11"],
@@ -126,26 +126,26 @@ class GovernanceShieldAgent:
             "cybersecurity": ["NIST CSF", "ISO 27001", "CMMC"],
             "general": ["GDPR", "CCPA", "SOX"]
         }
-        
+
         logger.info("Initialized GovernanceShieldAgent")
-    
+
     def sanitize_claims(self, content: str) -> str:
         """Sanitize naive claims with mature, risk-aware language.
-        
+
         Args:
             content: Content to sanitize
-            
+
         Returns:
             Sanitized content
         """
         try:
             sanitized = content
-            
+
             # Check for zero tolerance violations
             if "zero hallucinations" in sanitized.lower():
                 logger.warning("CRITICAL: 'Zero hallucinations' claim detected - immediate disqualifier")
                 sanitized = self._critical_fix_zero_hallucinations(sanitized)
-            
+
             # Apply pattern replacements
             for category, patterns in self.naive_patterns.items():
                 for pattern in patterns:
@@ -154,26 +154,26 @@ class GovernanceShieldAgent:
                         # Replace with senior language
                         replacements = self.senior_replacements[category]
                         replacement = replacements[0]  # Use first replacement
-                        
+
                         # Replace all occurrences
                         sanitized = re.sub(pattern, replacement, sanitized, flags=re.IGNORECASE)
                         logger.debug(f"Replaced {category} claim with: {replacement}")
-            
+
             # Additional privacy fixes
             sanitized = self._fix_privacy_language(sanitized)
-            
+
             return sanitized
-            
+
         except Exception as e:
             logger.error(f"Error sanitizing claims: {str(e)}")
             return content
-    
+
     def generate_safety_protocol(self, risk_profile: RiskProfile) -> SafetyProtocol:
         """Generate safety protocol based on risk profile.
-        
+
         Args:
             risk_profile: Risk profile for target company
-            
+
         Returns:
             Comprehensive safety protocol
         """
@@ -182,7 +182,7 @@ class GovernanceShieldAgent:
                 return self._generate_high_risk_protocol(risk_profile)
             else:
                 return self._generate_standard_protocol(risk_profile)
-                
+
         except Exception as e:
             logger.error(f"Error generating safety protocol: {str(e)}")
             return SafetyProtocol(
@@ -190,44 +190,44 @@ class GovernanceShieldAgent:
                 data_privacy_approach="Privacy by design principles",
                 human_in_the_loop_policy="Human review for critical decisions"
             )
-    
+
     def audit_outreach(self, email_draft: str) -> str:
         """Audit final email draft for compliance.
-        
+
         Args:
             email_draft: Email content to audit
-            
+
         Returns:
             Audited email content
         """
         try:
             # Run full sanitization
             audited = self.sanitize_claims(email_draft)
-            
+
             # Add compliance disclaimer if needed
             if any(term in audited.lower() for term in ["hipaa", "phi", "health data"]):
                 audited += "\n\n[Note: All healthcare applications maintain HIPAA compliance through on-prem deployment or BAA-compliant APIs.]"
-            
+
             return audited
-            
+
         except Exception as e:
             logger.error(f"Error auditing outreach: {str(e)}")
             return email_draft
-    
+
     def scan_risk_level(self, industry: str, job_description: str) -> RiskProfile:
         """Scan industry and JD to determine risk level.
-        
+
         Args:
             industry: Target company industry
             job_description: Job description text
-            
+
         Returns:
             Risk profile with sensitivity and requirements
         """
         try:
             industry_lower = industry.lower()
             jd_lower = job_description.lower()
-            
+
             # Determine base sensitivity
             if industry_lower in ["healthcare", "health", "medical", "pharma"]:
                 sensitivity = IndustrySensitivity.HIGH
@@ -249,27 +249,27 @@ class GovernanceShieldAgent:
                 sensitivity = IndustrySensitivity.MEDIUM
                 compliance = self.compliance_requirements["general"]
                 data_types = ["User Data", "Analytics Data"]
-            
+
             # Boost sensitivity if JD mentions compliance
             if any(term in jd_lower for term in ["compliance", "regulatory", "audit", "sox", "hipaa"]):
                 if sensitivity == IndustrySensitivity.MEDIUM:
                     sensitivity = IndustrySensitivity.HIGH
                     logger.info("Boosted to HIGH sensitivity due to JD compliance keywords")
-            
+
             # Extract additional compliance keywords from JD
             additional_compliance = []
             for framework in ["GDPR", "CCPA", "SOC 2", "ISO 27001", "NIST", "CMMC"]:
                 if framework.lower() in jd_lower:
                     additional_compliance.append(framework)
-            
+
             compliance.extend(additional_compliance)
-            
+
             return RiskProfile(
                 industry_sensitivity=sensitivity,
                 compliance_keywords=list(set(compliance)),  # Remove duplicates
                 data_sensitivity=data_types
             )
-            
+
         except Exception as e:
             logger.error(f"Error scanning risk level: {str(e)}")
             return RiskProfile(
@@ -277,13 +277,13 @@ class GovernanceShieldAgent:
                 compliance_keywords=["GDPR"],
                 data_sensitivity=["User Data"]
             )
-    
+
     def _critical_fix_zero_hallucinations(self, content: str) -> str:
         """Critical fix for zero hallucination claims.
-        
+
         Args:
             content: Content with critical violation
-            
+
         Returns:
             Fixed content
         """
@@ -294,22 +294,22 @@ class GovernanceShieldAgent:
             content,
             flags=re.IGNORECASE
         )
-        
+
         content = re.sub(
             r"hallucination[- ]free",
             "hallucination-mitigated",
             content,
             flags=re.IGNORECASE
         )
-        
+
         return content
-    
+
     def _fix_privacy_language(self, content: str) -> str:
         """Fix privacy-related language issues.
-        
+
         Args:
             content: Content to fix
-            
+
         Returns:
             Fixed content
         """
@@ -320,42 +320,42 @@ class GovernanceShieldAgent:
             r"private data": "privacy-protected data",
             r"customer data": "customer-approved analytics"
         }
-        
+
         for pattern, replacement in privacy_fixes.items():
             content = re.sub(pattern, replacement, content, flags=re.IGNORECASE)
-        
+
         return content
-    
+
     def _generate_high_risk_protocol(self, risk_profile: RiskProfile) -> SafetyProtocol:
         """Generate protocol for high-risk industries.
-        
+
         Args:
             risk_profile: High-risk profile
-            
+
         Returns:
             Comprehensive safety protocol
         """
         frameworks = risk_profile.compliance_keywords
-        
+
         # Check for HIPAA requirement
         if "HIPAA" in frameworks:
             privacy = "On-prem deployment or BAA-compliant APIs with PII redaction (Presidio)"
         else:
             privacy = "End-to-end encryption with data minimization and anonymization"
-        
+
         return SafetyProtocol(
             validation_strategy="Automated eval pipeline (Ragas) + human expert review before production",
             data_privacy_approach=privacy,
             human_in_the_loop_policy="Mandatory human oversight for all high-stakes decisions with audit trails",
             compliance_frameworks=frameworks
         )
-    
+
     def _generate_standard_protocol(self, risk_profile: RiskProfile) -> SafetyProtocol:
         """Generate protocol for standard risk industries.
-        
+
         Args:
             risk_profile: Standard risk profile
-            
+
         Returns:
             Standard safety protocol
         """
@@ -370,7 +370,7 @@ class GovernanceShieldAgent:
 # Factory function for easy instantiation
 def create_governance_shield_agent() -> GovernanceShieldAgent:
     """Create a GovernanceShieldAgent instance.
-    
+
     Returns:
         Configured GovernanceShieldAgent
     """
@@ -380,10 +380,10 @@ def create_governance_shield_agent() -> GovernanceShieldAgent:
 # Convenience function for quick sanitization
 def sanitize_content(content: str) -> str:
     """Quickly sanitize content for risk maturity.
-    
+
     Args:
         content: Content to sanitize
-        
+
     Returns:
         Sanitized content
     """

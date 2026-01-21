@@ -23,7 +23,7 @@ Logger: Any = logging.getLogger(__name__)
 
 class SovereignRedisMcpClient(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
     """Official Redis MCP client for sovereign caching operations.
-    
+
     [HARDENING] Inherits MCPHardenedMixin for:
     - Exponential backoff retry (3 attempts)
     - SovereignEvent emission on connect/fail/success

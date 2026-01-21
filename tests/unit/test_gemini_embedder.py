@@ -25,11 +25,11 @@ def get_project_root() -> Path:
     import os
     if "PROJECT_ROOT" in os.environ:
         return Path(os.environ["PROJECT_ROOT"])
-    
+
     known_root = Path("C:/Git/Agentic-Workflow")
     if known_root.exists() and (known_root / "agentic_core").is_dir():
         return known_root
-    
+
     test_file = Path(__file__).resolve()
     return test_file.parent.parent.parent
 
@@ -44,22 +44,22 @@ class TestGeminiEmbedderAPICompliance:
     def test_embed_content_uses_contents_parameter(self, project_root: Path):
         """Verify embed_content calls use 'contents' not 'content' parameter."""
         violations = []
-        
+
         for rel_path in EMBEDDING_FILES:
             file_path = project_root / rel_path
             if not file_path.exists():
                 continue
-            
+
             content = file_path.read_text(encoding="utf-8")
-            
+
             # Find embed_content calls with wrong parameter
             # Pattern: embed_content(...content=...) but NOT contents=
             wrong_pattern = r"embed_content\s*\([^)]*\bcontent\s*="
             correct_pattern = r"embed_content\s*\([^)]*\bcontents\s*="
-            
+
             wrong_matches = re.findall(wrong_pattern, content)
             correct_matches = re.findall(correct_pattern, content)
-            
+
             # Filter out false positives (variable names like embed_content = ...)
             for match in wrong_matches:
                 if "contents=" not in match:
@@ -68,7 +68,7 @@ class TestGeminiEmbedderAPICompliance:
                         "issue": "Uses 'content=' instead of 'contents='",
                         "match": match[:50]
                     })
-        
+
         assert not violations, (
             f"Found incorrect embed_content parameter usage:\n"
             + "\n".join(f"  - {v['file']}: {v['issue']}" for v in violations)
@@ -77,21 +77,21 @@ class TestGeminiEmbedderAPICompliance:
     def test_embed_content_result_uses_embeddings_array(self, project_root: Path):
         """Verify embed_content result access uses 'embeddings[0].values' not 'embedding.values'."""
         violations = []
-        
+
         for rel_path in EMBEDDING_FILES:
             file_path = project_root / rel_path
             if not file_path.exists():
                 continue
-            
+
             content = file_path.read_text(encoding="utf-8")
-            
+
             # Check for old-style result access
             if "result.embedding.values" in content:
                 violations.append({
                     "file": rel_path,
                     "issue": "Uses 'result.embedding.values' instead of 'result.embeddings[0].values'"
                 })
-        
+
         assert not violations, (
             f"Found incorrect embed_content result access:\n"
             + "\n".join(f"  - {v['file']}: {v['issue']}" for v in violations)

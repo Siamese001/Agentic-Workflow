@@ -18,7 +18,7 @@ missing_invocation = []
 for agent in agents:
     invocation = agent.get('invocation', 'No')
     has_healing = agent.get('has_healing', False)
-    
+
     # Has healing but invocation is No
     if has_healing and invocation != 'Yes':
         missing_invocation.append(agent)

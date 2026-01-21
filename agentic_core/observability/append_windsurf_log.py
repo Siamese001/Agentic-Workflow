@@ -54,7 +54,7 @@ def append_batch(
 ) -> dict:
     """
     Append a new batch entry to the windsurf log.
-    
+
     Args:
         healing_pct: Core healing percentage
         healed: Number of healed agents
@@ -63,17 +63,17 @@ def append_batch(
         batch_name: Optional batch name (auto-generated if None)
         mcp_hardened: Number of MCP hardened agents
         regressions: Number of regressions detected
-    
+
     Returns:
         The new entry that was appended
     """
     log = load_log()
-    
+
     # Auto-generate batch name if not provided
     if batch_name is None:
         batch_num = len(log) + 1
         batch_name = f"Batch {batch_num}"
-    
+
     new_entry = {
         "date": datetime.now().strftime('%Y-%m-%d'),
         "batch": batch_name,
@@ -84,17 +84,17 @@ def append_batch(
         "mcp_hardened": mcp_hardened,
         "regressions": regressions
     }
-    
+
     log.append(new_entry)
     save_log(log)
-    
+
     print(f"\n[NEW ENTRY]")
     print(f"  Batch: {batch_name}")
     print(f"  Healing: {healing_pct}% ({healed}/{total_core})")
     print(f"  MCP Hardened: {mcp_hardened}")
     print(f"  Commits: {commits}")
     print(f"  Regressions: {regressions}")
-    
+
     return new_entry
 
 
@@ -103,10 +103,10 @@ def get_current_stats() -> dict:
     log = load_log()
     if not log:
         return {}
-    
+
     latest = log[-1]
     total_commits = sum(entry.get('commits', 0) for entry in log)
-    
+
     return {
         'latest_batch': latest.get('batch', 'Unknown'),
         'healing_pct': latest.get('healing_core_pct', 0),
@@ -129,16 +129,16 @@ def main():
     parser.add_argument('--mcp', type=int, default=0, help='MCP hardened agents')
     parser.add_argument('--regressions', type=int, default=0, help='Regressions detected')
     parser.add_argument('--stats', action='store_true', help='Show current stats only')
-    
+
     args = parser.parse_args()
-    
+
     if args.stats:
         stats = get_current_stats()
         print("\n[CURRENT STATS]")
         for key, value in stats.items():
             print(f"  {key}: {value}")
         return
-    
+
     append_batch(
         healing_pct=args.healing,
         healed=args.healed,

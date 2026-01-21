@@ -12,6 +12,7 @@ data/cache/
 data/tmp/
 data/**/*.bin
 archives/
+!archives/gatekeeper/archival_audit.jsonl
 *.zip
 *.tar.gz
 *.lfs

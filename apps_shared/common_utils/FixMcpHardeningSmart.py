@@ -30,7 +30,7 @@ def find_agent_class_in_file(content: str, class_name: str) -> Optional[Tuple[in
     match = re.search(pattern, content, re.DOTALL)
     if match:
         return (match.start(), match.end(), match.group(1).strip())
-    
+
     # Try to find any class that ends with "Agent" and is the main one
     try:
         tree = ast.parse(content)
@@ -44,24 +44,24 @@ def find_agent_class_in_file(content: str, class_name: str) -> Optional[Tuple[in
                         return (match.start(), match.end(), match.group(1).strip())
     except:
         pass
-    
+
     return None
 
 def add_mcp_import(content: str) -> str:
     """Add MCPHardenedMixin import if not present."""
     if 'MCPHardenedMixin' in content:
         return content
-    
+
     import_line = 'from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\n'
-    
+
     lines = content.split('\n')
     insert_idx = 0
-    
+
     # Find last import line
     for i, line in enumerate(lines):
         if line.strip().startswith('import ') or line.strip().startswith('from '):
             insert_idx = i + 1
-    
+
     # If no imports, add after module docstring
     if insert_idx == 0:
         in_docstring = False
@@ -71,44 +71,44 @@ def add_mcp_import(content: str) -> str:
                 if not in_docstring:
                     insert_idx = i + 1
                     break
-    
+
     lines.insert(insert_idx, import_line.rstrip())
     return '\n'.join(lines)
 
 for agent in needs_hardening:
     path = Path(agent['path'])
     name = agent['class_name']
-    
+
     if not path.exists():
         print(f"⚠️  SKIP: {name} - file not found: {path}")
         skipped_count += 1
         continue
-    
+
     try:
         content = path.read_text(encoding='utf-8')
-        
+
         # Check if already has MCPHardenedMixin
         if 'MCPHardenedMixin' in content:
             print(f"✓ SKIP: {name} - already has MCPHardenedMixin")
             skipped_count += 1
             continue
-        
+
         # Find the class definition
         result = find_agent_class_in_file(content, name)
-        
+
         if not result:
             # Try to find if this is a stub/re-export file
             if 'from agentic_core' in content and 'import' in content and name in content:
                 print(f"✓ SKIP: {name} - stub/re-export file")
                 skipped_count += 1
                 continue
-            
+
             print(f"⚠️  SKIP: {name} - class not found in file")
             skipped_count += 1
             continue
-        
+
         start_pos, end_pos, current_inheritance = result
-        
+
         # Build new inheritance
         if current_inheritance:
             # Check if it already has MCPHardenedMixin somehow
@@ -119,21 +119,21 @@ for agent in needs_hardening:
             new_inheritance = f"{current_inheritance}, MCPHardenedMixin"
         else:
             new_inheritance = "MCPHardenedMixin"
-        
+
         # Replace class definition
         old_class_def = content[start_pos:end_pos]
         new_class_def = f"class {name}({new_inheritance}):"
         content = content[:start_pos] + new_class_def + content[end_pos:]
-        
+
         # Add import
         content = add_mcp_import(content)
-        
+
         # Write back
         path.write_text(content, encoding='utf-8')
-        
+
         print(f"✅ FIXED: {name}")
         fixed_count += 1
-        
+
     except Exception as e:
         error_msg = f"❌ ERROR: {name} - {str(e)}"
         print(error_msg)

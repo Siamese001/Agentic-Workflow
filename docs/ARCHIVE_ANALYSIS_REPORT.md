@@ -355,9 +355,9 @@ EXECUTIVE SUMMARY
     MEDIUM PRIORITY (restore as needed):     77 files
     REVIEW NEEDED (manual inspection):       182 files
     SKIP (exists or low quality):            150 files
-    
+
     TOTAL RESTORATION CANDIDATES:            131 files
-    
+
 
 ================================================================================
 TOP 10 RESTORATION COMMANDS

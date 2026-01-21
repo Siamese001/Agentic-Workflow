@@ -25,32 +25,32 @@ async def main():
     print("DUPLICATE FILE SCAN")
     print("=" * 80)
     print()
-    
+
     # Initialize agent
     agent = DuplicateCodeDetectorAgent(project_root=project_root)
-    
+
     # Scan for duplicates (all supported file types)
     print("Scanning for duplicate files...")
     results = await agent.execute(scan_whole_files=True)
-    
+
     whole_file_dupes = results["whole_file_duplicates"]
     recommendations = results["deletion_recommendations"]
-    
+
     print(f"\n✅ Scan complete!")
     print(f"   Found {len(whole_file_dupes)} sets of duplicate files")
     print(f"   Generated {len(recommendations)} deletion recommendations")
     print()
-    
+
     if not recommendations:
         print("No duplicates found!")
         return
-    
+
     # Generate review table
     print("=" * 80)
     print("DELETION REVIEW TABLE")
     print("=" * 80)
     print()
-    
+
     table_data = []
     for i, rec in enumerate(recommendations, 1):
         keep_file = rec["keep"]
@@ -58,7 +58,7 @@ async def main():
         rationale = rec["rationale"]
         size_kb = rec["size"] / 1024
         file_type = rec["file_type"]
-        
+
         table_data.append([
             i,
             file_type,
@@ -67,10 +67,10 @@ async def main():
             delete_files,
             rationale
         ])
-    
+
     headers = ["#", "Type", "Size", "Keep", "Delete", "Rationale"]
     print(tabulate(table_data, headers=headers, tablefmt="grid", maxcolwidths=[None, None, None, 50, 50, 40]))
-    
+
     print()
     print("=" * 80)
     print("SUMMARY")
@@ -79,17 +79,17 @@ async def main():
     print(f"Total files to delete: {sum(len(rec['delete']) for rec in recommendations)}")
     print(f"Total space to reclaim: {sum(rec['size'] for rec in recommendations) / 1024:.1f} KB")
     print()
-    
+
     # Group by file type
     by_type = {}
     for rec in recommendations:
         file_type = rec["file_type"]
         by_type.setdefault(file_type, []).append(rec)
-    
+
     print("By file type:")
     for file_type, recs in sorted(by_type.items()):
         print(f"  {file_type}: {len(recs)} duplicate sets")
-    
+
     print()
     print("=" * 80)
     print("NEXT STEPS")

@@ -23,11 +23,11 @@ def get_test_template(agent: Dict) -> str:
     class_name = agent['class_name']
     agent_path = agent['path'].replace('\\', '/')
     layer = agent['layer']
-    
+
     # Determine test file path
     test_dir = project_root / "tests" / layer.lower()
     test_dir.mkdir(parents=True, exist_ok=True)
-    
+
     template = f'''#!/usr/bin/env python3
 """
 Test suite for {class_name}
@@ -46,38 +46,38 @@ from {agent_path.replace('/', '.').replace('.py', '')} import {class_name}
 
 class Test{class_name}:
     """Test suite for {class_name}."""
-    
+
     @pytest.fixture
     def agent(self):
         """Create agent instance for testing."""
         return {class_name}()
-    
+
     def test_instantiation(self, agent):
         """Test that agent can be instantiated."""
         assert agent is not None
         assert isinstance(agent, {class_name})
-    
+
     def test_has_heal_repository(self, agent):
         """Test that agent has heal_repository method."""
         assert hasattr(agent, 'heal_repository')
         assert callable(getattr(agent, 'heal_repository'))
-    
+
     def test_heal_repository_dry_run(self, agent):
         """Test heal_repository in dry-run mode."""
         result = agent.heal_repository(dry_run=True, execute=False)
         assert isinstance(result, dict)
         assert 'violations' in result or 'fixed' in result
-    
+
     def test_mcp_hardened(self, agent):
         """Test that agent has MCP hardening."""
         # Check for MCPHardenedMixin in MRO
         mro_classes = [cls.__name__ for cls in type(agent).__mro__]
         assert 'MCPHardenedMixin' in mro_classes, f"Agent should have MCPHardenedMixin in MRO"
-    
+
     def test_class_name(self, agent):
         """Test that agent has correct class name."""
         assert agent.__class__.__name__ == '{class_name}'
-    
+
     # Add more specific tests based on agent methods
     # TODO: Expand with agent-specific test cases
 
@@ -85,48 +85,48 @@ class Test{class_name}:
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
 '''
-    
+
     return template
 
 
 def generate_tests_for_layer(layer: str, agents: List[Dict], max_count: int = 10) -> int:
     """Generate test files for agents in a specific layer."""
     layer_agents = [a for a in agents if a['layer'] == layer]
-    
+
     if not layer_agents:
         return 0
-    
+
     print(f"\n{'='*70}")
     print(f"Generating tests for {layer} layer ({len(layer_agents)} agents)")
     print(f"{'='*70}")
-    
+
     generated = 0
     for agent in layer_agents[:max_count]:
         class_name = agent['class_name']
         test_file = project_root / "tests" / layer.lower() / f"test_{class_name}.py"
-        
+
         # Skip if test already exists
         if test_file.exists():
             print(f"  ⏭️  {class_name}: test already exists")
             continue
-        
+
         try:
             # Generate test template
             test_content = get_test_template(agent)
-            
+
             # Write test file
             test_file.parent.mkdir(parents=True, exist_ok=True)
             test_file.write_text(test_content, encoding='utf-8')
-            
+
             print(f"  ✅ {class_name}: test generated")
             generated += 1
-            
+
         except Exception as e:
             print(f"  ❌ {class_name}: failed - {e}")
-    
+
     if len(layer_agents) > max_count:
         print(f"  ... {len(layer_agents) - max_count} more agents in {layer} (not generated)")
-    
+
     return generated
 
 
@@ -136,20 +136,20 @@ def main():
     print("AGENT TEST GENERATION")
     print("=" * 70)
     print(f"Total untested agents: {len(untested_agents)}")
-    
+
     total_generated = 0
-    
+
     # Generate tests by priority
     for layer in LAYER_PRIORITY:
         generated = generate_tests_for_layer(layer, untested_agents, max_count=10)
         total_generated += generated
-    
+
     print("\n" + "=" * 70)
     print("SUMMARY")
     print("=" * 70)
     print(f"Total tests generated: {total_generated}")
     print(f"Remaining untested: {len(untested_agents) - total_generated}")
-    
+
     if total_generated > 0:
         print("\n✅ Test generation complete!")
         print("\nNext steps:")

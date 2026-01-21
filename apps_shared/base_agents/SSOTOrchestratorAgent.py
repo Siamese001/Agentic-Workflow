@@ -13,7 +13,7 @@ Phase 2 Enhancement (Jan 19, 2026):
 
 Usage:
     from agentic_core.L3_orchestration.orchestrator_registry import get_orchestrator
-    
+
     orchestrator = get_orchestrator("healing")
     result = orchestrator.run_mission(["BiasAuditorAgent"], dry_run=True)
 """
@@ -33,10 +33,10 @@ def get_orchestrator(mode: str = "unified", **kwargs) -> IOrchestratorAgent:
     """
     Factory function: Single entry point for orchestration.
     Replaces direct instantiation of legacy orchestrator classes.
-    
+
     All modes now return the UnifiedOrchestratorAgent as the SSOT.
     The mode parameter configures the orchestrator's behavior.
-    
+
     Args:
         mode: Orchestration mode. Supported values:
             - "unified" (default): Full orchestration capabilities
@@ -45,22 +45,22 @@ def get_orchestrator(mode: str = "unified", **kwargs) -> IOrchestratorAgent:
             - "ssot": Focus on SSOT enforcement
             - "full": Run all operations (alias for unified)
         **kwargs: Additional arguments passed to orchestrator constructor
-    
+
     Returns:
         IOrchestratorAgent instance (UnifiedOrchestratorAgent)
-    
+
     Raises:
         ValueError: If mode is not recognized
     """
     # Valid modes
     valid_modes = {"unified", "healing", "compliance", "ssot", "full"}
-    
+
     if mode not in valid_modes:
         raise ValueError(
             f"Unknown orchestrator mode: '{mode}'. "
             f"Available modes: {sorted(valid_modes)}"
         )
-    
+
     # Create new instance with specified mode
     # Note: We don't use singleton here to allow mode-specific instances
     return UnifiedOrchestratorAgent(mode=mode, **kwargs)
@@ -76,7 +76,7 @@ def reset_orchestrator() -> None:
 class SSOTOrchestratorAgent:
     """
     DEPRECATED: Use UnifiedOrchestratorAgent instead.
-    
+
     This class is a deprecated alias that will be removed in a future version.
     """
     def __new__(cls, *args, **kwargs):
@@ -92,7 +92,7 @@ class SSOTOrchestratorAgent:
 class HealingOrchestratorAgent:
     """
     DEPRECATED: Use UnifiedOrchestratorAgent instead.
-    
+
     This class is a deprecated alias that will be removed in a future version.
     """
     def __new__(cls, *args, **kwargs):
@@ -108,7 +108,7 @@ class HealingOrchestratorAgent:
 class ConsolidatedOrchestratorAgent:
     """
     DEPRECATED: Use UnifiedOrchestratorAgent instead.
-    
+
     This class is a deprecated alias that will be removed in a future version.
     """
     def __new__(cls, *args, **kwargs):

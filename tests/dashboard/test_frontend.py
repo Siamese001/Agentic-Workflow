@@ -17,12 +17,12 @@ sys.path.insert(0, str(PROJECT_ROOT))
 @pytest.mark.dashboard
 class TestMetaLearningPanel:
     """Test Meta-Learning Panel JavaScript components."""
-    
+
     def test_meta_learning_panel_js_exists(self, js_dir):
         """Verify meta-learning-panel.js exists."""
         js_file = js_dir / "components" / "meta-learning-panel.js"
         assert js_file.exists(), f"Missing: {js_file}"
-    
+
     def test_meta_learning_panel_has_class(self, js_dir):
         """Verify meta-learning panel classes are defined."""
         js_file = js_dir / "components" / "meta-learning-panel.js"
@@ -35,12 +35,12 @@ class TestMetaLearningPanel:
 @pytest.mark.dashboard
 class TestRedisMonitor:
     """Test Redis Monitor JavaScript components."""
-    
+
     def test_redis_monitor_js_exists(self, js_dir):
         """Verify redis-monitor.js exists."""
         js_file = js_dir / "components" / "redis-monitor.js"
         assert js_file.exists(), f"Missing: {js_file}"
-    
+
     def test_redis_monitor_has_class(self, js_dir):
         """Verify Redis monitor classes are defined."""
         js_file = js_dir / "components" / "redis-monitor.js"
@@ -53,12 +53,12 @@ class TestRedisMonitor:
 @pytest.mark.dashboard
 class TestPineconeMonitor:
     """Test Pinecone Monitor JavaScript components."""
-    
+
     def test_pinecone_monitor_js_exists(self, js_dir):
         """Verify pinecone-monitor.js exists."""
         js_file = js_dir / "components" / "pinecone-monitor.js"
         assert js_file.exists(), f"Missing: {js_file}"
-    
+
     def test_pinecone_monitor_has_class(self, js_dir):
         """Verify Pinecone monitor classes are defined."""
         js_file = js_dir / "components" / "pinecone-monitor.js"
@@ -71,12 +71,12 @@ class TestPineconeMonitor:
 @pytest.mark.dashboard
 class TestExecutionFlow:
     """Test Execution Flow JavaScript components."""
-    
+
     def test_execution_flow_js_exists(self, js_dir):
         """Verify execution-flow.js exists."""
         js_file = js_dir / "components" / "execution-flow.js"
         assert js_file.exists(), f"Missing: {js_file}"
-    
+
     def test_execution_flow_has_class(self, js_dir):
         """Verify ExecutionFlow class is defined."""
         js_file = js_dir / "components" / "execution-flow.js"
@@ -89,12 +89,12 @@ class TestExecutionFlow:
 @pytest.mark.dashboard
 class TestMetaLearningController:
     """Test Meta-Learning Controller JavaScript components."""
-    
+
     def test_controller_js_exists(self, js_dir):
         """Verify meta-learning-controller.js exists."""
         js_file = js_dir / "controllers" / "meta-learning-controller.js"
         assert js_file.exists(), f"Missing: {js_file}"
-    
+
     def test_controller_has_polling(self, js_dir):
         """Verify controller has polling functionality."""
         js_file = js_dir / "controllers" / "meta-learning-controller.js"

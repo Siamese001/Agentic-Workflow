@@ -31,7 +31,7 @@ from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import Subatomic
 class ConfidenceLevel(Enum):
     """
     Confidence levels for LLM responses.
-    
+
     Defines confidence thresholds based on logprob scores:
     - HIGH: >= 0.8
     - MEDIUM: >= 0.5
@@ -70,11 +70,11 @@ class ConfidenceResult:
     def from_logprob(cls, avg_logprob: float, min_confidence: float = 0.7) -> "ConfidenceResult":
         """
         Create ConfidenceResult from average logprob.
-        
+
         Args:
             avg_logprob: Average logprob from LLM response (-2.0 to 0.0)
             min_confidence: Minimum confidence threshold for retry (default 0.7)
-        
+
         Returns:
             ConfidenceResult with normalized score and retry recommendation
         """

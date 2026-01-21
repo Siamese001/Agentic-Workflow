@@ -11,10 +11,10 @@ Logger: Any = logging.getLogger(__name__)
 def string_get(key: str) -> Optional[str]:
     """
     Mock for Redis MCP: Get string value.
-    
+
     Args:
         key: Redis key
-        
+
     Returns:
         Value or None if not found
     """
@@ -23,7 +23,7 @@ def string_get(key: str) -> Optional[str]:
 def string_set(key: str, value: str) -> None:
     """
     Mock for Redis MCP: Set string value.
-    
+
     Args:
         key: Redis key
         value: Value to set
@@ -32,10 +32,10 @@ def string_set(key: str, value: str) -> None:
 def incr(key: str) -> int:
     """
     Mock for Redis MCP: Atomically increment counter.
-    
+
     Args:
         key: Redis key
-        
+
     Returns:
         New value after increment
     """
@@ -51,7 +51,7 @@ def start_transaction() -> None:
 def watch_key(key: str) -> None:
     """
     Mock for Redis MCP: Watch a key for transaction.
-    
+
     Args:
         key: Redis key to watch
     """
@@ -59,7 +59,7 @@ def watch_key(key: str) -> None:
 def transaction_set_with_ttl(key: str, value: str, ttl: int) -> None:
     """
     Mock for Redis MCP: Set value with TTL in transaction.
-    
+
     Args:
         key: Redis key
         value: Value to set
@@ -72,11 +72,11 @@ def commit_transaction() -> None:
 def get_and_set(key: str, new_value: str) -> str:
     """
     Mock: Atomically get current value and set new value.
-    
+
     Args:
         key: Redis key
         new_value: New value to set
-        
+
     Returns:
         Previous value or "0"
     """
@@ -87,11 +87,11 @@ def get_and_set(key: str, new_value: str) -> str:
 def brave_search(query: str, count: int=5) -> str:
     """
     Mock for Brave Search MCP: Search the web.
-    
+
     Args:
         query: Search query
         count: Number of results to return
-        
+
     Returns:
         JSON string of search results
     """
@@ -102,11 +102,11 @@ def execute_cost_controlled_search(query: str, logger_instance: Optional[Any]=No
     """
     Mock for Brave Search wrapper with rate limiting.
     Returns search results 70% of the time to simulate rate limiting.
-    
+
     Args:
         query: Search query
         logger_instance: Optional Logger instance
-        
+
     Returns:
         JSON string of results or None if rate limited
     """
@@ -124,12 +124,12 @@ def execute_cost_controlled_search(query: str, logger_instance: Optional[Any]=No
 def search_records(query: str, index: str, top_k: int=5) -> str:
     """
     Mock for Pinecone MCP: Search vector database.
-    
+
     Args:
         query: Search query
         index: Pinecone index name
         top_k: Number of results to return
-        
+
     Returns:
         JSON string of search results
     """
@@ -141,10 +141,10 @@ def search_records(query: str, index: str, top_k: int=5) -> str:
 def search_nodes(query: str) -> str:
     """
     Mock for Memory MCP: Search knowledge graph.
-    
+
     Args:
         query: Search query
-        
+
     Returns:
         JSON string of user data
     """
@@ -153,10 +153,10 @@ def search_nodes(query: str) -> str:
 def get_from_langcache(key: str) -> Optional[str]:
     """
     Mock: Retrieves final result from LangCache.
-    
+
     Args:
         key: Cache key
-        
+
     Returns:
         Cached value or None
     """
@@ -165,7 +165,7 @@ def get_from_langcache(key: str) -> Optional[str]:
 def set_to_langcache(key: str, value: str, ttl: int=86400) -> None:
     """
     Mock: Writes result to LangCache with TTL.
-    
+
     Args:
         key: Cache key
         value: Value to cache
@@ -175,10 +175,10 @@ def set_to_langcache(key: str, value: str, ttl: int=86400) -> None:
 def get_current_time(timezone: Optional[str]=None) -> str:
     """
     Mock for Time MCP: Returns current time or converts timezone.
-    
+
     Args:
         timezone: Optional timezone string
-        
+
     Returns:
         JSON string with datetime
     """
@@ -189,12 +189,12 @@ def get_current_time(timezone: Optional[str]=None) -> str:
 def convert_time(source_timezone: str, time: str, target_timezone: str) -> str:
     """
     Mock for Time MCP: Converts time between timezones.
-    
+
     Args:
         source_timezone: Source timezone
         time: Time string
         target_timezone: Target timezone
-        
+
     Returns:
         JSON string with converted time
     """
@@ -203,10 +203,10 @@ def convert_time(source_timezone: str, time: str, target_timezone: str) -> str:
 def issues_get_detail(issue_id: str) -> str:
     """
     Mock for GitKraken MCP: Retrieves details for an issue.
-    
+
     Args:
         issue_id: Issue identifier
-        
+
     Returns:
         JSON string with issue details
     """
@@ -215,7 +215,7 @@ def issues_get_detail(issue_id: str) -> str:
 def browser_navigate(url: str) -> None:
     """
     Mock for Playwright MCP: Navigate to URL.
-    
+
     Args:
         url: URL to navigate to
     """
@@ -223,7 +223,7 @@ def browser_navigate(url: str) -> None:
 def browser_type(element: str, ref: str, text: str) -> None:
     """
     Mock for Playwright MCP: Type text into element.
-    
+
     Args:
         element: Element description
         ref: Element reference
@@ -233,7 +233,7 @@ def browser_type(element: str, ref: str, text: str) -> None:
 def browser_click(element: str, ref: str) -> None:
     """
     Mock for Playwright MCP: Click element.
-    
+
     Args:
         element: Element description
         ref: Element reference

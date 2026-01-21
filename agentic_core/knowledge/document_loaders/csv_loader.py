@@ -39,7 +39,7 @@ class CsvDocumentLoader:
         """
         if not HAS_PANDAS:
             raise ImportError("pandas is required for CsvDocumentLoader")
-        
+
         try:
             df: Any = pd.read_csv(file_path, **kwargs)
             records: List[Dict[str, Any]] = df.to_dict(orient='records')
@@ -52,7 +52,7 @@ class CsvDocumentLoader:
         """Load as pandas DataFrame for advanced processing."""
         if not HAS_PANDAS:
             raise ImportError("pandas is required for CsvDocumentLoader")
-        
+
         try:
             return pd.read_csv(file_path, **kwargs)
         except Exception as e:
@@ -63,7 +63,7 @@ class CsvDocumentLoader:
         """Load only first N rows for preview/sampling."""
         if not HAS_PANDAS:
             raise ImportError("pandas is required for CsvDocumentLoader")
-        
+
         try:
             df: Any = pd.read_csv(file_path, nrows=rows, **kwargs)
             return df.to_dict(orient='records')

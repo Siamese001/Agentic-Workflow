@@ -20,11 +20,11 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 class ValidationRejectionReason(Enum):
     """
     Enumeration of validation rejection reasons.
-    
+
     Defines the specific reasons why content validation may fail,
     including depth issues, unbound metrics, and language quality problems.
     """
-    
+
     INSUFFICIENT_DEPTH = "INSUFFICIENT_DEPTH"
     UNBOUND_METRICS = "UNBOUND_METRICS"
     FLUFF_LANGUAGE = "FLUFF_LANGUAGE"
@@ -35,16 +35,16 @@ class ValidationRejectionReason(Enum):
 class Violation:
     """
     Represents a validation violation with reason and message.
-    
+
     Attributes:
         reason: Reason for the validation failure
         message: Detailed violation message
     """
-    
+
     def __init__(self, reason: ValidationRejectionReason, message: str) -> None:
         """
         Initialize a validation violation.
-        
+
         Args:
             reason: Reason for the validation failure
             message: Detailed violation message
@@ -56,17 +56,17 @@ class Violation:
 class IntegrityGateResult:
     """
     Result of integrity gate validation.
-    
+
     Attributes:
         passed: Whether validation passed
         depth_score: Depth quality score (0-1)
         violations: List of validation violations
     """
-    
+
     def __init__(self, passed: bool, depth_score: float) -> None:
         """
         Initialize integrity gate result.
-        
+
         Args:
             passed: Whether validation passed
             depth_score: Depth quality score (0-1)
@@ -78,7 +78,7 @@ class IntegrityGateResult:
     def add_violation(self, reason: ValidationRejectionReason, message: str) -> None:
         """
         Add a validation violation and mark result as failed.
-        
+
         Args:
             reason: Reason for the validation failure
             message: Detailed violation message
@@ -91,17 +91,17 @@ class IntegrityGateResult:
 class FinancialProofPoint:
     """
     Financial metric with value and source citation.
-    
+
     Attributes:
         metric_name: Name of the financial metric
         value: Metric value
         source_citation: Optional source citation
     """
-    
+
     def __init__(self, metric_name: str, value: str, source_citation: Optional[str] = None) -> None:
         """
         Initialize financial proof point.
-        
+
         Args:
             metric_name: Name of the financial metric
             value: Metric value
@@ -115,17 +115,17 @@ class FinancialProofPoint:
 class KeyTechnology:
     """
     Technology implementation with details and source.
-    
+
     Attributes:
         technology_name: Name of the technology
         implementation_details: Implementation details
         source_citation: Optional source citation
     """
-    
+
     def __init__(self, technology_name: str, implementation_details: str, source_citation: Optional[str] = None) -> None:
         """
         Initialize key technology.
-        
+
         Args:
             technology_name: Name of the technology
             implementation_details: Implementation details
@@ -139,15 +139,15 @@ class KeyTechnology:
 class KeyExecutive:
     """
     Key executive information.
-    
+
     Attributes:
         name: Executive name
     """
-    
+
     def __init__(self, name: str) -> None:
         """
         Initialize key executive.
-        
+
         Args:
             name: Executive name
         """
@@ -157,17 +157,17 @@ class KeyExecutive:
 class StrategicLayer:
     """
     Strategic layer containing core thesis and initiatives.
-    
+
     Attributes:
         core_thesis: Core strategic thesis
         strategic_initiatives: List of strategic initiatives
         financial_proof_points: List of financial proof points
     """
-    
+
     def __init__(self, core_thesis: str, strategic_initiatives: List[str], financial_proof_points: List[FinancialProofPoint]) -> None:
         """
         Initialize strategic layer.
-        
+
         Args:
             core_thesis: Core strategic thesis
             strategic_initiatives: List of strategic initiatives
@@ -181,16 +181,16 @@ class StrategicLayer:
 class TechnicalLayer:
     """
     Technical layer containing implementation details.
-    
+
     Attributes:
         implementation_summary: Summary of technical implementation
         key_technologies: List of key technologies used
     """
-    
+
     def __init__(self, implementation_summary: str, key_technologies: List[KeyTechnology]) -> None:
         """
         Initialize technical layer.
-        
+
         Args:
             implementation_summary: Summary of technical implementation
             key_technologies: List of key technologies used
@@ -202,15 +202,15 @@ class TechnicalLayer:
 class LeadershipLayer:
     """
     Leadership layer containing key executives.
-    
+
     Attributes:
         key_executives: List of key executives
     """
-    
+
     def __init__(self, key_executives: List[KeyExecutive]) -> None:
         """
         Initialize leadership layer.
-        
+
         Args:
             key_executives: List of key executives
         """
@@ -220,15 +220,15 @@ class LeadershipLayer:
 class CitationMap:
     """
     Citation map containing source citations.
-    
+
     Attributes:
         citations: List of source citations
     """
-    
+
     def __init__(self, citations: List[Any]) -> None:
         """
         Initialize citation map.
-        
+
         Args:
             citations: List of source citations
         """
@@ -238,14 +238,14 @@ class CitationMap:
 class DeepResearchOutput:
     """
     Deep research output containing all layers.
-    
+
     Attributes:
         StrategicLayer: Strategic layer with thesis and initiatives
         TechnicalLayer: Technical layer with implementation details
         LeadershipLayer: Leadership layer with key executives
         CitationMap: Citation map with source citations
     """
-    
+
     def __init__(
         self,
         StrategicLayer: StrategicLayer,
@@ -255,7 +255,7 @@ class DeepResearchOutput:
     ) -> None:
         """
         Initialize deep research output.
-        
+
         Args:
             StrategicLayer: Strategic layer with thesis and initiatives
             TechnicalLayer: Technical layer with implementation details
@@ -298,7 +298,7 @@ class IntegrityGateExecutorAgent(MCPHardenedMixin, HealerMixin):
     def __init__(self, min_depth_score: float = 0.7) -> None:
         """
         Initialize integrity gate executor.
-        
+
         Args:
             min_depth_score: Minimum depth score threshold (0-1, default 0.7)
         """

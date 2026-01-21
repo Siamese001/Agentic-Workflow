@@ -42,12 +42,12 @@ class ReconSignal(BaseModel):
 
 class ReconAgent:
     """Analyzes candidate history for competitive signals."""
-    
+
     def __init__(self):
         """Initialize recon agent with competitor database."""
         # Mock competitor database - in production, this would query real data
         self.competitor_db: Dict[str, Company] = self._build_competitor_db()
-        
+
         # Industry mapping for adjacent markets
         self.industry_adjacency: Dict[str, List[str]] = {
             "rideshare": ["delivery", "logistics", "transportation"],
@@ -61,12 +61,12 @@ class ReconAgent:
             "healthcare": ["biotech", "pharma", "wellness"],
             "education": ["edtech", "training", "certification"]
         }
-        
+
         logger.info("Initialized ReconAgent with competitor database")
-    
+
     def _build_competitor_db(self) -> Dict[str, Company]:
         """Build mock competitor database.
-        
+
         Returns:
             Dictionary of companies and their competitive data
         """
@@ -171,18 +171,18 @@ class ReconAgent:
                 adjacent_companies=["Pandora", "SoundCloud", "Tidal"]
             )
         }
-    
+
     def analyze(
         self,
         target_company: str,
         candidate_history: List[str]
     ) -> ReconSignal:
         """Analyze candidate history for competitive signals.
-        
+
         Args:
             target_company: Target company name
             candidate_history: List of companies candidate worked at
-            
+
         Returns:
             Reconnaissance signal with strategy
         """
@@ -196,17 +196,17 @@ class ReconAgent:
                 strategy_recommendation="No competitive intelligence available. Focus on transferable skills.",
                 confidence_score=0.0
             )
-        
+
         # Check for direct competitors
         direct_match = self._find_direct_competitor(target, candidate_history)
         if direct_match:
             return self._generate_direct_competitor_signal(target, direct_match)
-        
+
         # Check for adjacent market companies
         adjacent_match = self._find_adjacent_competitor(target, candidate_history)
         if adjacent_match:
             return self._generate_adjacent_signal(target, adjacent_match)
-        
+
         # No competitive match found
         return ReconSignal(
             target_company=target_company,
@@ -214,69 +214,69 @@ class ReconAgent:
             strategy_recommendation="No direct competitive experience. Emphasize industry expertise and transferable skills.",
             confidence_score=0.0
         )
-    
+
     def _find_direct_competitor(
         self,
         target: Company,
         candidate_history: List[str]
     ) -> Optional[str]:
         """Find if candidate worked at direct competitor.
-        
+
         Args:
             target: Target company
             candidate_history: Candidate's work history
-            
+
         Returns:
             Name of matching competitor or None
         """
         history_lower = [h.lower() for h in candidate_history]
-        
+
         for competitor in target.competitors:
             if competitor.lower() in history_lower:
                 return competitor
-        
+
         return None
-    
+
     def _find_adjacent_competitor(
         self,
         target: Company,
         candidate_history: List[str]
     ) -> Optional[str]:
         """Find if candidate worked at adjacent market company.
-        
+
         Args:
             target: Target company
             candidate_history: Candidate's work history
-            
+
         Returns:
             Name of adjacent company or None
         """
         history_lower = [h.lower() for h in candidate_history]
-        
+
         for adjacent in target.adjacent_companies:
             if adjacent.lower() in history_lower:
                 return adjacent
-        
+
         # Also check by industry adjacency
         adjacent_industries = self.industry_adjacency.get(target.industry, [])
         for company in candidate_history:
             company_info = self.competitor_db.get(company)
             if company_info and company_info.industry in adjacent_industries:
                 return company
-        
+
         return None
-    
+
     def _generate_direct_competitor_signal(
         self,
         target: Company,
         competitor: str
     ) -> ReconSignal:
         """Generate signal for direct competitor experience.
-        
+
         Args:
             target: Target company
             competitor: Competitor name
-            
+
         Returns:
             Recon signal with strategy
         """
@@ -285,14 +285,14 @@ class ReconAgent:
             "Has insider knowledge of competitor strategies and pain points",
             "Can speak to industry-specific challenges and solutions"
         ]
-        
+
         strategy = (
             f"Candidate is an INSIDER with direct experience at {competitor}. "
             f"Emphasize knowledge of {competitor}'s struggles/wins and how that "
             f"translates to solving {target.name}'s challenges. Highlight competitive "
             f"insights and market positioning expertise."
         )
-        
+
         return ReconSignal(
             target_company=target.name,
             competitor_detected=competitor,
@@ -301,18 +301,18 @@ class ReconAgent:
             confidence_score=0.9,
             market_insights=insights
         )
-    
+
     def _generate_adjacent_signal(
         self,
         target: Company,
         adjacent: str
     ) -> ReconSignal:
         """Generate signal for adjacent market experience.
-        
+
         Args:
             target: Target company
             adjacent: Adjacent company name
-            
+
         Returns:
             Recon signal with strategy
         """
@@ -321,14 +321,14 @@ class ReconAgent:
             "Brings cross-industry perspective and fresh ideas",
             "Familiar with related technologies and business models"
         ]
-        
+
         strategy = (
             f"Candidate knows the MODEL from adjacent experience at {adjacent}. "
             f"Emphasize transferable domain expertise and how insights from "
             f"{adjacent} apply to {target.name}'s market. Highlight ability to "
             f"bridge different but related domains."
         )
-        
+
         return ReconSignal(
             target_company=target.name,
             competitor_detected=adjacent,
@@ -337,19 +337,19 @@ class ReconAgent:
             confidence_score=0.6,
             market_insights=insights
         )
-    
+
     def add_company(self, company: Company) -> None:
         """Add company to competitor database.
-        
+
         Args:
             company: Company to add
         """
         self.competitor_db[company.name] = company
         logger.debug(f"Added company to database: {company.name}")
-    
+
     def update_competitors(self, company_name: str, competitors: List[str]) -> None:
         """Update competitor list for a company.
-        
+
         Args:
             company_name: Company to update
             competitors: New competitor list
@@ -357,37 +357,37 @@ class ReconAgent:
         if company_name in self.competitor_db:
             self.competitor_db[company_name].competitors = competitors
             logger.debug(f"Updated competitors for {company_name}")
-    
+
     def get_competitive_landscape(self, company_name: str) -> Optional[Dict[str, List[str]]]:
         """Get competitive landscape for a company.
-        
+
         Args:
             company_name: Company to analyze
-            
+
         Returns:
             Dictionary with competitors and adjacent companies
         """
         company = self.competitor_db.get(company_name)
         if not company:
             return None
-        
+
         return {
             "direct_competitors": company.competitors,
             "adjacent_companies": company.adjacent_companies,
             "industry": company.industry
         }
-    
+
     def batch_analyze(
         self,
         target_companies: List[str],
         candidate_history: List[str]
     ) -> List[ReconSignal]:
         """Analyze multiple target companies.
-        
+
         Args:
             target_companies: List of target companies
             candidate_history: Candidate's work history
-            
+
         Returns:
             List of recon signals
         """
@@ -395,7 +395,7 @@ class ReconAgent:
         for target in target_companies:
             signal = self.analyze(target, candidate_history)
             signals.append(signal)
-        
+
         return signals
 
 
@@ -405,7 +405,7 @@ _recon_agent: Optional[ReconAgent] = None
 
 def get_recon_agent() -> ReconAgent:
     """Get global recon agent instance.
-    
+
     Returns:
         ReconAgent instance
     """
@@ -421,11 +421,11 @@ def analyze_competitive_fit(
     candidate_history: List[str]
 ) -> ReconSignal:
     """Analyze candidate's competitive fit for target company.
-    
+
     Args:
         target_company: Target company name
         candidate_history: List of companies worked at
-        
+
     Returns:
         Reconnaissance signal
     """

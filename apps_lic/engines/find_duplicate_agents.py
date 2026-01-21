@@ -34,7 +34,7 @@ def compute_semantic_hash(file_path: Path) -> str:
     try:
         content = file_path.read_text(encoding='utf-8')
         tree = ast.parse(content)
-        
+
         # Extract class names, method names, and base classes
         semantic_parts = []
         for node in ast.walk(tree):
@@ -44,7 +44,7 @@ def compute_semantic_hash(file_path: Path) -> str:
                 for item in node.body:
                     if isinstance(item, ast.FunctionDef):
                         semantic_parts.append(f"method:{item.name}")
-        
+
         semantic_str = "|".join(sorted(semantic_parts))
         return hashlib.sha256(semantic_str.encode()).hexdigest()[:16]
     except Exception:
@@ -56,7 +56,7 @@ def extract_agent_class_name(file_path: Path) -> str:
     try:
         content = file_path.read_text(encoding='utf-8')
         tree = ast.parse(content)
-        
+
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
                 # Look for classes ending in Agent
@@ -73,7 +73,7 @@ def get_file_location_priority(file_path: Path, project_root: Path) -> int:
     SSOT hierarchy per structure_blueprint.py.
     """
     rel_path = str(file_path.relative_to(project_root)).replace("\\", "/")
-    
+
     # Priority order (canonical locations first)
     if rel_path.startswith("agentic_core/L5_safety/agents/"):
         return 1  # Canonical L5 agent location
@@ -96,7 +96,7 @@ def analyze_duplicate_quality(file_path: Path) -> Dict[str, any]:
     try:
         content = file_path.read_text(encoding='utf-8')
         tree = ast.parse(content)
-        
+
         # Quality metrics
         has_docstrings = False
         has_type_hints = False
@@ -104,12 +104,12 @@ def analyze_duplicate_quality(file_path: Path) -> Dict[str, any]:
         has_healing = False
         has_mcp_hardening = False
         syntax_errors = []
-        
+
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
                 if ast.get_docstring(node):
                     has_docstrings = True
-                
+
                 # Check base classes
                 for base in node.bases:
                     base_name = ast.unparse(base)
@@ -119,17 +119,17 @@ def analyze_duplicate_quality(file_path: Path) -> Dict[str, any]:
                         has_mcp_hardening = True
                     if "TestingMixin" in base_name:
                         has_tests = True
-                
+
                 # Check for type hints
                 for item in node.body:
                     if isinstance(item, ast.FunctionDef):
                         if item.returns or any(arg.annotation for arg in item.args.args):
                             has_type_hints = True
-        
+
         # Check for common issues
         if "SubatomicTestingMixin" in content and "from" not in content.split("SubatomicTestingMixin")[0][-100:]:
             syntax_errors.append("Missing SubatomicTestingMixin import")
-        
+
         if "super().heal_repository()" in content:
             # Check if it's in a factory function (bad) or class method (potentially bad)
             lines = content.split('\n')
@@ -139,7 +139,7 @@ def analyze_duplicate_quality(file_path: Path) -> Dict[str, any]:
                     context = '\n'.join(lines[max(0, i-5):i])
                     if "def create_" in context and "class " not in context:
                         syntax_errors.append("super() call outside class scope")
-        
+
         return {
             "has_docstrings": has_docstrings,
             "has_type_hints": has_type_hints,
@@ -174,73 +174,73 @@ def analyze_duplicate_quality(file_path: Path) -> Dict[str, any]:
 def find_duplicate_agents(project_root: Path) -> Dict[str, List[Path]]:
     """Find all duplicate agent files in the repository."""
     print(f"[SCAN] Searching for agent files in {project_root}...")
-    
+
     # Find all Python files with "Agent" in the name
     agent_files = []
     for pattern in ["**/*Agent.py", "**/*agent.py"]:
         agent_files.extend(project_root.glob(pattern))
-    
+
     # Exclude certain directories
     excluded_dirs = {".venv", "venv", "__pycache__", ".git", "node_modules", "coverage_html"}
     agent_files = [
-        f for f in agent_files 
+        f for f in agent_files
         if not any(excluded in f.parts for excluded in excluded_dirs)
     ]
-    
+
     print(f"[SCAN] Found {len(agent_files)} agent files")
-    
+
     # Group by exact hash
     exact_duplicates = defaultdict(list)
     for file_path in agent_files:
         file_hash = compute_file_hash(file_path)
         if not file_hash.startswith("error:"):
             exact_duplicates[file_hash].append(file_path)
-    
+
     # Group by semantic hash (near-duplicates)
     semantic_duplicates = defaultdict(list)
     for file_path in agent_files:
         semantic_hash = compute_semantic_hash(file_path)
         if semantic_hash != "parse_error":
             semantic_duplicates[semantic_hash].append(file_path)
-    
+
     # Filter to only groups with duplicates
     exact_dups = {h: files for h, files in exact_duplicates.items() if len(files) > 1}
     semantic_dups = {h: files for h, files in semantic_duplicates.items() if len(files) > 1}
-    
+
     print(f"[FOUND] {len(exact_dups)} exact duplicate groups")
     print(f"[FOUND] {len(semantic_dups)} semantic duplicate groups")
-    
+
     return exact_dups, semantic_dups
 
 
 def generate_recommendations(duplicate_groups: Dict[str, List[Path]], project_root: Path, duplicate_type: str = "exact") -> List[Dict]:
     """Generate remediation recommendations for each duplicate group."""
     recommendations = []
-    
+
     for hash_val, files in duplicate_groups.items():
         if len(files) < 2:
             continue
-        
+
         # Sort by location priority
         files_with_priority = [(f, get_file_location_priority(f, project_root)) for f in files]
         files_with_priority.sort(key=lambda x: x[1])
-        
+
         # Analyze quality
         files_with_quality = []
         for file_path, priority in files_with_priority:
             quality = analyze_duplicate_quality(file_path)
             files_with_quality.append((file_path, priority, quality))
-        
+
         # Sort by quality score (descending) then priority (ascending)
         files_with_quality.sort(key=lambda x: (-x[2]["quality_score"], x[1]))
-        
+
         canonical_file = files_with_quality[0][0]
         canonical_quality = files_with_quality[0][2]
         duplicates_to_remove = [f[0] for f in files_with_quality[1:]]
-        
+
         # Extract agent class name
         agent_class = extract_agent_class_name(canonical_file)
-        
+
         # Generate recommendation
         rec = {
             "agent_class": agent_class,
@@ -258,16 +258,16 @@ def generate_recommendations(duplicate_groups: Dict[str, List[Path]], project_ro
             "action": "DELETE" if canonical_quality["quality_score"] > 0 else "REVIEW",
             "rationale": generate_rationale(canonical_file, duplicates_to_remove, canonical_quality, files_with_quality[1:])
         }
-        
+
         recommendations.append(rec)
-    
+
     return recommendations
 
 
 def generate_rationale(canonical: Path, duplicates: List[Path], canonical_quality: Dict, duplicate_info: List[Tuple]) -> str:
     """Generate human-readable rationale for the recommendation."""
     rationale_parts = []
-    
+
     # Canonical file strengths
     strengths = []
     if canonical_quality["has_healing"]:
@@ -278,10 +278,10 @@ def generate_rationale(canonical: Path, duplicates: List[Path], canonical_qualit
         strengths.append("has docstrings")
     if canonical_quality["has_type_hints"]:
         strengths.append("has type hints")
-    
+
     if strengths:
         rationale_parts.append(f"Keep canonical: {', '.join(strengths)}")
-    
+
     # Issues with duplicates
     for dup_path, priority, quality in duplicate_info:
         issues = []
@@ -293,10 +293,10 @@ def generate_rationale(canonical: Path, duplicates: List[Path], canonical_qualit
             issues.append("missing MCPHardenedMixin")
         if quality["quality_score"] < canonical_quality["quality_score"]:
             issues.append(f"lower quality score ({quality['quality_score']} vs {canonical_quality['quality_score']})")
-        
+
         if issues:
             rationale_parts.append(f"Remove {dup_path.name}: {', '.join(issues)}")
-    
+
     return " | ".join(rationale_parts) if rationale_parts else "Review manually - similar quality"
 
 
@@ -305,32 +305,32 @@ def print_recommendations(recommendations: List[Dict], output_format: str = "tex
     if output_format == "json":
         print(json.dumps(recommendations, indent=2))
         return
-    
+
     print("\n" + "="*80)
     print("DUPLICATE AGENT ANALYSIS & RECOMMENDATIONS")
     print("="*80 + "\n")
-    
+
     for i, rec in enumerate(recommendations, 1):
         print(f"\n{'─'*80}")
         print(f"[{i}] {rec['agent_class']} ({rec['duplicate_type']} duplicates)")
         print(f"{'─'*80}")
-        
+
         print(f"\n✅ CANONICAL (KEEP):")
         print(f"   📁 {rec['canonical_file']}")
         print(f"   Quality: {rec['canonical_quality']['quality_score']}/4")
         if rec['canonical_quality']['syntax_errors']:
             print(f"   ⚠️  Issues: {', '.join(rec['canonical_quality']['syntax_errors'])}")
-        
+
         print(f"\n❌ DUPLICATES ({rec['action']}):")
         for dup in rec['duplicates']:
             print(f"   📁 {dup['path']}")
             print(f"      Priority: {dup['priority']} | Quality: {dup['quality']['quality_score']}/4")
             if dup['quality']['syntax_errors']:
                 print(f"      ⚠️  Issues: {', '.join(dup['quality']['syntax_errors'])}")
-        
+
         print(f"\n💡 RATIONALE:")
         print(f"   {rec['rationale']}")
-        
+
         print(f"\n🔧 RECOMMENDED ACTION:")
         if rec['action'] == "DELETE":
             print(f"   1. Verify canonical file works correctly")
@@ -346,40 +346,40 @@ def print_recommendations(recommendations: List[Dict], output_format: str = "tex
 def main():
     """Main entry point."""
     import argparse
-    
+
     parser = argparse.ArgumentParser(description="Find duplicate agents in repository")
     parser.add_argument("--project-root", type=str, default=".", help="Project root directory")
     parser.add_argument("--output", type=str, choices=["text", "json"], default="text", help="Output format")
     parser.add_argument("--type", type=str, choices=["exact", "semantic", "both"], default="both", help="Duplicate detection type")
-    
+
     args = parser.parse_args()
-    
+
     project_root = Path(args.project_root).resolve()
-    
+
     if not project_root.exists():
         print(f"Error: Project root {project_root} does not exist")
         return 1
-    
+
     # Find duplicates
     exact_dups, semantic_dups = find_duplicate_agents(project_root)
-    
+
     # Generate recommendations
     all_recommendations = []
-    
+
     if args.type in ["exact", "both"]:
         exact_recs = generate_recommendations(exact_dups, project_root, "exact")
         all_recommendations.extend(exact_recs)
-    
+
     if args.type in ["semantic", "both"]:
         semantic_recs = generate_recommendations(semantic_dups, project_root, "semantic")
         # Filter out exact duplicates already covered
         exact_files = {rec['canonical_file'] for rec in all_recommendations}
         semantic_recs = [r for r in semantic_recs if r['canonical_file'] not in exact_files]
         all_recommendations.extend(semantic_recs)
-    
+
     # Print results
     print_recommendations(all_recommendations, args.output)
-    
+
     # Summary
     print(f"\n{'='*80}")
     print(f"SUMMARY")
@@ -387,7 +387,7 @@ def main():
     print(f"Total duplicate groups found: {len(all_recommendations)}")
     print(f"Files to delete: {sum(len(r['duplicates']) for r in all_recommendations)}")
     print(f"Action required: {sum(1 for r in all_recommendations if r['action'] == 'DELETE')} auto-delete, {sum(1 for r in all_recommendations if r['action'] == 'REVIEW')} manual review")
-    
+
     return 0
 
 

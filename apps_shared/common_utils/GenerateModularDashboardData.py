@@ -33,30 +33,30 @@ def load_discovery():
     if not discovery_path.exists():
         print(f"❌ {discovery_path} not found")
         sys.exit(1)
-    
+
     with open(discovery_path, 'r') as f:
         data = json.load(f)
-    
+
     # Handle both list format and dict format
     if isinstance(data, list):
         agents = data
     else:
         agents = data.get('agents', [])
-    
+
     print(f"✅ Loaded {len(agents)} agents from discovery")
     return agents
 
 def map_territory(agent):
     """
     Get territory from agent discovery data (SSOT).
-    
+
     Uses the 'territory' field from agent_discovery_full.json which is
     computed by territory_ssot_definitions.get_territory_from_path().
     This ensures consistency with regenerate_data.py.
     """
     # SSOT: Use territory from discovery data directly
     territory = agent.get('territory', 'Unknown')
-    
+
     # Fallback for agents without territory field
     if not territory or territory == 'Unknown':
         # Use layer as fallback
@@ -64,7 +64,7 @@ def map_territory(agent):
         if layer:
             return f"{layer}/Core"
         return "Unknown"
-    
+
     return territory
 
 def calculate_metrics(agents_in_territory):
@@ -72,47 +72,47 @@ def calculate_metrics(agents_in_territory):
     total = len(agents_in_territory)
     if total == 0:
         return None
-    
+
     # Count agents with heal capability (has_healing field in discovery)
     heal_cap = sum(1 for a in agents_in_territory if a.get('has_healing', False))
-    
+
     # Count agents with heal invocation (invocation field in discovery)
     heal_invocation = sum(1 for a in agents_in_territory if a.get('invocation') == 'Yes')
-    
+
     # Count agents with tests
     has_tests = sum(1 for a in agents_in_territory if a.get('has_tests', False))
-    
+
     # Calculate averages
     heal_cap_pct = (heal_cap / total) * 100
     heal_inv_pct = (heal_invocation / total) * 100
     test_pct = (has_tests / total) * 100
-    
+
     # Get complexity values (cyclomatic_complexity field)
     complexities = [a.get('cyclomatic_complexity', 0) for a in agents_in_territory if a.get('cyclomatic_complexity')]
     avg_cc = sum(complexities) / len(complexities) if complexities else 0
-    
+
     # Complexity health (inverse - lower CC is better)
     complexity_health = max(0, 100 - (avg_cc * 2)) if avg_cc else 100
-    
+
     # Observable % - from observability field
-    observable_agents = sum(1 for a in agents_in_territory 
-                           if a.get('observability', {}).get('logging') or 
+    observable_agents = sum(1 for a in agents_in_territory
+                           if a.get('observability', {}).get('logging') or
                               a.get('observability', {}).get('metrics') or
                               a.get('observability', {}).get('tracing'))
     observable_pct = (observable_agents / total) * 100 if total > 0 else 0
-    
+
     # Typed % - from typed_pct field
     typed_values = [a.get('typed_pct', 0) for a in agents_in_territory]
     typed_pct = sum(typed_values) / len(typed_values) if typed_values else 0
-    
+
     # Documented % - from documented_pct field
     doc_values = [a.get('documented_pct', 0) for a in agents_in_territory]
     documented_pct = sum(doc_values) / len(doc_values) if doc_values else 0
-    
+
     # MCP Hardened % - from mcp_hardened field
     hardened_count = sum(1 for a in agents_in_territory if a.get('mcp_hardened', False))
     hardened_pct = (hardened_count / total) * 100 if total > 0 else 0
-    
+
     # Calculate overall health (weighted average)
     health = (
         heal_cap_pct * 0.30 +
@@ -121,7 +121,7 @@ def calculate_metrics(agents_in_territory):
         observable_pct * 0.20 +
         complexity_health * 0.15
     )
-    
+
     # Risk assessment
     if health >= 85:
         risk = "Low"
@@ -129,10 +129,10 @@ def calculate_metrics(agents_in_territory):
         risk = "Medium"
     else:
         risk = "High"
-    
+
     # Code quality score (simplified)
     code_quality = (typed_pct + documented_pct) / 2
-    
+
     return {
         "Territory": None,  # Will be set by caller
         "Total": total,
@@ -202,39 +202,39 @@ TERRITORY_ORDER = [
 
 def generate_dashboard_data(agents):
     """Generate dashboard_data.js with territory rollups"""
-    
+
     # Group agents by territory
     territories = defaultdict(list)
     for agent in agents:
         territory = map_territory(agent)
         if territory != "Unknown":  # Skip Unknown territories
             territories[territory].append(agent)
-    
+
     print(f"📊 Found {len(territories)} territories")
-    
+
     # Calculate metrics for each territory IN ORDER
     dashboard_data = []
     for territory_name in TERRITORY_ORDER:
         if territory_name not in territories:
             continue  # Skip territories with no agents
-        
+
         agents_list = territories[territory_name]
         metrics = calculate_metrics(agents_list)
         if metrics:
             metrics["Territory"] = territory_name
             dashboard_data.append(metrics)
-    
+
     # Calculate TOTAL row
     total_agents = len(agents)
     total_metrics = calculate_metrics(agents)
     if total_metrics:
         total_metrics["Territory"] = "TOTAL"
         dashboard_data.append(total_metrics)
-    
+
     # Write to file
     output_path = Path("agentic_core/L6_observability/dashboards/data/dashboard_data.js")
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    
+
     with open(output_path, 'w') as f:
         f.write("/**\n")
         f.write(" * Strategic Dashboard Metrics\n")
@@ -243,19 +243,19 @@ def generate_dashboard_data(agents):
         f.write("window.dashboardData = ")
         f.write(json.dumps(dashboard_data, indent=2))
         f.write(";\n")
-    
+
     print(f"✅ Generated {output_path} with {len(dashboard_data)} rows")
     return dashboard_data
 
 def generate_agent_data(agents, territories):
     """Generate agent_data.js with per-agent distributions and metric arrays for tooltips"""
-    
+
     # Group agents by territory
     territory_agents = defaultdict(list)
     for agent in agents:
         territory = map_territory(agent)
         territory_agents[territory].append(agent)
-    
+
     # Build per-agent data structure with FULL metric arrays (matching monolithic globalAgentData)
     agent_data = {}
     for territory, agents_list in territory_agents.items():
@@ -271,30 +271,30 @@ def generate_agent_data(agents, territories):
         schema_values = []
         proper_base_values = []
         code_quality_values = []
-        
+
         agent_objects = []
         for a in agents_list:
             # Calculate individual agent metrics
             has_healing = a.get('has_healing', False)
             heal_cap = 100.0 if has_healing else 0.0
-            
+
             invocation = a.get('invocation', 'No')
             invocation_pct = 100.0 if invocation == 'Yes' else (50.0 if invocation == 'Inherited' else 0.0)
-            
+
             mcp_hardened = a.get('mcp_hardened', False)
             hardened_pct = 100.0 if mcp_hardened else 0.0
-            
+
             has_tests = a.get('has_tests', False)
             test_pct = 100.0 if has_tests else 0.0
-            
+
             cc = a.get('cyclomatic_complexity', 0) or 0
             complexity_health = max(0, 100 - (cc * 2))
-            
+
             typed_pct = a.get('typed_pct', 0) or 0
             documented_pct = a.get('documented_pct', 0) or 0
             schema_pct = 100.0  # Assume schema strictness
             proper_base_pct = 100.0  # Assume canonical inheritance
-            
+
             # Calculate health score
             health = (
                 heal_cap * 0.30 +
@@ -303,10 +303,10 @@ def generate_agent_data(agents, territories):
                 hardened_pct * 0.20 +
                 complexity_health * 0.15
             )
-            
+
             # Code quality score
             code_quality = (typed_pct * 0.30 + documented_pct * 0.30 + schema_pct * 0.25 + proper_base_pct * 0.15)
-            
+
             # Store values for distribution arrays
             heal_cap_values.append(heal_cap)
             invocation_values.append(invocation_pct)
@@ -319,13 +319,13 @@ def generate_agent_data(agents, territories):
             schema_values.append(schema_pct)
             proper_base_values.append(proper_base_pct)
             code_quality_values.append(code_quality)
-            
+
             # Get file path
             rel_path = a.get('rel_file', '') or a.get('path', '')
             abs_path = a.get('abs_file', '') or a.get('file_path', '')
             if not abs_path and rel_path:
                 abs_path = f"C:/Git/Agentic-Workflow/{rel_path}"
-            
+
             # Build agent object for drill-down modal
             agent_objects.append({
                 "name": a.get('class_name', '') or a.get('name', 'Unknown'),
@@ -358,7 +358,7 @@ def generate_agent_data(agents, territories):
                 # Typing summary
                 "typing_summary": f"Init: {'✓' if typed_pct > 70 else '✗'} | Methods: {int(typed_pct)}% | Returns: {'✓' if typed_pct > 50 else '✗'}"
             })
-        
+
         # Store territory data with both agent objects AND metric arrays
         agent_data[territory] = {
             # Individual agent objects for drill-down modal
@@ -376,10 +376,10 @@ def generate_agent_data(agents, territories):
             "properBase": proper_base_values,
             "codeQuality": code_quality_values
         }
-    
+
     # Write to file
     output_path = Path("agentic_core/L6_observability/dashboards/data/agent_data.js")
-    
+
     with open(output_path, 'w') as f:
         f.write("/**\n")
         f.write(" * Per-Agent Distribution Data\n")
@@ -389,7 +389,7 @@ def generate_agent_data(agents, territories):
         f.write("window.realAgentData = ")
         f.write(json.dumps(agent_data, indent=2))
         f.write(";\n")
-    
+
     print(f"✅ Generated {output_path} with {len(agent_data)} territories (full metric arrays)")
 
 def main():
@@ -397,16 +397,16 @@ def main():
     print("MODULAR DASHBOARD DATA GENERATOR")
     print("="*70)
     print()
-    
+
     # Load discovery
     agents = load_discovery()
-    
+
     # Generate dashboard_data.js
     dashboard_data = generate_dashboard_data(agents)
-    
+
     # Generate agent_data.js
     generate_agent_data(agents, dashboard_data)
-    
+
     print()
     print("="*70)
     print("✅ COMPLETE - Dashboard data files generated")

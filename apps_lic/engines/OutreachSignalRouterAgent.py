@@ -84,10 +84,10 @@ class OutreachSignalRouterAgent(MCPHardenedMixin, HealerMixin):
     def get_agents_for_signals(cls, signals: Set[str]) -> List[str]:
         """
         Get agents needed for the given signals.
-        
+
         Args:
             signals: Set of signal names to route
-        
+
         Returns:
             List of agent names that should handle these signals
         """
@@ -101,10 +101,10 @@ class OutreachSignalRouterAgent(MCPHardenedMixin, HealerMixin):
     def has_critical_signal(cls, signals: Set[str]) -> bool:
         """
         Check if any critical signals are present.
-        
+
         Args:
             signals: Set of signal names to check
-        
+
         Returns:
             True if any signal is critical, False otherwise
         """
@@ -119,12 +119,12 @@ class OutreachSignalRouterAgent(MCPHardenedMixin, HealerMixin):
     ) -> OutreachHealingStrategy:
         """
         Determine healing strategy based on context.
-        
+
         Args:
             cycle_number: Current healing cycle number (1-indexed)
             signals: Set of active signals requiring attention
             modified_sections: Set of campaign sections that were modified
-        
+
         Returns:
             Appropriate healing strategy for the current context
         """
@@ -154,10 +154,10 @@ class OutreachAgentFactory(MCPHardenedMixin, HealerMixin):
     def create_all_agents(ctx: OutreachEngineContext) -> List[Any]:
         """
         Create all agents for full diagnostic.
-        
+
         Args:
             ctx: Outreach engine context
-        
+
         Returns:
             List of all outreach agents
         """
@@ -175,10 +175,10 @@ class OutreachAgentFactory(MCPHardenedMixin, HealerMixin):
     def create_quality_agents(ctx: OutreachEngineContext) -> List[Any]:
         """
         Create quality-focused agents.
-        
+
         Args:
             ctx: Outreach engine context
-        
+
         Returns:
             List of quality-focused agents
         """
@@ -193,10 +193,10 @@ class OutreachAgentFactory(MCPHardenedMixin, HealerMixin):
     def create_compliance_agents(ctx: OutreachEngineContext) -> List[Any]:
         """
         Create compliance-focused agents.
-        
+
         Args:
             ctx: Outreach engine context
-        
+
         Returns:
             List of compliance-focused agents
         """
@@ -210,11 +210,11 @@ class OutreachAgentFactory(MCPHardenedMixin, HealerMixin):
     def create_agents_by_name(ctx: OutreachEngineContext, names: List[str]) -> List[Any]:
         """
         Create specific agents by name.
-        
+
         Args:
             ctx: Outreach engine context
             names: List of agent class names to create
-        
+
         Returns:
             List of requested agents
         """
@@ -248,7 +248,7 @@ class OutreachHealingCycle:
     def __init__(self, ctx: OutreachEngineContext, cycle_number: int) -> None:
         """
         Initialize healing cycle.
-        
+
         Args:
             ctx: Outreach engine context
             cycle_number: Current cycle number (1-indexed)
@@ -261,10 +261,10 @@ class OutreachHealingCycle:
     async def execute(self, strategy: OutreachHealingStrategy) -> OutreachCycleResult:
         """
         Execute the healing cycle with the given strategy.
-        
+
         Args:
             strategy: Healing strategy to apply
-        
+
         Returns:
             OutreachCycleResult with cycle execution details
         """
@@ -325,10 +325,10 @@ class OutreachHealingCycle:
     def _build_agenda(self, strategy: OutreachHealingStrategy) -> List[Any]:
         """
         Build the agent agenda based on strategy.
-        
+
         Args:
             strategy: Healing strategy to apply
-        
+
         Returns:
             List of agents to execute
         """
@@ -358,7 +358,7 @@ class OutreachHealingCycle:
     def _check_rollback_conditions(self) -> bool:
         """
         Check if rollback should be triggered.
-        
+
         Returns:
             True if rollback conditions are met, False otherwise
         """
@@ -375,7 +375,7 @@ class OutreachHealingCycle:
     def _execute_rollback(self) -> None:
         """
         Execute rollback of all changes.
-        
+
         Reverts campaign to last backup and clears critical signals.
         """
         print(f"   🚨 Cycle {self.cycle_number}: Triggering rollback...")

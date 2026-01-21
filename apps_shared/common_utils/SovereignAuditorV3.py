@@ -75,14 +75,14 @@ def validate_prompt_ssot(target_path: str) -> tuple[float, list[str]]:
 def validate_config_ssot(target_path: str) -> tuple[float, list[str]]:
     """Checks for .env existence and core neural link keys."""
     env_path = Path(target_path) / ".env"
-    if not env_path.exists(): 
+    if not env_path.exists():
         return 0.0, ["CRITICAL: Neural Link Offline - .env Missing"]
-    
+
     from agentic_core.config.blueprint_sovereign.SovereignEnv import get_env
     env = get_env(Path(target_path))
     required = ["GEMINI_API_KEY", "GEMINI_MODEL"]
     Missing = [k for k in required if not getattr(env, k, None)]
-    
+
     score = 100.0 * (1 - (len(Missing) / len(required)))
     return score, [f"Missing {k}" for k in Missing]
 
@@ -127,16 +127,16 @@ class SovereignReport:
 
 def main():
     target = Path("agentic_core")
-    
+
     report = SovereignReport()
-    
+
     # 1. Territory Coverage Audit (Agent-based validation replaces legacy canon keys)
     territory_issues = []
     for territory, config in SOVEREIGN_REGISTRY.items():
         territory_path = REPO_ROOT / territory
         if not territory_path.exists() and not config.get('volatile', False):
             territory_issues.append(f"Missing Territory: {territory}")
-    
+
     territory_score = 100.0 * (1 - (len(territory_issues) / len(SOVEREIGN_REGISTRY))) if SOVEREIGN_REGISTRY else 100.0
     report.record_result("Territory Coverage", territory_score, territory_issues)
 

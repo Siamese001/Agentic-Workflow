@@ -1,7 +1,7 @@
 /**
  * Meta-Learning Panel Components
  * Phase 3.1: Real-time visualization of meta-learning activity
- * 
+ *
  * Components:
  * - ExperienceStream: Live feed of experiences
  * - StrategyWeightsChart: Bar chart of strategy weights
@@ -17,7 +17,7 @@ class ExperienceStream {
         this.experiences = [];
         this.maxDisplay = 50;
     }
-    
+
     addExperience(exp) {
         this.experiences.unshift(exp);
         if (this.experiences.length > this.maxDisplay) {
@@ -25,20 +25,20 @@ class ExperienceStream {
         }
         this.render();
     }
-    
+
     setExperiences(experiences) {
         this.experiences = experiences.slice(0, this.maxDisplay);
         this.render();
     }
-    
+
     render() {
         if (!this.container) return;
-        
+
         if (this.experiences.length === 0) {
             this.container.innerHTML = '<div class="empty-state">No experiences recorded yet</div>';
             return;
         }
-        
+
         const html = this.experiences.map(exp => `
             <div class="experience-item ${this.getRewardClass(exp.reward)}">
                 <span class="exp-type">${this.formatThoughtType(exp.thought_type)}</span>
@@ -46,16 +46,16 @@ class ExperienceStream {
                 <span class="exp-time">${this.formatTime(exp.timestamp)}</span>
             </div>
         `).join('');
-        
+
         this.container.innerHTML = html;
     }
-    
+
     getRewardClass(reward) {
         if (reward > 0.7) return 'reward-high';
         if (reward > 0.3) return 'reward-medium';
         return 'reward-low';
     }
-    
+
     formatThoughtType(type) {
         const icons = {
             'cot': '🔗 CoT',
@@ -65,7 +65,7 @@ class ExperienceStream {
         };
         return icons[type] || type;
     }
-    
+
     formatTime(timestamp) {
         if (!timestamp) return '';
         const date = new Date(timestamp);
@@ -81,24 +81,24 @@ class StrategyWeightsChart {
         this.container = document.getElementById(containerId);
         this.weights = { cot: 1.0, tot: 1.0, react: 1.0, reflection: 1.0 };
     }
-    
+
     update(weights) {
         this.weights = weights;
         this.render();
     }
-    
+
     render() {
         if (!this.container) return;
-        
+
         const strategies = [
             { key: 'cot', label: 'Chain of Thought', color: '#3b82f6', icon: '🔗' },
             { key: 'tot', label: 'Tree of Thought', color: '#10b981', icon: '🌳' },
             { key: 'react', label: 'ReAct', color: '#f59e0b', icon: '⚡' },
             { key: 'reflection', label: 'Reflection', color: '#8b5cf6', icon: '🔄' }
         ];
-        
+
         const maxWeight = Math.max(2.0, ...Object.values(this.weights));
-        
+
         const html = `
             <div class="strategy-weights-chart">
                 ${strategies.map(s => {
@@ -117,7 +117,7 @@ class StrategyWeightsChart {
                 }).join('')}
             </div>
         `;
-        
+
         this.container.innerHTML = html;
     }
 }
@@ -130,25 +130,25 @@ class PatternTimeline {
         this.container = document.getElementById(containerId);
         this.patterns = [];
     }
-    
+
     addPattern(pattern) {
         this.patterns.push(pattern);
         this.render();
     }
-    
+
     setPatterns(patterns) {
         this.patterns = patterns;
         this.render();
     }
-    
+
     render() {
         if (!this.container) return;
-        
+
         if (this.patterns.length === 0) {
             this.container.innerHTML = '<div class="empty-state">No patterns extracted yet</div>';
             return;
         }
-        
+
         const html = `
             <div class="pattern-timeline">
                 ${this.patterns.map((p, i) => `
@@ -163,10 +163,10 @@ class PatternTimeline {
                 `).join('')}
             </div>
         `;
-        
+
         this.container.innerHTML = html;
     }
-    
+
     formatTime(timestamp) {
         if (!timestamp) return '';
         const date = new Date(timestamp);
@@ -181,10 +181,10 @@ class MetaLearningStatsPanel {
     constructor(containerId) {
         this.container = document.getElementById(containerId);
     }
-    
+
     update(stats) {
         if (!this.container) return;
-        
+
         const html = `
             <div class="meta-stats-grid">
                 <div class="stat-box">
@@ -205,7 +205,7 @@ class MetaLearningStatsPanel {
                 </div>
             </div>
         `;
-        
+
         this.container.innerHTML = html;
     }
 }

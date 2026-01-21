@@ -80,7 +80,7 @@ class StructureConfig:
 class UnifiedStructureEnforcerAgent:
     """
     Unified structure enforcement with gravity and naming.
-    
+
     Consolidates:
     - GravityEnforcerAgent (layer imports)
     - HierarchyEnforcerAgent (hierarchy)
@@ -88,23 +88,23 @@ class UnifiedStructureEnforcerAgent:
     - DocEnforcerAgent (documentation)
     - ASCIIEnforcerAgent (ASCII)
     - StrictDocEnforcerAgent (strict docs)
-    
+
     Usage:
         enforcer = UnifiedStructureEnforcerAgent()
-        
+
         # Validate structure
         violations = enforcer.validate_file(Path("my_agent.py"))
-        
+
         # Check gravity
         is_valid = enforcer.check_gravity_import("L2", "L5")
-        
+
         # Force rename
         enforcer.force_rename_class(Path("BadName.py"), "BadName", "BadNameAgent")
     """
-    
+
     # Layer hierarchy (lower number = lower layer)
     LAYER_ORDER = {"L0": 0, "L1": 1, "L2": 2, "L3": 3, "L4": 4, "L5": 5, "L6": 6}
-    
+
     # Gravity rules: which layers can import from which
     # Lower layers should NOT import from higher layers
     GRAVITY_RULES = {
@@ -116,7 +116,7 @@ class UnifiedStructureEnforcerAgent:
         "L5": {"L0", "L1", "L2", "L3", "L4", "L5"},  # L5 can import L0-L5
         "L6": {"L0", "L1", "L2", "L3", "L4", "L5", "L6"},  # L6 can import all
     }
-    
+
     def __init__(
         self,
         project_root: Optional[Path] = None,
@@ -126,37 +126,37 @@ class UnifiedStructureEnforcerAgent:
         self.config = config or StructureConfig()
         self._lock = threading.RLock()
         self._violations: List[StructureViolation] = []
-        
+
         Logger.info("UnifiedStructureEnforcerAgent initialized")
-    
+
     def validate_file(self, file_path: Path) -> List[StructureViolation]:
         """Validate a file for all structure rules."""
         violations = []
-        
+
         if not file_path.exists():
             return violations
-        
+
         try:
             content = file_path.read_text(encoding="utf-8")
         except Exception as e:
             Logger.error(f"Failed to read {file_path}: {e}")
             return violations
-        
+
         # Run all enabled checks
         if self.config.enable_gravity:
             violations.extend(self._check_gravity(file_path, content))
-        
+
         if self.config.enable_naming:
             violations.extend(self._check_naming(file_path, content))
-        
+
         if self.config.enable_documentation:
             violations.extend(self._check_documentation(file_path, content))
-        
+
         if self.config.enable_ascii:
             violations.extend(self._check_ascii(file_path, content))
-        
+
         return violations
-    
+
     def _extract_layer(self, path: Path) -> Optional[str]:
         """Extract layer from file path."""
         path_str = str(path)
@@ -164,29 +164,29 @@ class UnifiedStructureEnforcerAgent:
             if f"/{layer}_" in path_str or f"\\{layer}_" in path_str:
                 return layer
         return None
-    
+
     def _extract_layer_from_module(self, module: str) -> Optional[str]:
         """Extract layer from module name."""
         for layer in ["L0", "L1", "L2", "L3", "L4", "L5", "L6"]:
             if f".{layer}_" in module or module.startswith(f"{layer}_") or f"_{layer}_" in module:
                 return layer
         return None
-    
+
     def _check_gravity(self, file_path: Path, content: str) -> List[StructureViolation]:
         """Check gravity (layer import) violations."""
         violations = []
-        
+
         source_layer = self._extract_layer(file_path)
         if not source_layer:
             return violations
-        
+
         allowed_layers = self.GRAVITY_RULES.get(source_layer, set())
-        
+
         try:
             tree = ast.parse(content)
         except SyntaxError:
             return violations
-        
+
         for node in ast.walk(tree):
             if isinstance(node, ast.ImportFrom) and node.module:
                 target_layer = self._extract_layer_from_module(node.module)
@@ -198,22 +198,22 @@ class UnifiedStructureEnforcerAgent:
                         message=f"Gravity violation: {source_layer} cannot import from {target_layer}",
                         severity="CRITICAL",
                     ))
-        
+
         return violations
-    
+
     def _check_naming(self, file_path: Path, content: str) -> List[StructureViolation]:
         """Check naming convention violations."""
         violations = []
-        
+
         # Only check Agent files
         if not file_path.name.endswith("Agent.py"):
             return violations
-        
+
         try:
             tree = ast.parse(content)
         except SyntaxError:
             return violations
-        
+
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
                 if not node.name.endswith(self.config.agent_suffix):
@@ -225,22 +225,22 @@ class UnifiedStructureEnforcerAgent:
                         suggested_fix=f"{node.name}{self.config.agent_suffix}",
                         auto_fixable=True,
                     ))
-        
+
         return violations
-    
+
     def _check_documentation(self, file_path: Path, content: str) -> List[StructureViolation]:
         """Check documentation violations."""
         violations = []
-        
+
         try:
             tree = ast.parse(content)
         except SyntaxError:
             return violations
-        
+
         for node in ast.walk(tree):
             if isinstance(node, (ast.ClassDef, ast.FunctionDef)):
                 docstring = ast.get_docstring(node)
-                
+
                 if self.config.required_docstring and not docstring:
                     violations.append(StructureViolation(
                         file_path=file_path,
@@ -257,13 +257,13 @@ class UnifiedStructureEnforcerAgent:
                         message=f"Docstring too short for '{node.name}' (min {self.config.min_docstring_length} chars)",
                         severity="INFO",
                     ))
-        
+
         return violations
-    
+
     def _check_ascii(self, file_path: Path, content: str) -> List[StructureViolation]:
         """Check ASCII compliance."""
         violations = []
-        
+
         lines = content.split("\n")
         for i, line in enumerate(lines, 1):
             try:
@@ -278,27 +278,27 @@ class UnifiedStructureEnforcerAgent:
                     message=f"Non-ASCII characters found: {non_ascii[:5]}",
                     severity="WARNING",
                 ))
-        
+
         return violations
-    
+
     def check_gravity_import(self, source_layer: str, target_layer: str) -> Tuple[bool, str]:
         """
         Check if an import from source to target layer is allowed.
-        
+
         Args:
             source_layer: Layer doing the import (e.g., "L2")
             target_layer: Layer being imported (e.g., "L5")
-            
+
         Returns:
             Tuple of (allowed, reason)
         """
         allowed_layers = self.GRAVITY_RULES.get(source_layer, set())
-        
+
         if target_layer in allowed_layers:
             return True, f"{source_layer} can import from {target_layer}"
         else:
             return False, f"Gravity violation: {source_layer} cannot import from {target_layer}"
-    
+
     def force_rename_class(
         self,
         file_path: Path,
@@ -308,13 +308,13 @@ class UnifiedStructureEnforcerAgent:
     ) -> Dict[str, Any]:
         """
         Force rename a class to comply with naming conventions.
-        
+
         Args:
             file_path: Path to the file
             old_name: Current class name
             new_name: New class name (should end with Agent)
             dry_run: If True, don't actually modify
-            
+
         Returns:
             Result dictionary
         """
@@ -325,67 +325,67 @@ class UnifiedStructureEnforcerAgent:
             "applied": False,
             "dry_run": dry_run,
         }
-        
+
         if not file_path.exists():
             result["error"] = "File not found"
             return result
-        
+
         try:
             content = file_path.read_text(encoding="utf-8")
         except Exception as e:
             result["error"] = str(e)
             return result
-        
+
         # Replace class name
         new_content = re.sub(
             rf"\bclass\s+{old_name}\b",
             f"class {new_name}",
             content,
         )
-        
+
         # Replace all references
         new_content = re.sub(rf"\b{old_name}\b", new_name, new_content)
-        
+
         if new_content == content:
             result["message"] = "No changes needed"
             return result
-        
+
         if not dry_run:
             # Backup first
             backup_dir = self.project_root / "archives" / "healing_backups" / "naming"
             backup_dir.mkdir(parents=True, exist_ok=True)
             backup_path = backup_dir / f"{file_path.name}.{datetime.now().strftime('%Y%m%d_%H%M%S')}"
             shutil.copy2(file_path, backup_path)
-            
+
             # Write new content
             file_path.write_text(new_content, encoding="utf-8")
             result["applied"] = True
             result["backup"] = str(backup_path)
-            
+
             Logger.info(f"Renamed class: {old_name} -> {new_name} in {file_path}")
         else:
             result["message"] = "Dry run - no changes applied"
-        
+
         return result
-    
+
     def validate_hierarchy(self, file_path: Path) -> List[StructureViolation]:
         """Validate file hierarchy placement."""
         violations = []
-        
+
         layer = self._extract_layer(file_path)
         if not layer:
             return violations
-        
+
         # Check if file is in correct layer directory
         expected_prefix = f"{layer}_"
         path_parts = file_path.parts
-        
+
         layer_found = False
         for part in path_parts:
             if part.startswith(expected_prefix):
                 layer_found = True
                 break
-        
+
         if not layer_found:
             violations.append(StructureViolation(
                 file_path=file_path,
@@ -393,9 +393,9 @@ class UnifiedStructureEnforcerAgent:
                 violation_type=StructureViolationType.HIERARCHY,
                 message=f"File not in expected layer directory: {layer}",
             ))
-        
+
         return violations
-    
+
     def get_violations(self) -> List[StructureViolation]:
         """Get all recorded violations."""
         return self._violations.copy()

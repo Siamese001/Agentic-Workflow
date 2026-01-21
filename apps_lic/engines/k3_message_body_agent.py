@@ -72,7 +72,7 @@ ARCHETYPE_TEMPLATES = {
 
 class K3_MessageBodyAgent(Agent):
     """K.3 specialist agent for message body generation.
-    
+
     This agent generates archetype-specific message bodies with:
     - Mandatory transition phrases
     - Exactly 2 insights (numbered)
@@ -80,7 +80,7 @@ class K3_MessageBodyAgent(Agent):
     - Placeholder detection blocking (LIC-QA-001)
     - Metric source binding enforcement (LIC-QA-041)
     """
-    
+
     def __init__(
         self,
         config: ReasoningConfig,
@@ -89,7 +89,7 @@ class K3_MessageBodyAgent(Agent):
         char_limit: Optional[int] = None,
     ):
         """Initialize K.3 message body agent.
-        
+
         Args:
             config: Reasoning configuration
             archetype: Recipient archetype (C_LEVEL, EXECUTIVE, etc.)
@@ -97,20 +97,20 @@ class K3_MessageBodyAgent(Agent):
             char_limit: Character limit for route
         """
         super().__init__(config, k_node_id="K.3", element="Message Body")
-        
+
         self.archetype = archetype
         self.route = route
         self.char_limit = char_limit
         self.template = ARCHETYPE_TEMPLATES.get(archetype, ARCHETYPE_TEMPLATES["EXECUTIVE"])
-        
+
         logger.info(
             f"K.3 Message Body Agent initialized: "
             f"archetype={archetype}, route={route}, char_limit={char_limit}"
         )
-    
+
     async def execute(self, context: Dict[str, Any]) -> K3Output:
         """Execute K.3 message body generation.
-        
+
         Args:
             context: Execution context with:
                 - company_name: str
@@ -119,19 +119,19 @@ class K3_MessageBodyAgent(Agent):
                 - sender_bullets: List[str] - Sender credential bullets
                 - metric_source_map: Dict - Metric to source mapping
                 - regeneration_feedback: Optional[str]
-                
+
         Returns:
             K3Output with message body
         """
         logger.info(f"Executing K.3 message body generation for {self.archetype}")
-        
+
         # Extract context
         company_name = context.get("company_name", "the company")
         recipient_name = context.get("recipient_name", "")
         rag_insights = context.get("rag_insights", [])
         sender_bullets = context.get("sender_bullets", [])
         regeneration_feedback = context.get("regeneration_feedback")
-        
+
         # Build prompt
         if regeneration_feedback:
             prompt = self._build_regeneration_prompt(context, regeneration_feedback)
@@ -139,7 +139,7 @@ class K3_MessageBodyAgent(Agent):
             prompt = self._build_initial_prompt(
                 company_name, recipient_name, rag_insights, sender_bullets
             )
-        
+
         # Generate with self-consistency if configured
         if self.config.self_consistency > 1:
             candidates = await self._call_llm_with_self_consistency(
@@ -148,21 +148,21 @@ class K3_MessageBodyAgent(Agent):
             response = self._select_best_candidate(candidates, "length")
         else:
             response = await self._call_llm(prompt)
-        
+
         # Parse body components
         body = response.strip()
-        
+
         # Extract transition phrase
         transition_phrase = self._extract_transition_phrase(body, company_name)
-        
+
         # Count insights and bullets
         insights_count = self._count_insights(body)
         bullets_count = self._count_bullets(body)
-        
+
         # Calculate metrics
         word_count = len(body.split())
         char_count = len(body)
-        
+
         # Build output
         output = K3Output(
             body=body,
@@ -179,14 +179,14 @@ class K3_MessageBodyAgent(Agent):
                 "temperature": self.config.temperature,
             },
         )
-        
+
         logger.info(
             f"K.3 generation complete: {word_count} words, {char_count} chars, "
             f"{insights_count} insights, {bullets_count} bullets"
         )
-        
+
         return output
-    
+
     def _build_initial_prompt(
         self,
         company_name: str,
@@ -195,13 +195,13 @@ class K3_MessageBodyAgent(Agent):
         sender_bullets: List[str],
     ) -> str:
         """Build initial generation prompt.
-        
+
         Args:
             company_name: Target company name
             recipient_name: Recipient name
             rag_insights: RAG-derived insights
             sender_bullets: Sender credential bullets
-            
+
         Returns:
             Formatted prompt
         """
@@ -209,7 +209,7 @@ class K3_MessageBodyAgent(Agent):
             self.archetype,
             ARCHETYPE_TRANSITIONS["EXECUTIVE"]
         ).format(company=company_name)
-        
+
         prompt = f"""Generate a professional LinkedIn message body for a {self.archetype} recipient.
 
 CRITICAL CONSTRAINTS (ZERO TOLERANCE):
@@ -252,25 +252,25 @@ FORBIDDEN (LIC-QA-001):
 
 Generate the message body now:
 """
-        
+
         return prompt
-    
+
     def _build_regeneration_prompt(
         self,
         context: Dict[str, Any],
         feedback: str,
     ) -> str:
         """Build regeneration prompt with validation feedback.
-        
+
         Args:
             context: Original context
             feedback: Validation feedback
-            
+
         Returns:
             Regeneration prompt
         """
         previous_body = context.get("previous_body", "")
-        
+
         prompt = f"""REGENERATION REQUIRED
 
 {feedback}
@@ -290,16 +290,16 @@ Maintain all other content unchanged.
 
 Generate the corrected message body:
 """
-        
+
         return prompt
-    
+
     def _extract_transition_phrase(self, body: str, company_name: str) -> str:
         """Extract transition phrase from body.
-        
+
         Args:
             body: Message body
             company_name: Company name
-            
+
         Returns:
             Extracted transition phrase or empty string
         """
@@ -307,18 +307,18 @@ Generate the corrected message body:
             self.archetype,
             ARCHETYPE_TRANSITIONS["EXECUTIVE"]
         ).format(company=company_name)
-        
+
         if expected_phrase.lower() in body.lower():
             return expected_phrase
-        
+
         return ""
-    
+
     def _count_insights(self, body: str) -> int:
         """Count numbered insights in body.
-        
+
         Args:
             body: Message body
-            
+
         Returns:
             Number of insights
         """
@@ -326,13 +326,13 @@ Generate the corrected message body:
         # Count patterns like "1." and "2."
         insights = re.findall(r'\n\d+\.\s+', body)
         return len(insights)
-    
+
     def _count_bullets(self, body: str) -> int:
         """Count bullets in body.
-        
+
         Args:
             body: Message body
-            
+
         Returns:
             Number of bullets
         """

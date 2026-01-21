@@ -27,7 +27,7 @@ from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import Subatomic
 class TaskPriority(Enum):
     """
     Priority levels for proactive tasks.
-    
+
     Defines the urgency and importance of tasks identified by the
     proactive scheduler, from critical to background priority.
     """
@@ -41,7 +41,7 @@ class TaskPriority(Enum):
 class HandoffReason(Enum):
     """
     Reasons for handoff to human.
-    
+
     Defines the specific conditions that trigger a handoff request
     when the agent reaches its capability limits or encounters risks.
     """
@@ -106,10 +106,10 @@ class ProactiveScheduler:
     def __init__(self, ctx: ResumeEngineContext) -> None:
         """
         Initialize proactive scheduler.
-        
+
         Args:
             ctx: Resume engine context for coordination
-        
+
         Sets up task tracking, pattern recognition, and autonomous
         task identification capabilities.
         """
@@ -121,10 +121,10 @@ class ProactiveScheduler:
     def identify_tasks(self) -> List[ProactiveTask]:
         """
         Identify tasks based on current context.
-        
+
         Analyzes context signals and state to proactively identify
         tasks that need to be executed.
-        
+
         Returns:
             List of identified proactive tasks
         """
@@ -190,14 +190,14 @@ class ProactiveScheduler:
     ) -> ProactiveTask:
         """
         Create a proactive task.
-        
+
         Args:
             name: Task name
             description: Task description
             priority: Task priority level
             auto_execute: Whether task can be auto-executed
             requires_approval: Whether task requires human approval
-        
+
         Returns:
             Created ProactiveTask instance
         """
@@ -216,7 +216,7 @@ class ProactiveScheduler:
     def get_pending_tasks(self) -> List[ProactiveTask]:
         """
         Get pending tasks sorted by priority.
-        
+
         Returns:
             List of pending tasks ordered by priority (CRITICAL first)
         """
@@ -233,7 +233,7 @@ class ProactiveScheduler:
     def mark_executed(self, task_id: str, result: str = "completed") -> None:
         """
         Mark a task as executed.
-        
+
         Args:
             task_id: ID of task to mark as executed
             result: Execution result description
@@ -247,7 +247,7 @@ class ProactiveScheduler:
     def get_auto_executable_tasks(self) -> List[ProactiveTask]:
         """
         Get tasks that can be auto-executed.
-        
+
         Returns:
             List of tasks that can be executed without approval
         """
@@ -271,7 +271,7 @@ class PredictiveHandoff:
     def register_capability(self, profile: CapabilityProfile) -> None:
         """
         Register an agent's capability profile.
-        
+
         Args:
             profile: Capability profile to register
         """
@@ -384,7 +384,7 @@ class PredictiveHandoff:
     def clear_handoffs(self) -> None:
         """
         Clear all handoff requests.
-        
+
         Removes all pending handoff requests from the queue.
         """
         self._handoff_requests.clear()
@@ -413,7 +413,7 @@ class CapabilityMonitorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixi
     ) -> None:
         """
         Record an agent execution.
-        
+
         Args:
             agent_name: Name of agent that executed
             TaskType: Type of task executed
@@ -454,10 +454,10 @@ class CapabilityMonitorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixi
     def get_success_rate(self, agent_name: str) -> float:
         """
         Get success rate for an agent.
-        
+
         Args:
             agent_name: Name of agent
-        
+
         Returns:
             Success rate between 0.0 and 1.0
         """
@@ -470,10 +470,10 @@ class CapabilityMonitorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixi
     def get_capability_profile(self, agent_name: str) -> CapabilityProfile:
         """
         Generate a capability profile for an agent.
-        
+
         Args:
             agent_name: Name of agent
-        
+
         Returns:
             Generated capability profile with stats
         """
@@ -491,10 +491,10 @@ class CapabilityMonitorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixi
     def _get_supported_tasks(self, agent_name: str) -> List[str]:
         """
         Get list of tasks an agent has successfully completed.
-        
+
         Args:
             agent_name: Name of agent
-        
+
         Returns:
             List of task types successfully completed
         """
@@ -511,14 +511,13 @@ class CapabilityMonitorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixi
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, int]:
         """
         Autonomous healing method (Canon Key 51 compliance).
-        
+
         Args:
             dry_run: If True, only report violations without fixing
             execute: If True, apply fixes
             **kwargs: Additional healing parameters
-        
+
         Returns:
             Dict with healing summary (violations, fixed, errors)
         """
         return super().heal_repository(dry_run, execute, **kwargs)
-

@@ -63,7 +63,7 @@ class ExperienceIn(BaseModel):
 @app.get("/api/health")
 async def health_check() -> Dict[str, Any]:
     return {
-        "status": "healthy", 
+        "status": "healthy",
         "version": "1.0.0",
         "state_file_found": RUNTIME_STATE_FILE.exists()
     }

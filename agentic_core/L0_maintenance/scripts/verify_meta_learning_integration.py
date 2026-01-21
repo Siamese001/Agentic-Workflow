@@ -16,10 +16,10 @@ def test_redis_cache_method():
     """Test if _cache_result method exists and is callable."""
     project_root = Path(__file__).parent.parent
     guardian = get_autonomy_guardian(project_root)
-    
+
     print("\n[TEST 1] Redis Cache Method")
     print("-" * 60)
-    
+
     if hasattr(guardian, '_cache_result'):
         print("✅ _cache_result method exists")
         try:
@@ -41,10 +41,10 @@ def test_pinecone_vector_method():
     """Test if _store_vector method exists and is callable."""
     project_root = Path(__file__).parent.parent
     guardian = get_autonomy_guardian(project_root)
-    
+
     print("\n[TEST 2] Pinecone Vector Method")
     print("-" * 60)
-    
+
     if hasattr(guardian, '_store_vector'):
         print("✅ _store_vector method exists")
         try:
@@ -66,10 +66,10 @@ def test_meta_learning_trigger():
     """Test the Meta-Learning trigger logic by simulating a healing result."""
     project_root = Path(__file__).parent.parent
     guardian = get_autonomy_guardian(project_root)
-    
+
     print("\n[TEST 3] Meta-Learning Trigger Logic")
     print("-" * 60)
-    
+
     # Simulate a successful healing result
     simulated_summary = {
         "violations": 5,
@@ -78,17 +78,17 @@ def test_meta_learning_trigger():
         "healed": 5,
         "renamed": 0
     }
-    
+
     print(f"Simulated healing result: {simulated_summary}")
-    
+
     # The Meta-Learning recording should trigger when:
     # - dry_run = False
     # - summary["fixed"] > 0
-    
+
     # Check if the logic would trigger
     dry_run = False
     fixed_count = simulated_summary.get("fixed", 0)
-    
+
     if not dry_run and fixed_count > 0:
         print(f"✅ Meta-Learning trigger conditions met:")
         print(f"   - dry_run={dry_run}")
@@ -105,50 +105,50 @@ def verify_mixin_inheritance():
     """Verify that AutonomyGuardianAgent inherits from Redis and Pinecone mixins."""
     project_root = Path(__file__).parent.parent
     guardian = get_autonomy_guardian(project_root)
-    
+
     print("\n[TEST 4] Mixin Inheritance")
     print("-" * 60)
-    
+
     from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
     from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
-    
+
     is_redis = isinstance(guardian, RedisCacheMixin)
     is_pinecone = isinstance(guardian, PineconeVectorMixin)
-    
+
     print(f"RedisCacheMixin: {'✅ Inherited' if is_redis else '❌ NOT inherited'}")
     print(f"PineconeVectorMixin: {'✅ Inherited' if is_pinecone else '❌ NOT inherited'}")
-    
+
     return is_redis and is_pinecone
 
 def main():
     print("\n" + "=" * 80)
     print("META-LEARNING INTEGRATION VERIFICATION")
     print("=" * 80)
-    
+
     results = {
         "redis_cache": test_redis_cache_method(),
         "pinecone_vector": test_pinecone_vector_method(),
         "trigger_logic": test_meta_learning_trigger(),
         "mixin_inheritance": verify_mixin_inheritance()
     }
-    
+
     print("\n" + "=" * 80)
     print("VERIFICATION SUMMARY")
     print("=" * 80)
-    
+
     for test_name, passed in results.items():
         status = "✅ PASS" if passed else "❌ FAIL"
         print(f"{test_name:20} {status}")
-    
+
     all_passed = all(results.values())
-    
+
     print("\n" + "=" * 80)
     if all_passed:
         print("✅ ALL TESTS PASSED - Meta-Learning integration is functional")
     else:
         print("⚠️  SOME TESTS FAILED - Review integration issues above")
     print("=" * 80)
-    
+
     return 0 if all_passed else 1
 
 if __name__ == '__main__':

@@ -1,7 +1,7 @@
 /**
  * Pinecone Monitor Components
  * Phase 3.3: Real-time visualization of Pinecone vector operations
- * 
+ *
  * Components:
  * - PineconeOperationsDashboard: Statistics dashboard
  * - QueryResultsVisualizer: Recent query results display
@@ -14,13 +14,13 @@ class PineconeOperationsDashboard {
     constructor(containerId) {
         this.container = document.getElementById(containerId);
     }
-    
+
     update(stats) {
         if (!this.container) return;
-        
+
         const operations = stats.operations || {};
         const avgSimilarity = ((stats.avg_similarity || 0) * 100).toFixed(1);
-        
+
         const html = `
             <div class="pinecone-stats-grid">
                 <div class="stat-box">
@@ -58,10 +58,10 @@ class PineconeOperationsDashboard {
                 </div>
             </div>
         `;
-        
+
         this.container.innerHTML = html;
     }
-    
+
     getSimilarityClass(similarity) {
         if (similarity > 80) return 'similarity-excellent';
         if (similarity > 60) return 'similarity-good';
@@ -79,12 +79,12 @@ class QueryResultsVisualizer {
         this.queries = [];
         this.maxDisplay = 10;
     }
-    
+
     setQueries(queries) {
         this.queries = queries.slice(0, this.maxDisplay);
         this.render();
     }
-    
+
     addQuery(query) {
         this.queries.unshift(query);
         if (this.queries.length > this.maxDisplay) {
@@ -92,15 +92,15 @@ class QueryResultsVisualizer {
         }
         this.render();
     }
-    
+
     render() {
         if (!this.container) return;
-        
+
         if (this.queries.length === 0) {
             this.container.innerHTML = '<div class="empty-state">No queries recorded yet</div>';
             return;
         }
-        
+
         const html = `
             <div class="query-results">
                 ${this.queries.map(q => `
@@ -116,15 +116,15 @@ class QueryResultsVisualizer {
                 `).join('')}
             </div>
         `;
-        
+
         this.container.innerHTML = html;
     }
-    
+
     renderResults(results) {
         if (!results || results.length === 0) {
             return '<div class="no-results">No results</div>';
         }
-        
+
         return `
             <div class="query-results-list">
                 ${results.slice(0, 5).map((r, i) => `
@@ -137,7 +137,7 @@ class QueryResultsVisualizer {
             </div>
         `;
     }
-    
+
     formatTime(timestamp) {
         if (!timestamp) return '';
         const date = new Date(timestamp);

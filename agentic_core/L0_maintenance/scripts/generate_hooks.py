@@ -23,49 +23,49 @@ from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGI
 def sync_pre_commit(dry_run: bool = False):
     """
     Synchronize .pre-commit-config.yaml with SSOT from structure_blueprint.py
-    
+
     Args:
         dry_run: If True, only print changes without modifying files
     """
     # [SSOT] Dynamically derive sovereign roots
     sovereign_roots = list(SOVEREIGN_REGISTRY.keys())
-    
+
     # Add system folders that should be included in patterns
     system_folders = ["data", "archives"]
     all_roots = sovereign_roots + system_folders
-    
+
     # Build regex patterns
     roots_pattern = "|".join(sovereign_roots)
     all_roots_pattern = "|".join(all_roots)
-    
+
     exclude_pattern = f"^({all_roots_pattern})/"
     files_pattern = f"^({roots_pattern})/.*\\.py$"
-    
+
     print(f"[*] Syncing Pre-commit Config with SSOT...")
     print(f"   [SSOT] Sovereign Roots: {', '.join(sovereign_roots)}")
     print(f"   [PATTERN] Exclude: {exclude_pattern}")
     print(f"   [PATTERN] Files: {files_pattern}")
-    
+
     # Locate the pre-commit config
     config_path = project_root / "agentic_core" / "L0_maintenance" / "scripts" / ".pre-commit-config.yaml"
-    
+
     if not config_path.exists():
         print(f"   [!] Config not found at: {config_path}")
         print(f"   [!] Checking alternate location...")
         config_path = project_root / ".pre-commit-config.yaml"
-        
+
         if not config_path.exists():
             print(f"   [X] No .pre-commit-config.yaml found!")
             return False
-    
+
     print(f"   [OK] Found config at: {config_path}")
-    
+
     # Read current config
     with open(config_path, 'r', encoding='utf-8') as f:
         content = f.read()
-    
+
     original_content = content
-    
+
     # Pattern replacements - target the hardcoded folder lists
     replacements = [
         # Exclude patterns (with data/archives)
@@ -79,7 +79,7 @@ def sync_pre_commit(dry_run: bool = False):
             f'files: ^({roots_pattern})/.*\\.py$'
         ),
     ]
-    
+
     changes_made = 0
     for pattern, replacement in replacements:
         matches = re.findall(pattern, content)
@@ -87,24 +87,24 @@ def sync_pre_commit(dry_run: bool = False):
             content = re.sub(pattern, replacement, content)
             changes_made += len(matches)
             print(f"   [✓] Updated {len(matches)} pattern(s)")
-    
+
     if changes_made == 0:
         print(f"   [OK] No changes needed - config already synchronized")
         return True
-    
+
     if dry_run:
         print(f"\n   [DRY-RUN] Would update {changes_made} pattern(s)")
         print(f"\n--- DIFF ---")
         print(f"Original patterns found, would be replaced with SSOT-derived patterns")
         return True
-    
+
     # Write updated config
     with open(config_path, 'w', encoding='utf-8') as f:
         f.write(content)
-    
+
     print(f"   [✓] Updated {changes_made} pattern(s) in {config_path.name}")
     print(f"   [SUCCESS] Pre-commit config synchronized with SSOT")
-    
+
     return True
 
 
@@ -121,13 +121,13 @@ def generate_sovereign_list():
 
 if __name__ == "__main__":
     import argparse
-    
+
     parser = argparse.ArgumentParser(description="Sync pre-commit config with SSOT")
     parser.add_argument("--dry-run", action="store_true", help="Show changes without applying")
     parser.add_argument("--list", action="store_true", help="List current sovereign roots")
-    
+
     args = parser.parse_args()
-    
+
     if args.list:
         generate_sovereign_list()
     else:

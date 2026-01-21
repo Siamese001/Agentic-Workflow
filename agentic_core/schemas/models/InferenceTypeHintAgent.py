@@ -34,11 +34,11 @@ class InferenceTypeHintAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
     def __init__(self, ctx: Any, project_root: Optional[str] = None) -> None:
         """
         Initialize with mandatory ctx for sovereign operation.
-        
+
         Args:
             ctx: Execution context (mandatory)
             project_root: Optional project root directory
-        
+
         Raises:
             ValueError: If ctx is None
         """
@@ -50,10 +50,10 @@ class InferenceTypeHintAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
     async def execute(self, file_path: str) -> Dict[str, Any]:
         """
         Execute method for validator compatibility.
-        
+
         Args:
             file_path: Path to file to validate
-        
+
         Returns:
             Dict with healed status
         """
@@ -62,11 +62,11 @@ class InferenceTypeHintAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
     async def heal_violation(self, file_path: Path, ctx: Optional[Any] = None) -> Dict[str, Any]:
         """
         Per-file healing: invoke LLM for precise type inference.
-        
+
         Args:
             file_path: Path to file to heal
             ctx: Optional execution context (uses self.ctx if None)
-        
+
         Returns:
             Dict with healed status and functions annotated count
         """

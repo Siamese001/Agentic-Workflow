@@ -341,16 +341,16 @@ class DagEngineAgent(MCPHardenedMixin, HealerMixin):
     @timeout(120)
     @standard_heal
     def heal_repository(
-        self, 
-        dry_run: bool = True, 
-        execute: bool = False, 
-        depth: int = 0, 
-        max_depth: int = 3, 
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
         _call_path: Optional[set] = None
     ) -> Dict[str, int]:
         """
         Wired DAG Healing - Validates task graphs and removes dead or circular tasks.
-        
+
         WIRED CAPABILITIES:
         - validate_dag(): Checks for circular dependencies and orphaned nodes.
         - _cleanup_orphaned_tasks(): Removes tasks with no parents/children.
@@ -358,7 +358,7 @@ class DagEngineAgent(MCPHardenedMixin, HealerMixin):
         """
         # CRITICAL: Chain up to HealerMixin
         super().heal_repository(dry_run=dry_run, execute=execute)
-        
+
         # Cycle/Depth Detection
         if _call_path is None:
             _call_path = set()
@@ -366,9 +366,9 @@ class DagEngineAgent(MCPHardenedMixin, HealerMixin):
         if agent_name in _call_path or depth > max_depth:
             return {"errors": 1, "skipped": 1}
         _call_path.add(agent_name)
-        
+
         metrics = {"violations": 0, "fixed": 0, "errors": 0, "skipped": 0}
-        
+
         try:
             # 1. Structural DAG Validation
             if hasattr(self, 'validate_dag'):
@@ -376,7 +376,7 @@ class DagEngineAgent(MCPHardenedMixin, HealerMixin):
                 # validate_dag returns bool, convert to metrics
                 if not dag_results:
                     metrics["violations"] += 1
-                
+
             # 2. Orphan Cleanup
             if hasattr(self, '_cleanup_orphaned_tasks'):
                 cleanup_results = self._cleanup_orphaned_tasks(dry_run=dry_run)
@@ -388,7 +388,7 @@ class DagEngineAgent(MCPHardenedMixin, HealerMixin):
             metrics["errors"] += 1
         finally:
             _call_path.discard(agent_name)
-            
+
         return metrics
 
 def create_dag_from_config(config: Dict[str, Any]) -> DAGEngine:

@@ -66,13 +66,13 @@ class MetricsAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
         # Initialize compliance metrics
         self._initialize_compliance_metrics()
-        
+
         # Alerting rules configuration (Phase 15 Alignment)
         if self.project_root:
             self.alerting_rules_file = self.project_root / "observability" / "prometheus" / "alerting_rules.yml"
         else:
             self.alerting_rules_file = None
-            
+
         self.alerts = {
             "CanonHighStructuralViolations": {
                 "expr": 'canon_violations_total{type="final_total"} > 50',
@@ -112,14 +112,14 @@ class MetricsAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
             # Compliance rate gauge (0-100)
             self._gauges["compliance.compliance_rate"] = 100.0
-            
+
             # State sync monitor default (Key 17)
             self._gauges["state_sync.redis_monitor_active"] = 0
 
             # Metadata
             self._metadata["compliance.last_scan"] = None
             self._metadata["compliance.scan_count"] = 0
-    
+
     def check_redis_monitor(self) -> None:
         """
         Probes Redis for the sovereign monitor sentinel.
@@ -128,14 +128,14 @@ class MetricsAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         try:
             import redis
             from agentic_core.config.blueprint_sovereign.SovereignEnv import get_redis_connection
-            
+
             # Reuse established connection logic from SSOT
             r = get_redis_connection()
             monitor_sentinel = r.get("sovereign:monitor:name")
-            
+
             is_active = 1 if monitor_sentinel else 0
             self.set_gauge("state_sync.redis_monitor_active", is_active)
-            
+
             if is_active:
                 Logger.info(f"[MetricsAgent] Redis Monitor detected: {monitor_sentinel.decode('utf-8')}")
             else:
@@ -277,7 +277,7 @@ class MetricsAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             # Update gauge (assume total files scanned elsewhere or approximate)
             compliance_rate = 0.0 if total > 0 else 100.0
             self._gauges["compliance.compliance_rate"] = compliance_rate
-            
+
             # Convergence status for alerting
             converged = len(violations) == 0
             self._gauges["compliance.converged"] = 1.0 if converged else 0.0
@@ -288,7 +288,7 @@ class MetricsAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
         # Refresh the external monitor heartbeat
         self.check_redis_monitor()
-        
+
         Logger.info(f"[MetricsAgent] Recorded compliance scan: {total} violations")
 
     def get_all_metrics(self) -> Dict[str, Any]:

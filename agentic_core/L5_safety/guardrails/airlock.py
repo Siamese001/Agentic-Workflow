@@ -29,14 +29,14 @@ class AirlockProtocol:
         if tool_name in self.high_risk_tools:
             logging.info(f"Airlock: Evaluating High-Risk tool '{tool_name}'...")
             return self._validate_risk_parameters(tool_name, args)
-        
+
         return True
 
     def _validate_risk_parameters(self, tool: str, args: Dict) -> bool:
         # Prevent agents from touching system files or the .env soul
         path = str(args.get("path", "")).lower()
         protected_targets = [".env", ".git", "/etc/", "c:/windows/", "system32"]
-        
+
         if any(bad in path for bad in protected_targets):
             logging.error(f"Airlock: Blocked access attempt to protected path: {path}")
             return False

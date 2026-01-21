@@ -54,7 +54,7 @@ class RedTeamAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     - All payloads sourced from prompt_governance/templates/
     - Full audit logging on every attempt
     - Automatic escalation on successful bypass
-    
+
     Registered templates:
     - red_team_governance.jinja: Governance and authorization
     - jailbreak_classic.jinja: Classic jailbreak testing (used in ADVERSARIAL_FRAGMENTS)

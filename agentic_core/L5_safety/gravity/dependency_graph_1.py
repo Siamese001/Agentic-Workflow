@@ -63,7 +63,7 @@ class DependencyNode:
     imported_by: List[str] = field(default_factory=list)
     calls: List[str] = field(default_factory=list)
     called_by: List[str] = field(default_factory=list)
-    
+
     def to_dict(self) -> Dict[str, Any]:
         return {
             "name": self.name,
@@ -81,17 +81,17 @@ class DependencyGraph:
     """Complete dependency graph structure."""
     nodes: Dict[str, DependencyNode] = field(default_factory=dict)
     edges: List[Tuple[str, str, str]] = field(default_factory=list)  # (from, to, type)
-    
+
     def add_node(self, name: str, **kwargs) -> DependencyNode:
         """Add or update a node in the graph."""
         if name not in self.nodes:
             self.nodes[name] = DependencyNode(name=name, **kwargs)
         return self.nodes[name]
-    
+
     def add_edge(self, from_node: str, to_node: str, edge_type: str = "imports"):
         """Add an edge between nodes."""
         self.edges.append((from_node, to_node, edge_type))
-        
+
         # Update node relationships
         if from_node in self.nodes:
             if edge_type == "imports":
@@ -100,7 +100,7 @@ class DependencyGraph:
             elif edge_type == "calls":
                 if to_node not in self.nodes[from_node].calls:
                     self.nodes[from_node].calls.append(to_node)
-        
+
         if to_node in self.nodes:
             if edge_type == "imports":
                 if from_node not in self.nodes[to_node].imported_by:
@@ -108,7 +108,7 @@ class DependencyGraph:
             elif edge_type == "calls":
                 if from_node not in self.nodes[to_node].called_by:
                     self.nodes[to_node].called_by.append(from_node)
-    
+
     def to_dict(self) -> Dict[str, Any]:
         return {
             "nodes": {k: v.to_dict() for k, v in self.nodes.items()},
@@ -126,7 +126,7 @@ class GraphResult:
     data: Dict[str, Any] = field(default_factory=dict)
     warnings: List[str] = field(default_factory=list)
     error: Optional[str] = None
-    
+
     def to_dict(self) -> Dict[str, Any]:
         return {
             "success": self.success,
@@ -175,16 +175,16 @@ STDLIB_MODULES = {
 
 class ImportExtractor(ast.NodeVisitor):
     """Extract imports from Python AST."""
-    
+
     def __init__(self, include_stdlib: bool = False):
         self.imports: List[Dict[str, Any]] = []
         self.include_stdlib = include_stdlib
-    
+
     def _is_stdlib(self, module: str) -> bool:
         """Check if module is from standard library."""
         root = module.split(".")[0]
         return root in STDLIB_MODULES
-    
+
     def visit_Import(self, node: ast.Import):
         """Handle 'import x' statements."""
         for alias in node.names:
@@ -197,7 +197,7 @@ class ImportExtractor(ast.NodeVisitor):
                     "type": "import",
                 })
         self.generic_visit(node)
-    
+
     def visit_ImportFrom(self, node: ast.ImportFrom):
         """Handle 'from x import y' statements."""
         module = node.module or ""
@@ -216,29 +216,29 @@ class ImportExtractor(ast.NodeVisitor):
 
 class CallExtractor(ast.NodeVisitor):
     """Extract function/method calls from Python AST."""
-    
+
     def __init__(self):
         self.calls: List[Dict[str, Any]] = []
         self._current_scope: List[str] = []
-    
+
     def visit_FunctionDef(self, node: ast.FunctionDef):
         """Track function scope."""
         self._current_scope.append(node.name)
         self.generic_visit(node)
         self._current_scope.pop()
-    
+
     def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef):
         """Track async function scope."""
         self._current_scope.append(node.name)
         self.generic_visit(node)
         self._current_scope.pop()
-    
+
     def visit_ClassDef(self, node: ast.ClassDef):
         """Track class scope."""
         self._current_scope.append(node.name)
         self.generic_visit(node)
         self._current_scope.pop()
-    
+
     def visit_Call(self, node: ast.Call):
         """Extract call information."""
         call_name = self._get_call_name(node.func)
@@ -249,7 +249,7 @@ class CallExtractor(ast.NodeVisitor):
                 "scope": ".".join(self._current_scope) if self._current_scope else "<module>",
             })
         self.generic_visit(node)
-    
+
     def _get_call_name(self, node: ast.expr) -> Optional[str]:
         """Extract the name of a called function."""
         if isinstance(node, ast.Name):
@@ -264,11 +264,11 @@ class CallExtractor(ast.NodeVisitor):
 
 class DefinitionExtractor(ast.NodeVisitor):
     """Extract function and class definitions from Python AST."""
-    
+
     def __init__(self):
         self.definitions: List[Dict[str, Any]] = []
         self._current_scope: List[str] = []
-    
+
     def visit_FunctionDef(self, node: ast.FunctionDef):
         """Extract function definition."""
         full_name = ".".join(self._current_scope + [node.name])
@@ -282,7 +282,7 @@ class DefinitionExtractor(ast.NodeVisitor):
         self._current_scope.append(node.name)
         self.generic_visit(node)
         self._current_scope.pop()
-    
+
     def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef):
         """Extract async function definition."""
         full_name = ".".join(self._current_scope + [node.name])
@@ -296,7 +296,7 @@ class DefinitionExtractor(ast.NodeVisitor):
         self._current_scope.append(node.name)
         self.generic_visit(node)
         self._current_scope.pop()
-    
+
     def visit_ClassDef(self, node: ast.ClassDef):
         """Extract class definition."""
         full_name = ".".join(self._current_scope + [node.name])
@@ -311,7 +311,7 @@ class DefinitionExtractor(ast.NodeVisitor):
         self._current_scope.append(node.name)
         self.generic_visit(node)
         self._current_scope.pop()
-    
+
     def _get_decorator_name(self, node: ast.expr) -> str:
         """Get decorator name."""
         if isinstance(node, ast.Name):
@@ -321,7 +321,7 @@ class DefinitionExtractor(ast.NodeVisitor):
         elif isinstance(node, ast.Call):
             return self._get_decorator_name(node.func)
         return "<unknown>"
-    
+
     def _get_base_name(self, node: ast.expr) -> str:
         """Get base class name."""
         if isinstance(node, ast.Name):
@@ -340,21 +340,21 @@ def parse_file(file_path: str, include_stdlib: bool = False) -> Dict[str, Any]:
     try:
         with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
             code = f.read()
-        
+
         tree = ast.parse(code)
-        
+
         # Extract imports
         import_extractor = ImportExtractor(include_stdlib=include_stdlib)
         import_extractor.visit(tree)
-        
+
         # Extract calls
         call_extractor = CallExtractor()
         call_extractor.visit(tree)
-        
+
         # Extract definitions
         def_extractor = DefinitionExtractor()
         def_extractor.visit(tree)
-        
+
         return {
             "success": True,
             "path": file_path,
@@ -383,27 +383,27 @@ def build_graph(
 ) -> GraphResult:
     """
     Build a dependency graph from a file or directory.
-    
+
     Args:
         target_path: File or directory to analyze
         include_stdlib: Include standard library modules
         max_depth: Maximum directory depth to traverse
-        
+
     Returns:
         GraphResult with the dependency graph
     """
     graph = DependencyGraph()
     warnings = []
-    
+
     target = Path(target_path)
-    
+
     if not target.exists():
         return GraphResult(
             success=False,
             operation="build_graph",
             error=f"Path does not exist: {target_path}"
         )
-    
+
     # Collect Python files
     if target.is_file():
         if target.suffix == ".py":
@@ -421,15 +421,15 @@ def build_graph(
         # Limit depth
         base_depth = len(target.parts)
         files = [f for f in files if len(f.parts) - base_depth <= max_depth]
-    
+
     # Parse each file
     for file_path in files:
         result = parse_file(str(file_path), include_stdlib=include_stdlib)
-        
+
         if not result["success"]:
             warnings.append(f"Failed to parse {file_path}: {result.get('error', 'Unknown error')}")
             continue
-        
+
         # Create module node
         module_name = _path_to_module(file_path, target if target.is_dir() else target.parent)
         node = graph.add_node(
@@ -437,7 +437,7 @@ def build_graph(
             path=str(file_path),
             node_type="module"
         )
-        
+
         # Add import edges
         for imp in result["imports"]:
             imported_module = imp["module"]
@@ -446,15 +446,15 @@ def build_graph(
                 imported_module = _resolve_relative_import(
                     module_name, imp["module"], imp["level"]
                 )
-            
+
             graph.add_node(imported_module, node_type="module")
             graph.add_edge(module_name, imported_module, "imports")
-        
+
         # Add definitions as sub-nodes
         for defn in result["definitions"]:
             full_name = f"{module_name}.{defn['full_name']}"
             graph.add_node(full_name, path=str(file_path), node_type=defn["type"])
-    
+
     return GraphResult(
         success=True,
         operation="build_graph",
@@ -466,31 +466,31 @@ def build_graph(
 def detect_cycles(graph_data: Dict[str, Any]) -> GraphResult:
     """
     Detect circular dependencies in a dependency graph.
-    
+
     Args:
         graph_data: Graph data from build_graph
-        
+
     Returns:
         GraphResult with detected cycles
     """
     nodes = graph_data.get("nodes", {})
     cycles = []
-    
+
     # Build adjacency list
     adj: Dict[str, List[str]] = {}
     for name, node in nodes.items():
         adj[name] = node.get("imports", [])
-    
+
     # DFS-based cycle detection
     visited: Set[str] = set()
     rec_stack: Set[str] = set()
     path: List[str] = []
-    
+
     def dfs(node: str) -> bool:
         visited.add(node)
         rec_stack.add(node)
         path.append(node)
-        
+
         for neighbor in adj.get(node, []):
             if neighbor not in visited:
                 if dfs(neighbor):
@@ -500,15 +500,15 @@ def detect_cycles(graph_data: Dict[str, Any]) -> GraphResult:
                 cycle_start = path.index(neighbor)
                 cycle = path[cycle_start:] + [neighbor]
                 cycles.append(cycle)
-        
+
         path.pop()
         rec_stack.remove(node)
         return False
-    
+
     for node in adj:
         if node not in visited:
             dfs(node)
-    
+
     return GraphResult(
         success=True,
         operation="detect_cycles",
@@ -526,16 +526,16 @@ def ImpactAnalysis(
 ) -> GraphResult:
     """
     Analyze impact of changing a symbol.
-    
+
     Args:
         graph_data: Graph data from build_graph
         symbol: Symbol to analyze (module, function, or class name)
-        
+
     Returns:
         GraphResult with impact analysis
     """
     nodes = graph_data.get("nodes", {})
-    
+
     if symbol not in nodes:
         # Try partial match
         matches = [n for n in nodes if symbol in n]
@@ -546,29 +546,29 @@ def ImpactAnalysis(
                 error=f"Symbol not found: {symbol}"
             )
         symbol = matches[0]
-    
+
     # BFS to find all dependents
     direct_dependents: Set[str] = set()
     transitive_dependents: Set[str] = set()
-    
+
     # Find direct dependents (who imports this)
     for name, node in nodes.items():
         if symbol in node.get("imports", []):
             direct_dependents.add(name)
-    
+
     # Find transitive dependents
     queue = list(direct_dependents)
     visited = set(direct_dependents)
-    
+
     while queue:
         current = queue.pop(0)
         transitive_dependents.add(current)
-        
+
         for name, node in nodes.items():
             if current in node.get("imports", []) and name not in visited:
                 visited.add(name)
                 queue.append(name)
-    
+
     return GraphResult(
         success=True,
         operation="ImpactAnalysis",
@@ -585,53 +585,53 @@ def ImpactAnalysis(
 def find_unused_imports(target_path: str) -> GraphResult:
     """
     Find unused imports in a file or directory.
-    
+
     Args:
         target_path: File or directory to analyze
-        
+
     Returns:
         GraphResult with unused imports
     """
     target = Path(target_path)
     unused = []
     warnings = []
-    
+
     if target.is_file():
         files = [target]
     else:
         # Phase 6.7: Use ssot_discovery instead of rglob
         from agentic_core.utils.ssot_discovery import get_python_files
         files = list(get_python_files(target))
-    
+
     for file_path in files:
         result = parse_file(str(file_path))
-        
+
         if not result["success"]:
             warnings.append(f"Failed to parse {file_path}")
             continue
-        
+
         imports = result["imports"]
         calls = result["calls"]
         definitions = result["definitions"]
-        
+
         # Get all used names
         used_names: Set[str] = set()
         for call in calls:
             # Add the root name of the call
             root_name = call["name"].split(".")[0]
             used_names.add(root_name)
-        
+
         # Add names used in definitions (bases, decorators)
         for defn in definitions:
             for base in defn.get("bases", []):
                 used_names.add(base.split(".")[0])
             for dec in defn.get("decorators", []):
                 used_names.add(dec.split(".")[0])
-        
+
         # Check each import
         for imp in imports:
             imported_name = imp.get("alias") or imp.get("name") or imp["module"].split(".")[-1]
-            
+
             if imported_name not in used_names and imported_name != "*":
                 unused.append({
                     "file": str(file_path),
@@ -639,7 +639,7 @@ def find_unused_imports(target_path: str) -> GraphResult:
                     "name": imported_name,
                     "line": imp["line"],
                 })
-    
+
     return GraphResult(
         success=True,
         operation="unused_imports",
@@ -655,23 +655,23 @@ def find_unused_imports(target_path: str) -> GraphResult:
 def get_module_dependencies(target_path: str, include_stdlib: bool = False) -> GraphResult:
     """
     Get direct module dependencies for a file.
-    
+
     Args:
         target_path: Python file to analyze
         include_stdlib: Include standard library modules
-        
+
     Returns:
         GraphResult with module dependencies
     """
     result = parse_file(target_path, include_stdlib=include_stdlib)
-    
+
     if not result["success"]:
         return GraphResult(
             success=False,
             operation="module_dependencies",
             error=result.get("error", "Failed to parse file")
         )
-    
+
     # Group imports by module
     modules: Dict[str, List[str]] = {}
     for imp in result["imports"]:
@@ -680,7 +680,7 @@ def get_module_dependencies(target_path: str, include_stdlib: bool = False) -> G
             modules[module] = []
         if imp["type"] == "from_import" and imp.get("name"):
             modules[module].append(imp["name"])
-    
+
     return GraphResult(
         success=True,
         operation="module_dependencies",
@@ -701,15 +701,15 @@ def _path_to_module(file_path: Path, base_path: Path) -> str:
     try:
         rel_path = file_path.relative_to(base_path)
         parts = list(rel_path.parts)
-        
+
         # Remove .py extension
         if parts[-1].endswith(".py"):
             parts[-1] = parts[-1][:-3]
-        
+
         # Handle __init__.py
         if parts[-1] == "__init__":
             parts = parts[:-1]
-        
+
         return ".".join(parts) if parts else "<root>"
     except ValueError:
         return file_path.stem
@@ -718,13 +718,13 @@ def _path_to_module(file_path: Path, base_path: Path) -> str:
 def _resolve_relative_import(current_module: str, import_module: str, level: int) -> str:
     """Resolve a relative import to absolute module name."""
     parts = current_module.split(".")
-    
+
     # Go up 'level' directories
     if level > len(parts):
         return import_module or "<unknown>"
-    
+
     base_parts = parts[:-level] if level > 0 else parts
-    
+
     if import_module:
         return ".".join(base_parts + [import_module])
     return ".".join(base_parts)
@@ -750,10 +750,10 @@ def _calculate_risk_level(impact_count: int) -> str:
 def DependencyGraph(args: DependencyGraphArgs) -> Dict[str, Any]:
     """
     Main entry point for dependency graph operations.
-    
+
     Args:
         args: DependencyGraphArgs with operation details
-        
+
     Returns:
         Dict with operation results
     """
@@ -763,7 +763,7 @@ def DependencyGraph(args: DependencyGraphArgs) -> Dict[str, Any]:
             include_stdlib=args.include_stdlib,
             max_depth=args.max_depth or 10
         )
-    
+
     elif args.operation == GraphOperation.DETECT_CYCLES:
         # First build the graph, then detect cycles
         graph_result = build_graph(
@@ -773,9 +773,9 @@ def DependencyGraph(args: DependencyGraphArgs) -> Dict[str, Any]:
         )
         if not graph_result.success:
             return graph_result.to_dict()
-        
+
         result = detect_cycles(graph_result.data)
-    
+
     elif args.operation == GraphOperation.IMPACT_ANALYSIS:
         if not args.symbol:
             return GraphResult(
@@ -783,7 +783,7 @@ def DependencyGraph(args: DependencyGraphArgs) -> Dict[str, Any]:
                 operation="ImpactAnalysis",
                 error="symbol required for ImpactAnalysis operation"
             ).to_dict()
-        
+
         # First build the graph
         graph_result = build_graph(
             args.target_path,
@@ -792,25 +792,25 @@ def DependencyGraph(args: DependencyGraphArgs) -> Dict[str, Any]:
         )
         if not graph_result.success:
             return graph_result.to_dict()
-        
+
         result = ImpactAnalysis(graph_result.data, args.symbol)
-    
+
     elif args.operation == GraphOperation.UNUSED_IMPORTS:
         result = find_unused_imports(args.target_path)
-    
+
     elif args.operation == GraphOperation.MODULE_DEPENDENCIES:
         result = get_module_dependencies(
             args.target_path,
             include_stdlib=args.include_stdlib
         )
-    
+
     else:
         result = GraphResult(
             success=False,
             operation=str(args.operation),
             error=f"Unknown operation: {args.operation}"
         )
-    
+
     return result.to_dict()
 
 

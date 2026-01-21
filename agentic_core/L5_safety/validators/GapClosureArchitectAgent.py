@@ -39,7 +39,7 @@ class CompetenciesOutput:
 
 class GapClosureArchitectAgent(L0MaintenanceBaseAgent):
     """Gap Closure Architect agent for leadership competencies.
-    
+
     Inherits from L0MaintenanceBaseAgent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
 
     This agent generates competencies with strict constraints:

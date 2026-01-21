@@ -1,7 +1,7 @@
 /**
  * Execution Flow Components
  * Phase 3.4: Real-time visualization of agent execution flow
- * 
+ *
  * Components:
  * - AgentExecutionTimeline: Timeline visualization
  * - LayerFlowDiagram: Layer progression diagram
@@ -15,7 +15,7 @@ class AgentExecutionTimeline {
         this.container = document.getElementById(containerId);
         this.timeline = [];
     }
-    
+
     addExecution(agent, layer, start, end, success) {
         this.timeline.push({
             agent, layer, start, end,
@@ -24,28 +24,28 @@ class AgentExecutionTimeline {
         });
         this.render();
     }
-    
+
     setTimeline(timeline) {
         this.timeline = timeline;
         this.render();
     }
-    
+
     render() {
         if (!this.container) return;
-        
+
         if (this.timeline.length === 0) {
             this.container.innerHTML = '<div class="empty-state">No executions recorded yet</div>';
             return;
         }
-        
+
         const maxDuration = Math.max(...this.timeline.map(t => t.duration || 0.1));
-        
+
         const html = `
             <div class="execution-timeline">
                 ${this.timeline.map((exec, i) => {
                     const widthPct = Math.max(5, ((exec.duration || 0) / maxDuration) * 100);
                     const statusClass = exec.success ? 'exec-success' : 'exec-failure';
-                    
+
                     return `
                         <div class="timeline-row">
                             <div class="timeline-label">
@@ -65,7 +65,7 @@ class AgentExecutionTimeline {
                 }).join('')}
             </div>
         `;
-        
+
         this.container.innerHTML = html;
     }
 }
@@ -80,16 +80,16 @@ class LayerFlowDiagram {
         this.currentLayer = null;
         this.completedLayers = [];
     }
-    
+
     update(currentLayer, completedLayers) {
         this.currentLayer = currentLayer;
         this.completedLayers = completedLayers || [];
         this.render();
     }
-    
+
     render() {
         if (!this.container) return;
-        
+
         const html = `
             <div class="layer-flow">
                 ${this.layers.map(layer => `
@@ -101,16 +101,16 @@ class LayerFlowDiagram {
                 `).join('')}
             </div>
         `;
-        
+
         this.container.innerHTML = html;
     }
-    
+
     getLayerClass(layer) {
         if (this.completedLayers.includes(layer)) return 'layer-completed';
         if (layer === this.currentLayer) return 'layer-active';
         return 'layer-pending';
     }
-    
+
     getLayerStatus(layer) {
         if (this.completedLayers.includes(layer)) return '✓';
         if (layer === this.currentLayer) return '●';
@@ -125,16 +125,16 @@ class ExecutionSummaryPanel {
     constructor(containerId) {
         this.container = document.getElementById(containerId);
     }
-    
+
     update(timeline) {
         if (!this.container) return;
-        
+
         const totalExecutions = timeline.length;
         const successCount = timeline.filter(e => e.success).length;
         const failureCount = totalExecutions - successCount;
         const totalDuration = timeline.reduce((sum, e) => sum + (e.duration || 0), 0);
         const avgDuration = totalExecutions > 0 ? totalDuration / totalExecutions : 0;
-        
+
         const html = `
             <div class="execution-summary-grid">
                 <div class="stat-box">
@@ -163,7 +163,7 @@ class ExecutionSummaryPanel {
                 </div>
             </div>
         `;
-        
+
         this.container.innerHTML = html;
     }
 }

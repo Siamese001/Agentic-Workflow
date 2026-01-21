@@ -48,7 +48,7 @@ class ScriptToAgentClassifierAgent(L0MaintenanceBaseAgent, AutonomyMixin,
     """
     Sovereign classifier for script vs agent constitutional compliance.
     Uses static analysis (AST) + heuristics aligned with semantic_l2_registry.
-    
+
     Inherits from L0MaintenanceBaseAgent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
 
     Now hardened with:
@@ -167,7 +167,7 @@ class ScriptToAgentClassifierAgent(L0MaintenanceBaseAgent, AutonomyMixin,
         total = score_script + score_agent
         if total == 0:
             return "uncertain", 0.5
-        
+
         confidence = max(score_script, score_agent) / total
         if score_script > score_agent:
             return "script", confidence
@@ -183,7 +183,7 @@ class ScriptToAgentClassifierAgent(L0MaintenanceBaseAgent, AutonomyMixin,
         score_script = self._compute_script_score(signals, rationale)
         score_agent = self._compute_agent_score(signals, filename, rationale)
         recommended, confidence = self._determine_recommendation(signals, score_script, score_agent)
-        
+
         return {
             "recommended_type": recommended,
             "confidence": round(confidence, 3),

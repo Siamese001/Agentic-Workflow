@@ -59,7 +59,7 @@ def validate_file_naming(file_path: Path, project_root: Path) -> Tuple[bool, str
 
     stem = file_path.stem
     lower_stem = stem.lower()
-    
+
     # 1. Snake Case Enforcement (No Caps or Dashes) - Applies to ALL Python files
     if re.search(r"[A-Z]", stem) or "-" in stem:
         return False, f"NAMING VIOLATION: '{file_name}' must be snake_case (lowercase only)."
@@ -117,15 +117,15 @@ def get_placement_guidance(content_preview: str) -> str:
     # L1: Cognition & Strategy
     if any(x in content_preview for x in ["planner", "strategy", "reasoning", "mission"]):
         return "agentic_core/L1_cognition"
-    
+
     # L1: Thought Nodes (Execution/Atomic logic) - now under L1_cognition/thought_engine
     if "node" in content_preview.lower() or "execute" in content_preview:
         return "agentic_core/L1_cognition/thought_engine"
-    
+
     # L3: Orchestration (Routing/Fission)
     if any(x in content_preview for x in ["router", "orchestrator", "fission", "hop"]):
         return "agentic_core/L3_orchestration"
-        
+
     # L4: State (Memory/Databases)
     if any(x in content_preview for x in ["pinecone", "redis", "storage", "cache"]):
         return "agentic_core/L4_state"
@@ -252,11 +252,11 @@ def validate_import_conventions(file_path: Path, project_root: Path) -> List[str
 def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, str]:
     """
     Validate that a file exists in an allowed root folder.
-    
+
     Args:
         file_path: Absolute path to file
         project_root: Project root directory
-        
+
     Returns:
         Tuple of (is_valid, reason)
     """
@@ -266,11 +266,11 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
         parts = rel_path.parts
         depth = len(parts)
         root_folder = parts[0]
-        
+
         # Rule 0: Exempt the root structure
         if file_path.name == "__init__.py" or depth == 1:
             return True, "Sovereign Structural Component"
-        
+
         # [ETERNAL DEPTH 4] Universal enforcement for all L-layers
         if root_folder == "agentic_core":
             agentic_core_exact_depth = SOVEREIGN_REGISTRY["agentic_core"]["depth"]  # Legacy bridge – migrate to SOVEREIGN_REGISTRY
@@ -289,19 +289,19 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
             if depth != 3:
                 reason = "SHALLOW" if depth < 3 else "DEEP"
                 return False, f"{reason} VIOLATION (tests): '{rel_path}' depth {depth} != 3"
-            
+
         # Rule 1a: Core Stage Enforcement (Identity/Inference/Meta or P/S/L)
         if root_folder == "agentic_core":
             stage = parts[2]
             # Check against authorized list AND standard P/S/L naming convention
             if stage not in ALLOWED_CORE_STAGES and not (stage.startswith('P') or stage.startswith('S') or stage.startswith('L')):
                 return False, f"UNAUTHORIZED STAGE: '{stage}' is not a recognized Sovereign territory."
-        
+
         return True, f"{root_folder} depth verified"
-        
+
         if root_folder in ALLOWED_ROOT_FOLDERS:
             return True, f"File in allowed root folder: {root_folder}"
-        
+
         # Check if in forbidden folder
         if root_folder in FORBIDDEN_ROOT_FOLDERS:
             return False, f"VOID VIOLATION: Forbidden root folder '{root_folder}' (legacy numbered)"
@@ -311,23 +311,23 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
             # Check if part is in FORBIDDEN_ROOT_FOLDERS
             if part in FORBIDDEN_ROOT_FOLDERS:
                 return False, f"VOID VIOLATION: Forbidden folder '{part}' at any depth."
-        
+
         # Check for numbered prefix pattern (NOT APPROVED)
         if root_folder and root_folder[0:2].isdigit() and root_folder[2:3] == "_":
             return False, f"VOID VIOLATION: Numbered folder '{root_folder}' not approved (use approved folders only)"
-        
+
         # SOVEREIGN PROTECTION: Key 0 (General) must remain at Project Root
         validator_markers = {"validator", "compliance", "canon"}
         if root_folder.startswith("apps_") and any(m in file_path.name.lower() for m in validator_markers):
             return False, f"GRAVITY ERROR: Sovereign compliance logic ('{file_path.name}') leaked into downstream '{root_folder}'."
-        
+
         # [L6 HARDENING] Strict Naming Enforcement
         is_name_valid, name_reason = validate_file_naming(file_path, project_root)
         if not is_name_valid:
             return False, name_reason
 
         return True, "Path and Name compliant."
-        
+
     except ValueError:
         # File is outside project root
         return False, f"VOID VIOLATION: File outside project root"
@@ -336,80 +336,80 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
 def get_applicable_keys_for_file(file_path: Path, project_root: Path) -> Set[int]:
     """
     Determine which canon keys should apply to a given file based on its location.
-    
+
     Args:
         file_path: Absolute path to file
         project_root: Project root directory
-        
+
     Returns:
         Set of applicable key numbers
     """
     try:
         rel_path = file_path.relative_to(project_root)
         rel_path_str = str(rel_path).replace("\\", "/")
-        
+
         applicable_keys = set()
-        
+
         for key_num, folders in KEY_TO_FOLDER_MAP.items():
             for folder_pattern in folders:
                 if rel_path_str.startswith(folder_pattern):
                     applicable_keys.add(key_num)
                     break
-        
+
         return applicable_keys
-        
+
     except ValueError:
         return set()
 
 
 def enforce_void_compliance(
-    files: List[Path], 
+    files: List[Path],
     project_root: Path
 ) -> Tuple[List[Path], List[Tuple[Path, str]]]:
     """
     Filter files to only those in allowed folders.
-    
+
     Args:
         files: List of file paths to validate
         project_root: Project root directory
-        
+
     Returns:
         Tuple of (valid_files, violations)
     """
     valid_files = []
     violations = []
-    
+
     for file_path in files:
         is_valid, reason = validate_file_location(file_path, project_root)
-        
+
         if is_valid:
             valid_files.append(file_path)
         else:
             violations.append((file_path, reason))
             Logger.warning(f"   [VOID] {file_path.name}: {reason}")
-    
+
     return valid_files, violations
 
 
 def get_folder_scope_summary(project_root: Path) -> Dict[str, int]:
     """
     Generate summary of files per allowed folder.
-    
+
     Args:
         project_root: Project root directory
-        
+
     Returns:
         Dictionary mapping folder names to file counts
     """
     summary = {folder: 0 for folder in ALLOWED_ROOT_FOLDERS}
-    
+
     all_py = get_python_files(project_root)
     for folder in ALLOWED_ROOT_FOLDERS:
         folder_path = project_root / folder
         if folder_path.exists() and folder_path.is_dir():
             py_files = [f for f in all_py if str(f).startswith(str(folder_path))]
             summary[folder] = len(py_files)
-    
+
     return summary
 
 
@@ -427,7 +427,7 @@ def generate_ascii_tree(start_path: Path, max_depth: int = 3) -> str:
             tree.append(f"{prefix}{connector}{item.name}")
             if item.is_dir():
                 _add(item, prefix + ("    " if i == len(items)-1 else "│   "), depth + 1)
-    
+
     _add(start_path, "", 1)
     return "\n".join(tree)
 
@@ -495,21 +495,21 @@ def validate_canonical_hierarchy(project_root: Path) -> List[Tuple[Path, str]]:
                 l1_path = root_path / l1_name
                 if not l1_path.exists():
                     continue
-                
+
                 # Get expected L2 folders from CORE_SUBFOLDER_MAP
                 expected_l2 = set(CORE_SUBFOLDER_MAP.get(l1_name, []))
                 actual_l2_dirs = {p.name for p in l1_path.iterdir() if p.is_dir() and not p.name.startswith(".")}
                 actual_l2_files = [p.name for p in l1_path.iterdir() if p.is_file() and p.suffix == ".py"]
-                
+
                 # Whitelist autonomous agents to prevent drift violations
                 AUTONOMOUS_WHITELIST = {
                     "autonomous_checkpoint_manager.py", "autonomous_state_guardian.py",
                     "self_updating_safety_engine.py", "neural_auto_immune_agent.py"
                 }
-                
+
                 # Filter out whitelisted autonomous agents from violations
                 actual_l2_files = [f for f in actual_l2_files if f not in AUTONOMOUS_WHITELIST]
-                
+
                 # Unexpected L2 folders
                 unexpected_l2 = actual_l2_dirs - expected_l2
                 for bad in unexpected_l2:
@@ -520,20 +520,20 @@ def validate_canonical_hierarchy(project_root: Path) -> List[Tuple[Path, str]]:
                 l1_path = root_path / l1_name
                 if not l1_path.exists():
                     continue
-                
+
                 expected_l2 = set(l2_list)
                 actual_l2_dirs = {p.name for p in l1_path.iterdir() if p.is_dir() and not p.name.startswith(".")}
                 actual_l2_files = [p.name for p in l1_path.iterdir() if p.is_file() and p.suffix == ".py"]
-                
+
                 # Whitelist autonomous agents to prevent drift violations
                 AUTONOMOUS_WHITELIST = {
                     "autonomous_checkpoint_manager.py", "autonomous_state_guardian.py",
                     "self_updating_safety_engine.py", "neural_auto_immune_agent.py"
                 }
-                
+
                 # Filter out whitelisted autonomous agents from violations
                 actual_l2_files = [f for f in actual_l2_files if f not in AUTONOMOUS_WHITELIST]
-                
+
                 # Unexpected L2 folders
                 unexpected_l2 = actual_l2_dirs - expected_l2
                 for bad in unexpected_l2:
@@ -609,32 +609,32 @@ def check_import_waterfall_violations(file_path: Path, project_root: Path) -> Li
 
     # [PHASE 2] Convention Enforcement
     violations.extend(validate_import_conventions(file_path, project_root))
-        
+
     return violations
 
 
 def validate_sovereign_roots(project_root: Path) -> List[Tuple[Path, str]]:
     """
     Validate that all sovereign roots exist and are properly structured.
-    
+
     Args:
         project_root: Project root directory
-        
+
     Returns:
         List of violations as (path, reason) tuples
     """
     violations = []
-    
+
     for root_name in ALLOWED_ROOT_FOLDERS:
         root_path = project_root / root_name
-        
+
         # Check if root exists
         if not root_path.exists():
             violations.append((root_path, f"Missing sovereign root: {root_name}"))
             continue
-            
+
         # Check if it's a directory
         if not root_path.is_dir():
             violations.append((root_path, f"Sovereign root is not a directory: {root_name}"))
-    
+
     return violations

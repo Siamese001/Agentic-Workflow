@@ -15,7 +15,7 @@ from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import Subatom
 class CampaignPlannerAgent(HealerMixin, SubatomicTestingMixin, OutreachAgent, MCPHardenedMixin):
     """
     Strategic campaign planning agent.
-    
+
     Provides:
     - Campaign structure recommendations
     - Lead segmentation suggestions
@@ -26,7 +26,7 @@ class CampaignPlannerAgent(HealerMixin, SubatomicTestingMixin, OutreachAgent, MC
     async def execute(self) -> None:
         """
         Execute campaign planning and generate strategic recommendations.
-        
+
         Analyzes:
         - Campaign schedule and follow-up sequences
         - Lead segmentation needs
@@ -78,12 +78,12 @@ Provide 3 specific recommendations to improve campaign effectiveness.
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, int]:
         """
         Autonomous healing method (Canon Key 51 compliance).
-        
+
         Args:
             dry_run: If True, only report violations without fixing
             execute: If True, apply fixes
             **kwargs: Additional healing parameters
-        
+
         Returns:
             Dict with healing summary (violations, fixed, errors)
         """

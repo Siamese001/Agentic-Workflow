@@ -98,7 +98,7 @@ class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     ) -> None:
         """
         Initialize the Canon Validator with hybrid cache.
-        
+
         Args:
             redis_host: Redis server hostname
             redis_port: Redis server port
@@ -131,19 +131,19 @@ class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     def _perform_healing(self, anomaly: AnomalyReport) -> bool:
         """Perform healing for validation anomalies."""
         self._mcp_audit("healing_start", payload=anomaly.to_dict())
-        
+
         if anomaly.type == "rule_drift":
             # Recalibrate from known good patterns
             self._mcp_audit("healing_success")
             return True
-        
+
         if anomaly.type == "validation_inconsistency":
             # Reset thresholds
             self.promotion_threshold = 3
             self.failure_threshold = 5
             self._mcp_audit("healing_success")
             return True
-        
+
         return False
 
     def _safe_parse_ast(self, code: str) -> Tuple[Optional[str], Optional[str]]:

@@ -23,7 +23,7 @@ from agentic_core.utils.core_extensions.decorators import standard_heal
 class TypeEnforcerAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin):
     """ROLE: Type Guardian. Enforces PEP 484."""
     async def execute(self) -> None:
-                    
+
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Type Contracts...")
         await asyncio.sleep(0)
     @standard_heal

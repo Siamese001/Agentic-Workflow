@@ -42,7 +42,7 @@ class PromptTemplate:
     tags: List[str] = field(default_factory=list)
     variables: List[str] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {
@@ -56,7 +56,7 @@ class PromptTemplate:
             "variables": self.variables,
             "metadata": self.metadata,
         }
-    
+
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "PromptTemplate":
         """Create from dictionary."""
@@ -71,29 +71,29 @@ class PromptTemplate:
             variables=data.get("variables", []),
             metadata=data.get("metadata", {}),
         )
-    
+
     def render(self, **kwargs) -> str:
         """Render template with variables.
-        
+
         Args:
             **kwargs: Variable values
-            
+
         Returns:
             Rendered prompt
         """
         content = self.content
-        
+
         for var in self.variables:
             if var in kwargs:
                 placeholder = f"{{{var}}}"
                 content = content.replace(placeholder, str(kwargs[var]))
-        
+
         return content
 
 
 class PromptRegistry:
     """Central registry for constitutional prompt assets.
-    
+
     Features:
     - Template storage and retrieval
     - Category-based organization
@@ -101,24 +101,24 @@ class PromptRegistry:
     - Version management
     - Persistence to disk
     """
-    
+
     def __init__(
         self,
         registry_path: Optional[Path] = None,
         enable_logging: bool = True,
     ):
         """Initialize prompt registry.
-        
+
         Args:
             registry_path: Path to registry file
             enable_logging: Enable logging
         """
         self.registry_path = registry_path or Path("prompt_governance/registry/prompts.json")
         self.enable_logging = enable_logging
-        
+
         self._templates: Dict[str, PromptTemplate] = {}
         self._load_registry()
-        
+
         if self.enable_logging:
             logger.info(
                 "prompt_registry_initialized",
@@ -127,16 +127,16 @@ class PromptRegistry:
                     "registry_path": str(self.registry_path),
                 }
             )
-    
+
     def register(self, template: PromptTemplate) -> None:
         """Register a prompt template.
-        
+
         Args:
             template: Prompt template
         """
         self._templates[template.template_id] = template
         self._save_registry()
-        
+
         if self.enable_logging:
             logger.info(
                 "template_registered",
@@ -146,27 +146,27 @@ class PromptRegistry:
                     "version": template.version,
                 }
             )
-    
+
     def get(self, template_id: str) -> Optional[PromptTemplate]:
         """Get a prompt template.
-        
+
         Args:
             template_id: Template identifier
-            
+
         Returns:
             PromptTemplate or None
         """
         return self._templates.get(template_id)
-    
+
     def find_by_category(
         self,
         category: PromptCategory,
     ) -> List[PromptTemplate]:
         """Find templates by category.
-        
+
         Args:
             category: Prompt category
-            
+
         Returns:
             List of matching templates
         """
@@ -174,13 +174,13 @@ class PromptRegistry:
             t for t in self._templates.values()
             if t.category == category
         ]
-    
+
     def find_by_tag(self, tag: str) -> List[PromptTemplate]:
         """Find templates by tag.
-        
+
         Args:
             tag: Tag to search for
-            
+
         Returns:
             List of matching templates
         """
@@ -188,68 +188,68 @@ class PromptRegistry:
             t for t in self._templates.values()
             if tag in t.tags
         ]
-    
+
     def search(self, query: str) -> List[PromptTemplate]:
         """Search templates by name or description.
-        
+
         Args:
             query: Search query
-            
+
         Returns:
             List of matching templates
         """
         query_lower = query.lower()
-        
+
         return [
             t for t in self._templates.values()
             if query_lower in t.name.lower() or query_lower in t.description.lower()
         ]
-    
+
     def list_all(self) -> List[PromptTemplate]:
         """List all templates.
-        
+
         Returns:
             List of all templates
         """
         return list(self._templates.values())
-    
+
     def delete(self, template_id: str) -> bool:
         """Delete a template.
-        
+
         Args:
             template_id: Template identifier
-            
+
         Returns:
             True if deleted
         """
         if template_id in self._templates:
             del self._templates[template_id]
             self._save_registry()
-            
+
             if self.enable_logging:
                 logger.info(
                     "template_deleted",
                     extra={"template_id": template_id}
                 )
-            
+
             return True
-        
+
         return False
-    
+
     def _load_registry(self) -> None:
         """Load registry from disk."""
         if not self.registry_path.exists():
             self._create_default_templates()
             return
-        
+
         try:
             with open(self.registry_path, 'r') as f:
                 data = json.load(f)
-            
+
             for template_data in data.get("templates", []):
                 template = PromptTemplate.from_dict(template_data)
                 self._templates[template.template_id] = template
-        
+
         except Exception as e:
             if self.enable_logging:
                 logger.error(
@@ -258,21 +258,21 @@ class PromptRegistry:
                     exc_info=True,
                 )
             self._create_default_templates()
-    
+
     def _save_registry(self) -> None:
         """Save registry to disk."""
         try:
             # Ensure directory exists
             self.registry_path.parent.mkdir(parents=True, exist_ok=True)
-            
+
             data = {
                 "version": "1.0.0",
                 "templates": [t.to_dict() for t in self._templates.values()],
             }
-            
+
             with open(self.registry_path, 'w') as f:
                 json.dump(data, f, indent=2)
-        
+
         except Exception as e:
             if self.enable_logging:
                 logger.error(
@@ -280,7 +280,7 @@ class PromptRegistry:
                     extra={"error": str(e)},
                     exc_info=True,
                 )
-    
+
     def _create_default_templates(self) -> None:
         """Create default prompt templates."""
         # System instruction
@@ -294,7 +294,7 @@ class PromptRegistry:
             tags=["default", "system"],
         )
         self._templates[system_template.template_id] = system_template
-        
+
         # Safety policy
         safety_template = PromptTemplate(
             template_id="safety_default",
@@ -306,7 +306,7 @@ class PromptRegistry:
             tags=["default", "safety"],
         )
         self._templates[safety_template.template_id] = safety_template
-        
+
         # Reasoning template
         reasoning_template = PromptTemplate(
             template_id="react_default",
@@ -319,7 +319,7 @@ class PromptRegistry:
             variables=["thought", "action", "observation"],
         )
         self._templates[reasoning_template.template_id] = reasoning_template
-        
+
         self._save_registry()
 
 
@@ -327,10 +327,10 @@ def create_prompt_registry(
     registry_path: Optional[Path] = None,
 ) -> PromptRegistry:
     """Factory function to create prompt registry.
-    
+
     Args:
         registry_path: Optional registry path
-        
+
     Returns:
         PromptRegistry instance
     """

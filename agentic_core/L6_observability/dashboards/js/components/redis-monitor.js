@@ -1,7 +1,7 @@
 /**
  * Redis Monitor Components
  * Phase 3.2: Real-time visualization of Redis cache operations
- * 
+ *
  * Components:
  * - RedisOperationCounter: Statistics dashboard
  * - RedisOperationLog: Recent operations log
@@ -14,13 +14,13 @@ class RedisOperationCounter {
     constructor(containerId) {
         this.container = document.getElementById(containerId);
     }
-    
+
     update(stats) {
         if (!this.container) return;
-        
+
         const hitRate = ((stats.hit_rate || 0) * 100).toFixed(1);
         const operations = stats.operations || {};
-        
+
         const html = `
             <div class="redis-stats-grid">
                 <div class="stat-box">
@@ -62,10 +62,10 @@ class RedisOperationCounter {
                 </div>
             </div>
         `;
-        
+
         this.container.innerHTML = html;
     }
-    
+
     getHitRateClass(rate) {
         if (rate > 80) return 'hit-rate-excellent';
         if (rate > 60) return 'hit-rate-good';
@@ -83,7 +83,7 @@ class RedisOperationLog {
         this.operations = [];
         this.maxDisplay = 20;
     }
-    
+
     addOperation(op) {
         this.operations.unshift(op);
         if (this.operations.length > this.maxDisplay) {
@@ -91,20 +91,20 @@ class RedisOperationLog {
         }
         this.render();
     }
-    
+
     setOperations(operations) {
         this.operations = operations.slice(0, this.maxDisplay);
         this.render();
     }
-    
+
     render() {
         if (!this.container) return;
-        
+
         if (this.operations.length === 0) {
             this.container.innerHTML = '<div class="empty-state">No operations recorded yet</div>';
             return;
         }
-        
+
         const html = `
             <div class="operation-log">
                 ${this.operations.map(op => `
@@ -117,16 +117,16 @@ class RedisOperationLog {
                 `).join('')}
             </div>
         `;
-        
+
         this.container.innerHTML = html;
     }
-    
+
     getHitClass(hit) {
         if (hit === true) return 'cache-hit';
         if (hit === false) return 'cache-miss';
         return '';
     }
-    
+
     getResultIcon(op) {
         if (op.hit === true) return '✓ HIT';
         if (op.hit === false) return '✗ MISS';
@@ -134,12 +134,12 @@ class RedisOperationLog {
         if (op.operation === 'delete') return '✓ DEL';
         return '';
     }
-    
+
     truncateKey(key) {
         if (!key) return '';
         return key.length > 30 ? key.substring(0, 27) + '...' : key;
     }
-    
+
     formatTime(timestamp) {
         if (!timestamp) return '';
         const date = new Date(timestamp);

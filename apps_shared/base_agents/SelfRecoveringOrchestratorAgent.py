@@ -73,7 +73,7 @@ from agentic_core.utils.core_extensions.decorators import standard_heal
 class SelfRecoveringOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin, CognitiveRecoveryMixin):
     """
     Orchestrator that automatically recovers from workflow failures.
-    
+
     Features:
     - Automatic failure detection and classification
     - Dynamic workflow graph mutation
@@ -105,7 +105,7 @@ class SelfRecoveringOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
         """
         Logger.info(f"Initiating Cognitive Recovery for: {type(error).__name__}")
         advice = self.perform_cognitive_rca(error)
-        
+
         if advice:
             Logger.info("🧠 Cognitive Memory found a potential fix strategy.")
             # Future: Auto-apply the fix. For now, we log the RCA.
@@ -137,12 +137,12 @@ class SelfRecoveringOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
     async def execute_with_recovery(self, graph: nx.DiGraph, initial_inputs: Dict[str, Any], graph_id: str) -> Dict[str, Any]:
         """
         Execute a workflow graph with automatic recovery.
-        
+
         Args:
             graph: Workflow graph to execute
             initial_inputs: Initial inputs
             graph_id: Unique graph identifier
-            
+
         Returns:
             Execution results
         """
@@ -187,13 +187,13 @@ class SelfRecoveringOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
     async def _execute_node_with_retry(self, node: Any, node_id: str, initial_inputs: Dict[str, Any], execution_state: Dict[str, Any]) -> bool:
         """
         Execute a node with intelligent retry logic.
-        
+
         Args:
             node: Node to execute
             node_id: Node identifier
             initial_inputs: Initial inputs
             execution_state: Execution state
-            
+
         Returns:
             True if successful, False otherwise
         """
@@ -215,7 +215,7 @@ class SelfRecoveringOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
                 return True
             except Exception as e:
                 Logger.warning(f'Node {node_id} attempt {attempt + 1} failed: {e}')
-                
+
                 # On final retry failure, attempt cognitive recovery
                 if attempt == max_retries - 1:
                     if self._attempt_final_recovery(node_id, e):
@@ -226,21 +226,21 @@ class SelfRecoveringOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
     def _attempt_final_recovery(self, node_id: str, error: Exception) -> bool:
         """Attempt final recovery using healing and cognitive recovery."""
         Logger.info(f"All retries exhausted for {node_id}. Attempting cognitive recovery...")
-        
+
         # Tier 1 & 2: Standard Heuristics/HealerMixin
         healed = self._attempt_healing()
-        
+
         # Tier 3: NEW Cognitive Recovery (Semantic Brain)
         known_fix_found = self.attempt_cognitive_recovery(error)
-        
+
         if known_fix_found:
             Logger.warning("Cognitive recovery identified a known fix. Proceeding with semantic-guided retry.")
             if healed:
                 Logger.info("Attempting one more retry after healing + cognitive guidance...")
                 return True
-        
+
         return False
-    
+
     def _attempt_healing(self) -> bool:
         """Attempt to heal repository issues."""
         if hasattr(self, 'heal_repository'):
@@ -266,7 +266,7 @@ class SelfRecoveringOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
     async def _apply_recovery_strategy(self, graph_id: str, failed_node: Any, node_id: str, execution_state: Dict[str, Any]) -> bool:
         """
         Apply recovery strategy for a failed node.
-        
+
         Args:
             graph_id: Graph identifier
             failed_node: The failed node
@@ -304,7 +304,7 @@ class SelfRecoveringOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
         self.mutation_history.append(mutation)
         execution_state['mutations_applied'].append(mutation)
         return True
-    
+
     def _apply_fork_strategy(self, node_id: str, failed_node: Any, graph: nx.DiGraph, execution_state: Dict[str, Any]) -> bool:
         """Apply FORK recovery strategy."""
         Logger.info(f'Applying FORK strategy for {node_id}')
@@ -325,7 +325,7 @@ class SelfRecoveringOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
             execution_state['mutations_applied'].append(mutation)
             return True
         return False
-    
+
     def _apply_replace_strategy(self, node_id: str, failed_node: Any, graph: nx.DiGraph, execution_state: Dict[str, Any]) -> bool:
         """Apply REPLACE recovery strategy."""
         Logger.info(f'Applying REPLACE strategy for {node_id}')
@@ -356,10 +356,10 @@ class SelfRecoveringOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
     def _select_recovery_strategy(self, pattern: NodeFailurePattern) -> RecoveryStrategy:
         """
         Select appropriate recovery strategy based on failure pattern.
-        
+
         Args:
             pattern: Node failure pattern
-            
+
         Returns:
             Recovery strategy
         """

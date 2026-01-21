@@ -23,14 +23,14 @@ def infer_rationale(canonical: str, dup_path: str, action: str) -> str:
     """Infer rationale based on path patterns."""
     if "blueprint_sovereign" in dup_path:
         return "Leftover blueprint template — production version is canonical"
-    
+
     if ("validators" in canonical and "agents" in dup_path) or \
        ("agents" in canonical and "validators" in dup_path):
         return "Location overlap: same agent in agents/ vs validators/ directories"
-    
+
     if action == "REVIEW":
         return "Minor differences detected (comments/formatting/incomplete features) — manual merge needed"
-    
+
     return "Exact or structural duplicate — likely copy-paste or migration artifact"
 
 
@@ -41,15 +41,15 @@ data = json.load(sys.stdin)
 results = []
 for item in data:
     canonical = item["canonical_file"]
-    
+
     if not is_agent_file(canonical):
         continue
-    
+
     for dup in item["duplicates"]:
         dup_path = dup["path"]
         if not is_agent_file(dup_path):
             continue
-        
+
         results.append({
             "agent_name": Path(canonical).stem,
             "canonical": canonical,

@@ -26,18 +26,18 @@ from agentic_core.utils.sovereign_index import SovereignIndex
 def check_dark_reasoning(filepath: Path) -> List[str]:
     """
     Check for reasoning operations without corresponding observability footprints.
-    
+
     Dark Reasoning occurs when an agent performs cognitive operations (think, plan, decide)
     without leaving a trace in the L6 observability layer (logging, telemetry).
-    
+
     Args:
         filepath: Path to Python file to audit
-        
+
     Returns:
         List of issues found (empty if compliant)
     """
     issues = []
-    
+
     # Only audit L1-L3 for reasoning footprints
     file_str = str(filepath).replace("\\", "/")
     if not any(layer in file_str for layer in ["L1_cognition", "L2_execution", "L3_orchestration"]):
@@ -46,24 +46,24 @@ def check_dark_reasoning(filepath: Path) -> List[str]:
     try:
         content = filepath.read_text(encoding="utf-8")
         tree = ast.parse(content)
-        
+
         class DarkReasoningVisitor(ast.NodeVisitor):
-                                    
+
             def __init__(self):
                 self.issues = []
                 self.reasoning_methods = {"think", "plan", "decide", "reason", "validate", "execute_plan"}
-                
+
             def visit_Call(self, node):
-                                                    
+
                 # Check for calls to reasoning methods
                 if isinstance(node.func, ast.Attribute) and node.func.attr.lower() in self.reasoning_methods:
                     self.issues.append(f"Dark Reasoning Violation: Unobserved reasoning call '{node.func.attr}' at line {node.lineno}")
-                
+
                 # Check for direct LLM usage (L5 Bypass)
                 if isinstance(node.func, ast.Attribute) and node.func.attr in {"chat", "complete", "messages"}:
                     if isinstance(node.func.value, ast.Name) and node.func.value.id in {"client", "openai", "anthropic"}:
                         self.issues.append(f"Potential L5 Bypass: Direct LLM call at line {node.lineno}")
-                
+
                 self.generic_visit(node)
 
         visitor = DarkReasoningVisitor()
@@ -72,34 +72,34 @@ def check_dark_reasoning(filepath: Path) -> List[str]:
 
     except Exception:
         pass
-    
+
     return issues
 
 def validate_observability_footprint(target_dir: str) -> Tuple[float, List[str]]:
     """
     Validate that all reasoning operations have observability footprints.
-    
+
     Args:
         target_dir: Directory to audit
-        
+
     Returns:
         Tuple of (score percentage, list of issues)
     """
     issues = []
     total_files = 0
-    
+
     # Phase 6.8: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_python_files
     for path in get_python_files(Path(target_dir)):
-        
+
         total_files += 1
         file_issues = check_dark_reasoning(path)
         # Use full path instead of just filename
         issues.extend([f"{str(path)}: {i}" for i in file_issues])
-    
+
     # Calculate score (deduct 5 points per dark reasoning instance)
     score = 100.0
     if issues:
         score = max(0, 100 - (len(issues) * 5))
-    
+
     return score, issues

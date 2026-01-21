@@ -57,7 +57,7 @@ class DashboardDataGenerator:
         for agent in agents:
             rel_path = str(agent.relative_to(self.project_root)).replace("\\", "/")
             entry = registry.get(rel_path, {})
-            
+
             m["compliant"] += 1 if entry.get("has_healing") else 0
             m["heal_cap"] += 1 if entry.get("has_healing") else 0
             m["heal_inv"] += 1 if entry.get("invocation") == "Yes" else 0
@@ -77,10 +77,10 @@ class DashboardDataGenerator:
         """Format raw metrics into a standardized dashboard row."""
         t = metrics["total"]
         if t == 0: return {}
-        
+
         avg_cc = round(metrics["cc_sum"] / t, 1)
         health = round(((metrics["test"]/t*100) + (metrics["heal_inv"]/t*100) + (metrics["obs"]/t)) / 3, 1)
-        
+
         return {
             "Territory": territory_name,
             "Total": t,
@@ -122,7 +122,7 @@ class DashboardDataGenerator:
     def generate_full_report_data(self) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
         """High-level orchestrator for the modular generation process."""
         self.load_registry()
-        # Note: In production, this would involve full path scanning. 
+        # Note: In production, this would involve full path scanning.
         # For brevity, this assumes a typical orchestrator call pattern.
         rows = [] # Filled by caller using build_territory_row
         total_row = self.build_total_row(rows)

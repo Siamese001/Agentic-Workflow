@@ -56,17 +56,17 @@ class GravityFix:
 class GravityLeakRepairAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
     """
     [L5 HEALER] Automated gravity violation repair agent.
-    
+
     Works in tandem with UnifiedStructureEnforcerAgent to automatically fix
     upward imports and architectural violations.
-    
+
     Healing Strategies:
     1. RELOCATE: Move shared code to utils/ or appropriate layer
     2. ABSTRACT: Create abstraction layer for cross-layer dependencies
     3. INJECT: Use dependency injection instead of direct imports
     4. REMOVE: Remove unnecessary imports
     """
-    
+
     # Layer hierarchy - lower index = higher authority
     LAYER_ORDER = {
         'L0': 0,
@@ -77,13 +77,13 @@ class GravityLeakRepairAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixi
         'L5': 5,
         'L6': 6
     }
-    
+
     def __init__(self, project_root: Path = None) -> None:
         """Initialize the gravity leak repair agent."""
         self.project_root = Path(project_root) if project_root else Path.cwd()
         self.logger = Logger
         super().__init__()
-    
+
     def analyze_violation(
         self,
         file_path: Path,
@@ -93,18 +93,18 @@ class GravityLeakRepairAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixi
     ) -> GravityFix:
         """
         Analyze a gravity violation and recommend a fix.
-        
+
         Args:
             file_path: File with the violation
             import_statement: The problematic import
             file_layer: Layer of the file
             import_layer: Layer being imported
-            
+
         Returns:
             GravityFix with recommended solution
         """
         # Determine fix strategy based on violation pattern
-        
+
         # Strategy 1: If importing from L0, likely a shared utility
         if import_layer == 'L0':
             return GravityFix(
@@ -115,7 +115,7 @@ class GravityLeakRepairAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixi
                 fix_type='RELOCATE',
                 rationale=f"Move shared L0 code to utils/ to avoid upward import from {file_layer}"
             )
-        
+
         # Strategy 2: Cross-layer dependency - suggest abstraction
         else:
             return GravityFix(
@@ -126,14 +126,14 @@ class GravityLeakRepairAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixi
                 fix_type='ABSTRACT',
                 rationale=f"Create abstraction layer to decouple {file_layer} from {import_layer}"
             )
-    
+
     def _suggest_utils_import(self, import_statement: str) -> str:
         """
         Suggest a utils/ import path for relocated code.
-        
+
         Args:
             import_statement: Original import statement
-            
+
         Returns:
             Suggested new import path
         """
@@ -144,27 +144,27 @@ class GravityLeakRepairAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixi
             if len(parts) >= 4:
                 module_path = parts[1]
                 imported_items = ' '.join(parts[3:])
-                
+
                 # Suggest utils path
                 if 'mixins' in module_path:
                     return f"from agentic_core.utils.core_extensions.subatomic_testing_mixin import {imported_items}"
                 else:
                     return f"from agentic_core.utils import {imported_items}"
-        
+
         return import_statement
-    
+
     def generate_fix_report(self, violations: List[Dict[str, Any]]) -> List[GravityFix]:
         """
         Generate fix recommendations for all violations.
-        
+
         Args:
             violations: List of gravity violations from UnifiedStructureEnforcerAgent
-            
+
         Returns:
             List of GravityFix recommendations
         """
         fixes = []
-        
+
         for violation in violations:
             fix = self.analyze_violation(
                 file_path=violation.get('file_path'),
@@ -173,9 +173,9 @@ class GravityLeakRepairAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixi
                 import_layer=violation.get('import_layer', '')
             )
             fixes.append(fix)
-        
+
         return fixes
-    
+
     def apply_fix(
         self,
         fix: GravityFix,
@@ -183,11 +183,11 @@ class GravityLeakRepairAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixi
     ) -> Dict[str, Any]:
         """
         Apply a gravity fix to a file.
-        
+
         Args:
             fix: GravityFix to apply
             dry_run: If True, only simulate the fix
-            
+
         Returns:
             Dict with fix results
         """
@@ -202,10 +202,10 @@ class GravityLeakRepairAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixi
             else:
                 # Read file
                 content = fix.file_path.read_text(encoding='utf-8')
-                
+
                 # Replace import
                 new_content = content.replace(fix.old_import, fix.new_import)
-                
+
                 # Write back
                 if new_content != content:
                     fix.file_path.write_text(new_content, encoding='utf-8')
@@ -214,11 +214,11 @@ class GravityLeakRepairAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixi
                 else:
                     self.logger.warning(f"[NO CHANGE] {fix.file_path.name}: Import not found")
                     return {"status": "no_change", "fix_type": fix.fix_type}
-                    
+
         except Exception as e:
             self.logger.error(f"Error applying fix to {fix.file_path}: {e}")
             return {"status": "error", "error": str(e)}
-    
+
     def heal_repository(
         self,
         dry_run: bool = True,
@@ -229,14 +229,14 @@ class GravityLeakRepairAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixi
     ) -> Dict[str, Any]:
         """
         Canon Key 51 compliance: Detect and fix gravity violations.
-        
+
         Args:
             dry_run: If True, only report violations without fixing
             execute: If True, attempt to fix violations
             depth: Current recursion depth
             max_depth: Maximum recursion depth
             _call_path: Internal call path tracking
-            
+
         Returns:
             Dictionary with healing summary
         """
@@ -244,9 +244,9 @@ class GravityLeakRepairAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixi
 
         if _call_path is None:
             _call_path = []
-        
+
         self.logger.info(f"[GravityLeakRepairAgent] Starting gravity leak repair (dry_run={dry_run})")
-        
+
         # Get violations from UnifiedStructureEnforcerAgent
         try:
             from agentic_core.L5_safety.unified.UnifiedStructureEnforcerAgent import UnifiedStructureEnforcerAgent
@@ -262,7 +262,7 @@ class GravityLeakRepairAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixi
                 "violations_found": 0,
                 "violations_fixed": 0
             }
-        
+
         if not violations:
             self.logger.info("No gravity violations found - nothing to repair!")
             return {
@@ -272,10 +272,10 @@ class GravityLeakRepairAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixi
                 "violations_fixed": 0,
                 "summary": "No gravity violations to repair"
             }
-        
+
         # Generate fix recommendations
         self.logger.info(f"Analyzing {len(violations)} gravity violations...")
-        
+
         # Group violations by fix type
         fix_summary = {
             'RELOCATE': 0,
@@ -283,9 +283,9 @@ class GravityLeakRepairAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixi
             'INJECT': 0,
             'REMOVE': 0
         }
-        
+
         fixes_applied = 0
-        
+
         for v in violations[:10]:  # Limit to first 10 for safety
             fix = self.analyze_violation(
                 file_path=v.file_path,
@@ -293,9 +293,9 @@ class GravityLeakRepairAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixi
                 file_layer=v.file_layer,
                 import_layer=v.import_layer
             )
-            
+
             fix_summary[fix.fix_type] += 1
-            
+
             # Apply fix if execute=True
             if execute and not dry_run:
                 result = self.apply_fix(fix, dry_run=False)
@@ -304,7 +304,7 @@ class GravityLeakRepairAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixi
             else:
                 # Just report
                 self.apply_fix(fix, dry_run=True)
-        
+
         # Report summary
         self.logger.info(f"\nGravity Leak Repair Summary:")
         self.logger.info(f"  Total violations: {len(violations)}")
@@ -314,7 +314,7 @@ class GravityLeakRepairAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixi
             if count > 0:
                 self.logger.info(f"    {fix_type}: {count}")
         self.logger.info(f"  Fixes applied: {fixes_applied}")
-        
+
         return {
             "agent": "GravityLeakRepairAgent",
             "violations_found": len(violations),

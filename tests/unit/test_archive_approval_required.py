@@ -38,11 +38,11 @@ def get_project_root() -> Path:
     import os
     if "PROJECT_ROOT" in os.environ:
         return Path(os.environ["PROJECT_ROOT"])
-    
+
     known_root = Path("C:/Git/Agentic-Workflow")
     if known_root.exists() and (known_root / "agentic_core").is_dir():
         return known_root
-    
+
     test_file = Path(__file__).resolve()
     return test_file.parent.parent.parent
 
@@ -90,16 +90,16 @@ class TestArchiveApprovalRequired:
             agent_path = project_root / rel_path
             if not agent_path.exists():
                 continue
-            
+
             content = agent_path.read_text(encoding="utf-8")
-            
+
             # Find approval method
             approval_match = re.search(
                 r"def _prompt_user_for_archive_approval\s*\([^)]*\)[^:]*:.*?(?=\n    def |\nclass |\Z)",
                 content,
                 re.DOTALL
             )
-            
+
             if approval_match:
                 method_body = approval_match.group(0)
                 assert "isatty" in method_body, (
@@ -112,16 +112,16 @@ class TestArchiveApprovalRequired:
             agent_path = project_root / rel_path
             if not agent_path.exists():
                 continue
-            
+
             content = agent_path.read_text(encoding="utf-8")
-            
+
             # Find approval method
             approval_match = re.search(
                 r"def _prompt_user_for_archive_approval\s*\([^)]*\)[^:]*:.*?(?=\n    def |\nclass |\Z)",
                 content,
                 re.DOTALL
             )
-            
+
             if approval_match:
                 method_body = approval_match.group(0)
                 assert "_skip_all_archives" in method_body, (

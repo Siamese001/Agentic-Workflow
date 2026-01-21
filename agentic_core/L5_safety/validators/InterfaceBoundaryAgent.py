@@ -9,8 +9,8 @@ from dataclasses import dataclass
 """
 INTERFACE BOUNDARY AGENT
 ------------------------
-L2 Execution Agent designed to enforce the boundary between L0 Infrastructure 
-and higher-level Orchestration. 
+L2 Execution Agent designed to enforce the boundary between L0 Infrastructure
+and higher-level Orchestration.
 
 Mechanism:
 1. Analyzes L0 maintenance scripts for complexity (Methods > 15 or LOC > 200).
@@ -58,17 +58,17 @@ class InterfaceBoundaryAgent(MCPHardenedMixin):
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
-        
+
         Args:
             dry_run: If True, only report violations without fixing
             execute: If True, apply fixes
-        
+
         Returns:
             Dict with healing summary
         """
         super().heal_repository()
 
-        return {"violations": 0, "fixed": 0, "errors": 0}
+        return {"violations_found": 0, "violations_fixed": 0, "errors": 0}
 
     def __init__(self, root_dir: str = ".", complexity_threshold: int = 15) -> None:
         """Initialize the instance."""
@@ -108,7 +108,7 @@ class InterfaceBoundaryAgent(MCPHardenedMixin):
         """Creates a proposed abstract base class for a 'Heavy' L0 utility."""
         source_path = Path(violation['file'])
         interface_name = f"I{source_path.stem}"
-        
+
         content = [
             f'from abc import ABC, abstractmethod',
             f'',

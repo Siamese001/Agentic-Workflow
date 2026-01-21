@@ -50,32 +50,32 @@ from agentic_core.L5_safety.validators.decorators import standard_heal
 class L5Agent(HealerMixin, MCPHardenedMixin):
     """
     Consolidated base for L5 Safety agents.
-    
+
     Guaranteed Capabilities:
     - heal_repository(): Self-repair method
     - _hardened_call(): MCP operations with retry/timeout
     - _run_self_tests(): Self-testing for safety validation
-    
+
     L5 Table Decision:
     - Basic Self-Testing: YES (validation checks)
     - Delegation to TestSovereigntyAgent: NO (L5 IS the validator)
     """
     name: str = "L5Agent"
     layer: str = "L5"
-    
+
     @standard_heal
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, **kwargs) -> HealResult:
         """Override in subclass to implement healing logic."""
         super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, **kwargs)
         return self._normalize_result({"status": "SKIPPED", "agent": self.name, "violations_found": 0, "violations_fixed": 0})
-    
+
     def _run_self_tests(self) -> Dict[str, Any]:
         """Override in subclass to implement self-tests."""
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository()
 
         return {"status": "not_implemented", TESTS_DIR: 0}
-    
+
     def validate(self, target: Any) -> Dict[str, Any]:
         """Override in subclass to implement validation logic."""
         raise NotImplementedError(f"{self.name} must implement validate()")

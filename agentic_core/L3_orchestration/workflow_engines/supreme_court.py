@@ -22,7 +22,7 @@ class SupremeCourt:
     async def deliberate(self, CONTEXT: str, GOAL: str, risk_level: str) -> ConsensusVerdict:
         """Reaches a Verdict on whether the proposed plan is legal."""
         logging.info(f"Supreme Court: Deliberating on {risk_level} risk mission...")
-        
+
         # In a real run, this would compare outputs from 2-3 different models.
         return ConsensusVerdict(
             reasoning="Plan aligns with safety guardrails and budget.",

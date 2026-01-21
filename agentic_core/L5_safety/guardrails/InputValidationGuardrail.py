@@ -40,7 +40,7 @@ class InputValidationGuardrail(HealerMixin):
     async def validate(self, input_text: str, context: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """Validate input against enabled rules."""
         logger.info(f"[{self.name}] Validating input")
-        
+
         result = {
             "valid": True,
             "violations": [],
@@ -51,7 +51,7 @@ class InputValidationGuardrail(HealerMixin):
             for rule in self.enabled_rules:
                 rule_result = await self._apply_rule(rule, input_text, context)
                 result["rules_applied"].append(rule)
-                
+
                 if not rule_result.get("valid"):
                     result["valid"] = False
                     result["violations"].extend(rule_result.get("violations", []))
@@ -85,7 +85,7 @@ class InputValidationGuardrail(HealerMixin):
     def _detect_pii(self, text: str) -> Dict[str, Any]:
         """Detect personally identifiable information."""
         violations = []
-        
+
         # Email pattern
         if re.search(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', text):
             violations.append({
@@ -93,7 +93,7 @@ class InputValidationGuardrail(HealerMixin):
                 "severity": "high",
                 "message": "Email address detected in input",
             })
-        
+
         # Phone pattern
         if re.search(r'\b\d{3}[-.]?\d{3}[-.]?\d{4}\b', text):
             violations.append({
@@ -101,7 +101,7 @@ class InputValidationGuardrail(HealerMixin):
                 "severity": "high",
                 "message": "Phone number detected in input",
             })
-        
+
         # SSN pattern
         if re.search(r'\b\d{3}-\d{2}-\d{4}\b', text):
             violations.append({
@@ -193,4 +193,4 @@ class InputValidationGuardrail(HealerMixin):
     def heal_repository(self, dry_run: bool = True, **kwargs) -> Dict[str, Any]:
         """Repository healing with parent chain invocation."""
         result = super().heal_repository(dry_run=dry_run, **kwargs)
-        return {"healed": 0, "skipped": 0, "parent": result}
+        return {"violations_fixed": 0, "skipped": 0, "parent": result}

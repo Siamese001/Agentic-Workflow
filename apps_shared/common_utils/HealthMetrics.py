@@ -32,6 +32,3 @@ def count_failures_by_code(events: List[Dict[str, object]]) -> Dict[str, int]:
         code = str(evt.get("error_code") or "unknown")
         counts[code] = counts.get(code, 0) + 1
     return counts
-
-
-

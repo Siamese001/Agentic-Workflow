@@ -30,16 +30,16 @@ Logger: Any = logging.getLogger(__name__)
 async def run_l5_outreach_orchestrator(campaign_id: str, Archetype: str='RECRUITER', max_cycles: int=5, quality_threshold: float=0.75, enable_intervention: bool=True) -> Any:
     """
     Run L5+ autonomous outreach orchestrator.
-    
+
     This is a thin wrapper that delegates to the consolidated orchestrator.
-    
+
     Args:
         campaign_id: Campaign identifier
         Archetype: Campaign Archetype
         max_cycles: Maximum cycles
         quality_threshold: Quality threshold
         enable_intervention: Enable human intervention
-        
+
     Returns:
         Workflow execution results
     """

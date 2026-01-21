@@ -41,17 +41,17 @@ Logger = logging.getLogger(__name__)
 class CanonBaseAgent(HealerMixin):
     """
     Base class for all Canon validation agents.
-    
+
     Provides shared infrastructure for validation including:
         - Verification registry with check functions for all Canon keys.
         - File hashing for cache invalidation.
         - Redis caching for validation results.
         - LLM-based smart fix capabilities with retry logic.
-    
+
     Class Attributes:
         VERIFICATION_REGISTRY: Dict mapping Canon keys to check functions.
         _registry_built: Flag indicating if registry has been initialized.
-    
+
     Instance Attributes:
         ctx: ValidationContext for file access and reporting.
         name: Agent name for logging and reporting.
@@ -64,10 +64,10 @@ class CanonBaseAgent(HealerMixin):
     def _init_registry(cls, ctx: ValidationProtocol) -> None:
         """
         Build the verification registry once.
-        
+
         Initializes VERIFICATION_REGISTRY with check functions for all Canon keys.
         Uses dynamic import for L2 StructuralEngineerAgent to avoid gravity violation.
-        
+
         Args:
             ctx: ValidationContext for agent initialization.
         """
@@ -80,7 +80,7 @@ class CanonBaseAgent(HealerMixin):
         # ARCHIVED: BudgetAgent import removed
         # ARCHIVED: TypeMechanicAgent import removed
         from agentic_core.canon_agents_syntax import CodeJanitor, DependencySentinelAgent
-        
+
         # GRAVITY FIXED (Intra-Core): Dynamic import for L2 dependency
         import importlib
         _struct_mod = importlib.import_module('agentic_core.L2_execution.ToolRegistry.StructuralEngineerAgent')
@@ -106,7 +106,7 @@ class CanonBaseAgent(HealerMixin):
     ) -> None:
         """
         Initialize the Canon base agent.
-        
+
         Args:
             context: ValidationContext for file access and reporting.
             name: Agent name (defaults to class name).
@@ -119,7 +119,7 @@ class CanonBaseAgent(HealerMixin):
     def can_run(self) -> bool:
         """
         Check if agent can run.
-        
+
         Returns:
             True unless CRITICAL_FAIL signal is present in context.
         """
@@ -128,10 +128,10 @@ class CanonBaseAgent(HealerMixin):
     def get_file_hash(self, file_path: str) -> str:
         """
         Calculate SHA-256 hash of a file.
-        
+
         Args:
             file_path: Path to file to hash.
-            
+
         Returns:
             Hex digest of SHA-256 hash, or empty string on error.
         """
@@ -145,11 +145,11 @@ class CanonBaseAgent(HealerMixin):
     def check_cache(self, file_path: str, key: int) -> Optional[Dict[str, Any]]:
         """
         Check Redis cache for validation result.
-        
+
         Args:
             file_path: Path to file being validated.
             key: Canon key number.
-            
+
         Returns:
             Cached result dict or None if not cached.
         """
@@ -162,7 +162,7 @@ class CanonBaseAgent(HealerMixin):
     def store_cache(self, file_path: str, key: int, result: Dict[str, Any]) -> None:
         """
         Store validation result in Redis cache.
-        
+
         Args:
             file_path: Path to file being validated.
             key: Canon key number.
@@ -218,14 +218,14 @@ class CanonBaseAgent(HealerMixin):
 
     async def smart_fix(self, file_path: str, violation_key: int) -> bool:
         """Trigger LLM-based fix for a specific violation.
-        
+
         Uses resilient mutation with retry logic to fix violations.
         Records healing attempts and stores successful patterns.
-        
+
         Args:
             file_path: Path to file with violation.
             violation_key: Canon key number of the violation.
-            
+
         Returns:
             True if fix was successful, False otherwise.
         """
@@ -235,7 +235,7 @@ class CanonBaseAgent(HealerMixin):
         if not self.ctx.can_attempt_healing(file_path):
             Logger.debug(f'Cannot attempt healing for {file_path}.')
             return False
-        
+
         self.__class__._init_registry(self.ctx)
         check_func = self.VERIFICATION_REGISTRY.get(violation_key)
         if not check_func:
@@ -245,39 +245,39 @@ class CanonBaseAgent(HealerMixin):
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 original_code = f.read()
-            
+
             res = await self._run_check_func(check_func)
             violation_details = self._get_violation_details(res, file_path)
             violation_desc = f'{self.name} Key {violation_key} Violation in {file_path}'
             reference_fix = self._get_reference_fix(violation_desc)
-            
+
             max_rounds = int(os.getenv('MAX_HEALING_ROUNDS', '5'))
             current_code = original_code
             previous_failure: Optional[str] = None
 
             for round_num in range(1, max_rounds + 1):
                 print(f'      [Round {round_num}/{max_rounds}] Healing Key {violation_key} → {os.path.basename(file_path)}', flush=True)
-                
+
                 task = self._build_task(violation_key, file_path, violation_details, reference_fix)
                 fixed_code = await self.ctx.resilient_mutation(
                     agent_name=self.name, Task=task, code=current_code,
                     file_path=file_path, round_num=round_num, previous_failure=previous_failure
                 )
-                
+
                 if fixed_code == current_code:
                     print(f'      [!] No changes made in Round {round_num}', flush=True)
                     previous_failure = 'No changes were made to the code.'
                     continue
-                
+
                 with open(file_path, 'w', encoding='utf-8') as f:
                     f.write(fixed_code)
-                
+
                 res = await self._run_check_func(check_func)
                 if res[0]:
                     print(f'      [OK] Healing successful in Round {round_num}', flush=True)
                     self._record_success(file_path, violation_key, violation_desc, fixed_code)
                     return True
-                
+
                 relevant = [d for d in res[1] if str(d).startswith(file_path)]
                 previous_failure = ('Fix attempt failed. Remaining violations:\n' + '\n'.join(map(str, relevant[:3]))
                                    if relevant else 'Fix attempt did not resolve the Violation.')
@@ -297,9 +297,9 @@ class CanonBaseAgent(HealerMixin):
     def execute(self) -> None:
         """
         Execute validation checks.
-        
+
         Must be overridden in subclass to implement specific checks.
-        
+
         Raises:
             NotImplementedError: Always, as this is abstract.
         """
@@ -316,14 +316,14 @@ class CanonBaseAgent(HealerMixin):
     ) -> Dict[str, int]:
         """
         Execute L1 cognition healing operations.
-        
+
         Args:
             dry_run: If True, only report violations without fixing.
             execute: If True, apply fixes.
             depth: Current recursion depth for cycle detection.
             max_depth: Maximum allowed recursion depth.
             _call_path: Set of agent names already in call chain.
-            
+
         Returns:
             Dict with keys: violations, fixed, errors, skipped.
         """

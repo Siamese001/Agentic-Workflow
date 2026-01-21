@@ -33,12 +33,12 @@ def get_layer(path: Path) -> str:
     """Extract layer from path."""
     rel = str(path.relative_to(PROJECT_ROOT))
     parts = rel.replace('\\', '/').split('/')
-    
+
     # Check root folder first
     if parts[0] == APPS_LIC_DIR: return APPS_LIC_DIR
     if parts[0] == APPS_RG_DIR: return APPS_RG_DIR
     if parts[0] == APPS_SHARED_DIR: return APPS_SHARED_DIR
-    
+
     # Check agentic_core subfolders
     if parts[0] == AGENTIC_CORE_DIR and len(parts) > 1:
         for part in parts[1:]:
@@ -52,7 +52,7 @@ def get_layer(path: Path) -> str:
         subfolder = parts[1]
         if subfolder in ['config', 'utils', 'observability', 'schemas', 'runtime', 'prompt_governance']:
             return subfolder
-    
+
     return 'other'
 
 def find_test_file(agent_path: Path, agent_class: str) -> bool:
@@ -60,17 +60,17 @@ def find_test_file(agent_path: Path, agent_class: str) -> bool:
     tests_dir = PROJECT_ROOT / TESTS_DIR
     if not tests_dir.exists():
         return False
-    
+
     # Check for test_<filename>.py or test_<classname>.py
     agent_name = agent_path.stem
     class_snake = ''.join(['_' + c.lower() if c.isupper() else c for c in agent_class]).lstrip('_')
-    
+
     patterns = [
         f"test_{agent_name}.py",
         f"test_{class_snake}.py",
         f"test_{agent_name.lower()}.py",
     ]
-    
+
     # Phase 6.7: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_python_files
     for test_file in [f for f in get_python_files(tests_dir) if f.name.startswith('test_')]:
@@ -83,12 +83,12 @@ def find_test_file(agent_path: Path, agent_class: str) -> bool:
                 return True
         except:
             pass
-    
+
     return False
 
 # Name suffixes that indicate an agent (not a mixin/base)
-AGENT_SUFFIXES = {'Agent', 'Handler', 'Manager', 'Controller', 'Executor', 'Validator', 
-                  'Orchestrator', 'Router', 'Dispatcher', 'Governor', 'Enforcer', 
+AGENT_SUFFIXES = {'Agent', 'Handler', 'Manager', 'Controller', 'Executor', 'Validator',
+                  'Orchestrator', 'Router', 'Dispatcher', 'Governor', 'Enforcer',
                   'Analyzer', 'Mapper', 'Loader', 'Provider', 'Engine', 'Plane',
                   'Shield', 'Guard', 'Sentinel', 'Monitor', 'Observer', 'Historian'}
 
@@ -107,16 +107,16 @@ def analyze_file(path: Path) -> list:
         tree = ast.parse(content)
     except:
         return agents
-    
+
     for node in ast.walk(tree):
         if isinstance(node, ast.ClassDef):
             # Skip pure base/mixin classes
             if any(p in node.name for p in EXCLUDE_PATTERNS):
                 continue
-            
+
             # Check if it's an agent by name suffixes
             name_match = any(node.name.endswith(s) for s in AGENT_SUFFIXES)
-            
+
             # Check base classes
             bases = set()
             for base in node.bases:
@@ -124,13 +124,13 @@ def analyze_file(path: Path) -> list:
                     bases.add(base.id)
                 elif isinstance(base, ast.Attribute):
                     bases.add(base.attr)
-            
+
             base_match = bool(bases & AGENT_BASE_CLASSES)
-            
+
             is_agent = name_match or base_match
             if not is_agent:
                 continue
-            
+
             # Get all base class names
             bases = set()
             for base in node.bases:
@@ -138,13 +138,13 @@ def analyze_file(path: Path) -> list:
                     bases.add(base.id)
                 elif isinstance(base, ast.Attribute):
                     bases.add(base.attr)
-            
+
             # Check for healing mixin
             has_healing = bool(bases & HEALER_MIXINS)
-            
+
             # Check for MCP mixin
             has_mcp = bool(bases & MCP_MIXINS)
-            
+
             # Also check method names and decorators for healing/MCP patterns
             for item in node.body:
                 if isinstance(item, ast.FunctionDef):
@@ -152,7 +152,7 @@ def analyze_file(path: Path) -> list:
                         has_healing = True
                     if 'mcp' in item.name.lower() or 'hardened' in item.name.lower():
                         has_mcp = True
-            
+
             # Check imports at file level for mixin usage
             for n in ast.walk(tree):
                 if isinstance(n, ast.ImportFrom):
@@ -164,10 +164,10 @@ def analyze_file(path: Path) -> list:
                         for alias in n.names:
                             if alias.name in MCP_MIXINS:
                                 has_mcp = True
-            
+
             # Check for testing
             has_testing = find_test_file(path, node.name)
-            
+
             agents.append({
                 'class': node.name,
                 'path': path,
@@ -177,12 +177,12 @@ def analyze_file(path: Path) -> list:
                 'has_testing': has_testing,
                 'bases': list(bases),
             })
-    
+
     return agents
 
 def main():
     stats = defaultdict(lambda: {'count': 0, 'healing': 0, 'mcp': 0, 'testing': 0})
-    
+
     # Directories to scan
     scan_dirs = [
         PROJECT_ROOT / AGENTIC_CORE_DIR,
@@ -190,14 +190,14 @@ def main():
         PROJECT_ROOT / APPS_RG_DIR,
         PROJECT_ROOT / APPS_SHARED_DIR,
     ]
-    
+
     # Phase 6.7: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_python_files
     for scan_dir in scan_dirs:
         if not scan_dir.exists():
             continue
         for py_file in get_python_files(scan_dir):
-            
+
             for agent in analyze_file(py_file):
                 layer = agent['layer']
                 stats[layer]['count'] += 1
@@ -207,35 +207,35 @@ def main():
                     stats[layer]['mcp'] += 1
                 if agent['has_testing']:
                     stats[layer]['testing'] += 1
-    
+
     # Define row order
     all_layers = ['L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'config', 'utils', 'observability', 'schemas', 'runtime', 'prompt_governance', APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, 'other']
-    
+
     print("| Layer | Agents | Testing% | Healing% | MCP% |")
     print("|-------|--------|----------|----------|------|")
-    
+
     total_count = 0
     total_healing = 0
     total_mcp = 0
     total_testing = 0
-    
+
     for layer in all_layers:
         s = stats[layer]
         count = s['count']
         if count == 0:
             continue  # Skip empty layers
-        
+
         total_count += count
         total_healing += s['healing']
         total_mcp += s['mcp']
         total_testing += s['testing']
-        
+
         testing_pct = s['testing'] * 100 // count
         healing_pct = s['healing'] * 100 // count
         mcp_pct = s['mcp'] * 100 // count
-        
+
         print(f"| {layer} | {count} | {testing_pct}% | {healing_pct}% | {mcp_pct}% |")
-    
+
     # Total row
     print("|-------|--------|----------|----------|------|")
     if total_count > 0:

@@ -48,29 +48,29 @@ def has_tests(path, content):
 def add_test_to_file(filepath: Path, class_name: str) -> bool:
     """Add _run_self_tests to a class in a file."""
     content = filepath.read_text(encoding="utf-8", errors="ignore")
-    
+
     if "_run_self_tests" in content:
         return False
-    
+
     # Find the class definition
     class_pattern = rf"^(class {re.escape(class_name)}\([^)]*\):)"
     match = re.search(class_pattern, content, re.MULTILINE)
     if not match:
         return False
-    
+
     # Get indentation
     class_line_start = content.rfind("\n", 0, match.start()) + 1
     class_line = content[class_line_start:match.end()]
     base_indent = len(class_line) - len(class_line.lstrip())
     method_indent = " " * (base_indent + 4)
-    
+
     # Prepare test method with proper indentation
     test_lines = TEST_METHOD.strip().split("\n")
     indented_test = "\n".join(
         method_indent + line.strip() if line.strip() else ""
         for line in test_lines
     )
-    
+
     # Find end of class - look for next class def or end of file
     class_end = match.end()
     next_class = re.search(r"\n(?=class \w)", content[class_end:])
@@ -78,7 +78,7 @@ def add_test_to_file(filepath: Path, class_name: str) -> bool:
         insert_pos = class_end + next_class.start()
     else:
         insert_pos = len(content)
-    
+
     # Insert the test method
     new_content = content[:insert_pos] + "\n" + indented_test + "\n" + content[insert_pos:]
     filepath.write_text(new_content, encoding="utf-8")
@@ -89,30 +89,30 @@ def main():
     agents = json.load(open(AGENT_DISCOVERY_JSON))
     files_processed = set()
     added = 0
-    
+
     for a in agents:
         p = Path(a["path"])
         if not p.exists():
             continue
-        
+
         content = p.read_text(encoding="utf-8", errors="ignore")
         if has_tests(p, content):
             continue
-        
+
         class_name = a["class_name"]
         key = f"{p}:{class_name}"
         if key in files_processed:
             continue
         files_processed.add(key)
-        
+
         if add_test_to_file(p, class_name):
             added += 1
             print(f"[ADDED] {class_name} in {p.name}")
         else:
             print(f"[SKIP] {class_name} in {p.name}")
-    
+
     print(f"\nTotal added: {added}")
-    
+
     # Verify
     missing = 0
     for a in agents:
@@ -200,12 +200,12 @@ MISSING_TESTS = [
 TEST_METHOD_TEMPLATE = '''
     def _run_self_tests(self) -> dict:
         """Run internal self-tests for this agent.
-        
+
         Returns:
             dict: Test results with 'passed', 'failed', 'skipped' counts.
         """
         results = {"passed": 0, "failed": 0, "skipped": 0, TESTS_DIR: []}
-        
+
         # Test 1: Verify class instantiation
         try:
             assert self is not None, "Instance should exist"
@@ -214,7 +214,7 @@ TEST_METHOD_TEMPLATE = '''
         except AssertionError as e:
             results["failed"] += 1
             results[TESTS_DIR].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
-        
+
         # Test 2: Verify class has expected attributes
         try:
             assert hasattr(self, "__class__"), "Should have __class__ attribute"
@@ -223,7 +223,7 @@ TEST_METHOD_TEMPLATE = '''
         except AssertionError as e:
             results["failed"] += 1
             results[TESTS_DIR].append({"name": "test_has_class", "status": "failed", "error": str(e)})
-        
+
         return results
 '''
 
@@ -233,7 +233,7 @@ def find_class_end(content: str, class_name: str) -> tuple[int, int]:
         tree = ast.parse(content)
     except SyntaxError:
         return -1, -1
-    
+
     for node in ast.walk(tree):
         if isinstance(node, ast.ClassDef) and node.name == class_name:
             # Find the last line of the class
@@ -247,32 +247,32 @@ def add_test_method_to_class(filepath: Path, class_name: str) -> bool:
     if not filepath.exists():
         print(f"  [SKIP] File not found: {filepath}")
         return False
-    
+
     content = filepath.read_text(encoding='utf-8', errors='ignore')
-    
+
     # Check if already has test method
     if '_run_self_tests' in content:
         print(f"  [SKIP] {class_name} already has _run_self_tests")
         return False
-    
+
     # Find the class
     start_line, end_line = find_class_end(content, class_name)
     if start_line == -1:
         print(f"  [SKIP] Class {class_name} not found in {filepath}")
         return False
-    
+
     # Insert test method at end of class
     lines = content.split('\n')
-    
+
     # Find proper indentation from the class
     class_line = lines[start_line - 1]
     base_indent = len(class_line) - len(class_line.lstrip())
     method_indent = base_indent + 4
-    
+
     # Prepare the test method with proper indentation
     test_method = TEST_METHOD_TEMPLATE.replace('\n    ', '\n' + ' ' * method_indent)
     test_method = test_method.strip()
-    
+
     # Insert before the last line of the class
     insert_pos = end_line
     lines.insert(insert_pos, '')
@@ -282,7 +282,7 @@ def add_test_method_to_class(filepath: Path, class_name: str) -> bool:
             lines.insert(insert_pos + i, ' ' * method_indent + line.strip())
         else:
             lines.insert(insert_pos + i, '')
-    
+
     # Write back
     filepath.write_text('\n'.join(lines), encoding='utf-8')
     print(f"  [ADDED] _run_self_tests to {class_name}")
@@ -293,11 +293,11 @@ def main():
     """Add test coverage to all agents missing tests."""
     print("Adding test coverage to agents...")
     print("=" * 60)
-    
+
     added = 0
     skipped = 0
     failed = 0
-    
+
     # Group by file to avoid multiple writes
     files_to_update = {}
     for agent in MISSING_TESTS:
@@ -305,7 +305,7 @@ def main():
         if path not in files_to_update:
             files_to_update[path] = []
         files_to_update[path].append(agent['class'])
-    
+
     for path, classes in files_to_update.items():
         filepath = Path(path)
         print(f"\nProcessing: {path}")
@@ -314,7 +314,7 @@ def main():
                 added += 1
             else:
                 skipped += 1
-    
+
     print("\n" + "=" * 60)
     print(f"Summary: Added={added}, Skipped={skipped}, Failed={failed}")
 

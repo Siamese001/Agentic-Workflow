@@ -49,7 +49,7 @@ class ResourceThreshold:
 class ProactiveResourceManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     Manages healing resources proactively to prevent exhaustion.
-    
+
     Features:
     - Real-time resource monitoring
     - Predictive budget allocation
@@ -91,7 +91,7 @@ class ProactiveResourceManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
     def can_attempt_healing(self, file_path: str, violation_key: int) -> Tuple[bool, str]:
         """
         Check if healing can be attempted for a file.
-        
+
         Args:
             file_path: Path to file
             violation_key: Canon key
@@ -102,12 +102,12 @@ class ProactiveResourceManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
         budget_check = self._check_budget_constraints(file_path)
         if not budget_check[0]:
             return budget_check
-        
+
         # Check priority and success rate
         priority_check = self._check_priority_and_success_rate(violation_key)
         if not priority_check[0]:
             return priority_check
-        
+
         return (True, 'OK')
 
     def _check_budget_constraints(self, file_path: str) -> Tuple[bool, str]:
@@ -120,7 +120,7 @@ class ProactiveResourceManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
         if self.active_healings >= self.thresholds.max_concurrent_heals:
             return (False, f'Max concurrent healings reached ({self.active_healings}/{self.thresholds.max_concurrent_heals})')
         return (True, 'OK')
-    
+
     def _check_priority_and_success_rate(self, violation_key: int) -> Tuple[bool, str]:
         """Check priority and success rate constraints."""
         budget_utilization: Any = self.global_healing_count / self.thresholds.global_healing_budget
@@ -137,7 +137,7 @@ class ProactiveResourceManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
     def record_healing_attempt(self, file_path: str, violation_key: int, success: bool, rounds_taken: int) -> Any:
         """
         Record a healing attempt.
-        
+
         Args:
             file_path: Path to healed file
             violation_key: Canon key
@@ -196,11 +196,11 @@ class ProactiveResourceManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
     def get_priority_score(self, file_path: str, violation_key: int) -> float:
         """
         Calculate priority score for a healing Task.
-        
+
         Args:
             file_path: Path to file
             violation_key: Canon key
-            
+
         Returns:
             Priority score (higher = more important)
         """
@@ -216,7 +216,7 @@ class ProactiveResourceManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
     def add_to_queue(self, file_path: str, violation_key: int, violation_details: str) -> Any:
         """
         Add a healing Task to the priority queue.
-        
+
         Args:
             file_path: Path to file
             violation_key: Canon key

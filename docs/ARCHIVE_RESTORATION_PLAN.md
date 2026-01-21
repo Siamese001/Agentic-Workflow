@@ -1,6 +1,6 @@
 # Archive Restoration Plan
 
-**Generated:** 2026-01-20  
+**Generated:** 2026-01-20
 **Status:** Ready for review
 
 ---

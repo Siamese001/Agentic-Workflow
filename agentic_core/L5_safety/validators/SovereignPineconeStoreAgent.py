@@ -47,7 +47,7 @@ class SovereignPineconeStoreAgent(HealerMixin, MCPHardenedMixin):
     """
     ADAPTER: Legacy Interface -> New MCP Client.
     Maintains backward compatibility for 'add_texts' and 'similarity_search'.
-    
+
     Phase 13C: All operations now flow through L3 MCP Router with L5 shielding.
     """
 
@@ -122,7 +122,7 @@ class SovereignPineconeStoreAgent(HealerMixin, MCPHardenedMixin):
     async def upsert_file_vector(self, file_path: Path, territory_hint: Optional[str]=None) -> Any:
         """
         Upsert single file — used during healing.
-        
+
         Args:
             file_path: Path to file
             territory_hint: Optional territory classification
@@ -144,11 +144,11 @@ class SovereignPineconeStoreAgent(HealerMixin, MCPHardenedMixin):
     async def semantic_search(self, query: str, top_k: int=5) -> List[Dict]:
         """
         Runtime retrieval for agents needing to 'find' logic.
-        
+
         Args:
             query: Search query text
             top_k: Number of results to return
-            
+
         Returns:
             List of search results with metadata
         """
@@ -164,11 +164,11 @@ class SovereignPineconeStoreAgent(HealerMixin, MCPHardenedMixin):
     async def hybrid_search(self, query: str, top_k: int=5) -> List[Dict]:
         """
         Eternal precision: Combined Vector + Keyword search.
-        
+
         Args:
             query: Search query
             top_k: Number of results
-            
+
         Returns:
             Search results
         """
@@ -184,10 +184,10 @@ class SovereignPineconeStoreAgent(HealerMixin, MCPHardenedMixin):
     def purge_ghost_vector(self, file_path: Path) -> Any:
         """
         Surgical strike to remove stale vector data.
-        
+
         Note: Delete operations not directly supported via MCP.
         This is a no-op for compatibility.
-        
+
         Args:
             file_path: Path to file
         """
@@ -196,7 +196,7 @@ class SovereignPineconeStoreAgent(HealerMixin, MCPHardenedMixin):
     async def health_check(self) -> Dict:
         """
         Enhanced health check with sample quality assessment.
-        
+
         Returns:
             Health status dictionary
         """
@@ -212,7 +212,7 @@ class SovereignPineconeStoreAgent(HealerMixin, MCPHardenedMixin):
         """
         Health check for the validator loop.
         Reports index status and vector count with quality metrics.
-        
+
         Args:
             ctx: Optional validation context
         """

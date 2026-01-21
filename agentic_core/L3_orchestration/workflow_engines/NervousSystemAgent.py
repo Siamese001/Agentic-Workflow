@@ -206,11 +206,11 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
         expired = [l for l, info in self.coverage_bias_state.items() if info["remaining_cycles"] <= 0]
         for l in expired:
             del self.coverage_bias_state[l]
-        
+
         # Decrement active and apply dynamic decay
         for layer, info in list(self.coverage_bias_state.items()):
             info["remaining_cycles"] = max(0, info["remaining_cycles"] - 1)
-            
+
             # Dynamic decay: Reduce weight if proportion healthy
             try:
                 from agentic_core.L6_observability.metrics.CoverageAgent import CoverageAgent
@@ -494,12 +494,12 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
         """
         GOLD STANDARD: Post-phase validation using domain-specific agents.
         Validates location, hierarchy, and import compliance after phase completion.
-        
+
         Args:
             phase_name: Name of the completed phase
             affected_paths: List of file paths affected by the phase
             dry_run: If True, only preview without applying fixes
-            
+
         Returns:
             Dict with validation results from all integrated agents
         """
@@ -518,7 +518,7 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
 
         try:
             valid_files = [p for p in affected_paths if p.suffix == ".py" and p.exists()]
-            
+
             # LocationAgent validation
             if self.location_agent and valid_files:
                 location_violations = []
@@ -585,12 +585,12 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
         """
         GOLD STANDARD: Cleanup violations using integrated domain agents.
         Prioritizes healing based on violation severity and type.
-        
+
         Args:
             violations: List of PhaseViolation objects
             dry_run: If True, only preview actions
             max_actions: Maximum cleanup actions per run
-            
+
         Returns:
             List of action dicts with results and batch summary
         """
@@ -665,11 +665,11 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
         """
         GOLD STANDARD: Full orchestration with autonomous cleanup.
         Runs all phases, validates, and cleans up violations.
-        
+
         Args:
             files: Optional list of files to process
             dry_run: If True, only preview cleanup actions
-            
+
         Returns:
             Dict with comprehensive execution and cleanup summaries
         """
@@ -680,7 +680,7 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
         # Run post-phase validation for all phases
         for phase_name in self.phases.keys():
             validation_report = self.post_phase_validation(phase_name, affected_paths, dry_run=dry_run)
-            
+
             # Convert validation issues to PhaseViolation objects
             for loc_viol in validation_report.get("location_validation", {}).get("violations", []):
                 all_violations.append(PhaseViolation(

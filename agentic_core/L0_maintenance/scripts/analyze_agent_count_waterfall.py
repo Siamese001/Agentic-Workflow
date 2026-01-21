@@ -34,7 +34,7 @@ def get_commit_history():
         text=True,
         cwd="C:/Git/Agentic-Workflow"
     )
-    
+
     commits = []
     for line in result.stdout.strip().split('\n'):
         if '|' in line:
@@ -51,14 +51,14 @@ def main():
     print("=" * 80)
     print("AGENT COUNT WATERFALL ANALYSIS")
     print("=" * 80)
-    
+
     commits = get_commit_history()
     print(f"\nFound {len(commits)} commits touching agent_discovery_full.json\n")
-    
+
     # Get counts for each commit
     waterfall = []
     prev_count = None
-    
+
     for i, commit in enumerate(reversed(commits)):  # Oldest first
         count = get_agent_count_at_commit(commit['hash'])
         if count is not None:
@@ -69,75 +69,75 @@ def main():
                 'delta': delta
             })
             prev_count = count
-        
+
         # Progress indicator
         if (i + 1) % 20 == 0:
             print(f"  Processed {i + 1}/{len(commits)} commits...")
-    
+
     # Find significant changes (delta >= 10 or <= -10)
     print("\n" + "=" * 80)
     print("SIGNIFICANT CHANGES (|delta| >= 10)")
     print("=" * 80)
     print(f"{'Date':<12} {'Count':>6} {'Delta':>7}  {'Commit':<10} Message")
     print("-" * 80)
-    
+
     for entry in waterfall:
         if abs(entry['delta']) >= 10:
             delta_str = f"+{entry['delta']}" if entry['delta'] > 0 else str(entry['delta'])
             print(f"{entry['date']:<12} {entry['count']:>6} {delta_str:>7}  {entry['hash']:<10} {entry['message']}")
-    
+
     # Build waterfall summary by date
     print("\n" + "=" * 80)
     print("DAILY WATERFALL SUMMARY")
     print("=" * 80)
-    
+
     daily = defaultdict(list)
     for entry in waterfall:
         daily[entry['date']].append(entry)
-    
+
     print(f"{'Date':<12} {'Start':>6} {'End':>6} {'Net':>7}  Key Events")
     print("-" * 80)
-    
+
     for date in sorted(daily.keys()):
         entries = daily[date]
         start_count = entries[0]['count'] - entries[0]['delta']
         end_count = entries[-1]['count']
         net = end_count - start_count
         net_str = f"+{net}" if net > 0 else str(net)
-        
+
         # Find most significant change
         max_delta_entry = max(entries, key=lambda x: abs(x['delta']))
         key_event = max_delta_entry['message'][:40] if abs(max_delta_entry['delta']) >= 5 else ""
-        
+
         print(f"{date:<12} {start_count:>6} {end_count:>6} {net_str:>7}  {key_event}")
-    
+
     # Final summary
     print("\n" + "=" * 80)
     print("WATERFALL SUMMARY")
     print("=" * 80)
-    
+
     if waterfall:
         first = waterfall[0]
         last = waterfall[-1]
-        
+
         print(f"First recorded count: {first['count']} agents ({first['date']})")
         print(f"Current count:        {last['count']} agents ({last['date']})")
         print(f"Total change:         {last['count'] - first['count']} agents")
-        
+
         # Find peak
         peak = max(waterfall, key=lambda x: x['count'])
         print(f"\nPeak count:           {peak['count']} agents ({peak['date']})")
         print(f"  Commit: {peak['hash']} - {peak['message']}")
-        
+
         # Find major drops
         print("\n" + "-" * 80)
         print("MAJOR REDUCTION EVENTS (delta <= -20)")
         print("-" * 80)
-        
+
         for entry in waterfall:
             if entry['delta'] <= -20:
                 print(f"  {entry['date']} | {entry['delta']:>4} | {entry['hash']} | {entry['message']}")
-    
+
     return 0
 
 if __name__ == "__main__":

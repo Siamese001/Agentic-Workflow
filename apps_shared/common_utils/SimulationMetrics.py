@@ -18,9 +18,3 @@ def test_compute_collaboration_score_and_conflict_index() -> None:
 
     assert isinstance(collab, float)
     assert isinstance(conflict, float)
-
-
-
-
-
-

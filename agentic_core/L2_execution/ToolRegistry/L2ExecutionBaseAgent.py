@@ -77,16 +77,16 @@ def get_subatomic_engine(gemini_client: Any) -> Any:
 @dataclass
 class L2ExecutionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent):
     """Unified L2 base class - replaces CanonBaseAgent + SubAtomicAgent.
-    
+
     PHASE 3 MRO HARDENING:
     - RedisCacheMixin: First (caching infrastructure)
     - PineconeVectorMixin: Second (vector infrastructure)
     - SovereignBaseAgent: Last (root - includes InfrastructureMixin with SubatomicTestingMixin)
-    
+
     Note: SubatomicTestingMixin is now inherited via SovereignBaseAgent -> InfrastructureMixin
-    
+
     MRO: RedisCacheMixin -> PineconeVectorMixin -> SovereignBaseAgent -> InfrastructureMixin -> ... -> object
-    
+
     Features:
     - Async execution (mandatory)
     - Gemini client (optional via enable_gemini flag)
@@ -100,11 +100,11 @@ class L2ExecutionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
     """
     ctx: ValidationContext
     enable_gemini: bool = True  # Feature flag - True for former Canon agents, False for lightweight
-    
+
     # [PHASE 2] Redis/Pinecone integration
     _cache_prefix: str = "l2_execution"
     _namespace: str = "l2_tools"
-    
+
     name: str = field(init=False)
     role: str = field(init=False)
     _client: Optional[Any] = field(default=None, init=False)
@@ -115,9 +115,9 @@ class L2ExecutionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
         """Shared initialization logic with cooperative MRO."""
         # Initialize MRO chain - mixins first, then SovereignBaseAgent
         super().__init__(name=self.__class__.__name__)
-        
+
         self.role = re.sub('(?<!^)(?=[A-Z])', '_', self.name).lower()
-        
+
         # Conditional Gemini + subatomic initialization
         if self.enable_gemini:
             api_key = os.getenv('GOOGLE_API_KEY') or os.getenv('GEMINI_API_KEY')
@@ -172,20 +172,20 @@ class L2ExecutionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
     # =========================================================================
     # L2-SPECIFIC LAYER METHODS: Tool Execution
     # =========================================================================
-    
+
     def act(self, plan: List[str]) -> Dict[str, Any]:
         """L2-specific: Execute tools from plan with parallel support and error handling.
-        
+
         Args:
             plan: List of tool actions to execute
-            
+
         Returns:
             Dict with aggregated results and any errors
         """
         tools = self._extract_tools_from_plan(plan)
         results = []
         errors = []
-        
+
         for tool in tools:
             try:
                 result = self._execute_tool(tool)
@@ -193,41 +193,41 @@ class L2ExecutionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
             except Exception as e:
                 errors.append({"tool": tool, "error": str(e), "type": type(e).__name__})
                 results.append({"tool": tool, "result": None, "success": False, "error": str(e)})
-        
+
         # Trigger healing on errors
         if errors:
             clustered = self.cluster_errors(errors)
             self.log_warning(f"Tool execution errors: {clustered}")
             super().heal_repository()
-        
+
         return {
             "results": results,
             "errors": errors,
             "success_count": sum(1 for r in results if r.get("success")),
             "error_count": len(errors)
         }
-    
+
     async def act_async(self, plan: List[str]) -> Dict[str, Any]:
         """L2-specific: Async parallel tool execution with rate-limit healing.
-        
+
         Args:
             plan: List of tool actions to execute
-            
+
         Returns:
             Dict with aggregated results and clustered errors
         """
         tools = self._extract_tools_from_plan(plan)
-        
+
         async def execute_one(tool: str) -> Dict[str, Any]:
             try:
                 result = await self._execute_tool_async(tool)
                 return {"tool": tool, "result": result, "success": True}
             except Exception as e:
                 return {"tool": tool, "result": None, "success": False, "error": str(e), "type": type(e).__name__}
-        
+
         # Parallel execution
         results = await asyncio.gather(*[execute_one(t) for t in tools], return_exceptions=True)
-        
+
         # Handle exceptions from gather
         processed_results = []
         for i, r in enumerate(results):
@@ -235,14 +235,14 @@ class L2ExecutionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
                 processed_results.append({"tool": tools[i], "success": False, "error": str(r), "type": type(r).__name__})
             else:
                 processed_results.append(r)
-        
+
         errors = [r for r in processed_results if not r.get("success")]
-        
+
         if errors:
             clustered = self.cluster_errors(errors)
             self.log_warning(f"Async execution errors: {clustered}")
             super().heal_repository()
-        
+
         return {
             "results": processed_results,
             "errors": errors,
@@ -250,26 +250,26 @@ class L2ExecutionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
             "success_count": sum(1 for r in processed_results if r.get("success")),
             "error_count": len(errors)
         }
-    
+
     def cluster_errors(self, errors: List[Dict[str, Any]]) -> Dict[str, List[str]]:
         """L2-specific: Group errors by type for efficient targeted healing.
-        
+
         Args:
             errors: List of error dicts with 'type' and 'error' keys
-            
+
         Returns:
             Dict mapping error types to list of error messages
         """
         from collections import defaultdict
         groups: Dict[str, List[str]] = defaultdict(list)
-        
+
         for e in errors:
             error_type = e.get("type", "Unknown")
             error_msg = e.get("error", str(e))
             groups[error_type].append(error_msg)
-        
+
         return dict(groups)
-    
+
     def _extract_tools_from_plan(self, plan: List[str]) -> List[str]:
         """Extract tool names/actions from plan steps."""
         tools = []
@@ -280,12 +280,12 @@ class L2ExecutionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
             elif isinstance(step, dict):
                 tools.append(step.get("tool", step.get("action", str(step))))
         return tools
-    
+
     def _execute_tool(self, tool: str) -> Any:
         """Execute a single tool - override in subclasses for actual implementation."""
         self.log_info(f"Executing tool: {tool}")
         return {"executed": tool, "status": "placeholder"}
-    
+
     async def _execute_tool_async(self, tool: str) -> Any:
         """Async tool execution - override in subclasses for actual implementation."""
         self.log_info(f"Async executing tool: {tool}")

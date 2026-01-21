@@ -41,17 +41,17 @@ class CanonBaseAgentInterface(Protocol):
 class HealerAgent(SubatomicTestingMixin, HealerMixin):
     """
     Self-healing agent for syntax repair and structural alignment.
-    
+
     Validates Canon Keys:
         - Key 48: Syntax Repair - fixes Python syntax errors.
         - Key 49: Structural Alignment - ensures proper file structure.
-    
+
     Role:
         The Ultimate Repair Agent. Uses LLM-based healing with retry logic.
-    
+
     Note:
         Legacy L1 class - uses composition over inheritance (DDD Phase 9A).
-    
+
     Attributes:
         impl: Optional CanonBaseAgent implementation (abstract, skip instantiation).
         ctx: ValidationContext for file access and reporting.
@@ -67,15 +67,15 @@ class HealerAgent(SubatomicTestingMixin, HealerMixin):
     ) -> Dict[str, int]:
         """
         Execute autonomous healing for Canon Key 51 compliance.
-        
+
         Runs the shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         before executing agent-specific healing logic.
-        
+
         Args:
             dry_run: If True, only report violations without fixing.
             execute: If True, apply fixes to detected violations.
             **kwargs: Additional healing parameters.
-        
+
         Returns:
             Dict with keys: violations, fixed, errors.
         """
@@ -85,7 +85,7 @@ class HealerAgent(SubatomicTestingMixin, HealerMixin):
     def __init__(self, ctx: Optional[Any] = None) -> None:
         """
         Initialize the HealerAgent.
-        
+
         Args:
             ctx: Optional ValidationContext for file access and reporting.
         """
@@ -101,13 +101,13 @@ class HealerAgent(SubatomicTestingMixin, HealerMixin):
     ) -> Dict[str, Any]:
         """
         Execute healing operations.
-        
+
         Maintains backward compatibility with orchestrator interface.
-        
+
         Args:
             goal: Optional goal description (unused, for interface compat).
             context: Optional execution context (unused, for interface compat).
-            
+
         Returns:
             Dict with status and agent name.
         """
@@ -117,7 +117,7 @@ class HealerAgent(SubatomicTestingMixin, HealerMixin):
     def get_capabilities(self) -> List[str]:
         """
         Get list of agent capabilities.
-        
+
         Returns:
             List of capability strings from implementation.
         """
@@ -128,7 +128,7 @@ class HealerAgent(SubatomicTestingMixin, HealerMixin):
     def validate_state(self) -> bool:
         """
         Validate current agent state.
-        
+
         Returns:
             True if state is valid, False otherwise.
         """
@@ -138,10 +138,10 @@ class HealerAgent(SubatomicTestingMixin, HealerMixin):
 
     def _check_file_for_syntax_error(self, file_path: str) -> Tuple[bool, Optional[SyntaxError]]:
         """Check a single file for syntax errors.
-        
+
         Args:
             file_path: Path to the Python file to check.
-            
+
         Returns:
             Tuple of (has_error, error_object). If no error, error_object is None.
         """
@@ -157,10 +157,10 @@ class HealerAgent(SubatomicTestingMixin, HealerMixin):
 
     def _is_file_excluded(self, file_path: str) -> bool:
         """Check if file should be excluded from healing.
-        
+
         Args:
             file_path: Path to check.
-            
+
         Returns:
             True if file should be excluded.
         """
@@ -169,7 +169,7 @@ class HealerAgent(SubatomicTestingMixin, HealerMixin):
 
     def _scan_for_syntax_errors(self) -> List[Tuple[str, Optional[SyntaxError]]]:
         """Scan all Python files for syntax errors.
-        
+
         Returns:
             List of (file_path, error) tuples for files with errors.
         """
@@ -184,11 +184,11 @@ class HealerAgent(SubatomicTestingMixin, HealerMixin):
 
     async def _attempt_fix_single_file(self, file_path: str, error: SyntaxError) -> bool:
         """Attempt to fix a single file with syntax error.
-        
+
         Args:
             file_path: Path to the file to fix.
             error: The SyntaxError object.
-            
+
         Returns:
             True if fix was successful.
         """
@@ -199,7 +199,7 @@ class HealerAgent(SubatomicTestingMixin, HealerMixin):
 
     def _get_remaining_errors(self) -> List[str]:
         """Get list of files that still have syntax errors.
-        
+
         Returns:
             List of file paths with remaining errors.
         """
@@ -212,13 +212,13 @@ class HealerAgent(SubatomicTestingMixin, HealerMixin):
 
     async def _execute_healing(self) -> None:
         """Execute the core healing logic.
-        
+
         Scans for syntax errors and attempts LLM-based fixes with retry.
         Reports results to validation context.
         """
         max_rounds = int(os.getenv('MAX_HEALING_ROUNDS', '3'))
         print(f"\n[>>>] {self.name} ACTIVATED: Investigating Failures...")
-        
+
         round_num = 0
         any_healed = True
 
@@ -230,7 +230,7 @@ class HealerAgent(SubatomicTestingMixin, HealerMixin):
                 break
 
             print(f"   [ALERT] Round {round_num}: Found {len(errors)} Syntax Blockers. Healing...")
-            
+
             fix_results = [await self._attempt_fix_single_file(fp, err) for fp, err in errors]
             any_healed = any(fix_results)
 

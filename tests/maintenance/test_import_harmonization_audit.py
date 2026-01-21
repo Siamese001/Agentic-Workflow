@@ -1,6 +1,6 @@
 """
 file: tests/maintenance/test_import_harmonization_audit.py
-description: Final audit to verify that all core agents are using the new SSOT 
+description: Final audit to verify that all core agents are using the new SSOT
              locations and no imports are pointing to quarantined archives.
 """
 
@@ -27,7 +27,7 @@ class TestImportHarmonization:
         """
         import agentic_core.L5_safety.validators.structure_blueprint as ssot
         excluded_dirs = getattr(ssot, "GLOBAL_EXCLUDED_DIRS", [])
-        
+
         # Verify 'archives' is strictly in the exclusion list
         assert "archives" in excluded_dirs or "archives/" in excluded_dirs
 
@@ -51,14 +51,14 @@ class TestImportHarmonization:
         """
         from agentic_core.utils.sovereign_index import SovereignIndex
         from agentic_core.L5_safety.validators.structure_blueprint import GLOBAL_EXCLUDED_DIRS
-        
+
         # Reset instance to ensure fresh state
         SovereignIndex.reset_instance()
-        
+
         # Get instance with project root
         project_root = Path(__file__).resolve().parents[2]
         idx = SovereignIndex.get_instance(project_root)
-        
+
         # Verify the intersection exists - confirming they are pulling from the same source
         assert any(d in idx._excluded_dirs for d in GLOBAL_EXCLUDED_DIRS), (
             f"SovereignIndex exclusions {idx._excluded_dirs} don't overlap with SSOT {GLOBAL_EXCLUDED_DIRS}"

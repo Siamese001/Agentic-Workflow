@@ -18,10 +18,10 @@ def timeout(seconds: int):
     """
     Decorator to enforce timeout on heal_repository() or any long method.
     Cross-platform using threading (works on Windows).
-    
+
     Args:
         seconds: Maximum execution time in seconds
-        
+
     Usage:
         @timeout(300)  # 5-minute limit
         def heal_repository(self, ...):
@@ -45,7 +45,7 @@ def timeout(seconds: int):
             thread = threading.Thread(target=target)
             thread.daemon = True
             thread.start()
-            
+
             # Wait for completion or timeout
             completed.wait(timeout=seconds)
 
@@ -55,10 +55,10 @@ def timeout(seconds: int):
                     f"{func.__name__} timed out after {seconds}s — "
                     f"consider splitting large operations or increasing limit"
                 )
-            
+
             if exception[0]:
                 raise exception[0]
-            
+
             return result[0]
         return wrapper
     return decorator

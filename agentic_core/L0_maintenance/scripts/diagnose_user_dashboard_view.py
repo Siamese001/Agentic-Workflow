@@ -41,18 +41,18 @@ if 'const dashboardData = [' in html_content:
     print("="*70)
     print("The HTML file contains hardcoded data instead of loading from dashboard_data.js")
     print("This could cause the user to see stale data!")
-    
+
     # Extract embedded data
     data_match = re.search(r'const dashboardData = (\[.*?\]);', html_content, re.DOTALL)
     if data_match:
         embedded_data = json.loads(data_match.group(1))
         embedded_total = next((r for r in embedded_data if r['Territory'] == 'TOTAL'), None)
-        
+
         if embedded_total:
             print(f"\nEmbedded TOTAL row in HTML:")
             print(f"  Health: {embedded_total.get('Health', 'MISSING')}")
             print(f"  Code Quality Score: {embedded_total.get('Code Quality Score', 'MISSING')}")
-            
+
             if embedded_total.get('Health') == embedded_total.get('Code Quality Score'):
                 print("\n❌ BUG FOUND: Embedded HTML data has IDENTICAL Health and Code Quality!")
                 print("This is what the user is seeing!")
@@ -74,7 +74,7 @@ if "row['Health']" in html_content or 'row["Health"]' in html_content:
 else:
     print("❌ WARNING: Health column rendering not found in JS")
 
-# Look for Code Quality Score rendering  
+# Look for Code Quality Score rendering
 if "row['Code Quality Score']" in html_content or 'row["Code Quality Score"]' in html_content:
     print("✅ Found Code Quality Score column rendering in JS")
 else:

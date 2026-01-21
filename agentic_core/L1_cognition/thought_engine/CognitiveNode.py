@@ -29,7 +29,7 @@ class CognitiveResult:
 
 class PerceptionNode:
     """Perception component - processes raw input."""
-    
+
     async def process_async(self, raw_input: Dict, context: Dict) -> Dict:
         """Process raw input into perceived state."""
         return {
@@ -38,11 +38,11 @@ class PerceptionNode:
             "timestamp": time.time(),
             "input_type": self._classify_input(raw_input)
         }
-    
+
     def _classify_input(self, raw_input: Dict) -> str:
         """Classify input type."""
         query = raw_input.get("user_query", "").lower()
-        
+
         if any(w in query for w in ["how", "what", "why", "when", "where"]):
             return "question"
         elif any(w in query for w in ["plan", "strategy", "step"]):
@@ -55,21 +55,21 @@ class PerceptionNode:
 
 class ReasoningNode:
     """Reasoning component - generates thoughts and conclusions."""
-    
+
     async def reason_async(self, perceived: Dict) -> Dict:
         """Generate reasoning with adaptive strategy selection."""
         # Get strategy bias from meta-learner
         strategy_bias = perceived.get("strategy_bias", {})
-        
+
         # Select thought type using bias
         thought_type = self._biased_select(strategy_bias)
-        
+
         # Get memory patterns
         memory_patterns = perceived.get("memory", [])
-        
+
         # Generate reasoning
         reasoning = self._generate_reasoning(perceived["query"], thought_type, memory_patterns)
-        
+
         return {
             "goal": reasoning.get("goal", perceived["query"]),
             "domain": reasoning.get("domain", "general"),
@@ -77,31 +77,31 @@ class ReasoningNode:
             "reasoning": reasoning,
             "confidence": reasoning.get("confidence", 0.7)
         }
-    
+
     def _biased_select(self, strategy_bias: Dict[str, float]) -> str:
         """Select strategy using weighted bias."""
         if not strategy_bias:
             return "cot"  # Default: Chain of Thought
-        
+
         # Weighted random selection
         import random
         strategies = list(strategy_bias.keys())
         weights = list(strategy_bias.values())
-        
+
         total = sum(weights)
         if total <= 0:
             return strategies[0] if strategies else "cot"
-        
+
         r = random.random() * total
         cumulative = 0.0
-        
+
         for strategy, weight in zip(strategies, weights):
             cumulative += weight
             if r <= cumulative:
                 return strategy
-        
+
         return strategies[-1] if strategies else "cot"
-    
+
     def _generate_reasoning(self, query: str, thought_type: str, patterns: List[Any]) -> Dict[str, Any]:
         """Generate reasoning based on query and thought type."""
         reasoning = {
@@ -111,7 +111,7 @@ class ReasoningNode:
             "steps": [],
             "confidence": 0.8
         }
-        
+
         # Adjust based on thought type
         if thought_type == "cot":
             reasoning["steps"] = ["Understand", "Analyze", "Conclude"]
@@ -121,23 +121,23 @@ class ReasoningNode:
             reasoning["steps"] = ["Observe", "Think", "Act"]
         else:
             reasoning["steps"] = ["Process", "Respond"]
-        
+
         # Adjust with memory patterns
         if patterns:
             reasoning["confidence"] = min(0.95, reasoning["confidence"] + 0.1)
             reasoning["patterns_applied"] = len(patterns)
-        
+
         return reasoning
 
 
 class PlanningCoordinator:
     """Planning component - creates action plans."""
-    
+
     def plan(self, goal: str, domain: str, context: Dict) -> Dict[str, Any]:
         """Create plan from reasoning."""
         # Get memory patterns
         memory_patterns = context.get("memory", [])
-        
+
         # Create base plan
         plan = {
             "goal": goal,
@@ -146,13 +146,13 @@ class PlanningCoordinator:
             "score": 0.8,
             "patterns_applied": 0
         }
-        
+
         # Adjust with memory patterns
         if memory_patterns:
             plan = self._adjust_with_patterns(plan, memory_patterns)
-        
+
         return plan
-    
+
     def _generate_steps(self, goal: str, domain: str) -> List[str]:
         """Generate plan steps."""
         if "math" in goal.lower() or "calculate" in goal.lower():
@@ -161,27 +161,27 @@ class PlanningCoordinator:
             return ["Define objectives", "Identify resources", "Create timeline", "Execute"]
         else:
             return ["Understand goal", "Identify approach", "Execute", "Validate"]
-    
+
     def _adjust_with_patterns(self, plan: Dict, patterns: List[Any]) -> Dict:
         """Adjust plan based on memory patterns."""
         plan["patterns_applied"] = len(patterns)
         plan["score"] = min(0.95, plan["score"] + 0.1)
-        
+
         # Add pattern-based steps
         if patterns:
             plan["steps"].insert(0, "Apply learned patterns")
-        
+
         return plan
 
 
 class ActionNode:
     """Action component - executes plans."""
-    
+
     def act(self, reasoned: Dict) -> str:
         """Execute action based on reasoning."""
         goal = reasoned.get("goal", "")
         reasoning = reasoned.get("reasoning", {})
-        
+
         # Simple action execution
         if "2+2" in goal or "2 + 2" in goal:
             return "4"
@@ -197,72 +197,72 @@ class ActionNode:
 class CognitiveNode:
     """
     Central Cognitive Node - Full L1 Pipeline Integration
-    
+
     Orchestrates:
     - Perception → Reasoning → Planning → Action
     - Semantic memory integration
     - Meta-learning feedback loop
     - Governance policy enforcement
     """
-    
+
     def __init__(self):
         """Initialize cognitive node with all components."""
         self.perception = PerceptionNode()
         self.reasoning = ReasoningNode()
         self.planning = PlanningCoordinator()
         self.action = ActionNode()
-        
+
         # Phase 3 components
         try:
             from agentic_core.L1_cognition.learning.MetaLearningAgent import MetaLearningAgent
             self.meta_learner = MetaLearningAgent()
         except ImportError:
             self.meta_learner = None
-        
+
         try:
             from agentic_core.L1_cognition.memory.SemanticMemory import SemanticMemory
             self.semantic_memory = SemanticMemory()
         except ImportError:
             self.semantic_memory = None
-        
+
         # Statistics
         self.missions_processed = 0
         self.total_latency_ms = 0.0
         self.average_confidence = 0.0
-    
+
     async def process_async(self, raw_input: Dict, context: Dict) -> CognitiveResult:
         """
         Process input through full cognitive pipeline.
-        
+
         Args:
             raw_input: Raw user input
             context: Processing context
-            
+
         Returns:
             CognitiveResult with output and metadata
         """
         start_time = time.time()
         self.missions_processed += 1
-        
+
         try:
             # 1. Perception
             perceived = await self.perception.process_async(raw_input, context)
-            
+
             # 2. Memory integration
             memory_used = []
             if self.semantic_memory:
                 relevant_memory = await self._query_semantic_memory(perceived["query"])
                 perceived["memory"] = relevant_memory
                 memory_used = [m.get("id", "") for m in relevant_memory[:3]]
-            
+
             # 3. Adaptive reasoning with meta-learning bias
             strategy_bias = {}
             if self.meta_learner:
                 strategy_bias = self.meta_learner.get_strategy_bias()
             perceived["strategy_bias"] = strategy_bias
-            
+
             reasoned = await self.reasoning.reason_async(perceived)
-            
+
             # 4. Planning with reasoning input
             plan = self.planning.plan(
                 reasoned["goal"],
@@ -270,10 +270,10 @@ class CognitiveNode:
                 perceived
             )
             reasoned["plan"] = plan
-            
+
             # 5. Action execution
             output = self.action.act(reasoned)
-            
+
             # 6. Feedback loop for meta-learning
             if self.meta_learner:
                 reward = self._compute_mission_reward(output, plan, reasoned)
@@ -283,14 +283,14 @@ class CognitiveNode:
                     outcome={"output": output, "success": True},
                     reward=reward
                 )
-                
+
                 # Async replay
                 if self.missions_processed % 10 == 0:
                     await self._async_replay_and_learn()
-            
+
             latency_ms = (time.time() - start_time) * 1000
             self.total_latency_ms += latency_ms
-            
+
             return CognitiveResult(
                 output=output,
                 thought_type=reasoned["thought_type"],
@@ -300,7 +300,7 @@ class CognitiveNode:
                 latency_ms=latency_ms,
                 success=True
             )
-        
+
         except Exception as e:
             latency_ms = (time.time() - start_time) * 1000
             return CognitiveResult(
@@ -309,36 +309,36 @@ class CognitiveNode:
                 latency_ms=latency_ms,
                 success=False
             )
-    
+
     async def _query_semantic_memory(self, query: str) -> List[Dict[str, Any]]:
         """Query semantic memory for relevant patterns."""
         if not self.semantic_memory:
             return []
-        
+
         try:
             results = self.semantic_memory.query(query, top_k=3)
             return results
         except Exception:
             return []
-    
+
     def _compute_mission_reward(self, output: str, plan: Dict, reasoned: Dict) -> float:
         """Compute reward signal for learning."""
         reward = 0.0
-        
+
         # Success signal
         if output and "error" not in output.lower():
             reward += 0.5
-        
+
         # Plan quality
         plan_score = plan.get("score", 0.5)
         reward += plan_score * 0.3
-        
+
         # Confidence
         confidence = reasoned.get("confidence", 0.5)
         reward += confidence * 0.2
-        
+
         return min(1.0, reward)
-    
+
     async def _async_replay_and_learn(self) -> None:
         """Async replay and learning."""
         if self.meta_learner:
@@ -346,11 +346,11 @@ class CognitiveNode:
                 self.meta_learner.replay_and_learn(batch_size=16)
             except Exception:
                 pass
-    
+
     def get_statistics(self) -> Dict[str, Any]:
         """Get pipeline statistics."""
         avg_latency = (self.total_latency_ms / self.missions_processed) if self.missions_processed > 0 else 0
-        
+
         return {
             "missions_processed": self.missions_processed,
             "average_latency_ms": avg_latency,

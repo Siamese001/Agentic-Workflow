@@ -2,7 +2,7 @@ from __future__ import annotations
 """
 Micro-Runtime & Execution Schemas
 =================================
-Defines the atomic stages (Subatomic Hops) and state transitions 
+Defines the atomic stages (Subatomic Hops) and state transitions
 for the Sovereign runtime.
 """
 

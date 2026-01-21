@@ -38,10 +38,10 @@ redis_cache_ttl = 60 * 60 * 24 * 7  # 7-day mission persistence
 # NAMING FIXED: SovereignReasoningMemory → SovereignReasoningMemory
 class SovereignReasoningMemory:
     """Ultra-hardened sovereign manager for cognitive artifacts."""
-    
+
     _instances = {}
     _lock = threading.Lock()
-    
+
     def __new__(cls, mission_id: str):
         with cls._lock:
             if mission_id not in cls._instances:
@@ -49,11 +49,11 @@ class SovereignReasoningMemory:
                 instance._initialized = False
                 cls._instances[mission_id] = instance
             return cls._instances[mission_id]
-    
+
     def __init__(self, mission_id: str):
         if getattr(self, '_initialized', False):
             return
-        
+
         self.mission_id = mission_id
         self.thought_history: List[Dict] = []
         self.scratchpad: Dict[str, str] = {}
@@ -63,7 +63,7 @@ class SovereignReasoningMemory:
         self.max_redis_steps = 1000  # Sovereign bound on total mission thoughts
         self._initialize_redis()
         self._initialized = True
-    
+
     def _initialize_redis(self):
         """L4-hardened Redis connection with immediate failover logic."""
         try:
@@ -81,15 +81,15 @@ class SovereignReasoningMemory:
             Logger.critical(f"[L1 MEMORY BREACH] Redis link failed: {e}")
             mcp_authority.record_breach(f"Persistence Failure: {str(e)}")
             raise
-    
+
     def add_thought(self, file_path: str, key_id: int, thought: str, step: int) -> None:
         """Record a cognitive step with L5 input shielding and hashing."""
         if len(thought) > MAX_THOUGHT_LENGTH:
             raise ValueError(f"Thought exceeds sovereign limit ({MAX_THOUGHT_LENGTH} chars)")
-        
+
         import hashlib
         thought_hash = hashlib.sha256(thought.encode()).hexdigest()[:16]
-        
+
         entry = {
             "timestamp": datetime.utcnow().isoformat() + "Z",
             "mission_id": self.mission_id,
@@ -99,14 +99,14 @@ class SovereignReasoningMemory:
             "hash": thought_hash,
             "thought": thought
         }
-        
+
         with self.history_lock:
             self.thought_history.append(entry)
             # Prune local cache to keep it lean
             file_entries = [e for e in self.thought_history if e["file"] == entry["file"]]
             if len(file_entries) > MAX_HISTORY_PER_FILE:
                 self.thought_history = [e for e in self.thought_history if e["file"] != entry["file"]] + file_entries[-MAX_HISTORY_PER_FILE:]
-        
+
         # [REDIS ETERNAL CACHE] Push reasoning step immediately for L4 persistence
         try:
             r = redis.Redis(connection_pool=self.redis_pool)
@@ -114,13 +114,13 @@ class SovereignReasoningMemory:
             # L5 Shield: Guard against massive payloads that could clog Redis
             if len(entry_json) > 8192:
                 entry_json = json.dumps({**entry, "thought": entry["thought"][:4000] + "..."})
-            
+
             r.rpush(self.redis_reasoning_key, entry_json)
-            
+
             # Enforce sovereign bound: keep the mission log from ballooning
             if r.llen(self.redis_reasoning_key) > self.max_redis_steps:
                 r.ltrim(self.redis_reasoning_key, -self.max_redis_steps, -1)
-            
+
             r.expire(self.redis_reasoning_key, REDIS_CACHE_TTL)
             Logger.info(f"[L4 REASONING CACHE] Step persisted to Redis: {Path(file_path).name}")
         except Exception as e:
@@ -128,13 +128,13 @@ class SovereignReasoningMemory:
             mcp_authority.record_breach(f"Redis Reasoning Failure: {str(e)}")
 
     def update_scratchpad(self, file_path: str, content: str):
-                    
+
         if len(content) > MAX_SCRATCHPAD_SIZE:
             raise ValueError("Scratchpad overflow.")
         self.scratchpad[file_path] = content
 
     def get_scratchpad(self, file_path: str) -> str:
-                    
+
         return self.scratchpad.get(file_path, "")
 
     def _get_redis(self):
@@ -150,14 +150,14 @@ class SovereignReasoningMemory:
                 cached_history = [json.loads(s) for s in raw_steps]
                 if file_path or key_id:
                     return [
-                        e for e in cached_history 
+                        e for e in cached_history
                         if (not file_path or e["file"] == Path(file_path).name) and
                            (key_id is None or e["key_id"] == key_id)
                     ]
                 return cached_history
         except Exception as e:
             Logger.warning(f"Redis reasoning recall failed: {e} — falling back to memory")
-            
+
         with self.history_lock:
             if file_path or key_id:
                 filtered = [
@@ -169,7 +169,7 @@ class SovereignReasoningMemory:
             return [dict(t) for t in self.thought_history]
 
     def export_history(self) -> str:
-                    
+
         return json.dumps({
             "mission_id": self.mission_id,
             "exported_at": datetime.utcnow().isoformat(),

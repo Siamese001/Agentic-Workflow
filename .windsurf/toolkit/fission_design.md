@@ -1,7 +1,7 @@
 # LocationAgent Fission Design Document
 
-**Date:** 2026-01-20  
-**Status:** Design Phase - Awaiting Review  
+**Date:** 2026-01-20
+**Status:** Design Phase - Awaiting Review
 **Current File:** `agentic_core/L5_safety/validators/LocationAgent.py` (2138 lines)
 
 ---
@@ -286,12 +286,12 @@ All three agents should inherit from `SovereignBaseAgent` and share:
 
 ## Success Criteria
 
-✅ Each agent has <800 lines  
-✅ Single Responsibility Principle enforced  
-✅ All 637 tests pass  
-✅ No circular dependencies  
-✅ Backward compatibility maintained  
-✅ Performance neutral or improved  
+✅ Each agent has <800 lines
+✅ Single Responsibility Principle enforced
+✅ All 637 tests pass
+✅ No circular dependencies
+✅ Backward compatibility maintained
+✅ Performance neutral or improved
 
 ---
 

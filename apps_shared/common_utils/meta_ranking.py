@@ -45,9 +45,3 @@ def test_merge_scores_deduplicates_by_source_and_text() -> None:
     assert merged[0].text == "x"
     assert merged[1].source == "resume"
     assert len(merged) == 2
-
-
-
-
-
-

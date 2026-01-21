@@ -46,65 +46,65 @@ def validate_drilldown_infrastructure(html: str) -> Dict[str, bool]:
 
 def main():
     dashboard_path = Path('reports/autonomy_dashboard.html')
-    
+
     if not dashboard_path.exists():
         print(f"❌ Dashboard not found: {dashboard_path}")
         print("   Run: python canon_validator_agentic_v2_thin.py --report")
         return 1
-    
+
     html = dashboard_path.read_text(encoding='utf-8')
-    
+
     # Validate infrastructure
     print("=" * 90)
     print("DRILL-DOWN INFRASTRUCTURE VALIDATION (Static HTML Check)")
     print("=" * 90)
-    
+
     infra = validate_drilldown_infrastructure(html)
     print(f"openDrillModal() function:     {'✅ Found' if infra['openDrillModal_function'] else '❌ Missing'}")
     print(f"drillModal DOM element:        {'✅ Found' if infra['drillModal_element'] else '❌ Missing'}")
     print(f"onclick template reference:    {'✅ Found' if infra['template_has_onclick'] else '❌ Missing'}")
-    
+
     if not infra['openDrillModal_function'] or not infra['drillModal_element']:
         print("\n❌ CRITICAL: Drill-down infrastructure is missing!")
         return 1
-    
+
     # Extract dashboard data
     print("\n" + "=" * 90)
     print("TERRITORY DATA VALIDATION")
     print("=" * 90)
-    
+
     data = extract_dashboard_data(html)
-    
+
     if not data:
         print("❌ No dashboard data found!")
         return 1
-    
+
     print(f"Found {len(data)} territory rows in dashboardData\n")
-    
+
     print(f"{'Territory':<50} {'Agents':<10} {'Health':<10} {'Data Status'}")
     print("-" * 90)
-    
+
     total_agents = 0
     territories_with_data = 0
-    
+
     for row in sorted(data, key=lambda r: r.get('Territory', '')):
         territory = row.get('Territory', 'Unknown')
         agents = row.get('Total', 0)
         health = row.get('Health', 0)
-        
+
         if territory != 'TOTAL':
             total_agents += agents
             if agents > 0:
                 territories_with_data += 1
-        
+
         status = "✅ Has agent data" if agents > 0 else "⚠️  No agents"
         if territory == 'TOTAL':
             status = "📊 Summary row"
-        
+
         print(f"{territory:<50} {agents:<10} {health:<10.1f} {status}")
-    
+
     print("-" * 90)
-    
+
     # Summary
     print(f"\n{'='*90}")
     print("VALIDATION SUMMARY")
@@ -121,7 +121,7 @@ def main():
     print("-" * 90)
     print(f"{'Territory':<35} {'Sub-Territory':<20} {'onclick':<10} {'cursor':<10} {'Status'}")
     print("-" * 90)
-    
+
     # These are the validated results from actual browser testing
     validated_rows = [
         ("L5 Safety", "Validators", True, True),
@@ -150,18 +150,18 @@ def main():
         ("Apps Shared", "Shared Utilities", True, True),
         ("Tests", "Integration", True, True),
     ]
-    
+
     all_pass = True
     for territory, sub, has_onclick, has_cursor in validated_rows:
         status = "✅ PASS" if has_onclick and has_cursor else "❌ FAIL"
         if not (has_onclick and has_cursor):
             all_pass = False
         print(f"{territory:<35} {sub:<20} {'✅' if has_onclick else '❌':<10} {'✅' if has_cursor else '❌':<10} {status}")
-    
+
     print("-" * 90)
     print(f"\n✅ ALL {len(validated_rows)} TERRITORY ROWS HAVE WORKING DRILL-DOWN CAPABILITY")
     print("   (Validated via Playwright browser automation)")
-    
+
     return 0 if all_pass else 1
 
 

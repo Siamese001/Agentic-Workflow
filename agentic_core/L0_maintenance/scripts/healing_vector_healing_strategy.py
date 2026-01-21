@@ -31,7 +31,7 @@ Logger: Any = logging.getLogger(__name__)
 class VectorHealingStrategy:
     """
     Autonomous healing for Pinecone vector state drift.
-    
+
     Detects and corrects vector inconsistencies by:
     - Re-embedding files with outdated or Missing vectors
     - Using SHA-256 content hashing for immutability checks
@@ -51,10 +51,10 @@ class VectorHealingStrategy:
     async def diagnose(self, issues: List[Dict]) -> List[Dict]:
         """
         Diagnose vector drift from auditor issues or proactive scan.
-        
+
         Args:
             issues: List of issues from sovereignty auditor
-            
+
         Returns:
             List of fix dictionaries with action details
         """
@@ -73,11 +73,11 @@ class VectorHealingStrategy:
     async def apply(self, fix: Dict, ctx: Any=None) -> bool:
         """
         Apply vector healing fix using Sovereign Clients.
-        
+
         Args:
             fix: Fix dictionary with action details
             ctx: Execution context (unused)
-            
+
         Returns:
             True if fix applied successfully, False otherwise
         """
@@ -120,10 +120,10 @@ class VectorHealingStrategy:
     async def _get_embedding(self, content: str) -> List[float]:
         """
         Generate embedding using Pinecone Inference MCP.
-        
+
         Args:
             content: Text content to embed
-            
+
         Returns:
             Embedding vector or None if failed
         """
@@ -149,7 +149,7 @@ class VectorHealingStrategy:
 async def create_vector_healing_strategy() -> VectorHealingStrategy:
     """
     Factory function to create a vector healing strategy.
-    
+
     Returns:
         Initialized VectorHealingStrategy instance
     """

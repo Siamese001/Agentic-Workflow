@@ -100,14 +100,14 @@ ARCHIVES_DIR = "archives"
 class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
     """
     Batch agent for detecting and optionally refactoring duplicated code.
-    
+
     HARDENED CONFIGURATION (2026-01-07):
     - Default threshold: 1.0 (100% structural identity required)
     - Aggressive purge mode: Filename duplicates consolidated to SSOT regardless of content divergence
     - Prevents Logic Bleed by enforcing absolute identity
-    
+
     HARDENED: Redis caching + Pinecone vector support for semantic fingerprinting.
-    
+
     Responsibilities:
     - Computes perceptual hashes of normalized AST nodes
     - Groups duplicates with 100% structural identity (threshold=1.0)
@@ -116,10 +116,10 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
     - Whole-file duplicate detection and aggressive consolidation
     - Filename uniqueness enforcement (AGGRESSIVE: all duplicates → SSOT, no rename fallback)
     - Dead-code pruning with empty-file auto-deletion
-    
+
     Consolidates functionality from deprecated FilenameUniquenessGuardianAgent (2025-12-31).
     """
-    
+
     # [PHASE 5] Redis/Pinecone integration
     _cache_prefix: str = "code_dedup"
     _namespace: str = "l2_fingerprints"
@@ -128,7 +128,7 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
         """
         HARDENED: 100% identity by default to prevent Logic Bleed.
         Enforces absolute structural identity for SSOT compliance.
-        
+
         Args:
             similarity_threshold: Default 1.0 (100% identity required)
             min_lines: Minimum lines for duplicate detection
@@ -141,7 +141,7 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
         self.extracted_count = 0
         self.consolidated_count = 0
         self.errors: List[str] = []
-        
+
         # Initialize tree-sitter parser if available
         self.ts_parser = None
         if TREE_SITTER_AVAILABLE and Parser and tspython:
@@ -150,7 +150,7 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
                 self.ts_parser.set_language(Language(tspython.language()))
             except Exception:
                 self.ts_parser = None
-    
+
     def _run_self_tests(self) -> bool:
         """Phase 1: Self-testing for L2 compliance."""
         assert hasattr(self, 'threshold'), "Missing threshold"
@@ -164,7 +164,7 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
         code = textwrap.dedent(code)
         lines = CodeDeduplicationAgent._filter_code_lines(code)
         return ' '.join(lines)
-    
+
     @staticmethod
     def _filter_code_lines(code: str) -> List[str]:
         """Filter code lines by removing comments and empty lines."""
@@ -176,7 +176,7 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
             if stripped:
                 lines.append(' '.join(stripped.split()))
         return '\n'.join(lines)
-    
+
     def _normalize_ast_tree(self, node: ast.AST) -> str:
         """Anonymize variables and constants in AST for structural comparison."""
         if isinstance(node, ast.Name):
@@ -188,7 +188,7 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
             return 'CONST'
         children = [self._normalize_ast_tree(child) for child in ast.iter_child_nodes(node)]
         return f'{type(node).__name__}({"|".join(children)})'
-    
+
     def _normalize_ts_tree(self, node: Any) -> str:
         """Normalize tree-sitter node for structural comparison."""
         if node.type == 'identifier':
@@ -244,7 +244,7 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
         print('\n[*] CodeDeduplicationAgent: Scanning for cross-file duplicates...')
         # Collect all candidate blocks with their best normalized representation
         candidates: List[Tuple[Path, str, int, str, str, int]] = []  # (path, name, line, code, norm_str, len_norm)
-        
+
         # Best-in-class: Colored, dynamic filename + live group stats
         pbar = tqdm(
             total=len(python_files),
@@ -256,18 +256,18 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
             position=0,
         )
         stats = {"blocks": 0, "skipped": 0}
-        
+
         for file_str in python_files:
             file_path: Any = Path(file_str)
             pbar.set_description(f"Blocks: {file_path.name[:40]}")
             pbar.set_postfix(stats)
-            
+
             # EXCLUDE archives/ directory
             if not file_path.exists() or ARCHIVES_DIR in str(file_path):
                 stats["skipped"] += 1
                 pbar.update(1)
                 continue
-                
+
             for name, code, line in self._extract_functions_classes(file_path):
                 # Get best normalized string (tree-sitter > AST > text fallback)
                 norm_str = ''
@@ -287,9 +287,9 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
                 len_norm = len(norm_str)
                 candidates.append((file_path, name, line, code, norm_str, len_norm))
                 stats["blocks"] += 1
-            
+
             pbar.update(1)
-        
+
         pbar.close()
 
         # === FAST EXACT STRUCTURAL GROUPING ===
@@ -382,7 +382,7 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
         """Detect exact whole-file duplicates (identical content)."""
         print('\n[*] CodeDeduplicationAgent: Scanning for whole-file duplicates...')
         hash_to_files: Dict[str, List[Path]] = defaultdict(list)
-        
+
         pbar = tqdm(
             total=len(python_files),
             desc="Hashing files",
@@ -393,11 +393,11 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
             position=0,
         )
         stats = {"identical_groups": 0}
-        
+
         for path in python_files:
             pbar.set_description(f"Hashing: {path.name[:40]}")
             pbar.set_postfix(stats)
-            
+
             if not path.exists() or ARCHIVES_DIR in str(path):
                 pbar.update(1)
                 continue
@@ -407,9 +407,9 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
                 if len(hash_to_files[file_hash]) == 2:  # New group formed
                     stats["identical_groups"] += 1
             pbar.update(1)
-        
+
         pbar.close()
-        
+
         for file_hash, files in hash_to_files.items():
             if len(files) > 1:
                 print(f'   [!] IDENTICAL FILE DUPLICATE ({len(files)} copies):')
@@ -423,7 +423,7 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
         """Detect duplicate basenames with safety check (identical vs divergent content)."""
         print('\n[*] CodeDeduplicationAgent: Scanning for duplicate filenames (safety-enhanced)...')
         basename_to_entries: Dict[str, List[Tuple[Path, str]]] = defaultdict(list)
-        
+
         pbar = tqdm(
             total=len(python_files),
             desc="Checking names",
@@ -434,11 +434,11 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
             position=0,
         )
         stats = {"name_groups": 0, "divergent": 0}
-        
+
         for path in python_files:
             pbar.set_description(f"Names: {path.name[:40]}")
             pbar.set_postfix(stats)
-            
+
             if not path.exists() or ARCHIVES_DIR in str(path) or path.name in {'__init__.py', 'setup.py'}:
                 pbar.update(1)
                 continue
@@ -451,9 +451,9 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
                 if len(hashes) > 1:
                     stats["divergent"] += 1
             pbar.update(1)
-        
+
         pbar.close()
-        
+
         for basename, entries in basename_to_entries.items():
             if len(entries) > 1:
                 hashes = {h for _, h in entries}
@@ -483,7 +483,7 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
                 proposed = file_path.name
             except Exception as e:
                 self.errors.append(f'NamingAgent call failed: {e}')
-        
+
         try:
             preview = file_path.read_text(encoding='utf-8', errors='ignore')[:2048].lower()
             target_dir = self._get_target_dir_from_content(preview, project_root)
@@ -528,17 +528,17 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
                             self.consolidated_count += 1
                         else:
                             print(f'      [DRY-RUN] Would delete: {p}')
-        
+
         # Second: filename conflicts (AGGRESSIVE PURGE MODE)
         for basename, entries in self.filename_duplicates.items():
             paths = [p for p, _ in entries]
             hashes = {h for _, h in entries}
-            
-            # CASE-COLLISION AWARE PURGE: 
+
+            # CASE-COLLISION AWARE PURGE:
             # Prioritizes snake_case 'tool_registry' as the canonical SSOT location.
             if len(paths) > 1:
                 primary = min(paths, key=lambda p: (
-                    ARCHIVES_DIR in str(p), 
+                    ARCHIVES_DIR in str(p),
                     'ToolRegistry' in str(p),
                     str(p)
                 ))
@@ -591,26 +591,26 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
         if not hasattr(ctx, 'project_root'):
             print('   [!] project_root Missing in context')
             return
-        
+
         python_paths = [Path(f) for f in ctx.python_files]
         project_root_path = Path(ctx.project_root)
-        
+
         # Phase 1: Code block duplicates (existing functionality)
         self.scan_for_duplicates(ctx.python_files)
-        
+
         # Phase 2: Whole-file duplicates (new - consolidates FilenameUniquenessGuardianAgent)
         self.scan_file_level_duplicates(python_paths)
-        
+
         # Phase 3: Filename duplicates with safety check (new)
         self.scan_filename_duplicates(python_paths, project_root_path)
-        
+
         # Phase 4: Safe resolution if surgery enabled
         if getattr(ctx, 'RUN_SPRAWL_SURGERY', False):
             self.resolve_duplicates_safely(project_root_path, dry_run=False)
-        
+
         # Phase 5: Extract code block duplicates (existing functionality)
         await self.auto_extract_duplicates(project_root_path, ctx)
-        
+
         # Report results
         print(f'\n[*] DEDUPLICATION SUMMARY:')
         print(f'    Code block duplicates: {len(self.duplicate_groups)} groups')
@@ -624,7 +624,7 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
         """Collect imports, definitions, and usages from AST."""
         imported_names, defined_functions, defined_classes, used_names = set(), set(), set(), set()
         import_lines, def_lines = {}, {}
-        
+
         for node in ast.walk(tree):
             if isinstance(node, (ast.Import, ast.ImportFrom)):
                 for alias in node.names:
@@ -639,7 +639,7 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
                 def_lines[node.name] = node.lineno
             elif isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load):
                 used_names.add(node.id)
-        
+
         return imported_names, defined_functions, defined_classes, used_names, import_lines, def_lines
 
     def detect_dead_code(self, file_path: Path) -> Dict[str, Any]:
@@ -648,17 +648,17 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
             content = file_path.read_text(encoding='utf-8')
         except Exception as e:
             return {'error': f'Could not read {file_path}: {e}'}
-            
+
         if not content.strip() or file_path.name == '__init__.py':
             return {'skipped': True, 'reason': 'Empty or __init__ file'}
-            
+
         try:
             tree = ast.parse(content, filename=str(file_path))
         except SyntaxError as e:
             return {'error': f'Syntax error in {file_path}: {e}'}
-            
+
         imported, funcs, classes, used, import_lines, def_lines = self._collect_ast_symbols(tree)
-        
+
         return {
             'file_path': str(file_path),
             'unused_imports': [{'name': n, 'line': import_lines.get(n)} for n in imported if n not in used],
@@ -669,23 +669,23 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
     def scan_dead_code(self, directory: Path, recursive: bool = True) -> Dict[str, Any]:
         """
         SUPPLEMENTED FROM DeadCodeDetectorAgent — merged 2025-12-30
-        
+
         Scan an entire directory for dead code.
-        
+
         Args:
             directory: Directory to scan
             recursive: Whether to scan recursively
-            
+
         Returns:
             Dict with scan results and summary
         """
         if not directory.exists():
             return {'error': f'Directory {directory} does not exist'}
-            
+
         # Phase 6.7: Use ssot_discovery instead of rglob/glob
         from agentic_core.utils.ssot_discovery import get_python_files
         py_files = list(get_python_files(directory))
-        
+
         results = {
             'scanned_files': len(py_files),
             'findings': [],
@@ -695,7 +695,7 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
                 'total_unused_classes': 0,
             }
         }
-        
+
         for file_path in py_files:
             finding = self.detect_dead_code(file_path)
             if 'error' not in finding and 'skipped' not in finding:
@@ -703,38 +703,38 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
                 results['summary']['total_unused_imports'] += len(finding['unused_imports'])
                 results['summary']['total_unused_functions'] += len(finding['unused_functions'])
                 results['summary']['total_unused_classes'] += len(finding['unused_classes'])
-                
+
         return results
 
     def prune_dead_code(self, file_path: Path, dry_run: bool = True) -> Dict[str, Any]:
         """
         SUPPLEMENTED FROM DeadCodePrunerAgent — merged 2025-12-30
-        
+
         Remove detected dead code from a file.
-        
+
         Args:
             file_path: Path to the file to prune
             dry_run: If True, only report what would be removed
-            
+
         Returns:
             Dict with pruning results
         """
         findings = self.detect_dead_code(file_path)
         if 'error' in findings or 'skipped' in findings:
             return findings
-            
+
         lines_to_remove = set()
         for item in findings['unused_imports']:
             if item['line']:
                 lines_to_remove.add(item['line'])
-                
+
         results = {
             'file': str(file_path),
             'dry_run': dry_run,
             'lines_marked': list(lines_to_remove),
             'imports_removed': len(findings['unused_imports']),
         }
-        
+
         if not dry_run and lines_to_remove:
             try:
                 content = file_path.read_text(encoding='utf-8')

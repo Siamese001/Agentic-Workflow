@@ -63,9 +63,9 @@ def build_codebase_index() -> Tuple[Set[str], Set[str], Set[str]]:
     classes = set()
     functions = set()
     file_contents = set()  # MD5 of file contents for duplicate detection
-    
+
     import hashlib
-    
+
     for dir_path in CURRENT_DIRS:
         if not Path(dir_path).exists():
             continue
@@ -75,7 +75,7 @@ def build_codebase_index() -> Tuple[Set[str], Set[str], Set[str]]:
             try:
                 content = py_file.read_text(encoding='utf-8', errors='replace')
                 file_contents.add(hashlib.md5(content.encode()).hexdigest())
-                
+
                 tree = ast.parse(content)
                 for node in ast.walk(tree):
                     if isinstance(node, ast.ClassDef):
@@ -84,7 +84,7 @@ def build_codebase_index() -> Tuple[Set[str], Set[str], Set[str]]:
                         functions.add(node.name.lower())
             except:
                 pass
-    
+
     return classes, functions, file_contents
 
 # ============================================================================
@@ -94,17 +94,17 @@ def build_codebase_index() -> Tuple[Set[str], Set[str], Set[str]]:
 def should_exclude_path(path: Path) -> bool:
     """Check if path should be excluded."""
     path_str = str(path).lower()
-    
+
     # Check folder exclusions
     for folder in EXCLUDE_FOLDERS:
         if folder.lower() in path_str:
             return True
-    
+
     # Check pattern exclusions
     for pattern in EXCLUDE_PATTERNS:
         if pattern in path_str:
             return True
-    
+
     return False
 
 def analyze_file(file_path: Path, existing_classes: Set[str], existing_functions: Set[str]) -> Dict:
@@ -116,17 +116,17 @@ def analyze_file(file_path: Path, existing_classes: Set[str], existing_functions
         return {'valid': False, 'error': 'syntax'}
     except Exception as e:
         return {'valid': False, 'error': str(e)}
-    
+
     unique_agents = []
     unique_classes = []
     unique_functions = []
     existing = []
-    
+
     for node in ast.iter_child_nodes(tree):
         if isinstance(node, ast.ClassDef):
             name_lower = node.name.lower()
             is_agent = node.name.endswith('Agent')
-            
+
             if name_lower not in existing_classes:
                 if is_agent:
                     unique_agents.append(node.name)
@@ -134,22 +134,22 @@ def analyze_file(file_path: Path, existing_classes: Set[str], existing_functions
                     unique_classes.append(node.name)
             else:
                 existing.append(node.name)
-                
+
         elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
             if not node.name.startswith('_'):
                 if node.name.lower() not in existing_functions:
                     unique_functions.append(node.name)
                 else:
                     existing.append(node.name)
-    
+
     total = len(unique_agents) + len(unique_classes) + len(unique_functions) + len(existing)
     unique_count = len(unique_agents) + len(unique_classes) + len(unique_functions)
-    
+
     uniqueness = (unique_count / total * 100) if total > 0 else 0
     # Boost for agents
     uniqueness += len(unique_agents) * 10
     uniqueness = min(100, uniqueness)
-    
+
     return {
         'valid': True,
         'unique_agents': unique_agents,
@@ -163,7 +163,7 @@ def analyze_file(file_path: Path, existing_classes: Set[str], existing_functions
 def infer_domain(file_path: Path, content: str = None) -> str:
     """Infer domain from path and content."""
     path_str = str(file_path).lower()
-    
+
     if 'lic' in path_str or 'outreach' in path_str or 'message' in path_str:
         return 'outreach'
     if 'rg' in path_str or 'resume' in path_str:
@@ -188,21 +188,21 @@ def main():
     print("RESTORE UNIQUE FILES FROM ARCHIVES")
     print("Excluding duplicates and backups")
     print("=" * 80)
-    
+
     # Build index
     print("\n[1/4] Building codebase index...")
     existing_classes, existing_functions, file_hashes = build_codebase_index()
     print(f"  Indexed: {len(existing_classes)} classes, {len(existing_functions)} functions")
-    
+
     # Scan archives
     print("\n[2/4] Scanning archives (excluding duplicates)...")
-    
+
     candidates = []
     skipped_folders = set()
-    
+
     for root, dirs, files in os.walk(ARCHIVES_ROOT):
         root_path = Path(root)
-        
+
         # Skip excluded folders
         if should_exclude_path(root_path):
             # Track which folders we're skipping
@@ -210,13 +210,13 @@ def main():
             skipped_folders.add(rel)
             dirs[:] = []  # Don't descend
             continue
-        
+
         for file in files:
             if not file.endswith('.py') or file in SKIP_FILES:
                 continue
-            
+
             file_path = root_path / file
-            
+
             # Check file hash for exact duplicates
             import hashlib
             try:
@@ -226,18 +226,18 @@ def main():
                     continue  # Exact duplicate
             except:
                 continue
-            
+
             # Analyze file
             result = analyze_file(file_path, existing_classes, existing_functions)
-            
+
             if not result['valid']:
                 continue
-            
+
             if result['uniqueness'] >= 50:  # At least 50% unique
                 domain = infer_domain(file_path)
                 has_agents = len(result['unique_agents']) > 0
                 target = get_target_folder(domain, has_agents)
-                
+
                 candidates.append({
                     'path': file_path,
                     'relative': str(file_path.relative_to(ARCHIVES_ROOT)),
@@ -249,17 +249,17 @@ def main():
                     'target': target,
                     'loc': result['loc']
                 })
-    
+
     print(f"  Found {len(candidates)} unique files to restore")
     print(f"  Skipped folders: {skipped_folders}")
-    
+
     # Sort by uniqueness
     candidates.sort(key=lambda x: -x['uniqueness'])
-    
+
     # Show candidates
     print("\n[3/4] Restoration candidates...")
     print("-" * 60)
-    
+
     for c in candidates[:30]:
         agents = c['unique_agents']
         classes = c['unique_classes'][:3]
@@ -271,22 +271,22 @@ def main():
         if classes:
             print(f"    Classes: {classes}")
         print(f"    Target: {c['target']}")
-    
+
     if len(candidates) > 30:
         print(f"\n  ... and {len(candidates) - 30} more files")
-    
+
     # Execute restoration
     print("\n[4/4] Executing restoration...")
     print("-" * 60)
-    
+
     restored = 0
     skipped = 0
-    
+
     for c in candidates:
         src = c['path']
         target_dir = Path(c['target'])
         target_dir.mkdir(parents=True, exist_ok=True)
-        
+
         # Generate PascalCase filename
         if c['unique_agents']:
             dst_name = c['unique_agents'][0] + '.py'
@@ -298,17 +298,17 @@ def main():
                 dst_name = ''.join(p.capitalize() for p in parts) + '.py'
             else:
                 dst_name = name[0].upper() + name[1:] + '.py' if name else src.name
-        
+
         dst = target_dir / dst_name
-        
+
         if dst.exists():
             skipped += 1
             continue
-        
+
         shutil.copy2(str(src), str(dst))
         print(f"  ✓ {dst}")
         restored += 1
-    
+
     print("\n" + "=" * 80)
     print("SUMMARY")
     print("=" * 80)

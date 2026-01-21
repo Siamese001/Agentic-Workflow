@@ -55,7 +55,7 @@ class BootstrapAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
     """
     Autonomous boot integrity agent.
     Runs before any validation mission to anchor the environment.
-    
+
     Inherits from L0MaintenanceBaseAgent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
     """
 
@@ -65,7 +65,7 @@ class BootstrapAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
 
     def _verify_env_file(self) -> bool:
         """Verify .env file exists and load it.
-        
+
         Returns:
             True if .env loaded successfully.
         """
@@ -79,7 +79,7 @@ class BootstrapAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
 
     def _verify_redis_connection(self) -> bool:
         """Verify Redis/Langcache connectivity.
-        
+
         Returns:
             True if Redis is reachable.
         """
@@ -105,7 +105,7 @@ class BootstrapAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
 
     def _verify_model_authorization(self) -> bool:
         """Verify mandatory model API keys are present.
-        
+
         Returns:
             True if all mandatory keys are set.
         """
@@ -120,9 +120,9 @@ class BootstrapAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
 
     def verify_neural_link(self) -> bool:
         """Full neural link verification.
-        
+
         Checks .env presence, Redis state, and model authorization.
-        
+
         Returns:
             True if all critical systems are active.
         """
@@ -147,10 +147,10 @@ class BootstrapAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
         """
         Seed critical sovereign directories and starter files on first boot.
         Ported from OrganicTerritorySeederAgent.execute().
-        
+
         Args:
             project_root: Project root path (defaults to self.project_root)
-            
+
         Returns:
             Dict with seeding results
         """
@@ -161,19 +161,19 @@ class BootstrapAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
             import importlib
             module = importlib.import_module('agentic_core.L2_execution.ToolRegistry.Toolsmith')
             return module.Toolsmith
-        
+
         root = project_root or self.project_root
         toolsmith = _get_toolsmith()()
-        
+
         result = await toolsmith.seed_territory(root, dry_run=False)
-        
+
         if result.get('seeded'):
             Logger.info(f"Territory seeded: {len(result['seeded'])} files")
             for f in result['seeded']:
                 print(f"   [SEEDED] {f}")
         if result.get('errors'):
             Logger.warning(f"Seeding errors: {result['errors']}")
-            
+
         return result
 
     # Mandatory agents and search paths for registry validation
@@ -212,13 +212,13 @@ class BootstrapAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
         """Ensure all mandatory agents exist and are discoverable."""
         missing = []
         found = []
-        
+
         for agent_name in self._MANDATORY_AGENTS:
             if self._try_import_agent(agent_name):
                 found.append(agent_name)
             else:
                 missing.append(agent_name)
-        
+
         self._report_registry_status(missing, len(found))
         return missing
 
@@ -227,21 +227,21 @@ class BootstrapAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
         Execute full bootstrap with territory seeding and registry validation.
         """
         print("\n[BOOTSTRAP PHASE] Full Sovereign Bootstrap Sequence...")
-        
+
         results = {
             'neural_link': False,
             'registry_valid': False,
             'territory_seeded': False,
         }
-        
+
         # Step 1: Neural link verification
         results['neural_link'] = self.verify_neural_link()
-        
+
         # Step 2: Registry validation
         Missing = self.validate_sovereign_registry()
         results['registry_valid'] = len(Missing) == 0
         results['missing_agents'] = Missing
-        
+
         # Step 3: Territory seeding (async)
         try:
             seed_result = await self.seed_initial_territory()
@@ -250,14 +250,14 @@ class BootstrapAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
         except Exception as e:
             Logger.error(f"Territory seeding failed: {e}")
             results['territory_seeded'] = False
-            
+
         # Summary
         all_ok = all([results['neural_link'], results['registry_valid']])
         if all_ok:
             print("\n   [BOOTSTRAP COMPLETE] All critical systems active.")
         else:
             print("\n   [BOOTSTRAP PARTIAL] Some systems require attention.")
-            
+
         return results
 
     @timeout(300)
@@ -271,14 +271,14 @@ class BootstrapAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
     ) -> Dict[str, int]:
         """
         Execute L0 maintenance healing operations.
-        
+
         Args:
             dry_run: If True, only report violations without fixing.
             execute: If True, apply fixes.
             depth: Current recursion depth for cycle detection.
             max_depth: Maximum allowed recursion depth.
             _call_path: Set of agent names already in call chain for cycle detection.
-            
+
         Returns:
             Dict with keys: violations, fixed, errors, skipped.
         """

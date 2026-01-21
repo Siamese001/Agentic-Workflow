@@ -21,10 +21,10 @@ logger = logging.getLogger(__name__)
 def ensure_directory(path: Union[str, Path]) -> bool:
     """
     Ensure a directory exists, creating it if necessary.
-    
+
     Args:
         path: The directory path to ensure exists.
-        
+
     Returns:
         True if directory exists or was created successfully, False otherwise.
     """
@@ -39,11 +39,11 @@ def ensure_directory(path: Union[str, Path]) -> bool:
 def safe_read_file(path: Union[str, Path], encoding: str = "utf-8") -> Optional[str]:
     """
     Safely read a file's content.
-    
+
     Args:
         path: The file path to read.
         encoding: The file encoding (default: utf-8).
-        
+
     Returns:
         The file content as a string, or None if file doesn't exist or cannot be read.
     """
@@ -61,36 +61,36 @@ def safe_read_file(path: Union[str, Path], encoding: str = "utf-8") -> Optional[
 
 
 def safe_write_file(
-    path: Union[str, Path], 
-    content: str, 
+    path: Union[str, Path],
+    content: str,
     encoding: str = "utf-8",
     make_dirs: bool = True
 ) -> bool:
     """
     Safely write content to a file using an atomic write pattern.
-    
+
     Uses write-to-temp-then-rename pattern for atomicity.
-    
+
     Args:
         path: The target file path.
         content: The content to write.
         encoding: The file encoding (default: utf-8).
         make_dirs: If True, create parent directories if they don't exist.
-        
+
     Returns:
         True if write succeeded, False otherwise.
     """
     target_path = Path(path)
     temp_path = None
-    
+
     try:
         if make_dirs:
             ensure_directory(target_path.parent)
-            
+
         # Write to a temp file first
         temp_path = target_path.with_suffix(target_path.suffix + ".tmp")
         temp_path.write_text(content, encoding=encoding)
-        
+
         # Atomic replace (POSIX compliant, usually safe on Windows too)
         # On Windows, os.replace allows overwriting
         os.replace(temp_path, target_path)
@@ -109,10 +109,10 @@ def safe_write_file(
 def safe_delete_file(path: Union[str, Path]) -> bool:
     """
     Safely delete a file if it exists.
-    
+
     Args:
         path: The file path to delete.
-        
+
     Returns:
         True if file was deleted or didn't exist, False on error.
     """
@@ -127,32 +127,32 @@ def safe_delete_file(path: Union[str, Path]) -> bool:
 
 
 def safe_copy_file(
-    src: Union[str, Path], 
+    src: Union[str, Path],
     dst: Union[str, Path],
     make_dirs: bool = True
 ) -> bool:
     """
     Safely copy a file from source to destination.
-    
+
     Args:
         src: Source file path.
         dst: Destination file path.
         make_dirs: If True, create parent directories if they don't exist.
-        
+
     Returns:
         True if copy succeeded, False otherwise.
     """
     try:
         src_path = Path(src)
         dst_path = Path(dst)
-        
+
         if not src_path.exists():
             logger.error(f"Source file does not exist: {src}")
             return False
-            
+
         if make_dirs:
             ensure_directory(dst_path.parent)
-            
+
         shutil.copy2(src_path, dst_path)
         return True
     except Exception as e:
@@ -161,32 +161,32 @@ def safe_copy_file(
 
 
 def safe_move_file(
-    src: Union[str, Path], 
+    src: Union[str, Path],
     dst: Union[str, Path],
     make_dirs: bool = True
 ) -> bool:
     """
     Safely move a file from source to destination.
-    
+
     Args:
         src: Source file path.
         dst: Destination file path.
         make_dirs: If True, create parent directories if they don't exist.
-        
+
     Returns:
         True if move succeeded, False otherwise.
     """
     try:
         src_path = Path(src)
         dst_path = Path(dst)
-        
+
         if not src_path.exists():
             logger.error(f"Source file does not exist: {src}")
             return False
-            
+
         if make_dirs:
             ensure_directory(dst_path.parent)
-            
+
         shutil.move(str(src_path), str(dst_path))
         return True
     except Exception as e:

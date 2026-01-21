@@ -46,22 +46,22 @@ class DeadlockDetectorAgent(HealerMixin, SubatomicTestingMixin):
     def _run_self_tests(self) -> bool:
         """Run self-tests for DeadlockDetectorAgent."""
         super()._run_self_tests()
-        
+
         # Test empty state
         assert isinstance(self.monitored_tasks, dict), "monitored_tasks must be dict"
         assert isinstance(self.alerted_tasks, set), "alerted_tasks must be set"
-        
+
         # Test detection logic on known patterns
         # Empty should not detect deadlock
         assert len(self.monitored_tasks) == 0 or True, "Initial state check"
-        
+
         Logger.debug(f"[SELF-TEST] {self.__class__.__name__} passed")
         return True
 
     def _perform_healing(self, anomaly: AnomalyReport) -> bool:
         """Perform healing for detected anomalies."""
         self._mcp_audit("healing_start", payload=anomaly.to_dict())
-        
+
         if anomaly.type == "stale_tasks":
             # Clear stale task monitors
             stale = [k for k, v in self.monitored_tasks.items() if v.status == "TIMEOUT"]
@@ -70,14 +70,14 @@ class DeadlockDetectorAgent(HealerMixin, SubatomicTestingMixin):
             self.alerted_tasks.clear()
             self._mcp_audit("healing_success", payload={"cleared": len(stale)})
             return True
-        
+
         if anomaly.type == "monitor_corruption":
             # Reset to clean state
             self.monitored_tasks.clear()
             self.alerted_tasks.clear()
             self._mcp_audit("healing_success")
             return True
-        
+
         return False
 
     def start_monitoring(self) -> Any:
@@ -258,11 +258,11 @@ class DeadlockDetectorAgent(HealerMixin, SubatomicTestingMixin):
     @timeout(120)
     @standard_heal
     def heal_repository(
-        self, 
-        dry_run: bool = True, 
-        execute: bool = False, 
-        depth: int = 0, 
-        max_depth: int = 3, 
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
         _call_path: Optional[set] = None
     ) -> Dict[str, int]:
         """
@@ -291,5 +291,5 @@ class DeadlockDetectorAgent(HealerMixin, SubatomicTestingMixin):
         except Exception as e:
             Logger.error(f"Deadlock healing failed: {e}")
             metrics["errors"] = metrics.get("errors", 0) + 1
-            
+
         return metrics

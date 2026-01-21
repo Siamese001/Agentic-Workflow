@@ -182,7 +182,7 @@ self.backup_dir = self.project_root / "archives" / "healing_backups" / ...
 def test_backup_folder_ssot_compliance():
     """Verify .sovereign_healing_backup is in SSOT."""
     from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
-    
+
     assert '.sovereign_healing_backup' in SOVEREIGN_REGISTRY, \
         "Backup folder must be defined in SSOT"
 ```
@@ -196,9 +196,9 @@ def test_backup_folder_ssot_compliance():
 def test_filesystem_agent_backup_location():
     """Verify FilesystemAgent uses SSOT-approved backup location."""
     from agentic_core.L5_safety.validators.FilesystemAgent import get_filesystem_agent
-    
+
     agent = get_filesystem_agent(project_root)
-    
+
     # Verify backup_dir is under SSOT-approved folder
     assert 'archives' in str(agent.backup_dir) or \
            '.sovereign_healing_backup' in SOVEREIGN_REGISTRY
@@ -213,10 +213,10 @@ def test_filesystem_agent_backup_location():
 def test_location_agent_backup_location():
     """Verify LocationAgent uses SSOT-approved backup location."""
     from agentic_core.L5_safety.validators.LocationAgent import get_location_agent
-    
+
     agent = get_location_agent(project_root)
     backup_dir = agent._initialize_backup_dir()
-    
+
     # Verify backup_dir is under SSOT-approved folder
     assert 'archives' in str(backup_dir) or \
            '.sovereign_healing_backup' in SOVEREIGN_REGISTRY
@@ -244,9 +244,9 @@ def test_naming_agent_backup_location():
 def test_healing_transaction_manager_backup_location():
     """Verify HealingTransactionManager uses SSOT-approved backup location."""
     from agentic_core.L4_state.ledger.healing_transaction_manager import HealingTransactionManager
-    
+
     manager = HealingTransactionManager()
-    
+
     # Verify backup_dir is under SSOT-approved folder
     assert 'archives' in str(manager.backup_dir) or \
            '.sovereign_healing_backup' in SOVEREIGN_REGISTRY
@@ -266,23 +266,23 @@ def test_no_unauthorized_root_folders():
         SOVEREIGN_REGISTRY,
         get_validated_project_root
     )
-    
+
     project_root = get_validated_project_root()
-    
+
     # Get all directories at root level
-    root_dirs = [d for d in os.listdir(project_root) 
+    root_dirs = [d for d in os.listdir(project_root)
                  if os.path.isdir(project_root / d) and not d.startswith('.git')]
-    
+
     # Get approved folders
     approved_folders = set(SOVEREIGN_REGISTRY.keys())
     approved_folders.update(['scripts', 'docs', 'archives', 'reports', 'data'])
-    
+
     # Check for unauthorized folders
     unauthorized = set(root_dirs) - approved_folders
-    
+
     # Filter out hidden folders that are system-generated
     unauthorized = {f for f in unauthorized if not f.startswith('.')}
-    
+
     assert len(unauthorized) == 0, \
         f"Unauthorized root folders found: {unauthorized}"
 ```

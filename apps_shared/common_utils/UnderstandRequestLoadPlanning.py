@@ -126,56 +126,56 @@ class ConfigLoadPlanner:
 
     def plan_load(self, load_request: Dict[str, Any]) -> ConfigLoadResult:
         """Plan configuration loading operations.
-        
+
         Args:
             load_request: Dictionary containing configuration loading requirements
-            
+
         Returns:
             ConfigLoadResult: Complete planning result with load plan
         """
         self.logger.info(f"Starting config load planning for: {load_request.get('plan_name', 'unknown')}")
-        
+
         try:
             # Validate input request
             self._validate_request(load_request)
-            
+
             # Parse config type
             config_type = self._parse_config_type(load_request)
-            
+
             # Parse scope
             scope = self._parse_scope(load_request)
-            
+
             # Parse sections
             sections = self._parse_sections(load_request)
-            
+
             # Parse validation rules if enabled
             validation_rules = (
-                self._parse_validation_rules(load_request) 
+                self._parse_validation_rules(load_request)
                 if self.config.enable_validation else []
             )
-            
+
             # Parse validation level
             validation_level = self._parse_validation_level(load_request)
-            
+
             # Create load plan
             load_plan = self._create_load_plan(
                 load_request, config_type, scope,
                 sections, validation_rules, validation_level
             )
-            
+
             # Count items
             parameter_count = sum(
                 len(section.parameters) for section in sections
             )
             section_count = len(sections)
             validation_rule_count = len(validation_rules)
-            
+
             # Estimate load time
             load_time = self._estimate_load_time(load_plan)
-            
+
             # Estimate memory usage
             memory_estimate = self._estimate_memory_usage(load_plan)
-            
+
             result = ConfigLoadResult(
                 success=True,
                 load_plan=load_plan,
@@ -192,13 +192,13 @@ class ConfigLoadPlanner:
                     "planner": "ConfigLoadPlanner"
                 }
             )
-            
+
             self.logger.info(
                 f"Successfully planned config load: "
                 f"{parameter_count} parameters in {section_count} sections"
             )
             return result
-            
+
         except Exception as e:
             self.logger.error(f"Config load planning failed: {str(e)}")
             return ConfigLoadResult(
@@ -214,10 +214,10 @@ class ConfigLoadPlanner:
         """Validate config load planning request."""
         if not request:
             raise ValueError("Config load planning request cannot be empty")
-        
+
         if "plan_name" not in request:
             raise ValueError("Plan name is required in config load planning request")
-        
+
         if "config_type" not in request:
             raise ValueError("Config type is required in config load planning request")
 
@@ -231,7 +231,7 @@ class ConfigLoadPlanner:
             "feature_flags": ConfigType.FEATURE_FLAGS,
             "security_config": ConfigType.SECURITY_CONFIG
         }
-        
+
         config_type_str = request.get("config_type", "app_config")
         return type_mapping.get(config_type_str, ConfigType.APP_CONFIG)
 
@@ -245,7 +245,7 @@ class ConfigLoadPlanner:
             "module": ConfigScope.MODULE,
             "user": ConfigScope.USER
         }
-        
+
         scope_str = request.get("scope", "project")
         return scope_mapping.get(scope_str, ConfigScope.PROJECT)
 
@@ -257,7 +257,7 @@ class ConfigLoadPlanner:
             "strict": ValidationLevel.STRICT,
             "comprehensive": ValidationLevel.COMPREHENSIVE
         }
-        
+
         level_str = request.get("validation_level", self.config.default_validation_level)
         return level_mapping.get(level_str, ValidationLevel.BASIC)
 
@@ -265,13 +265,13 @@ class ConfigLoadPlanner:
         """Parse sections from request."""
         sections = []
         raw_sections = request.get("sections", [])
-        
+
         for raw_section in raw_sections:
             if isinstance(raw_section, dict):
                 # Parse parameters
                 parameters = []
                 raw_params = raw_section.get("parameters", [])
-                
+
                 for raw_param in raw_params:
                     if isinstance(raw_param, dict):
                         param = ConfigParameter(
@@ -285,10 +285,10 @@ class ConfigLoadPlanner:
                             metadata=raw_param.get("metadata", {})
                         )
                         parameters.append(param)
-                
+
                 # Parse subsections recursively
                 subsections = self._parse_subsections(raw_section.get("subsections", []))
-                
+
                 section = ConfigSection(
                     name=raw_section.get("name", "unnamed"),
                     parameters=parameters,
@@ -296,7 +296,7 @@ class ConfigLoadPlanner:
                     metadata=raw_section.get("metadata", {})
                 )
                 sections.append(section)
-        
+
         # Validate parameter count
         total_params = sum(len(s.parameters) for s in sections)
         if total_params > self.config.max_parameters_per_config:
@@ -304,19 +304,19 @@ class ConfigLoadPlanner:
                 f"Number of parameters ({total_params}) exceeds maximum "
                 f"({self.config.max_parameters_per_config})"
             )
-        
+
         return sections
 
     def _parse_subsections(self, raw_subsections: List[Dict[str, Any]]) -> List[ConfigSection]:
         """Parse subsections recursively."""
         subsections = []
-        
+
         for raw_sub in raw_subsections:
             if isinstance(raw_sub, dict):
                 # Parse parameters
                 parameters = []
                 raw_params = raw_sub.get("parameters", [])
-                
+
                 for raw_param in raw_params:
                     if isinstance(raw_param, dict):
                         param = ConfigParameter(
@@ -330,12 +330,12 @@ class ConfigLoadPlanner:
                             metadata=raw_param.get("metadata", {})
                         )
                         parameters.append(param)
-                
+
                 # Recursively parse nested subsections
                 nested_subsections = self._parse_subsections(
                     raw_sub.get("subsections", [])
                 )
-                
+
                 subsection = ConfigSection(
                     name=raw_sub.get("name", "unnamed"),
                     parameters=parameters,
@@ -343,14 +343,14 @@ class ConfigLoadPlanner:
                     metadata=raw_sub.get("metadata", {})
                 )
                 subsections.append(subsection)
-        
+
         return subsections
 
     def _parse_validation_rules(self, request: Dict[str, Any]) -> List[ValidationRule]:
         """Parse validation rules from request."""
         rules = []
         raw_rules = request.get("validation_rules", [])
-        
+
         for raw_rule in raw_rules:
             if isinstance(raw_rule, dict):
                 rule = ValidationRule(
@@ -362,7 +362,7 @@ class ConfigLoadPlanner:
                     metadata=raw_rule.get("metadata", {})
                 )
                 rules.append(rule)
-        
+
         return rules
 
     def _create_load_plan(
@@ -391,16 +391,16 @@ class ConfigLoadPlanner:
     def _estimate_load_time(self, plan: ConfigLoadPlan) -> int:
         """Estimate load time in seconds."""
         base_time = 3  # Base setup time
-        
+
         # Time per parameter
         param_count = sum(
             len(section.parameters) for section in plan.sections
         )
         param_time = param_count * 0.01
-        
+
         # Time per validation rule
         validation_time = len(plan.validation_rules) * 0.05
-        
+
         # Validation level multiplier
         level_multiplier = {
             ValidationLevel.NONE: 0.5,
@@ -408,27 +408,27 @@ class ConfigLoadPlanner:
             ValidationLevel.STRICT: 1.5,
             ValidationLevel.COMPREHENSIVE: 2.0
         }
-        
+
         total_time = (
             base_time + param_time + validation_time
         ) * level_multiplier.get(plan.validation_level, 1.0)
-        
+
         return int(total_time)
 
     def _estimate_memory_usage(self, plan: ConfigLoadPlan) -> int:
         """Estimate memory usage in MB."""
         # Base memory usage
         base_memory = 10  # 10MB base
-        
+
         # Memory for parameters (assume average 512 bytes per parameter)
         param_count = sum(
             len(section.parameters) for section in plan.sections
         )
         param_memory = param_count * 512
-        
+
         # Memory for validation rules (assume average 256 bytes per rule)
         rule_memory = len(plan.validation_rules) * 256
-        
+
         # Validation level memory multiplier
         level_multiplier = {
             ValidationLevel.NONE: 0.5,
@@ -436,12 +436,12 @@ class ConfigLoadPlanner:
             ValidationLevel.STRICT: 1.5,
             ValidationLevel.COMPREHENSIVE: 2.0
         }
-        
+
         total_memory_bytes = (
-            base_memory * 1024 * 1024 + 
+            base_memory * 1024 * 1024 +
             param_memory + rule_memory
         ) * level_multiplier.get(plan.validation_level, 1.0)
-        
+
         return total_memory_bytes // (1024 * 1024)  # Convert to MB
 
 
@@ -473,7 +473,7 @@ def plan_config_load(
     config: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
     """Plan config load from simple parameters.
-    
+
     Args:
         plan_name: Name of the load plan
         config_type: Type of configuration
@@ -482,7 +482,7 @@ def plan_config_load(
         validation_rules: Optional list of validation rules
         validation_level: Level of validation to apply
         config: Optional planner configuration overrides
-        
+
     Returns:
         Dict: Planning result with load plan and resource requirements
     """
@@ -495,12 +495,12 @@ def plan_config_load(
         "validation_rules": validation_rules or [],
         "validation_level": validation_level
     }
-    
+
     # Create planner and execute
     planner_config = ConfigLoadConfig(**config) if config else None
     planner = ConfigLoadPlanner(planner_config)
     result = planner.plan_load(request)
-    
+
     # Convert result to dict for JSON serialization
     def serialize_section(section: ConfigSection) -> Dict[str, Any]:
         """Serialize a ConfigSection to a dictionary for JSON output."""
@@ -524,7 +524,7 @@ def plan_config_load(
             ],
             "metadata": section.metadata
         }
-    
+
     return {
         "success": result.success,
         "load_plan": {

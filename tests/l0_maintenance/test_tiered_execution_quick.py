@@ -16,15 +16,15 @@ def test_implementation_structure():
     print("\n" + "="*70)
     print("QUICK VALIDATION: Tiered Execution Implementation")
     print("="*70)
-    
+
     validator_path = PROJECT_ROOT / "canon_validator_agentic_v2_thin.py"
-    
+
     if not validator_path.exists():
         print("❌ canon_validator_agentic_v2_thin.py not found")
         return False
-    
+
     content = validator_path.read_text(encoding='utf-8')
-    
+
     checks = [
         ("Tier 1: Structural Stabilization", "TIER 1: Structural Stabilization"),
         ("Tier 2: Architectural Alignment", "TIER 2: Architectural Alignment"),
@@ -42,10 +42,10 @@ def test_implementation_structure():
         ("Tier results consolidation", "total_fixes = t1_results[\"total_fixes\"] + t2_results[\"total_fixes\"]"),
         ("Tiered scan mode", '"scan_mode": "tiered_sovereign_sweep"'),
     ]
-    
+
     passed = 0
     failed = 0
-    
+
     for check_name, check_string in checks:
         if check_string in content:
             print(f"   ✅ {check_name}")
@@ -53,10 +53,10 @@ def test_implementation_structure():
         else:
             print(f"   ❌ {check_name} - NOT FOUND")
             failed += 1
-    
+
     print(f"\n{'='*70}")
     print(f"Implementation Checks: {passed}/{len(checks)} passed")
-    
+
     if failed == 0:
         print("✅ All implementation checks passed!")
         return True
@@ -70,26 +70,26 @@ def test_tier_structure():
     print("\n" + "="*70)
     print("TIER STRUCTURE VALIDATION")
     print("="*70)
-    
+
     validator_path = PROJECT_ROOT / "canon_validator_agentic_v2_thin.py"
     content = validator_path.read_text(encoding='utf-8')
-    
+
     # Extract tier definitions
     tier1_agents = ["LocationAgent", "HierarchyAgent", "NamingAgent"]
     tier2_agents = ["ImportAgent", "GovernanceAgent"]
     tier4_agents = ["AutonomyGuardian"]
-    
+
     print("\n   Expected Tier Structure:")
     print(f"   Tier 1 (Structural): {tier1_agents}")
     print(f"   Tier 2 (Architectural): {tier2_agents}")
     print(f"   Tier 3 (Discovery): [Dynamic roster from build_healing_roster]")
     print(f"   Tier 4 (Safety): {tier4_agents}")
-    
+
     # Verify tier 1 agents are defined
     tier1_found = all(agent in content for agent in tier1_agents)
     tier2_found = all(agent in content for agent in tier2_agents)
     tier4_found = all(agent in content for agent in tier4_agents)
-    
+
     if tier1_found and tier2_found and tier4_found:
         print("\n   ✅ All mandatory tier agents are defined")
         return True
@@ -109,19 +109,19 @@ def test_stability_gate():
     print("\n" + "="*70)
     print("STABILITY GATE VALIDATION")
     print("="*70)
-    
+
     validator_path = PROJECT_ROOT / "canon_validator_agentic_v2_thin.py"
     content = validator_path.read_text(encoding='utf-8')
-    
+
     # Check for stability gate logic
     stability_checks = [
         'if execute_heal and t1_results.get("total_violations", 0) > 0:',
         'print("\\n[!] MISSION ABORTED: Repository filesystem is unstable.")',
         'return',
     ]
-    
+
     all_present = all(check in content for check in stability_checks)
-    
+
     if all_present:
         print("   ✅ Stability gate logic is correctly implemented")
         print("   ✅ Mission will abort if Tier 1 violations persist in execute mode")
@@ -136,10 +136,10 @@ def test_execution_timeline():
     print("\n" + "="*70)
     print("EXECUTION TIMELINE VALIDATION")
     print("="*70)
-    
+
     validator_path = PROJECT_ROOT / "canon_validator_agentic_v2_thin.py"
     content = validator_path.read_text(encoding='utf-8')
-    
+
     # Check for timeline tracking
     timeline_checks = [
         '"execution_timeline": []',
@@ -153,9 +153,9 @@ def test_execution_timeline():
         '"start": tier1_start.isoformat()',
         '"end": tier1_end.isoformat()',
     ]
-    
+
     passed = sum(1 for check in timeline_checks if check in content)
-    
+
     if passed >= 8:  # At least 8 out of 10 checks should pass
         print(f"   ✅ Execution timeline tracking is implemented ({passed}/{len(timeline_checks)} checks)")
         print("   ✅ All 4 tiers will be tracked with start/end timestamps")
@@ -170,19 +170,19 @@ def test_roster_deduplication_logic():
     print("\n" + "="*70)
     print("ROSTER DEDUPLICATION VALIDATION")
     print("="*70)
-    
+
     validator_path = PROJECT_ROOT / "canon_validator_agentic_v2_thin.py"
     content = validator_path.read_text(encoding='utf-8')
-    
+
     # Check for deduplication logic
     dedup_checks = [
         'mandatory_names = {name for name, _ in mandatory_structural}',
         'mandatory_names.add("AutonomyGuardian")',
         'discovery_roster = [a for a in full_roster if a[0] not in mandatory_names]',
     ]
-    
+
     all_present = all(check in content for check in dedup_checks)
-    
+
     if all_present:
         print("   ✅ Roster deduplication logic is correctly implemented")
         print("   ✅ Mandatory agents will be filtered from Tier 3 discovery roster")
@@ -197,7 +197,7 @@ def main():
     print("\n" + "="*70)
     print("TIERED EXECUTION FLOW - QUICK VALIDATION SUITE")
     print("="*70)
-    
+
     tests = [
         ("Implementation Structure", test_implementation_structure),
         ("Tier Structure", test_tier_structure),
@@ -205,7 +205,7 @@ def main():
         ("Execution Timeline", test_execution_timeline),
         ("Roster Deduplication", test_roster_deduplication_logic),
     ]
-    
+
     results = []
     for test_name, test_func in tests:
         try:
@@ -216,21 +216,21 @@ def main():
             import traceback
             traceback.print_exc()
             results.append((test_name, False))
-    
+
     # Summary
     print("\n" + "="*70)
     print("VALIDATION SUMMARY")
     print("="*70)
-    
+
     passed_count = sum(1 for _, passed in results if passed)
     total_count = len(results)
-    
+
     for test_name, passed in results:
         status = "✅ PASS" if passed else "❌ FAIL"
         print(f"  {status}: {test_name}")
-    
+
     print(f"\nTotal: {passed_count}/{total_count} validations passed")
-    
+
     if passed_count == total_count:
         print("\n🎉 ALL VALIDATIONS PASSED!")
         print("\nTiered execution flow implementation is correct:")

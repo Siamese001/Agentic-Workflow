@@ -16,12 +16,12 @@ logger = logging.getLogger(__name__)
 
 class TalentMetrics(BaseModel):
     """Metrics describing talent acquisition and management capabilities."""
-    
+
     team_size: int = Field(..., ge=0, description="Size of team managed")
     pedigree_keywords: List[str] = Field(default_factory=list, description="Prestige markers in team")
     retention_rate: Optional[str] = Field(None, description="Team retention rate")
     hiring_velocity: Optional[str] = Field(None, description="Hiring speed metric")
-    
+
     @validator('pedigree_keywords')
     def validate_pedigree(cls, v):
         """Ensure pedigree keywords are prestigious markers."""
@@ -32,17 +32,17 @@ class TalentMetrics(BaseModel):
             'top-tier', 'fortune 500', 'ivy league', 'stanford', 'mit',
             'cmu', 'berkeley', 'open-source', 'github', 'kaggle'
         }
-        
+
         filtered = [kw for kw in v if any(term in kw.lower() for term in prestigious_terms)]
         return filtered
 
 
 class TalentSignalEnhancer:
     """Enhances talent signals in resume content and generates network hooks."""
-    
+
     def __init__(self, candidate_background: Dict[str, Any]):
         """Initialize the talent signal enhancer.
-        
+
         Args:
             candidate_background: Candidate's professional background
         """
@@ -50,7 +50,7 @@ class TalentSignalEnhancer:
         self.management_history = candidate_background.get("management_history", [])
         self.network_size = candidate_background.get("network_size", {})
         self.has_management_experience = len(self.management_history) > 0
-        
+
         # Pedigree detection patterns
         self.pedigree_patterns = {
             "education": [
@@ -93,32 +93,32 @@ class TalentSignalEnhancer:
                 r"patented"
             ]
         }
-        
+
         logger.info(f"Initialized TalentSignalEnhancer with management experience: {self.has_management_experience}")
-    
+
     def enhance_management_bullet(self, bullet_text: str) -> str:
         """Enhance a management bullet with talent signals.
-        
+
         Args:
             bullet_text: Original management bullet
-            
+
         Returns:
             Enhanced bullet with talent attraction focus
         """
         try:
             # Extract team size
             team_size = self._extract_team_size(bullet_text)
-            
+
             # Detect pedigree in context
             pedigree = self._detect_pedigree(bullet_text)
-            
+
             # Extract hiring/retention metrics
             hiring_metric = self._extract_hiring_metric(bullet_text)
             retention_metric = self._extract_retention_metric(bullet_text)
-            
+
             # Build enhanced bullet
             enhanced = bullet_text
-            
+
             # Add team size with pedigree
             if team_size > 0:
                 if pedigree:
@@ -132,7 +132,7 @@ class TalentSignalEnhancer:
                         f"team of {team_size}",
                         f"high-performance team of {team_size}"
                     )
-            
+
             # Add hiring velocity
             if hiring_metric:
                 if "hired" in enhanced.lower():
@@ -140,29 +140,29 @@ class TalentSignalEnhancer:
                         "hired",
                         f"recruited **{hiring_metric}**"
                     )
-            
+
             # Add retention rate
             if retention_metric:
                 enhanced += f", achieving **{retention_metric} retention**"
-            
+
             # If no specific metrics, strengthen language
             if not pedigree and not hiring_metric and not retention_metric:
                 enhanced = self._strengthen_generic_bullet(enhanced, team_size)
-            
+
             logger.debug(f"Enhanced bullet: {bullet_text[:50]}... -> {enhanced[:50]}...")
-            
+
             return enhanced
-            
+
         except Exception as e:
             logger.error(f"Error enhancing management bullet: {str(e)}")
             return bullet_text
-    
+
     def generate_network_hook(self, target_role: str) -> Optional[str]:
         """Generate a P.S. hook leveraging network as asset.
-        
+
         Args:
             target_role: Role being targeted (e.g., "Senior AI Engineer")
-            
+
         Returns:
             Network hook string or None if no management experience
         """
@@ -171,31 +171,31 @@ class TalentSignalEnhancer:
             if not self.has_management_experience:
                 logger.debug("No management experience, skipping network hook")
                 return None
-            
+
             # Get network size for role
             role_network = self.network_size.get(target_role.lower(), 0)
-            
+
             if role_network < 5:
                 # Network too small to leverage
                 return None
-            
+
             # Generate hook
             hook = f"P.S. I have a specialized network of {role_network} {target_role}s who often follow me to new ventures. I could likely fill your open {target_role} roles within 60 days."
-            
+
             logger.info(f"Generated network hook for {target_role} with network size {role_network}")
-            
+
             return hook
-            
+
         except Exception as e:
             logger.error(f"Error generating network hook: {str(e)}")
             return None
-    
+
     def get_hyde_context(self, job_description: str) -> Optional[str]:
         """Get HyDE context if JD is hiring-heavy.
-        
+
         Args:
             job_description: Job description text
-            
+
         Returns:
             "Recruiting" context if hiring focus detected
         """
@@ -204,33 +204,33 @@ class TalentSignalEnhancer:
                 "hire", "hiring", "recruit", "build team", "scale team",
                 "grow team", "talent acquisition", "team building"
             ]
-            
+
             jd_lower = job_description.lower()
             hiring_count = sum(1 for keyword in hiring_keywords if keyword in jd_lower)
-            
+
             # If 3+ hiring keywords, return recruiting context
             if hiring_count >= 3:
                 return "Recruiting"
-            
+
             return None
-            
+
         except Exception as e:
             logger.error(f"Error getting HyDE context: {str(e)}")
             return None
-    
+
     def _detect_pedigree(self, text: str) -> List[str]:
         """Detect prestige markers in text.
-        
+
         Args:
             text: Text to scan for pedigree markers
-            
+
         Returns:
             List of detected prestige markers
         """
         try:
             text_lower = text.lower()
             detected = []
-            
+
             # Scan all patterns
             for category, patterns in self.pedigree_patterns.items():
                 for pattern in patterns:
@@ -243,26 +243,26 @@ class TalentSignalEnhancer:
                             formatted = match.title()
                         else:
                             formatted = match.title()
-                        
+
                         if formatted not in detected:
                             detected.append(formatted)
-            
+
             # Add generic prestigious terms if specific ones not found
             if not detected and any(term in text_lower for term in ["senior", "lead", "principal"]):
                 detected.append("Senior Talent")
-            
+
             return detected[:5]  # Limit to 5 most prestigious
-            
+
         except Exception as e:
             logger.error(f"Error detecting pedigree: {str(e)}")
             return []
-    
+
     def _extract_team_size(self, text: str) -> int:
         """Extract team size from text.
-        
+
         Args:
             text: Text containing team size
-            
+
         Returns:
             Team size number
         """
@@ -275,24 +275,24 @@ class TalentSignalEnhancer:
                 r"led (\d+)",
                 r"built a team of (\d+)"
             ]
-            
+
             for pattern in patterns:
                 match = re.search(pattern, text.lower())
                 if match:
                     return int(match.group(1))
-            
+
             return 0
-            
+
         except Exception as e:
             logger.error(f"Error extracting team size: {str(e)}")
             return 0
-    
+
     def _extract_hiring_metric(self, text: str) -> Optional[str]:
         """Extract hiring velocity from text.
-        
+
         Args:
             text: Text containing hiring information
-            
+
         Returns:
             Hiring velocity string or None
         """
@@ -303,7 +303,7 @@ class TalentSignalEnhancer:
                 r"recruited (\d+) within (\d+) months?",
                 r"built team from (\d+) to (\d+) in (\d+) months?"
             ]
-            
+
             for pattern in patterns:
                 match = re.search(pattern, text.lower())
                 if match:
@@ -313,19 +313,19 @@ class TalentSignalEnhancer:
                     elif len(groups) == 3:
                         growth = int(groups[1]) - int(groups[0])
                         return f"{growth} in <{groups[2]} months"
-            
+
             return None
-            
+
         except Exception as e:
             logger.error(f"Error extracting hiring metric: {str(e)}")
             return None
-    
+
     def _extract_retention_metric(self, text: str) -> Optional[str]:
         """Extract retention rate from text.
-        
+
         Args:
             text: Text containing retention information
-            
+
         Returns:
             Retention rate string or None
         """
@@ -336,29 +336,29 @@ class TalentSignalEnhancer:
                 r"retention of (\d+)%",
                 r"retained (\d+)%"
             ]
-            
+
             for pattern in patterns:
                 match = re.search(pattern, text.lower())
                 if match:
                     return f"{match.group(1)}%"
-            
+
             # Look for "no attrition", "zero turnover"
             if any(phrase in text.lower() for phrase in ["no attrition", "zero turnover", "100% retained"]):
                 return "100%"
-            
+
             return None
-            
+
         except Exception as e:
             logger.error(f"Error extracting retention metric: {str(e)}")
             return None
-    
+
     def _strengthen_generic_bullet(self, bullet: str, team_size: int) -> str:
         """Strengthen generic management bullet.
-        
+
         Args:
             bullet: Original bullet
             team_size: Detected team size
-            
+
         Returns:
             Strengthened bullet
         """
@@ -381,13 +381,13 @@ class TalentSignalEnhancer:
                         f"team of {team_size}",
                         f"team of {team_size} **specialized engineers**"
                     )
-            
+
             # Add leadership emphasis
             if "managed" in bullet.lower():
                 bullet = bullet.replace("managed", "built and led")
-            
+
             return bullet
-            
+
         except Exception as e:
             logger.error(f"Error strengthening generic bullet: {str(e)}")
             return bullet
@@ -396,10 +396,10 @@ class TalentSignalEnhancer:
 # Factory function for easy instantiation
 def create_talent_signal_enhancer(candidate_background: Dict[str, Any]) -> TalentSignalEnhancer:
     """Create a TalentSignalEnhancer instance.
-    
+
     Args:
         candidate_background: Candidate's professional background
-        
+
     Returns:
         Configured TalentSignalEnhancer
     """
@@ -412,20 +412,20 @@ def enhance_talent_signals(
     candidate_background: Dict[str, Any]
 ) -> Tuple[List[str], Optional[str]]:
     """Quickly enhance talent signals in bullets.
-    
+
     Args:
         bullets: List of management bullets
         candidate_background: Candidate background
-        
+
     Returns:
         Tuple of (enhanced bullets, network hook)
     """
     enhancer = create_talent_signal_enhancer(candidate_background)
     enhanced = [enhancer.enhance_management_bullet(b) for b in bullets]
-    
+
     # Generate network hook for first suitable role
     hook = None
     if enhancer.has_management_experience:
         hook = enhancer.generate_network_hook("Senior AI Engineer")
-    
+
     return enhanced, hook

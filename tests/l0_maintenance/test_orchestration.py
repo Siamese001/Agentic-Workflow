@@ -12,19 +12,19 @@ from agentic_core.L3_orchestration.workflow_engines.SSOTOrchestratorAgent import
 
 def main():
     project_root = Path(__file__).parent.parent
-    
+
     print("=" * 60)
     print("SSOT ORCHESTRATION - Post-Syntax Remediation Test")
     print("=" * 60)
     print()
-    
+
     # Initialize orchestrator
     orchestrator = SSOTOrchestratorAgent(project_root=project_root)
-    
+
     # Run orchestration with full healing enabled
     # Triggering full healing and Meta-Learning write-loop
     result = orchestrator.heal_repository(dry_run=False, execute=True)
-    
+
     # Print results
     print()
     print("=" * 60)
@@ -39,11 +39,11 @@ def main():
     print(f"Success Rate: {result.get('success_rate', 0):.1f}%")
     print(f"Execution Time: {result.get('execution_time_ms', 0):.0f}ms")
     print("=" * 60)
-    
+
     # Meta-Learning status
     if result.get('status') == 'PASS' and result.get('violations_fixed', 0) > 0:
         print(f"\n✅ Meta-Learning Enabled: {result.get('violations_fixed')} fixes recorded to L4 State.")
-    
+
     return 0 if result.get('status') == 'PASS' else 1
 
 if __name__ == '__main__':

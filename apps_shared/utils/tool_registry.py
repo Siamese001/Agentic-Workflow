@@ -17,7 +17,7 @@ Logger = logging.getLogger(__name__)
 class ToolRegistry:
     """
     SSOT for all tools. Ensures tools reside in Sovereign Territory.
-    
+
     Features:
     - Singleton pattern for global access
     - Path validation via is_path_allowed
@@ -47,21 +47,21 @@ class ToolRegistry:
         cls._tools = {}
 
     def register_tool(
-        self, 
-        tool_name: str, 
-        tool_path: str, 
+        self,
+        tool_name: str,
+        tool_path: str,
         tool_func: Callable[..., Any],
         description: str = ""
     ) -> bool:
         """
         Registers a tool only after verifying its location is sovereign.
-        
+
         Args:
             tool_name: Unique identifier for the tool
             tool_path: Path to the tool file (absolute or relative)
             tool_func: The callable function/method for the tool
             description: Optional description of the tool
-            
+
         Returns:
             True if registration succeeded, False if rejected
         """
@@ -80,7 +80,7 @@ class ToolRegistry:
                     return False
             else:
                 rel_path = path
-            
+
             # Check if path is in globally excluded directories
             path_parts = rel_path.parts
             if any(excl in path_parts for excl in GLOBAL_EXCLUDED_DIRS):
@@ -89,7 +89,7 @@ class ToolRegistry:
                     "is in a globally excluded directory."
                 )
                 return False
-            
+
             # Validate path is in Sovereign Territory
             if not is_path_allowed(str(rel_path)):
                 Logger.error(
@@ -107,7 +107,7 @@ class ToolRegistry:
             }
             Logger.info(f"[REGISTRY] SUCCESS: Tool '{tool_name}' registered and verified.")
             return True
-            
+
         except Exception as e:
             Logger.error(f"[REGISTRY] ERROR: Failed to register tool '{tool_name}': {e}")
             return False
@@ -115,10 +115,10 @@ class ToolRegistry:
     def unregister_tool(self, tool_name: str) -> bool:
         """
         Removes a tool from the registry.
-        
+
         Args:
             tool_name: Name of the tool to remove
-            
+
         Returns:
             True if removed, False if not found
         """
@@ -131,10 +131,10 @@ class ToolRegistry:
     def get_tool(self, tool_name: str) -> Optional[Dict[str, Any]]:
         """
         Retrieves a registered tool by name.
-        
+
         Args:
             tool_name: Name of the tool to retrieve
-            
+
         Returns:
             Tool dict with path, func, verified, description or None
         """
@@ -143,10 +143,10 @@ class ToolRegistry:
     def get_tool_func(self, tool_name: str) -> Optional[Callable[..., Any]]:
         """
         Retrieves just the callable function for a tool.
-        
+
         Args:
             tool_name: Name of the tool
-            
+
         Returns:
             The tool's callable function or None
         """
@@ -164,11 +164,11 @@ class ToolRegistry:
     def discover_tools(self, pattern: str = "*_tool.py", project_root: Optional[Path] = None) -> List[Path]:
         """
         Uses SovereignIndex to discover tool files matching a pattern.
-        
+
         Args:
             pattern: Glob pattern for tool files (default: *_tool.py)
             project_root: Optional project root path (defaults to cwd)
-            
+
         Returns:
             List of discovered tool file paths
         """
@@ -178,24 +178,24 @@ class ToolRegistry:
         return idx.get_files(pattern)
 
     def auto_register_from_pattern(
-        self, 
+        self,
         pattern: str = "*_tool.py",
         tool_loader: Optional[Callable[[Path], tuple]] = None
     ) -> int:
         """
         Auto-discovers and registers tools matching a pattern.
-        
+
         Args:
             pattern: Glob pattern for tool files
-            tool_loader: Optional function that takes a Path and returns 
+            tool_loader: Optional function that takes a Path and returns
                         (tool_name, tool_func, description) tuple
-                        
+
         Returns:
             Number of tools successfully registered
         """
         discovered = self.discover_tools(pattern)
         registered = 0
-        
+
         for tool_path in discovered:
             if tool_loader:
                 try:
@@ -209,7 +209,7 @@ class ToolRegistry:
                 tool_name = tool_path.stem
                 if self.register_tool(tool_name, str(tool_path), lambda: None, f"Tool from {tool_path.name}"):
                     registered += 1
-        
+
         Logger.info(f"[REGISTRY] Auto-registered {registered}/{len(discovered)} tools from pattern '{pattern}'")
         return registered
 

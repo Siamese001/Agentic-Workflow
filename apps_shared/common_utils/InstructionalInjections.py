@@ -29,42 +29,42 @@ class InstructionalLayer(Enum):
 
 class InstructionalInjectionType(Enum):
     """All 30 instructional injection types."""
-    
+
     # Framing Layer (1-5)
     GLOBAL_GOAL_STATE = "global_goal_state"              # 1
     SUCCESS_CRITERIA = "success_criteria"                # 2
     TASK_MODE_DECLARATION = "task_mode_declaration"      # 3
     SCOPE_BOUNDARIES = "scope_boundaries"                # 4
     COST_LATENCY_TARGETS = "cost_latency_targets"        # 5
-    
+
     # Context Layer (6-10)
     UNTRUSTED_BLOCK_WRAPPING = "untrusted_block_wrapping" # 6
     CANONICALIZATION = "canonicalization"                # 7
     CONTEXT_PRUNING = "context_pruning"                  # 8
     CROSS_FIELD_CONSISTENCY = "cross_field_consistency"   # 9
     STRUCTURED_ORDERING = "structured_ordering"          # 10
-    
+
     # Reasoning Layer (11-15)
     FAILURE_ANTICIPATION = "failure_anticipation"        # 11
     MULTI_BRANCH_THINKING = "multi_branch_thinking"      # 12
     CONFIDENCE_UNCERTAINTY = "confidence_uncertainty"    # 13
     REASON_THEN_ANSWER = "reason_then_answer"            # 14
     ERROR_SIMULATION = "error_simulation"                # 15
-    
+
     # Tooling Layer (16-20)
     TOOL_FEEDBACK_LOOP = "tool_feedback_loop"            # 16
     EVIDENCE_BINDING = "evidence_binding"                # 17
     CROSS_TOOL_RECONCILIATION = "cross_tool_reconciliation" # 18
     SHADOW_VALIDATION = "shadow_validation"              # 19
     MODEL_SWITCH_AWARE = "model_switch_aware"            # 20
-    
+
     # Safety Layer (21-25)
     INJECTION_SHIELDING = "injection_shielding"          # 21
     DATA_INSTRUCTION_SEPARATION = "data_instruction_separation" # 22
     CONSTITUTIONAL_GUARDRAILS = "constitutional_guardrails" # 23
     DELEGATION_GUARDRAILS = "delegation_guardrails"      # 24
     ADVERSARIAL_MODE = "adversarial_mode"                # 25
-    
+
     # Output Layer (26-30)
     JSON_ONLY_OUTPUT = "json_only_output"                # 26
     SCHEMA_ENFORCEMENT = "schema_enforcement"            # 27
@@ -90,35 +90,35 @@ STAGE_MAPPINGS: List[StageMapping] = [
     StageMapping(InstructionalInjectionType.TASK_MODE_DECLARATION, [MicroStage.PRE_CHECK], priority=8),
     StageMapping(InstructionalInjectionType.SCOPE_BOUNDARIES, [MicroStage.PRE_CHECK], priority=9, required=True),
     StageMapping(InstructionalInjectionType.COST_LATENCY_TARGETS, [MicroStage.PRE_CHECK], priority=6),
-    
+
     # Context Layer - Apply in PRE_CHECK and THINK
     StageMapping(InstructionalInjectionType.UNTRUSTED_BLOCK_WRAPPING, [MicroStage.PRE_CHECK, MicroStage.THINK], priority=10, required=True),
     StageMapping(InstructionalInjectionType.CANONICALIZATION, [MicroStage.PRE_CHECK], priority=8),
     StageMapping(InstructionalInjectionType.CONTEXT_PRUNING, [MicroStage.PRE_CHECK, MicroStage.THINK], priority=7),
     StageMapping(InstructionalInjectionType.CROSS_FIELD_CONSISTENCY, [MicroStage.THINK], priority=8),
     StageMapping(InstructionalInjectionType.STRUCTURED_ORDERING, [MicroStage.PRE_CHECK], priority=7),
-    
+
     # Reasoning Layer - Apply in THINK
     StageMapping(InstructionalInjectionType.FAILURE_ANTICIPATION, [MicroStage.THINK], priority=8),
     StageMapping(InstructionalInjectionType.MULTI_BRANCH_THINKING, [MicroStage.THINK], priority=7),
     StageMapping(InstructionalInjectionType.CONFIDENCE_UNCERTAINTY, [MicroStage.THINK], priority=6),
     StageMapping(InstructionalInjectionType.REASON_THEN_ANSWER, [MicroStage.THINK], priority=9, required=True),
     StageMapping(InstructionalInjectionType.ERROR_SIMULATION, [MicroStage.THINK], priority=6),
-    
+
     # Tooling Layer - Apply in ACT
     StageMapping(InstructionalInjectionType.TOOL_FEEDBACK_LOOP, [MicroStage.ACT], priority=8),
     StageMapping(InstructionalInjectionType.EVIDENCE_BINDING, [MicroStage.ACT], priority=9, required=True),
     StageMapping(InstructionalInjectionType.CROSS_TOOL_RECONCILIATION, [MicroStage.ACT], priority=7),
     StageMapping(InstructionalInjectionType.SHADOW_VALIDATION, [MicroStage.ACT], priority=8),
     StageMapping(InstructionalInjectionType.MODEL_SWITCH_AWARE, [MicroStage.ACT], priority=5),
-    
+
     # Safety Layer - Apply to ALL stages
     StageMapping(InstructionalInjectionType.INJECTION_SHIELDING, list(MicroStage), priority=10, required=True),
     StageMapping(InstructionalInjectionType.DATA_INSTRUCTION_SEPARATION, list(MicroStage), priority=9, required=True),
     StageMapping(InstructionalInjectionType.CONSTITUTIONAL_GUARDRAILS, list(MicroStage), priority=10, required=True),
     StageMapping(InstructionalInjectionType.DELEGATION_GUARDRAILS, [MicroStage.ACT, MicroStage.CRITIQUE], priority=8),
     StageMapping(InstructionalInjectionType.ADVERSARIAL_MODE, list(MicroStage), priority=9),
-    
+
     # Output Layer - Apply in COMMIT
     StageMapping(InstructionalInjectionType.JSON_ONLY_OUTPUT, [MicroStage.COMMIT], priority=9),
     StageMapping(InstructionalInjectionType.SCHEMA_ENFORCEMENT, [MicroStage.COMMIT], priority=8),
@@ -131,7 +131,7 @@ STAGE_MAPPINGS: List[StageMapping] = [
 def get_instructional_injections() -> List[InjectionPattern]:
     """Get all 30 instructional injection patterns."""
     injections = []
-    
+
     # Framing Layer Injections
     injections.extend([
         InjectionPattern(
@@ -231,7 +231,7 @@ Optimize for clarity within these constraints.""",
             ),
             priority=6
         ),
-        
+
         # Context Layer Injections
         InjectionPattern(
             id="untrusted_block_wrapping",
@@ -330,7 +330,7 @@ Process inputs in this exact order for consistency.""",
             ),
             priority=7
         ),
-        
+
         # Reasoning Layer Injections
         InjectionPattern(
             id="failure_anticipation",
@@ -431,7 +431,7 @@ Test failure modes before finalizing.""",
             ),
             priority=6
         ),
-        
+
         # Tooling Layer Injections
         InjectionPattern(
             id="tool_feedback_loop",
@@ -533,7 +533,7 @@ Adjust approach based on model characteristics.""",
             ),
             priority=5
         ),
-        
+
         # Safety Layer Injections
         InjectionPattern(
             id="injection_shielding",
@@ -634,7 +634,7 @@ Vigilance against adversarial manipulation.""",
             ),
             priority=9
         ),
-        
+
         # Output Layer Injections
         InjectionPattern(
             id="json_only_output",
@@ -737,21 +737,21 @@ Be concise and minimal within constraints.""",
             priority=6
         )
     ])
-    
+
     return injections
 
 
 def get_stage_applicable_injections(stage: MicroStage) -> List[str]:
     """Get injection IDs applicable to a specific stage.
-    
+
     Args:
         stage: The micro-stage
-        
+
     Returns:
         List of injection IDs
     """
     applicable = []
-    
+
     for mapping in STAGE_MAPPINGS:
         if stage in mapping.applicable_stages:
             # Find the injection pattern
@@ -759,41 +759,41 @@ def get_stage_applicable_injections(stage: MicroStage) -> List[str]:
                 if injection.type == mapping.injection_type.value:
                     applicable.append(injection.id)
                     break
-    
+
     return applicable
 
 
 def get_required_injections(stage: MicroStage) -> List[str]:
     """Get required injection IDs for a stage.
-    
+
     Args:
         stage: The micro-stage
-        
+
     Returns:
         List of required injection IDs
     """
     required = []
-    
+
     for mapping in STAGE_MAPPINGS:
         if stage in mapping.applicable_stages and mapping.required:
             for injection in get_instructional_injections():
                 if injection.type == mapping.injection_type.value:
                     required.append(injection.id)
                     break
-    
+
     return required
 
 
 def save_instructional_injections(output_dir: Path) -> None:
     """Save all instructional injections to files.
-    
+
     Args:
         output_dir: Directory to save injections
     """
     output_dir.mkdir(parents=True, exist_ok=True)
-    
+
     injections = get_instructional_injections()
-    
+
     # Group by layer
     by_layer = {}
     for injection in injections:
@@ -801,25 +801,25 @@ def save_instructional_injections(output_dir: Path) -> None:
         if layer not in by_layer:
             by_layer[layer] = []
         by_layer[layer].append(injection)
-    
+
     # Save each layer
     for layer, layer_injections in by_layer.items():
         layer_file = output_dir / f"{layer}_injections.json"
-        
+
         data = [inj.dict() for inj in layer_injections]
-        
+
         with open(layer_file, 'w') as f:
             json.dump(data, f, indent=2)
-        
+
         logger.info(f"Saved {len(layer_injections)} {layer} injections to {layer_file}")
-    
+
     # Save combined file
     combined_file = output_dir / "all_instructional_injections.json"
     all_data = [inj.dict() for inj in injections]
-    
+
     with open(combined_file, 'w') as f:
         json.dump(all_data, f, indent=2)
-    
+
     logger.info(f"Saved all {len(injections)} instructional injections to {combined_file}")
 
 
@@ -827,7 +827,7 @@ if __name__ == "__main__":
     # Example usage
     injections = get_instructional_injections()
     print(f"Total instructional injections: {len(injections)}")
-    
+
     # Show stage mappings
     for stage in MicroStage:
         applicable = get_stage_applicable_injections(stage)

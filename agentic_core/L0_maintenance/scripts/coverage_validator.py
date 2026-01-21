@@ -39,23 +39,23 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 class CoverageValidator:
     """Validates coverage and identifies violations."""
-    
+
     def __init__(self, target_coverage: float = 30.0):
         self.target_coverage = target_coverage
-    
+
     async def validate(self) -> List[Dict[str, Any]]:
         """Identify modules with coverage below target."""
         violations = []
-        
+
         # Simulate coverage check for L0 utilities
         # Phase 6.9: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_python_files
     l0_modules = list(get_python_files(Path(L0_MAINTENANCE_DIR)))
-        
+
         for module in l0_modules[:20]:  # Sample first 20 for demo
             if '__pycache__' in str(module):
                 continue
-            
+
             # Simulate 0% coverage detection
             violations.append({
                 'path': str(module),
@@ -64,19 +64,19 @@ class CoverageValidator:
                 'impact_score': 50,  # Medium impact
                 'audit_fail_count': 0
             })
-        
+
         return violations
 
 
 class CoverageHealer:
     """Heals coverage violations by creating tests."""
-    
+
     async def heal(self, violation: Dict[str, Any]) -> bool:
         """Attempt to heal a coverage violation."""
         file_path = Path(violation['path'])
-        
+
         print(f"  🔧 Healing: {file_path.name}")
-        
+
         # Simulate healing by checking if module is importable
         try:
             # Just verify file exists for now
@@ -86,38 +86,38 @@ class CoverageHealer:
         except Exception as e:
             print(f"    ✗ Healing failed: {e}")
             return False
-        
+
         return False
 
 
 async def run_autonomous_remediation():
     """Execute Phase 6 autonomous remediation loop."""
     from agentic_core.L3_orchestration.workflow_engines.mission_controller_convergence import ConvergenceEngine
-    
+
     print("🚀 Phase 6: Autonomous Remediation Loop")
     print("=" * 60)
-    
+
     # Initialize components
     validator = CoverageValidator(target_coverage=30.0)
     healer = CoverageHealer()
     engine = ConvergenceEngine(max_rounds=3)
-    
+
     # Get initial violations
     print("\n📊 Scanning for coverage violations...")
     initial_violations = await validator.validate()
     print(f"Found {len(initial_violations)} modules with 0% coverage\n")
-    
+
     # Run convergence loop
     success = await engine.run_convergence(validator, healer, initial_violations)
-    
+
     print("\n" + "=" * 60)
     if success:
         print("✅ AUTONOMOUS REMEDIATION COMPLETE")
     else:
         print("⚠️  REMEDIATION INCOMPLETE - Manual intervention may be required")
-    
+
     print(f"Round history: {engine.round_history}")
-    
+
     return success
 
 

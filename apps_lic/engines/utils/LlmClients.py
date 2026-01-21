@@ -11,7 +11,7 @@ class GeminiLLMClient:
     """
     Centralized client for all Gemini API calls with circuit breaker protection
     """
-    
+
     def __init__(self, circuit_breaker: CircuitBreaker):
         self.api_key = os.environ.get("GEMINI_API_KEY")
         if not self.api_key:
@@ -28,13 +28,13 @@ class GeminiLLMClient:
     def generate(self, prompt: str) -> str:
         """
         Generate content with circuit breaker protection
-        
+
         Args:
             prompt: The prompt string to send to Gemini
-            
+
         Returns:
             Generated text response
-            
+
         Raises:
             Exception: If API call fails
             CircuitBreakerOpenError: If circuit breaker is OPEN

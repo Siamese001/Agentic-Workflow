@@ -192,7 +192,7 @@ L4_APPROVED_FOLDERS: Set[str] = {
     'agentic_core/config/blueprint_sovereign', # 20 files - added per SSOT review
 }
 
-CORE_SUBFOLDER_MAP: Any = {'L0_maintenance': ['scripts', 'logs', 'benchmarks', 'mixins'], 'L1_cognition': ['thought_engine', 'intent_analysis', 'planning'], 'L2_execution': ['ToolRegistry', 'action_handlers', 'mcp', 'tool_registry'], 'L3_orchestration': ['workflow_engines', 'fission_logic', 'S3_vitality', 'mcp', 'meta_learning', 'interfaces'], 'L4_state': ['ValidationContext', 'ledger', 'filesystem', 'memory', 'validation_context'], 'L5_safety': ['guardrails', 'red_teaming', 'gravity', 'validators', 'agents', 'bases', 'policies', 'utils', 'verifiability'], 'L6_observability': ['dashboards', 'reports', 'metrics', 'telemetry', 'tracing', 'compliance', 'agents'], 'schemas': ['models', 'messages', 'types', 'validators'], 'config': ['blueprint_sovereign', 'environments', 'feature_flags', 'secrets_manager'], 'prompt_governance': ['meta_prompts', 'version_registry', 'rendering', 'templates'], 'runtime': ['shared_runtime', 'environment_setup', 'shared', 'resource_management'], 'utils': ['core_extensions', 'wrappers', 'general_helpers', 'naming', 'deduplicated'], 'patterns': ['agent_roles', 'communication_flow', 'interaction_patterns', 'reasoning_patterns'], 'semantic_memory': ['store', 'embeddings', 'retrieval', 'index'], 'knowledge': ['document_loaders', 'static_index', 'ResearchCache']}
+CORE_SUBFOLDER_MAP: Any = {'L0_maintenance': ['scripts', 'logs', 'benchmarks', 'mixins'], 'L1_cognition': ['thought_engine', 'intent_analysis', 'planning'], 'L2_execution': ['ToolRegistry', 'action_handlers', 'mcp', 'tool_registry', 'unified'], 'L3_orchestration': ['workflow_engines', 'fission_logic', 'S3_vitality', 'mcp', 'meta_learning', 'interfaces'], 'L4_state': ['ValidationContext', 'ledger', 'filesystem', 'memory', 'validation_context'], 'L5_safety': ['guardrails', 'red_teaming', 'gravity', 'validators', 'agents', 'bases', 'policies', 'utils', 'verifiability', 'unified', 'core'], 'L6_observability': ['dashboards', 'reports', 'metrics', 'telemetry', 'tracing', 'compliance', 'agents'], 'schemas': ['models', 'messages', 'types', 'validators'], 'config': ['blueprint_sovereign', 'environments', 'feature_flags', 'secrets_manager'], 'prompt_governance': ['meta_prompts', 'version_registry', 'rendering', 'templates'], 'runtime': ['shared_runtime', 'environment_setup', 'shared', 'resource_management'], 'utils': ['core_extensions', 'wrappers', 'general_helpers', 'naming', 'deduplicated'], 'patterns': ['agent_roles', 'communication_flow', 'interaction_patterns', 'reasoning_patterns'], 'semantic_memory': ['store', 'embeddings', 'retrieval', 'index'], 'knowledge': ['document_loaders', 'static_index', 'ResearchCache']}
 APPS_RG_SUBFOLDER_MAP: Any = {'logic_nodes': ['node_definitions', 'node_helpers'], 'asset_library': ['asset_definitions', 'asset_helpers'], 'system_flow': ['flow_definitions', 'flow_helpers'], 'engines': ['resume_engine', 'utils'], 'templates': ['template_definitions', 'template_helpers']}
 APPS_LIC_SUBFOLDER_MAP: Any = {'logic_nodes': ['node_definitions', 'node_helpers'], 'asset_library': ['asset_definitions', 'asset_helpers'], 'system_flow': ['flow_definitions', 'flow_helpers'], 'engines': ['outreach_engine', 'utils'], 'templates': ['template_definitions', 'template_helpers'], 'domain': []}
 APPS_SHARED_SUBFOLDER_MAP: Any = {'base_definitions': ['definition_helpers', 'definition_types'], 'common_utils': ['utility_helpers', 'utility_types'], 'core_components': ['component_definitions', 'component_helpers'], 'base_agents': ['agent_definitions', 'agent_helpers'], 'models': ['model_definitions', 'model_helpers'], 'utils': ['utility_helpers', 'utility_types']}
@@ -223,7 +223,7 @@ APP_SPECIFIC_TARGET_SUBFOLDER: str = "engines"
 # Files matching these patterns should NEVER be in agentic_core
 APP_SPECIFIC_PATTERNS: List[str] = [
     r'^rg_.*\.py$',           # Resume Gen files
-    r'^lic_.*\.py$',          # LinkedIn Canonical files  
+    r'^lic_.*\.py$',          # LinkedIn Canonical files
     r'^resume_.*\.py$',       # Resume-related files
     r'^outreach_.*\.py$',     # Outreach-related files
     r'^dispatch_(resume|outreach).*\.py$',  # Dispatch tools
@@ -398,12 +398,12 @@ def get_validated_project_root():
     """
     from pathlib import Path
     current = Path(__file__).resolve()
-    
+
     for parent in [current] + list(current.parents):
         markers_found = sum(1 for marker in PROJECT_ROOT_MARKERS if (parent / marker).exists())
         if markers_found >= 2:
             return parent
-    
+
     raise ValueError(f"Could not find valid project root from {__file__}")
 
 def validate_path_within_project(path, project_root=None) -> bool:
@@ -414,7 +414,7 @@ def validate_path_within_project(path, project_root=None) -> bool:
     from pathlib import Path
     if project_root is None:
         project_root = get_validated_project_root()
-    
+
     try:
         path = Path(path).resolve()
         project_root = Path(project_root).resolve()
@@ -431,12 +431,12 @@ def safe_path_join(project_root, *parts):
     from pathlib import Path
     project_root = Path(project_root).resolve()
     result = project_root.joinpath(*parts).resolve()
-    
+
     if not validate_path_within_project(result, project_root):
         raise ValueError(
             f"SAFETY VIOLATION: Path '{result}' is outside project root '{project_root}'"
         )
-    
+
     return result
 
 # === COMPREHENSIVE NAMING CONVENTIONS (SSOT) ===
@@ -453,7 +453,7 @@ NAMING_CONVENTIONS: Dict[str, Dict[str, Any]] = {
         "min_words": 2,  # At least 2 words (e.g., HealerAgent = Healer + Agent)
         "max_words": 4,  # Max 4 words (e.g., CodeDeduplicationAgent)
     },
-    
+
     # Python scripts - snake_case, high-signal, 2-3 words
     "script": {
         "pattern": r"^[a-z][a-z0-9]*(_[a-z0-9]+){1,2}\.py$",
@@ -465,7 +465,7 @@ NAMING_CONVENTIONS: Dict[str, Dict[str, Any]] = {
         "max_words": 3,
         "require_signal": True,  # Must contain CANON_SIGNALS keyword
     },
-    
+
     # Python core modules - snake_case, high-signal, 2-3 words
     "core_module": {
         "pattern": r"^[a-z][a-z0-9]*(_[a-z0-9]+){1,2}\.py$",
@@ -477,7 +477,7 @@ NAMING_CONVENTIONS: Dict[str, Dict[str, Any]] = {
         "max_words": 3,
         "require_signal": True,
     },
-    
+
     # Python base classes - snake_case ending with _base
     "base_class": {
         "pattern": r"^[a-z][a-z0-9]*(_[a-z0-9]+)*_base\.py$",
@@ -488,7 +488,7 @@ NAMING_CONVENTIONS: Dict[str, Dict[str, Any]] = {
         "min_words": 2,
         "max_words": 3,
     },
-    
+
     # Jinja templates - snake_case, descriptive, 2-3 words
     "jinja_template": {
         "pattern": r"^[a-z][a-z0-9]*(_[a-z0-9]+){1,2}\.(jinja|jinja2|j2)$",
@@ -499,7 +499,7 @@ NAMING_CONVENTIONS: Dict[str, Dict[str, Any]] = {
         "min_words": 2,
         "max_words": 3,
     },
-    
+
     # JSON config files - snake_case, descriptive, 2-3 words
     "json_config": {
         "pattern": r"^[a-z][a-z0-9]*(_[a-z0-9]+){0,2}\.json$",
@@ -510,7 +510,7 @@ NAMING_CONVENTIONS: Dict[str, Dict[str, Any]] = {
         "min_words": 1,
         "max_words": 3,
     },
-    
+
     # YAML config files - snake_case, descriptive, 2-3 words
     "yaml_config": {
         "pattern": r"^[a-z][a-z0-9]*(_[a-z0-9]+){0,2}\.(yaml|yml)$",
@@ -521,7 +521,7 @@ NAMING_CONVENTIONS: Dict[str, Dict[str, Any]] = {
         "min_words": 1,
         "max_words": 3,
     },
-    
+
     # Markdown documentation - snake_case or SCREAMING_SNAKE for special files
     "markdown_doc": {
         "pattern": r"^([a-z][a-z0-9]*(_[a-z0-9]+){0,3}|[A-Z][A-Z0-9]*(_[A-Z0-9]+)*)\.md$",
@@ -532,7 +532,7 @@ NAMING_CONVENTIONS: Dict[str, Dict[str, Any]] = {
         "min_words": 1,
         "max_words": 4,
     },
-    
+
     # Text files - snake_case, descriptive
     "text_file": {
         "pattern": r"^[a-z][a-z0-9]*(_[a-z0-9]+){0,2}\.txt$",
@@ -632,10 +632,10 @@ ALLOWED_DUPLICATE_FILENAMES: frozenset[str] = frozenset({
     # Python package infrastructure (MUST exist in every package)
     '__init__.py',
     '__main__.py',
-    
+
     # Testing infrastructure (pytest requires these in test directories)
     'conftest.py',
-    
+
     # Common module patterns (legitimate per-package definitions)
     'context.py',
     'config.py',
@@ -647,18 +647,18 @@ ALLOWED_DUPLICATE_FILENAMES: frozenset[str] = frozenset({
     'utils.py',
     'helpers.py',
     'common.py',
-    
+
     # Observability patterns (per-engine instrumentation)
     'observability.py',
     'metrics.py',
     'logging.py',
     'tracing.py',
-    
+
     # Autonomous agent patterns (per-engine autonomy)
     'proactive.py',
     'autonomous.py',
     'self_healing.py',
-    
+
     # Prompt patterns (per-domain prompts)
     'prompts.py',
     'templates.py',
@@ -668,35 +668,35 @@ ALLOWED_DUPLICATE_FILENAMES: frozenset[str] = frozenset({
 def safe_prefixed_filename(prefix: str, filename: str) -> str:
     """
     SSOT safeguard: Generate a prefixed filename WITHOUT duplicate prefixes.
-    
+
     Prevents name sprawl like:
         healing_strategies.py -> healing_healing_strategies.py (BAD)
-        
+
     Instead produces:
         healing_strategies.py -> healing_strategies.py (already has prefix)
         strategies.py -> healing_strategies.py (prefix added)
-    
+
     Args:
         prefix: The prefix to add (e.g., 'healing', 'auditors')
         filename: The original filename
-        
+
     Returns:
         Filename with prefix added only if not already present
     """
     if not prefix:
         return filename
-    
+
     # Normalize prefix (remove trailing underscore if present)
     prefix = prefix.rstrip('_')
-    
+
     # Check if filename already starts with the prefix
     stem = filename.rsplit('.', 1)[0] if '.' in filename else filename
     suffix = '.' + filename.rsplit('.', 1)[1] if '.' in filename else ''
-    
+
     # If already has prefix, return unchanged
     if stem.startswith(prefix + '_') or stem == prefix:
         return filename
-    
+
     # Add prefix
     return f"{prefix}_{filename}"
 
@@ -704,22 +704,22 @@ def safe_prefixed_filename(prefix: str, filename: str) -> str:
 def validate_no_duplicate_prefix(filename: str) -> tuple[bool, str]:
     """
     SSOT safeguard: Detect if a filename has duplicate prefixes.
-    
+
     Examples of violations:
         healing_healing_strategies.py -> True, "Duplicate prefix: healing_"
         auditors_auditors_report.py -> True, "Duplicate prefix: auditors_"
-        
+
     Returns:
         (has_violation, message)
     """
     stem = filename.rsplit('.', 1)[0] if '.' in filename else filename
     parts = stem.split('_')
-    
+
     # Check for consecutive duplicate parts
     for i in range(len(parts) - 1):
         if parts[i] == parts[i + 1] and parts[i]:  # Non-empty consecutive duplicates
             return True, f"Duplicate prefix detected: '{parts[i]}_' repeated in '{filename}'"
-    
+
     return False, ""
 DISCOVERY_EXCLUDED_TERRITORIES: frozenset[str] = frozenset({'runtime_shared', 'legacy_code', 'legacy_engines', 'archives', 'stubs', 'examples'})
 PYTHON_STDLIB_MODULES: frozenset[str] = frozenset({'os', 'sys', 'pathlib', 'logging', 'asyncio', 'typing', 'dataclasses', 'collections', 'json', 're', 'datetime', 'functools', 'itertools', 'abc', 'enum', 'contextlib', 'threading', 'time', 'random', 'math', 'urllib', 'http', 'socket', 'subprocess', 'shutil', 'hashlib', 'uuid', 'copy', 'io', 'traceback', 'inspect', 'importlib', 'warnings', 'pickle'})
@@ -747,29 +747,29 @@ GLOBAL_EXCLUDED_DIRS: frozenset[str] = frozenset({
 def is_path_allowed(rel_path: Union[str, Path]) -> bool:
     """
     [SSOT] Determines if a path conforms to the SOVEREIGN_REGISTRY structure.
-    Used by agents (Filesystem/Hierarchy) as a safety brake to prevent 
+    Used by agents (Filesystem/Hierarchy) as a safety brake to prevent
     'friendly fire' archiving of validly placed files.
-    
+
     Args:
         rel_path: Path relative to project root (e.g., 'agentic_core/L2_execution/file.py')
-        
+
     Returns:
         True if path is within a valid sovereign territory, False otherwise
     """
     path_str = str(rel_path).replace("\\", "/")
     parts = path_str.split("/")
-    
+
     # 1. Check Root Whitelist (Files allowed at strict root)
     if len(parts) == 1:
         return parts[0] in ROOT_PROTECTED_FILES or parts[0] in ALLOWED_DUPLICATE_FILENAMES
 
     root = parts[0]
-    
+
     # 2. Check Sovereign Roots
     if root not in SOVEREIGN_REGISTRY:
         # If the root folder isn't known (e.g. "random_folder/"), it's invalid
         return False
-        
+
     # 3. Check First-Level Subfolders (The Sovereign Domain Check)
     # Ensures file is in e.g., 'agentic_core/L2_execution', not 'agentic_core/junk'
     if len(parts) > 1:
@@ -779,7 +779,7 @@ def is_path_allowed(rel_path: Union[str, Path]) -> bool:
             # Check if it's a .py file at root level (e.g., agentic_core/__init__.py)
             if not parts[1].endswith('.py'):
                 return False
-            
+
     # If it passed these gates, it is structurally aligned with the blueprint
     return True
 
@@ -819,7 +819,7 @@ AST_PLACEMENT_SIGNALS: Dict[str, Dict[str, Any]] = {
         "keyword_signals": ["planner", "strategy", "plan", "goal", "objective"],
         "weight": 8,
     },
-   
+
     # L2_execution placements
     "agentic_core/L2_execution/ToolRegistry": {
         "class_patterns": [".*Agent$", ".*Tool$", ".*Handler$"],
@@ -846,7 +846,7 @@ AST_PLACEMENT_SIGNALS: Dict[str, Dict[str, Any]] = {
         "keyword_signals": ["mcp", "model_context_protocol", "fetch", "client", "server"],
         "weight": 9,
     },
-   
+
     # L3_orchestration placements
     "agentic_core/L3_orchestration/workflow_engines": {
         "class_patterns": [".*Engine$", ".*Orchestrator$", ".*Controller$", ".*Coordinator$"],
@@ -873,7 +873,7 @@ AST_PLACEMENT_SIGNALS: Dict[str, Dict[str, Any]] = {
         "keyword_signals": ["meta", "learning", "adaptive", "self_improve", "evolve"],
         "weight": 7,
     },
-   
+
     # L4_state placements
     "agentic_core/L4_state/ValidationContext": {
         "class_patterns": [".*Context.*", ".*State.*", ".*Session.*"],
@@ -899,7 +899,7 @@ AST_PLACEMENT_SIGNALS: Dict[str, Dict[str, Any]] = {
         "keyword_signals": ["memory", "cache", "store", "retrieve", "embedding", "vector"],
         "weight": 9,
     },
-   
+
     # L5_safety placements
     "agentic_core/L5_safety/guardrails": {
         "class_patterns": [".*Guardrail.*", ".*Limit.*", ".*Throttle.*", ".*Healer.*"],
@@ -934,7 +934,7 @@ AST_PLACEMENT_SIGNALS: Dict[str, Dict[str, Any]] = {
         "keyword_signals": ["redteam", "adversarial", "attack", "probe", "jailbreak", "exploit"],
         "weight": 8,
     },
-   
+
     # Utils placements
     "agentic_core/utils/core_extensions": {
         "class_patterns": [".*Extension.*", ".*Mixin.*", ".*Helper.*"],
@@ -952,7 +952,7 @@ AST_PLACEMENT_SIGNALS: Dict[str, Dict[str, Any]] = {
         "keyword_signals": ["naming", "snake_case", "pascal_case", "case", "convention"],
         "weight": 7,
     },
-   
+
     # Observability placements
     "agentic_core/observability/metrics": {
         "class_patterns": [".*Metric.*", ".*Counter.*", ".*Gauge.*"],
@@ -978,7 +978,7 @@ AST_PLACEMENT_SIGNALS: Dict[str, Dict[str, Any]] = {
         "keyword_signals": ["compliance", "report", "audit", "coverage"],
         "weight": 7,
     },
-   
+
     # Schemas placements
     "agentic_core/schemas/models": {
         "class_patterns": [".*Model$", ".*Schema$", ".*DTO$"],
@@ -989,7 +989,7 @@ AST_PLACEMENT_SIGNALS: Dict[str, Dict[str, Any]] = {
         "decorator_signals": ["@dataclass"],
         "weight": 9,
     },
-   
+
     # Prompt governance placements
     "agentic_core/prompt_governance/templates": {
         "class_patterns": [".*Template.*", ".*Prompt.*"],

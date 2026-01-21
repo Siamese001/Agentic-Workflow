@@ -1,6 +1,6 @@
 # File Placement Migration Report
 
-**Date:** January 2, 2026  
+**Date:** January 2, 2026
 **Issue:** App-specific files incorrectly placed in `agentic_core`
 
 ## Executive Summary

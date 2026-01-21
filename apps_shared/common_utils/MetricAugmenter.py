@@ -26,11 +26,11 @@ class ImpactCategory(str, Enum):
 
 class BusinessImpact(BaseModel):
     """Business impact estimation for a technical metric."""
-    
+
     category: ImpactCategory = Field(..., description="Type of business impact")
     value_statement: str = Field(..., description="Business impact statement")
     confidence: float = Field(..., ge=0.0, le=1.0, description="Confidence in estimation")
-    
+
     @validator('value_statement')
     def validate_conservative_language(cls, v):
         """Ensure conservative language is used."""
@@ -42,12 +42,12 @@ class BusinessImpact(BaseModel):
 
 class AugmentedBullet(BaseModel):
     """Resume bullet with business impact augmentation."""
-    
+
     original_text: str = Field(..., description="Original bullet text")
     technical_metric: Optional[str] = Field(None, description="Detected technical metric")
     business_impact: Optional[BusinessImpact] = Field(None, description="Business impact")
     final_text: str = Field(..., description="Final augmented text")
-    
+
     @property
     def is_augmented(self) -> bool:
         """Check if bullet was augmented with business impact."""
@@ -56,15 +56,15 @@ class AugmentedBullet(BaseModel):
 
 class MetricAugmenter:
     """Translates technical metrics into business impact statements."""
-    
+
     def __init__(self, industry: str = "technology"):
         """Initialize the metric augmenter.
-        
+
         Args:
             industry: Target industry for impact estimation
         """
         self.industry = industry.lower()
-        
+
         # Metric type to business category mapping
         self.metric_mappings = {
             "latency": ImpactCategory.RETENTION,
@@ -86,7 +86,7 @@ class MetricAugmenter:
             "migration": ImpactCategory.CAPEX,
             "deployment": ImpactCategory.OPEX
         }
-        
+
         # Heuristic impact templates
         self.impact_templates = {
             ImpactCategory.RETENTION: [
@@ -115,7 +115,7 @@ class MetricAugmenter:
                 "optimizing asset utilization by est. {value}%"
             ]
         }
-        
+
         # Industry-specific multipliers
         self.industry_multipliers = {
             "technology": {"revenue": 1.2, "cost": 1.0},
@@ -124,22 +124,22 @@ class MetricAugmenter:
             "retail": {"revenue": 1.1, "cost": 0.9},
             "manufacturing": {"revenue": 1.0, "cost": 1.3}
         }
-        
+
         logger.info(f"Initialized MetricAugmenter for {industry} industry")
-    
+
     def augment_bullet(self, bullet_text: str) -> AugmentedBullet:
         """Augment a single bullet with business impact.
-        
+
         Args:
             bullet_text: Original bullet text
-            
+
         Returns:
             AugmentedBullet with business impact
         """
         try:
             # Detect ALL technical metrics
             technical_metrics = self._detect_metrics(bullet_text)
-            
+
             if not technical_metrics:
                 # No metric detected, return original
                 return AugmentedBullet(
@@ -148,17 +148,17 @@ class MetricAugmenter:
                     business_impact=None,
                     final_text=bullet_text
                 )
-            
+
             # Select the highest-impact metric
             selected_metric = self._select_highest_impact_metric(technical_metrics)
-            
+
             # Estimate business impact
             business_impact = self._estimate_impact(
                 selected_metric["type"],
                 selected_metric["value"],
                 bullet_text
             )
-            
+
             if not business_impact:
                 # Could not estimate impact
                 return AugmentedBullet(
@@ -167,17 +167,17 @@ class MetricAugmenter:
                     business_impact=None,
                     final_text=bullet_text
                 )
-            
+
             # Create augmented text
             final_text = self._create_augmented_text(bullet_text, business_impact)
-            
+
             return AugmentedBullet(
                 original_text=bullet_text,
                 technical_metric=selected_metric["type"],
                 business_impact=business_impact,
                 final_text=final_text
             )
-            
+
         except Exception as e:
             logger.error(f"Error augmenting bullet: {str(e)}")
             return AugmentedBullet(
@@ -186,13 +186,13 @@ class MetricAugmenter:
                 business_impact=None,
                 final_text=bullet_text
             )
-    
+
     def _select_highest_impact_metric(self, metrics: List[Dict[str, Any]]) -> Dict[str, Any]:
         """Select the metric with highest business impact.
-        
+
         Args:
             metrics: List of detected metrics
-            
+
         Returns:
             Selected metric with highest impact
         """
@@ -210,41 +210,41 @@ class MetricAugmenter:
             "refactoring": 2,
             "optimization": 2
         }
-        
+
         # Sort by impact priority
         sorted_metrics = sorted(
             metrics,
             key=lambda m: impact_priority.get(m["type"], 0),
             reverse=True
         )
-        
+
         return sorted_metrics[0] if sorted_metrics else metrics[0]
-    
+
     def augment_batch(self, bullets: List[str]) -> List[AugmentedBullet]:
         """Augment multiple bullets at once.
-        
+
         Args:
             bullets: List of bullet texts
-            
+
         Returns:
             List of AugmentedBullet objects
         """
         try:
             augmented = []
-            
+
             for bullet in bullets:
                 if not bullet or not isinstance(bullet, str):
                     logger.warning("Skipping invalid bullet")
                     continue
-                
+
                 augmented_bullet = self.augment_bullet(bullet)
                 augmented.append(augmented_bullet)
-            
+
             augmentation_rate = sum(1 for b in augmented if b.is_augmented) / len(augmented)
             logger.info(f"Augmented {len(augmented)} bullets, rate: {augmentation_rate:.2%}")
-            
+
             return augmented
-            
+
         except Exception as e:
             logger.error(f"Error augmenting batch: {str(e)}")
             return [AugmentedBullet(
@@ -253,20 +253,20 @@ class MetricAugmenter:
                 business_impact=None,
                 final_text=b
             ) for b in bullets if isinstance(b, str)]
-    
+
     def _detect_metrics(self, text: str) -> List[Dict[str, Any]]:
         """Detect ALL technical metrics in text.
-        
+
         Args:
             text: Text to scan for metrics
-            
+
         Returns:
             List of dictionaries with metric type and value
         """
         try:
             text_lower = text.lower()
             detected_metrics = []
-            
+
             # Regex patterns for metric detection
             patterns = {
                 "latency": [
@@ -310,7 +310,7 @@ class MetricAugmenter:
                     r"sla.*(\d+\.?\d*)"
                 ]
             }
-            
+
             # Check each pattern and collect all matches
             for metric_type, metric_patterns in patterns.items():
                 for pattern in metric_patterns:
@@ -322,7 +322,7 @@ class MetricAugmenter:
                             "pattern": pattern
                         })
                         break  # Only add one match per pattern type
-            
+
             # Check for keywords without numbers
             keywords = {
                 "migration": ["migration", "migrated"],
@@ -330,7 +330,7 @@ class MetricAugmenter:
                 "refactoring": ["refactor", "refactored"],
                 "optimization": ["optimiz", "optimised"]
             }
-            
+
             for metric_type, keyword_list in keywords.items():
                 if any(keyword in text_lower for keyword in keyword_list):
                     detected_metrics.append({
@@ -338,13 +338,13 @@ class MetricAugmenter:
                         "value": "significant",
                         "pattern": "keyword"
                     })
-            
+
             return detected_metrics
-            
+
         except Exception as e:
             logger.error(f"Error detecting metrics: {str(e)}")
             return []
-    
+
     def _estimate_impact(
         self,
         metric_type: str,
@@ -352,19 +352,19 @@ class MetricAugmenter:
         context: str
     ) -> Optional[BusinessImpact]:
         """Estimate business impact for a metric.
-        
+
         Args:
             metric_type: Type of technical metric
             metric_value: Value of the metric
             context: Original bullet text for context
-            
+
         Returns:
             BusinessImpact estimation
         """
         try:
             # Get business category
             category = self.metric_mappings.get(metric_type, ImpactCategory.OPEX)
-            
+
             # Use heuristic estimation
             if metric_type in ["latency", "speed", "response_time"]:
                 # Latency improvements typically impact retention
@@ -377,7 +377,7 @@ class MetricAugmenter:
                 else:
                     value_statement = "improving user experience and retention"
                     confidence = 0.5
-            
+
             elif metric_type in ["accuracy", "f1", "precision", "recall"]:
                 # Accuracy improvements impact revenue
                 accuracy = self._extract_number(metric_value)
@@ -391,7 +391,7 @@ class MetricAugmenter:
                 else:
                     value_statement = "enhancing product quality and trust"
                     confidence = 0.4
-            
+
             elif metric_type in ["storage", "compute", "infrastructure", "cloud", "cost"]:
                 # Infrastructure optimizations impact OpEx
                 if metric_value in ["significant"]:
@@ -407,7 +407,7 @@ class MetricAugmenter:
                     else:
                         value_statement = "optimizing operational efficiency"
                         confidence = 0.4
-            
+
             elif metric_type in ["uptime", "reliability", "availability"]:
                 # Reliability impacts risk
                 uptime = self._extract_number(metric_value)
@@ -417,33 +417,33 @@ class MetricAugmenter:
                 else:
                     value_statement = "mitigating system reliability risks"
                     confidence = 0.4
-            
+
             elif metric_type in ["migration", "deployment"]:
                 # Migrations impact CapEx
                 value_statement = "deferring est. $500K in infrastructure purchases"
                 confidence = 0.5
-            
+
             else:
                 # Default to OpEx
                 value_statement = "improving operational efficiency"
                 confidence = 0.3
-            
+
             return BusinessImpact(
                 category=category,
                 value_statement=value_statement,
                 confidence=confidence
             )
-            
+
         except Exception as e:
             logger.error(f"Error estimating impact: {str(e)}")
             return None
-    
+
     def _extract_number(self, value_str: str) -> Optional[float]:
         """Extract numeric value from string.
-        
+
         Args:
             value_str: String containing number
-            
+
         Returns:
             Extracted number or None
         """
@@ -459,29 +459,29 @@ class MetricAugmenter:
                 return float(value_str)
         except (ValueError, AttributeError):
             return None
-    
+
     def _create_augmented_text(self, original: str, impact: BusinessImpact) -> str:
         """Create final augmented text with business impact.
-        
+
         Args:
             original: Original bullet text
             impact: Business impact to add
-            
+
         Returns:
             Augmented text with impact statement
         """
         try:
             # Format the impact statement
             impact_text = f"**{impact.value_statement}**"
-            
+
             # Add to end of original text
             if original.endswith('.'):
                 augmented = f"{original[:-1]}, {impact_text}."
             else:
                 augmented = f"{original}, {impact_text}."
-            
+
             return augmented
-            
+
         except Exception as e:
             logger.error(f"Error creating augmented text: {str(e)}")
             return original
@@ -492,10 +492,10 @@ def create_metric_augmenter(
     industry: str = "technology"
 ) -> MetricAugmenter:
     """Create a MetricAugmenter instance.
-    
+
     Args:
         industry: Target industry
-        
+
     Returns:
         Configured MetricAugmenter
     """
@@ -508,11 +508,11 @@ def augment_metrics(
     industry: str = "technology"
 ) -> List[str]:
     """Quickly augment a list of bullets.
-    
+
     Args:
         bullets: List of bullet texts
         industry: Target industry
-        
+
     Returns:
         List of augmented texts
     """

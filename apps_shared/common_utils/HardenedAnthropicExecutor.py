@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class HardenedAnthropicConfig:
     """Configuration for HardenedAnthropicExecutor."""
-    
+
     # Model context limits (tokens)
     MODEL_LIMITS = {
         "claude-3-5-sonnet-20241022": 200000,
@@ -34,7 +34,7 @@ class HardenedAnthropicConfig:
         "claude-3-sonnet-20240229": 200000,
         "claude-3-haiku-20240307": 200000,
     }
-    
+
     def __init__(
         self,
         model: str = "claude-3-5-sonnet-20241022",
@@ -52,7 +52,7 @@ class HardenedAnthropicConfig:
         self.max_retries = max_retries
         self.failure_threshold = failure_threshold
         self.reset_timeout_s = reset_timeout_s
-    
+
     @property
     def max_context_tokens(self) -> int:
         """Get maximum context tokens for the model."""
@@ -61,24 +61,24 @@ class HardenedAnthropicConfig:
 
 class HardenedAnthropicExecutor(HardeningMixin):
     """Military-grade executor for Anthropic Claude API.
-    
+
     Wraps the Anthropic client with circuit breaking, retries,
     token validation, and structured telemetry.
     """
-    
+
     def __init__(
         self,
         config: Optional[HardenedAnthropicConfig] = None,
         telemetry: Optional[SystemTelemetry] = None,
     ):
         """Initialize hardened Anthropic executor.
-        
+
         Args:
             config: Optional configuration
             telemetry: Optional telemetry instance
         """
         self.config = config or HardenedAnthropicConfig()
-        
+
         # Initialize hardening mixin
         super().__init__(
             component_name="anthropic_executor",
@@ -87,77 +87,77 @@ class HardenedAnthropicExecutor(HardeningMixin):
             max_retries=self.config.max_retries,
             telemetry=telemetry,
         )
-        
+
         # Initialize Anthropic client
         self._client = None
         self._setup_client()
-    
+
     def _setup_client(self) -> None:
         """Setup Anthropic client."""
         try:
             import anthropic
         except ImportError as exc:
             raise ImportError("Anthropic package not installed. Install with: pip install anthropic") from exc
-        
+
         api_key = os.getenv("ANTHROPIC_API_KEY")
         if not api_key:
             raise RuntimeError("ANTHROPIC_API_KEY environment variable must be set")
-        
+
         self._client = anthropic.Anthropic(
             api_key=api_key,
             timeout=self.config.timeout_s,
         )
-    
+
     def _validate_token_budget(self, prompt: str) -> None:
         """Validate token budget before API call.
-        
+
         Anthropic doesn't provide official tokenization, so we use
         a conservative estimate based on character count.
-        
+
         Args:
             prompt: Input prompt text
-            
+
         Raises:
             TokenLimitError: If prompt exceeds model limits
         """
         # Conservative estimate: ~4 chars per token for Claude
         estimated_tokens = len(prompt) // 4
-        
+
         # Reserve space for max_tokens in response
         available_tokens = self.config.max_context_tokens - self.config.max_tokens
-        
+
         if estimated_tokens > available_tokens:
             raise TokenLimitError(
                 f"Prompt estimated at {estimated_tokens} tokens exceeds available budget "
                 f"({available_tokens} tokens for {self.config.model})"
             )
-    
+
     def _build_messages(
         self,
         messages: List[AgentMessage],
         system_prompt: Optional[str] = None,
     ) -> tuple[List[Dict[str, str]], Optional[str]]:
         """Build Anthropic message format.
-        
+
         Args:
             messages: Agent messages
             system_prompt: Optional system prompt
-            
+
         Returns:
             Tuple of (messages, system_prompt) for Anthropic API
         """
         # Anthropic uses system_prompt parameter separately
         anthropic_messages = []
-        
+
         # Add user/assistant messages
         for msg in messages:
             anthropic_messages.append({
                 "role": msg.role,
                 "content": msg.content
             })
-        
+
         return anthropic_messages, system_prompt
-    
+
     async def run_llm(
         self,
         prompt: str,
@@ -168,14 +168,14 @@ class HardenedAnthropicExecutor(HardeningMixin):
         messages: Optional[List[AgentMessage]] = None,
     ) -> str:
         """Run Anthropic completion with hardening.
-        
+
         Args:
             prompt: Input prompt (used if messages not provided)
             temperature: Sampling temperature override
             max_tokens: Max tokens override
             system_prompt: Optional system prompt
             messages: Alternative to prompt - list of messages
-            
+
         Returns:
             Generated text response
         """
@@ -187,7 +187,7 @@ class HardenedAnthropicExecutor(HardeningMixin):
             anthropic_messages = [{"role": "user", "content": prompt}]
             sys_prompt = system_prompt
             combined_prompt = prompt
-        
+
         # Define async operation
         async def _completion():
             response = self._client.messages.create(
@@ -197,12 +197,12 @@ class HardenedAnthropicExecutor(HardeningMixin):
                 max_tokens=max_tokens or self.config.max_tokens,
                 system=sys_prompt,
             )
-            
+
             # Extract content
             if response.content:
                 return response.content[0].text
             return ""
-        
+
         # Execute with hardening
         return await self.execute_hardened(
             operation="messages_create",
@@ -215,7 +215,7 @@ class HardenedAnthropicExecutor(HardeningMixin):
                 "has_system_prompt": bool(sys_prompt),
             },
         )
-    
+
     async def run_llm_with_response(
         self,
         prompt: str,
@@ -226,14 +226,14 @@ class HardenedAnthropicExecutor(HardeningMixin):
         messages: Optional[List[AgentMessage]] = None,
     ) -> AgentResponse:
         """Run Anthropic completion with full response metadata.
-        
+
         Args:
             prompt: Input prompt (used if messages not provided)
             temperature: Sampling temperature override
             max_tokens: Max tokens override
             system_prompt: Optional system prompt
             messages: Alternative to prompt - list of messages
-            
+
         Returns:
             AgentResponse with content and metadata
         """
@@ -245,7 +245,7 @@ class HardenedAnthropicExecutor(HardeningMixin):
             anthropic_messages = [{"role": "user", "content": prompt}]
             sys_prompt = system_prompt
             combined_prompt = prompt
-        
+
         # Define async operation with response capture
         async def _completion():
             response = self._client.messages.create(
@@ -256,7 +256,7 @@ class HardenedAnthropicExecutor(HardeningMixin):
                 system=sys_prompt,
             )
             return response
-        
+
         # Execute with hardening
         raw_response = await self.execute_hardened(
             operation="messages_create",
@@ -269,28 +269,28 @@ class HardenedAnthropicExecutor(HardeningMixin):
                 "has_system_prompt": bool(sys_prompt),
             },
         )
-        
+
         # Extract response data
         content = ""
         usage = None
-        
+
         if raw_response.content:
             content = raw_response.content[0].text
-        
+
         if hasattr(raw_response, 'usage'):
             usage = {
                 "prompt_tokens": raw_response.usage.input_tokens,
                 "completion_tokens": raw_response.usage.output_tokens,
                 "total_tokens": raw_response.usage.input_tokens + raw_response.usage.output_tokens,
             }
-        
+
         return AgentResponse(
             content=content,
             model=self.config.model,
             usage=usage,
             finish_reason=raw_response.stop_reason if raw_response else None,
         )
-    
+
     def run_llm_sync(
         self,
         prompt: str,
@@ -301,25 +301,25 @@ class HardenedAnthropicExecutor(HardeningMixin):
         messages: Optional[List[AgentMessage]] = None,
     ) -> str:
         """Synchronous version of run_llm.
-        
+
         Args:
             prompt: Input prompt
             temperature: Sampling temperature override
             max_tokens: Max tokens override
             system_prompt: Optional system prompt
             messages: Alternative to prompt - list of messages
-            
+
         Returns:
             Generated text response
         """
         import asyncio
-        
+
         # Run async method in event loop
         loop = asyncio.get_event_loop()
         if loop.is_running():
             # If already in event loop, use run_in_executor
             import concurrent.futures
-            
+
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 future = executor.submit(
                     asyncio.run,
@@ -341,12 +341,12 @@ def create_hardened_anthropic_executor(
     **kwargs
 ) -> HardenedAnthropicExecutor:
     """Create a hardened Anthropic executor.
-    
+
     Args:
         model: Anthropic model name
         temperature: Sampling temperature
         **kwargs: Additional configuration parameters
-        
+
     Returns:
         HardenedAnthropicExecutor instance
     """

@@ -25,19 +25,19 @@ sys.path.insert(0, str(Path.cwd()))
 
 try:
     from agentic_core.L5_safety.validators.AutonomyGuardianAgent import AutonomyGuardianAgent
-    
+
     project_root = Path.cwd()
     agent = AutonomyGuardianAgent(project_root)
-    
+
     print("=" * 80)
     print("TRACING DASHBOARD GENERATION")
     print("=" * 80)
-    
+
     # Check template path
     template_path = project_root / AGENTIC_CORE_DIR / "config" / "validators" / "dashboard_template.html"
     print(f"\nTemplate path: {template_path}")
     print(f"Template exists: {template_path.exists()}")
-    
+
     if template_path.exists():
         template = template_path.read_text(encoding='utf-8')
         print(f"Template size: {len(template):,} bytes")
@@ -51,24 +51,24 @@ try:
         print(f"Has 'const gaugeData = {{}}': {has_gauge}")
         print(f"Has '<!-- STRATEGIC_REVIEW_INSERT -->': {'<!-- STRATEGIC_REVIEW_INSERT -->' in template}")
         print(f"Has '<!-- TOP_RECS_INSERT -->': {'<!-- TOP_RECS_INSERT -->' in template}")
-        
+
         # Try a simple injection test
         print("\n" + "=" * 80)
         print("TESTING SIMPLE INJECTION")
         print("=" * 80)
-        
+
         test_data = [{"Territory": "Test", "Total": 1}]
         test_json = json.dumps(test_data)
-        
+
         html = template.replace('const dashboardData = [];', f'const dashboardData = {test_json};')
-        
+
         print(f"After injection, 'const dashboardData = [];' still present: {'const dashboardData = [];' in html}")
         print(f"After injection, 'const dashboardData = [' present: {'const dashboardData = [' in html}")
-        
+
     print("\n" + "=" * 80)
     print("ATTEMPTING FULL GENERATION")
     print("=" * 80)
-    
+
     try:
         agent.generate_compliance_report(markdown=False)
         print("✓ Generation completed successfully")
@@ -81,11 +81,11 @@ try:
         print(f"Message: {str(e)}")
         import traceback
         traceback.print_exc()
-    
+
     # Check if dashboard was created
     dashboard_path = project_root / REPORTS_DIR / "autonomy_dashboard.html"
     print(f"\nDashboard exists: {dashboard_path.exists()}")
-    
+
 except Exception as e:
     print(f"Fatal error: {e}")
     import traceback

@@ -1,6 +1,6 @@
 """Brand Voice Enforcer - Ensures consistent personal brand across all engines.
 
-This module enforces linguistic constraints (sentence length, vocabulary, 
+This module enforces linguistic constraints (sentence length, vocabulary,
 active voice) across all generated text in both Resume and Outreach engines.
 """
 
@@ -56,12 +56,12 @@ class ToneAnalysisResult(BaseModel):
 
 class ToneEnforcer:
     """Enforces tone rules across generated content."""
-    
+
     def __init__(self):
         """Initialize tone enforcer with default profiles."""
         # Default tone profiles
         self.profiles: Dict[ToneVoice, ToneSettings] = self._create_default_profiles()
-        
+
         # Voice-specific patterns
         self.voice_patterns = {
             ToneVoice.AUTHORITATIVE: {
@@ -90,7 +90,7 @@ class ToneEnforcer:
                 "avoid": ["maintained", "preserved", "followed"]
             }
         }
-        
+
         # Passive voice indicators
         self.passive_patterns = [
             r"\b(was|were|is|are|am|been|being)\s+\w+ed\b",
@@ -98,12 +98,12 @@ class ToneEnforcer:
             r"\b\w+ed\s+by\s+the\b",
             r"\b\w+ed\s+by\s+\w+\b"
         ]
-        
+
         logger.info("Initialized ToneEnforcer with default profiles")
-    
+
     def _create_default_profiles(self) -> Dict[ToneVoice, ToneSettings]:
         """Create default tone profiles.
-        
+
         Returns:
             Dictionary of tone settings by voice
         """
@@ -169,58 +169,58 @@ class ToneEnforcer:
                 max_passive_voice_percent=25.0
             )
         }
-    
+
     def audit_content(self, text: str, settings: ToneSettings) -> List[ToneViolation]:
         """Audit content for tone violations.
-        
+
         Args:
             text: Text to audit
             settings: Tone settings to enforce
-            
+
         Returns:
             List of violations found
         """
         violations = []
-        
+
         # Check sentence length
         violations.extend(self._check_sentence_length(text, settings))
-        
+
         # Check banned words
         violations.extend(self._check_banned_words(text, settings))
-        
+
         # Check required keywords
         violations.extend(self._check_required_keywords(text, settings))
-        
+
         # Check voice consistency
         violations.extend(self._check_voice_consistency(text, settings))
-        
+
         # Check passive voice
         violations.extend(self._check_passive_voice(text, settings))
-        
+
         # Check formality level
         violations.extend(self._check_formality(text, settings))
-        
+
         return violations
-    
+
     def _check_sentence_length(self, text: str, settings: ToneSettings) -> List[ToneViolation]:
         """Check sentence length violations.
-        
+
         Args:
             text: Text to check
             settings: Tone settings
-            
+
         Returns:
             List of violations
         """
         violations = []
-        
+
         # Split into sentences
         sentences = re.split(r'[.!?]+', text)
         sentences = [s.strip() for s in sentences if s.strip()]
-        
+
         for sentence in sentences:
             word_count = len(sentence.split())
-            
+
             if word_count > settings.max_sentence_length:
                 violations.append(ToneViolation(
                     type="sentence_length",
@@ -229,7 +229,7 @@ class ToneEnforcer:
                     location=sentence[:50] + "..." if len(sentence) > 50 else sentence,
                     suggestion=f"Consider breaking into shorter sentences"
                 ))
-            
+
             elif word_count < settings.min_sentence_length:
                 violations.append(ToneViolation(
                     type="sentence_length",
@@ -238,28 +238,28 @@ class ToneEnforcer:
                     location=sentence,
                     suggestion="Consider expanding with more detail"
                 ))
-        
+
         return violations
-    
+
     def _check_banned_words(self, text: str, settings: ToneSettings) -> List[ToneViolation]:
         """Check for banned words.
-        
+
         Args:
             text: Text to check
             settings: Tone settings
-            
+
         Returns:
             List of violations
         """
         violations = []
         text_lower = text.lower()
-        
+
         for word in settings.banned_words:
             if word.lower() in text_lower:
                 # Find word in context
                 pattern = re.compile(rf'\b{re.escape(word)}\b', re.IGNORECASE)
                 match = pattern.search(text)
-                
+
                 violations.append(ToneViolation(
                     type="banned_word",
                     severity="error",
@@ -267,27 +267,27 @@ class ToneEnforcer:
                     location=match.group() if match else word,
                     suggestion=f"Replace with stronger alternative"
                 ))
-        
+
         return violations
-    
+
     def _check_required_keywords(self, text: str, settings: ToneSettings) -> List[ToneViolation]:
         """Check for required keywords.
-        
+
         Args:
             text: Text to check
             settings: Tone settings
-            
+
         Returns:
             List of violations
         """
         violations = []
         text_lower = text.lower()
-        
+
         missing_keywords = []
         for keyword in settings.required_keywords:
             if keyword.lower() not in text_lower:
                 missing_keywords.append(keyword)
-        
+
         if missing_keywords:
             violations.append(ToneViolation(
                 type="missing_keyword",
@@ -295,34 +295,34 @@ class ToneEnforcer:
                 message=f"Missing required keywords: {', '.join(missing_keywords)}",
                 suggestion=f"Consider incorporating these keywords"
             ))
-        
+
         return violations
-    
+
     def _check_voice_consistency(self, text: str, settings: ToneSettings) -> List[ToneViolation]:
         """Check voice consistency with primary voice.
-        
+
         Args:
             text: Text to check
             settings: Tone settings
-            
+
         Returns:
             List of violations
         """
         violations = []
         voice = settings.primary_voice
-        
+
         if voice not in self.voice_patterns:
             return violations
-        
+
         patterns = self.voice_patterns[voice]
         text_lower = text.lower()
-        
+
         # Check for preferred patterns
         preferred_found = 0
         for pattern in patterns["patterns"]:
             if re.search(pattern, text_lower):
                 preferred_found += 1
-        
+
         # Check for avoided patterns
         for avoid_word in patterns["avoid"]:
             if avoid_word.lower() in text_lower:
@@ -332,7 +332,7 @@ class ToneEnforcer:
                     message=f"Voice inconsistency: '{avoid_word}' doesn't match {voice.value} tone",
                     suggestion=f"Use {voice.value} voice alternatives: {', '.join(patterns['verbs'][:3])}"
                 ))
-        
+
         # Check if enough preferred patterns found
         if preferred_found == 0 and len(patterns["patterns"]) > 0:
             violations.append(ToneViolation(
@@ -341,28 +341,28 @@ class ToneEnforcer:
                 message=f"Weak {voice.value} voice: no preferred patterns detected",
                 suggestion=f"Consider using: {', '.join(patterns['verbs'][:3])}"
             ))
-        
+
         return violations
-    
+
     def _check_passive_voice(self, text: str, settings: ToneSettings) -> List[ToneViolation]:
         """Check for excessive passive voice.
-        
+
         Args:
             text: Text to check
             settings: Tone settings
-            
+
         Returns:
             List of violations
         """
         violations = []
-        
+
         # Count sentences
         sentences = re.split(r'[.!?]+', text)
         sentences = [s.strip() for s in sentences if s.strip()]
-        
+
         if not sentences:
             return violations
-        
+
         # Count passive voice sentences
         passive_count = 0
         for sentence in sentences:
@@ -370,10 +370,10 @@ class ToneEnforcer:
                 if re.search(pattern, sentence.lower()):
                     passive_count += 1
                     break
-        
+
         # Calculate percentage
         passive_percent = (passive_count / len(sentences)) * 100
-        
+
         if passive_percent > settings.max_passive_voice_percent:
             violations.append(ToneViolation(
                 type="passive_voice",
@@ -381,21 +381,21 @@ class ToneEnforcer:
                 message=f"Too much passive voice: {passive_percent:.1f}% (max: {settings.max_passive_voice_percent}%)",
                 suggestion="Use more active voice construction"
             ))
-        
+
         return violations
-    
+
     def _check_formality(self, text: str, settings: ToneSettings) -> List[ToneViolation]:
         """Check formality level compliance.
-        
+
         Args:
             text: Text to check
             settings: Tone settings
-            
+
         Returns:
             List of violations
         """
         violations = []
-        
+
         if settings.formality_level == "formal":
             # Check for informal elements
             informal_patterns = [
@@ -405,7 +405,7 @@ class ToneEnforcer:
                 r"\bkinda\b",
                 r"\bsorta\b"
             ]
-            
+
             for pattern in informal_patterns:
                 if re.search(pattern, text.lower()):
                     violations.append(ToneViolation(
@@ -414,7 +414,7 @@ class ToneEnforcer:
                         message="Informal language detected in formal tone",
                         suggestion="Use formal language"
                     ))
-        
+
         elif settings.formality_level == "professional":
             # Check for overly casual elements
             casual_patterns = [
@@ -422,7 +422,7 @@ class ToneEnforcer:
                 r"\bain't\b",
                 r"\bcuz\b"
             ]
-            
+
             for pattern in casual_patterns:
                 if re.search(pattern, text.lower()):
                     violations.append(ToneViolation(
@@ -431,33 +431,33 @@ class ToneEnforcer:
                         message="Overly casual language detected",
                         suggestion="Use professional language"
                     ))
-        
+
         return violations
-    
+
     def analyze_tone(self, text: str) -> ToneAnalysisResult:
         """Analyze tone of text and detect voice.
-        
+
         Args:
             text: Text to analyze
-            
+
         Returns:
             Tone analysis result
         """
         # Detect primary voice
         voice_detected = self._detect_voice(text)
-        
+
         # Use detected voice or default
         settings = self.profiles.get(voice_detected, self.profiles[ToneVoice.AUTHORITATIVE])
-        
+
         # Audit content
         violations = self.audit_content(text, settings)
-        
+
         # Calculate score
         score = self._calculate_compliance_score(violations)
-        
+
         # Calculate metrics
         metrics = self._calculate_metrics(text, violations)
-        
+
         return ToneAnalysisResult(
             is_compliant=score >= 0.8,
             violations=violations,
@@ -465,68 +465,68 @@ class ToneEnforcer:
             voice_detected=voice_detected,
             metrics=metrics
         )
-    
+
     def _detect_voice(self, text: str) -> ToneVoice:
         """Detect the dominant voice in text.
-        
+
         Args:
             text: Text to analyze
-            
+
         Returns:
             Detected voice type
         """
         text_lower = text.lower()
         voice_scores = {}
-        
+
         for voice, patterns in self.voice_patterns.items():
             score = 0
-            
+
             # Count pattern matches
             for pattern in patterns["patterns"]:
                 matches = len(re.findall(pattern, text_lower))
                 score += matches
-            
+
             # Penalize avoided words
             for avoid_word in patterns["avoid"]:
                 if avoid_word.lower() in text_lower:
                     score -= 2
-            
+
             voice_scores[voice] = max(0, score)
-        
+
         # Return voice with highest score
         if voice_scores:
             return max(voice_scores, key=voice_scores.get)
-        
+
         return ToneVoice.AUTHORITATIVE  # Default
-    
+
     def _calculate_compliance_score(self, violations: List[ToneViolation]) -> float:
         """Calculate overall compliance score.
-        
+
         Args:
             violations: List of violations
-            
+
         Returns:
             Score between 0.0 and 1.0
         """
         if not violations:
             return 1.0
-        
+
         # Weight violations by severity
         weights = {"error": 10, "warning": 5, "info": 1}
         total_penalty = sum(weights.get(v.severity, 1) for v in violations)
-        
+
         # Calculate score (max penalty of 50 points)
         score = max(0.0, 1.0 - (total_penalty / 50))
-        
+
         return score
-    
+
     def _calculate_metrics(self, text: str, violations: List[ToneViolation]) -> Dict[str, float]:
         """Calculate analysis metrics.
-        
+
         Args:
             text: Analyzed text
             violations: Found violations
-            
+
         Returns:
             Metrics dictionary
         """
@@ -534,36 +534,36 @@ class ToneEnforcer:
         violation_counts = {}
         for violation in violations:
             violation_counts[violation.type] = violation_counts.get(violation.type, 0) + 1
-        
+
         # Calculate text metrics
         sentences = len(re.split(r'[.!?]+', text))
         words = len(text.split())
-        
+
         return {
             "sentences": float(sentences),
             "words": float(words),
             "avg_sentence_length": words / sentences if sentences > 0 else 0.0,
             "violations_by_type": {k: float(v) for k, v in violation_counts.items()}
         }
-    
+
     def get_profile(self, voice: ToneVoice) -> ToneSettings:
         """Get tone profile for a voice.
-        
+
         Args:
             voice: Voice type
-            
+
         Returns:
             Tone settings
         """
         return self.profiles.get(voice, self.profiles[ToneVoice.AUTHORITATIVE])
-    
+
     def create_custom_profile(
         self,
         voice: ToneVoice,
         settings: ToneSettings
     ) -> None:
         """Create or update a custom profile.
-        
+
         Args:
             voice: Voice type
             settings: Tone settings
@@ -578,7 +578,7 @@ _tone_enforcer: Optional[ToneEnforcer] = None
 
 def get_tone_enforcer() -> ToneEnforcer:
     """Get global tone enforcer instance.
-    
+
     Returns:
         ToneEnforcer instance
     """
@@ -591,11 +591,11 @@ def get_tone_enforcer() -> ToneEnforcer:
 # Convenience functions
 def audit_text(text: str, voice: ToneVoice) -> List[ToneViolation]:
     """Audit text for tone violations.
-    
+
     Args:
         text: Text to audit
         voice: Voice type to enforce
-        
+
     Returns:
         List of violations
     """
@@ -606,10 +606,10 @@ def audit_text(text: str, voice: ToneVoice) -> List[ToneViolation]:
 
 def analyze_tone(text: str) -> ToneAnalysisResult:
     """Analyze tone of text.
-    
+
     Args:
         text: Text to analyze
-        
+
     Returns:
         Tone analysis result
     """

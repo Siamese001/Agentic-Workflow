@@ -80,10 +80,10 @@ class ObservabilityExecutionAdapter:
         self._metrics_store: Dict[str, List[float]] = {}
         self._initialize_handlers()
 
-    def register_handler(self, operation_type: ObservabilityType, 
+    def register_handler(self, operation_type: ObservabilityType,
                         handler: Callable) -> None:
         """Register a handler for observability operation type.
-        
+
         Args:
             operation_type: Type of operation
             handler: Handler function
@@ -93,105 +93,105 @@ class ObservabilityExecutionAdapter:
 
     def execute(self, request: ObservabilityRequest) -> ObservabilityResult:
         """Execute observability operation.
-        
+
         Args:
             request: Observability operation request
-            
+
         Returns:
             ObservabilityResult: Result with observability data
         """
         self.logger.info(f"Executing observability operation: {request.request_id}")
-        
+
         start_time = time.time()
         trace_id = str(uuid.uuid4()) if self.config.enable_tracing else None
-        
+
         try:
             # Start trace if enabled
             if trace_id:
                 self._start_trace(trace_id, request)
-            
+
             # Get handler for operation type
             handler = self._operation_handlers.get(request.operation_type)
             if not handler:
                 return self._create_error_result(
-                    request, 
+                    request,
                     f"No handler for operation type: {request.operation_type.value}",
                     start_time
                 )
-            
+
             # Execute operation with monitoring
             result = self._execute_with_monitoring(handler, request, trace_id)
-            
+
             # Calculate execution time
             result.execution_time = time.time() - start_time
-            
+
             # Record metrics if enabled
             if self.config.enable_metrics:
                 self._record_metrics(result)
-            
+
             # End trace if enabled
             if trace_id:
                 self._end_trace(trace_id, result)
-            
+
             return result
-            
+
         except Exception as e:
             self.logger.error(f"Observability execution failed: {str(e)}")
             return self._create_error_result(request, str(e), start_time)
 
     def execute_batch(self, requests: List[ObservabilityRequest]) -> List[ObservabilityResult]:
         """Execute multiple observability operations.
-        
+
         Args:
             requests: List of operation requests
-            
+
         Returns:
             List[ObservabilityResult]: Results for all operations
         """
         results = []
-        
+
         for request in requests:
             result = self.execute(request)
             results.append(result)
-        
+
         return results
 
     def get_trace(self, trace_id: str) -> Optional[Dict[str, Any]]:
         """Get trace information.
-        
+
         Args:
             trace_id: ID of trace
-            
+
         Returns:
             Optional[Dict]: Trace data
         """
         return self._active_traces.get(trace_id)
 
-    def get_metrics(self, metric_name: str, 
+    def get_metrics(self, metric_name: str,
                    time_range: Optional[Tuple[float, float]] = None) -> List[float]:
         """Get metrics data.
-        
+
         Args:
             metric_name: Name of metric
             time_range: Optional time range filter
-            
+
         Returns:
             List[float]: Metric values
         """
         values = self._metrics_store.get(metric_name, [])
-        
+
         if time_range:
             # Filter by time range (placeholder implementation)
             pass
-        
+
         return values
 
     def clear_traces(self, older_than: Optional[float] = None) -> int:
         """Clear old traces.
-        
+
         Args:
             older_than: Clear traces older than this time (seconds)
-            
+
         Returns:
             int: Number of traces cleared
         """
@@ -199,21 +199,21 @@ class ObservabilityExecutionAdapter:
             count = len(self._active_traces)
             self._active_traces.clear()
             return count
-        
+
         # Filter traces by age
         current_time = time.time()
         to_remove = []
-        
+
         for trace_id, trace in self._active_traces.items():
             if current_time - trace.get("start_time", 0) > older_than:
                 to_remove.append(trace_id)
-        
+
         for trace_id in to_remove:
             del self._active_traces[trace_id]
-        
+
         return len(to_remove)
 
-    def _execute_with_monitoring(self, handler: Callable, 
+    def _execute_with_monitoring(self, handler: Callable,
                                 request: ObservabilityRequest,
                                 trace_id: Optional[str]) -> ObservabilityResult:
         """Execute operation with monitoring."""
@@ -221,16 +221,16 @@ class ObservabilityExecutionAdapter:
             # Add trace context to parameters
             if trace_id:
                 request.parameters["trace_id"] = trace_id
-            
+
             # Execute handler
             data = handler(request.parameters)
-            
+
             # Extract metrics from data
             metrics = {}
             if isinstance(data, dict) and "metrics" in data:
                 metrics = data["metrics"]
                 data = {k: v for k, v in data.items() if k != "metrics"}
-            
+
             # Create result
             result = ObservabilityResult(
                 request_id=request.request_id,
@@ -240,9 +240,9 @@ class ObservabilityExecutionAdapter:
                 metrics=metrics,
                 traces=[self._active_traces[trace_id]] if trace_id and trace_id in self._active_traces else []
             )
-            
+
             return result
-            
+
         except Exception as e:
             return ObservabilityResult(
                 request_id=request.request_id,
@@ -276,12 +276,12 @@ class ObservabilityExecutionAdapter:
             if metric_name not in self._metrics_store:
                 self._metrics_store[metric_name] = []
             self._metrics_store[metric_name].append(value)
-            
+
             # Keep only last 1000 values
             if len(self._metrics_store[metric_name]) > 1000:
                 self._metrics_store[metric_name] = self._metrics_store[metric_name][-1000:]
 
-    def _create_error_result(self, request: ObservabilityRequest, 
+    def _create_error_result(self, request: ObservabilityRequest,
                             error: str, start_time: float) -> ObservabilityResult:
         """Create error result."""
         return ObservabilityResult(
@@ -298,7 +298,7 @@ class ObservabilityExecutionAdapter:
         def _trace_handler(params: Dict[str, Any]) -> Dict[str, Any]:
             operation = params.get("operation")
             component = params.get("component", "unknown")
-            
+
             return {
                 "trace_data": {
                     "operation": operation,
@@ -310,13 +310,13 @@ class ObservabilityExecutionAdapter:
                     "trace_depth": 3
                 }
             }
-        
+
         # Metric operation handler
         def _metric_handler(params: Dict[str, Any]) -> Dict[str, Any]:
             metric_name = params.get("name")
             value = params.get("value", 0)
             tags = params.get("tags", {})
-            
+
             return {
                 "metric_data": {
                     "name": metric_name,
@@ -328,13 +328,13 @@ class ObservabilityExecutionAdapter:
                     "metric_collection_time": 0.05
                 }
             }
-        
+
         # Log operation handler
         def _log_handler(params: Dict[str, Any]) -> Dict[str, Any]:
             level = params.get("level", "info")
             message = params.get("message", "")
             context = params.get("context", {})
-            
+
             return {
                 "log_data": {
                     "level": level,
@@ -347,13 +347,13 @@ class ObservabilityExecutionAdapter:
                     "log_processing_time": 0.02
                 }
             }
-        
+
         # Event operation handler
         def _event_handler(params: Dict[str, Any]) -> Dict[str, Any]:
             event_type = params.get("type")
             source = params.get("source", "unknown")
             data = params.get("data", {})
-            
+
             return {
                 "event_data": {
                     "type": event_type,
@@ -365,12 +365,12 @@ class ObservabilityExecutionAdapter:
                     "event_processing_time": 0.03
                 }
             }
-        
+
         # Profile operation handler
         def _profile_handler(params: Dict[str, Any]) -> Dict[str, Any]:
             target = params.get("target")
             duration = params.get("duration", 0)
-            
+
             return {
                 "profile_data": {
                     "target": target,
@@ -383,7 +383,7 @@ class ObservabilityExecutionAdapter:
                     "samples_collected": 100
                 }
             }
-        
+
         # Register default handlers
         self.register_handler(ObservabilityType.TRACE, _trace_handler)
         self.register_handler(ObservabilityType.METRIC, _metric_handler)
@@ -418,19 +418,19 @@ def execute_observability_execution(
     execution_level: str = "basic"
 ) -> Dict[str, Any]:
     """Execute observability operation.
-    
+
     Args:
         request_id: Unique request identifier
         operation_type: Type of observability operation
         target: Target component or system
         parameters: Operation parameters
         execution_level: Level of execution detail
-        
+
     Returns:
         Dict: Observability result
     """
     adapter = create_observability_execution_adapter()
-    
+
     request = ObservabilityRequest(
         request_id=request_id,
         operation_type=ObservabilityType(operation_type),
@@ -438,9 +438,9 @@ def execute_observability_execution(
         parameters=parameters,
         execution_level=ExecutionLevel(execution_level)
     )
-    
+
     result = adapter.execute(request)
-    
+
     return {
         "request_id": result.request_id,
         "operation_type": result.operation_type.value,

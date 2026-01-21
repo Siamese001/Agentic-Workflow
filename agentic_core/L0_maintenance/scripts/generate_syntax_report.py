@@ -12,24 +12,24 @@ from agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent import UnifiedCode
 
 def main():
     project_root = Path(__file__).parent.parent
-    
+
     print("Generating comprehensive syntax error report...")
     print()
-    
+
     # Initialize validator
     agent = UnifiedCodeValidatorAgent(project_root=project_root)
-    
+
     # Run validation
     results = agent.validate_repository()
     errors = results.get('syntax_errors', [])
-    
+
     print(f"Total syntax errors: {len(errors)}")
     print()
-    
+
     if len(errors) == 0:
         print("SUCCESS: All files are syntactically valid!")
         return 0
-    
+
     # Group by layer
     by_layer = {}
     for e in errors:
@@ -52,35 +52,35 @@ def main():
             layer = 'Apps'
         else:
             layer = 'Other'
-        
+
         if layer not in by_layer:
             by_layer[layer] = []
         by_layer[layer].append(e)
-    
+
     # Print summary
     print("Errors by layer:")
     for layer in sorted(by_layer.keys()):
         print(f"  {layer}: {len(by_layer[layer])} errors")
     print()
-    
+
     # Print detailed errors
     print("=" * 80)
     print("DETAILED ERROR REPORT")
     print("=" * 80)
-    
+
     for layer in sorted(by_layer.keys()):
         print(f"\n### {layer} Layer ({len(by_layer[layer])} errors)")
         print("-" * 80)
-        
+
         for e in by_layer[layer]:
             rel_path = e.file_path.relative_to(project_root)
             print(f"\nFile: {rel_path}")
             print(f"Line: {e.line_number}, Column: {e.column_number}")
             print(f"Error: {e.error_message}")
-    
+
     print()
     print("=" * 80)
-    
+
     return 1
 
 if __name__ == '__main__':

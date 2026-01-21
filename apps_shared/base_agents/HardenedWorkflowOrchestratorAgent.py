@@ -38,7 +38,7 @@ class HardenedWorkflowOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3Subatom
     """
     Thin wrapper for Hardened Workflow Orchestrator.
     Delegates to ConsolidatedOrchestratorAgent.
-    
+
     Legacy API preserved for backward compatibility.
     """
 

@@ -31,7 +31,7 @@ class DispatchOutreachToolsAgent(HealerMixin, MCPHardenedMixin):
     def __init__(self, config: Optional[Dict[str, object]]=None) -> None:
         """
         Initialize dispatch outreach tools agent.
-        
+
         Args:
             config: Optional configuration dictionary with timeout settings
         """
@@ -47,11 +47,11 @@ class DispatchOutreachToolsAgent(HealerMixin, MCPHardenedMixin):
     def execute(self, action: str, params: Dict[str, object]) -> ExecutionResult:
         """
         Execute action with parameters.
-        
+
         Args:
             action: Action name to execute
             params: Parameters for the action
-        
+
         Returns:
             ExecutionResult with success status, output, and duration
         """

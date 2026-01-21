@@ -63,10 +63,10 @@ class GitAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         self.repo_root = repo_root or Path.cwd()
         self.remote_repo = os.getenv('CANON_REMOTE_REPO')
         self.git_cmd = ['git', '-C', str(self.repo_root)]
-        
+
         # L4 checkpoint integration
         self._ledger = None
-        
+
         if not self._is_git_repo():
             Logger.warning(f'Not in a git repository: {self.repo_root}')
             self.enabled = False
@@ -84,7 +84,7 @@ class GitAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     def _perform_healing(self, anomaly: AnomalyReport) -> bool:
         """Perform healing for tool execution anomalies with L4 integration."""
         self._mcp_audit("healing_start", payload=anomaly.to_dict())
-        
+
         if anomaly.type == "tool_failure":
             # Reset git state on tool failure
             try:
@@ -93,7 +93,7 @@ class GitAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
                 return True
             except Exception:
                 return False
-        
+
         if anomaly.type == "commit_corruption":
             # Abort any in-progress operations
             try:
@@ -102,7 +102,7 @@ class GitAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
                 return True
             except Exception:
                 return False
-        
+
         return False
 
     def _is_git_repo(self) -> bool:

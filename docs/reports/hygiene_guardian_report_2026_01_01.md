@@ -1,8 +1,8 @@
 # HygieneGuardianAgent - Full Repo Scan Report
 
-**Date:** January 1, 2026  
-**Agent:** `HygieneGuardianAgent` (L5_safety/validators)  
-**Scope:** Full repository scan  
+**Date:** January 1, 2026
+**Agent:** `HygieneGuardianAgent` (L5_safety/validators)
+**Scope:** Full repository scan
 **Status:** ✅ **CLEAN**
 
 ---

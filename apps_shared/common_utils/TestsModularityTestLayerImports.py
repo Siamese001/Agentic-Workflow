@@ -132,9 +132,3 @@ def test_prompt_files_do_not_import_providers_or_core() -> None:
             violations.append((str(path), sorted(bad)))
 
     assert not violations, f"prompt_* files importing forbidden modules: {violations}"
-
-
-
-
-
-

@@ -15,10 +15,10 @@ import time
 class RgHealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
     """
     Orchestrates the complete self-healing process for resume generation.
-    
+
     Manages multiple healing cycles with convergence detection, budget tracking,
     and automatic rollback on critical failures.
-    
+
     Attributes:
         ctx: Resume engine context containing resume state
         max_cycles: Maximum number of healing cycles to run
@@ -34,7 +34,7 @@ class RgHealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTesti
     ) -> None:
         """
         Initialize the healing orchestrator.
-        
+
         Args:
             ctx: Resume engine context
             max_cycles: Maximum healing cycles (default: 5)
@@ -50,10 +50,10 @@ class RgHealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTesti
     async def run(self) -> 'HealingResult':
         """
         Run the complete healing process.
-        
+
         Executes multiple healing cycles until convergence is achieved,
         budget is exhausted, or max cycles is reached.
-        
+
         Returns:
             HealingResult with complete execution details
         """
@@ -142,12 +142,12 @@ class RgHealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTesti
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs: Any) -> Dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
-        
+
         Args:
             dry_run: If True, only report violations without fixing
             execute: If True, apply fixes
             **kwargs: Additional healing parameters
-        
+
         Returns:
             Dict with healing summary (violations, fixed, errors)
         """

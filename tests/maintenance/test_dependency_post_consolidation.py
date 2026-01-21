@@ -1,6 +1,6 @@
 """
 file: tests/maintenance/test_dependency_post_consolidation.py
-description: Scans the live codebase to ensure no active agents are importing 
+description: Scans the live codebase to ensure no active agents are importing
              deprecated bases or legacy orchestrators.
 """
 
@@ -23,7 +23,7 @@ DEPRECATED_TERMS = [
 def find_legacy_usage():
     """Scans .py files for legacy class usage in actual code (not docs/comments)."""
     violations = []
-    
+
     # Paths to exclude from scanning (utility scripts, not live agents)
     EXCLUDED_PATHS = [
         "L0_maintenance/scripts",  # Utility/migration scripts
@@ -32,27 +32,27 @@ def find_legacy_usage():
         "__pycache__",
         "test_discovery_roster_builder.py",  # Test file with expected references
     ]
-    
+
     for root, _, files in os.walk(LIVE_CORE_PATH):
         # Skip excluded directories
         if any(excl in root.replace("\\", "/") for excl in EXCLUDED_PATHS):
             continue
-            
+
         for file in files:
             if file.endswith(".py"):
                 file_path = Path(root) / file
-                
+
                 # Skip specific files that contain deprecated terms for documentation/aliasing
                 if any(excl in str(file_path).replace("\\", "/") for excl in EXCLUDED_PATHS):
                     continue
-                
+
                 content = file_path.read_text(errors='ignore')
                 lines = content.split('\n')
                 in_docstring = False
-                
+
                 for line_num, line in enumerate(lines, 1):
                     stripped = line.strip()
-                    
+
                     # Track docstring state (triple quotes)
                     if '"""' in stripped or "'''" in stripped:
                         # Toggle docstring state (simple heuristic)
@@ -61,20 +61,20 @@ def find_legacy_usage():
                             in_docstring = not in_docstring
                         # If line has opening and closing quotes, it's a single-line docstring
                         continue
-                    
+
                     # Skip if inside docstring
                     if in_docstring:
                         continue
-                    
+
                     # Skip comment lines
                     if stripped.startswith('#'):
                         continue
-                    
+
                     # Skip lines mentioning deprecation/legacy/consolidation context
                     lower_line = line.lower()
                     if any(ctx in lower_line for ctx in ['deprecated', 'legacy', 'consolidat', 'replaces', 'from ', 'formerly']):
                         continue
-                    
+
                     for term in DEPRECATED_TERMS:
                         # Look for actual code usage patterns:
                         # - Class inheritance: class Foo(CanonBaseAgent)
@@ -89,7 +89,7 @@ def find_legacy_usage():
                             is_instantiation = re.search(term + r'\s*\(', line)
                             is_type_hint = re.search(r':\s*' + term + r'\b', line) or re.search(r'->\s*' + term + r'\b', line)
                             is_assignment = re.search(r'=\s*' + term + r'\b', line)
-                            
+
                             if is_import or is_inheritance or is_instantiation or is_type_hint or is_assignment:
                                 violations.append((str(file_path), term, line_num, stripped[:80]))
     return violations

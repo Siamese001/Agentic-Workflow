@@ -37,22 +37,22 @@ class MetricsWitnessAgent(
 ):
     """
     Sovereign witness for L6 observability metrics validation.
-    
+
     Cross-examines L6 observability metrics against constitutional expectations.
     Provides audit-ready (score, issues) tuples for governance dimensions.
-    
+
     Dimensions Validated:
         - Structural SSOT: Penalizes location/hierarchy violations.
         - Healing Resilience: Measures successful remediation ratio.
-    
+
     Hardening Features:
         - Proactive Metric recalculation on suspected drift.
         - Adaptive scoring based on system state.
         - Self-diagnosis of MetricsAgent availability.
-    
+
     Inherits:
         L0MaintenanceBaseAgent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin.
-    
+
     Attributes:
         Logger: Logger instance for this agent.
         metrics: MetricsAgent instance or None if unavailable.
@@ -62,9 +62,9 @@ class MetricsWitnessAgent(
     def __init__(self, project_root: Path) -> None:
         """
         Initialize with project root.
-        
+
         Gracefully degrades if MetricsAgent is unavailable.
-        
+
         Args:
             project_root: Path to project root directory.
         """
@@ -82,9 +82,9 @@ class MetricsWitnessAgent(
     def calculate_structural_ssot_score(self) -> Tuple[float, List[str]]:
         """
         Calculate Structural SSOT dimension score.
-        
+
         Penalizes recorded location/hierarchy violations.
-        
+
         Returns:
             Tuple of (score: float, issues: List[str]).
             Score is 0-100, with 5-point penalty per violation.
@@ -107,9 +107,9 @@ class MetricsWitnessAgent(
     def calculate_healing_resilience_score(self) -> Tuple[float, List[str]]:
         """
         Calculate Healing Resilience dimension score.
-        
+
         Measures the ratio of successful healing actions to total violations.
-        
+
         Returns:
             Tuple of (score: float, issues: List[str]).
             Score is 0-100 based on healing success ratio.
@@ -136,9 +136,9 @@ class MetricsWitnessAgent(
     async def _detect_action_opportunity(self) -> Optional[Dict[str, Any]]:
         """
         Detect opportunities for proactive action.
-        
+
         Triggers recalculation if metrics appear stale or agent unavailable.
-        
+
         Returns:
             Dict with action details if opportunity detected, None otherwise.
         """
@@ -158,11 +158,11 @@ class MetricsWitnessAgent(
     ) -> Dict[str, Tuple[float, List[str]]]:
         """
         Execute in conservative mode with cached/fallback scores.
-        
+
         Args:
             ctx: Execution context.
             **context: Additional context parameters.
-            
+
         Returns:
             Dict with dimension scores using fallback values.
         """
@@ -179,11 +179,11 @@ class MetricsWitnessAgent(
     ) -> Dict[str, str]:
         """
         Execute in minimal mode for resource preservation.
-        
+
         Args:
             ctx: Execution context.
             **context: Additional context parameters.
-            
+
         Returns:
             Dict with standby status.
         """
@@ -200,11 +200,11 @@ class MetricsWitnessAgent(
     ) -> Dict[str, Tuple[float, List[str]]]:
         """
         Execute in standard mode with full metrics calculation.
-        
+
         Args:
             ctx: Execution context.
             **context: Additional context parameters.
-            
+
         Returns:
             Dict with all dimension scores.
         """
@@ -216,7 +216,7 @@ class MetricsWitnessAgent(
     def heal_repository(self) -> Dict[str, int]:
         """
         Execute healing chain via parent class.
-        
+
         Returns:
             Dict with healing results from parent implementation.
         """

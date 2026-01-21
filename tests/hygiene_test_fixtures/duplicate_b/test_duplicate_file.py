@@ -22,14 +22,14 @@ def calculate_product(a: int, b: int) -> int:
 
 class DuplicateTestClass:
     """A test class that exists in both duplicate files."""
-    
+
     def __init__(self, value: int):
         self.value = value
-    
+
     def double(self) -> int:
         """Return double the value."""
         return self.value * 2
-    
+
     def triple(self) -> int:
         """Return triple the value."""
         return self.value * 3

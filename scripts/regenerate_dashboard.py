@@ -35,14 +35,14 @@ def regenerate_full():
     print("=" * 70)
     print("FULL Dashboard Regeneration")
     print("=" * 70)
-    
+
     # Import and run the full regeneration script
     script_path = PROJECT_ROOT / "agentic_core" / "L0_maintenance" / "scripts" / "regenerate_dashboard_full.py"
-    
+
     if not script_path.exists():
         print(f"❌ Script not found: {script_path}")
         return 1
-    
+
     # Execute the script
     import subprocess
     result = subprocess.run(
@@ -50,7 +50,7 @@ def regenerate_full():
         cwd=str(PROJECT_ROOT),
         capture_output=False
     )
-    
+
     return result.returncode
 
 
@@ -58,11 +58,11 @@ def regenerate_data_only():
     """Regenerate dashboard data files only (no HTML update)."""
     import json
     from collections import defaultdict
-    
+
     print("=" * 70)
     print("Dashboard Data-Only Regeneration")
     print("=" * 70)
-    
+
     # Import SSOT definitions
     from agentic_core.L5_safety.validators.dashboard_ssot_definitions import (
         calc_heal_cap_pct, calc_invocation_pct, calc_test_pct, calc_hardened_pct,
@@ -77,27 +77,27 @@ def regenerate_data_only():
         FIELD_MCP_HARDENED, FIELD_TYPED_PCT, FIELD_DOCUMENTED_PCT,
         FIELD_SCHEMA_STRICTNESS, FIELD_PROPER_BASE_CLASS, FIELD_CYCLOMATIC_COMPLEXITY
     )
-    
+
     from agentic_core.L0_maintenance.scripts.territory_ssot_definitions import get_territory_sort_key
-    
+
     # Load agent discovery
     discovery_file = PROJECT_ROOT / "agent_discovery_full.json"
     if not discovery_file.exists():
         print(f"❌ Discovery file not found: {discovery_file}")
         print("   Run: python scripts/full_agent_discovery.py")
         return 1
-    
+
     with open(discovery_file, 'r', encoding='utf-8') as f:
         agents = json.load(f)
-    
+
     print(f"Loaded {len(agents)} agents from discovery")
-    
+
     # Group by territory
     territories = defaultdict(list)
     for agent in agents:
         territory = agent.get(FIELD_TERRITORY, 'Unknown')
         territories[territory].append(agent)
-    
+
     # Build TOTAL row
     total_heal_cap = calc_heal_cap_pct(agents)
     total_invocation = calc_invocation_pct(agents)
@@ -109,7 +109,7 @@ def regenerate_data_only():
     total_avg_cc = calc_avg_cc(agents)
     total_complexity_health = calc_complexity_health(total_avg_cc)
     total_hardened = calc_hardened_pct(agents)
-    
+
     total_metrics = {
         FIELD_HAS_HEALING: total_heal_cap,
         FIELD_INVOCATION: total_invocation,
@@ -121,10 +121,10 @@ def regenerate_data_only():
         FIELD_SCHEMA_STRICTNESS: total_schema_pct,
         FIELD_PROPER_BASE_CLASS: total_canonical_pct
     }
-    
+
     total_health = get_canonical_health_score(total_metrics, is_l0=False)
     total_code_quality = get_canonical_code_quality_score(total_metrics)
-    
+
     total_row = {
         COL_TERRITORY: "TOTAL",
         COL_TOTAL: len(agents),
@@ -141,12 +141,12 @@ def regenerate_data_only():
         COL_CODE_QUALITY: total_code_quality,
         COL_HEALTH: total_health
     }
-    
+
     # Build territory rows
     rows = [total_row]
     for territory in sorted(territories.keys(), key=get_territory_sort_key):
         ags = territories[territory]
-        
+
         heal_cap = calc_heal_cap_pct(ags)
         invocation = calc_invocation_pct(ags)
         test_pct = calc_test_pct(ags)
@@ -157,7 +157,7 @@ def regenerate_data_only():
         canonical_pct = calc_canonical_inheritance_pct(ags)
         avg_cc = calc_avg_cc(ags)
         complexity_health = calc_complexity_health(avg_cc)
-        
+
         territory_metrics = {
             FIELD_HAS_HEALING: heal_cap,
             FIELD_INVOCATION: invocation,
@@ -169,11 +169,11 @@ def regenerate_data_only():
             FIELD_SCHEMA_STRICTNESS: schema_pct,
             FIELD_PROPER_BASE_CLASS: canonical_pct
         }
-        
+
         is_l0 = is_l0_territory(territory)
         health = get_canonical_health_score(territory_metrics, is_l0=is_l0)
         code_quality = get_canonical_code_quality_score(territory_metrics)
-        
+
         row = {
             COL_TERRITORY: territory,
             COL_TOTAL: len(ags),
@@ -191,11 +191,11 @@ def regenerate_data_only():
             COL_HEALTH: health
         }
         rows.append(row)
-    
+
     print(f"\nGenerated {len(rows)} rows (including TOTAL)")
     print(f"MCP Hardened %: {total_row[COL_HARDENED]:.1f}%")
     print(f"Test Coverage %: {total_row[COL_TEST]:.1f}%")
-    
+
     # Write to dashboard_data.js
     dashboard_data_file = PROJECT_ROOT / "agentic_core" / "L6_observability" / "dashboards" / "data" / "dashboard_data.js"
     with open(dashboard_data_file, 'w', encoding='utf-8') as f:
@@ -204,10 +204,10 @@ def regenerate_data_only():
         f.write("window.dashboardData = ")
         json.dump(rows, f, indent=2)
         f.write(";\n")
-    
+
     print(f"\n✅ Dashboard data written to {dashboard_data_file}")
     print("\nRestart the dashboard server and clear browser cache to see changes.")
-    
+
     return 0
 
 
@@ -221,13 +221,13 @@ Examples:
   python scripts/regenerate_dashboard.py --data-only   # Regenerate data files only
         """
     )
-    
+
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument('--full', action='store_true', help='Full regeneration (HTML + data)')
     group.add_argument('--data-only', action='store_true', help='Regenerate data files only')
-    
+
     args = parser.parse_args()
-    
+
     if args.full:
         return regenerate_full()
     elif args.data_only:

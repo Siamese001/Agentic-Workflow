@@ -20,7 +20,7 @@ Logger: Any = logging.getLogger(__name__)
 class GitKrakenHealingStrategy:
     """
     Autonomous healing for version control sovereignty.
-    
+
     Detects and corrects version control violations by:
     - Grouping detected violations into atomic Git transactions
     - Creating healing commits via GitKraken MCP
@@ -39,10 +39,10 @@ class GitKrakenHealingStrategy:
     async def diagnose(self, issues: List[Dict]) -> List[Dict]:
         """
         Group detected violations into atomic Git transactions.
-        
+
         Args:
             issues: List of issues from sovereignty auditor
-            
+
         Returns:
             List of fix dictionaries with action details
         """
@@ -62,11 +62,11 @@ class GitKrakenHealingStrategy:
     async def apply(self, fix: Dict, ctx: Any=None) -> bool:
         """
         Execute the commit and optional PR via the L3-routed MCP.
-        
+
         Args:
             fix: Fix dictionary with action details
             ctx: Execution context (unused)
-            
+
         Returns:
             True if fix applied successfully, False otherwise
         """
@@ -100,11 +100,11 @@ class GitKrakenHealingStrategy:
     async def _create_healing_commit(self, files: List[str], message: str) -> Dict[str, Any]:
         """
         Create a healing commit via GitKraken MCP.
-        
+
         Args:
             files: List of file paths to commit
             message: Commit message
-            
+
         Returns:
             Result dictionary with commit SHA or None if failed
         """
@@ -128,11 +128,11 @@ class GitKrakenHealingStrategy:
     async def _create_pr(self, title: str, description: str) -> bool:
         """
         Create a pull request via GitKraken MCP.
-        
+
         Args:
             title: PR title
             description: PR description
-            
+
         Returns:
             True if PR created successfully, False otherwise
         """
@@ -161,7 +161,7 @@ class GitKrakenHealingStrategy:
 async def create_gitkraken_healing_strategy() -> GitKrakenHealingStrategy:
     """
     Factory function to create a GitKraken healing strategy.
-    
+
     Returns:
         Initialized GitKrakenHealingStrategy instance
     """

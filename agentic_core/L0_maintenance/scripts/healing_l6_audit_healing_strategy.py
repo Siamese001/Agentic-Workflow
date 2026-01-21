@@ -23,7 +23,7 @@ Logger: Any = logging.getLogger(__name__)
 class L6AuditHealingStrategy:
     """
     Autonomous healing for L6 observability audit trail gaps.
-    
+
     Detects and corrects audit trail inconsistencies by:
     - Scanning healing action logs for Missing audit events
     - Cross-referencing L0 actions with L6 event records
@@ -43,10 +43,10 @@ class L6AuditHealingStrategy:
     async def diagnose(self, issues: List[Dict]) -> List[Dict]:
         """
         Diagnose Missing audit events using cross-reference logic.
-        
+
         Args:
             issues: List of issues from sovereignty auditor
-            
+
         Returns:
             List of fix dictionaries with action details
         """
@@ -63,7 +63,7 @@ class L6AuditHealingStrategy:
     async def _find_missing_audit_events(self) -> List[Dict]:
         """
         Scans recent healing transactions to ensure L6 registration.
-        
+
         Returns:
             List of Missing event data dictionaries
         """
@@ -100,11 +100,11 @@ class L6AuditHealingStrategy:
     async def apply(self, fix: Dict, ctx: Any=None) -> bool:
         """
         Apply corrective audit entry via Sovereign L6 Client.
-        
+
         Args:
             fix: Fix dictionary with action details
             ctx: Execution context (unused)
-            
+
         Returns:
             True if fix applied successfully, False otherwise
         """
@@ -135,10 +135,10 @@ class L6AuditHealingStrategy:
     async def _emit_corrective_event(self, event_data: Dict) -> bool:
         """
         Emit corrective audit event to L6 observability layer.
-        
+
         Args:
             event_data: Event data to emit
-            
+
         Returns:
             True if emission succeeded, False otherwise
         """
@@ -157,7 +157,7 @@ class L6AuditHealingStrategy:
 async def create_l6_audit_healing_strategy() -> L6AuditHealingStrategy:
     """
     Factory function to create an L6 audit healing strategy.
-    
+
     Returns:
         Initialized L6AuditHealingStrategy instance
     """

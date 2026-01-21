@@ -20,19 +20,19 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 # NAMING FIXED: SovereignSeverity → sovereign_severity
 class sovereign_severity(str, Enum):
     """Canonical SSOT for event severity levels with observability log mapping."""
-    
+
     CRITICAL = "CRITICAL"
     """Immediate threat to sovereignty — system may be compromised"""
-    
+
     ERROR = "ERROR"
     """Healing required — constitutional violation detected"""
-    
+
     WARNING = "WARNING"
     """Degradation risk — attention needed but not blocking"""
-    
+
     INFO = "INFO"
     """Normal sovereign operation — audit trail"""
-    
+
     DEBUG = "DEBUG"
     """Detailed internal diagnostics — verbose"""
 
@@ -53,128 +53,128 @@ severity_log_levels = {
 # NAMING FIXED: SovereignEventType → sovereign_event_type
 class sovereign_event_type(str, Enum):
     """Canonical SSOT for all SovereignEvent types with human-readable intent."""
-    
+
     # === GOVERNANCE ===
     AUDIT_STARTED = "AUDIT_STARTED"
     """Sovereign Auditor v3 begins multi-dimensional compliance sweep"""
-    
+
     AUDIT_COMPLETED = "AUDIT_COMPLETED"
     """Sovereign Auditor v3 finishes audit with final sovereignty score"""
-    
+
     SOVEREIGNTY_COMPROMISED = "SOVEREIGNTY_COMPROMISED"
     """Overall health score drops below 95% — healing required"""
-    
+
     SOVEREIGNTY_RESTORED = "SOVEREIGNTY_RESTORED"
     """Healing cycle restores health to ≥95%"""
-    
+
     SOVEREIGNTY_ACHIEVED = "SOVEREIGNTY_ACHIEVED"
     """Overall health reaches ≥95% — threshold for active operations met"""
-    
+
     SOVEREIGNTY_PERFECT = "SOVEREIGNTY_PERFECT"
     """Overall health reaches 100.0% — perfect constitutional alignment"""
-    
+
     # === GUARDIAN ===
     GUARDIAN_BLOCKED_COMMIT = "GUARDIAN_BLOCKED_COMMIT"
     """Pre-commit hook blocked commit due to constitutional violations"""
-    
+
     GUARDIAN_VIOLATION = "GUARDIAN_VIOLATION"
     """Guardian detected violation during enforcement check"""
-    
+
     GUARDIAN_CLEAN = "GUARDIAN_CLEAN"
     """Guardian validation passed — commit approved"""
-    
+
     # === HEALING ===
     HEALING_CYCLE_STARTED = "HEALING_CYCLE_STARTED"
     """L0 Healing Engine begins new self-correction cycle"""
-    
+
     HEALING_ACTION_APPLIED = "HEALING_ACTION_APPLIED"
     """Healing fix successfully applied via Transaction Manager"""
-    
+
     HEALING_ACTION_FAILED = "HEALING_ACTION_FAILED"
     """Healing fix failed — atomicity preserved via rollback"""
-    
+
     HEALING_TRANSACTION_START = "HEALING_TRANSACTION_START"
     """Healing transaction initiated with ACID guarantees"""
-    
+
     HEALING_TRANSACTION_COMMIT = "HEALING_TRANSACTION_COMMIT"
     """Healing transaction committed successfully"""
-    
+
     HEALING_TRANSACTION_ROLLBACK = "HEALING_TRANSACTION_ROLLBACK"
     """Healing transaction rolled back due to failure"""
-    
+
     HEALING_FIX_APPLIED = "HEALING_FIX_APPLIED"
     """Individual healing fix applied to codebase"""
-    
+
     HEALING_FIX_REVERTED = "HEALING_FIX_REVERTED"
     """Healing fix reverted due to validation failure"""
-    
+
     HEALING_CYCLE_COMPLETE = "HEALING_CYCLE_COMPLETE"
     """Healing cycle concludes with final remediation count"""
-    
+
     # === REASONING ===
     REASONING_START = "REASONING_START"
     """Reasoning chain begins execution for a goal"""
-    
+
     REASONING_END = "REASONING_END"
     """Reasoning chain completes with final conclusion"""
-    
+
     REASONING_STEP = "REASONING_STEP"
     """Individual reasoning step executed in thought chain"""
-    
+
     HYPOTHESIS_FORMED = "HYPOTHESIS_FORMED"
     """New hypothesis created during reasoning process"""
-    
+
     HYPOTHESIS_VALIDATED = "HYPOTHESIS_VALIDATED"
     """Hypothesis confirmed through evidence validation"""
-    
+
     HYPOTHESIS_REJECTED = "HYPOTHESIS_REJECTED"
     """Hypothesis disproven and discarded"""
-    
+
     DARK_REASONING_DETECTED = "DARK_REASONING_DETECTED"
     """Unlogged reasoning detected — observability gap identified"""
-    
+
     # === VIOLATION ===
     VIOLATION_DETECTED = "VIOLATION_DETECTED"
     """Guardian detects constitutional violation (SSOT, DDD, observability, etc.)"""
-    
+
     SSOT_INLINE_MODEL = "SSOT_INLINE_MODEL"
     """Inline Pydantic model detected outside schemas/ — SSOT violation"""
-    
+
     SSOT_RAW_PROMPT = "SSOT_RAW_PROMPT"
     """Raw prompt string found — should use prompt_governance SSOT"""
-    
+
     SSOT_HARDCODED_CONFIG = "SSOT_HARDCODED_CONFIG"
     """Hardcoded configuration value — should use sovereign_config SSOT"""
-    
+
     SSOT_UNDERSCORE_FIELD = "SSOT_UNDERSCORE_FIELD"
     """Underscore field detected in dataclass/BaseModel — naming violation"""
-    
+
     DDD_VIOLATION = "DDD_VIOLATION"
     """Domain-Driven Design principle violated"""
-    
+
     DDD_AGGREGATE_BYPASS = "DDD_AGGREGATE_BYPASS"
     """Aggregate boundary bypassed — direct entity access detected"""
-    
+
     DDD_UBIQUITOUS_LANGUAGE_MISSING = "DDD_UBIQUITOUS_LANGUAGE_MISSING"
     """Domain ubiquitous language not used — terminology violation"""
-    
+
     LAYER_CROSS_IMPORT = "LAYER_CROSS_IMPORT"
     """L1 agent directly imports L2 implementation — DIP violation"""
-    
+
     # === SYSTEM ===
     SYSTEM_BOOT = "SYSTEM_BOOT"
     """Agentic system initialization started"""
-    
+
     CONSTITUTION_LOAD = "CONSTITUTION_LOAD"
     """Sovereign domain constitution loaded into memory"""
-    
+
     # === MCP ===
     MCP_INTEGRATION_STARTED = "MCP_INTEGRATION_STARTED"
     """Model Context Protocol integration initiated"""
-    
+
     MCP_INTEGRATION_SUCCESS = "MCP_INTEGRATION_SUCCESS"
     """MCP integration completed successfully"""
-    
+
     MCP_INTEGRATION_FAILED = "MCP_INTEGRATION_FAILED"
     """MCP integration failed with error"""
 
@@ -182,23 +182,23 @@ class sovereign_event_type(str, Enum):
 # NAMING FIXED: SOVEREIGN_EVENT_CATEGORIES → sovereign_event_categories
 sovereign_event_categories = {
     "GOVERNANCE": [
-        sovereign_event_type.AUDIT_STARTED, 
+        sovereign_event_type.AUDIT_STARTED,
         sovereign_event_type.AUDIT_COMPLETED,
-        sovereign_event_type.SOVEREIGNTY_COMPROMISED, 
+        sovereign_event_type.SOVEREIGNTY_COMPROMISED,
         sovereign_event_type.SOVEREIGNTY_RESTORED,
         sovereign_event_type.SOVEREIGNTY_ACHIEVED,
         sovereign_event_type.SOVEREIGNTY_PERFECT
     ],
     "GUARDIAN": [
-        sovereign_event_type.GUARDIAN_BLOCKED_COMMIT, 
+        sovereign_event_type.GUARDIAN_BLOCKED_COMMIT,
         sovereign_event_type.GUARDIAN_VIOLATION,
         sovereign_event_type.GUARDIAN_CLEAN
     ],
     "HEALING": [
         sovereign_event_type.HEALING_CYCLE_STARTED,
-        sovereign_event_type.HEALING_ACTION_APPLIED, 
+        sovereign_event_type.HEALING_ACTION_APPLIED,
         sovereign_event_type.HEALING_ACTION_FAILED,
-        sovereign_event_type.HEALING_TRANSACTION_START, 
+        sovereign_event_type.HEALING_TRANSACTION_START,
         sovereign_event_type.HEALING_TRANSACTION_COMMIT,
         sovereign_event_type.HEALING_TRANSACTION_ROLLBACK,
         sovereign_event_type.HEALING_FIX_APPLIED,
@@ -206,22 +206,22 @@ sovereign_event_categories = {
         sovereign_event_type.HEALING_CYCLE_COMPLETE
     ],
     "REASONING": [
-        sovereign_event_type.REASONING_START, 
+        sovereign_event_type.REASONING_START,
         sovereign_event_type.REASONING_END,
-        sovereign_event_type.REASONING_STEP, 
+        sovereign_event_type.REASONING_STEP,
         sovereign_event_type.HYPOTHESIS_FORMED,
-        sovereign_event_type.HYPOTHESIS_VALIDATED, 
+        sovereign_event_type.HYPOTHESIS_VALIDATED,
         sovereign_event_type.HYPOTHESIS_REJECTED,
         sovereign_event_type.DARK_REASONING_DETECTED
     ],
     "VIOLATION": [
-        sovereign_event_type.VIOLATION_DETECTED, 
+        sovereign_event_type.VIOLATION_DETECTED,
         sovereign_event_type.SSOT_INLINE_MODEL,
-        sovereign_event_type.SSOT_RAW_PROMPT, 
+        sovereign_event_type.SSOT_RAW_PROMPT,
         sovereign_event_type.SSOT_HARDCODED_CONFIG,
-        sovereign_event_type.SSOT_UNDERSCORE_FIELD, 
+        sovereign_event_type.SSOT_UNDERSCORE_FIELD,
         sovereign_event_type.DDD_VIOLATION,
-        sovereign_event_type.DDD_AGGREGATE_BYPASS, 
+        sovereign_event_type.DDD_AGGREGATE_BYPASS,
         sovereign_event_type.DDD_UBIQUITOUS_LANGUAGE_MISSING,
         sovereign_event_type.LAYER_CROSS_IMPORT
     ],
@@ -244,7 +244,7 @@ class sovereign_base_model(BaseModel):
 # NAMING FIXED: Territory → territory
 class territory(sovereign_base_model):
     '''Brief description of functionality and purpose.'''
-    
+
     name: str
     depth: int
     path: str
@@ -253,7 +253,7 @@ class territory(sovereign_base_model):
 # NAMING FIXED: AgentMessage → agent_message
 class agent_message(sovereign_base_model):
     '''Brief description of functionality and purpose.'''
-    
+
     source: str
     destination: str
     content: str
@@ -263,10 +263,10 @@ class agent_message(sovereign_base_model):
 class read_file_args(BaseModel):
     """Arguments for reading a file."""
     path: str = Field(..., description="Relative path to the file to read")
-    
+
     @validator('path')
     def validate_path(cls, v):
-                    
+
         if Path(v).is_absolute():
             raise ValueError("Path must be relative to project root")
         return v
@@ -277,10 +277,10 @@ class write_file_args(BaseModel):
     path: str = Field(..., description="Relative path to the file to write")
     content: str = Field(..., description="Content to write to the file")
     create_dirs: bool = Field(default=True, description="Create parent directories if they don't exist")
-    
+
     @validator('path')
     def validate_path(cls, v):
-                    
+
         if Path(v).is_absolute():
             raise ValueError("Path must be relative to project root")
         return v
@@ -291,10 +291,10 @@ class move_file_args(BaseModel):
     source: str = Field(..., description="Relative path to the source file")
     destination: str = Field(..., description="Relative path to the destination")
     overwrite: bool = Field(default=False, description="Overwrite destination if it exists")
-    
+
     @validator('source', 'destination')
     def validate_paths(cls, v):
-                    
+
         if Path(v).is_absolute():
             raise ValueError("Paths must be relative to project root")
         return v
@@ -305,10 +305,10 @@ class list_files_args(BaseModel):
     path: str = Field(default=".", description="Relative path to the directory to list")
     pattern: Optional[str] = Field(default=None, description="Glob pattern to filter files (e.g., '*.py')")
     recursive: bool = Field(default=False, description="Recursively list subdirectories")
-    
+
     @validator('path')
     def validate_path(cls, v):
-                    
+
         if Path(v).is_absolute():
             raise ValueError("Path must be relative to project root")
         return v
@@ -321,19 +321,19 @@ class execute_command_args(BaseModel):
     cwd: Optional[str] = Field(default=None, description="Working directory (relative to project root)")
     timeout: int = Field(default=30, description="Timeout in seconds (max 300)")
     capture_output: bool = Field(default=True, description="Capture stdout and stderr")
-    
+
     @validator('timeout')
     def validate_timeout(cls, v):
-                    
+
         if v > 300:
             raise ValueError("Timeout cannot exceed 300 seconds to prevent livelocks")
         if v < 1:
             raise ValueError("Timeout must be at least 1 second")
         return v
-    
+
     @validator('cwd')
     def validate_cwd(cls, v):
-                    
+
         if v and Path(v).is_absolute():
             raise ValueError("Working directory must be relative to project root")
         return v
@@ -342,10 +342,10 @@ class execute_command_args(BaseModel):
 class delete_file_args(BaseModel):
     """Arguments for deleting a file."""
     path: str = Field(..., description="Relative path to the file to delete")
-    
+
     @validator('path')
     def validate_path(cls, v):
-                    
+
         if Path(v).is_absolute():
             raise ValueError("Path must be relative to project root")
         return v
@@ -355,10 +355,10 @@ class create_directory_args(BaseModel):
     """Arguments for creating a directory."""
     path: str = Field(..., description="Relative path to the directory to create")
     parents: bool = Field(default=True, description="Create parent directories if they don't exist")
-    
+
     @validator('path')
     def validate_path(cls, v):
-                    
+
         if Path(v).is_absolute():
             raise ValueError("Path must be relative to project root")
         return v
@@ -642,7 +642,7 @@ class thermal_profile(str, Enum):
 class hard_state:
     """
     Immutable, DAG-owned state that the LLM cannot edit directly.
-    
+
     This contains critical execution metadata, security_scopes, and structural
     information that must remain stable throughout the workflow.
     """
@@ -678,7 +678,7 @@ class hard_state:
 class soft_state:
     """
     Mutable, LLM-owned scratchpad for high-temperature creativity.
-    
+
     This is where the LLM can draft, speculate, and iterate without risking
     system stability. Content here must be validated before promotion to HardState.
     """
@@ -773,7 +773,7 @@ class signal_context(BaseModel):
     last_modified: datetime = Field(default_factory=datetime.utcnow)
 
     class Config:
-                    
+
         arbitrary_types_allowed = True
 
     def update_timestamp(self) -> None:
@@ -1094,7 +1094,7 @@ class validator_config:
 class prompts_config:
     """Configuration for all prompt templates."""
     prompts: Dict[str, Dict[str, str]] = field(default_factory=dict)
-    
+
     def get_prompt(self, prompt_name: str, section: str='default') -> str:
         """Retrieve a prompt template by name and section."""
         if prompt_name not in self.prompts:
@@ -1414,9 +1414,9 @@ class financial_metric:
     period: str
     source_citation: str
     yoy_change: Optional[str] = None
-    
+
     def validate(self) -> bool:
-                    
+
         return bool(self.metric_name and self.value and self.source_citation)
 
 @dataclass
@@ -1428,9 +1428,9 @@ class technical_implementation:
     implementation_details: str
     source_citation: str
     performance_gain: Optional[str] = None
-    
+
     def validate(self) -> bool:
-                    
+
         return bool(self.technology_name and self.implementation_details and self.source_citation)
 
 @dataclass
@@ -1441,9 +1441,9 @@ class strategic_layer:
     core_thesis: str
     financial_proof_points: List[FinancialMetric] = field(default_factory=list)
     strategic_initiatives: List[str] = field(default_factory=list)
-    
+
     def validate(self) -> bool:
-                    
+
         if not self.core_thesis or len(self.core_thesis) < 20:
             return False
         if len(self.financial_proof_points) < 2:
@@ -1458,9 +1458,9 @@ class technical_layer:
     key_technologies: List[TechnicalImplementation] = field(default_factory=list)
     infrastructure_stack: List[str] = field(default_factory=list)
     implementation_summary: Optional[str] = None
-    
+
     def validate(self) -> bool:
-                    
+
         if len(self.key_technologies) < 2:
             return False
         return all((tech.validate() for tech in self.key_technologies))
@@ -1472,9 +1472,9 @@ class leadership_layer:
     """Leadership research layer."""
     key_executives: List[ExecutiveProfile] = field(default_factory=list)
     organizational_structure: Optional[str] = None
-    
+
     def validate(self) -> bool:
-                    
+
         if len(self.key_executives) < 2:
             return False
         return all((exec.name and exec.title and exec.ownership for exec in self.key_executives))
@@ -1485,17 +1485,17 @@ class leadership_layer:
 class citation_map:
     """Citation tracking for research sources."""
     citations: Dict[str, str] = field(default_factory=dict)
-    
+
     def add_citation(self, source_id: str, url: str) -> None:
-                    
+
         self.citations[source_id] = url
-    
+
     def get_citation(self, source_id: str) -> Optional[str]:
-                    
+
         return self.citations.get(source_id)
-    
+
     def validate(self) -> bool:
-                    
+
         return len(self.citations) >= 3
 
 @dataclass
@@ -1509,16 +1509,16 @@ class deep_research_output:
     leadership_layer: LeadershipLayer
     citation_map: CitationMap
     research_timestamp: Optional[str] = None
-    
+
     def validate(self) -> bool:
-                    
-        return (self.strategic_layer.validate() and 
-                self.technical_layer.validate() and 
-                self.leadership_layer.validate() and 
+
+        return (self.strategic_layer.validate() and
+                self.technical_layer.validate() and
+                self.leadership_layer.validate() and
                 self.citation_map.validate())
-    
+
     def to_dict(self) -> Dict[str, Any]:
-                    
+
         return {
             'company_name': self.company_name,
             'strategic_layer': {
@@ -1581,9 +1581,9 @@ class integrity_gate_result:
     rejection_reasons: List[str] = field(default_factory=list)
     detailed_violations: List[str] = field(default_factory=list)
     depth_score: float = 0.0
-    
+
     def add_violation(self, reason: str, detail: str) -> None:
-                    
+
         self.rejection_reasons.append(reason)
         self.detailed_violations.append(detail)
         self.passed = False
@@ -1698,7 +1698,7 @@ class immutable_staging_buffer:
     version: int = 1
     timestamp: Optional[str] = None
     checksum: Optional[str] = None
-    
+
     def with_data(self, new_data: Dict[str, Any]) -> 'ImmutableStagingBuffer':
         """Return a new buffer with updated data."""
         from datetime import datetime
@@ -1708,7 +1708,7 @@ class immutable_staging_buffer:
             _timestamp=datetime.utcnow().isoformat(),
             _checksum=None,
         )
-    
+
     def clear(self) -> 'ImmutableStagingBuffer':
         """Return a new empty buffer."""
         from datetime import datetime
@@ -1797,7 +1797,7 @@ class word_count_constraint:
     """Word count constraint for a section."""
     min_words: int
     max_words: int
-    
+
     def validate(self, text: str) -> tuple[bool, str]:
         """Validate text against word count constraint."""
         word_count = len(text.split())
@@ -1813,7 +1813,7 @@ class word_count_constraint:
 class char_count_constraint:
     """Character count constraint for a section."""
     max_chars: int
-    
+
     def validate(self, text: str) -> tuple[bool, str]:
         """Validate text against character count constraint."""
         char_count = len(text)
@@ -2066,7 +2066,7 @@ class mission_phase(sovereign_base_model):
 class mission_plan(sovereign_base_model):
     """
     Complete mission plan with Builder pattern support.
-    
+
     Sovereign Builder Pattern (Phase 12):
     - Fluent API for mission construction
     - Immutable result with constitutional validation
@@ -2089,7 +2089,7 @@ class mission_plan(sovereign_base_model):
         - Early validation (uniqueness, required fields)
         - Observability (construction logging)
         """
-        
+
         def __init__(self):
             self._mission_id: Optional[str] = None
             self._cycle_id: Optional[int] = None
@@ -2098,40 +2098,40 @@ class mission_plan(sovereign_base_model):
             self._phases: List[MissionPhase] = []
             self._risk_assessment: Dict = {}
             self._phase_names: set = set()  # Integrity check
-        
+
         def with_mission_id(self, mission_id: str) -> 'MissionPlan.Builder':
-                                    
+
             self._mission_id = mission_id
             return self
-        
+
         def with_cycle(self, cycle_id: int) -> 'MissionPlan.Builder':
-                                    
+
             self._cycle_id = cycle_id
             return self
-        
+
         def with_priority(self, priority: MissionPriority) -> 'MissionPlan.Builder':
-                                    
+
             self._priority = priority
             return self
-        
+
         def with_objective(self, objective: str) -> 'MissionPlan.Builder':
-                                    
+
             self._objective = objective
             return self
-        
+
         def add_phase(self, phase: MissionPhase) -> 'MissionPlan.Builder':
-                                    
+
             if phase.name in self._phase_names:
                 raise ValueError(f"Sovereignty Violation: Duplicate phase name detected: {phase.name}")
             self._phase_names.add(phase.name)
             self._phases.append(phase)
             return self
-        
+
         def with_risk_assessment(self, assessment: Dict) -> 'MissionPlan.Builder':
-                                    
+
             self._risk_assessment = assessment
             return self
-        
+
         def build(self) -> "MissionPlan":
             """Construct immutable MissionPlan with sovereign validation"""
             if not self._mission_id:
@@ -2142,14 +2142,14 @@ class mission_plan(sovereign_base_model):
                 raise ValueError("objective is required")
             if not self._phases:
                 raise ValueError("At least one phase required")
-            
+
             # Sovereign Invariant: No dependency cycles
             self._detect_dependency_cycles()
-            
+
             # Observability: Log construction
             logger.info(f"[BUILDER] Constructing MissionPlan {self._mission_id} | "
                         f"Phases: {len(self._phases)} | Priority: {self._priority}")
-            
+
             return MissionPlan(
                 mission_id=self._mission_id,
                 cycle_id=self._cycle_id,
@@ -2166,28 +2166,28 @@ class mission_plan(sovereign_base_model):
             """
             if not self._phases:
                 return
-            
+
             # Build graph: phase_name → list of dependent phase names
             graph: Dict[str, List[str]] = {p.name: p.dependencies for p in self._phases}
-            
+
             visited = set()
             rec_stack = set()
-            
+
             def has_cycle(node: str) -> bool:
-                                                    
+
                 visited.add(node)
                 rec_stack.add(node)
-                
+
                 for neighbor in graph.get(node, []):
                     if neighbor not in visited:
                         if has_cycle(neighbor):
                             return True
                     elif neighbor in rec_stack:
                         return True
-                
+
                 rec_stack.remove(node)
                 return False
-            
+
             for phase_name in graph:
                 if phase_name not in visited:
                     if has_cycle(phase_name):
@@ -2221,7 +2221,7 @@ class revision_step(sovereign_base_model):
 class thought_chain(sovereign_base_model):
     """
     Thought chain for reasoning trace with Builder pattern support.
-    
+
     Sovereign Builder Pattern (Phase 12):
     - Ensures logical continuity in reasoning steps
     - Immutable chain with timestamp tracking
@@ -2252,12 +2252,12 @@ class thought_chain(sovereign_base_model):
             self._duration_seconds: float = 0.0
 
         def with_chain_id(self, chain_id: str) -> 'ThoughtChain.Builder':
-                                    
+
             self._chain_id = chain_id
             return self
 
         def with_goal(self, goal: str) -> 'ThoughtChain.Builder':
-                                    
+
             self._goal = goal
             return self
 
@@ -2269,7 +2269,7 @@ class thought_chain(sovereign_base_model):
             return self
 
         def add_hypothesis(self, hypothesis: Hypothesis) -> 'ThoughtChain.Builder':
-                                    
+
             self._hypotheses.append(hypothesis)
             return self
 
@@ -2280,7 +2280,7 @@ class thought_chain(sovereign_base_model):
             return self
 
         def mark_failed(self) -> 'ThoughtChain.Builder':
-                                    
+
             self._success = False
             return self
 
@@ -2288,7 +2288,7 @@ class thought_chain(sovereign_base_model):
             """Construct immutable ThoughtChain with constitutional validation."""
             if not self._chain_id or not self._goal:
                 raise ValueError("ThoughtChain construction failed: chain_id and goal are mandatory.")
-            
+
             if self._success and not self._final_conclusion:
                 raise ValueError("Inconsistent State: Success requires a final_conclusion.")
 
@@ -2318,7 +2318,7 @@ import uuid
 class constitutional_violation(sovereign_base_model):
     """
     Constitutional violation record with Builder pattern support.
-    
+
     Sovereign Builder Pattern (Phase 12):
     - Fluent judicial record construction
     - Severity validation
@@ -2357,40 +2357,40 @@ class constitutional_violation(sovereign_base_model):
             self._suggested_fix: Optional[str] = None
 
         def with_guardian(self, guardian: str) -> 'ConstitutionalViolation.Builder':
-                                    
+
             self._guardian = guardian
             return self
 
         def in_dimension(self, dimension: str) -> 'ConstitutionalViolation.Builder':
-                                    
+
             self._dimension = dimension
             return self
 
         def with_severity(self, severity: str) -> 'ConstitutionalViolation.Builder':
-                                    
+
             if severity not in ["CRITICAL", "HIGH", "MEDIUM", "LOW"]:
                 raise ValueError(f"Sovereignty Violation: Invalid severity: {severity}")
             self._severity = severity
             return self
 
         def at_location(self, file_path: str, line_number: Optional[int] = None) -> 'ConstitutionalViolation.Builder':
-                                    
+
             self._file_path = file_path
             self._line_number = line_number
             return self
 
         def with_description(self, description: str) -> 'ConstitutionalViolation.Builder':
-                                    
+
             self._description = description
             return self
 
         def with_evidence(self, evidence: str) -> 'ConstitutionalViolation.Builder':
-                                    
+
             self._evidence = evidence
             return self
 
         def with_suggested_fix(self, fix: str) -> 'ConstitutionalViolation.Builder':
-                                    
+
             self._suggested_fix = fix
             return self
 
@@ -2432,7 +2432,7 @@ class constitutional_violation(sovereign_base_model):
 class healing_action(sovereign_base_model):
     """
     Healing action record with Builder pattern support.
-    
+
     Sovereign Builder Pattern (Phase 12):
     - Fluent correction record construction
     - Explicit success/failure outcome paths
@@ -2473,45 +2473,45 @@ class healing_action(sovereign_base_model):
             self._transaction_id: Optional[str] = None
 
         def with_strategy(self, strategy: str) -> 'HealingAction.Builder':
-                                    
+
             self._strategy = strategy
             return self
 
         def with_action_type(self, action_type: str) -> 'HealingAction.Builder':
-                                    
+
             self._action_type = action_type
             return self
 
         def targeting(self, file: str, line: Optional[int] = None) -> 'HealingAction.Builder':
-                                    
+
             self._target_file = file
             self._target_line = line
             return self
 
         def for_reason(self, reason: str) -> 'HealingAction.Builder':
-                                    
+
             self._reason = reason
             return self
 
         def succeeded(self) -> 'HealingAction.Builder':
-                                    
+
             self._success = True
             self._error_message = None
             return self
 
         def failed(self, error: str) -> 'HealingAction.Builder':
-                                    
+
             self._success = False
             self._error_message = error
             return self
 
         def with_backup(self, backup_path: str) -> 'HealingAction.Builder':
-                                    
+
             self._backup_path = backup_path
             return self
 
         def in_transaction(self, transaction_id: str) -> 'HealingAction.Builder':
-                                    
+
             self._transaction_id = transaction_id
             return self
 
@@ -2526,7 +2526,7 @@ class healing_action(sovereign_base_model):
             for field, value in required.items():
                 if not value:
                     raise ValueError(f"Sovereignty Reporting Error: {field} is required.")
-            
+
             if self._success is None:
                 raise ValueError("Incomplete Record: Must specify outcome via succeeded() or failed().")
 
@@ -2557,7 +2557,7 @@ class healing_action(sovereign_base_model):
 class healing_cycle(sovereign_base_model):
     """
     Healing cycle record with Builder pattern support.
-    
+
     Sovereign Builder Pattern (Phase 12):
     - Fluent self-correction journey construction
     - Automatic success calculation from scores
@@ -2592,12 +2592,12 @@ class healing_cycle(sovereign_base_model):
             self._duration_seconds: float = 0.0
 
         def with_cycle_id(self, cycle_id: str) -> 'HealingCycle.Builder':
-                                    
+
             self._cycle_id = cycle_id
             return self
 
         def triggered_by_score(self, score: float) -> 'HealingCycle.Builder':
-                                    
+
             self._trigger_score = score
             return self
 
@@ -2610,12 +2610,12 @@ class healing_cycle(sovereign_base_model):
             return self
 
         def add_action(self, action: HealingAction) -> 'HealingCycle.Builder':
-                                    
+
             self._actions.append(action)
             return self
 
         def with_duration(self, seconds: float) -> 'HealingCycle.Builder':
-                                    
+
             self._duration_seconds = seconds
             return self
 
@@ -2623,10 +2623,10 @@ class healing_cycle(sovereign_base_model):
             """Construct immutable HealingCycle with sovereign validation."""
             if self._trigger_score is None or self._target_score is None:
                 raise ValueError("Healing Integrity Error: Both trigger and target scores are required.")
-            
+
             if not self._cycle_id:
                 self._cycle_id = f"healcycle-{uuid.uuid4().hex[:8]}"
-            
+
             # Derive metrics from the action list
             healed = sum(1 for a in self._actions if a.success)
             persistent = len(self._actions) - healed
@@ -2653,7 +2653,7 @@ class healing_cycle(sovereign_base_model):
 class healing_report(sovereign_base_model):
     """
     Healing report for DDD compliance audits with Builder pattern support.
-    
+
     Sovereign Builder Pattern (Phase 12):
     - Automatic ID generation if not provided
     - Strategy deduplication tracking
@@ -2694,7 +2694,7 @@ class healing_report(sovereign_base_model):
             self._strategies_used: List[str] = []
 
         def with_report_id(self, report_id: str) -> 'HealingReport.Builder':
-                                    
+
             self._report_id = report_id
             return self
 
@@ -2725,7 +2725,7 @@ class healing_report(sovereign_base_model):
             """Construct immutable HealingReport with final constitutional validation."""
             if not self._report_id:
                 self._report_id = f"heal-{uuid.uuid4().hex[:8]}"
-            
+
             # Observability: Record the formal generation of the healing ledger
             logger.info(f"[AUDIT] HealingReport Sealed: {self._report_id} | "
                         f"Outcome: {'SUCCESS' if self._success else 'PARTIAL'} | "
@@ -2749,7 +2749,7 @@ class healing_report(sovereign_base_model):
 class sovereign_event(sovereign_base_model):
     """
     Sovereign event telemetry with Builder pattern support.
-    
+
     Sovereign Builder Pattern (Phase 12):
     - Fluent telemetry emission
     - Severity-to-log-level mapping
@@ -2821,22 +2821,22 @@ class sovereign_event(sovereign_base_model):
             return self
 
         def from_source(self, source: str) -> 'SovereignEvent.Builder':
-                                    
+
             self._source = source
             return self
 
         def in_dimension(self, dimension: Optional[str]) -> 'SovereignEvent.Builder':
-                                    
+
             self._dimension = dimension
             return self
 
         def with_payload(self, **kwargs) -> 'SovereignEvent.Builder':
-                                    
+
             self._payload.update(kwargs)
             return self
 
         def correlated_with(self, correlation_id: str) -> 'SovereignEvent.Builder':
-                                    
+
             self._correlation_id = correlation_id
             return self
 

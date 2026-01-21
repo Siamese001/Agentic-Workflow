@@ -29,9 +29,9 @@ Logger: Any = logging.getLogger(__name__)
 @dataclass
 class L1CognitionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent):
     """L1 Cognition base class - unified under SovereignBaseAgent.
-    
+
     HARDENED: Now with Redis caching + Pinecone vector support.
-    
+
     Provides:
     - Real logging (log_info/warning/error)
     - Standardized ValidationProtocol context
@@ -40,10 +40,10 @@ class L1CognitionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
     - Abstract execute() enforcement
     - Redis caching (RedisCacheMixin) - with graceful degradation
     - Pinecone vectors (PineconeVectorMixin) - with graceful degradation
-    
+
     Renamed to avoid naming collision with deprecated CanonBaseAgent.
     """
-    
+
     # [PHASE 2] Redis/Pinecone integration
     _cache_prefix: str = "l1_cognition"
     _namespace: str = "l1_patterns"
@@ -59,7 +59,7 @@ class L1CognitionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
         from agentic_core.canon_agents_core import SystemArchitect
         from agentic_core.canon_agents_quality_1 import NamingAgent, SafetyInspectorAgent
         from agentic_core.canon_agents_syntax import CodeJanitor, DependencySentinelAgent
-        
+
         # Archived agents - use stubs for backward compatibility
         try:
             from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import UnifiedCodeEnforcerAgent
@@ -77,7 +77,7 @@ class L1CognitionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
             from agentic_core.L5_safety.validators.TypeMechanicAgent import TypeMechanicAgent
         except ImportError:
             TypeMechanicAgent = None
-        
+
         # GRAVITY FIXED (Intra-Core): Dynamic import for L2 dependency
         import importlib
         _struct_mod = importlib.import_module('agentic_core.L2_execution.ToolRegistry.StructuralEngineerAgent')
@@ -98,7 +98,7 @@ class L1CognitionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
     def __init__(self, context: Optional[ValidationProtocol] = None, name: Optional[str] = None, layer: Optional[str] = None, **kwargs: Any) -> None:
         """
         Initialize L1 cognition base agent.
-        
+
         Args:
             context: Optional validation protocol context
             name: Optional agent name
@@ -212,20 +212,20 @@ class L1CognitionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
     # =========================================================================
     # L1-SPECIFIC LAYER METHODS: Cognition/Reasoning
     # =========================================================================
-    
+
     def plan(self, task: str, history: List[Dict] = None) -> Dict[str, Any]:
         """L1-specific: Multi-step Chain-of-Thought planning with self-critique.
-        
+
         Args:
             task: The task to plan for
             history: Optional conversation/action history for context
-            
+
         Returns:
             Dict with steps, tools, and critique
         """
         history_context = self._summarize_history(history or [])
         critique = self._self_critique_previous_plan() if hasattr(self, 'last_plan') else ""
-        
+
         prompt = f"""
 Task: {task}
 History summary: {history_context}
@@ -240,7 +240,7 @@ Output JSON: {{"steps": [...], "tools": [...], "critique": "..."}}
 """
         # Store for reflection
         self.last_plan = {"task": task, "prompt": prompt}
-        
+
         return {
             "steps": [
                 f"Understand: {task}",
@@ -251,18 +251,18 @@ Output JSON: {{"steps": [...], "tools": [...], "critique": "..."}}
             "tools": [],
             "critique": "Initial plan - needs execution feedback"
         }
-    
+
     def reflect(self, outcome: Dict[str, Any]) -> str:
         """L1-specific: Deep reflection for learning and improvement.
-        
+
         Args:
             outcome: Result of executing the plan
-            
+
         Returns:
             Reflection text with improvement suggestions
         """
         last_plan = getattr(self, 'last_plan', {})
-        
+
         reflection = f"""
 Reflection on outcome:
 - Task: {last_plan.get('task', 'Unknown')}
@@ -279,27 +279,27 @@ Persistent improvements to apply:
         # Trigger healing if outcome indicates error
         if outcome.get('error'):
             self.log_warning(f"Error in outcome, triggering healing: {outcome.get('error')}")
-        
+
         return reflection
-    
+
     def _summarize_history(self, history: List[Dict]) -> str:
         """Summarize conversation/action history for context efficiency."""
         if not history:
             return "No prior history"
-        
+
         summaries = []
         for item in history[-5:]:  # Last 5 items for token efficiency
             action = item.get('action', 'unknown')
             result = item.get('result', 'no result')[:100]
             summaries.append(f"- {action}: {result}")
-        
+
         return "\n".join(summaries)
-    
+
     def _self_critique_previous_plan(self) -> str:
         """Generate self-critique of previous plan if available."""
         if not hasattr(self, 'last_plan'):
             return ""
-        
+
         return f"Previous plan for '{self.last_plan.get('task', 'unknown')}' - review for improvements"
 
     async def execute(self) -> Any:

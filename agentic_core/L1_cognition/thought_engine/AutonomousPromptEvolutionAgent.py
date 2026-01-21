@@ -39,7 +39,7 @@ log = logging.getLogger(__name__)
 class AutonomousPromptEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
     """
     Autonomous agent that evolves prompt templates based on performance metrics.
-    
+
     Capabilities:
     - Tracks prompt template performance via MetaLearningAgent
     - Applies evolutionary mutations (word substitution, structure changes)
@@ -75,7 +75,7 @@ class AutonomousPromptEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, He
         """Retrieve performance metrics for a prompt template from MetaLearning."""
         if not self.meta_learning:
             return {"avg_reward": 0.0, "usage_count": 0, "success_rate": 0.0}
-        
+
         try:
             # Query meta-learning for experiences related to this template
             experiences = getattr(self.meta_learning, 'get_experiences_by_context', lambda x: [])(
@@ -83,10 +83,10 @@ class AutonomousPromptEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, He
             )
             if not experiences:
                 return {"avg_reward": 0.0, "usage_count": 0, "success_rate": 0.0}
-            
+
             rewards = [e.get("reward", 0.0) for e in experiences]
             successes = sum(1 for r in rewards if r > 0.5)
-            
+
             return {
                 "avg_reward": sum(rewards) / len(rewards) if rewards else 0.0,
                 "usage_count": len(experiences),
@@ -99,48 +99,48 @@ class AutonomousPromptEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, He
     def evolve_prompt(self, template_id: str, feedback: Dict[str, Any]) -> Dict[str, Any]:
         """
         Apply evolutionary changes to a prompt based on success metrics.
-        
+
         Args:
             template_id: Identifier for the prompt template
             feedback: Dict containing reward, success indicators, and context
-            
+
         Returns:
             Dict with evolution result: {evolved: bool, new_template: str, changes: list}
         """
         log.info(f"[L0 EVOLUTION] Evolving prompt: {template_id}")
-        
+
         # Load current template
         template_path = self.prompts_dir / f"{template_id}.txt"
         if not template_path.exists():
             template_path = self.prompts_dir / f"{template_id}.py"
-        
+
         if not template_path.exists():
             log.warning(f"Template not found: {template_id}")
             return {"evolved": False, "error": "Template not found"}
-        
+
         try:
             current_template = template_path.read_text(encoding="utf-8")
         except Exception as e:
             return {"evolved": False, "error": str(e)}
-        
+
         # Determine if evolution is warranted
         performance = self.get_prompt_performance(template_id)
         reward = feedback.get("reward", 0.0)
-        
+
         # Only evolve if performance is below threshold
         if performance["avg_reward"] > 0.8 and reward > 0.7:
             log.info(f"[L0 EVOLUTION] Template {template_id} performing well, skipping evolution")
             return {"evolved": False, "reason": "Performance above threshold"}
-        
+
         # Select mutation strategy based on feedback
         strategy = random.choice(self._mutation_strategies)
         evolved_template, changes = strategy(current_template, feedback)
-        
+
         # Validate evolved template
         if not self._validate_template(evolved_template):
             log.warning(f"[L0 EVOLUTION] Evolved template failed validation")
             return {"evolved": False, "error": "Validation failed"}
-        
+
         # Record evolution
         evolution_record = {
             "template_id": template_id,
@@ -152,7 +152,7 @@ class AutonomousPromptEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, He
             "performance_before": performance,
         }
         self._evolution_history.append(evolution_record)
-        
+
         log.info(f"[L0 EVOLUTION] Successfully evolved {template_id}: {changes}")
         return {
             "evolved": True,
@@ -165,7 +165,7 @@ class AutonomousPromptEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, He
         """Substitute words with synonyms or more precise alternatives."""
         changes = []
         evolved = template
-        
+
         # Simple word substitutions for common patterns
         substitutions = {
             "please": "kindly",
@@ -174,20 +174,20 @@ class AutonomousPromptEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, He
             "should": "must",
             "can you": "please",
         }
-        
+
         for old, new in substitutions.items():
             if old in evolved.lower():
                 evolved = evolved.replace(old, new)
                 changes.append(f"word_choice: '{old}' -> '{new}'")
                 break  # One mutation per evolution
-        
+
         return evolved, changes
 
     def _mutate_structure(self, template: str, feedback: Dict[str, Any]) -> tuple[str, List[str]]:
         """Restructure prompt for clarity or emphasis."""
         changes = []
         evolved = template
-        
+
         # Add structure markers if missing
         if "Step 1:" not in evolved and len(evolved) > 200:
             lines = evolved.split("\n")
@@ -203,14 +203,14 @@ class AutonomousPromptEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, He
                         new_lines.append(line)
                 evolved = "\n".join(new_lines)
                 changes.append("structure: added numbered steps")
-        
+
         return evolved, changes
 
     def _mutate_emphasis(self, template: str, feedback: Dict[str, Any]) -> tuple[str, List[str]]:
         """Add or modify emphasis markers."""
         changes = []
         evolved = template
-        
+
         # Add emphasis to key instructions
         emphasis_triggers = ["important", "critical", "must", "always", "never"]
         for trigger in emphasis_triggers:
@@ -218,7 +218,7 @@ class AutonomousPromptEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, He
                 evolved = evolved.replace(trigger, f"**{trigger.upper()}**")
                 changes.append(f"emphasis: highlighted '{trigger}'")
                 break
-        
+
         return evolved, changes
 
     def _validate_template(self, template: str) -> bool:
@@ -245,7 +245,7 @@ class AutonomousPromptEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, He
         history = self.get_evolution_history(template_id)
         if not history:
             return False
-        
+
         # Remove last evolution record
         last = history[-1]
         self._evolution_history = [e for e in self._evolution_history if e != last]
@@ -255,7 +255,7 @@ class AutonomousPromptEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, He
     def heal_repository(self, dry_run: bool = True, **kwargs) -> Dict[str, int]:
         """Invoke healing chain via super()."""
         return super().heal_repository(dry_run=dry_run, **kwargs)
-        
+
         # === ZOMBIE VACCINATION: Wired orphaned methods ===
         if hasattr(self, '_validate_template'):
             try:
@@ -266,4 +266,3 @@ class AutonomousPromptEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, He
                 Logger.error(f'Error in _validate_template: {e}')
                 metrics['errors'] += 1
         # === END VACCINATION ===
-        

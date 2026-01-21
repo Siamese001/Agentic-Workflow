@@ -45,14 +45,14 @@ class ContextSnapshot:
     ephemeral_logs: int
     semantic_facts: int
     compressed_size: int
-    
+
     def _run_self_tests(self) -> bool:
         """Phase 1 Final: Minimal self-testing for data container."""
         assert hasattr(self, "timestamp"), "Missing timestamp"
         assert hasattr(self, "stage"), "Missing stage"
         assert self.total_size >= 0, "total_size must be non-negative"
         return True
-    
+
     def __post_init__(self) -> None:
         assert self._run_self_tests(), f"Self-test failed: {self.__class__.__name__}"
 
@@ -66,14 +66,14 @@ class HandoffSummary:
     lessons_learned: List[str]
     warnings: List[str]
     compressed_context: str
-    
+
     def _run_self_tests(self) -> bool:
         """Phase 1 Final: Minimal self-testing for data container."""
         assert hasattr(self, "previous_stage"), "Missing previous_stage"
         assert hasattr(self, "next_stage"), "Missing next_stage"
         assert isinstance(self.structural_facts, list), "structural_facts must be list"
         return True
-    
+
     def __post_init__(self) -> None:
         assert self._run_self_tests(), f"Self-test failed: {self.__class__.__name__}"
 
@@ -81,13 +81,13 @@ class HandoffSummary:
 class ContextCuratorAgent(SubatomicTestingMixin, MCPHardenedMixin, SubAtomicAgent):
     """
     The Context Curator - Prompt Engineer Agent
-    
+
     Runs between pipeline stages (post-convergence).
     Identifies ephemeral logs vs semantic architectural decisions.
     Uses Gemini to compress session into structural facts.
     Writes HandoffSummary.md for next stage.
     Archives bloated logs and wipes active memory.
-    
+
     Process:
     1. Read current_context.json
     2. Classify: Ephemeral vs Semantic
@@ -100,7 +100,7 @@ class ContextCuratorAgent(SubatomicTestingMixin, MCPHardenedMixin, SubAtomicAgen
     def __init__(self, ctx: Any) -> None:
         """
         Initialize Context Curator.
-        
+
         Args:
             ctx: ValidationContext
         """
@@ -115,7 +115,7 @@ class ContextCuratorAgent(SubatomicTestingMixin, MCPHardenedMixin, SubAtomicAgen
     async def execute(self) -> Any:
         """
         Execute context curation.
-        
+
         Runs post-convergence to compress and handoff context.
         """
         Logger.info('📚 Context Curator: Compressing context for handoff...')
@@ -145,7 +145,7 @@ class ContextCuratorAgent(SubatomicTestingMixin, MCPHardenedMixin, SubAtomicAgen
     def _classify_content(self) -> tuple[List[str], List[str]]:
         """
         Classify content as ephemeral vs semantic.
-        
+
         Returns:
             Tuple of (ephemeral_logs, semantic_facts)
         """
@@ -174,10 +174,10 @@ class ContextCuratorAgent(SubatomicTestingMixin, MCPHardenedMixin, SubAtomicAgen
     async def _compress_context(self, semantic_facts: List[str]) -> HandoffSummary:
         """
         Compress context using Gemini.
-        
+
         Args:
             semantic_facts: Semantic architectural decisions
-            
+
         Returns:
             Handoff summary
         """

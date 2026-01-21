@@ -79,22 +79,22 @@ class ExecutorConfig:
 class UnifiedSafetyExecutorAgent:
     """
     Unified safety executor with integrity gates.
-    
+
     Consolidates:
     - IntegrityGateExecutorAgent
     - L5IntegrityGateExecutorAgent
     - SafetyExecutorAgent
-    
+
     Usage:
         executor = UnifiedSafetyExecutorAgent()
-        
+
         # Execute with safety checks
         result = executor.execute(my_function, arg1, arg2)
-        
+
         # Add custom gate
         executor.add_gate("custom_check", lambda: check_something())
     """
-    
+
     def __init__(
         self,
         config: Optional[ExecutorConfig] = None,
@@ -107,12 +107,12 @@ class UnifiedSafetyExecutorAgent:
         self._results: List[ExecutionResult] = []
         self._blocked_count = 0
         self._allowed_count = 0
-        
+
         # Initialize default gates
         self._init_default_gates()
-        
+
         Logger.info("UnifiedSafetyExecutorAgent initialized")
-    
+
     def _init_default_gates(self) -> None:
         """Initialize default safety gates."""
         # Integrity gate: Check for valid execution context
@@ -122,7 +122,7 @@ class UnifiedSafetyExecutorAgent:
             severity="HIGH",
             blocking=True,
         ))
-    
+
     def add_gate(
         self,
         name: str,
@@ -139,7 +139,7 @@ class UnifiedSafetyExecutorAgent:
         )
         self._gates.append(gate)
         Logger.info(f"Added safety gate: {name}")
-    
+
     def execute(
         self,
         fn: Callable[..., T],
@@ -149,18 +149,18 @@ class UnifiedSafetyExecutorAgent:
     ) -> ExecutionResult:
         """
         Execute a function with safety checks.
-        
+
         Args:
             fn: Function to execute
             *args: Positional arguments
             context: Execution context for gate checks
             **kwargs: Keyword arguments
-            
+
         Returns:
             ExecutionResult with status and result
         """
         start_time = datetime.utcnow()
-        
+
         with self._lock:
             # Run pre-execution safety checks
             if self.config.enable_safety_checks:
@@ -169,7 +169,7 @@ class UnifiedSafetyExecutorAgent:
                     self._blocked_count += 1
                     self._results.append(check_result)
                     return check_result
-            
+
             # Run integrity gates
             if self.config.enable_integrity_gates:
                 gate_result = self._run_gates(context or {})
@@ -177,39 +177,39 @@ class UnifiedSafetyExecutorAgent:
                     self._blocked_count += 1
                     self._results.append(gate_result)
                     return gate_result
-            
+
             # Execute the function
             try:
                 result = fn(*args, **kwargs)
-                
+
                 end_time = datetime.utcnow()
                 execution_time = (end_time - start_time).total_seconds() * 1000
-                
+
                 exec_result = ExecutionResult(
                     status=ExecutionStatus.ALLOWED,
                     message="Execution completed successfully",
                     result=result,
                     execution_time_ms=execution_time,
                 )
-                
+
                 self._allowed_count += 1
                 self._results.append(exec_result)
-                
+
                 return exec_result
-                
+
             except Exception as e:
                 end_time = datetime.utcnow()
                 execution_time = (end_time - start_time).total_seconds() * 1000
-                
+
                 exec_result = ExecutionResult(
                     status=ExecutionStatus.FAILED,
                     message=f"Execution failed: {str(e)}",
                     execution_time_ms=execution_time,
                 )
-                
+
                 self._results.append(exec_result)
                 return exec_result
-    
+
     def _run_safety_checks(self, context: Dict[str, Any]) -> ExecutionResult:
         """Run safety detector checks."""
         if self._detector is None:
@@ -217,18 +217,18 @@ class UnifiedSafetyExecutorAgent:
                 status=ExecutionStatus.ALLOWED,
                 message="No detector configured",
             )
-        
+
         # Check for safety violations
         try:
             # Get input from context if available
             input_text = context.get("input", "")
-            
+
             if not input_text:
                 return ExecutionResult(
                     status=ExecutionStatus.ALLOWED,
                     message="No input to check",
                 )
-            
+
             # Check for injection threats first
             if hasattr(self._detector, "detect_injection"):
                 injection_threats = self._detector.detect_injection(input_text)
@@ -238,47 +238,47 @@ class UnifiedSafetyExecutorAgent:
                         block_reason=BlockReason.DETECTOR_FLAG,
                         message=f"Blocked by injection detector: {len(injection_threats)} threat(s)",
                     )
-            
+
             if hasattr(self._detector, "detect_all"):
                 threats = self._detector.detect_all(input_text)
-                
+
                 # Check for high-severity threats
                 high_severity = [
                     t for t in threats
                     if hasattr(t, "severity") and t.severity.value >= 2
                 ]
-                
+
                 if high_severity and self.config.block_on_high_severity:
                     return ExecutionResult(
                         status=ExecutionStatus.BLOCKED,
                         block_reason=BlockReason.DETECTOR_FLAG,
                         message=f"Blocked by safety detector: {len(high_severity)} high-severity threat(s)",
                     )
-            
+
             if hasattr(self._detector, "get_safety_score"):
                 score = self._detector.get_safety_score(input_text)
-                
+
                 if score < self.config.safety_score_threshold:
                     return ExecutionResult(
                         status=ExecutionStatus.BLOCKED,
                         block_reason=BlockReason.THRESHOLD_EXCEEDED,
                         message=f"Safety score {score:.2f} below threshold {self.config.safety_score_threshold}",
                     )
-        
+
         except Exception as e:
             Logger.error(f"Safety check error: {e}")
-        
+
         return ExecutionResult(
             status=ExecutionStatus.ALLOWED,
             message="Safety checks passed",
         )
-    
+
     def _run_gates(self, context: Dict[str, Any]) -> ExecutionResult:
         """Run integrity gates."""
         for gate in self._gates:
             try:
                 passed = gate.check_fn(context)
-                
+
                 if not passed:
                     if gate.blocking:
                         return ExecutionResult(
@@ -288,22 +288,22 @@ class UnifiedSafetyExecutorAgent:
                         )
                     else:
                         Logger.warning(f"Non-blocking gate failed: {gate.name}")
-            
+
             except Exception as e:
                 Logger.error(f"Gate {gate.name} error: {e}")
-                
+
                 if gate.blocking:
                     return ExecutionResult(
                         status=ExecutionStatus.BLOCKED,
                         block_reason=BlockReason.INTEGRITY_FAILURE,
                         message=f"Integrity gate error: {gate.name} - {e}",
                     )
-        
+
         return ExecutionResult(
             status=ExecutionStatus.ALLOWED,
             message="All integrity gates passed",
         )
-    
+
     def check_and_block(
         self,
         input_text: str,
@@ -311,33 +311,33 @@ class UnifiedSafetyExecutorAgent:
     ) -> Tuple[bool, str]:
         """
         Quick check if input should be blocked.
-        
+
         Args:
             input_text: Input to check
             source: Source of input
-            
+
         Returns:
             Tuple of (should_block, reason)
         """
         if self._detector is None:
             return False, "No detector configured"
-        
+
         try:
             if hasattr(self._detector, "is_safe"):
                 is_safe = self._detector.is_safe(input_text, source)
                 if not is_safe:
                     return True, "Safety detector flagged input as unsafe"
-            
+
             if hasattr(self._detector, "get_safety_score"):
                 score = self._detector.get_safety_score(input_text)
                 if score < self.config.safety_score_threshold:
                     return True, f"Safety score {score:.2f} below threshold"
-        
+
         except Exception as e:
             Logger.error(f"Check error: {e}")
-        
+
         return False, "Input passed safety checks"
-    
+
     def get_stats(self) -> Dict[str, Any]:
         """Get execution statistics."""
         return {
@@ -347,7 +347,7 @@ class UnifiedSafetyExecutorAgent:
             "block_rate": self._blocked_count / max(1, self._allowed_count + self._blocked_count),
             "gates_count": len(self._gates),
         }
-    
+
     def get_results(self) -> List[ExecutionResult]:
         """Get all execution results."""
         return self._results.copy()

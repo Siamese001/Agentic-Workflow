@@ -31,7 +31,7 @@ class DeepBrainHarvester:
     def __init__(self, api_key: str=None, index_name: str='canon-healing-patterns'):
         """
         Initialize Deep Brain Harvester.
-        
+
         Args:
             api_key: Pinecone API key (defaults to env var)
             index_name: Pinecone index name
@@ -60,10 +60,10 @@ class DeepBrainHarvester:
     def _generate_embedding(self, text: str) -> List[float]:
         """
         Generate embedding for text using OpenAI.
-        
+
         Args:
             text: Text to embed
-            
+
         Returns:
             Embedding vector
         """
@@ -79,10 +79,10 @@ class DeepBrainHarvester:
     def harvest_flattening_pattern(self, namespace: str='structural_patterns') -> Dict:
         """
         Harvest the Subatomic Flattening Pattern and store in Pinecone.
-        
+
         Args:
             namespace: Pinecone namespace for pattern storage
-            
+
         Returns:
             Upsert result
         """
@@ -100,10 +100,10 @@ class DeepBrainHarvester:
     def _create_pattern_text(self, pattern: Dict) -> str:
         """
         Create searchable text representation of pattern.
-        
+
         Args:
             pattern: Pattern dictionary
-            
+
         Returns:
             Text representation for embedding
         """
@@ -113,12 +113,12 @@ class DeepBrainHarvester:
     def query_pattern(self, query: str, namespace: str='structural_patterns', top_k: int=3) -> List[Dict]:
         """
         Query Pinecone for similar patterns.
-        
+
         Args:
             query: Query text
             namespace: Namespace to search
             top_k: Number of results to return
-            
+
         Returns:
             List of matching patterns
         """

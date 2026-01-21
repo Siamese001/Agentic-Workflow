@@ -263,7 +263,7 @@ class OrchestratorAgentAndScopeManagerAgent(SovereignBaseAgent):
     def create_agent_swarm(self) -> List[Any]:
         """
         Create the subatomic agent swarm based on configuration.
-        
+
         Returns:
             List of agent instances
         """
@@ -282,12 +282,12 @@ class OrchestratorAgentAndScopeManagerAgent(SovereignBaseAgent):
     async def calculate_smart_scope(self, target_path: Optional[str]=None) -> List[str]:
         """
         Calculate smart scope using Dependency Diplomat.
-        
+
         Uses BFS on dependency graph to find all files affected by changes.
-        
+
         Args:
             target_path: Optional target file or directory
-            
+
         Returns:
             List of files in impact scope
         """
@@ -319,11 +319,11 @@ class OrchestratorAgentAndScopeManagerAgent(SovereignBaseAgent):
 def create_orchestrator(config: Optional[OrchestratorConfig]=None, context: Optional[ValidationContext]=None) -> ConsolidatedOrchestratorAgent:
     """
     Factory function to create a consolidated orchestrator.
-    
+
     Args:
         config: Orchestrator configuration
         context: Validation context
-        
+
     Returns:
         ConsolidatedOrchestratorAgent instance
     """
@@ -332,7 +332,7 @@ def create_orchestrator(config: Optional[OrchestratorConfig]=None, context: Opti
 async def main() -> Any:
     """
     [START] PHASE 5: Main entry point for consolidated orchestrator.
-    
+
     Supports CLI flags:
     - --heal: Enable healing mode
     - --clean-slate: Flush Redis and clear all leases

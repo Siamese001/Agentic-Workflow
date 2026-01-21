@@ -75,14 +75,14 @@ class FileManagerAgent(SovereignBaseAgent):
     ) -> Dict[str, int]:
         """
         Repository-wide filesystem healing - invoke shared chain.
-        
+
         Args:
             dry_run: Preview changes without executing
             execute: Execute healing operations
             depth: Current recursion depth
             max_depth: Maximum recursion depth
             _call_path: Set of agent names in current call path (cycle detection)
-            
+
         Returns:
             Healing results with metrics
         """
@@ -126,11 +126,11 @@ class FileManagerAgent(SovereignBaseAgent):
     def _perform_filesystem_healing(self, dry_run: bool, execute: bool) -> Dict[str, int]:
         """
         Perform filesystem-specific healing operations.
-        
+
         Args:
             dry_run: Preview mode
             execute: Execute mode
-            
+
         Returns:
             Healing results
         """
@@ -167,11 +167,11 @@ class FileManagerAgent(SovereignBaseAgent):
     def _clean_broken_backups(self, dry_run: bool, execute: bool) -> int:
         """
         Clean broken/orphaned backup files.
-        
+
         Args:
             dry_run: Preview mode
             execute: Execute mode
-            
+
         Returns:
             Number of backups cleaned
         """
@@ -201,11 +201,11 @@ class FileManagerAgent(SovereignBaseAgent):
     def _fix_broken_paths(self, dry_run: bool, execute: bool) -> int:
         """
         Fix broken symlinks and invalid paths.
-        
+
         Args:
             dry_run: Preview mode
             execute: Execute mode
-            
+
         Returns:
             Number of paths fixed
         """
@@ -231,11 +231,11 @@ class FileManagerAgent(SovereignBaseAgent):
     def _merge_healing_results(self, parent: Dict[str, Any], fs: Dict[str, Any]) -> Dict[str, Any]:
         """
         Merge parent healing results with filesystem-specific results.
-        
+
         Args:
             parent: Parent/HealerMixin healing results
             fs: Filesystem-specific healing results
-            
+
         Returns:
             Merged results with summed metrics
         """

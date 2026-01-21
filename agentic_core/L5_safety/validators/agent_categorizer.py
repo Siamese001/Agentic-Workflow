@@ -13,7 +13,7 @@ from agentic_core.utils.sovereign_index import SovereignIndex
 
 class AgentCategorizer:
     """Categorizes agents into non-overlapping groups based on AST analysis."""
-    
+
     # Non-overlapping category patterns (ordered by priority)
     CATEGORY_PATTERNS = [
         {
@@ -120,23 +120,23 @@ class AgentCategorizer:
         # Sub-20: Use ssot_discovery instead of glob
         from agentic_core.utils.ssot_discovery import get_python_files
         py_files = list(get_python_files(self.folder_path))
-        
+
         for py_file in py_files:
             if py_file.name.startswith("__"):
                 continue
-            
+
             try:
                 self._analyze_file(py_file)
             except (SyntaxError, UnicodeDecodeError):
                 continue
-        
+
         return dict(self.categories)
 
     def _analyze_file(self, py_file: Path) -> None:
         """Analyze a Python file and extract agent classes."""
         source = py_file.read_text(encoding="utf-8", errors="replace")
         tree = ast.parse(source)
-        
+
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef) and node.name.endswith("Agent"):
                 category = self._categorize_agent(node, source)
@@ -152,7 +152,7 @@ class AgentCategorizer:
         name = class_node.name
         docstring = ast.get_docstring(class_node) or ""
         combined_text = f"{name} {docstring}".lower()
-        
+
         for category_def in self.CATEGORY_PATTERNS:
             # Check if any exclude pattern matches
             excluded = False
@@ -160,15 +160,15 @@ class AgentCategorizer:
                 if re.search(exclude_pattern, combined_text, re.IGNORECASE):
                     excluded = True
                     break
-            
+
             if excluded:
                 continue
-            
+
             # Check if any include pattern matches
             for pattern in category_def["patterns"]:
                 if re.search(pattern, combined_text, re.IGNORECASE):
                     return category_def["name"]
-        
+
         return "Specialized Agents"
 
     def get_category_summary(self) -> Dict[str, int]:

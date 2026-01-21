@@ -2,7 +2,7 @@ from __future__ import annotations
 """
 Simulation & Scenario Schemas
 =============================
-Defines the models for running system simulations and capturing 
+Defines the models for running system simulations and capturing
 outcomes. Used for testing agentic behavior in sandbox environments.
 """
 
@@ -16,7 +16,7 @@ class SimScenario(BaseModel):
     id: str = Field(..., description="Unique identifier for the scenario")
     description: str = Field(..., description="Human-readable summary of the test case")
     initial_context: Dict[str, Any] = Field(
-        default_factory=dict, 
+        default_factory=dict,
         description="Initial SignalContext state for the simulation"
     )
     execution_profile_name: str = Field(..., description="Target execution profile (e.g., 'standard', 'fast')")

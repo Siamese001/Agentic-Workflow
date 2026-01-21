@@ -20,7 +20,7 @@ from runtime.shared import (
 
 class TitaniumPipelineIntegrationTest:
     """Integration test suite for the complete Titanium RAG Pipeline."""
-    
+
     def __init__(self):
         """Initialize the test suite."""
         # Create pipeline with all features enabled
@@ -29,7 +29,7 @@ class TitaniumPipelineIntegrationTest:
             max_retrieved_docs=20,
             top_k_final=5
         )
-        
+
         # Mock document database
         self.document_db = [
             {
@@ -83,7 +83,7 @@ class TitaniumPipelineIntegrationTest:
                 "metadata": {"source": "customer_report", "date": "2024-01-22"}
             }
         ]
-        
+
         # Test scenarios covering all phases
         self.test_scenarios = [
             {
@@ -117,7 +117,7 @@ class TitaniumPipelineIntegrationTest:
                 "description": "Should be blocked as reference query"
             }
         ]
-    
+
     async def mock_retrieval_function(
         self,
         query: str,
@@ -125,37 +125,37 @@ class TitaniumPipelineIntegrationTest:
         **kwargs
     ) -> Tuple[List[Dict], List[Dict]]:
         """Mock retrieval function that simulates vector and BM25 search.
-        
+
         Args:
             query: Query string
             max_docs: Maximum documents to retrieve
             **kwargs: Additional arguments
-            
+
         Returns:
             Tuple of (dense_results, sparse_results)
         """
         # Simple keyword matching for simulation
         query_words = query.lower().split()
         scored_docs = []
-        
+
         for doc in self.document_db:
             score = 0
             text = doc["text"].lower()
-            
+
             # Calculate simple relevance score
             for word in query_words:
                 if word in text:
                     score += 1
-            
+
             if score > 0:
                 scored_docs.append((doc, score))
-        
+
         # Sort by score
         scored_docs.sort(key=lambda x: x[1], reverse=True)
-        
+
         # Take top documents
         top_docs = scored_docs[:max_docs]
-        
+
         # Create dense results (mock vector search)
         dense_results = []
         for doc, score in top_docs:
@@ -164,7 +164,7 @@ class TitaniumPipelineIntegrationTest:
                 "score": min(score / len(query_words), 1.0),  # Normalize to 0-1
                 "metadata": doc
             })
-        
+
         # Create sparse results (mock BM25)
         sparse_results = []
         for doc, score in top_docs:
@@ -172,26 +172,26 @@ class TitaniumPipelineIntegrationTest:
                 "doc_id": doc["doc_id"],
                 "score": score * 1.5  # BM25 scores are typically higher
             })
-        
+
         return dense_results, sparse_results
-    
+
     async def test_individual_phases(self):
         """Test each phase individually."""
         print("\n" + "="*60)
         print("TESTING: Individual Phases")
         print("="*60)
-        
+
         # Test Phase 1: Precision Layer
         print("\n1. Testing Phase 1 (Precision Layer):")
         print("-" * 40)
-        
+
         # Test gate
         gate_result = self.pipeline.gate.should_retrieve("hello")
         print(f"   Gate - Simple query: {'Block' if not gate_result.should_retrieve else 'Allow'} ({gate_result.reason})")
-        
+
         gate_result = self.pipeline.gate.should_retrieve("What is RAG?")
         print(f"   Gate - Complex query: {'Block' if not gate_result.should_retrieve else 'Allow'} ({gate_result.reason})")
-        
+
         # Test compressor
         test_chunks = [
             "Our RAG pipeline is fast and efficient. It achieves 50ms latency.",
@@ -203,11 +203,11 @@ class TitaniumPipelineIntegrationTest:
             query="RAG pipeline performance"
         )
         print(f"   Compression ratio: {compression_result.compression_ratio:.2f}")
-        
+
         # Test Phase 2: Reasoning Layer
         print("\n2. Testing Phase 2 (Reasoning Layer):")
         print("-" * 40)
-        
+
         # Test decomposition
         decomposed = await self.pipeline.decomposer.decompose(
             "Compare AWS vs Azure pricing for financial services"
@@ -215,17 +215,17 @@ class TitaniumPipelineIntegrationTest:
         print(f"   Decomposition: {len(decomposed.sub_queries)} sub-queries")
         for i, sub_query in enumerate(decomposed.sub_queries, 1):
             print(f"     {i}. {sub_query}")
-        
+
         # Test dynamic alpha
         alpha_entity = self.pipeline.scorer._determine_dynamic_alpha("ABC-123 error code")
         alpha_technical = self.pipeline.scorer._determine_dynamic_alpha("Python API")
         alpha_concept = self.pipeline.scorer._determine_dynamic_alpha("company strategy")
         print(f"   Dynamic Alpha - Entity: {alpha_entity}, Technical: {alpha_technical}, Concept: {alpha_concept}")
-        
+
         # Test Phase 3: SOTA Layer
         print("\n3. Testing Phase 3 (SOTA Layer):")
         print("-" * 40)
-        
+
         # Test reranker availability
         print(f"   Reranker available: {self.pipeline.reranker.is_available}")
         if self.pipeline.reranker.is_available:
@@ -236,7 +236,7 @@ class TitaniumPipelineIntegrationTest:
                 top_k=3
             )
             print(f"   Reranked {len(test_docs)} to {len(reranked)} documents")
-        
+
         # Test cache availability
         print(f"   Cache available: {self.pipeline.cache.is_available}")
         if self.pipeline.cache.is_available:
@@ -244,22 +244,22 @@ class TitaniumPipelineIntegrationTest:
             self.pipeline.cache.put("test query", "test response")
             cached = self.pipeline.cache.get("test query")
             print(f"   Cache test: {'Hit' if cached else 'Miss'}")
-    
+
     async def test_full_pipeline_scenarios(self):
         """Test complete pipeline with various scenarios."""
         print("\n" + "="*60)
         print("TESTING: Full Pipeline Scenarios")
         print("="*60)
-        
+
         for i, scenario in enumerate(self.test_scenarios, 1):
             print(f"\nScenario {i}: {scenario['name']}")
             print(f"Query: {scenario['query']}")
             print(f"Description: {scenario['description']}")
             print("-" * 40)
-            
+
             # Clear cache for clean test
             self.pipeline.cache.clear()
-            
+
             # First query
             start_time = time.time()
             result1 = await self.pipeline.query(
@@ -267,13 +267,13 @@ class TitaniumPipelineIntegrationTest:
                 retrieval_function=self.mock_retrieval_function
             )
             time1 = time.time() - start_time
-            
+
             print(f"   First query: {time1:.3f}s")
             print(f"   Cached: {result1['metadata']['cached']}")
             print(f"   Decomposed: {bool(result1['metadata']['decomposed'])}")
             print(f"   Compressed: {result1['metadata']['compressed']}")
             print(f"   Reranked: {result1['metadata']['reranked']}")
-            
+
             # Second query (for cache test)
             if scenario['expected_phase'] == 'cache_hit':
                 start_time = time.time()
@@ -282,24 +282,24 @@ class TitaniumPipelineIntegrationTest:
                     retrieval_function=self.mock_retrieval_function
                 )
                 time2 = time.time() - start_time
-                
+
                 print(f"   Second query: {time2:.3f}s")
                 print(f"   Cache speedup: {time1/time2:.1f}x faster")
                 print(f"   Cached hit: {result2['metadata']['cached']}")
-            
+
             # Verify expected behavior
             if scenario['expected_phase'] == 'gate_block':
                 if not result1['metadata']['gate_decision']['should_retrieve']:
                     print(f"   ✅ Correctly blocked by gate")
                 else:
                     print(f"   ❌ Should have been blocked by gate")
-    
+
     async def test_pipeline_statistics(self):
         """Test pipeline statistics and monitoring."""
         print("\n" + "="*60)
         print("TESTING: Pipeline Statistics")
         print("="*60)
-        
+
         # Run some queries to generate stats
         queries = [
             "hello",  # Should be blocked
@@ -307,14 +307,14 @@ class TitaniumPipelineIntegrationTest:
             "Python API documentation",  # Should use technical alpha
             "Compare our performance to benchmarks"  # Full pipeline
         ]
-        
+
         print("\nRunning queries to generate statistics...")
         for query in queries:
             await self.pipeline.query(
                 query=query,
                 retrieval_function=self.mock_retrieval_function
             )
-        
+
         # Get statistics
         stats = self.pipeline.get_stats()
         print(f"\nPipeline Statistics:")
@@ -324,7 +324,7 @@ class TitaniumPipelineIntegrationTest:
         print(f"   Decompositions: {stats['decompositions']} ({stats['decomposition_rate']:.1%})")
         print(f"   Compressions: {stats['compressions']} ({stats['compression_rate']:.1%})")
         print(f"   Rerankings: {stats['rerankings']} ({stats['reranking_rate']:.1%})")
-        
+
         # Get component info
         component_info = self.pipeline.get_component_info()
         print(f"\nComponent Status:")
@@ -332,13 +332,13 @@ class TitaniumPipelineIntegrationTest:
         print(f"   Phase 2 (Reasoning): Available")
         print(f"   Phase 3 (SOTA): Reranker={component_info['phase_3_sota']['reranker_available']}, "
               f"Cache={component_info['phase_3_sota']['cache_available']}")
-    
+
     async def test_error_handling(self):
         """Test pipeline error handling and fallbacks."""
         print("\n" + "="*60)
         print("TESTING: Error Handling & Fallbacks")
         print("="*60)
-        
+
         # Test with empty results
         print("\n1. Testing with empty retrieval results:")
         result = await self.pipeline.query(
@@ -346,7 +346,7 @@ class TitaniumPipelineIntegrationTest:
             retrieval_function=lambda q, **kwargs: ([], [])
         )
         print(f"   Handled empty results: {len(result['documents'])} documents")
-        
+
         # Test with None query
         print("\n2. Testing with None query:")
         result = await self.pipeline.query(
@@ -354,10 +354,10 @@ class TitaniumPipelineIntegrationTest:
             retrieval_function=self.mock_retrieval_function
         )
         print(f"   Handled None query: {result['response'] is not None}")
-        
+
         # Test component fallbacks
         print("\n3. Testing component fallbacks:")
-        
+
         # Create pipeline with disabled components
         minimal_pipeline = TitaniumRAGPipeline(
             enable_compression=False,
@@ -365,26 +365,26 @@ class TitaniumPipelineIntegrationTest:
             enable_reranking=False,
             enable_caching=False
         )
-        
+
         result = await minimal_pipeline.query(
             query="test query",
             retrieval_function=self.mock_retrieval_function
         )
         print(f"   Minimal pipeline works: {result['metadata'] is not None}")
-    
+
     def test_convenience_functions(self):
         """Test convenience functions for easy setup."""
         print("\n" + "="*60)
         print("TESTING: Convenience Functions")
         print("="*60)
-        
+
         # Test create_titanium_pipeline
         print("\n1. Testing create_titanium_pipeline():")
-        
+
         # Full pipeline
         full_pipeline = create_titanium_pipeline(enable_all=True)
         print(f"   Full pipeline created: {full_pipeline is not None}")
-        
+
         # Custom pipeline
         custom_pipeline = create_titanium_pipeline(
             enable_all=False,
@@ -394,29 +394,29 @@ class TitaniumPipelineIntegrationTest:
         print(f"   Custom pipeline created: {custom_pipeline is not None}")
         print(f"   Caching enabled: {custom_pipeline.enable_caching}")
         print(f"   Reranking enabled: {custom_pipeline.enable_reranking}")
-    
+
     async def run_all_tests(self):
         """Run all integration tests."""
         print("🚀 Starting Titanium RAG Pipeline Integration Test Suite")
         print("="*60)
-        
+
         # Check component availability
         print("\nChecking component availability...")
         component_info = self.pipeline.get_component_info()
-        
+
         print(f"  Phase 1 (Precision): ✅ Available")
         print(f"  Phase 2 (Reasoning): ✅ Available")
         print(f"  Phase 3 (SOTA):")
         print(f"    - Reranker: {'✅' if component_info['phase_3_sota']['reranker_available'] else '⚠️  Fallback'}")
         print(f"    - Cache: {'✅' if component_info['phase_3_sota']['cache_available'] else '⚠️  Fallback'}")
-        
+
         # Run all tests
         await self.test_individual_phases()
         await self.test_full_pipeline_scenarios()
         await self.test_pipeline_statistics()
         await self.test_error_handling()
         self.test_convenience_functions()
-        
+
         print("\n" + "="*60)
         print("✅ ALL INTEGRATION TESTS COMPLETED")
         print("="*60)

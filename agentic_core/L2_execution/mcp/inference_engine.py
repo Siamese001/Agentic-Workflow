@@ -31,23 +31,23 @@ class HardStateProtocol(Protocol):
     execution_id: str
     node_id: str
     def add_trace(self, EVENT: str, DATA: Dict[str, Any]) -> 'HardStateProtocol': ...
-                    
+
 
 # NAMING FIXED: SignalContextProtocol → SignalContextProtocol
 class SignalContextProtocol(Protocol):
     """Protocol for SignalContext to allow dependency injection."""
     def get_thermal_params(self) -> Dict[str, float]: ...
-                    
+
     def get_anchored_context(self) -> Optional[str]: ...
-                    
+
     def update_timestamp(self) -> None: ...
-                    
+
     @property
     def HardState(self) -> HardStateProtocol: ...
-                    
+
     @HardState.setter
     def HardState(self, value: HardStateProtocol) -> None: ...
-                    
+
 
 # NAMING FIXED: LOGGER → Logger
 Logger = logging.getLogger(__name__)
@@ -78,7 +78,7 @@ class OpenAiClientWrapper:
 
     @property
     def chat(self):
-                    
+
         return self._client.chat
 
 # NAMING FIXED: AnthropicClientWrapper → AnthropicClientWrapper
@@ -89,16 +89,16 @@ class AnthropicClientWrapper:
 
     @property
     def chat(self):
-                    
+
         return self
 
     @property
     def completions(self):
-                    
+
         return self
 
     async def create(self, messages: List[Dict[str, Any]], model: str, temperature: float, top_p: float, frequency_penalty: float, presence_penalty: float, stream: bool, max_tokens: Optional[int] = None, **kwargs) -> Any:
-                    
+
         anthropic_messages = []
         for msg in messages:
             if msg["role"] == "user":
@@ -126,21 +126,21 @@ class AnthropicClientWrapper:
 
         # Convert Anthropic response to an OpenAI-like structure
         class MockChoice:
-                                    
+
             def __init__(self, content):
                 self.message = type('obj', (object,), {'content': content})()
 
         class MockUsage:
-                                    
+
             def __init__(self, input_tokens, output_tokens):
                 self.input_tokens = input_tokens
                 self.output_tokens = output_tokens
             def model_dump(self):
-                                                    
+
                 return {"prompt_tokens": self.input_tokens, "completion_tokens": self.output_tokens, "total_tokens": self.input_tokens + self.output_tokens}
 
         class MockResponse:
-                                    
+
             def __init__(self, response_content, usage_input, usage_output):
                 self.choices = [MockChoice(response_content)]
                 self.usage = MockUsage(usage_input, usage_output)
@@ -175,7 +175,7 @@ class GoogleClientWrapper:
                 "role": role,
                 "parts": [{"text": msg["content"]}]
             })
-        
+
         # Use new google.genai API
         from google.genai import types
         config = types.GenerateContentConfig(
@@ -183,7 +183,7 @@ class GoogleClientWrapper:
             top_p=top_p,
             max_output_tokens=max_tokens,
         )
-        
+
         response = self._client.models.generate_content(
             model=model,
             contents=contents,
@@ -224,7 +224,7 @@ class GenericOpenAiCompatibleClientWrapper:
 
     @property
     def chat(self):
-                    
+
         return self._client.chat # Assume client has a .chat attribute with .completions.create
 
 # --- Local Client Factory ---
@@ -431,7 +431,7 @@ class InferenceEngine:
         self.default_provider = default_provider
         self.enable_logging = enable_logging
         self._client_cache: Dict[Provider, Any] = {}
-        
+
         # Initialize semantic cache for response caching
         self.cache: SemanticCache = create_semantic_cache(
             ttl=3600,
@@ -459,7 +459,7 @@ class InferenceEngine:
         """
         # Get thermal parameters first (needed for cache key)
         thermal_params = self.thermostat.get_thermal_params(request)
-        
+
         # Build cache lookup context: prompt + mode + thermal + model for intent
         cache_context = {
             "mode": request.mode.value if request.mode else "default",
@@ -492,7 +492,7 @@ class InferenceEngine:
                 model=cached_result.model,
                 context_updated=False  # No new trace
             )
-        
+
         start_time = time.time()
 
         # Get client for Provider
@@ -546,7 +546,7 @@ class InferenceEngine:
                 model=api_params["model"],
                 context_updated=True
             )
-            
+
             # Cache set (store full result)
             self.cache.set(
                 prompt=cache_prompt,

@@ -43,7 +43,7 @@ Logger = logging.getLogger(__name__)
 # NAMING FIXED: ValidationResult → ValidationResult
 class ValidationResult: # Placeholder for ValidationResult
     '''Brief description of functionality and purpose.'''
-    
+
     def __init__(self, gate_id, PASSED, SEVERITY, MESSAGE, DETAILS=None, SIGNATURE=None) -> None:
         self.gate_id = gate_id
         self.passed = PASSED
@@ -58,16 +58,16 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 # NAMING FIXED: AdaptiveRecoveryLoop → AdaptiveRecoveryLoop
 class AdaptiveRecoveryLoop: # Placeholder for AdaptiveRecoveryLoop
     '''Brief description of functionality and purpose.'''
-    
+
     def __init__(self, initial_temperature) -> None:
         self.current_temperature = initial_temperature
         self.temperature_log = []
     def reset(self, temp):
-                    
+
         self.current_temperature = temp
         self.temperature_log = []
     def record_failure(self, gate_id, MESSAGE, DETAILS):
-                    
+
         self.temperature_log.append({'gate_id': gate_id, 'message': MESSAGE, 'details': DETAILS, 'temperature': self.current_temperature})
         # Simple retry logic for placeholder
         if self.current_temperature < 1.0:
@@ -75,7 +75,7 @@ class AdaptiveRecoveryLoop: # Placeholder for AdaptiveRecoveryLoop
             return type('Recovery', (object,), {'should_retry': True})()
         return type('Recovery', (object,), {'should_retry': False})()
     def get_temperature_log(self):
-                    
+
         return self.temperature_log
 
 

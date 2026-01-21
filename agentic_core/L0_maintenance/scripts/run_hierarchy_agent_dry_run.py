@@ -25,12 +25,12 @@ def main():
     print("=" * 80)
     print("Using: agentic_core/L5_safety/guardrails/HierarchyAgent.py")
     print("Validating hierarchy (no changes will be made)...\n")
-    
+
     project_root = Path.cwd()
-    
+
     # Initialize with healing_enabled=False for dry-run
     agent = HierarchyAgent(project_root, healing_enabled=False)
-    
+
     # Run comprehensive hierarchy healing (all operations in dry-run)
     result = agent.heal_hierarchy(
         create_structure=True,
@@ -38,7 +38,7 @@ def main():
         enforce_depth=True,
         purge_orphans=True
     )
-    
+
     print("\n" + "=" * 80)
     print("DRY RUN COMPLETE - No changes were made")
     print("=" * 80)

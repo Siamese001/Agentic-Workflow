@@ -15,7 +15,7 @@ const FilterController = {
     toggleFilter: function(tableType, key) {
         if (window.tableFilterState[tableType]) {
             window.tableFilterState[tableType][key] = !window.tableFilterState[tableType][key];
-            
+
             // Trigger re-render
             if (typeof renderTerritorySummaryTable === 'function' && window.dashboardData) {
                 renderTerritorySummaryTable(window.dashboardData);
@@ -28,13 +28,13 @@ const FilterController = {
 
     exportCSV: function() {
         if (!window.dashboardData) return;
-        
+
         const headers = Object.keys(window.dashboardData[0]);
         const csvRows = [];
-        
+
         // Add header row
         csvRows.push(headers.join(','));
-        
+
         // Add data rows
         window.dashboardData.forEach(row => {
             const values = headers.map(header => {
@@ -43,7 +43,7 @@ const FilterController = {
             });
             csvRows.push(values.join(','));
         });
-        
+
         // Create download
         const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
         const url = window.URL.createObjectURL(blob);

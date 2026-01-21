@@ -99,10 +99,10 @@ class ObservabilityToolInvoker:
         self._circuit_breakers: Dict[str, Dict[str, Any]] = {}
         self._initialize_tools()
 
-    def register_tool(self, tool_spec: ToolSpecification, 
+    def register_tool(self, tool_spec: ToolSpecification,
                      client: Optional[Any] = None) -> None:
         """Register an observability tool.
-        
+
         Args:
             tool_spec: Tool specification
             client: Optional client instance
@@ -110,31 +110,31 @@ class ObservabilityToolInvoker:
         self._registered_tools[tool_spec.tool_id] = tool_spec
         if client:
             self._tool_clients[tool_spec.tool_id] = client
-        
+
         # Initialize circuit breaker
         self._circuit_breakers[tool_spec.tool_id] = {
             "failures": 0,
             "last_failure": None,
             "state": "closed"  # closed, open, half_open
         }
-        
+
         self.logger.info(f"Registered tool: {tool_spec.tool_id}")
 
     def invoke_tool(self, context: ToolInvocationContext,
                    parameters: Dict[str, Any]) -> ToolInvocationResult:
         """Invoke an observability tool.
-        
+
         Args:
             context: Invocation context
             parameters: Tool parameters
-            
+
         Returns:
             ToolInvocationResult: Invocation result
         """
         self.logger.info(f"Invoking tool: {context.tool_id}, method: {context.method}")
-        
+
         start_time = time.time()
-        
+
         try:
             # Check tool exists
             if context.tool_id not in self._registered_tools:
@@ -145,7 +145,7 @@ class ObservabilityToolInvoker:
                     f"Tool not registered: {context.tool_id}",
                     start_time
                 )
-            
+
             # Check circuit breaker
             if not self._check_circuit_breaker(context.tool_id):
                 return self._create_error_result(
@@ -155,7 +155,7 @@ class ObservabilityToolInvoker:
                     "Circuit breaker is open",
                     start_time
                 )
-            
+
             # Validate parameters
             tool_spec = self._registered_tools[context.tool_id]
             validation_errors = self._validate_parameters(parameters, tool_spec, context.method)
@@ -167,25 +167,25 @@ class ObservabilityToolInvoker:
                     f"Parameter validation failed: {validation_errors}",
                     start_time
                 )
-            
+
             # Execute invocation with retry
             result = self._execute_with_retry(context, parameters)
-            
+
             # Update circuit breaker
             if result.success:
                 self._reset_circuit_breaker(context.tool_id)
             else:
                 self._record_failure(context.tool_id)
-            
+
             # Calculate execution time
             result.execution_time = time.time() - start_time
-            
+
             # Record metrics if enabled
             if self.config.enable_metrics:
                 self._record_invocation_metrics(result)
-            
+
             return result
-            
+
         except Exception as e:
             self.logger.error(f"Tool invocation failed: {str(e)}")
             self._record_failure(context.tool_id)
@@ -200,33 +200,33 @@ class ObservabilityToolInvoker:
     def invoke_tool_batch(self, contexts: List[ToolInvocationContext],
                           parameters_list: List[Dict[str, Any]]) -> List[ToolInvocationResult]:
         """Invoke multiple tools.
-        
+
         Args:
             contexts: List of invocation contexts
             parameters_list: List of parameters
-            
+
         Returns:
             List[ToolInvocationResult]: Results for all invocations
         """
         if len(contexts) != len(parameters_list):
             raise ValueError("Contexts and parameters lists must have same length")
-        
+
         results = []
-        
+
         for context, parameters in zip(contexts, parameters_list):
             result = self.invoke_tool(context, parameters)
             results.append(result)
-        
+
         return results
 
     def invoke_tool_stream(self, context: ToolInvocationContext,
                           parameters: Dict[str, Any]) -> Dict[str, object]:
         """Invoke tool with streaming response.
-        
+
         Args:
             context: Invocation context
             parameters: Tool parameters
-            
+
         Returns:
             Iterator: Stream of response chunks
         """
@@ -234,33 +234,33 @@ class ObservabilityToolInvoker:
         client = self._tool_clients.get(context.tool_id)
         if not client:
             raise ValueError(f"No client for tool: {context.tool_id}")
-        
+
         # Execute streaming invocation
         for chunk in client.invoke_stream(context.method, parameters):
             yield chunk
 
     def list_tools(self, category: Optional[ToolCategory] = None) -> List[ToolSpecification]:
         """List registered tools.
-        
+
         Args:
             category: Optional filter by category
-            
+
         Returns:
             List[ToolSpecification]: Registered tools
         """
         tools = list(self._registered_tools.values())
-        
+
         if category:
             tools = [t for t in tools if t.category == category]
-        
+
         return tools
 
     def get_tool_specification(self, tool_id: str) -> Optional[ToolSpecification]:
         """Get tool specification.
-        
+
         Args:
             tool_id: Tool identifier
-            
+
         Returns:
             Optional[ToolSpecification]: Tool specification
         """
@@ -268,7 +268,7 @@ class ObservabilityToolInvoker:
 
     def reset_circuit_breaker(self, tool_id: str) -> None:
         """Reset circuit breaker for tool.
-        
+
         Args:
             tool_id: Tool identifier
         """
@@ -281,12 +281,12 @@ class ObservabilityToolInvoker:
         """Execute tool invocation with retry logic."""
         last_error = None
         max_retries = context.retry_policy.get("max_retries", self.config.max_retries)
-        
+
         for attempt in range(max_retries + 1):
             try:
                 # Get tool client
                 client = self._tool_clients.get(context.tool_id)
-                
+
                 if client:
                     # Use registered client
                     response = client.invoke(context.method, parameters)
@@ -303,7 +303,7 @@ class ObservabilityToolInvoker:
                 else:
                     # Simulate invocation
                     return self._simulate_invocation(context, parameters)
-                
+
             except Exception as e:
                 last_error = str(e)
                 if attempt < max_retries:
@@ -312,7 +312,7 @@ class ObservabilityToolInvoker:
                     time.sleep(retry_delay)
                 else:
                     self.logger.error(f"Invocation failed after {attempt + 1} attempts: {last_error}")
-        
+
         return self._create_error_result(
             context.invocation_id,
             context.tool_id,
@@ -325,10 +325,10 @@ class ObservabilityToolInvoker:
                             parameters: Dict[str, Any]) -> ToolInvocationResult:
         """Simulate tool invocation."""
         tool_spec = self._registered_tools[context.tool_id]
-        
+
         # Simulate processing time
         time.sleep(0.1)
-        
+
         # Generate mock response based on tool category and method
         if tool_spec.category == ToolCategory.TRACING:
             response = {
@@ -362,7 +362,7 @@ class ObservabilityToolInvoker:
             }
         else:
             response = {"message": f"Mock response from {tool_spec.name}"}
-        
+
         return ToolInvocationResult(
             invocation_id=context.invocation_id,
             tool_id=context.tool_id,
@@ -379,23 +379,23 @@ class ObservabilityToolInvoker:
                             method: str) -> List[str]:
         """Validate tool parameters."""
         errors = []
-        
+
         # Get method schema
         method_schema = tool_spec.parameters_schema.get(method, {})
-        
+
         # Check required parameters
         for param_name, param_def in method_schema.items():
             if param_def.get("required", False) and param_name not in parameters:
                 errors.append(f"Missing required parameter: {param_name}")
-            
+
             # Type validation
             if param_name in parameters:
                 expected_type = param_def.get("type")
                 value = parameters[param_name]
-                
+
                 if expected_type and not self._check_type(value, expected_type):
                     errors.append(f"Parameter {param_name} must be of type {expected_type}")
-        
+
         return errors
 
     def _check_type(self, value: object, expected_type: str) -> bool:
@@ -408,20 +408,20 @@ class ObservabilityToolInvoker:
             "array": list,
             "object": dict
         }
-        
+
         expected_python_type = type_map.get(expected_type)
         if expected_python_type:
             return isinstance(value, expected_python_type)
-        
+
         return True
 
     def _check_circuit_breaker(self, tool_id: str) -> bool:
         """Check if circuit breaker allows invocation."""
         if not self.config.enable_circuit_breaker:
             return True
-        
+
         breaker = self._circuit_breakers.get(tool_id, {})
-        
+
         if breaker.get("state") == "open":
             # Check if we should try half-open
             last_failure = breaker.get("last_failure")
@@ -429,18 +429,18 @@ class ObservabilityToolInvoker:
                 breaker["state"] = "half_open"
                 return True
             return False
-        
+
         return True
 
     def _record_failure(self, tool_id: str) -> None:
         """Record failure for circuit breaker."""
         if not self.config.enable_circuit_breaker:
             return
-        
+
         breaker = self._circuit_breakers.get(tool_id, {})
         breaker["failures"] += 1
         breaker["last_failure"] = time.time()
-        
+
         # Open circuit breaker if threshold reached
         if breaker["failures"] >= self.config.circuit_breaker_threshold:
             breaker["state"] = "open"
@@ -493,7 +493,7 @@ class ObservabilityToolInvoker:
                 }
             }
         )
-        
+
         # Metric collector tool
         metric_tool = ToolSpecification(
             tool_id="metric_collector",
@@ -513,7 +513,7 @@ class ObservabilityToolInvoker:
                 }
             }
         )
-        
+
         # Log analyzer tool
         log_tool = ToolSpecification(
             tool_id="log_analyzer",
@@ -534,7 +534,7 @@ class ObservabilityToolInvoker:
                 }
             }
         )
-        
+
         # Register built-in tools
         self.register_tool(trace_tool)
         self.register_tool(metric_tool)
@@ -568,7 +568,7 @@ def tool_invoke_observability_tool(
     timeout: float = 30.0
 ) -> Dict[str, Any]:
     """Invoke observability tool.
-    
+
     Args:
         tool_id: Tool identifier
         method: Method to invoke
@@ -576,12 +576,12 @@ def tool_invoke_observability_tool(
         invocation_id: Optional unique invocation identifier
         caller_id: Optional caller identifier
         timeout: Invocation timeout
-        
+
     Returns:
         Dict: Invocation result
     """
     invoker = create_observability_tool_invoker()
-    
+
     context = ToolInvocationContext(
         invocation_id=invocation_id or str(uuid.uuid4()),
         tool_id=tool_id,
@@ -589,9 +589,9 @@ def tool_invoke_observability_tool(
         caller_id=caller_id,
         timeout=timeout
     )
-    
+
     result = invoker.invoke_tool(context, parameters)
-    
+
     return {
         "invocation_id": result.invocation_id,
         "tool_id": result.tool_id,

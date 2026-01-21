@@ -14,7 +14,7 @@ DISCOVERY_FILE = PROJECT_ROOT / "agent_discovery_full.json"
 # Target agents for this batch (10 agents)
 TARGET_AGENTS = [
     "GitSafetyHandlerAgent",
-    "CodeFormatterAgent", 
+    "CodeFormatterAgent",
     "DocstringComplianceAgent",
     "InferenceTypeHintAgent",
     "NamingNormalizationAgent",
@@ -29,7 +29,7 @@ def get_agent_info(agent_name: str) -> Dict[str, Any]:
     """Get agent info from discovery data."""
     with open(DISCOVERY_FILE, 'r', encoding='utf-8') as f:
         agents = json.load(f)
-    
+
     for agent in agents:
         if agent['class_name'] == agent_name:
             return agent
@@ -40,7 +40,7 @@ def main():
     print("=" * 70)
     print("BATCH REFACTORING TARGET: 10 AGENTS")
     print("=" * 70)
-    
+
     for i, agent_name in enumerate(TARGET_AGENTS, 1):
         info = get_agent_info(agent_name)
         if info:
@@ -49,7 +49,7 @@ def main():
             print(f"   Typed: {info['typed_pct']:.0f}% | Doc: {info['documented_pct']:.0f}% | Schema: {info['schema_strictness']:.0f}%")
         else:
             print(f"\n{i}. {agent_name} - NOT FOUND")
-    
+
     print("\n" + "=" * 70)
     print("Ready to refactor these 10 agents")
     print("=" * 70)

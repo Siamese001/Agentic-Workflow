@@ -28,7 +28,7 @@ from agentic_core.L5_safety.validators.canonical_truth import (
 
 class TestHealthScoreCalculation:
     """Test suite for canonical health score calculation."""
-    
+
     def test_perfect_health_score(self):
         """Test that perfect scores (100.0 across all metrics) yield 100.0."""
         result = calculate_health_score(
@@ -39,7 +39,7 @@ class TestHealthScoreCalculation:
             comp_health=100.0
         )
         assert result == 100.0, "Perfect health should be 100.0"
-    
+
     def test_zero_health_score(self):
         """Test that zero scores across all metrics yield 0.0."""
         result = calculate_health_score(
@@ -50,7 +50,7 @@ class TestHealthScoreCalculation:
             comp_health=0.0
         )
         assert result == 0.0, "Zero health should be 0.0"
-    
+
     def test_weighted_formula_accuracy(self):
         """Test that weights are applied correctly."""
         # Known inputs with expected output
@@ -64,12 +64,12 @@ class TestHealthScoreCalculation:
         # Total: 27.0 + 8.0 + 17.5 + 17.0 + 9.0 = 78.5
         expected = 78.5
         assert result == expected, f"Expected {expected}, got {result}"
-    
+
     def test_weights_sum_to_one(self):
         """Verify that health weights sum to 1.0 (100%)."""
         total = sum(HEALTH_WEIGHTS.values())
         assert abs(total - 1.0) < 0.0001, f"Weights must sum to 1.0, got {total}"
-    
+
     def test_precision_rounding(self):
         """Test that results are rounded to 4 decimal places."""
         result = calculate_health_score(
@@ -81,7 +81,7 @@ class TestHealthScoreCalculation:
         )
         # Verify result has at most 4 decimal places
         assert len(str(result).split('.')[-1]) <= 4, "Result should be rounded to 4 decimals"
-    
+
     def test_invalid_input_below_range(self):
         """Test that values below 0.0 raise ValueError."""
         with pytest.raises(ValueError, match="must be between 0.0 and 100.0"):
@@ -92,7 +92,7 @@ class TestHealthScoreCalculation:
                 obs=50.0,
                 comp_health=50.0
             )
-    
+
     def test_invalid_input_above_range(self):
         """Test that values above 100.0 raise ValueError."""
         with pytest.raises(ValueError, match="must be between 0.0 and 100.0"):
@@ -103,7 +103,7 @@ class TestHealthScoreCalculation:
                 obs=50.0,
                 comp_health=50.0
             )
-    
+
     def test_edge_case_boundary_values(self):
         """Test boundary values (0.0 and 100.0) are accepted."""
         # Should not raise
@@ -119,7 +119,7 @@ class TestHealthScoreCalculation:
 
 class TestLayerInference:
     """Test suite for canonical layer inference."""
-    
+
     def test_l0_maintenance_detection(self):
         """Test L0 layer detection from path."""
         paths = [
@@ -129,7 +129,7 @@ class TestLayerInference:
         ]
         for path in paths:
             assert get_canonical_layer(path) == "L0", f"Failed to detect L0 in {path}"
-    
+
     def test_l5_safety_detection(self):
         """Test L5 layer detection from path."""
         paths = [
@@ -139,7 +139,7 @@ class TestLayerInference:
         ]
         for path in paths:
             assert get_canonical_layer(path) == "L5", f"Failed to detect L5 in {path}"
-    
+
     def test_apps_detection(self):
         """Test Apps layer detection from path."""
         paths = [
@@ -149,7 +149,7 @@ class TestLayerInference:
         ]
         for path in paths:
             assert get_canonical_layer(path) == "Apps", f"Failed to detect Apps in {path}"
-    
+
     def test_utils_detection(self):
         """Test utils detection from path."""
         paths = [
@@ -158,7 +158,7 @@ class TestLayerInference:
         ]
         for path in paths:
             assert get_canonical_layer(path) == "utils", f"Failed to detect utils in {path}"
-    
+
     def test_tests_detection(self):
         """Test tests detection from path."""
         paths = [
@@ -168,7 +168,7 @@ class TestLayerInference:
         ]
         for path in paths:
             assert get_canonical_layer(path) == "tests", f"Failed to detect tests in {path}"
-    
+
     def test_all_layers_l0_to_l6(self):
         """Test all layers L0-L6 are correctly detected."""
         layer_map = {
@@ -183,13 +183,13 @@ class TestLayerInference:
         for expected_layer, path in layer_map.items():
             result = get_canonical_layer(path)
             assert result == expected_layer, f"Expected {expected_layer}, got {result} for {path}"
-    
+
     def test_windows_path_normalization(self):
         """Test that Windows paths with backslashes are handled correctly."""
         windows_path = "C:\\Git\\Agentic-Workflow\\agentic_core\\L3_orchestration\\workflow_engines\\agent.py"
         result = get_canonical_layer(windows_path)
         assert result == "L3", f"Windows path normalization failed: {windows_path}"
-    
+
     def test_unknown_path(self):
         """Test that unknown paths return 'Unknown'."""
         unknown_paths = [
@@ -200,7 +200,7 @@ class TestLayerInference:
         for path in unknown_paths:
             result = get_canonical_layer(path)
             assert result == "Unknown", f"Expected 'Unknown' for {path}, got {result}"
-    
+
     def test_path_object_input(self):
         """Test that Path objects are accepted as input."""
         path_obj = Path("agentic_core/L5_safety/validators/agent.py")
@@ -210,7 +210,7 @@ class TestLayerInference:
 
 class TestValidationFunctions:
     """Test suite for validation helper functions."""
-    
+
     def test_validate_health_components_valid(self):
         """Test that valid components pass validation."""
         result = validate_health_components(
@@ -221,7 +221,7 @@ class TestValidationFunctions:
             comp_health=60.0
         )
         assert result is True, "Valid components should pass"
-    
+
     def test_validate_health_components_invalid(self):
         """Test that invalid components fail validation."""
         result = validate_health_components(
@@ -232,15 +232,15 @@ class TestValidationFunctions:
             comp_health=60.0
         )
         assert result is False, "Invalid components should fail"
-    
+
     def test_get_health_weights_returns_copy(self):
         """Test that get_health_weights returns a copy, not the original."""
         weights1 = get_health_weights()
         weights2 = get_health_weights()
-        
+
         # Modify one copy
         weights1["heal_capability"] = 0.99
-        
+
         # Verify original is unchanged
         assert weights2["heal_capability"] == 0.30, "Should return independent copies"
         assert HEALTH_WEIGHTS["heal_capability"] == 0.30, "Original should be unchanged"
@@ -248,7 +248,7 @@ class TestValidationFunctions:
 
 class TestAgentCategorization:
     """Test suite for canonical agent categorization."""
-    
+
     def test_validator_categorization(self):
         """Test that validator agents are correctly categorized."""
         test_cases = [
@@ -260,7 +260,7 @@ class TestAgentCategorization:
         for agent_name in test_cases:
             result = categorize_agent(agent_name)
             assert result == "Validator", f"{agent_name} should be categorized as Validator, got {result}"
-    
+
     def test_healer_categorization(self):
         """Test that healer agents are correctly categorized."""
         test_cases = [
@@ -272,7 +272,7 @@ class TestAgentCategorization:
         for agent_name in test_cases:
             result = categorize_agent(agent_name)
             assert result == "Healer", f"{agent_name} should be categorized as Healer, got {result}"
-    
+
     def test_orchestrator_categorization(self):
         """Test that orchestrator agents are correctly categorized."""
         test_cases = [
@@ -284,7 +284,7 @@ class TestAgentCategorization:
         for agent_name in test_cases:
             result = categorize_agent(agent_name)
             assert result == "Orchestrator", f"{agent_name} should be categorized as Orchestrator, got {result}"
-    
+
     def test_guardian_categorization(self):
         """Test that guardian agents are correctly categorized."""
         test_cases = [
@@ -296,13 +296,13 @@ class TestAgentCategorization:
         for agent_name in test_cases:
             result = categorize_agent(agent_name)
             assert result == "Guardian", f"{agent_name} should be categorized as Guardian, got {result}"
-    
+
     def test_categorization_with_base_classes(self):
         """Test that base classes influence categorization."""
         # Agent name doesn't match, but base class does
         result = categorize_agent("CustomAgent", base_classes=["HealerMixin", "BaseAgent"])
         assert result == "Healer", "Base classes should influence categorization"
-    
+
     def test_categorization_with_docstring(self):
         """Test that docstring influences categorization."""
         # Neither name nor base classes match, but docstring does
@@ -312,19 +312,19 @@ class TestAgentCategorization:
             docstring="This agent validates and enforces compliance rules"
         )
         assert result == "Validator", "Docstring should influence categorization"
-    
+
     def test_generic_agent_fallback(self):
         """Test that unmatched agents return GenericAgent."""
         result = categorize_agent("RandomCustomAgent")
         assert result == "GenericAgent", "Unmatched agents should return GenericAgent"
-    
+
     def test_priority_order(self):
         """Test that first pattern match wins (priority order)."""
         # Agent could match multiple categories, first should win
         result = categorize_agent("ValidatorHealerAgent")
         # Validator comes before Healer in AGENT_CATEGORY_PATTERNS
         assert result == "Validator", "First pattern match should win"
-    
+
     def test_case_insensitive_matching(self):
         """Test that pattern matching is case-insensitive."""
         test_cases = [
@@ -335,7 +335,7 @@ class TestAgentCategorization:
         for agent_name, expected_category in test_cases:
             result = categorize_agent(agent_name)
             assert result == expected_category, f"{agent_name} should match {expected_category}"
-    
+
     def test_get_agent_categories(self):
         """Test that get_agent_categories returns all categories."""
         categories = get_agent_categories()
@@ -347,7 +347,7 @@ class TestAgentCategorization:
 
 class TestSSOTEnforcement:
     """Test suite to ensure no duplicate implementations exist."""
-    
+
     def test_no_hardcoded_health_weights_in_dashboard(self):
         """Verify dashboard generator doesn't have hardcoded health weights."""
         dashboard_path = Path("C:/Git/Agentic-Workflow/agentic_core/L6_observability/dashboards/generate_dashboard.py")
@@ -358,7 +358,7 @@ class TestSSOTEnforcement:
             # SHOULD import from canonical_truth
             assert "from agentic_core.L5_safety.validators.canonical_truth_1 import calculate_health_score" in content, \
                 "Dashboard should import canonical health function"
-    
+
     def test_no_hardcoded_health_weights_in_tests(self):
         """Verify E2E tests don't have hardcoded health weights."""
         test_path = Path("C:/Git/Agentic-Workflow/scripts/test_dashboard_end_to_end.py")
@@ -373,7 +373,7 @@ class TestSSOTEnforcement:
 
 class TestCategorizationMatrix:
     """Matrix test for specific agent examples from codebase."""
-    
+
     def test_real_world_agents(self):
         """Test categorization of actual agents from the codebase."""
         # Real agents with expected categories
@@ -389,7 +389,7 @@ class TestCategorizationMatrix:
             ("LocationAgent", "Governor"),
             ("HierarchyAgent", "Governor"),
         ]
-        
+
         for agent_name, expected_category in test_matrix:
             result = categorize_agent(agent_name)
             assert result == expected_category, \

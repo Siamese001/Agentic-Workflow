@@ -23,7 +23,7 @@ class CachedSafetyShield:
             self.redis = None
             self._memory_cache = {}
         self.prefix_gravity = f'l5_gravity:{session_id}'
-        self.prefix_policy = f'l5_policy:{session_id}' 
+        self.prefix_policy = f'l5_policy:{session_id}'
 
 # Alias for backward compatibility
 

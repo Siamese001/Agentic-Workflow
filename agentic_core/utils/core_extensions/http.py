@@ -51,12 +51,12 @@ ALLOWED_DOMAINS: Set[str] = {
 
 class SovereignHttpClient(MCPHardenedMixin, HealerMixin):
     """Sovereign HTTP client - audit + safe exec for all HTTP operations."""
-    
+
     def __init__(self, timeout: int = 30, allow_internal: bool = False):
         super().__init__()
         """
         Initialize HTTP client.
-        
+
         Args:
             timeout: Default request timeout in seconds
             allow_internal: Allow internal/localhost requests (default False)
@@ -65,7 +65,7 @@ class SovereignHttpClient(MCPHardenedMixin, HealerMixin):
         self.allow_internal = allow_internal
         self.audit_log: List[Dict[str, Any]] = []
         self._session = None
-    
+
     def _get_session(self):
         """Lazy-load requests session."""
         if self._session is None:
@@ -80,28 +80,28 @@ class SovereignHttpClient(MCPHardenedMixin, HealerMixin):
                 Logger.warning("[SOVEREIGN HTTP] requests not installed")
                 return None
         return self._session
-    
+
     def _validate_url(self, url: str) -> bool:
         """Validate URL against sovereignty rules."""
         try:
             parsed = urlparse(url)
             host = (parsed.hostname or '').lower()
-            
+
             # Block internal/localhost unless explicitly allowed
             if not self.allow_internal:
                 if host in {'localhost', '127.0.0.1'} or host.startswith('192.168.') or host.endswith('.local'):
                     Logger.warning(f"[SOVEREIGN HTTP] Blocked internal URL: {url}")
                     return False
-            
+
             # Check domain allowlist
             if not any(host == d or host.endswith('.' + d) for d in ALLOWED_DOMAINS):
                 Logger.warning(f"[SOVEREIGN HTTP] Domain not in allowlist: {host}")
                 return False
-            
+
             return True
         except Exception:
             return False
-    
+
     def _audit(self, operation: str, url: str, result: Any) -> None:
         """Record operation to audit log."""
         parsed = urlparse(url)
@@ -111,21 +111,21 @@ class SovereignHttpClient(MCPHardenedMixin, HealerMixin):
             'path': parsed.path[:50],
             'success': result.get('success', False) if isinstance(result, dict) else True
         })
-    
+
     def execute(self, operation: str, **payload) -> Dict[str, Any]:
         """
         Route HTTP operations safely.
-        
+
         Args:
             operation: HTTP operation (get, post, put, delete)
             **payload: Operation-specific parameters (url, data, headers, etc.)
-        
+
         Returns:
             Result dictionary with success status and response data
         """
         url = payload.get('url', '')
         Logger.debug(f"[SOVEREIGN HTTP] {operation.upper()}: {url[:100]}")
-        
+
         # Validate URL
         if not self._validate_url(url):
             result = {
@@ -134,7 +134,7 @@ class SovereignHttpClient(MCPHardenedMixin, HealerMixin):
             }
             self._audit(operation, url, result)
             return result
-        
+
         session = self._get_session()
         if session is None:
             result = {
@@ -144,55 +144,55 @@ class SovereignHttpClient(MCPHardenedMixin, HealerMixin):
             }
             self._audit(operation, url, result)
             return result
-        
+
         timeout = payload.get('timeout', self.timeout)
         headers = payload.get('headers', {})
-        
+
         try:
             if operation == 'get':
                 params = payload.get('params', {})
                 response = session.get(url, params=params, headers=headers, timeout=timeout)
-            
+
             elif operation == 'post':
                 data = payload.get('data')
                 json_data = payload.get('json')
                 response = session.post(url, data=data, json=json_data, headers=headers, timeout=timeout)
-            
+
             elif operation == 'put':
                 data = payload.get('data')
                 json_data = payload.get('json')
                 response = session.put(url, data=data, json=json_data, headers=headers, timeout=timeout)
-            
+
             elif operation == 'delete':
                 response = session.delete(url, headers=headers, timeout=timeout)
-            
+
             else:
                 result = {'success': False, 'error': f'Unsupported HTTP operation: {operation}'}
                 self._audit(operation, url, result)
                 return result
-            
+
             # Check response
             response.raise_for_status()
-            
+
             # Try to parse JSON, fallback to text
             try:
                 body = response.json()
             except Exception:
                 body = response.text[:1000]  # Truncate large responses
-            
+
             result = {
                 'success': True,
                 'status_code': response.status_code,
                 'body': body
             }
-        
+
         except Exception as e:
             Logger.error(f"[SOVEREIGN HTTP] {operation.upper()} {url} failed: {e}")
             result = {
                 'success': False,
                 'error': str(e)
             }
-        
+
         self._audit(operation, url, result)
         return result
 

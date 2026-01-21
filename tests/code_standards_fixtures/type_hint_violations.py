@@ -50,12 +50,12 @@ class SomeClass:
     def __init__(self, value):
         """Init method - 'self' doesn't need type hint."""
         self.value = value
-    
+
     # VIOLATION: Public method missing hints
     def public_method(self, x):
         """Public method missing type hints."""
         return self.value + x
-    
+
     # This is OK - private method
     def _private_method(self, x):
         """Private method - type hints not required."""

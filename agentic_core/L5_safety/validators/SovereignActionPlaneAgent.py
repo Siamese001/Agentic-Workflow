@@ -47,7 +47,7 @@ class SovereignToolsmith:
     def __init__(self, output_dir: str = SCRIPTS_DIR) -> None:
         """
         Initialize Toolsmith.
-        
+
         Args:
             output_dir: Directory for generated tools
         """
@@ -57,10 +57,10 @@ class SovereignToolsmith:
     async def forge_diagnostic_tool(self, failure_context: str) -> Optional[str]:
         """
         Forge a diagnostic tool based on failure context.
-        
+
         Args:
             failure_context: Context describing the failure
-        
+
         Returns:
             Path to generated tool or None if failed
         """
@@ -87,7 +87,7 @@ class SovereignSandbox:
     async def start(self) -> None:
         """
         Start the sandbox environment.
-        
+
         Initializes the secure execution environment.
         """
         self._is_running = True
@@ -96,7 +96,7 @@ class SovereignSandbox:
     async def stop(self) -> None:
         """
         Stop the sandbox environment.
-        
+
         Shuts down the secure execution environment.
         """
         self._is_running = False
@@ -105,11 +105,11 @@ class SovereignSandbox:
     async def execute_tool(self, tool_path: str, args: Optional[List[str]] = None) -> Dict[str, Any]:
         """
         Execute a tool in the sandbox.
-        
+
         Args:
             tool_path: Path to tool to execute
             args: Optional command-line arguments
-        
+
         Returns:
             Dictionary with execution results
         """

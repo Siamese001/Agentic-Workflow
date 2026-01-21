@@ -23,7 +23,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 # NAMING FIXED: TerritoryWatcher → TerritoryWatcher
 class TerritoryWatcher(FileSystemEventHandler):
     """Watches the entire territory for changes and feeds L3 Orchestration Executive"""
-    
+
     def __init__(self, core):
         self.core = core
         super().__init__()
@@ -33,7 +33,7 @@ class TerritoryWatcher(FileSystemEventHandler):
             return
         # Thread-safe handoff to the L3 Executive Queue
         self.core.loop.call_soon_threadsafe(
-            self.core.event_queue.put_nowait, 
+            self.core.event_queue.put_nowait,
             {"path": event.src_path, "type": "modify"}
         )
 
@@ -44,7 +44,7 @@ class AutonomousSovereignCore:
         self.loop = asyncio.get_event_loop()
         self.event_queue = asyncio.Queue()
         self.running = True
-        
+
         # Import autonomous improvements
         from agentic_core.L1_cognition.thought_engine.AdaptiveLearningEngine import (
             create_adaptive_learning_engine,
@@ -80,7 +80,7 @@ class AutonomousSovereignCore:
         self.l4_checkpoint = create_autonomous_checkpoint_manager()
         self.l4_guardian = create_autonomous_state_guardian()
         self.l5_safety = create_self_updating_safety_engine()
-        
+
         print(f"\n[ETERNAL SOVEREIGN CORE AWAKENED] {datetime.now()}")
         print(f"   L1 Adaptive Learning: Online")
         print(f"   L2 Resource Manager: Online")
@@ -89,7 +89,7 @@ class AutonomousSovereignCore:
         print(f"   L4 Checkpoint Manager: Online")
         print(f"   L4 State Guardian: Online")
         print(f"   L5 Safety Engine: Online")
-        
+
         # Awaken autonomous loops with dependency injection
         self.l1_learning.awaken()
         self.l2_resource.awaken(learner_instance=self.l1_learning)  # Inject L1 wisdom into L2
@@ -102,10 +102,10 @@ class AutonomousSovereignCore:
         while self.running:
             event = await self.event_queue.get()
             path = event["path"]
-            
+
             try:
                 print(f"   [EXECUTIVE] Processing: {Path(path).name}")
-                
+
                 # Priority 1: L5 Safety Review
                 if "safety" in path or "guardrail" in path:
                     detection = await self.l5_safety.detect_threats(
@@ -113,18 +113,18 @@ class AutonomousSovereignCore:
                     )
                     if detection.detected:
                         print(f"   [L5] Threat detected: {detection.ThreatLevel}")
-                
+
                 # Priority 2: L4 Checkpoint
                 await self.l4_checkpoint.auto_checkpoint_if_needed(
                     state={"event": event["type"], "path": path},
                     files_to_track=[path]
                 )
-                
+
                 # Priority 3: L2 Resource Refresh
                 status = self.l2_resource.get_resource_status()
                 if status['global_budget_remaining'] < 10:
                     print(f"   [L2] Low resource budget: {status['global_budget_remaining']}")
-                
+
             except Exception as e:
                 print(f"   [!] Executive Worker Error: {e}")
             finally:
@@ -134,15 +134,15 @@ class AutonomousSovereignCore:
         """L3: Eternal monitoring loop"""
         # Launch background daemons and the Executive Worker
         asyncio.create_task(self.sovereign_executive_worker())
-        
+
         # Set up file system watcher
         observer = Observer()
         handler = TerritoryWatcher(self)
         observer.schedule(handler, str(Path.cwd()), recursive=True)
         observer.start()
-        
+
         print(f"   [L3] Territory watcher active on: {Path.cwd()}")
-        
+
         try:
             while self.running:
                 await asyncio.sleep(1)

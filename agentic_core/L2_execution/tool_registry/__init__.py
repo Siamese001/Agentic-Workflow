@@ -4,7 +4,7 @@ L2 Execution: Tool Registry (SSOT)
 Pattern: Builder/Healer agents (Validation + Healing)
 Rule: All agents here must inherit from HealerMixin.
 
-DEPRECATION WARNING: ToolRegistry (PascalCase) is legacy and scheduled 
+DEPRECATION WARNING: ToolRegistry (PascalCase) is legacy and scheduled
 for consolidation in Phase 4. Use this snake_case path for all new imports.
 
 Status: CANONICAL snake_case location

@@ -65,13 +65,13 @@ class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMix
 
     def __init__(self, ctx: Optional[any] = None, *args: any, _allow_mock: bool = True, **kwargs: any) -> None:
         """Initialize TestSovereigntyAgent.
-        
+
         Args:
             ctx: Execution context (optional for testing agents)
             *args: Additional positional arguments
             _allow_mock: If True and ctx is None, use MagicMock (default True for testing agents)
             **kwargs: Additional keyword arguments
-        
+
         Note: Testing agents have ctx optional by design for standalone validation.
         """
         if ctx is None:
@@ -91,7 +91,7 @@ class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMix
         """Run advanced tests on Artifact or repo."""
         if request is None:
             request = {}
-        
+
         test_type = request.get("type", "basic")
         coverage_target = request.get("coverage_target", 80)
         Artifact = request.get("Artifact", "")
@@ -147,7 +147,7 @@ class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMix
                 cwd=self.repo_root,
                 check=False
             )
-            
+
             output = result.stdout.decode()
             coverage = self._parse_coverage(output)
             passed = result.returncode == 0 and coverage >= coverage_target
@@ -176,7 +176,7 @@ class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMix
                 cwd=self.repo_root,
                 check=False
             )
-            
+
             passed = result.returncode == 0
             return {
                 "passed": passed,
@@ -203,7 +203,7 @@ class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMix
                 cwd=self.repo_root,
                 check=False
             )
-            
+
             passed = result.returncode == 0
             return {
                 "passed": passed,

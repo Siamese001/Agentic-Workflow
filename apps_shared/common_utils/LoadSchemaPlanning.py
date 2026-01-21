@@ -127,55 +127,55 @@ class SchemaLoadPlanner:
 
     def plan_load(self, load_request: Dict[str, Any]) -> SchemaLoadResult:
         """Plan schema loading operations.
-        
+
         Args:
             load_request: Dictionary containing schema requirements
-            
+
         Returns:
             SchemaLoadResult: Complete planning result with load plan
         """
         self.logger.info(f"Starting schema load planning for: {load_request.get('plan_name', 'unknown')}")
-        
+
         try:
             # Validate input request
             self._validate_request(load_request)
-            
+
             # Parse schemas
             schemas = self._parse_schemas(load_request)
-            
+
             # Parse validation mode
             validation_mode = self._parse_validation_mode(load_request)
-            
+
             # Parse validation rules if enabled
             validation_rules = (
-                self._parse_validation_rules(load_request) 
+                self._parse_validation_rules(load_request)
                 if self.config.enable_validation else []
             )
-            
+
             # Parse transforms if enabled
             transforms = (
-                self._parse_transforms(load_request) 
+                self._parse_transforms(load_request)
                 if self.config.enable_transforms else []
             )
-            
+
             # Create load plan
             load_plan = self._create_load_plan(
                 load_request, schemas, validation_mode,
                 validation_rules, transforms
             )
-            
+
             # Count items
             schema_count = len(schemas)
             dependency_count = sum(len(s.dependencies) for s in schemas)
             validation_rule_count = len(validation_rules)
             transform_count = len(transforms)
-            
+
             # Estimate load time
             load_time = self._estimate_load_time(load_plan)
-            
+
             # Estimate memory usage
             memory_estimate = self._estimate_memory_usage(load_plan)
-            
+
             result = SchemaLoadResult(
                 success=True,
                 load_plan=load_plan,
@@ -191,13 +191,13 @@ class SchemaLoadPlanner:
                     "planner": "SchemaLoadPlanner"
                 }
             )
-            
+
             self.logger.info(
                 f"Successfully planned schema load: "
                 f"{schema_count} schemas, {dependency_count} dependencies"
             )
             return result
-            
+
         except Exception as e:
             self.logger.error(f"Schema load planning failed: {str(e)}")
             return SchemaLoadResult(
@@ -213,10 +213,10 @@ class SchemaLoadPlanner:
         """Validate schema load planning request."""
         if not request:
             raise ValueError("Schema load planning request cannot be empty")
-        
+
         if "plan_name" not in request:
             raise ValueError("Plan name is required in schema load planning request")
-        
+
         if "schemas" not in request:
             raise ValueError("Schemas are required in schema load planning request")
 
@@ -224,7 +224,7 @@ class SchemaLoadPlanner:
         """Parse schemas from request."""
         schemas = []
         raw_schemas = request.get("schemas", [])
-        
+
         for raw_schema in raw_schemas:
             if isinstance(raw_schema, dict):
                 # Parse schema type
@@ -237,12 +237,12 @@ class SchemaLoadPlanner:
                     "openapi": SchemaType.OPENAPI,
                     "graphql": SchemaType.GRAPHQL
                 }
-                
+
                 schema_type = type_mapping.get(
                     raw_schema.get("type", "json"),
                     SchemaType.JSON
                 )
-                
+
                 # Parse scope if present
                 scope = SchemaScope.DATA
                 if "scope" in raw_schema:
@@ -258,7 +258,7 @@ class SchemaLoadPlanner:
                         raw_schema.get("scope"),
                         SchemaScope.DATA
                     )
-                
+
                 schema = SchemaDefinition(
                     name=raw_schema.get("name", "unnamed"),
                     type=schema_type,
@@ -270,14 +270,14 @@ class SchemaLoadPlanner:
                     scope=scope
                 )
                 schemas.append(schema)
-        
+
         # Validate schema count
         if len(schemas) > self.config.max_schemas_per_plan:
             raise ValueError(
                 f"Number of schemas ({len(schemas)}) exceeds maximum "
                 f"({self.config.max_schemas_per_plan})"
             )
-        
+
         # Validate total dependencies
         total_deps = sum(len(s.dependencies) for s in schemas)
         if total_deps > self.config.max_dependencies:
@@ -285,7 +285,7 @@ class SchemaLoadPlanner:
                 f"Total dependencies ({total_deps}) exceeds maximum "
                 f"({self.config.max_dependencies})"
             )
-        
+
         return schemas
 
     def _parse_validation_mode(self, request: Dict[str, Any]) -> ValidationMode:
@@ -296,7 +296,7 @@ class SchemaLoadPlanner:
             "syntax_only": ValidationMode.SYNTAX_ONLY,
             "disabled": ValidationMode.DISABLED
         }
-        
+
         mode_str = request.get("validation_mode", self.config.default_validation_mode)
         return mode_mapping.get(mode_str, ValidationMode.STRICT)
 
@@ -304,7 +304,7 @@ class SchemaLoadPlanner:
         """Parse validation rules from request."""
         rules = []
         raw_rules = request.get("validation_rules", [])
-        
+
         for raw_rule in raw_rules:
             if isinstance(raw_rule, dict):
                 rule = ValidationRule(
@@ -315,14 +315,14 @@ class SchemaLoadPlanner:
                     message=raw_rule.get("message")
                 )
                 rules.append(rule)
-        
+
         return rules
 
     def _parse_transforms(self, request: Dict[str, Any]) -> List[SchemaTransform]:
         """Parse transforms from request."""
         transforms = []
         raw_transforms = request.get("transforms", [])
-        
+
         type_mapping = {
             "json": SchemaType.JSON,
             "xml": SchemaType.XML,
@@ -332,7 +332,7 @@ class SchemaLoadPlanner:
             "openapi": SchemaType.OPENAPI,
             "graphql": SchemaType.GRAPHQL
         }
-        
+
         for raw_transform in raw_transforms:
             if isinstance(raw_transform, dict):
                 transform = SchemaTransform(
@@ -348,7 +348,7 @@ class SchemaLoadPlanner:
                     parameters=raw_transform.get("parameters", {})
                 )
                 transforms.append(transform)
-        
+
         return transforms
 
     def _create_load_plan(
@@ -376,10 +376,10 @@ class SchemaLoadPlanner:
     def _estimate_load_time(self, plan: SchemaLoadPlan) -> int:
         """Estimate load time in seconds."""
         base_time = 5  # Base setup time
-        
+
         # Time for parsing schemas
         schema_time = len(plan.schemas) * 0.5
-        
+
         # Time for validation
         validation_multiplier = {
             ValidationMode.STRICT: 2.0,
@@ -387,50 +387,50 @@ class SchemaLoadPlanner:
             ValidationMode.SYNTAX_ONLY: 0.5,
             ValidationMode.DISABLED: 0.1
         }
-        
+
         validation_time = (
-            len(plan.validation_rules) * 0.2 * 
+            len(plan.validation_rules) * 0.2 *
             validation_multiplier.get(plan.validation_mode, 1.0)
         )
-        
+
         # Time for transforms
         transform_time = len(plan.transforms) * 1.0
-        
+
         # Time for dependency resolution
         dep_time = (
             sum(len(s.dependencies) for s in plan.schemas) * 0.1
             if plan.resolve_dependencies else 0
         )
-        
+
         total_time = base_time + schema_time + validation_time + transform_time + dep_time
-        
+
         return int(total_time)
 
     def _estimate_memory_usage(self, plan: SchemaLoadPlan) -> int:
         """Estimate memory usage in MB."""
         # Base memory usage
         base_memory = 30  # 30MB base
-        
+
         # Memory for schemas (assume average 10KB per schema)
         schema_memory = len(plan.schemas) * 10 * 1024
-        
+
         # Memory for validation rules
         validation_memory = len(plan.validation_rules) * 1024
-        
+
         # Memory for transforms
         transform_memory = len(plan.transforms) * 5 * 1024
-        
+
         # Memory for dependencies
         dep_memory = (
             sum(len(s.dependencies) for s in plan.schemas) * 512
             if plan.resolve_dependencies else 0
         )
-        
+
         total_memory_bytes = (
-            base_memory * 1024 * 1024 + 
+            base_memory * 1024 * 1024 +
             schema_memory + validation_memory + transform_memory + dep_memory
         )
-        
+
         return total_memory_bytes // (1024 * 1024)  # Convert to MB
 
 
@@ -459,7 +459,7 @@ def plan_schema_load(
     config: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
     """Plan schema load from simple parameters.
-    
+
     Args:
         plan_name: Name of the load plan
         schemas: List of schema definitions
@@ -468,7 +468,7 @@ def plan_schema_load(
         transforms: Optional list of schema transforms
         resolve_dependencies: Whether to resolve schema dependencies
         config: Optional planner configuration overrides
-        
+
     Returns:
         Dict: Planning result with load plan and resource requirements
     """
@@ -481,12 +481,12 @@ def plan_schema_load(
         "transforms": transforms or [],
         "resolve_dependencies": resolve_dependencies
     }
-    
+
     # Create planner and execute
     planner_config = SchemaLoadConfig(**config) if config else None
     planner = SchemaLoadPlanner(planner_config)
     result = planner.plan_load(request)
-    
+
     # Convert result to dict for JSON serialization
     return {
         "success": result.success,

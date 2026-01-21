@@ -58,7 +58,3 @@ class GoldenOutput(BaseModel):
     safety_decisions: Dict[str, object]
     metacognition_summary: Dict[str, object]
     final_verdict: Literal["pass", "fail", "borderline"]
-
-
-
-

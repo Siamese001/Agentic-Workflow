@@ -1,7 +1,7 @@
 # MCP Integration Sovereignty Report
 
-**Date:** January 1, 2026  
-**Scope:** Full-repo zero-loss scan of all MCP and third-party integrations  
+**Date:** January 1, 2026
+**Scope:** Full-repo zero-loss scan of all MCP and third-party integrations
 **Status:** 🔍 Complete Discovery | ⚠️ Gaps Identified | 📋 Hardening Plan Ready
 
 ---
@@ -103,7 +103,7 @@ connection_kwargs = {
 
 if env.REDIS_SSL:
     connection_kwargs.update({
-        "ssl": True, 
+        "ssl": True,
         "ssl_cert_reqs": None,
         "ssl_check_hostname": False
     })
@@ -262,7 +262,7 @@ PWD = os.environ.get("NEO4J_PASSWORD", "password")  # ❌ Hardcoded default
 # BEFORE - RedisSovereignAgent.py:48-52
 if env.REDIS_SSL:
     connection_kwargs.update({
-        "ssl": True, 
+        "ssl": True,
         "ssl_cert_reqs": None,  # ❌ No cert validation
         "ssl_check_hostname": False  # ❌ No hostname check
     })
@@ -328,14 +328,14 @@ class MCPHardenedMixin:
     - Connection pooling support
     - Timeout enforcement
     """
-    
+
     MAX_RETRIES: int = 3
     BASE_DELAY: float = 1.0
     MAX_DELAY: float = 30.0
     DEFAULT_TIMEOUT: float = 30.0
-    
+
     async def _hardened_call(
-        self, 
+        self,
         operation: str,
         call_func,
         *args,
@@ -345,7 +345,7 @@ class MCPHardenedMixin:
         """Execute MCP call with retry and observability."""
         timeout = timeout or self.DEFAULT_TIMEOUT
         last_error = None
-        
+
         for attempt in range(self.MAX_RETRIES):
             try:
                 # Emit start event
@@ -353,21 +353,21 @@ class MCPHardenedMixin:
                     "MCP_CALL_START",
                     {"operation": operation, "attempt": attempt + 1}
                 )
-                
+
                 # Execute with timeout
                 result = await asyncio.wait_for(
                     call_func(*args, **kwargs),
                     timeout=timeout
                 )
-                
+
                 # Emit success event
                 self._emit_sovereign_event(
                     "MCP_CALL_SUCCESS",
                     {"operation": operation, "attempt": attempt + 1}
                 )
-                
+
                 return result
-                
+
             except asyncio.TimeoutError:
                 last_error = f"Timeout after {timeout}s"
                 self._emit_sovereign_event(
@@ -380,16 +380,16 @@ class MCPHardenedMixin:
                     "MCP_CALL_FAIL",
                     {"operation": operation, "attempt": attempt + 1, "error": str(e)}
                 )
-            
+
             # Exponential backoff
             if attempt < self.MAX_RETRIES - 1:
                 delay = min(self.BASE_DELAY * (2 ** attempt), self.MAX_DELAY)
                 await asyncio.sleep(delay)
-        
+
         # All retries exhausted - emit CRITIQUE
         self._emit_critique(operation, last_error)
         raise RuntimeError(f"MCP {operation} failed after {self.MAX_RETRIES} attempts: {last_error}")
-    
+
     def _emit_sovereign_event(self, event_type: str, data: Dict[str, Any]) -> None:
         """Emit telemetry event for observability."""
         try:
@@ -397,7 +397,7 @@ class MCPHardenedMixin:
             emit_event(event_type, data)
         except ImportError:
             logger.debug(f"[MCP] {event_type}: {data}")
-    
+
     def _emit_critique(self, operation: str, error: str) -> None:
         """Emit CRITIQUE for subatomic retry consideration."""
         try:
@@ -427,7 +427,7 @@ class MCPHardenedMixin:
 ```diff
   if env.REDIS_SSL:
 -     connection_kwargs.update({
--         "ssl": True, 
+-         "ssl": True,
 -         "ssl_cert_reqs": None,
 -         "ssl_check_hostname": False
 -     })
@@ -505,7 +505,7 @@ logger = logging.getLogger(__name__)
 def emit_event(event_type: str, data: Dict[str, Any]) -> None:
     """
     Emit sovereign event for MCP observability.
-    
+
     Events are logged and can be forwarded to external systems.
     """
     event = {
@@ -514,10 +514,10 @@ def emit_event(event_type: str, data: Dict[str, Any]) -> None:
         "data": data,
         "source": "mcp_integration"
     }
-    
+
     # Log for local observability
     logger.info(f"[SOVEREIGN_EVENT] {json.dumps(event)}")
-    
+
     # Future: Forward to Redis pub/sub, Prometheus, etc.
 ```
 
@@ -567,58 +567,58 @@ import asyncio
 from unittest.mock import AsyncMock, patch, MagicMock
 
 class TestMCPHardenedMixin:
-    
+
     @pytest.mark.asyncio
     async def test_retry_on_transient_failure(self):
         """Test exponential backoff retry on failures."""
         from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-        
+
         class TestClient(MCPHardenedMixin):
             pass
-        
+
         client = TestClient()
         mock_call = AsyncMock(side_effect=[Exception("Transient"), "success"])
-        
+
         with patch.object(client, '_emit_sovereign_event'):
             result = await client._hardened_call("test_op", mock_call)
-        
+
         assert result == "success"
         assert mock_call.call_count == 2
-    
+
     @pytest.mark.asyncio
     async def test_emit_critique_on_exhaustion(self):
         """Test CRITIQUE emission after all retries fail."""
         from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-        
+
         class TestClient(MCPHardenedMixin):
             MAX_RETRIES = 2
             BASE_DELAY = 0.01  # Fast for testing
-        
+
         client = TestClient()
         mock_call = AsyncMock(side_effect=Exception("Permanent failure"))
-        
+
         with patch.object(client, '_emit_critique') as mock_critique:
             with pytest.raises(RuntimeError):
                 await client._hardened_call("test_op", mock_call)
-            
+
             mock_critique.assert_called_once()
-    
+
     @pytest.mark.asyncio
     async def test_timeout_enforcement(self):
         """Test timeout triggers retry."""
         from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-        
+
         class TestClient(MCPHardenedMixin):
             MAX_RETRIES = 2
             BASE_DELAY = 0.01
-        
+
         client = TestClient()
-        
+
         async def slow_call():
             await asyncio.sleep(10)
-        
+
         mock_call = AsyncMock(side_effect=slow_call)
-        
+
         with patch.object(client, '_emit_sovereign_event'):
             with pytest.raises(RuntimeError):
                 await client._hardened_call("test_op", mock_call, timeout=0.01)
@@ -634,7 +634,7 @@ import pytest
 from unittest.mock import patch, MagicMock
 
 class TestRedisMCPHardening:
-    
+
     @pytest.mark.asyncio
     async def test_redis_retry_on_connection_error(self):
         """Test Redis client retries on connection error."""
@@ -643,7 +643,7 @@ class TestRedisMCPHardening:
             # Test implementation
 
 class TestPineconeMCPHardening:
-    
+
     @pytest.mark.asyncio
     async def test_pinecone_emits_events(self):
         """Test Pinecone client emits SovereignEvents."""
@@ -806,8 +806,8 @@ else:
 **Remaining Gap:**
 - **G9 (Low):** Performance testing under load - deferred to next phase
 
-*Generated: January 1, 2026 (Phase 1, 2 & 3 - COMPLETE)*  
-*Scan Coverage: 184 MCP files, 112 Gemini files, 54 Redis files, 33 Pinecone files, 3 Neo4j files*  
+*Generated: January 1, 2026 (Phase 1, 2 & 3 - COMPLETE)*
+*Scan Coverage: 184 MCP files, 112 Gemini files, 54 Redis files, 33 Pinecone files, 3 Neo4j files*
 *Hardening: Redis ✅ | Pinecone ✅ | Neo4j ✅ (pooled + encrypted) | Gemini ✅*
 
 **MCP Sovereignty Status: ✅ 100% HARDENED & ENFORCED**

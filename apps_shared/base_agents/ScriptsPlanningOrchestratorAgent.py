@@ -64,7 +64,7 @@ class ScriptsPlanningResult:
 
 class ScriptsPlanningOrchestratorAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
     """Orchestrator for planning script execution operations.
-    
+
     Inherits from L0MaintenanceBaseAgent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
     """
 
@@ -164,7 +164,7 @@ class ScriptsPlanningOrchestratorAgent(SubatomicTestingMixin, L0MaintenanceBaseA
     ) -> Dict[str, int]:
         """
         Scripts Planning Healing - Validates orchestrator logic integrity.
-        
+
         WIRED CAPABILITIES:
         - _validate_tasks(): Performs self-diagnostic on task validation logic.
         """
@@ -174,7 +174,7 @@ class ScriptsPlanningOrchestratorAgent(SubatomicTestingMixin, L0MaintenanceBaseA
         )
         if not isinstance(metrics, dict):
             metrics = {"violations": 0, "fixed": 0, "errors": 0}
-        
+
         if metrics.get("cycle_detected"):
             return metrics
 
@@ -186,17 +186,17 @@ class ScriptsPlanningOrchestratorAgent(SubatomicTestingMixin, L0MaintenanceBaseA
                 script_path="scripts/health_check.py",
                 priority=ScriptExecutionPriority.NORMAL
             )
-            
+
             # If this raises ValueError, the agent is broken
             self._validate_tasks([diagnostic_task])
-            
+
             # If we get here, validation logic is healthy
             metrics["fixed"] = metrics.get("fixed", 0) + 1  # Count 1 successful health check
-            
+
         except Exception as e:
             Logger.error(f"Scripts planning health check failed: {e}")
             metrics["errors"] = metrics.get("errors", 0) + 1
-            
+
         return metrics
 
 def create_scripts_planning_orchestrator(max_concurrent_tasks: int=5, enable_dependency_check: bool=True, **kwargs: Dict[str, object]) -> ScriptsPlanningOrchestratorAgent:

@@ -26,16 +26,16 @@ def validate_base_agent_naming():
     print("\n" + "="*70)
     print("CRITICAL: Base Agent Naming Convention Validation")
     print("="*70)
-    
+
     # Load dashboard data
     data_file = project_root / "agentic_core" / "L6_observability" / "dashboards" / "data" / "dashboard_data.js"
     content = data_file.read_text(encoding='utf-8')
     lines = [l for l in content.split('\n') if not l.strip().startswith('//')]
     content = '\n'.join(lines).replace('window.dashboardData = ', '').strip().rstrip(';')
     data = json.loads(content)
-    
+
     failures = []
-    
+
     # Required Base Agent names
     REQUIRED_BASE_AGENTS = [
         'Sovereign Base Agent',
@@ -47,14 +47,14 @@ def validate_base_agent_naming():
         'L1 Cognition/Base Agent',
         'L0 Maintenance/Base Agent'
     ]
-    
+
     # Check all required Base Agents exist
     territories = [row['Territory'] for row in data]
-    
+
     for required in REQUIRED_BASE_AGENTS:
         if required not in territories:
             failures.append(f"Missing required Base Agent: '{required}'")
-    
+
     # Check for incorrect "Base Class" naming
     FORBIDDEN_NAMES = [
         'Base/Base Class',
@@ -66,11 +66,11 @@ def validate_base_agent_naming():
         'L1 Cognition/Base Class',
         'L0 Maintenance/Base Class'
     ]
-    
+
     for forbidden in FORBIDDEN_NAMES:
         if forbidden in territories:
             failures.append(f"Forbidden 'Base Class' naming found: '{forbidden}' (should be 'Base Agent')")
-    
+
     if failures:
         print(f"\n❌ NAMING VALIDATION FAILED: {len(failures)} issues")
         for f in failures:
@@ -93,16 +93,16 @@ def validate_base_agent_order():
     print("\n" + "="*70)
     print("CRITICAL: Base Agent Position Validation")
     print("="*70)
-    
+
     # Load dashboard data
     data_file = project_root / "agentic_core" / "L6_observability" / "dashboards" / "data" / "dashboard_data.js"
     content = data_file.read_text(encoding='utf-8')
     lines = [l for l in content.split('\n') if not l.strip().startswith('//')]
     content = '\n'.join(lines).replace('window.dashboardData = ', '').strip().rstrip(';')
     data = json.loads(content)
-    
+
     territories = [row['Territory'] for row in data]
-    
+
     # Expected order: TOTAL, Sovereign Base Agent, then each layer with Base Agent first
     expected_positions = {
         'TOTAL': 0,
@@ -115,9 +115,9 @@ def validate_base_agent_order():
         'L1 Cognition/Base Agent': 17,  # After L2 territories
         'L0 Maintenance/Base Agent': 19,  # After L1 territories
     }
-    
+
     failures = []
-    
+
     for base_agent, expected_pos in expected_positions.items():
         if base_agent in territories:
             actual_pos = territories.index(base_agent)
@@ -127,7 +127,7 @@ def validate_base_agent_order():
                 )
         else:
             failures.append(f"{base_agent}: Not found in dashboard data")
-    
+
     # Validate Base Agent is first for each layer
     layer_checks = [
         ('L6_Observability/Base Agent', ['L6_Observability/Metrics', 'L6_Observability/Telemetry']),
@@ -138,7 +138,7 @@ def validate_base_agent_order():
         ('L1 Cognition/Base Agent', ['L1 Cognition/Core']),
         ('L0 Maintenance/Base Agent', ['L0 Maintenance/Core']),
     ]
-    
+
     for base_agent, layer_territories in layer_checks:
         if base_agent in territories:
             base_pos = territories.index(base_agent)
@@ -149,7 +149,7 @@ def validate_base_agent_order():
                         failures.append(
                             f"{base_agent} must come BEFORE {territory} (Base Agent at {base_pos}, {territory} at {territory_pos})"
                         )
-    
+
     if failures:
         print(f"\n❌ POSITION VALIDATION FAILED: {len(failures)} issues")
         for f in failures:
@@ -171,16 +171,16 @@ if __name__ == "__main__":
     print("  - Same pattern for L5, L4, L3, L2, L1, L0")
     print("\nOrdering Rule:")
     print("  - Base Agent must be FIRST row for each layer")
-    
+
     all_passed = True
-    
+
     all_passed &= validate_base_agent_naming()
     all_passed &= validate_base_agent_order()
-    
+
     print("\n" + "="*70)
     print("FINAL RESULT")
     print("="*70)
-    
+
     if all_passed:
         print("\n✅ ALL BASE AGENT VALIDATIONS PASSED")
         print("   - Naming convention ✅")

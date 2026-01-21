@@ -75,18 +75,18 @@ def mock_llm_calls(monkeypatch):
     """
     try:
         import google.generativeai as genai
-        
+
         class MockGenerativeModel:
             def __init__(self, *args, **kwargs):
                 pass
-            
+
             def generate_content(self, *args, **kwargs):
                 class MockResponse:
                     text = "Mock LLM response for testing"
                     def __iter__(self):
                         yield self
                 return MockResponse()
-        
+
         monkeypatch.setattr(genai, "GenerativeModel", MockGenerativeModel)
     except ImportError:
         pass
@@ -100,7 +100,7 @@ def mock_mcp_tools(monkeypatch):
     # Mock common MCP tool patterns
     def mock_tool_execute(*args, **kwargs):
         return {"status": "mocked", "result": "stub_data"}
-    
+
     # This will be expanded as we identify specific MCP tool patterns
     pass
 
@@ -113,9 +113,9 @@ def path_shield(request, monkeypatch):
     # Skip path_shield if test is marked with disable_path_shield
     if "disable_path_shield" in request.fixturenames:
         return
-    
+
     import json
-    
+
     fixture_keywords = [
         "fixture", "sample", "mock", "data", "test_data",
         "golden", "config", "mission", "resume", "context",
@@ -124,14 +124,14 @@ def path_shield(request, monkeypatch):
 
     # Exclusion patterns for real test files that should not be mocked
     exclusion_patterns = ["live_stream.jsonl", "tmp", "temp", "checkpoint", "test.py", "patterns.json", "rules.json"]
-    
+
     # Save original functions before patching
     original_exists = os.path.exists
     original_isfile = os.path.isfile
     original_open = builtins.open
-    
+
     def mock_exists(path):
-                    
+
         path_str = str(path).lower()
         # Exclude real test files from mocking
         if any(excl in path_str for excl in exclusion_patterns):
@@ -139,7 +139,7 @@ def path_shield(request, monkeypatch):
         return any(kw in path_str for kw in fixture_keywords)
 
     def mock_open_wrapper(file, *args, **kwargs):
-                    
+
         file_str = str(file).lower()
         # Exclude real test files from path shield
         if any(excl in file_str for excl in exclusion_patterns):
@@ -157,7 +157,7 @@ def path_shield(request, monkeypatch):
     monkeypatch.setattr(os.path, "exists", mock_exists)
     monkeypatch.setattr(os.path, "isfile", mock_exists)
     monkeypatch.setattr(builtins, "open", mock_open_wrapper)
-    
+
     # Pathlib interception
     monkeypatch.setattr(Path, "exists", lambda self: mock_exists(self))
 
@@ -171,12 +171,12 @@ def pytest_configure(config):
 
 def pytest_collection_modifyitems(items):
     """
-    Sovereign Skip Shield: 
+    Sovereign Skip Shield:
     Automatically skips tests requiring live infrastructure during stubbed collection.
     """
     for item in items:
         # Detect keywords that imply external connectivity or live data requirements
         is_live = any(kw in item.nodeid.lower() for kw in ["live", "external", "integration_real", "network"])
-        
+
         if is_live:
             item.add_marker(pytest.mark.skip(reason="Live external dependency - skipped in stub mode"))

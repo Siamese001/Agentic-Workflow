@@ -27,7 +27,7 @@ gravity_layers = list(CORE_SUBFOLDER_MAP.keys())
 # NOT_AN_AGENT — validator utility, not a true agent — excluded from agent discovery
 class GravityComplianceValidatorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     '''Brief description of functionality and purpose.'''
-    
+
     def __init__(self, project_root: Path) -> None:
         warnings.warn(
             "GravityComplianceValidatorAgent is deprecated. Use GravityValidatorAgent from "
@@ -46,7 +46,7 @@ class GravityComplianceValidatorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
         return -1  # Unknown = no restriction
 
     def scan_file(self, file_path: Path):
-                    
+
         try:
             content = file_path.read_text(encoding="utf-8", errors="ignore")
         except Exception:
@@ -73,7 +73,7 @@ class GravityComplianceValidatorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
                 })
 
     def run(self) -> Dict[str, Any]:
-                    
+
         print("=== GRAVITY COMPLIANCE SCAN ===")
         for py_file in self.root.rglob("*.py"):
             if "agentic_core" in py_file.parts:

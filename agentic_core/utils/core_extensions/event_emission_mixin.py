@@ -22,7 +22,7 @@ class SovereignEvent(BaseModel):
 class EventEmissionMixin:
     """
     Phase 2 Observability Infrastructure: Event Emission (Report 4.3).
-    
+
     Standardizes how agents broadcast internal state changes to L6.
     Features:
     - Structured Event Schema (Pydantic)
@@ -37,20 +37,20 @@ class EventEmissionMixin:
         # Buffer for potential batch emission (Report 4.6)
         self._event_buffer = []
 
-    def emit_event(self, 
-                   event_type: str, 
-                   payload: Optional[Dict[str, Any]] = None, 
+    def emit_event(self,
+                   event_type: str,
+                   payload: Optional[Dict[str, Any]] = None,
                    severity: str = "INFO",
                    trace_id: Optional[str] = None) -> SovereignEvent:
         """
         Broadmosts a structured event for L6 monitoring.
-        
+
         Args:
             event_type: Category of the event (e.g., 'healing.success')
             payload: Data associated with the event
             severity: Impact level (INFO to CRITICAL)
             trace_id: ID for cross-agent request correlation
-            
+
         Returns:
             SovereignEvent: The emitted event object
         """
@@ -80,7 +80,7 @@ class EventEmissionMixin:
         # 2. L6 Observability Hook (Placeholder for L6 Central Dispatch)
         # In production, this would send to a centralized event bus or Redis stream
         self._dispatch_to_observability(event)
-        
+
         return event
 
     def _dispatch_to_observability(self, event: SovereignEvent):
@@ -156,18 +156,18 @@ class EventEmissionMixin:
 
                 self.emit_event(f"{event_prefix}.started", {"args": str(args)})
                 start_time = time.time()
-                
+
                 try:
                     result = await func(self, *args, **kwargs)
                     duration = time.time() - start_time
                     self.emit_event(
-                        f"{event_prefix}.completed", 
+                        f"{event_prefix}.completed",
                         {"duration": round(duration, 4), "success": True}
                     )
                     return result
                 except Exception as e:
                     self.emit_event(
-                        f"{event_prefix}.failed", 
+                        f"{event_prefix}.failed",
                         {"error": str(e), "success": False},
                         severity="ERROR"
                     )

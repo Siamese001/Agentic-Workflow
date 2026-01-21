@@ -19,7 +19,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGI
 def sync_pre_commit(dry_run: bool=False) -> Any:
     """
     Synchronize .pre-commit-config.yaml with SSOT from structure_blueprint.py
-    
+
     Args:
         dry_run: If True, only print changes without modifying files
     """

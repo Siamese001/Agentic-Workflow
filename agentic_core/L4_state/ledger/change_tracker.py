@@ -14,7 +14,7 @@ from typing import List, Dict, Tuple
 
 class ChangeRecord:
     """Record of a single file modification by a healer/fixer agent."""
-    
+
     def __init__(self, agent: str, file_path: str | Path, description: str):
         self.agent = agent
         self.file_path = str(Path(file_path).resolve())
@@ -24,11 +24,11 @@ class ChangeRecord:
 class ChangeTracker:
     """
     Tracks all file modifications during healing operations.
-    
+
     Provides exact traceability of which healer/fixer touched which file,
     producing a detailed Markdown report with by-agent and by-file views.
     """
-    
+
     def __init__(self):
         self.records: List[ChangeRecord] = []
 

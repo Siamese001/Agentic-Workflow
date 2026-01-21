@@ -3,7 +3,7 @@ from __future__ import annotations
 Base Sovereign Schemas
 ======================
 Defines the root models and structural entities for the Sovereign system.
-All primary system entities should inherit from SovereignBaseModel to 
+All primary system entities should inherit from SovereignBaseModel to
 ensure strict validation and immutability.
 """
 

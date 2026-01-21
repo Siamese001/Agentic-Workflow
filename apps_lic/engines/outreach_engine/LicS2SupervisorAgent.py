@@ -17,16 +17,16 @@ class LicS2SupervisorAgent(SubatomicTestingMixin, MCPHardenedMixin):
     v12.0: Updated coordination logic for strategic alignment workflow.
     Now manages entity extraction + validation flow.
     """
-    
+
 
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
-        
+
         Args:
             dry_run: If True, only report violations without fixing
             execute: If True, apply fixes
-        
+
         Returns:
             Dict with healing summary
         """
@@ -37,12 +37,12 @@ class LicS2SupervisorAgent(SubatomicTestingMixin, MCPHardenedMixin):
     def __init__(self, circuit_breaker: CircuitBreaker, search_client: GoogleSearchClient, llm_client: GeminiLLMClient) -> None:
         """
         Initialize LIC S2 supervisor agent.
-        
+
         Args:
             circuit_breaker: Circuit breaker for fault tolerance
             search_client: Google search client for research
             llm_client: Gemini LLM client for generation
-        
+
         Sets up internal, recipient, and organization agents along with
         scoring systems and reflexion capabilities.
         """
@@ -55,7 +55,7 @@ class LicS2SupervisorAgent(SubatomicTestingMixin, MCPHardenedMixin):
         self.claim_scorer = ClaimConfidenceScorer()
         self.rag_reflexion = RAGReflexionSystem()
         self.status = AgentStatus.IDLE
-    
+
     async def orchestrate_research(
         self,
         mission: OutreachMission,
@@ -77,7 +77,7 @@ class LicS2SupervisorAgent(SubatomicTestingMixin, MCPHardenedMixin):
         rag_results = internal_report['rag_results']
         prior_applications = internal_report['prior_applications']
         brief_entities = internal_report.get('brief_entities', [])
-        
+
         # Phase 2: Entity validation
         if brief_entities:
 
@@ -97,7 +97,7 @@ class LicS2SupervisorAgent(SubatomicTestingMixin, MCPHardenedMixin):
                     rag_results.extend(validation['rag_results'])
                     if validation.get('staleness_warning'):
                         pass
-        
+
         # Phase 3: Light supplemental RAG (minimal - strategic brief is primary)
         # Only run if no strategic brief found
         if not any(r.SourceType == "STRATEGIC_BRIEF" for r in rag_results):
@@ -106,17 +106,17 @@ class LicS2SupervisorAgent(SubatomicTestingMixin, MCPHardenedMixin):
             org_report = await self.organization_agent.get_organization_context(mission)
             rag_results.extend(recipient_report['rag_results'])
             rag_results.extend(org_report['rag_results'])
-        
+
         # Phase 4: Reflexion loop (if triggered by S6 failure or critique)
         reflexion_iterations = 0
         while reflexion_iterations < 2:
-            
+
             critique = self.rag_reflexion.critique_rag_sufficiency(
                 rag_results,
                 profile_analysis.Archetype,
                 iteration=reflexion_iterations + 1
             )
-            
+
             if refinement_context and reflexion_iterations == 0:
 
                 failure_rule = refinement_context[0].rule_id
@@ -128,7 +128,7 @@ class LicS2SupervisorAgent(SubatomicTestingMixin, MCPHardenedMixin):
             if critique.is_sufficient:
 
                 break
-            
+
             reflexion_iterations += 1
             Task = critique.refinement_tasks[0]
 
@@ -137,12 +137,12 @@ class LicS2SupervisorAgent(SubatomicTestingMixin, MCPHardenedMixin):
                 refinement_report = await self.recipient_agent.run_refinement_task(Task, mission)
             else:
                 refinement_report = await self.organization_agent.run_refinement_task(Task, mission)
-            
+
             rag_results.extend(refinement_report['rag_results'])
-        
+
         # Phase 5: Extract sender grounding whitelists
         sender_grounding = self._extract_sender_grounding(rag_results, mission)
-        
+
         # Phase 6: Build ResearchContext
         context = ResearchContext(
             recipient_insights=[
@@ -166,7 +166,7 @@ class LicS2SupervisorAgent(SubatomicTestingMixin, MCPHardenedMixin):
             sender_context=[],
             sender_grounding=sender_grounding
         )
-        
+
         # Phase 7: Archetype critique
         # corrected_profile_analysis = self._critique_archetype_classification(
         # TODO: Fix incomplete function call
@@ -178,17 +178,17 @@ class LicS2SupervisorAgent(SubatomicTestingMixin, MCPHardenedMixin):
             pass
 
         self.status = AgentStatus.COMPLETED
-        
+
         return context, corrected_profile_analysis
-    
+
     async def _run_adversarial_check(self, context: ResearchContext) -> List[str]:
         # ... (rest of the code remains the same)
 
         rag_summary = "\n".join([
-            f"- {r.SourceType}: {r.text[:100]}..." 
+            f"- {r.SourceType}: {r.text[:100]}..."
             for r in context.rag_results[:10]
         ])
-        
+
         critique_prompt = f"""You are an adversarial reviewer. Review the following research findings and identify any weak or unsupported claims:
 
 {rag_summary}
@@ -200,21 +200,21 @@ List any findings that appear:
 
 Return a numbered list of weaknesses (max 3). Format: "1. [weakness]"
 """
-        
+
         loop = asyncio.get_event_loop()
         try:
             findings_text = await loop.run_in_executor(
                 None, self.llm_client.generate, critique_prompt
             )
-            
+
             findings = [
-                f.strip() 
-                for f in findings_text.split('\n') 
+                f.strip()
+                for f in findings_text.split('\n')
                 if f.strip() and len(f.strip()) > 10
             ]
-            
+
             return findings[:3]
-            
+
         except Exception as e:
 
             return []
@@ -226,34 +226,34 @@ Return a numbered list of weaknesses (max 3). Format: "1. [weakness]"
     ) -> SenderGroundingWhitelists:
         """Extract sender grounding whitelists from RAG."""
         grounding = SenderGroundingWhitelists()
-        
+
         for result in rag_results:
             text_lower = result.text.lower()
-            
+
             if any(marker in text_lower for marker in ["team member", "colleague", "worked with", "collaborator"]):
                 names = self._extract_names_from_text(result.text)
                 grounding.team_members.extend(names)
                 if names:
                     grounding.raw_evidence["team_members"] = grounding.raw_evidence.get("team_members", []) + [result.text[:200]]
-            
+
             if any(marker in text_lower for marker in ["product", "platform", "solution", "service"]):
                 products = self._extract_capitalized_phrases(result.text)
                 grounding.products.extend(products)
                 if products:
                     grounding.raw_evidence["products"] = grounding.raw_evidence.get("products", []) + [result.text[:200]]
-            
+
             if any(marker in text_lower for marker in ["client", "customer", "case study", "project for"]):
                 cases = self._extract_capitalized_phrases(result.text)
                 grounding.case_studies.extend(cases)
                 if cases:
                     grounding.raw_evidence["case_studies"] = grounding.raw_evidence.get("case_studies", []) + [result.text[:200]]
-        
+
         grounding.team_members = list(set(grounding.team_members))
         grounding.products = list(set(grounding.products))
         grounding.case_studies = list(set(grounding.case_studies))
-        
+
         return grounding
-    
+
     def _extract_names_from_text(self, text: str) -> List[str]:
         """Extract person names from text."""
         words = text.split()
@@ -264,7 +264,7 @@ Return a numbered list of weaknesses (max 3). Format: "1. [weakness]"
                     full_name = f"{word} {words[i + 1]}"
                     names.append(full_name)
         return names
-    
+
     def _extract_capitalized_phrases(self, text: str) -> List[str]:
         """Extract capitalized phrases."""
         words = text.split()
@@ -280,7 +280,7 @@ Return a numbered list of weaknesses (max 3). Format: "1. [weakness]"
         if len(current_phrase) >= 2:
             phrases.append(" ".join(current_phrase))
         return phrases
-    
+
     def _critique_archetype_classification(
         self,
         provisional_analysis: ProfileAnalysis,
@@ -288,19 +288,19 @@ Return a numbered list of weaknesses (max 3). Format: "1. [weakness]"
     ) -> ProfileAnalysis:
         """Agentic self-correction of Archetype classification."""
         all_text = " ".join([r.text for r in context.rag_results]).lower()
-        
+
         if provisional_analysis.Archetype != Archetype.C_LEVEL:
             if any(term in all_text for term in ["strategic vision", "board member", "company direction"]):
                 critique = "RAG evidence suggests C_LEVEL status (strategic indicators)"
                 provisional_analysis.Archetype = Archetype.C_LEVEL
                 provisional_analysis.confidence = 0.90
                 provisional_analysis.critique_history.append(critique)
-        
+
         if provisional_analysis.Archetype != Archetype.RECRUITER:
             if any(term in all_text for term in ["talent acquisition", "hiring manager", "recruitment"]):
                 critique = "RAG evidence suggests RECRUITER role (hiring indicators)"
                 provisional_analysis.Archetype = Archetype.RECRUITER
                 provisional_analysis.confidence = 0.88
                 provisional_analysis.critique_history.append(critique)
-        
+
         return provisional_analysis

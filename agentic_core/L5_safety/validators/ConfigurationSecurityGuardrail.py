@@ -39,7 +39,7 @@ class ConfigurationSecurityGuardrail(HealerMixin):
     async def validate_config(self, config: Dict[str, Any]) -> Dict[str, Any]:
         """Validate configuration against security rules."""
         logger.info(f"[{self.name}] Validating configuration")
-        
+
         result = {
             "valid": True,
             "violations": [],
@@ -50,7 +50,7 @@ class ConfigurationSecurityGuardrail(HealerMixin):
             for rule in self.enabled_rules:
                 rule_result = await self._apply_rule(rule, config)
                 result["rules_applied"].append(rule)
-                
+
                 if not rule_result.get("valid"):
                     result["valid"] = False
                     result["violations"].extend(rule_result.get("violations", []))
@@ -164,4 +164,4 @@ class ConfigurationSecurityGuardrail(HealerMixin):
     def heal_repository(self, dry_run: bool = True, **kwargs) -> Dict[str, Any]:
         """Repository healing with parent chain invocation."""
         result = super().heal_repository(dry_run=dry_run, **kwargs)
-        return {"healed": 0, "skipped": 0, "parent": result}
+        return {"violations_fixed": 0, "skipped": 0, "parent": result}

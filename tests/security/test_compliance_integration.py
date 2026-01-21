@@ -10,7 +10,7 @@ import pytest
 from unittest.mock import MagicMock, patch
 
 from agentic_core.L3_orchestration.UnifiedOrchestratorAgent import (
-    UnifiedOrchestratorAgent, 
+    UnifiedOrchestratorAgent,
     OrchestratorMode
 )
 from agentic_core.L5_safety.validators.CredentialScannerAgent import CredentialScannerAgent
@@ -24,7 +24,7 @@ class TestComplianceIntegration:
 
     def test_orchestrator_compliance_mode_calls_scanner(self):
         """
-        Verify that running the orchestrator in COMPLIANCE mode instantiates 
+        Verify that running the orchestrator in COMPLIANCE mode instantiates
         and calls the CredentialScannerAgent.
         """
         with patch('agentic_core.L5_safety.validators.CredentialScannerAgent.CredentialScannerAgent') as MockScanner:
@@ -37,19 +37,19 @@ class TestComplianceIntegration:
                 "summary": {"by_severity": {"high": 0, "medium": 0, "low": 0}},
                 "recommendations": ["✅ No high-priority credential leaks detected"]
             }
-            
+
             orch = UnifiedOrchestratorAgent(mode="compliance")
-            
+
             # Execute in Compliance Mode
             result = orch.run_agent("TestAgent", dry_run=True)
-            
+
             # Verify Scanner was initialized and called
             MockScanner.assert_called()
             mock_scanner_instance.scan_for_credentials.assert_called_once()
-            
+
             # Verify result metadata
             assert result.metadata.get("credential_scan") == "complete"
-        
+
     def test_high_severity_credentials_fail_compliance(self):
         """
         Verify that if CredentialScanner finds high severity secrets,
@@ -69,10 +69,10 @@ class TestComplianceIntegration:
                 "summary": {"by_severity": {"high": 2, "medium": 1, "low": 0}},
                 "recommendations": ["🚨 HIGH PRIORITY: Remove all hardcoded credentials"]
             }
-            
+
             orch = UnifiedOrchestratorAgent(mode="compliance")
             result = orch.run_agent("TestAgent", dry_run=True)
-            
+
             # Result should reflect the findings
             assert result.status == "FAIL"
             assert result.violations_found == 3
@@ -91,10 +91,10 @@ class TestComplianceIntegration:
                 "summary": {"by_severity": {"high": 0, "medium": 0, "low": 0}},
                 "recommendations": ["✅ No high-priority credential leaks detected"]
             }
-            
+
             orch = UnifiedOrchestratorAgent(mode="compliance")
             result = orch.run_agent("TestAgent", dry_run=True)
-            
+
             assert result.status == "PASS"
             assert result.violations_found == 0
             assert result.success is True
@@ -115,10 +115,10 @@ class TestComplianceIntegration:
                 "summary": {"by_severity": {"high": 0, "medium": 2, "low": 0}},
                 "recommendations": ["Use environment variables for secrets"]
             }
-            
+
             orch = UnifiedOrchestratorAgent(mode="compliance")
             result = orch.run_agent("TestAgent", dry_run=True)
-            
+
             assert result.status == "WARN"
             assert result.violations_found == 2
             assert result.success is True  # WARN still counts as success
@@ -136,10 +136,10 @@ class TestComplianceIntegration:
                 "summary": {"by_severity": {"high": 1, "medium": 2, "low": 2}},
                 "recommendations": []
             }
-            
+
             orch = UnifiedOrchestratorAgent(mode="compliance")
             result = orch.run_agent("TestAgent", dry_run=True)
-            
+
             assert result.metadata.get("total_credentials") == 5
             assert result.metadata.get("high_severity_count") == 1
 
@@ -150,10 +150,10 @@ class TestComplianceIntegration:
         with patch('agentic_core.L5_safety.validators.CredentialScannerAgent.CredentialScannerAgent') as MockScanner:
             mock_scanner_instance = MockScanner.return_value
             mock_scanner_instance.scan_for_credentials.side_effect = Exception("Scanner failed")
-            
+
             orch = UnifiedOrchestratorAgent(mode="compliance")
             result = orch.run_agent("TestAgent", dry_run=True)
-            
+
             assert result.status == "ERROR"
             assert result.errors == 1
             assert "Credential scan error" in result.message

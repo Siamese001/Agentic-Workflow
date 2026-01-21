@@ -61,11 +61,11 @@ def test_initialization_disabled():
 async def test_fuzz_function_disabled(red_sentinel_agent):
     """Test fuzz_function when fuzzing is disabled."""
     result = await red_sentinel_agent.fuzz_function(
-        "test_func", 
-        "def test_func(): pass", 
+        "test_func",
+        "def test_func(): pass",
         "/path/to/file.py"
     )
-    
+
     assert isinstance(result, dict)
     assert result['enabled'] is False
     assert result['reason'] == 'ENABLE_FUZZ not set'
@@ -76,22 +76,22 @@ async def test_fuzz_function_disabled(red_sentinel_agent):
 async def test_fuzz_function_enabled():
     """Test fuzz_function when fuzzing is enabled."""
     agent = RedSentinelAgent()
-    
+
     with patch.object(agent, '_generate_hostile_inputs', new_callable=AsyncMock) as mock_generate, \
          patch.object(agent, '_test_with_input', new_callable=AsyncMock) as mock_test:
-        
+
         mock_generate.return_value = [
             {"type": "empty_string", "value": ""},
             {"type": "null_value", "value": None}
         ]
         mock_test.return_value = {"crash": False, "error": None}
-        
+
         result = await agent.fuzz_function(
             "test_func",
             "def test_func(x): return x",
             "/path/to/file.py"
         )
-        
+
         assert isinstance(result, dict)
         assert result['function'] == 'test_func'
         assert result['file'] == '/path/to/file.py'
@@ -105,22 +105,22 @@ async def test_fuzz_function_enabled():
 async def test_generate_hostile_inputs_with_mcp():
     """Test hostile input generation using MCP client."""
     agent = RedSentinelAgent()
-    
+
     mock_response = [
         {"type": "empty_string", "value": ""},
         {"type": "null_value", "value": None},
         {"type": "overflow", "value": "A" * 10000}
     ]
-    
+
     with patch('agentic_core.L5_safety.guardrails.RedSentinelAgent.get_llm_router_client') as mock_get_client:
         mock_router = AsyncMock()
         mock_router.validate_content.return_value = {
             'response': json.dumps(mock_response)
         }
         mock_get_client.return_value = mock_router
-        
+
         result = await agent._generate_hostile_inputs("test_func", "def test_func(): pass")
-        
+
         assert isinstance(result, list)
         assert len(result) <= 5  # Should limit to 5 inputs
         mock_router.validate_content.assert_called_once()
@@ -130,15 +130,15 @@ async def test_generate_hostile_inputs_with_mcp():
 async def test_generate_hostile_inputs_fallback():
     """Test hostile input generation fallback when MCP fails."""
     agent = RedSentinelAgent()
-    
+
     with patch('agentic_core.L5_safety.guardrails.RedSentinelAgent.get_llm_router_client') as mock_get_client:
         mock_get_client.side_effect = Exception("MCP connection failed")
-        
+
         with patch.object(agent, '_get_default_hostile_inputs') as mock_default:
             mock_default.return_value = [{"type": "default", "value": "test"}]
-            
+
             result = await agent._generate_hostile_inputs("test_func", "def test_func(): pass")
-            
+
             assert isinstance(result, list)
             mock_default.assert_called_once()
 
@@ -146,10 +146,10 @@ async def test_generate_hostile_inputs_fallback():
 def test_get_default_hostile_inputs(red_sentinel_agent):
     """Test default hostile inputs generation."""
     defaults = red_sentinel_agent._get_default_hostile_inputs()
-    
+
     assert isinstance(defaults, list)
     assert len(defaults) > 0
-    
+
     # Check that each default input has expected structure
     for input_data in defaults:
         assert isinstance(input_data, dict)
@@ -219,18 +219,18 @@ def test_llm_client_optional():
 async def test_json_decode_error_handling():
     """Test handling of malformed JSON responses from MCP."""
     agent = RedSentinelAgent()
-    
+
     with patch('agentic_core.L5_safety.guardrails.RedSentinelAgent.get_llm_router_client') as mock_get_client:
         mock_router = AsyncMock()
         mock_router.validate_content.return_value = {
             'response': 'invalid json response'  # Malformed JSON
         }
         mock_get_client.return_value = mock_router
-        
+
         with patch.object(agent, '_get_default_hostile_inputs') as mock_default:
             mock_default.return_value = [{"type": "fallback", "value": "test"}]
-            
+
             result = await agent._generate_hostile_inputs("test_func", "def test_func(): pass")
-            
+
             assert isinstance(result, list)
             mock_default.assert_called_once()  # Should fallback to defaults

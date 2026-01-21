@@ -33,7 +33,7 @@ class QualityDimension(Enum):
 @dataclass
 class QualityStandard:
     """Definition of a quality standard."""
-    
+
     name: str
     description: str
     dimension: QualityDimension
@@ -41,14 +41,14 @@ class QualityStandard:
     criteria: Dict[str, Any]
     measurement_method: str
     validation_rules: List[str] = field(default_factory=list)
-    
+
     def evaluate(self, content: str, context: Dict[str, Any]) -> Dict[str, Any]:
         """Evaluate content against this standard.
-        
+
         Args:
             content: Content to evaluate
             context: Evaluation context
-            
+
         Returns:
             Evaluation results
         """
@@ -59,20 +59,20 @@ class QualityStandard:
 @dataclass
 class EngineQualityProfile:
     """Quality profile for a specific engine."""
-    
+
     engine_type: EngineType
     base_standards: Set[str]
     preferred_standards: Set[str]
     excellence_standards: Set[str]
     custom_thresholds: QualityThresholds
     domain_weights: Dict[str, float]
-    
+
     def get_standards_for_level(self, level: StandardType) -> Set[str]:
         """Get standards for a quality level.
-        
+
         Args:
             level: Quality level
-            
+
         Returns:
             Set of standard names
         """
@@ -86,23 +86,23 @@ class EngineQualityProfile:
 
 class CrossEngineQualityStandards:
     """Manages quality standards across all engines."""
-    
+
     def __init__(self):
         """Initialize the quality standards manager."""
         self._standards: Dict[str, QualityStandard] = {}
         self._profiles: Dict[EngineType, EngineQualityProfile] = {}
-        
+
         # Initialize base standards
         self._initialize_base_standards()
-        
+
         # Initialize engine profiles
         self._initialize_engine_profiles()
-        
+
         logger.info("Initialized CrossEngineQualityStandards")
-    
+
     def _initialize_base_standards(self) -> None:
         """Initialize base quality standards."""
-        
+
         # Accuracy standards
         self._standards["factual_accuracy"] = QualityStandard(
             name="factual_accuracy",
@@ -117,7 +117,7 @@ class CrossEngineQualityStandards:
             measurement_method="claim_verification",
             validation_rules=["no_false_claims", "verify_statistics", "check_dates"]
         )
-        
+
         self._standards["no_hallucination"] = QualityStandard(
             name="no_hallucination",
             description="Content must not contain hallucinated information",
@@ -131,7 +131,7 @@ class CrossEngineQualityStandards:
             measurement_method="risk_assessment",
             validation_rules=["check_speculative_claims", "verify_context_grounding"]
         )
-        
+
         # Relevance standards
         self._standards["context_relevance"] = QualityStandard(
             name="context_relevance",
@@ -146,7 +146,7 @@ class CrossEngineQualityStandards:
             measurement_method="semantic_analysis",
             validation_rules=["check_keyword_alignment", "validate_requirement_coverage"]
         )
-        
+
         # Clarity standards
         self._standards["readability"] = QualityStandard(
             name="readability",
@@ -161,7 +161,7 @@ class CrossEngineQualityStandards:
             measurement_method="readability_analysis",
             validation_rules=["check_grammar", "analyze_sentence_structure"]
         )
-        
+
         self._standards["coherence"] = QualityStandard(
             name="coherence",
             description="Content must be internally coherent",
@@ -175,7 +175,7 @@ class CrossEngineQualityStandards:
             measurement_method="coherence_analysis",
             validation_rules=["check_logical_flow", "detect_contradictions"]
         )
-        
+
         # Value standards
         self._standards["adds_value"] = QualityStandard(
             name="adds_value",
@@ -190,7 +190,7 @@ class CrossEngineQualityStandards:
             measurement_method="value_assessment",
             validation_rules=["check_insight_quality", "validate_uniqueness"]
         )
-        
+
         # Completeness standards
         self._standards["completeness"] = QualityStandard(
             name="completeness",
@@ -205,7 +205,7 @@ class CrossEngineQualityStandards:
             measurement_method="requirement_analysis",
             validation_rules=["check_requirement_coverage", "validate_section_completeness"]
         )
-        
+
         # Preferred standards
         self._standards["professional_tone"] = QualityStandard(
             name="professional_tone",
@@ -220,7 +220,7 @@ class CrossEngineQualityStandards:
             measurement_method="tone_analysis",
             validation_rules=["check_formality_level", "scan_inappropriate_language"]
         )
-        
+
         self._standards["concise"] = QualityStandard(
             name="concise",
             description="Content is concise and to the point",
@@ -234,7 +234,7 @@ class CrossEngineQualityStandards:
             measurement_method="density_analysis",
             validation_rules=["check_redundancy", "calculate_information_density"]
         )
-        
+
         # Excellence standards
         self._standards["exceptional_quality"] = QualityStandard(
             name="exceptional_quality",
@@ -249,10 +249,10 @@ class CrossEngineQualityStandards:
             measurement_method="comprehensive_assessment",
             validation_rules=["comprehensive_quality_check", "innovation_assessment"]
         )
-    
+
     def _initialize_engine_profiles(self) -> None:
         """Initialize quality profiles for each engine."""
-        
+
         # Resume engine profile
         self._profiles[EngineType.RESUME] = EngineQualityProfile(
             engine_type=EngineType.RESUME,
@@ -286,7 +286,7 @@ class CrossEngineQualityStandards:
                 "value": 0.1
             }
         )
-        
+
         # Outreach engine profile
         self._profiles[EngineType.OUTREACH] = EngineQualityProfile(
             engine_type=EngineType.OUTREACH,
@@ -319,29 +319,29 @@ class CrossEngineQualityStandards:
                 "value": 0.2
             }
         )
-    
+
     def get_standard(self, name: str) -> Optional[QualityStandard]:
         """Get a quality standard by name.
-        
+
         Args:
             name: Standard name
-            
+
         Returns:
             Quality standard if found
         """
         return self._standards.get(name)
-    
+
     def get_engine_profile(self, engine_type: EngineType) -> Optional[EngineQualityProfile]:
         """Get quality profile for an engine.
-        
+
         Args:
             engine_type: Type of engine
-            
+
         Returns:
             Engine quality profile
         """
         return self._profiles.get(engine_type)
-    
+
     def evaluate_against_standards(
         self,
         content: str,
@@ -350,20 +350,20 @@ class CrossEngineQualityStandards:
         context: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
         """Evaluate content against engine-specific standards.
-        
+
         Args:
             content: Content to evaluate
             engine_type: Type of engine
             quality_level: Quality level to evaluate against
             context: Optional context
-            
+
         Returns:
             Evaluation results
         """
         profile = self.get_engine_profile(engine_type)
         if not profile:
             return {"error": f"No profile found for engine {engine_type}"}
-        
+
         required_standards = profile.get_standards_for_level(quality_level)
         results = {
             "engine_type": engine_type.value,
@@ -374,46 +374,46 @@ class CrossEngineQualityStandards:
             "overall_score": 0.0,
             "detailed_results": {}
         }
-        
+
         total_score = 0.0
-        
+
         for standard_name in required_standards:
             standard = self.get_standard(standard_name)
             if not standard:
                 continue
-            
+
             # Evaluate against standard
             standard_result = standard.evaluate(content, context or {})
-            
+
             # Record results
             results["detailed_results"][standard_name] = standard_result
-            
+
             if standard_result.get("passed", False):
                 results["standards_passed"] += 1
             else:
                 results["standards_failed"].append(standard_name)
-            
+
             total_score += standard_result.get("score", 0.0)
-        
+
         # Calculate overall score
         if results["standards_evaluated"] > 0:
             results["overall_score"] = total_score / results["standards_evaluated"]
-        
+
         return results
-    
+
     def get_quality_gates(self, engine_type: EngineType) -> Dict[str, Dict[str, Any]]:
         """Get quality gates for an engine.
-        
+
         Args:
             engine_type: Type of engine
-            
+
         Returns:
             Quality gates configuration
         """
         profile = self.get_engine_profile(engine_type)
         if not profile:
             return {}
-        
+
         return {
             "base_gate": {
                 "required_standards": list(profile.base_standards),
@@ -431,25 +431,25 @@ class CrossEngineQualityStandards:
                 "description": "Excellence quality level"
             }
         }
-    
+
     def create_domain_config_from_standards(
         self,
         engine_type: EngineType,
         quality_level: StandardType = StandardType.PREFERRED
     ) -> DomainConfig:
         """Create domain config based on quality standards.
-        
+
         Args:
             engine_type: Type of engine
             quality_level: Quality level
-            
+
         Returns:
             Domain configuration
         """
         profile = self.get_engine_profile(engine_type)
         if not profile:
             raise ValueError(f"No profile found for engine {engine_type}")
-        
+
         # Adjust thresholds based on quality level
         if quality_level == StandardType.BASE:
             thresholds = QualityThresholds(
@@ -467,14 +467,14 @@ class CrossEngineQualityStandards:
                 GOOD_MIN=0.75,
                 MARGINAL_MIN=0.6
             )
-        
+
         # Create validation rules from standards
         validation_rules = {}
         for standard_name in profile.get_standards_for_level(quality_level):
             standard = self.get_standard(standard_name)
             if standard:
                 validation_rules[standard_name] = standard.validation_rules
-        
+
         return DomainConfig(
             engine_type=engine_type,
             quality_thresholds=thresholds,
@@ -482,10 +482,10 @@ class CrossEngineQualityStandards:
             custom_metrics=list(profile.domain_weights.keys()),
             metric_weights=profile.domain_weights
         )
-    
+
     def export_standards(self) -> Dict[str, Any]:
         """Export all standards for documentation.
-        
+
         Returns:
             Standards export
         """
@@ -518,7 +518,7 @@ _standards: Optional[CrossEngineQualityStandards] = None
 
 def get_quality_standards() -> CrossEngineQualityStandards:
     """Get the global quality standards instance.
-    
+
     Returns:
         CrossEngineQualityStandards instance
     """
@@ -536,13 +536,13 @@ def evaluate_content_quality(
     context: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
     """Evaluate content quality against standards.
-    
+
     Args:
         content: Content to evaluate
         engine_type: Type of engine
         quality_level: Quality level
         context: Optional context
-        
+
     Returns:
         Evaluation results
     """
@@ -554,10 +554,10 @@ def evaluate_content_quality(
 
 def get_engine_quality_gates(engine_type: EngineType) -> Dict[str, Dict[str, Any]]:
     """Get quality gates for an engine.
-    
+
     Args:
         engine_type: Type of engine
-        
+
     Returns:
         Quality gates configuration
     """

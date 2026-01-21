@@ -26,11 +26,11 @@ Logger = logging.getLogger(__name__)
 @dataclass
 class GlobalComplianceAggregatorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Naming/Compliance: Global Compliance Aggregation"""
-    
+
     def __init__(self) -> None:
         """Initialize the instance."""
         self.results = []
-        
+
     def aggregate_results(self, results: List[Dict[str, Any]]) -> Dict[str, Any]:
         """Aggregate compliance results."""
         total_violations = sum(r.get('violations', 0) for r in results)

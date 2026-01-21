@@ -24,7 +24,7 @@ clean_merged_file() {
         echo "Cleaning: $file"
         # Backup original
         cp "/workspace/$file" "$BACKUP_DIR/$(basename $file).backup"
-        
+
         # Remove duplicate docstrings and imports after merge markers
         python3 << 'PYTHON_SCRIPT'
 import sys
@@ -41,17 +41,17 @@ parts = content.split('# ============================================')
 if len(parts) > 1:
     # Keep first part (original)
     cleaned = parts[0]
-    
+
     # Process merged parts
     for i in range(1, len(parts)):
         part = parts[i]
-        
+
         # Skip the merge comment line
         lines = part.split('\n', 2)
         if len(lines) > 2:
             # Skip docstring if it's duplicate
             rest = lines[2]
-            
+
             # Remove duplicate imports
             code_lines = []
             in_imports = True
@@ -66,16 +66,16 @@ if len(parts) > 1:
                     if not stripped:
                         continue
                     in_imports = False
-                
+
                 code_lines.append(line)
-            
+
             # Add cleaned content
             cleaned += '\n' + '\n'.join(code_lines)
 
     # Write cleaned content
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write(cleaned)
-    
+
     print(f"  ✓ Cleaned: {sys.argv[1]}")
 else:
     print(f"  ℹ No merge markers found in: {sys.argv[1]}")

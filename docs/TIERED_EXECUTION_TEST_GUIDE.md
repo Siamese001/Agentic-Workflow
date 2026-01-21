@@ -52,7 +52,7 @@ final_safety = [("AutonomyGuardian", get_autonomy_guardian(project_root))]
 
 **Script**: `scripts/test_tiered_execution_quick.py`
 
-**Run**: 
+**Run**:
 ```bash
 python scripts/test_tiered_execution_quick.py
 ```
@@ -169,14 +169,14 @@ from datetime import datetime
 with open('runtime_state.json') as f:
     state = json.load(f)
     timeline = state['execution_timeline']
-    
+
     print(f'Tiers recorded: {len(timeline)}')
-    
+
     for tier in timeline:
         start = datetime.fromisoformat(tier['start'])
         end = datetime.fromisoformat(tier['end'])
         duration = (end - start).total_seconds()
-        
+
         print(f\"Tier {tier['tier']} ({tier['name']}): {duration:.2f}s, {len(tier['agents'])} agents\")
 "
 ```
@@ -259,11 +259,11 @@ with open('runtime_state.json') as f:
     state = json.load(f)
     tier3 = next(t for t in state['execution_timeline'] if t['tier'] == 3)
     tier4 = next(t for t in state['execution_timeline'] if t['tier'] == 4)
-    
+
     print(f\"Tier 3 violations: {tier3['violations']}\")
     print(f\"Tier 4 violations: {tier4['violations']}\")
     print(f\"Tier 4 agents: {tier4['agents']}\")
-    
+
     if 'AutonomyGuardian' in tier4['agents']:
         print('✅ AutonomyGuardian present in Tier 4')
     else:
@@ -387,10 +387,10 @@ with open('runtime_state.json') as f:
     tier2 = set(next(t for t in state['execution_timeline'] if t['tier'] == 2)['agents'])
     tier3 = set(next(t for t in state['execution_timeline'] if t['tier'] == 3)['agents'])
     tier4 = set(next(t for t in state['execution_timeline'] if t['tier'] == 4)['agents'])
-    
+
     mandatory = tier1 | tier2 | tier4
     duplicates = mandatory & tier3
-    
+
     if duplicates:
         print(f\"❌ Duplicates found: {duplicates}\")
     else:

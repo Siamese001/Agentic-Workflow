@@ -20,7 +20,7 @@ for agent in base_class_agents:
     class_name = agent.get('class_name', 'Unknown')
     territory = agent.get('territory', 'Unknown')
     path = agent.get('path', 'Unknown')
-    
+
     print(f"Class: {class_name}")
     print(f"  Territory: {territory}")
     print(f"  Path: {path}")

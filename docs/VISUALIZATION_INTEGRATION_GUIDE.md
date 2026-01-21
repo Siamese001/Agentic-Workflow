@@ -13,14 +13,14 @@ This guide outlines the complete integration strategy for replacing static markd
 # Install via VS Code Extensions or command palette
 ext install:
 - ms-python.python                    # Python support
-- ms-toolsai.jupyter                  # Jupyter notebooks 
+- ms-toolsai.jupyter                  # Jupyter notebooks
 - ritwickdey.liveserver               # Launch HTML dashboards
 - mechatroner.rainbow-csv             # Color-coded CSV files
 - janisdd.vscode-edit-csv             # Interactive CSV editing
 - hediet.vscode-drawio                # Diagram creation
 ```
 
-#### Chart & Graph Extensions  
+#### Chart & Graph Extensions
 ```bash
 ext install:
 - ms-python.data-wrangler             # Data analysis UI
@@ -46,10 +46,10 @@ ext install:
 plugins {
     // Data visualization
     id("org.jetbrains.plugins.notebooks") version "latest"
-    id("Database Tools and SQL") version "latest" 
+    id("Database Tools and SQL") version "latest"
     id("CSV Editor") version "latest"
-    
-    // Web development  
+
+    // Web development
     id("JavaScript and TypeScript") version "latest"
     id("HTML Tools") version "latest"
     id("Live Edit Tool") version "latest"
@@ -74,7 +74,7 @@ class MyAgent:
     def generate_report(self):
         # Collect data
         data = self.collect_metrics()
-        
+
         # Create visualization
         viz = VizFramework(self.project_root)
         dashboard = viz.create_dashboard(
@@ -90,7 +90,7 @@ class MyAgent:
             ],
             agent_name=self.__class__.__name__
         )
-        
+
         # Display launch instructions
         instructions = viz.launch_instructions(dashboard)
         for instruction in instructions:
@@ -105,18 +105,18 @@ class MyAgent:
 def generate_report_v1(self):
     data = self.collect_data()
     csv_path = self.save_csv(data)
-    
+
     print(f"📊 Data saved: {csv_path}")
     print("💡 Open with Excel Viewer extension for better visualization")
 ```
 
-#### Level 2: Interactive Dashboard  
+#### Level 2: Interactive Dashboard
 ```python
 # Full interactive experience
 def generate_report_v2(self):
     data = self.collect_data()
     dashboard = self.create_dashboard(data)
-    
+
     print(f"🚀 Interactive dashboard: {dashboard}")
     print("   Right-click → Open with Live Server")
 ```
@@ -127,7 +127,7 @@ def generate_report_v2(self):
 def generate_report_v3(self):
     data = self.collect_data()
     websocket_server = self.create_realtime_dashboard(data)
-    
+
     print(f"⚡ Live dashboard: http://localhost:{websocket_server.port}")
     print("   Updates automatically as data changes")
 ```
@@ -137,7 +137,7 @@ def generate_report_v3(self):
 ### 4.1 Priority Agents (Week 1)
 1. **AutonomyGuardianAgent** ✅ Complete
 2. **ComplianceOrchestrator** - Complex tabular data
-3. **NamingAgent** - File listing reports  
+3. **NamingAgent** - File listing reports
 4. **HierarchyAgent** - Layer analysis charts
 
 ### 4.2 High-Impact Agents (Week 2-3)
@@ -160,15 +160,15 @@ gantt
     section Phase 1
     Install Extensions     :done, p1, 2026-01-02, 1d
     Setup Framework       :done, p2, 2026-01-02, 1d
-    
-    section Phase 2  
+
+    section Phase 2
     Core Agents           :active, p3, 2026-01-03, 7d
     Testing & Refinement  :p4, after p3, 3d
-    
+
     section Phase 3
-    Secondary Agents      :p5, after p4, 7d  
+    Secondary Agents      :p5, after p4, 7d
     Documentation        :p6, after p5, 3d
-    
+
     section Phase 4
     Full Rollout         :p7, after p6, 7d
     Training & Support   :p8, after p7, 3d
@@ -184,12 +184,12 @@ def create_metrics_dashboard(self, data):
         {"label": "Success Rate", "value": f"{self.success_rate(data):.1f}%", "color": self.get_color(self.success_rate(data))},
         {"label": "Avg Processing Time", "value": f"{self.avg_time(data):.2f}s", "icon": "fas fa-clock"}
     ]
-    
+
     charts = [
         {"type": "bar", "title": "Results by Category", "x_key": "category", "y_key": "count"},
         {"type": "pie", "title": "Status Distribution", "value_key": "count", "label_key": "status"}
     ]
-    
+
     return self.viz.create_dashboard("Agent Metrics", data, metrics, charts, self.__class__.__name__)
 ```
 
@@ -201,13 +201,13 @@ def create_compliance_dashboard(self, territories_data):
         {"label": "High Risk Areas", "value": self.high_risk_count, "color": "#e53e3e", "icon": "fas fa-exclamation-triangle"},
         {"label": "Total Coverage", "value": f"{len(territories_data)} territories", "icon": "fas fa-map"}
     ]
-    
+
     charts = [
         {"type": "scatter", "title": "Risk vs Health Matrix", "x_key": "risk_score", "y_key": "health_score", "color_key": "risk_level"},
         {"type": "bar", "title": "Compliance by Territory", "x_key": "territory", "y_key": "compliance_pct"},
         {"type": "line", "title": "Trend Over Time", "x_key": "date", "y_key": "compliance_pct"}
     ]
-    
+
     return self.viz.create_dashboard("Compliance Report", territories_data, metrics, charts, self.__class__.__name__)
 ```
 
@@ -220,7 +220,7 @@ def create_compliance_dashboard(self, territories_data):
 - [ ] Key metrics defined
 - [ ] Chart types selected
 
-### Post-Implementation  
+### Post-Implementation
 - [ ] CSV export functional
 - [ ] Dashboard renders correctly
 - [ ] Charts display data accurately

@@ -17,7 +17,7 @@ const TabController = {
         tabs.forEach(tab => {
             tab.addEventListener('click', (e) => {
                 e.preventDefault();
-                const targetId = tab.getAttribute('data-target') || 
+                const targetId = tab.getAttribute('data-target') ||
                                  tab.textContent.toLowerCase().replace(' ', '-');
                 this.switchTab(targetId);
             });

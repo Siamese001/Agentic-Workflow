@@ -1,7 +1,7 @@
 # RGLOB Elimination Report
 
-**Date:** January 20, 2026  
-**Author:** Cascade  
+**Date:** January 20, 2026
+**Author:** Cascade
 **Status:** Findings & Recommendations (No Execution)
 
 ---
@@ -149,7 +149,7 @@ for py_file in agentic_core_dir.rglob("*Agent.py"):
 
 # AFTER
 from agentic_core.utils.ssot_discovery import get_python_files
-agent_files = [f for f in get_python_files(self.project_root) 
+agent_files = [f for f in get_python_files(self.project_root)
                if f.name.endswith("Agent.py")]
 for py_file in agent_files:
 ```
@@ -179,7 +179,7 @@ for py_file in dir_obj.rglob("*.py"):
 
 # AFTER
 from agentic_core.utils.ssot_discovery import get_python_files
-py_files = [f for f in get_python_files(self.project_root) 
+py_files = [f for f in get_python_files(self.project_root)
             if str(f).startswith(str(dir_obj))]
 for py_file in py_files:
 ```
@@ -258,7 +258,7 @@ for state_file in state_dir.rglob("*.json"):
 
 # AFTER
 from agentic_core.utils.ssot_discovery import get_json_files
-state_files = [f for f in get_json_files(self.project_root) 
+state_files = [f for f in get_json_files(self.project_root)
                if str(f).startswith(str(state_dir))]
 for state_file in state_files:
 ```

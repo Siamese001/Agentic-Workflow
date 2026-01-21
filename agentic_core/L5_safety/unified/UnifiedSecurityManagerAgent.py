@@ -94,25 +94,25 @@ class SecureCheckpoint:
 class UnifiedSecurityManagerAgent:
     """
     Vaulted security manager with permission-based access control.
-    
+
     Consolidates:
     - AgentPermissionManagerAgent (permissions)
     - SecureCheckpointManagerAgent (checkpoints)
     - SecureConfigManagerAgent (configuration)
-    
+
     Usage:
         manager = UnifiedSecurityManagerAgent()
-        
+
         # Grant permission
         manager.grant_permission("agent_1", PermissionLevel.SECURE_READER, "admin")
-        
+
         # Access config (requires permission)
         value = manager.get_config("api_key", agent_id="agent_1")
-        
+
         # Create secure checkpoint
         checkpoint = manager.create_checkpoint("agent_1", data={"state": "active"})
     """
-    
+
     def __init__(self, vault_path: Optional[Path] = None):
         self._lock = threading.RLock()
         self._permissions: Dict[str, AgentPermission] = {}
@@ -120,16 +120,16 @@ class UnifiedSecurityManagerAgent:
         self._checkpoints: Dict[str, SecureCheckpoint] = {}
         self._audit_log: List[SecurityAuditEntry] = []
         self._vault_path = vault_path
-        
+
         # Initialize admin permission
         self._permissions["system"] = AgentPermission(
             agent_id="system",
             level=PermissionLevel.ADMIN,
             granted_by="system",
         )
-        
+
         Logger.info("UnifiedSecurityManagerAgent initialized")
-    
+
     def _audit(
         self,
         agent_id: str,
@@ -148,10 +148,10 @@ class UnifiedSecurityManagerAgent:
             details=details,
         )
         self._audit_log.append(entry)
-        
+
         level = logging.INFO if success else logging.WARNING
         Logger.log(level, f"SECURITY: {agent_id} {action.name} {resource} - {'OK' if success else 'DENIED'}")
-    
+
     def _check_permission(
         self,
         agent_id: str,
@@ -161,24 +161,24 @@ class UnifiedSecurityManagerAgent:
         """Check if agent has required permission level."""
         if agent_id not in self._permissions:
             return False
-        
+
         perm = self._permissions[agent_id]
-        
+
         # Check expiration
         if perm.expires_at and datetime.utcnow() > perm.expires_at:
             return False
-        
+
         # Check level
         if perm.level.value < required_level.value:
             return False
-        
+
         # Check resource-specific permissions
         if resource and perm.allowed_resources:
             if resource not in perm.allowed_resources and "*" not in perm.allowed_resources:
                 return False
-        
+
         return True
-    
+
     def grant_permission(
         self,
         agent_id: str,
@@ -193,7 +193,7 @@ class UnifiedSecurityManagerAgent:
             if not self._check_permission(granted_by, PermissionLevel.ADMIN):
                 self._audit(granted_by, SecurityAction.GRANT_PERMISSION, agent_id, False, "Insufficient permission")
                 return False
-            
+
             self._permissions[agent_id] = AgentPermission(
                 agent_id=agent_id,
                 level=level,
@@ -201,31 +201,31 @@ class UnifiedSecurityManagerAgent:
                 expires_at=expires_at,
                 allowed_resources=allowed_resources or {"*"},
             )
-            
+
             self._audit(granted_by, SecurityAction.GRANT_PERMISSION, agent_id, True, f"Level: {level.name}")
             return True
-    
+
     def revoke_permission(self, agent_id: str, revoked_by: str) -> bool:
         """Revoke permission from an agent."""
         with self._lock:
             if not self._check_permission(revoked_by, PermissionLevel.ADMIN):
                 self._audit(revoked_by, SecurityAction.REVOKE_PERMISSION, agent_id, False, "Insufficient permission")
                 return False
-            
+
             if agent_id in self._permissions:
                 del self._permissions[agent_id]
                 self._audit(revoked_by, SecurityAction.REVOKE_PERMISSION, agent_id, True)
                 return True
-            
+
             return False
-    
+
     def get_permission_level(self, agent_id: str) -> PermissionLevel:
         """Get permission level for an agent."""
         with self._lock:
             if agent_id in self._permissions:
                 return self._permissions[agent_id].level
             return PermissionLevel.NONE
-    
+
     def set_config(
         self,
         key: str,
@@ -239,7 +239,7 @@ class UnifiedSecurityManagerAgent:
             if not self._check_permission(agent_id, PermissionLevel.SECURE_WRITER):
                 self._audit(agent_id, SecurityAction.WRITE_CONFIG, key, False, "Insufficient permission")
                 return False
-            
+
             self._configs[key] = SecureConfig(
                 key=key,
                 value=value,
@@ -247,25 +247,25 @@ class UnifiedSecurityManagerAgent:
                 required_level=required_level,
                 modified_at=datetime.utcnow(),
             )
-            
+
             self._audit(agent_id, SecurityAction.WRITE_CONFIG, key, True)
             return True
-    
+
     def get_config(self, key: str, agent_id: str) -> Optional[Any]:
         """Get a secure configuration value."""
         with self._lock:
             if key not in self._configs:
                 return None
-            
+
             config = self._configs[key]
-            
+
             if not self._check_permission(agent_id, config.required_level, key):
                 self._audit(agent_id, SecurityAction.READ_CONFIG, key, False, "Insufficient permission")
                 return None
-            
+
             self._audit(agent_id, SecurityAction.READ_CONFIG, key, True)
             return config.value
-    
+
     def create_checkpoint(
         self,
         agent_id: str,
@@ -277,10 +277,10 @@ class UnifiedSecurityManagerAgent:
             if not self._check_permission(agent_id, PermissionLevel.SECURE_WRITER):
                 self._audit(agent_id, SecurityAction.CREATE_CHECKPOINT, "new", False, "Insufficient permission")
                 return None
-            
+
             checkpoint_id = secrets.token_hex(16)
             data_hash = hashlib.sha256(str(data).encode()).hexdigest()
-            
+
             checkpoint = SecureCheckpoint(
                 checkpoint_id=checkpoint_id,
                 created_by=agent_id,
@@ -289,12 +289,12 @@ class UnifiedSecurityManagerAgent:
                 encrypted=encrypted,
                 metadata={"data": data},
             )
-            
+
             self._checkpoints[checkpoint_id] = checkpoint
             self._audit(agent_id, SecurityAction.CREATE_CHECKPOINT, checkpoint_id, True)
-            
+
             return checkpoint
-    
+
     def restore_checkpoint(
         self,
         checkpoint_id: str,
@@ -304,16 +304,16 @@ class UnifiedSecurityManagerAgent:
         with self._lock:
             if checkpoint_id not in self._checkpoints:
                 return None
-            
+
             if not self._check_permission(agent_id, PermissionLevel.SECURE_READER):
                 self._audit(agent_id, SecurityAction.RESTORE_CHECKPOINT, checkpoint_id, False, "Insufficient permission")
                 return None
-            
+
             checkpoint = self._checkpoints[checkpoint_id]
             self._audit(agent_id, SecurityAction.RESTORE_CHECKPOINT, checkpoint_id, True)
-            
+
             return checkpoint.metadata.get("data")
-    
+
     def get_audit_log(
         self,
         agent_id: Optional[str] = None,
@@ -323,13 +323,13 @@ class UnifiedSecurityManagerAgent:
         """Get audit log entries."""
         with self._lock:
             entries = self._audit_log
-            
+
             if agent_id:
                 entries = [e for e in entries if e.agent_id == agent_id]
-            
+
             if action:
                 entries = [e for e in entries if e.action == action]
-            
+
             return entries[-limit:]
 
 

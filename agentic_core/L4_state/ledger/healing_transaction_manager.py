@@ -21,7 +21,7 @@ Logger: Any = logging.getLogger(__name__)
 class HealingTransaction:
     """
     Transaction manager for atomic healing operations with rollback capability.
-    
+
     Ensures that healing operations are:
     - Atomic: All fixes succeed or all are rolled back
     - Consistent: Files are backed up before modification
@@ -41,10 +41,10 @@ class HealingTransaction:
     def backup(self, file_path: Path) -> bool:
         """
         Create a backup of a file before modification.
-        
+
         Args:
             file_path: Path to file to backup
-            
+
         Returns:
             True if backup successful, False otherwise
         """
@@ -69,7 +69,7 @@ class HealingTransaction:
     def rollback(self) -> bool:
         """
         Rollback all changes by restoring from backups.
-        
+
         Returns:
             True if rollback successful, False otherwise
         """
@@ -97,7 +97,7 @@ class HealingTransaction:
     def commit(self) -> bool:
         """
         Commit the transaction by removing backups.
-        
+
         Returns:
             True if commit successful, False otherwise
         """
@@ -135,7 +135,7 @@ class HealingTransaction:
 def create_transaction() -> HealingTransaction:
     """
     Factory function to create a new healing transaction.
-    
+
     Returns:
         New HealingTransaction instance
     """

@@ -32,14 +32,14 @@ from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 class VizFramework:
     """Universal visualization framework for agent reports."""
-    
+
     def __init__(self, project_root: Path):
         self.project_root = project_root
         self.reports_dir = project_root / REPORTS_DIR
         self.reports_dir.mkdir(exist_ok=True)
-        
+
     def create_dashboard(
-        self, 
+        self,
         title: str,
         data: List[Dict[str, Any]],
         metrics: List[Dict[str, Any]],
@@ -49,7 +49,7 @@ class VizFramework:
     ) -> Path:
         """
         Create interactive HTML dashboard for agent data.
-        
+
         Args:
             title: Dashboard title
             data: Raw data for charts (list of dicts)
@@ -57,53 +57,53 @@ class VizFramework:
             charts: Chart configurations [{type, title, data_key, config}]
             agent_name: Name of generating agent
             description: Optional dashboard description
-            
+
         Returns:
             Path to generated HTML dashboard
         """
         dashboard_path = self.reports_dir / f"{agent_name.lower()}_dashboard.html"
         csv_path = self.reports_dir / f"{agent_name.lower()}_data.csv"
-        
+
         # Save data as CSV for spreadsheet compatibility
         if data:
             self._save_csv(data, csv_path)
-        
+
         # Generate HTML dashboard
         html_content = self._generate_html_dashboard(
             title, data, metrics, charts, agent_name, description, csv_path.name
         )
-        
+
         dashboard_path.write_text(html_content, encoding='utf-8')
         return dashboard_path
-    
+
     def _save_csv(self, data: List[Dict[str, Any]], csv_path: Path):
         """Save data as CSV file."""
         if not data:
             return
-            
+
         headers = list(data[0].keys())
         with open(csv_path, 'w', newline='', encoding='utf-8') as f:
             writer = csv.DictWriter(f, fieldnames=headers)
             writer.writeheader()
             writer.writerows(data)
-    
+
     def _generate_html_dashboard(
-        self, 
-        title: str, 
-        data: List[Dict[str, Any]], 
+        self,
+        title: str,
+        data: List[Dict[str, Any]],
         metrics: List[Dict[str, Any]],
-        charts: List[Dict[str, Any]], 
+        charts: List[Dict[str, Any]],
         agent_name: str,
         description: Optional[str],
         csv_filename: str
     ) -> str:
         """Generate complete HTML dashboard."""
-        
+
         # Convert data to JavaScript
         data_js = json.dumps(data) if data else "[]"
         metrics_js = json.dumps(metrics)
         charts_js = json.dumps(charts)
-        
+
         return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -151,7 +151,7 @@ class VizFramework:
         const DATA = {data_js};
         const METRICS = {metrics_js};
         const CHARTS = {charts_js};
-        
+
         {self._get_dashboard_js()}
     </script>
 </body>
@@ -459,7 +459,7 @@ class VizFramework:
                         y: data.map(d => parseFloat(d[config.y_key]) || 0),
                         type: 'bar',
                         name: config.series_name || config.y_key,
-                        marker: { 
+                        marker: {
                             color: config.colors || data.map(d => getColorForValue(d[config.color_key || config.y_key]))
                         }
                     }];
@@ -518,7 +518,7 @@ class VizFramework:
             };
 
             const finalLayout = Object.assign(defaultLayout, layout);
-            
+
             Plotly.newPlot(elementId, traces, finalLayout, {
                 responsive: true,
                 displayModeBar: false
@@ -570,7 +570,7 @@ class VizFramework:
                     default: return '#4299e1';
                 }
             }
-            
+
             const v = parseFloat(value);
             if (isNaN(v)) return '#718096';
             if (v >= 80) return '#38a169';
@@ -585,10 +585,10 @@ class VizFramework:
             f"🚀 VIEW INTERACTIVE DASHBOARD:",
             f"   📊 Dashboard: {dashboard_path.name}",
         ]
-        
+
         if csv_path:
             instructions.append(f"   📈 Raw Data: {csv_path.name}")
-            
+
         instructions.extend([
             f"",
             f"💡 VIEWING OPTIONS:",
@@ -601,5 +601,5 @@ class VizFramework:
             f"   • Rainbow CSV for color-coded data",
             f"   • Data Preview extension for inline charts"
         ])
-        
+
         return instructions

@@ -62,36 +62,36 @@ class RecoveryResult:
 class AdaptiveRecoveryLoop:
     """
     The Fixer - Implements Temperature Escalation Protocol.
-    
+
     Recovery Philosophy:
     - Creative Failure: Increase temp +0.15 (force different thinking)
     - Mechanical Failure: Increase temp +0.05 (slight nudge)
     - Max 3 attempts before HARD_HALT
     """
-    
+
     MAX_ATTEMPTS = 3
     CREATIVE_TEMP_INCREASE = 0.15
     MECHANICAL_TEMP_INCREASE = 0.05
     CREATIVE_MAX_TEMP = 0.9
     MECHANICAL_MAX_TEMP = 0.7
-    
+
     CREATIVE_FAILURE_PATTERNS = {
         'generic', 'cliché', 'robotic', 'template', 'boilerplate',
         'buzzword', 'jargon', 'vague', 'abstract', 'unoriginal'
     }
-    
+
     MECHANICAL_FAILURE_PATTERNS = {
         'word count', 'character limit', 'length', 'format',
         'structure', 'punctuation', 'capitalization'
     }
-    
+
     def __init__(self, initial_temperature: float = 0.5):
         self.initial_temperature = initial_temperature
         self.current_temperature = initial_temperature
         self.attempt_count = 0
         self.failure_history: List[FailureEvent] = []
         self.temperature_history: List[TemperatureAdjustment] = []
-        
+
     def record_failure(
         self,
         gate_id: str,
@@ -100,13 +100,13 @@ class AdaptiveRecoveryLoop:
     ) -> RecoveryResult:
         """
         Record a validation failure and determine recovery action.
-        
+
         Returns RecoveryResult with action and new temperature.
         """
         self.attempt_count += 1
-        
+
         failure_type = self._classify_failure(message, details)
-        
+
         failure_event = FailureEvent(
             attempt=self.attempt_count,
             failure_type=failure_type,
@@ -115,7 +115,7 @@ class AdaptiveRecoveryLoop:
             details=details
         )
         self.failure_history.append(failure_event)
-        
+
         if self.attempt_count >= self.MAX_ATTEMPTS:
             return RecoveryResult(
                 action=RecoveryAction.HARD_HALT,
@@ -130,7 +130,7 @@ class AdaptiveRecoveryLoop:
                     ]
                 }
             )
-        
+
         new_temp = self._calculate_new_temperature(failure_type)
         adjustment = TemperatureAdjustment(
             from_temp=self.current_temperature,
@@ -139,10 +139,10 @@ class AdaptiveRecoveryLoop:
             failure_type=failure_type
         )
         self.temperature_history.append(adjustment)
-        
+
         old_temp = self.current_temperature
         self.current_temperature = new_temp
-        
+
         return RecoveryResult(
             action=RecoveryAction.INCREASE_TEMP,
             new_temperature=new_temp,
@@ -155,7 +155,7 @@ class AdaptiveRecoveryLoop:
                 'remaining_attempts': self.MAX_ATTEMPTS - self.attempt_count
             }
         )
-    
+
     def record_success(self) -> Dict[str, Any]:
         """Record successful generation after recovery"""
         return {
@@ -173,17 +173,17 @@ class AdaptiveRecoveryLoop:
                 for adj in self.temperature_history
             ]
         }
-    
+
     def reset(self, initial_temperature: Optional[float] = None) -> None:
         """Reset recovery loop for new generation task"""
         if initial_temperature is not None:
             self.initial_temperature = initial_temperature
-        
+
         self.current_temperature = self.initial_temperature
         self.attempt_count = 0
         self.failure_history.clear()
         self.temperature_history.clear()
-    
+
     def get_temperature_log(self) -> List[Dict[str, Any]]:
         """Get complete temperature adjustment log for audit"""
         return [
@@ -197,7 +197,7 @@ class AdaptiveRecoveryLoop:
             }
             for adj in self.temperature_history
         ]
-    
+
     def _classify_failure(
         self,
         message: str,
@@ -205,31 +205,31 @@ class AdaptiveRecoveryLoop:
     ) -> FailureType:
         """
         Classify failure as CREATIVE or MECHANICAL based on message content.
-        
+
         Creative: Generic/cliché/robotic prose detected
         Mechanical: Word count/format/structure violations
         """
         message_lower = message.lower()
-        
+
         if any(pattern in message_lower for pattern in self.CREATIVE_FAILURE_PATTERNS):
             return FailureType.CREATIVE
-        
+
         if any(pattern in message_lower for pattern in self.MECHANICAL_FAILURE_PATTERNS):
             return FailureType.MECHANICAL
-        
+
         if details:
             details_str = str(details).lower()
             if any(pattern in details_str for pattern in self.CREATIVE_FAILURE_PATTERNS):
                 return FailureType.CREATIVE
             if any(pattern in details_str for pattern in self.MECHANICAL_FAILURE_PATTERNS):
                 return FailureType.MECHANICAL
-        
+
         return FailureType.UNKNOWN
-    
+
     def _calculate_new_temperature(self, failure_type: FailureType) -> float:
         """
         Calculate new temperature based on failure type.
-        
+
         Creative Failure: +0.15 (max 0.9) - Force model to think differently
         Mechanical Failure: +0.05 (max 0.7) - Slight nudge to regenerate
         """
@@ -248,9 +248,9 @@ class AdaptiveRecoveryLoop:
                 self.current_temperature + self.MECHANICAL_TEMP_INCREASE,
                 self.MECHANICAL_MAX_TEMP
             )
-        
+
         return round(new_temp, 2)
-    
+
     def _get_adjustment_reason(self, failure_type: FailureType) -> str:
         """Get human-readable reason for temperature adjustment"""
         if failure_type == FailureType.CREATIVE:

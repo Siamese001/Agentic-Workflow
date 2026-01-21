@@ -19,7 +19,7 @@ open_invocations = []
 for agent in agents:
     invocation = agent.get('invocation', 'No')
     has_healing = agent.get('has_healing', False)
-    
+
     # Open invocation: invocation=Yes but no healing capability
     if invocation == 'Yes' and not has_healing:
         open_invocations.append(agent)
@@ -38,7 +38,7 @@ else:
         if territory not in by_territory:
             by_territory[territory] = []
         by_territory[territory].append(agent)
-    
+
     for territory in sorted(by_territory.keys()):
         agents_list = by_territory[territory]
         print(f"\n{territory} ({len(agents_list)} agents):")

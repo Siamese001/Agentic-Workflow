@@ -2,8 +2,8 @@ from __future__ import annotations
 """
 Consensus & Deliberation Schemas
 ===============================
-Defines the structures for multi-model consensus and individual 
-model opinions. Used to ensure plan safety and agreement across 
+Defines the structures for multi-model consensus and individual
+model opinions. Used to ensure plan safety and agreement across
 the agentic collective.
 """
 

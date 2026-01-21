@@ -27,7 +27,7 @@ from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import Subatomic
 class LeadQualityAgent(OutreachAgent):
     """
     Validates and scores lead quality.
-    
+
     Validates:
     - Required fields (company, contact info)
     - Email domain quality
@@ -37,12 +37,12 @@ class LeadQualityAgent(OutreachAgent):
     async def execute(self) -> None:
         """
         Execute lead quality validation.
-        
+
         Validates all leads for:
         - Required fields presence
         - Contact information completeness
         - Suspicious email domains
-        
+
         Raises:
             LEAD_QUALITY_ISSUE signal if validation fails
         """
@@ -93,4 +93,3 @@ class LeadQualityAgent(OutreachAgent):
 from .OutreachTestPilotAgent import OutreachTestPilotAgent as OutreachTestPilot
 
 # OutreachTestPilotDeprecatedAgent extracted to OutreachTestPilotDeprecatedAgent.py (Phase B Task 2)
-

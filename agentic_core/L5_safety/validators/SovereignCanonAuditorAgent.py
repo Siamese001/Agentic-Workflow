@@ -44,7 +44,7 @@ class SovereignCanonAuditorAgent(HealerMixin, SubatomicTestingMixin, MCPHardened
     async def audit_core_components(self) -> Dict[str, Any]:
         """
         Audit critical core components for existence.
-        
+
         Returns:
             Audit results with status for each component
         """
@@ -72,10 +72,10 @@ class SovereignCanonAuditorAgent(HealerMixin, SubatomicTestingMixin, MCPHardened
     async def get_architectural_insight(self, question: str) -> str:
         """
         Get architectural insight about the system.
-        
+
         Args:
             question: Question to ask about the architecture
-            
+
         Returns:
             Answer from DeepWiki
         """
@@ -97,7 +97,7 @@ class SovereignCanonAuditorAgent(HealerMixin, SubatomicTestingMixin, MCPHardened
     async def verify_mcp_integration(self) -> Dict[str, Any]:
         """
         Verify MCP integration across all layers.
-        
+
         Returns:
             Verification results
         """
@@ -128,7 +128,7 @@ class SovereignCanonAuditorAgent(HealerMixin, SubatomicTestingMixin, MCPHardened
     async def run_full_audit(self) -> Dict[str, Any]:
         """
         Run complete canon audit.
-        
+
         Returns:
             Complete audit results
         """

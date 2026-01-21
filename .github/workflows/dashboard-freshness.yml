@@ -18,25 +18,25 @@ name: Dashboard Freshness Check
 jobs:
   check-dashboard:
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-      
+
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
-        
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        
+
     - name: Check dashboard freshness
       run: |
         python scripts/enforce_dashboard_freshness.py --check-only
-        
+
     - name: Verify SSOT compliance
       run: |
         # Ensure dashboard sources from agent_discovery_full.json
@@ -45,7 +45,7 @@ jobs:
           exit 1
         fi
         echo "✅ Dashboard sources from SSOT JSON"
-        
+
     - name: Upload dashboard artifacts (if failed)
       if: failure()
       uses: actions/upload-artifact@v3

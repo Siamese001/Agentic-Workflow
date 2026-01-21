@@ -22,7 +22,7 @@ class StructuredEngine:
         """Calls the LLM to generate a safe, structured execution plan."""
         import logging
         logging.info(f"Engine ({self.model}): Planning Task -> {Task[:50]}...")
-        
+
         # Mock LLM call - replace with actual SubAtomicEngine or LiteLLM wrapper
         return AgentPlan(
             reasoning="Task requires data analysis and local storage.",

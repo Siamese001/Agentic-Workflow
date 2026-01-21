@@ -67,30 +67,30 @@ class GravityViolation:
 class GravityValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin):
     """
     [L5 VALIDATOR] Unified detection for all gravity laws.
-    
+
     Consolidates logic from:
     - GravityComplianceValidatorAgent (Intra-core)
     - GravityEnforcerAgent (Upstream→Downstream)
     - GravityLeakRepairAgent (Upward leaks to L4/L5)
-    
+
     Detection only - delegates healing to GravityHealerAgent.
     """
-    
+
 
     @standard_heal
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
-        
+
         Args:
             dry_run: If True, only report violations without fixing
             execute: If True, apply fixes
-        
+
         Returns:
             Dict with healing summary
         """
         super().heal_repository()
-        
+
         # === ZOMBIE VACCINATION: Wired orphaned methods ===
         if hasattr(self, 'validate_file'):
             try:
@@ -109,7 +109,7 @@ class GravityValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin):
                 Logger.error(f'Error in validate_repository: {e}')
                 metrics['errors'] += 1
         # === END VACCINATION ===
-        
+
 
         return {"violations": 0, "fixed": 0, "errors": 0}
 
@@ -128,18 +128,18 @@ class GravityValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin):
     async def detect_violations(self, file_path: Path) -> List[GravityViolation]:
         """
         Unified detection for all gravity violation types.
-        
+
         Returns:
             List of GravityViolation objects with severity and suggested healing
         """
         raw_violations = []
-        
+
         try:
             content = file_path.read_text(encoding="utf-8")
             lines = content.splitlines()
             current_rank = self._get_layer_rank(str(file_path))
             in_docstring = False
-            
+
             for line_num, line in enumerate(lines, 1):
                 clean_line = line.strip()
 
@@ -147,11 +147,11 @@ class GravityValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin):
                 if clean_line.count('"""') % 2 != 0 or clean_line.count("'''") % 2 != 0:
                     in_docstring = not in_docstring
                     continue
-                
+
                 # SKIPS: Ignore comments, empty lines, and docstring interiors
                 if not clean_line or clean_line.startswith("#") or in_docstring:
                     continue
-                
+
                 # HARDENING: Ensure we are looking at an actual import statement, not a string
                 if not (clean_line.startswith("import ") or clean_line.startswith("from ")):
                     # Exception: check if it's an inline import (rare but possible)
@@ -160,7 +160,7 @@ class GravityValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin):
 
                 # Pattern 1: Intra-core and Upward Leak Detection
                 imports = re.findall(r"(?:from|import)\s+agentic_core\.(L\d+_\w+)", line)
-                
+
                 for imp_layer in imports:
                     imp_rank = self._get_layer_rank(imp_layer)
                     if imp_rank == -1:
@@ -178,7 +178,7 @@ class GravityValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin):
                             suggested_action="RELOCATE_FILE",
                             line_number=line_num
                         ))
-                    
+
                     # 2. Upward Leak (Low-layer importing L4/L5)
                     if imp_layer in ["L4_state", "L5_safety"] and current_rank < 3:
                         raw_violations.append(GravityViolation(
@@ -206,7 +206,7 @@ class GravityValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin):
                             suggested_action="COMMENT_OUT",
                             line_number=line_num
                         ))
-                        
+
         except Exception as e:
             self.logger.error(f"Failed to scan {file_path}: {e}")
 
@@ -216,18 +216,18 @@ class GravityValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin):
             key = (v.line_number, v.import_line)
             if key not in deduped or v.severity > deduped[key].severity:
                 deduped[key] = v
-            
+
         return list(deduped.values())
 
     async def validate_file(self, file_path: Path) -> Dict[str, Any]:
         """
         Validate a single file for gravity violations.
-        
+
         Returns:
             Dict with violation count and details
         """
         violations = await self.detect_violations(file_path)
-        
+
         return {
             "file": str(file_path.relative_to(self.root)),
             "violations_found": len(violations),
@@ -246,28 +246,28 @@ class GravityValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin):
     async def validate_repository(self) -> Dict[str, Any]:
         """
         Scan entire repository for gravity violations.
-        
+
         Returns:
             Dict with comprehensive violation report
         """
         all_violations = []
         files_scanned = 0
-        
+
         # Operation Zero: Use ssot_discovery instead of rglob
         from agentic_core.utils.ssot_discovery import get_python_files
         for py_file in get_python_files(self.root):
-                
+
             files_scanned += 1
             violations = await self.detect_violations(py_file)
             all_violations.extend(violations)
-        
+
         # Group by violation type
         by_type = {
             "intra_core": [v for v in all_violations if v.violation_type == "intra_core"],
             "upstream_downstream": [v for v in all_violations if v.violation_type == "upstream_downstream"],
             "upward_leak": [v for v in all_violations if v.violation_type == "upward_leak"],
         }
-        
+
         return {
             "files_scanned": files_scanned,
             "total_violations": len(all_violations),

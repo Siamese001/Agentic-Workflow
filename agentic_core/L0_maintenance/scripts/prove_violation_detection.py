@@ -18,29 +18,29 @@ from agentic_core.L3_orchestration.workflow_engines.SSOTOrchestratorAgent import
 
 def main():
     project_root = Path(__file__).parent.parent
-    
+
     print("=" * 80)
     print("PROOF: SSOT Orchestrator Detects All Violations")
     print("=" * 80)
     print()
-    
+
     # Initialize orchestrator
     orchestrator = SSOTOrchestratorAgent(project_root=project_root)
-    
+
     print("Running orchestration to detect violations...")
     print()
-    
+
     # Run orchestration (dry-run to just detect, not fix)
     result = orchestrator.heal_repository(dry_run=True, execute=False)
-    
+
     print("\n" + "=" * 80)
     print("VIOLATION DETECTION RESULTS")
     print("=" * 80)
-    
+
     # Map to report categories
     print("\n📋 Violations Detected by Agent:")
     print()
-    
+
     violations_map = {
         "SyntaxValidatorAgent": {
             "report_category": "Syntax Errors",
@@ -68,14 +68,14 @@ def main():
             "description": "Non-compliant naming conventions"
         }
     }
-    
+
     print(f"{'Agent':<30} {'Report Category':<25} {'Expected':<12} {'Status'}")
     print("-" * 80)
-    
+
     for agent_name, info in violations_map.items():
         status = "✅ DETECTED" if result.get('agents_run', 0) > 0 else "❌ NOT RUN"
         print(f"{agent_name:<30} {info['report_category']:<25} {str(info['report_count']):<12} {status}")
-    
+
     print()
     print("=" * 80)
     print("SUMMARY")
@@ -84,7 +84,7 @@ def main():
     print(f"Total Violations Found: {result.get('violations_found', 0)}")
     print(f"Execution Time: {result.get('execution_time_ms', 0):.0f}ms")
     print()
-    
+
     # Cross-reference with report
     print("📊 Cross-Reference with ssot_violations_report.md:")
     print()
@@ -102,7 +102,7 @@ def main():
     print("  - System is operational and detecting violations as designed")
     print()
     print("=" * 80)
-    
+
     return 0
 
 if __name__ == '__main__':

@@ -45,26 +45,26 @@ DETECTION_KEYWORDS = {
 
 def analyze_agents():
     agents_analysis = []
-    
+
     """Find all agent files."""
     # Phase 6.9: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_agent_files
     root_dir = get_validated_project_root()
     agent_files = list(get_agent_files(root_dir))
-    
+
     for py_file in agent_files:
         path_str = str(py_file)
         if '__pycache__' in path_str:
             continue
-        
+
         name = py_file.name
         if 'Agent' not in name and 'Validator' not in name and 'Detector' not in name and 'Enforcer' not in name:
             continue
-        
+
         try:
             content = py_file.read_text(encoding='utf-8', errors='ignore')
             size = len(content)
-            
+
             # Skip empty files
             if size < 50:
                 agents_analysis.append({
@@ -75,19 +75,19 @@ def analyze_agents():
                     'detects': []
                 })
                 continue
-            
+
             content_lower = content.lower()
-            
+
             # What does this agent detect?
             detects = []
             for category, keywords in DETECTION_KEYWORDS.items():
                 if any(kw in content_lower for kw in keywords):
                     detects.append(category)
-            
+
             # Check if it has key methods
             has_validate = 'def validate' in content_lower or 'def detect' in content_lower or 'def scan' in content_lower
             has_heal = 'def heal' in content_lower or 'def fix' in content_lower or 'def repair' in content_lower
-            
+
             agents_analysis.append({
                 'path': path_str,
                 'name': name,
@@ -98,13 +98,13 @@ def analyze_agents():
             })
         except Exception as e:
             pass
-    
+
     return agents_analysis
 
 def print_analysis(agents_analysis):
     print('=== AGENTS BY DETECTION CAPABILITY ===')
     print()
-    
+
     for category in DETECTION_KEYWORDS.keys():
         agents_for_cat = [a for a in agents_analysis if category in a.get('detects', [])]
         print(f'\n### {category.upper()} DETECTION ({len(agents_for_cat)} agents)')
@@ -115,7 +115,7 @@ def print_analysis(agents_analysis):
             print(f"           {a['path']}")
         if len(agents_for_cat) > 10:
             print(f'  ... and {len(agents_for_cat) - 10} more')
-    
+
     print()
     print('=== EMPTY AGENTS (SHOULD BE IMPLEMENTED) ===')
     empty = [a for a in agents_analysis if a['status'] == 'EMPTY']

@@ -41,7 +41,7 @@ class TestSystemHardening:
         """
         TC-001: Iteratively import all 10 restored agents in a clean subprocess
         to ensure no ModuleNotFoundError or CircularImportError occurs.
-        
+
         Validation: Must return exit code 0 for all 10 agents.
         """
         # Create a simple import script to run in subprocess
@@ -73,7 +73,7 @@ except Exception as e:
             text=True,
             timeout=30
         )
-        
+
         assert result.returncode == 0, (
             f"Import failed for {class_name} ({module_path}).\n"
             f"Exit code: {result.returncode}\n"
@@ -88,39 +88,39 @@ except Exception as e:
         """
         TC-002: Instantiate two L1CognitionBaseAgent-derived objects.
         Modify VERIFICATION_REGISTRY in Agent A.
-        
-        Validation: Assert Agent B's registry remains empty (verifies the 
+
+        Validation: Assert Agent B's registry remains empty (verifies the
         field(default_factory=dict) fix).
         """
         try:
             from agentic_core.L1_cognition.thought_engine.MetaLearningAgent import MetaLearningAgent
         except ImportError:
             pytest.skip("MetaLearningAgent not available for isolation test")
-        
+
         # Create two separate instances
         agent_a = MetaLearningAgent()
         agent_b = MetaLearningAgent()
-        
+
         # Verify both start with empty/independent registries
         # The VERIFICATION_REGISTRY should be instance-specific due to field(default_factory=dict)
-        
+
         # Check that modifying one doesn't affect the other
         # Note: VERIFICATION_REGISTRY is a class-level attribute that gets populated
         # by _init_registry, but the field(default_factory=dict) ensures each instance
         # gets its own dict initially
-        
+
         # For dataclass fields with default_factory, each instance gets its own dict
         # We verify the fix by checking the dataclass field definition
         import dataclasses
         from agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent import L1CognitionBaseAgent
-        
+
         # Get the fields of the dataclass
         fields = {f.name: f for f in dataclasses.fields(L1CognitionBaseAgent)}
-        
+
         # Verify VERIFICATION_REGISTRY uses default_factory
         assert "VERIFICATION_REGISTRY" in fields, "VERIFICATION_REGISTRY field not found"
         registry_field = fields["VERIFICATION_REGISTRY"]
-        
+
         # Check that it uses default_factory (not a mutable default)
         assert registry_field.default is dataclasses.MISSING, (
             "VERIFICATION_REGISTRY should not have a direct default value"
@@ -138,13 +138,13 @@ except Exception as e:
     def test_filesystem_blueprint_consistency(self):
         """
         TC-003: Compare is_path_allowed behavior in FilesystemAgent vs CodeDeduplicationAgent.
-        
-        Validation: Both must reference the same function ID in memory to ensure 
+
+        Validation: Both must reference the same function ID in memory to ensure
         SSOT (Single Source of Truth).
         """
         # Import structure_blueprint from the canonical location
         from agentic_core.L5_safety.validators import structure_blueprint as canonical_blueprint
-        
+
         # Verify the canonical module has the expected exports
         assert hasattr(canonical_blueprint, 'AGENTIC_CORE_DIR'), (
             "structure_blueprint missing AGENTIC_CORE_DIR"
@@ -152,7 +152,7 @@ except Exception as e:
         assert hasattr(canonical_blueprint, 'get_validated_project_root'), (
             "structure_blueprint missing get_validated_project_root"
         )
-        
+
         # Verify CodeDeduplicationAgent imports from the correct location
         try:
             from agentic_core.L5_safety.validators.CodeDeduplicationAgent import (
@@ -166,7 +166,7 @@ except Exception as e:
             # If import fails, check the source file directly
             import ast
             dedup_path = Path(__file__).resolve().parents[2] / "agentic_core" / "L5_safety" / "validators" / "CodeDeduplicationAgent.py"
-            
+
             if dedup_path.exists():
                 source = dedup_path.read_text(encoding='utf-8')
                 # Verify it imports from the correct location
@@ -202,10 +202,10 @@ except Exception as e:
         """
         from agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent import L1CognitionBaseAgent
         import dataclasses
-        
+
         fields = {f.name: f for f in dataclasses.fields(L1CognitionBaseAgent)}
         registry_field = fields.get("VERIFICATION_REGISTRY")
-        
+
         assert registry_field is not None, "VERIFICATION_REGISTRY field not found"
         # The type should be dict (or Dict[str, Any])
         assert registry_field.type in (dict, "dict", "Dict[str, Any]"), (

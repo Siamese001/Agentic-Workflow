@@ -39,7 +39,7 @@ log = logging.getLogger(__name__)
 class TestGeneratorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
     """
     Autonomous agent that generates subatomic tests for agent classes.
-    
+
     Capabilities:
     - Parses agent source files using AST
     - Identifies public methods and their signatures
@@ -50,7 +50,7 @@ class TestGeneratorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
     def __init__(self, tests_dir: Optional[Path] = None) -> None:
         """
         Initialize test generator agent.
-        
+
         Args:
             tests_dir: Optional directory for generated tests (defaults to tests/autogen)
         """
@@ -63,22 +63,22 @@ class TestGeneratorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
     def generate_tests_for_agent(self, agent_path: str) -> Dict[str, Any]:
         """
         Scan agent file and generate corresponding test cases.
-        
+
         Args:
             agent_path: Path to the agent Python file
-            
+
         Returns:
             Dict with generation result: {success: bool, test_file: str, tests_count: int}
         """
         path = Path(agent_path)
         if not path.exists():
             return {"success": False, "error": f"File not found: {agent_path}"}
-        
+
         if not path.suffix == ".py":
             return {"success": False, "error": "Not a Python file"}
-        
+
         log.info(f"[L0 TESTING] Generating tests for: {agent_path}")
-        
+
         try:
             source = path.read_text(encoding="utf-8")
             tree = ast.parse(source)
@@ -86,24 +86,24 @@ class TestGeneratorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
             return {"success": False, "error": f"Syntax error: {e}"}
         except Exception as e:
             return {"success": False, "error": str(e)}
-        
+
         # Extract class information
         classes = self._extract_classes(tree)
         if not classes:
             return {"success": False, "error": "No classes found in file"}
-        
+
         # Generate test file
         test_content = self._generate_test_file(path, classes)
-        
+
         # Write test file
         test_filename = f"test_{path.stem}.py"
         test_path = self.tests_dir / test_filename
-        
+
         try:
             test_path.write_text(test_content, encoding="utf-8")
         except Exception as e:
             return {"success": False, "error": f"Failed to write test file: {e}"}
-        
+
         # Record generation
         record = {
             "source_file": str(path),
@@ -113,7 +113,7 @@ class TestGeneratorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
             "timestamp": datetime.now().isoformat(),
         }
         self._generated_tests.append(record)
-        
+
         log.info(f"[L0 TESTING] Generated {record['tests_count']} tests in {test_path}")
         return {
             "success": True,
@@ -125,7 +125,7 @@ class TestGeneratorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
     def _extract_classes(self, tree: ast.AST) -> List[Dict[str, Any]]:
         """Extract class definitions and their methods from AST."""
         classes = []
-        
+
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
                 class_info = {
@@ -135,14 +135,14 @@ class TestGeneratorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
                     "has_healer_mixin": False,
                     "has_mcp_mixin": False,
                 }
-                
+
                 # Check for mixin inheritance
                 for base in class_info["bases"]:
                     if "HealerMixin" in base:
                         class_info["has_healer_mixin"] = True
                     if "MCPHardenedMixin" in base:
                         class_info["has_mcp_mixin"] = True
-                
+
                 # Extract methods
                 for item in node.body:
                     if isinstance(item, ast.FunctionDef) or isinstance(item, ast.AsyncFunctionDef):
@@ -154,9 +154,9 @@ class TestGeneratorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
                                 "has_return": self._has_return(item),
                             }
                             class_info["methods"].append(method_info)
-                
+
                 classes.append(class_info)
-        
+
         return classes
 
     def _get_base_name(self, base: ast.expr) -> str:
@@ -185,7 +185,7 @@ class TestGeneratorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
     def _generate_test_file(self, source_path: Path, classes: List[Dict[str, Any]]) -> str:
         """Generate pytest-compatible test file content."""
         module_path = self._path_to_module(source_path)
-        
+
         lines = [
             '"""',
             f"Auto-generated tests for {source_path.name}",
@@ -196,19 +196,19 @@ class TestGeneratorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
             "from unittest.mock import MagicMock, patch, AsyncMock",
             "",
         ]
-        
+
         # Add import for the module
         if module_path:
             class_names = ", ".join(c["name"] for c in classes)
             lines.append(f"from {module_path} import {class_names}")
         lines.append("")
         lines.append("")
-        
+
         # Generate test class for each source class
         for cls in classes:
             lines.extend(self._generate_test_class(cls))
             lines.append("")
-        
+
         return "\n".join(lines)
 
     def _generate_test_class(self, cls: Dict[str, Any]) -> List[str]:
@@ -218,7 +218,7 @@ class TestGeneratorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
             f'    """Tests for {cls["name"]}."""',
             "",
         ]
-        
+
         # Add fixture
         lines.extend([
             "    @pytest.fixture",
@@ -227,36 +227,36 @@ class TestGeneratorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
             f"        return {cls['name']}()",
             "",
         ])
-        
+
         # Generate test for each method
         for method in cls["methods"]:
             lines.extend(self._generate_test_method(cls, method))
             lines.append("")
-        
+
         # Add mixin-specific tests
         if cls["has_healer_mixin"]:
             lines.extend(self._generate_healer_tests(cls))
-        
+
         if cls["has_mcp_mixin"]:
             lines.extend(self._generate_mcp_tests(cls))
-        
+
         return lines
 
     def _generate_test_method(self, cls: Dict[str, Any], method: Dict[str, Any]) -> List[str]:
         """Generate test method for a source method."""
         test_name = f"test_{method['name']}"
-        
+
         if method["is_async"]:
             lines = [
                 f"    @pytest.mark.asyncio",
                 f"    async def {test_name}(self, instance):",
                 f'        """Test {method["name"]} method."""',
             ]
-            
+
             # Generate mock args
             args = ", ".join(f"MagicMock()" for _ in method["args"])
             call = f"await instance.{method['name']}({args})"
-            
+
             if method["has_return"]:
                 lines.append(f"        result = {call}")
                 lines.append(f"        assert result is not None")
@@ -267,16 +267,16 @@ class TestGeneratorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
                 f"    def {test_name}(self, instance):",
                 f'        """Test {method["name"]} method."""',
             ]
-            
+
             args = ", ".join(f"MagicMock()" for _ in method["args"])
             call = f"instance.{method['name']}({args})"
-            
+
             if method["has_return"]:
                 lines.append(f"        result = {call}")
                 lines.append(f"        assert result is not None")
             else:
                 lines.append(f"        {call}  # Should not raise")
-        
+
         return lines
 
     def _generate_healer_tests(self, cls: Dict[str, Any]) -> List[str]:

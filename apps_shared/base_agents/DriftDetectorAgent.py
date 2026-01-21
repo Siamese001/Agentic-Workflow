@@ -54,11 +54,11 @@ def timeout(seconds=0, minutes=0, hours=0):
 @dataclass
 class DriftDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Detects files that have drifted outside mapped canon territories."""
-    
+
     def __init__(self, project_root: Path) -> None:
         """
         Initialize DriftDetectorAgent.
-        
+
         Args:
             project_root: Absolute path to project root
         """
@@ -67,33 +67,33 @@ class DriftDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         self.mapped_paths: Set[str] = set()
         for paths in CANON_KEY_TO_FOLDER_MAP.values():
             self.mapped_paths.update(paths)
-    
+
     async def execute(self) -> List[str]:
         """
         Scan for unmapped files (drift violations).
-        
+
         Returns:
             List of Violation messages
         """
         violations = []
-        
+
         for py_file in self.root.rglob("*.py"):
             # Skip hidden/system directories
             if any(part.startswith(".") or part == "__pycache__" for part in py_file.parts):
                 continue
-            
+
             rel = str(py_file.relative_to(self.root)).replace("\\", "/")
-            
+
             # Exemption: Root protected files and __init__.py are allowed drift
             if py_file.name in ROOT_PROTECTED_FILES:
                 continue
             if py_file.name == "__init__.py":
                 continue
-            
+
             # Check if file is within any mapped territory
             if not any(rel.startswith(m + "/") or rel == m for m in self.mapped_paths):
                 violations.append(f"DRIFT VIOLATION: Unmapped file '{rel}'")
-        
+
         return violations
 
     @timeout(300)

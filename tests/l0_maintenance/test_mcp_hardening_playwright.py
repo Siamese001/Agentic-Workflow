@@ -17,7 +17,7 @@ def test_mcp_hardening():
     except ImportError:
         print("❌ Playwright not installed")
         return False
-    
+
     print("Starting dashboard server...")
     dashboard_dir = project_root / "agentic_core" / "L6_observability" / "dashboards"
     server = safe_popen(
@@ -27,29 +27,29 @@ def test_mcp_hardening():
         stderr=subprocess.PIPE
     )
     time.sleep(2)
-    
+
     try:
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
             page = browser.new_page()
-            
+
             print("Loading dashboard...")
             page.goto("http://localhost:8765/autonomy_dashboard.html")
             time.sleep(5)  # Wait for JS to load
-            
+
             # Check if dashboardData loaded
             result = page.evaluate("""
                 () => {
                     if (typeof dashboardData === 'undefined') {
                         return {success: false, error: 'dashboardData not loaded'};
                     }
-                    
+
                     // Find TOTAL row
                     const totalRow = dashboardData.find(r => r.Territory === 'TOTAL');
                     if (!totalRow) {
                         return {success: false, error: 'TOTAL row not found'};
                     }
-                    
+
                     const mcpPct = totalRow['MCP Hardened %'];
                     return {
                         success: mcpPct === 100.0,
@@ -58,9 +58,9 @@ def test_mcp_hardening():
                     };
                 }
             """)
-            
+
             browser.close()
-            
+
             if result['success']:
                 print(f"✅ MCP Hardening: 100% ({result['totalAgents']} agents)")
                 return True
@@ -70,11 +70,11 @@ def test_mcp_hardening():
                 else:
                     print(f"❌ MCP Hardening: {result.get('mcpPct', 'N/A')}% (expected 100%)")
                 return False
-                
+
     finally:
         server.terminate()
         server.wait()
-    
+
     return False
 
 if __name__ == "__main__":

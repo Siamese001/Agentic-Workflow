@@ -45,6 +45,3 @@ def span_stack() -> List[Dict[str, object]]:
     """Return the internal span stack (for inspection-only)."""
 
     return _span_stack
-
-
-

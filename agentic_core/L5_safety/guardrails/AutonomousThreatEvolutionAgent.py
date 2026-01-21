@@ -59,14 +59,14 @@ class AutonomousThreatEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, He
     def __init__(self, SafetyEngine: Optional[Any] = None) -> None:
         """
         Initialize autonomous threat evolution agent.
-        
+
         Args:
             SafetyEngine: Optional safety engine instance
         """
         self.safety: Optional[Any] = SafetyEngine
         # Use relative pathing to stay within the AGENTIC_CORE_DIR root gravity
         self.log_path: Path = Path("observability/logs/threat_detections.json")
-        self.evolution_interval: int = 3600  
+        self.evolution_interval: int = 3600
         self.running: bool = True
         self.confidence_threshold: float = 0.78
 

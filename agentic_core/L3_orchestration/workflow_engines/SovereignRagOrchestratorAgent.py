@@ -30,7 +30,7 @@ from agentic_core.utils.core_extensions.subatomic_testing_mixin import Subatomic
 def get_sovereign_rag_orchestrator() -> SovereignRagOrchestratorAgent:
     """
     Get singleton instance of Sovereign RAG Orchestrator.
-    
+
     Returns:
         SovereignRagOrchestratorAgent instance
     """
@@ -41,14 +41,14 @@ def get_sovereign_rag_orchestrator() -> SovereignRagOrchestratorAgent:
 class SovereignRagOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     Sovereign RAG Orchestrator - L3 Self-Optimizing RAG System.
-    
+
     Adapts parameters based on performance with persistent configuration.
     """
 
     def __init__(self, retriever: Optional[Any] = None, QueryPlanner: Optional[Any] = None, guardrail: Optional[Any] = None, engine: Optional[Any] = None) -> None:
         """
         Initialize sovereign RAG orchestrator.
-        
+
         Args:
             retriever: Optional retriever instance
             QueryPlanner: Optional query planner instance
@@ -70,7 +70,7 @@ class SovereignRagOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
     def _load_sovereign_config(self) -> None:
         """
         L4: Persist the 'learned intelligence' of the system.
-        
+
         Loads configuration from persistent storage or uses defaults.
         """
         if self.config_path.exists():
@@ -86,7 +86,7 @@ class SovereignRagOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
     def _save_sovereign_config(self) -> None:
         """
         L4: Write learned parameters back to the Canon.
-        
+
         Persists learned configuration to disk.
         """
         self.config_path.parent.mkdir(parents=True, exist_ok=True)
@@ -95,12 +95,12 @@ class SovereignRagOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
     async def red_team_critique(self, answer: str, documents: List[Any], query: str) -> Dict[str, Any]:
         """
         L5: Red team critique for faithfulness validation.
-        
+
         Args:
             answer: Generated answer to critique
             documents: Source documents used
             query: Original query
-        
+
         Returns:
             Dictionary with faithfulness score and improvement suggestions
         """

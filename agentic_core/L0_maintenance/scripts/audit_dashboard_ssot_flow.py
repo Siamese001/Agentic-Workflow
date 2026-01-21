@@ -178,17 +178,17 @@ sample_rows = [r for r in dashboard_data if r['Territory'] != 'TOTAL'][:3]
 calculation_mismatches = []
 for row in sample_rows:
     territory = row['Territory']
-    
+
     # Find agents for this territory
     territory_agents = [a for a in discovery_data if a.get('territory') == territory]
-    
+
     if not territory_agents:
         continue
-    
+
     # Recalculate using SSOT functions
     heal_cap_expected = calc_heal_cap_pct(territory_agents)
     heal_cap_actual = row.get('Heal Cap %', 0)
-    
+
     if abs(heal_cap_expected - heal_cap_actual) > 0.1:
         calculation_mismatches.append(
             f"{territory}: Heal Cap % mismatch (expected {heal_cap_expected:.1f}, got {heal_cap_actual:.1f})"
@@ -215,18 +215,18 @@ else:
     print("✅ TOTAL row is first")
 
 # Verify Base Agents come first for each layer
-layer_prefixes = ['L6_Observability', 'L5 Safety', 'L4 State', 'L3 Orchestration', 
+layer_prefixes = ['L6_Observability', 'L5 Safety', 'L4 State', 'L3 Orchestration',
                   'L2 Execution', 'L1 Cognition', 'L0 Maintenance']
 
 sort_violations = []
 for prefix in layer_prefixes:
-    layer_rows = [(i, r['Territory']) for i, r in enumerate(dashboard_data) 
+    layer_rows = [(i, r['Territory']) for i, r in enumerate(dashboard_data)
                   if r['Territory'].startswith(prefix)]
-    
+
     if layer_rows:
         base_agent_name = f"{prefix}/Base Agent"
         base_agent_positions = [i for i, t in layer_rows if t == base_agent_name]
-        
+
         if not base_agent_positions:
             sort_violations.append(f"{prefix}: No Base Agent found")
         elif base_agent_positions[0] != layer_rows[0][0]:
@@ -254,7 +254,7 @@ dashboard_total_row = next((r for r in dashboard_data if r['Territory'] == 'TOTA
 
 if dashboard_total_row:
     dashboard_agent_count = dashboard_total_row.get('Total', 0)
-    
+
     if discovery_agent_count == dashboard_agent_count:
         print(f"✅ Agent count matches: {discovery_agent_count} agents")
     else:

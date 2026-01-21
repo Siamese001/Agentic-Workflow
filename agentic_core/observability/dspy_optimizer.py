@@ -197,14 +197,14 @@ class DsPyOptimizer:
         """Create a DSPy module from a signature and prompt."""
 
         class OptimizedModule(dspy.Module):
-                                    
+
             def __init__(self, signature, prompt_template):
                 super().__init__()
                 self.generate = dspy.ChainOfThought(signature)
                 self.prompt_template = prompt_template
 
             def forward(self, **kwargs):
-                                                    
+
                 # Apply the prompt template
                 self.prompt_template.format(**kwargs)
                 return self.generate(**kwargs)

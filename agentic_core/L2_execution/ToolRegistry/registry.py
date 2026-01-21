@@ -45,7 +45,7 @@ class ToolRegistry:
     def register_tool(self, name: str, description: str, args_model: type[BaseModel], function: Callable) -> Any:
         """
         Register a tool with its Pydantic model and function.
-        
+
         Args:
             name: Tool name
             description: Tool description
@@ -57,7 +57,7 @@ class ToolRegistry:
     def get_function_declarations(self) -> List:
         """
         Generate google.genai.types.FunctionDeclaration for all registered tools.
-        
+
         Returns:
             List of FunctionDeclaration objects for Gemini
         """
@@ -86,10 +86,10 @@ class ToolRegistry:
     def _convert_type(self, pydantic_type: Optional[str]) -> str:
         """
         Convert Pydantic type to JSON Schema type.
-        
+
         Args:
             pydantic_type: Pydantic type string
-            
+
         Returns:
             JSON Schema type string
         """
@@ -101,15 +101,15 @@ class ToolRegistry:
     def execute_tool(self, name: str, args: Dict[str, Any], **kwargs) -> Any:
         """
         Execute a registered tool with validated arguments.
-        
+
         Args:
             name: Tool name
             args: Tool arguments as dictionary
             **kwargs: Additional keyword arguments (e.g., blackboard, agent_id)
-            
+
         Returns:
             Tool execution result
-            
+
         Raises:
             ValueError: If tool not found
             ValidationError: If arguments are invalid
@@ -134,7 +134,7 @@ _global_registry: Optional[ToolRegistry] = None
 def create_tool_registry() -> ToolRegistry:
     """
     Create or get the global tool registry.
-    
+
     Returns:
         Global ToolRegistry instance
     """
@@ -146,7 +146,7 @@ def create_tool_registry() -> ToolRegistry:
 def get_function_declarations() -> List:
     """
     Get FunctionDeclarations for all registered tools.
-    
+
     Returns:
         List of FunctionDeclaration objects for Gemini
     """
@@ -156,12 +156,12 @@ def get_function_declarations() -> List:
 def execute_tool_call(name: str, args: Dict[str, Any], **kwargs) -> Any:
     """
     Execute a tool call from the global registry.
-    
+
     Args:
         name: Tool name
         args: Tool arguments
         **kwargs: Additional keyword arguments
-        
+
     Returns:
         Tool execution result
     """

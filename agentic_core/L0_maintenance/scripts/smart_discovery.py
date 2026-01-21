@@ -97,27 +97,27 @@ def get_latest_source_mtime() -> datetime:
 def is_discovery_stale() -> Tuple[bool, str]:
     """
     Check if discovery JSON needs refresh.
-    
+
     Returns:
         (is_stale, reason)
     """
     if not DISCOVERY_JSON.exists():
         return True, "JSON file does not exist"
-    
+
     json_mtime = get_json_mtime()
     if json_mtime is None:
         return True, "JSON mtime unreadable"
-    
+
     # Check JSON age
     age = datetime.now() - json_mtime
     if age > STALENESS_THRESHOLD:
         return True, f"JSON too old ({age.total_seconds()/3600:.1f}h > 1h)"
-    
+
     # Check if any source files are newer than JSON
     latest_source = get_latest_source_mtime()
     if latest_source > json_mtime:
         return True, f"Source files modified after JSON ({latest_source} > {json_mtime})"
-    
+
     return False, "JSON is fresh"
 
 
@@ -125,14 +125,14 @@ def get_changed_files() -> List[Path]:
     """Return list of changed files since last manifest (for logging only)."""
     if not MANIFEST_JSON.exists():
         return _scan_python_files()  # Force full if no manifest
-    
+
     try:
         manifest = json.loads(MANIFEST_JSON.read_text(encoding="utf-8"))
         file_hashes: dict = manifest.get("file_hashes", {})
     except Exception as e:
         log.warning(f"Manifest invalid ({e}) → assuming all changed")
         return _scan_python_files()
-    
+
     files = _scan_python_files()
     changed = []
     for py_file in files:
@@ -149,37 +149,37 @@ def get_changed_files() -> List[Path]:
 def run_discovery(force: bool = False) -> int:
     """
     Run discovery with smart mode selection.
-    
+
     Returns exit code (0 = success)
     """
     import subprocess
-    
+
     is_stale, reason = is_discovery_stale()
-    
+
     if not force and not is_stale:
         log.info("JSON is fresh, skipping scan")
         log.info(f"Reason: {reason}")
         return 0
-    
+
     log.info("Discovery needed")
     log.info(f"Reason: {reason}")
-    
+
     changed = get_changed_files()
     log.info(f"Detected {len(changed)} changed files (informational)")
-    
+
     # INCREMENTAL TRIGGER: Use incremental mode for small change sets
     use_incremental = 0 < len(changed) <= 30
     if use_incremental:
         log.info(f"Small change set ({len(changed)} files) → using --incremental mode")
     elif len(changed) > 30:
         log.info(f"Large change set ({len(changed)} files) → full scan")
-    
+
     cmd = [sys.executable, str(PROJECT_ROOT / SCRIPTS_DIR / "full_agent_discovery.py")]
     if force:
         cmd.append("--force")
     if use_incremental:
         cmd.append("--incremental")
-    
+
     # Robust subprocess with timeout, output capture, logging
     log.info("Launching full_agent_discovery.py...")
     start = time.time()
@@ -225,23 +225,23 @@ def ensure_fresh_discovery() -> None:
 def main():
     """CLI entry point."""
     import argparse
-    
+
     parser = argparse.ArgumentParser(description="Smart Agent Discovery Runner")
     parser.add_argument("--check", action="store_true", help="Just check if stale, don't run")
     parser.add_argument("--force", action="store_true", help="Force full scan")
     parser.add_argument("--ensure", action="store_true", help="Ensure fresh (for pre-report)")
     args = parser.parse_args()
-    
+
     if args.check:
         is_stale, reason = is_discovery_stale()
         print(f"Stale: {is_stale}")
         print(f"Reason: {reason}")
         sys.exit(1 if is_stale else 0)
-    
+
     if args.ensure:
         ensure_fresh_discovery()
         sys.exit(0)
-    
+
     exit_code = run_discovery(force=args.force)
     sys.exit(exit_code)
 

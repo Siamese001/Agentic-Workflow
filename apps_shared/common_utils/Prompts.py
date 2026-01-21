@@ -53,7 +53,7 @@ def build_librarian_mission_extraction_prompt(
     This is the HIGH-SIGNAL extraction that feeds the entire RAG pipeline.
     """
     template = _get_prompt_template("librarian_mission_extraction")
-    
+
     return template.format(
         job_description=job_description,
         company_name=company_name,
@@ -70,12 +70,12 @@ def build_librarian_strategic_analysis_prompt(
     Used in multi-hop RAG for deep context building.
     """
     template = _get_prompt_template("librarian_strategic_analysis")
-    
+
     # Format previous context if available
     context_section = ""
     if previous_context:
         context_section = f"\n**Previous Analysis Context:**\n{previous_context}\n"
-    
+
     return template.format(
         job_description=job_description,
         target_company_name=rag_mission.target_company_name,
@@ -94,7 +94,7 @@ def build_librarian_memory_query_prompt(
     Used to retrieve relevant past insights for current JD.
     """
     template = _get_prompt_template("librarian_memory_query")
-    
+
     return template.format(
         query=query,
         context_type=context_type
@@ -112,12 +112,12 @@ def _format_resume_index_summary(index: 'MasterResumeIndex') -> str:
         top_skills = sorted(index.recency_scores.items(), key=lambda x: x[1], reverse=True)[:8]
         skills_list = [skill for skill, _ in top_skills]
         summary_parts.append(f"Top Candidate Skills (by recency): {', '.join(skills_list)}")
-    
+
     if hasattr(index, 'achievement_catalog') and index.achievement_catalog:
         ach_summary = [f"{a.get('value', 'N/A')} {a.get('metric_type', 'achievement')}" for a in index.achievement_catalog[:3]]
         if ach_summary:
             summary_parts.append(f"Recent Achievements: {'; '.join(ach_summary)}")
-    
+
     return '\n'.join(summary_parts) if summary_parts else "Candidate profile context not available."
 
 def build_phase1_prompt(
@@ -131,21 +131,21 @@ def build_phase1_prompt(
     Build Phase 1 RAG prompt with Librarian context integration.
     Enhanced with high-signal extraction patterns.
     """
-    
+
     # 1. LOGIC: Prepare the data ("ingredients")
     candidate_context = _format_resume_index_summary(master_resume_index)
-    
+
     # 2. Integrate Librarian context if available
     librarian_section = ""
     if librarian_context:
         librarian_section = f"\n**Librarian Intelligence:**\n{librarian_context}\n"
-    
+
     # 3. Build high-signal search queries
     tech_search_line = ""
     if mission.key_technologies:
         safe_tech = mission.key_technologies[0].replace('"', '')
         tech_search_line = f'3. Search for: `"{mission.target_company_name} press release {safe_tech}"`'
-    
+
     # 4. Add strategic priorities context if available
     strategic_context = ""
     if hasattr(mission, 'strategic_priorities') and mission.strategic_priorities:
@@ -176,17 +176,17 @@ def build_phase2_prompt(
     Focuses on identifying gaps and overlaps for positioning strategy.
     """
     template = _get_prompt_template("rag_phase_2")
-    
+
     # Add Librarian context integration
     librarian_section = ""
     if librarian_context:
         librarian_section = f"\n**Librarian Intelligence:**\n{librarian_context}\n"
-    
+
     # Add competitors context if available
     competitors_section = ""
     if hasattr(mission, 'competitors') and mission.competitors:
         competitors_section = f"\n**Known Competitors:**\n{', '.join(mission.competitors)}\n"
-    
+
     return template.format(
         precise_role_title=mission.precise_role_title,
         industry=industry,
@@ -214,17 +214,17 @@ def build_phase3_prompt(
     search_pattern_instruction = comp_config.search_pattern.format(
         role_title=mission.precise_role_title, peer_company="<peer_company>"
     )
-    
+
     # Add Librarian context
     librarian_section = ""
     if librarian_context:
         librarian_section = f"\n**Librarian Intelligence:**\n{librarian_context}\n"
-    
+
     # Add differentiators context if available
     differentiators_section = ""
     if hasattr(mission, 'differentiators') and mission.differentiators:
         differentiators_section = f"\n**Key Differentiators to Emphasize:**\n{chr(10).join(['- ' + d for d in mission.differentiators])}\n"
-    
+
     return template.format(
         target_company_name=mission.target_company_name,
         precise_role_title=mission.precise_role_title,
@@ -240,7 +240,7 @@ def build_phase3_prompt(
         librarian_section=librarian_section,
         differentiators_section=differentiators_section
     )
-    
+
 def build_phase4_prompt(
     mission: 'RAGMission',
     librarian_context: Optional[str] = None
@@ -250,24 +250,24 @@ def build_phase4_prompt(
     Enhanced with Librarian context for pain point identification.
     """
     template = _get_prompt_template("rag_phase_4")
-    
+
     # Build high-signal queries targeting pain points
     queries = [
         f'"challenges of {mission.core_responsibilities[0]} for {mission.key_technologies[0]}"' if mission.core_responsibilities and mission.key_technologies else f'"challenges of {mission.precise_role_title}"',
         f'"case study {mission.precise_role_title}"',
         f'"{mission.target_company_name} customer success stories"',
     ]
-    
+
     # Add identified pain points if available
     pain_points_section = ""
     if hasattr(mission, 'identified_pain_points') and mission.identified_pain_points:
         pain_points_section = f"\n**Identified Pain Points:**\n{chr(10).join(['- ' + p for p in mission.identified_pain_points])}\n"
-    
+
     # Add Librarian context
     librarian_section = ""
     if librarian_context:
         librarian_section = f"\n**Librarian Intelligence:**\n{librarian_context}\n"
-    
+
     return template.format(
         precise_role_title=mission.precise_role_title,
         core_responsibilities=', '.join(mission.core_responsibilities),
@@ -292,7 +292,7 @@ def build_macro_tot_generation_prompt(
     Adds variation instructions to encourage diverse approaches.
     """
     template = _get_prompt_template("macro_tot_generation")
-    
+
     # Default variation instructions if not provided
     if not variation_instruction:
         if draft_number == 1:
@@ -301,7 +301,7 @@ def build_macro_tot_generation_prompt(
             variation_instruction = "Focus on STRATEGIC VISION and leadership capabilities."
         else:
             variation_instruction = "Focus on BALANCED APPROACH combining technical and strategic elements."
-    
+
     return template.format(
         base_prompt=base_prompt,
         draft_number=draft_number,
@@ -319,15 +319,15 @@ def build_evaluator_scoring_prompt(
     Note: This is a FALLBACK - Code Interpreter is preferred for deterministic scoring.
     """
     template = _get_prompt_template("evaluator_scoring")
-    
+
     # Format drafts
     drafts_text = ""
     for i, draft in enumerate(drafts, 1):
         drafts_text += f"\n---\n**DRAFT {i}:**\n{draft}\n"
-    
+
     # Format criteria
     criteria_text = json.dumps(criteria, indent=2)
-    
+
     return template.format(
         section_name=section_name,
         drafts_text=drafts_text,
@@ -345,15 +345,15 @@ def build_macro_tot_synthesis_prompt(
     Used when Code Interpreter scores indicate multiple strong candidates.
     """
     template = _get_prompt_template("macro_tot_synthesis")
-    
+
     # Sort drafts by score and take top K
     sorted_drafts = sorted(scored_drafts, key=lambda x: x[1], reverse=True)[:top_k]
-    
+
     # Format top drafts with scores
     top_drafts_text = ""
     for i, (draft, score) in enumerate(sorted_drafts, 1):
         top_drafts_text += f"\n---\n**DRAFT {i} (Score: {score:.1f}):**\n{draft}\n"
-    
+
     return template.format(
         original_prompt=original_prompt,
         top_drafts_text=top_drafts_text,
@@ -396,16 +396,16 @@ def build_verbatim_bullet_selection_prompt(
 ) -> str:
     """Builds the prompt for selecting verbatim bullets."""
     template = _get_prompt_template("artist_verbatim_bullet_selection")
-    
+
     keywords_for_prompt = []
     comp_intel = getattr(thematic_analysis, 'competitive_intelligence', None)
     if comp_intel:
          kw_raw = getattr(comp_intel, 'differentiator_keywords', [])
-         if isinstance(kw_raw, list): 
+         if isinstance(kw_raw, list):
              keywords_for_prompt = kw_raw[:10]
 
     bullets_list = chr(10).join([f"- {b}" for b in master_bullets_text_list])
-    
+
     return template.format(
         bullets_list=bullets_list,
         verbatim_count=verbatim_count,
@@ -418,7 +418,7 @@ def build_customized_bullet_prompt(
 ) -> str:
     """Builds the prompt for customizing bullets."""
     template = _get_prompt_template("artist_customized_bullet")
-    
+
     primary_theme_kw = []
     if thematic_analysis and thematic_analysis.primary_theme:
          kw_raw = thematic_analysis.primary_theme.get('keywords', [])
@@ -483,7 +483,7 @@ def build_bullet_reorder_prompt(
     NOTE: Code Interpreter should be used instead for deterministic reordering.
     """
     template = _get_prompt_template("artist_bullet_reorder")
-    
+
     keywords_for_prompt = []
     comp_intel = getattr(thematic_analysis, 'competitive_intelligence', None)
     if comp_intel:
@@ -519,9 +519,9 @@ def build_overview_generation_prompt(
     **kwargs: Dict[str, object]) -> str:
     """Builds the prompt for generating an experience overview."""
     template = _get_prompt_template("artist_overview_generation")
-    
+
     min_wc, max_wc = word_count_range
-    
+
     job_desc_lower = job_description.lower()
     include_leadership_theme = any(kw in job_desc_lower for kw in ['lead', 'manage', 'director', 'vp', 'executive'])
     include_strategic_theme = any(kw in job_desc_lower for kw in ['strategy', 'roadmap', 'vision', 'partnership', 'alliance'])
@@ -552,7 +552,7 @@ def build_generation_prompt_with_reinforced_constraints(
     """
     min_wc = constraints.get('min_wc', constraints.get('min_word_count', 0))
     max_wc = constraints.get('max_wc', constraints.get('max_word_count', 999))
-    
+
     if attempt_number == 1:
         constraint_language = f"""
 
@@ -561,7 +561,7 @@ def build_generation_prompt_with_reinforced_constraints(
 - Format: MUST NOT start with "At [Company]" or "As [Title]"
 - Output: MUST be ONLY the requested content (no fences, no preamble)
 """
-    
+
     elif attempt_number == 2:
         constraint_language = f"""
 
@@ -573,7 +573,7 @@ def build_generation_prompt_with_reinforced_constraints(
 ✓ Count words before submitting
 ✓ Review output format before submitting
 """
-    
+
     elif attempt_number == 3:
         constraint_language = f"""
 
@@ -586,7 +586,7 @@ def build_generation_prompt_with_reinforced_constraints(
 
 OUTPUT ONLY AFTER ALL BOXES CHECKED.
 """
-    
+
     else:
         constraint_language = f"""
 
@@ -602,7 +602,7 @@ STEP 7: OUTPUT
 
 DO NOT output until STEP 7.
 """
-    
+
     return base_prompt + constraint_language
 
 def build_sc_synthesis_prompt(
@@ -611,12 +611,12 @@ def build_sc_synthesis_prompt(
 ) -> str:
     """Builds the prompt for self-consistency synthesis."""
     template = _get_prompt_template("artist_sc_synthesis")
-    
+
     # LOGIC: Format the list of candidate responses
     formatted_responses = ""
     for i, res in enumerate(candidate_responses):
         formatted_responses += f"\n---\n**DRAFT {i+1}:**\n{res}\n---\n"
-        
+
     return template.format(
         original_prompt=original_prompt,
         candidate_responses=formatted_responses
@@ -637,17 +637,17 @@ def build_validator_factual_check_prompt(
     Used in HOP-5 to detect strategic/factual failures that trigger Slow Loop.
     """
     template = _get_prompt_template("validator_factual_check")
-    
+
     # Extract key verification points
     primary_theme = thematic_analysis.primary_theme.get('name', 'N/A') if thematic_analysis.primary_theme else 'N/A'
-    
+
     differentiators = []
     comp_intel = getattr(thematic_analysis, 'competitive_intelligence', None)
     if comp_intel:
         diff_kw = getattr(comp_intel, 'differentiator_keywords', [])
         if isinstance(diff_kw, list):
             differentiators = diff_kw[:5]
-    
+
     return template.format(
         section_name=section_name,
         section_content=section_content,

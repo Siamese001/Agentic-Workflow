@@ -70,7 +70,7 @@ print(f"{'='*70}\n")
 
 base_agents = [a for a in agents_without_tests if 'Base Agent' in a.get('territory', '')]
 high_layer = [a for a in agents_without_tests if any(
-    a.get('territory', '').startswith(layer) 
+    a.get('territory', '').startswith(layer)
     for layer in ['L6_Observability', 'L5 Safety', 'L4 State']
 ) and a not in base_agents]
 
@@ -86,7 +86,7 @@ for i, agent in enumerate(batch1, 1):
     path = agent.get('path', 'Unknown')
     territory = agent.get('territory', 'Unknown')
     cc = agent.get('cyclomatic_complexity', 0)
-    
+
     print(f"{i}. {name}")
     print(f"   Territory: {territory}")
     print(f"   Path: {path}")

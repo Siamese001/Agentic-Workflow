@@ -55,10 +55,10 @@ class GeminiEmbedder:
     def embed_query(self, query: str) -> List[float]:
         """
         Generates semantic vectors with built-in error handling.
-        
+
         Args:
             query: Text string to embed
-            
+
         Returns:
             List of float values representing the embedding vector, or None on failure
         """

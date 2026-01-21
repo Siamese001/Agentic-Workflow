@@ -16,10 +16,10 @@ from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import Subatom
 class OutreachProactiveAgent(SubatomicTestingMixin, OutreachAgent, MCPHardenedMixin):
     """
     Agent that proactively identifies and executes outreach tasks.
-    
+
     Combines task scheduling, predictive handoff detection, and capability
     monitoring to autonomously manage outreach operations.
-    
+
     Attributes:
         name: Agent identifier
         scheduler: Proactive task scheduler
@@ -30,7 +30,7 @@ class OutreachProactiveAgent(SubatomicTestingMixin, OutreachAgent, MCPHardenedMi
     def __init__(self, ctx: 'OutreachEngineContext') -> None:
         """
         Initialize the proactive outreach agent.
-        
+
         Args:
             ctx: Outreach engine context
         """
@@ -43,10 +43,10 @@ class OutreachProactiveAgent(SubatomicTestingMixin, OutreachAgent, MCPHardenedMi
     async def execute(self) -> None:
         """
         Execute proactive outreach analysis and task execution.
-        
+
         Identifies pending tasks, checks for handoff needs, and auto-executes
         tasks that don't require human intervention.
-        
+
         Raises:
             HANDOFF_RECOMMENDED signal if predictive handoff is needed
         """
@@ -86,12 +86,12 @@ class OutreachProactiveAgent(SubatomicTestingMixin, OutreachAgent, MCPHardenedMi
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs: Any) -> Dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
-        
+
         Args:
             dry_run: If True, only report violations without fixing
             execute: If True, apply fixes
             **kwargs: Additional healing parameters
-        
+
         Returns:
             Dict with healing summary (violations, fixed, errors)
         """

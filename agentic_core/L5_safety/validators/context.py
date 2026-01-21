@@ -151,10 +151,10 @@ def _rate_limited_retry(max_attempts: int = 3, delay_seconds: float = 1.0):
     A simple retry decorator for async functions with a delay.
     """
     def decorator(func):
-                    
+
         @functools.wraps(func)
         async def wrapper(*args, **kwargs):
-                                    
+
             for attempt in range(1, max_attempts + 1):
                 try:
                     return await func(*args, **kwargs)
@@ -318,13 +318,13 @@ class ValidationContext:
             pass
 
     def report(self, agent: str, key: int, passed: bool, details: Any):
-                    
+
         self.results[key] = {"passed": passed, "details": details, "agent": agent}
         if not passed:
             print(f"   [{agent}] Key {key}: FAIL")
 
     def get_file_content(self, file_path: str) -> str:
-                    
+
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 return f.read()
@@ -345,12 +345,12 @@ class ValidationContext:
 
     @property
     def client(self):
-                    
+
         return self._client
 
     @_rate_limited_retry() # Refactored
     async def resilient_mutation(self, agent_name: str, Task: str, code: str = "", file_path: str = None, max_attempts: int = 3, **kwargs) -> str:
-                    
+
         if not self.intelligence_enabled or not self.budget.check_budget():
             return code
 

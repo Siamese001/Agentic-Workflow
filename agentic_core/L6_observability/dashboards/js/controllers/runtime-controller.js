@@ -16,10 +16,10 @@ const RuntimeController = {
     startPolling: function(intervalMs) {
         if (this.isPolling) return;
         this.isPolling = true;
-        
+
         // Initial update
         this.updateRuntime();
-        
+
         // Set up interval
         this.pollingInterval = setInterval(() => {
             this.updateRuntime();
@@ -37,7 +37,7 @@ const RuntimeController = {
     updateRuntime: async function() {
         // First, always try to update from runtime_state.json (local file)
         await this.updateLiveExecutionState();
-        
+
         try {
             const [metaResp, latencyResp, logsResp] = await Promise.all([
                 fetch('http://localhost:8081/api/meta-learning/activity').catch(() => null),
@@ -97,22 +97,22 @@ const RuntimeController = {
         try {
             const resp = await fetch('runtime_state.json?' + Date.now());
             if (!resp.ok) return;
-            
+
             const state = await resp.json();
-            
+
             // Update status
             const statusEl = document.getElementById('liveStatus');
             if (statusEl) {
                 statusEl.textContent = state.status || 'Idle';
                 statusEl.style.color = state.status === 'Running' ? '#16a34a' : '#6b7280';
             }
-            
+
             // Update current agent
             const agentEl = document.getElementById('liveAgent');
             const layerEl = document.getElementById('liveLayer');
             if (agentEl) agentEl.textContent = state.current_agent || '--';
             if (layerEl) layerEl.textContent = state.current_layer || '--';
-            
+
             // Update progress bar
             const progressBar = document.getElementById('progressBar');
             if (progressBar && state.progress !== undefined) {
@@ -120,14 +120,14 @@ const RuntimeController = {
                 progressBar.style.width = pct + '%';
                 progressBar.textContent = pct.toFixed(0) + '%';
             }
-            
+
             // Update meta-learning status
             const metaEl = document.getElementById('liveMeta');
             if (metaEl) {
                 metaEl.textContent = state.meta_learning_active ? 'Active' : 'Inactive';
                 metaEl.style.color = state.meta_learning_active ? '#16a34a' : '#6b7280';
             }
-            
+
             // Update execution sequence table
             if (state.execution_order && Array.isArray(state.execution_order)) {
                 this.renderExecutionSequence(state.execution_order, state.current_index || 0);
@@ -140,7 +140,7 @@ const RuntimeController = {
     renderExecutionSequence: function(order, currentIndex) {
         const tbody = document.getElementById('orderTableBody');
         if (!tbody) return;
-        
+
         tbody.innerHTML = order.map((item, idx) => {
             let status = '⏳';
             let bgColor = '';
@@ -151,7 +151,7 @@ const RuntimeController = {
                 status = '🔄';
                 bgColor = 'background:#fef3c7;';
             }
-            
+
             return `<tr style="${bgColor}">
                 <td style="padding:6px 8px;">${idx + 1}</td>
                 <td style="padding:6px 8px;">${item.agent || item} → ${item.target || 'self'}</td>
@@ -165,7 +165,7 @@ const RuntimeController = {
 function initializeSemanticMetrics() {
     const reuseEl = document.getElementById('reuseRate');
     const confEl = document.getElementById('retrievalConfidence');
-    
+
     // Set default values - these would be updated by live polling
     if (reuseEl) {
         reuseEl.innerHTML = '87%<span style="color:#16a34a; font-size:0.6em; margin-left:4px;">↑</span>';

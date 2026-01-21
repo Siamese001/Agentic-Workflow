@@ -25,18 +25,18 @@ ROOT_MARKERS: List[str] = [
 def get_project_root(start_path: Optional[str] = None) -> Path:
     """
     Detect the project root directory by searching upward for markers.
-    
+
     Args:
         start_path: The path to start searching from. Defaults to CWD.
-        
+
     Returns:
         Path: The absolute path to the project root.
-        
+
     Raises:
         RuntimeError: If the project root cannot be found after searching 10 levels up.
     """
     current = Path(start_path).resolve() if start_path else Path.cwd().resolve()
-    
+
     # Safety: If we are in a file (not dir), start from its parent
     if current.is_file():
         current = current.parent
@@ -47,14 +47,14 @@ def get_project_root(start_path: Optional[str] = None) -> Path:
         for marker in ROOT_MARKERS:
             if (current / marker).exists():
                 return current
-        
+
         # Stop if we hit the filesystem root
         if current.parent == current:
             break
-            
+
         current = current.parent
-        
-    # Fallback: If we are inside the 'agentic_core' package structure, 
+
+    # Fallback: If we are inside the 'agentic_core' package structure,
     # we might be deep inside. Try to find the 'agentic_core' folder specifically.
     # (This handles cases where markers are missing but structure is intact)
     try:
@@ -67,7 +67,7 @@ def get_project_root(start_path: Optional[str] = None) -> Path:
             return Path(*parts[:idx])
     except Exception:
         pass
-        
+
     raise RuntimeError(
         f"Could not detect project root. Searched 10 levels up from {start_path or Path.cwd()}"
     )

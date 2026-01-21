@@ -62,7 +62,7 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
     def __init__(self, project_root: Path, ctx: Any) -> None:
         """
         Initialize the test coverage guardian.
-        
+
         Args:
             project_root: Root directory of the project
             ctx: Execution context
@@ -84,7 +84,7 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
     def _load_history(self) -> List[Dict[str, Any]]:
         """
         Load coverage history from JSON file.
-        
+
         Returns:
             List of historical coverage entries
         """
@@ -98,7 +98,7 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
     def _save_history(self, entry: Dict[str, Any]) -> None:
         """
         Save coverage entry to history.
-        
+
         Args:
             entry: Coverage data entry to save
         """
@@ -130,14 +130,14 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
                 cwd=self.project_root,
                 capture_output=True,
             )
-            
+
             # Generate JSON report
             safe_execute(
-                ["coverage", "json", "-o", "coverage.json"], 
+                ["coverage", "json", "-o", "coverage.json"],
                 cwd=self.project_root,
                 check=False
             )
-            
+
             # Generate HTML report
             safe_execute(
                 ["coverage", "html", "-d", str(self.html_report_dir)],
@@ -169,7 +169,7 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
         core_path = self.project_root / self.target_scope
         if not core_path.exists():
             return []
-        
+
         # Phase 6.5: Use ssot_discovery instead of rglob
         from agentic_core.utils.ssot_discovery import get_python_files
         for py_file in get_python_files(core_path):
@@ -262,14 +262,14 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
             def test_property_{candidate['name']}({', '.join(candidate['params'])}):
                 \"\"\"Advanced property test for {candidate['name']}\"\"\"
                 assume(True)  # Filter invalid states
-                
+
                 try:
                     result = {candidate['name']}({', '.join(candidate['params'])})
                 except Exception:
                     assume(False)  # Ignore unexpected but non-critical failures
-                
+
                 assert result is not None
-                
+
                 {chr(10).join(common_templates + invariant_hints)}
         """
         )
@@ -356,7 +356,7 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
                 cwd=self.project_root,
                 check=False
             )
-            
+
             # Get results
             results_output = safe_execute(
                 ["mutmut", "results"],
@@ -365,7 +365,7 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
                 cwd=self.project_root,
                 check=False
             )
-            
+
             # Parse mutation score (simplified)
             # Format: "Survived: X, Killed: Y, Timeout: Z"
             killed = 0
@@ -381,10 +381,10 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
                 if survived_match:
                     survived = int(survived_match.group(1))
                     total = killed + survived
-            
+
             score = (killed / total * 100) if total > 0 else 0
             return {"score": score, "survived": total - killed, "examples": []}
-            
+
         except FileNotFoundError:
             if hasattr(self.ctx, "report"):
                 self.ctx.report("TestCoverageGuardianAgent", 0, False, "mutmut not installed")

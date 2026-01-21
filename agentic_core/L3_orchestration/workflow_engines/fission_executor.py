@@ -17,12 +17,12 @@ Logger: Any = logging.getLogger(__name__)
 async def apply_fission_blueprint(file_path: str, blueprint: dict, fission_mgr: 'FissionManagerAgent') -> bool:
     """
     Apply a fission blueprint to split a monolithic file into sub-modules.
-    
+
     Args:
         file_path: Path to the monolithic file
         blueprint: Fission blueprint with module definitions
         fission_mgr: FissionManagerAgent instance
-        
+
     Returns:
         bool: True if fission was successful, False otherwise
     """

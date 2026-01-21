@@ -21,13 +21,13 @@ def test_dashboard_visual():
     print("=" * 70)
     print("DASHBOARD VISUAL VERIFICATION TEST")
     print("=" * 70)
-    
+
     dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
     html = dashboard_path.read_text(encoding='utf-8')
-    
+
     passed = 0
     failed = 0
-    
+
     # Test 1: Extract and verify dashboardData
     print("\n1. Testing dashboardData embedding...")
     dashboard_match = re.search(r'const dashboardData = (\[.*?\]);', html, re.DOTALL)
@@ -36,7 +36,7 @@ def test_dashboard_visual():
             data_json = dashboard_match.group(1)
             data = json.loads(data_json)
             print(f"   ✅ dashboardData found: {len(data)} rows")
-            
+
             # Verify TOTAL row
             total_row = next((r for r in data if r.get('Territory') == 'TOTAL'), None)
             if total_row:
@@ -45,7 +45,7 @@ def test_dashboard_visual():
                 print(f"      - Heal Cap %: {total_row['Heal Cap %']}%")
                 print(f"      - Health: {total_row['Health']}%")
                 print(f"      - Test %: {total_row['Test %']}%")
-                
+
                 if total_row['Heal Cap %'] == 100.0:
                     print(f"   ✅ Heal Cap is 100% (CORRECT)")
                     passed += 1
@@ -61,7 +61,7 @@ def test_dashboard_visual():
     else:
         print("   ❌ dashboardData not found")
         failed += 1
-    
+
     # Test 2: Extract and verify realAgentData
     print("\n2. Testing realAgentData embedding...")
     real_data_match = re.search(r'const realAgentData = (\{.*?\});', html, re.DOTALL)
@@ -71,7 +71,7 @@ def test_dashboard_visual():
             real_data = json.loads(real_json)
             territories = list(real_data.keys())
             print(f"   ✅ realAgentData found: {len(territories)} territories")
-            
+
             # Check a sample territory
             if territories:
                 sample = territories[0]
@@ -83,7 +83,7 @@ def test_dashboard_visual():
                     print(f"      - {agent_count} agents")
                     print(f"      - {len(heal_values)} heal cap values")
                     print(f"      - Heal cap range: {min(heal_values):.0f}% - {max(heal_values):.0f}%")
-                    
+
                     # Check if all agents have 100% heal cap (should be true)
                     all_100 = all(v == 100.0 for v in heal_values)
                     if all_100:
@@ -105,7 +105,7 @@ def test_dashboard_visual():
     else:
         print("   ❌ realAgentData not found")
         failed += 1
-    
+
     # Test 3: Verify globalAgentData assignment
     print("\n3. Testing globalAgentData assignment...")
     if 'globalAgentData = realAgentData' in html:
@@ -114,7 +114,7 @@ def test_dashboard_visual():
     else:
         print("   ❌ globalAgentData not assigned to realAgentData")
         failed += 1
-    
+
     # Test 4: Verify no mock data calls
     print("\n4. Testing for mock data calls...")
     if 'globalAgentData = generateMockAgentData' in html:
@@ -123,7 +123,7 @@ def test_dashboard_visual():
     else:
         print("   ✅ Not calling generateMockAgentData")
         passed += 1
-    
+
     # Test 5: Verify loadData function exists
     print("\n5. Testing loadData function...")
     if 'function loadData()' in html:
@@ -132,7 +132,7 @@ def test_dashboard_visual():
     else:
         print("   ❌ loadData function not found")
         failed += 1
-    
+
     # Test 6: Verify rendering functions
     print("\n6. Testing rendering functions...")
     render_funcs = [
@@ -147,7 +147,7 @@ def test_dashboard_visual():
         else:
             print(f"   ❌ {func} not found")
             failed += 1
-    
+
     # Summary
     print("\n" + "=" * 70)
     print("TEST SUMMARY")
@@ -156,7 +156,7 @@ def test_dashboard_visual():
     print(f"❌ Failed: {failed}")
     print(f"Total: {passed + failed}")
     print("=" * 70)
-    
+
     if failed == 0:
         print("\n✅ DASHBOARD IS POPULATED AND READY")
         print("\nTo view the dashboard:")

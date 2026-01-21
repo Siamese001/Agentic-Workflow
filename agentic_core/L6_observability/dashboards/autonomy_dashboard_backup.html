@@ -7,7 +7,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>Autonomy Compliance Dashboard</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js" 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"
             onerror="handlePlotlyLoadError()"></script>
     <script>
         // Fallback for offline use - detect if Plotly failed to load
@@ -15,7 +15,7 @@
             console.warn('Plotly.js failed to load from CDN. Dashboard will work in limited mode.');
             window.PLOTLY_OFFLINE = true;
         }
-        
+
         // Check if Plotly loaded after page load
         window.addEventListener('DOMContentLoaded', function() {
             if (typeof Plotly === 'undefined') {
@@ -60,7 +60,7 @@
 
             <!-- Executive Dashboard Tab -->
             <div id="executive-content" class="tab-content">
-                
+
                 <!-- Semantic Retrieval Metrics -->
                 <div class="kpi-grid" id="cognitiveGrid" style="margin-bottom: 25px;">
                     <div class="kpi-box success">
@@ -74,7 +74,7 @@
                         <div class="kpi-subtext">Avg Cosine Similarity Score (Pinecone)</div>
                     </div>
                 </div>
-                
+
                 <!-- Global Alert Banner for Critical Outliers -->
                 <div id="outlierAlertBanner" style="display:none; margin-bottom:25px;">
                     <div class="chart-card" style="border: 2px solid var(--danger); background: #fef2f2;">
@@ -124,7 +124,7 @@
                 </div>
 
                 <div class="kpi-grid" id="kpiGrid"></div>
-                
+
                 <!-- Code Quality Table -->
                 <div class="kpi-grid" id="codeQualityGrid"></div>
             </div>
@@ -140,7 +140,7 @@
                         <div class="chart-body">
                             <div id="recommendationsList" style="display: grid; gap: 15px; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));"></div>
                             <p style="margin-top: 30px; font-style: italic; color: var(--light-text);">
-                                These recommendations teach autonomy interdependencies: missing super().heal_repository() calls create invocation gaps; 
+                                These recommendations teach autonomy interdependencies: missing super().heal_repository() calls create invocation gaps;
                                 insufficient tests block safe hardening; high complexity raises risk. Apply diffs → re-run report → watch health rise.
                             </p>
                         </div>
@@ -292,7 +292,7 @@
             }
             return Math.abs(hash);
         }
-        
+
         function mulberry32(seed) {
             return function() {
                 let t = seed += 0x6D2B79F5;
@@ -301,13 +301,13 @@
                 return ((t ^ t >>> 14) >>> 0) / 4294967296;
             };
         }
-        
+
         // Create a seeded random generator for a given context
         function createSeededRandom(context) {
             const seed = hashString(context);
             return mulberry32(seed);
         }
-        
+
         // Color coding helper for consistent thresholds
         function getColor(value, highGood = true) {
             const v = parseFloat(value);
@@ -332,13 +332,13 @@
         //   TEMPORARY DEBUG INSTRUMENTATION – 2026-01-11
         // ────────────────────────────────────────────────
         console.log("[DEBUG] Script execution started");
-        
+
         // Global error handler
         window.addEventListener('error', (event) => {
             console.error("[GLOBAL ERROR]", event.message, event.filename, event.lineno, event.colno);
             console.error("[ERROR STACK]", event.error?.stack);
         });
-        
+
         window.addEventListener('unhandledrejection', (event) => {
             console.error("[UNHANDLED PROMISE REJECTION]", event.reason);
         });
@@ -12449,7 +12449,7 @@
             const now = new Date();
             const secondsSinceRefresh = Math.floor((now - lastRefreshTime) / 1000);
             const secondsUntilRefresh = 30 - secondsSinceRefresh;
-            
+
             if (secondsUntilRefresh > 0) {
                 document.getElementById('refreshStatus').textContent = `Auto-refresh: ${secondsUntilRefresh}s`;
             }
@@ -12458,7 +12458,7 @@
         // ============================================
         // PHASE 1: Distribution Statistics Functions
         // ============================================
-        
+
         // Compute min, max, average, and standard deviation for a set of values
         // Filters out "N/A" strings (used for L0 healing metrics)
         function computeDistributionStats(values) {
@@ -12519,7 +12519,7 @@
             // Create simulated per-agent values based on territory averages
             // This demonstrates the distribution concept - real data would replace this
             const agentData = {};
-            
+
             // Agent name templates by territory type
             const agentNameTemplates = {
                 'L6': ['MetricsCollector', 'TelemetryAggregator', 'ComplianceChecker', 'DashboardRenderer', 'AlertManager', 'TraceExporter', 'LogAnalyzer', 'HealthMonitor', 'AuditLogger', 'ReportGenerator'],
@@ -12530,14 +12530,14 @@
                 'L1': ['ReasoningEngine', 'ContextAnalyzer', 'DecisionMaker', 'PatternMatcher', 'InferenceEngine', 'KnowledgeRetriever', 'PromptBuilder', 'ResponseParser', 'IntentClassifier', 'EntityExtractor'],
                 'default': ['GenericAgent', 'UtilityHelper', 'ServiceHandler', 'ProcessManager', 'DataHandler', 'ConfigLoader', 'PluginManager', 'ExtensionHost', 'AdapterLayer', 'WrapperClass']
             };
-            
+
             territoryData.forEach(row => {
                 const territory = row.Territory;
                 const numAgents = row.Total || 5;
-                
+
                 // Create a seeded random generator for this territory (deterministic)
                 const seededRandom = createSeededRandom(territory);
-                
+
                 // Determine which template to use based on territory name
                 let templateKey = 'default';
                 if (territory.includes('L6')) templateKey = 'L6';
@@ -12546,9 +12546,9 @@
                 else if (territory.includes('L3')) templateKey = 'L3';
                 else if (territory.includes('L2')) templateKey = 'L2';
                 else if (territory.includes('L1')) templateKey = 'L1';
-                
+
                 const templates = agentNameTemplates[templateKey];
-                
+
                 // Generate values with realistic variance around the average (DETERMINISTIC)
                 const generateValue = (avg, variance = 15, forceOutlier = false) => {
                     if (forceOutlier) {
@@ -12556,7 +12556,7 @@
                     }
                     return Math.max(0, Math.min(100, avg + (seededRandom() - 0.5) * variance * 2));
                 };
-                
+
                 // Generate individual agent objects
                 const agents = [];
                 const healCapValues = [];
@@ -12570,12 +12570,12 @@
                 const schemaValues = [];
                 const baseValues = [];
                 const qualityValues = [];
-                
+
                 for (let i = 0; i < numAgents; i++) {
                     const isOutlier = seededRandom() < 0.1; // 10% chance of being an outlier (deterministic)
                     const agentName = templates[i % templates.length] + (i >= templates.length ? `_${Math.floor(i / templates.length) + 1}` : '');
                     const territoryPath = territory.replace(/\s+/g, '_').replace(/\//g, '/');
-                    
+
                     // Generate metric values (all deterministic now)
                     const healCap = generateValue(row['Heal Cap %'] || 0, 15, isOutlier);
                     const invocation = generateValue(row['Invocation %'] || 0, 15, isOutlier);
@@ -12589,7 +12589,7 @@
                     const base = generateValue(row['Canonical Inheritance %'] || 0, 15, isOutlier);
                     const quality = generateValue(row['Code Quality Score'] || 0, 10, isOutlier);
                     const complexity = Math.max(1, Math.round(50 - complexityHealth / 2 + (seededRandom() - 0.5) * 10));
-                    
+
                     // Store values for distribution stats
                     healCapValues.push(healCap);
                     invocationValues.push(invocation);
@@ -12602,13 +12602,13 @@
                     schemaValues.push(schema);
                     baseValues.push(base);
                     qualityValues.push(quality);
-                    
+
                     // Create agent object for drill-down modal (all values deterministic)
                     const classLine = Math.floor(seededRandom() * 200) + 10;
                     const obsLogging = seededRandom() > 0.3;
                     const obsMetrics = seededRandom() > 0.5;
                     const obsTracing = seededRandom() > 0.6;
-                    
+
                     agents.push({
                         name: agentName,
                         rel: `agentic_core/${territoryPath}/${agentName}.py`,
@@ -12644,7 +12644,7 @@
                         isOutlier: isOutlier,
                         outlierMetrics: []
                     });
-                    
+
                     // Track which metrics are outliers for this agent
                     if (healCap < 50) agents[agents.length-1].outlierMetrics.push('Heal Cap');
                     if (invocation < 50) agents[agents.length-1].outlierMetrics.push('Invocation');
@@ -12652,7 +12652,7 @@
                     if (test < 50) agents[agents.length-1].outlierMetrics.push('Test');
                     if (health < 60) agents[agents.length-1].outlierMetrics.push('Health');
                 }
-                
+
                 agentData[territory] = {
                     // Individual agent objects for drill-down
                     agents: agents,
@@ -12679,7 +12679,7 @@
         // ============================================
         // PHASE 2: Outlier Counting & Badges
         // ============================================
-        
+
         // Count outliers based on threshold
         function countOutliers(values, threshold, comparison = 'below') {
             if (!values || values.length === 0) return 0;
@@ -12688,7 +12688,7 @@
             if (comparison === 'equals') return values.filter(v => v === threshold).length;
             return 0;
         }
-        
+
         // Format outlier badge with count and label
         function formatOutlierBadge(countAtZero, countBelowThreshold, threshold = 50) {
             let badges = '';
@@ -12701,7 +12701,7 @@
             }
             return badges;
         }
-        
+
         // Get outlier summary for a metric across all values
         function getOutlierSummary(values, criticalThreshold = 50) {
             const atZero = countOutliers(values, 0.1, 'below'); // Effectively 0%
@@ -12712,7 +12712,7 @@
         // ============================================
         // PHASE 3: Worst Performer Identification
         // ============================================
-        
+
         // Find the worst performing agent for a given metric
         function findWorstPerformer(agents, metricKey, lowerIsBetter = false) {
             if (!agents || agents.length === 0) return null;
@@ -12725,7 +12725,7 @@
                 return currentVal < worstVal ? agent : worst;
             }, agents[0]);
         }
-        
+
         // Format worst performer as a VS Code link
         function formatWorstPerformerLink(agent, value, criticalThreshold = 50) {
             if (!agent) return '<span style="color:#9ca3af;">—</span>';
@@ -12735,20 +12735,20 @@
             const path = agent.path || agent.file_path || '';
             const name = agent.name || agent.agent_name || path.split('/').pop() || 'Unknown';
             const displayName = name.length > 20 ? name.substring(0, 18) + '...' : name;
-            
+
             if (path) {
                 return `<a href="vscode://file/${path}" style="color:${textColor}; text-decoration:none; background:${bgColor}; padding:2px 6px; border-radius:4px; font-size:0.85em; white-space:nowrap;" title="Open ${name} in VS Code (${path})">${displayName} (${value.toFixed(0)}%)</a>`;
             }
             return `<span style="color:${textColor}; background:${bgColor}; padding:2px 6px; border-radius:4px; font-size:0.85em; white-space:nowrap;" title="${name}">${displayName} (${value.toFixed(0)}%)</span>`;
         }
-        
+
         // Get worst performer for a territory's metric from mock data
         function getWorstPerformerForMetric(territory, metricKey, criticalThreshold = 50) {
             const agentData = globalAgentData[territory];
             if (!agentData || !agentData[metricKey] || agentData[metricKey].length === 0) {
                 return { agent: null, value: 0 };
             }
-            
+
             // Find minimum value and its index
             const values = agentData[metricKey];
             let minIndex = 0;
@@ -12759,17 +12759,17 @@
                     minIndex = i;
                 }
             }
-            
+
             // Get real agent info from globalAgentData
             const agents = agentData.agents || [];
             const realAgent = agents[minIndex] || {
                 name: `Agent_${minIndex + 1}`,
                 path: `agentic_core/${territory.toLowerCase().replace(/[\s\/]+/g, '_')}/agent_${minIndex + 1}.py`
             };
-            
+
             return { agent: realAgent, value: minValue };
         }
-        
+
         // Get all problem agents below threshold for a territory's metric (for tooltips)
         // Returns list of {name, value} for agents below the threshold
         function getProblemAgentsForMetric(territory, metricKey, threshold = 50) {
@@ -12777,11 +12777,11 @@
             if (!agentData || !agentData[metricKey] || agentData[metricKey].length === 0) {
                 return [];
             }
-            
+
             const values = agentData[metricKey];
             const agents = agentData.agents || [];
             const problemAgents = [];
-            
+
             for (let i = 0; i < values.length; i++) {
                 if (values[i] < threshold) {
                     const agent = agents[i] || { name: `Agent_${i + 1}` };
@@ -12791,12 +12791,12 @@
                     });
                 }
             }
-            
+
             // Sort by value ascending (worst first)
             problemAgents.sort((a, b) => a.value - b.value);
             return problemAgents;
         }
-        
+
         // Format HIGH-SIGNAL tooltip with actionable intelligence
         // Shows: distribution stats, worst offenders with file paths, remediation priority
         function formatProblemAgentsTooltip(territory, metricKey, metricLabel, threshold = 50) {
@@ -12804,17 +12804,17 @@
             if (!agentData || !agentData[metricKey] || agentData[metricKey].length === 0) {
                 return `${metricLabel}: No agent data available`;
             }
-            
+
             const values = agentData[metricKey];
             const agents = agentData.agents || [];
             const stats = computeDistributionStats(values);
-            
+
             // Build comprehensive tooltip
             let tooltip = `📊 ${metricLabel} Distribution\n`;
             tooltip += `━━━━━━━━━━━━━━━━━━━━━━\n`;
             tooltip += `Avg: ${stats.avg.toFixed(1)}% | Range: ${stats.min.toFixed(0)}-${stats.max.toFixed(0)}%\n`;
             tooltip += `StdDev: ${stats.stdDev.toFixed(1)} | Agents: ${stats.count}\n`;
-            
+
             // Find problem agents (below threshold)
             const problems = [];
             for (let i = 0; i < values.length; i++) {
@@ -12824,51 +12824,51 @@
                 }
             }
             problems.sort((a, b) => a.value - b.value);
-            
+
             if (problems.length === 0) {
                 tooltip += `\n✅ All ${stats.count} agents meet threshold (≥${threshold}%)`;
                 return tooltip;
             }
-            
+
             // Calculate remediation effort
             const criticalCount = problems.filter(p => p.value === 0).length;
             const warningCount = problems.length - criticalCount;
             const avgDeficit = problems.reduce((sum, p) => sum + (threshold - p.value), 0) / problems.length;
-            
+
             tooltip += `\n⚠️ ${problems.length} agent(s) below ${threshold}% threshold\n`;
             if (criticalCount > 0) {
                 tooltip += `🔴 Critical (0%): ${criticalCount} | `;
             }
             tooltip += `🟡 Warning: ${warningCount}\n`;
             tooltip += `Avg deficit: ${avgDeficit.toFixed(1)} points to threshold\n`;
-            
+
             tooltip += `\n🔧 TOP REMEDIATION TARGETS:\n`;
             const topProblems = problems.slice(0, 3);
             topProblems.forEach((p, idx) => {
                 const shortPath = p.path ? p.path.split('/').slice(-2).join('/') : 'path unknown';
                 tooltip += `${idx + 1}. ${p.name} (${p.value.toFixed(0)}%) → ${shortPath}\n`;
             });
-            
+
             if (problems.length > 3) {
                 tooltip += `   ... +${problems.length - 3} more agents need attention`;
             }
-            
+
             return tooltip;
         }
 
         // ============================================
         // PHASE 4: Visual Enhancements
         // ============================================
-        
+
         // Aggregate outlier alerts across all territories for both tables
         function aggregateOutlierAlerts(territoryData) {
             const alerts = { table1: [], table2: [], hasCritical: false };
-            
+
             territoryData.forEach(row => {
                 const territory = row.Territory;
                 const agentData = globalAgentData[territory];
                 if (!agentData) return;
-                
+
                 // Table 1 metrics
                 const table1Metrics = [
                     { key: 'healCap', name: 'Heal Capability', threshold: 50 },
@@ -12878,7 +12878,7 @@
                     { key: 'complexityHealth', name: 'Complexity Health', threshold: 30 },
                     { key: 'health', name: 'Health Score', threshold: 60 }
                 ];
-                
+
                 table1Metrics.forEach(metric => {
                     const summary = getOutlierSummary(agentData[metric.key] || [], metric.threshold);
                     if (summary.atZero > 0) {
@@ -12888,7 +12888,7 @@
                         alerts.table1.push({ territory, metric: metric.name, count: summary.belowThreshold, type: 'warning', message: `${summary.belowThreshold} agent(s) below ${metric.threshold}%` });
                     }
                 });
-                
+
                 // Table 2 metrics
                 const table2Metrics = [
                     { key: 'typed', name: 'Typed', threshold: 50 },
@@ -12897,7 +12897,7 @@
                     { key: 'properBase', name: 'Proper Base', threshold: 50 },
                     { key: 'codeQuality', name: 'Code Quality', threshold: 60 }
                 ];
-                
+
                 table2Metrics.forEach(metric => {
                     const summary = getOutlierSummary(agentData[metric.key] || [], metric.threshold);
                     if (summary.atZero > 0) {
@@ -12908,22 +12908,22 @@
                     }
                 });
             });
-            
+
             return alerts;
         }
-        
+
         // Check if a territory row has any critical outliers
         function hasRowCriticalOutliers(territory) {
             const agentData = globalAgentData[territory];
             if (!agentData) return { hasCritical: false, hasWarning: false, criticalCount: 0, warningCount: 0 };
-            
+
             let criticalCount = 0;
             let warningCount = 0;
-            
+
             // Check all metrics
-            const allMetrics = ['healCap', 'invocation', 'hardened', 'test', 'complexityHealth', 'health', 
+            const allMetrics = ['healCap', 'invocation', 'hardened', 'test', 'complexityHealth', 'health',
                                'typed', 'documented', 'schemaStrictness', 'properBase', 'codeQuality'];
-            
+
             allMetrics.forEach(key => {
                 const values = agentData[key] || [];
                 const atZero = countOutliers(values, 0.1, 'below');
@@ -12931,15 +12931,15 @@
                 criticalCount += atZero;
                 warningCount += (belowThreshold - atZero);
             });
-            
-            return { 
-                hasCritical: criticalCount > 0, 
-                hasWarning: warningCount > 0, 
-                criticalCount, 
-                warningCount 
+
+            return {
+                hasCritical: criticalCount > 0,
+                hasWarning: warningCount > 0,
+                criticalCount,
+                warningCount
             };
         }
-        
+
         // Format warning icon for row header
         function formatRowWarningIcon(territory) {
             const status = hasRowCriticalOutliers(territory);
@@ -12951,7 +12951,7 @@
             }
             return '';
         }
-        
+
         // Get row background style based on outlier status
         function getRowOutlierStyle(territory, baseStyle = '') {
             const status = hasRowCriticalOutliers(territory);
@@ -12963,41 +12963,41 @@
             }
             return baseStyle;
         }
-        
+
         // ============================================
         // PHASE 5: Interactive Drill-down Functions
         // ============================================
-        
+
         // Global state for table filtering and sorting
         let tableFilterState = {
             table1: { showOnlyOutliers: false, sortByOutliers: false, showZombies: false },
             table2: { showOnlyOutliers: false, sortByOutliers: false, showZombies: false }
         };
-        
+
         // Count total outliers for a territory (for sorting)
         function getTerritoryOutlierCount(territory) {
             const status = hasRowCriticalOutliers(territory);
             return status.criticalCount * 10 + status.warningCount; // Weight critical higher
         }
-        
+
         // Export outliers to CSV
         function exportOutliersToCSV(tableType = 'both') {
             const alerts = aggregateOutlierAlerts(dashboardData);
             let csv = 'Territory,Metric,Type,Count,Message\n';
-            
+
             const processAlerts = (alertList, tableName) => {
                 alertList.forEach(alert => {
                     csv += `"${alert.territory}","${alert.metric}","${alert.type}","${alert.count}","${alert.message || ''}"\n`;
                 });
             };
-            
+
             if (tableType === 'both' || tableType === 'table1') {
                 processAlerts(alerts.table1, 'Health Metrics');
             }
             if (tableType === 'both' || tableType === 'table2') {
                 processAlerts(alerts.table2, 'Code Quality');
             }
-            
+
             // Download CSV
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
@@ -13005,7 +13005,7 @@
             link.download = `outliers_${tableType}_${new Date().toISOString().slice(0,10)}.csv`;
             link.click();
         }
-        
+
         // Render table controls (filter, sort, export)
         function renderTableControls(tableType, territoryData) {
             const state = tableFilterState[tableType];
@@ -13013,32 +13013,32 @@
             const tableAlerts = tableType === 'table1' ? alerts.table1 : alerts.table2;
             const outlierCount = tableAlerts.length;
             const criticalCount = tableAlerts.filter(a => a.type === 'critical').length;
-            
+
             return `
             <div style="display:flex; align-items:center; gap:16px; margin-bottom:12px; flex-wrap:wrap;">
                 <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.9em; color:#dc2626; font-weight:700;">
-                    <input type="checkbox" id="${tableType}-filter-zombies" ${state.showZombies ? 'checked' : ''} 
+                    <input type="checkbox" id="${tableType}-filter-zombies" ${state.showZombies ? 'checked' : ''}
                            onchange="toggleZombieFilter('${tableType}')" style="cursor:pointer;">
                     <span>🧟 Show Only Zombies (Persistent Outliers)</span>
                 </label>
                 <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.9em;">
-                    <input type="checkbox" id="${tableType}-filter-outliers" ${state.showOnlyOutliers ? 'checked' : ''} 
+                    <input type="checkbox" id="${tableType}-filter-outliers" ${state.showOnlyOutliers ? 'checked' : ''}
                            onchange="toggleOutlierFilter('${tableType}')" style="cursor:pointer;">
                     <span>Show only territories with outliers</span>
                     <span style="background:#dc2626; color:white; padding:2px 8px; border-radius:10px; font-size:0.8em;">${criticalCount} critical</span>
                 </label>
                 <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.9em;">
-                    <input type="checkbox" id="${tableType}-sort-outliers" ${state.sortByOutliers ? 'checked' : ''} 
+                    <input type="checkbox" id="${tableType}-sort-outliers" ${state.sortByOutliers ? 'checked' : ''}
                            onchange="toggleOutlierSort('${tableType}')" style="cursor:pointer;">
                     <span>Sort by outlier count</span>
                 </label>
-                <button onclick="exportOutliersToCSV('${tableType}')" 
+                <button onclick="exportOutliersToCSV('${tableType}')"
                         style="background:var(--primary); color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:0.85em; display:flex; align-items:center; gap:4px;">
                     📥 Export ${outlierCount} Outliers
                 </button>
             </div>`;
         }
-        
+
         // Toggle outlier filter
         function toggleOutlierFilter(tableType) {
             tableFilterState[tableType].showOnlyOutliers = !tableFilterState[tableType].showOnlyOutliers;
@@ -13049,7 +13049,7 @@
                 renderCodeQualityTable(dashboardData);
             }
         }
-        
+
         // Toggle outlier sort
         function toggleOutlierSort(tableType) {
             tableFilterState[tableType].sortByOutliers = !tableFilterState[tableType].sortByOutliers;
@@ -13060,7 +13060,7 @@
                 renderCodeQualityTable(dashboardData);
             }
         }
-        
+
         // PHASE 5: Toggle zombie filter (persistent outliers)
         function toggleZombieFilter(tableType) {
             tableFilterState[tableType].showZombies = !tableFilterState[tableType].showZombies;
@@ -13071,7 +13071,7 @@
                 renderCodeQualityTable(dashboardData);
             }
         }
-        
+
         // PHASE 5: Check if territory is a "zombie" (persistent outlier with high toxicity)
         function isZombieTerritory(territory) {
             const fanIn = getFanInData(territory);
@@ -13079,11 +13079,11 @@
             // Zombie = has critical outliers AND high fan-in (toxic hub)
             return status.hasCritical && fanIn >= 20;
         }
-        
+
         // ============================================
         // PHASE 6: Architectural Integrity & Toxicity
         // ============================================
-        
+
         // PHASE 6: Calculate toxicity-weighted impact score
         function calculateToxicityImpact(metricValue, territory) {
             const fanIn = getFanInData(territory);
@@ -13099,10 +13099,10 @@
             alert(`Convergence mission initiated for: ${agentPath.split('/').pop()}\n\nChecking sub-atomic primitives...`);
             // Future implementation: fetch('/api/heal', { method: 'POST', body: JSON.stringify({ path: agentPath }) });
         }
-        
+
         // Global state for toxicity filtering
         let toxicityFilterEnabled = false;
-        
+
         // Fan-in data derived from architecture analysis (base class inheritance counts)
         // Higher fan-in = more dependents = higher blast radius if broken
         function getFanInData(territory) {
@@ -13130,14 +13130,14 @@
             const seededRandom = createSeededRandom('fanIn_' + territory);
             return Math.floor(seededRandom() * 20) + 5;
         }
-        
+
         // Calculate Impact Score: (100 - MetricValue) × (1 + ln(FanInCount))
         function calculateImpactScore(metricValue, fanIn) {
             const deviation = 100 - metricValue;
             const toxicityMultiplier = 1 + Math.log(Math.max(fanIn, 1));
             return Math.round(deviation * toxicityMultiplier);
         }
-        
+
         // Get toxicity level based on fan-in
         function getToxicityLevel(fanIn) {
             if (fanIn >= 100) return { level: 'critical', icon: '☢️', color: '#dc2626', label: 'Critical Hub' };
@@ -13145,16 +13145,16 @@
             if (fanIn >= 20) return { level: 'medium', icon: '⚡', color: '#f59e0b', label: 'Medium Impact' };
             return { level: 'low', icon: '', color: '#6b7280', label: 'Low Impact' };
         }
-        
+
         // Calculate territory toxicity score (sum of impact scores for outliers)
         function calculateTerritoryToxicity(territory) {
             const agentData = globalAgentData[territory];
             if (!agentData) return { score: 0, hasSystemicRisk: false };
-            
+
             const fanIn = getFanInData(territory);
             let totalScore = 0;
             let criticalOutliers = 0;
-            
+
             // Check all metrics for outliers and calculate impact
             const metrics = ['healCap', 'invocation', 'hardened', 'test', 'health', 'typed', 'documented', 'codeQuality'];
             metrics.forEach(metric => {
@@ -13166,7 +13166,7 @@
                     }
                 });
             });
-            
+
             return {
                 score: totalScore,
                 fanIn: fanIn,
@@ -13174,28 +13174,28 @@
                 toxicity: getToxicityLevel(fanIn)
             };
         }
-        
+
         // Format toxicity badge for territory
         function formatToxicityBadge(territory) {
             const tox = calculateTerritoryToxicity(territory);
             if (tox.toxicity.level === 'low') return '';
-            
+
             let badge = `<span style="margin-left:6px; font-size:0.8em;" title="Fan-in: ${tox.fanIn} dependents">${tox.toxicity.icon}</span>`;
-            
+
             if (tox.hasSystemicRisk) {
                 badge += `<span style="background:#dc2626; color:white; padding:1px 6px; border-radius:4px; font-size:0.7em; margin-left:4px;">SYSTEMIC RISK</span>`;
             }
-            
+
             return badge;
         }
-        
+
         // Toggle toxicity filter
         function toggleToxicityFilter() {
             toxicityFilterEnabled = !toxicityFilterEnabled;
             renderTerritorySummaryTable(dashboardData);
             renderCodeQualityTable(dashboardData);
         }
-        
+
         // Render toxicity filter control
         function renderToxicityControl() {
             const toxicHubCount = dashboardData.filter(row => {
@@ -13203,11 +13203,11 @@
                 const fanIn = getFanInData(row.Territory);
                 return fanIn >= 20;
             }).length;
-            
+
             return `
             <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px; padding:12px; background:linear-gradient(135deg, rgba(220, 38, 38, 0.05) 0%, rgba(245, 158, 11, 0.05) 100%); border-radius:8px; border:1px solid rgba(220, 38, 38, 0.2);">
                 <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.9em; font-weight:600;">
-                    <input type="checkbox" id="toxicity-filter" ${toxicityFilterEnabled ? 'checked' : ''} 
+                    <input type="checkbox" id="toxicity-filter" ${toxicityFilterEnabled ? 'checked' : ''}
                            onchange="toggleToxicityFilter()" style="cursor:pointer; width:18px; height:18px;">
                     <span>☢️ Show Only Toxic Hubs (Fan-in ≥ 20)</span>
                     <span style="background:#dc2626; color:white; padding:2px 8px; border-radius:10px; font-size:0.8em;">${toxicHubCount} hubs</span>
@@ -13217,28 +13217,28 @@
                 </span>
             </div>`;
         }
-        
+
         // Render compact alert banner for a specific table (table1 or table2)
         function renderTableAlertBanner(territoryData, tableType = 'table1') {
             const alerts = aggregateOutlierAlerts(territoryData);
             const tableAlerts = tableType === 'table1' ? alerts.table1 : alerts.table2;
-            
+
             // Only show banner if there are critical alerts for this table
             const criticalAlerts = tableAlerts.filter(a => a.type === 'critical');
             if (criticalAlerts.length === 0) {
                 return '';
             }
-            
+
             // Group by territory
             const grouped = {};
             criticalAlerts.slice(0, 8).forEach(alert => {
                 if (!grouped[alert.territory]) grouped[alert.territory] = [];
                 grouped[alert.territory].push(alert);
             });
-            
+
             const criticalCount = criticalAlerts.length;
             const warningCount = tableAlerts.filter(a => a.type === 'warning').length;
-            
+
             let html = `
             <div style="margin-bottom:16px; padding:12px 16px; background:rgba(220, 38, 38, 0.08); border-radius:8px; border-left:4px solid #dc2626;">
                 <div style="display:flex; align-items:center; flex-wrap:wrap; gap:8px;">
@@ -13247,13 +13247,13 @@
                     <span style="background:#dc2626; color:white; padding:2px 8px; border-radius:12px; font-size:0.75em; font-weight:600;">${criticalCount}</span>
                     <span style="background:#f59e0b; color:white; padding:2px 8px; border-radius:12px; font-size:0.75em; font-weight:600;">${warningCount} warnings</span>
                     <span style="color:#6b7280; font-size:0.85em; margin-left:8px;">—</span>`;
-            
+
             // Inline list of territories with issues
             const territoryList = Object.entries(grouped).map(([territory, territoryAlerts]) => {
                 const alertText = territoryAlerts.map(a => `${a.count}@0% ${a.metric}`).join(', ');
                 return `<strong>${territory}</strong>: ${alertText}`;
             }).join(' · ');
-            
+
             html += `<span style="color:#374151; font-size:0.85em;">${territoryList}</span>`;
             html += `</div></div>`;
             return html;
@@ -13354,10 +13354,10 @@
                 }
                 return;
             }
-            
+
             try {
                 // Try project root first (../../../runtime_state.json), then local copy
-                let resp = await fetch('../../../runtime_state.json?' + Date.now()).catch(() => 
+                let resp = await fetch('../../../runtime_state.json?' + Date.now()).catch(() =>
                     fetch('runtime_state.json?' + Date.now())
                 );
                 const data = resp.ok ? await resp.json() : {status: "idle"};
@@ -13405,11 +13405,11 @@
                     tbody.innerHTML = '';
                     const order = data.agents_order || [];
                     const completedArr = data.completed_agents || [];
-                    
+
                     order.forEach((entry, i) => {
                         let status = "Pending";
                         let statusColor = "#6b7280";
-                        
+
                         if (completedArr.includes(entry)) {
                             status = "Done ✓";
                             statusColor = "#16a34a";
@@ -13451,20 +13451,20 @@
             }
         }
         setInterval(updateLiveExecutionState, 1000); // Poll every 1 second for responsive UI
-        
+
         // Initialize semantic retrieval metrics
         function initializeSemanticMetrics() {
             try {
                 // Consistent seed per dashboard instance
                 const rand = createSeededRandom('semantic_portfolio_2026');
-                
+
                 // 1. Semantic Reuse Rate
                 const reuseEl = document.getElementById('reuseRate');
                 if (reuseEl) {
                     // Realistic range: 65-95%
                     const reuseRate = Math.round(65 + rand() * 30);
                     reuseEl.textContent = reuseRate + '%';
-                    
+
                     reuseEl.classList.remove('trend-up', 'trend-down', 'trend-flat');
                     let trendColor = '#6b7280';
                     let trendIcon = '→';
@@ -13482,11 +13482,11 @@
                         reuseEl.classList.add('trend-down');
                         trendColor = '#dc2626'; trendIcon = '↓';
                     }
-                    
+
                     // Sparkline trend indicator
                     if (!reuseEl.nextElementSibling || !reuseEl.nextElementSibling.classList.contains('sparkline-trend')) {
-                        reuseEl.insertAdjacentHTML('afterend', 
-                            `<span class="sparkline-trend" style="color:${trendColor}; margin-left:8px; font-weight:bold;">${trendIcon}</span>` 
+                        reuseEl.insertAdjacentHTML('afterend',
+                            `<span class="sparkline-trend" style="color:${trendColor}; margin-left:8px; font-weight:bold;">${trendIcon}</span>`
                         );
                     }
                 }
@@ -13497,7 +13497,7 @@
                     // Realistic range: 0.82-0.96
                     const avgConfidence = (0.82 + rand() * 0.14).toFixed(2);
                     confEl.textContent = avgConfidence;
-                    
+
                     confEl.classList.remove('trend-up', 'trend-down', 'trend-flat');
                     if (parseFloat(avgConfidence) >= 0.90) {
                         confEl.style.color = '#16a34a';
@@ -13514,19 +13514,19 @@
                 console.warn('Failed to initialize semantic metrics:', e);
             }
         }
-        
+
         // Initialize runtime monitoring
         function initializeRuntimeMonitoring() {
             try {
                 // Static latency values (will be updated by live polling if API available)
                 const geminiLatency = 142; // Typical Gemini API latency
                 const pineconeLatency = 38; // Typical Pinecone query latency
-                
+
                 const geminiLatencyEl = document.getElementById('geminiLatency');
                 const pineconeLatencyEl = document.getElementById('pineconeLatency');
                 const expCountEl = document.getElementById('exp-count');
                 const patternCountEl = document.getElementById('pattern-count');
-                
+
                 if (geminiLatencyEl) {
                     geminiLatencyEl.textContent = geminiLatency + 'ms';
                     geminiLatencyEl.parentElement.classList.remove('warning');
@@ -13534,7 +13534,7 @@
                 } else {
                     console.warn('[DEFENSIVE] geminiLatency element missing - skipping');
                 }
-                
+
                 if (pineconeLatencyEl) {
                     pineconeLatencyEl.textContent = pineconeLatency + 'ms';
                     pineconeLatencyEl.parentElement.classList.remove('warning');
@@ -13542,7 +13542,7 @@
                 } else {
                     console.warn('[DEFENSIVE] pineconeLatency element missing - skipping');
                 }
-                
+
                 // Initialize meta-learning counts
                 if (expCountEl) {
                     expCountEl.textContent = '847'; // Total experiences captured
@@ -13553,7 +13553,7 @@
             } catch (err) {
                 console.error('[DEFENSIVE] initializeRuntimeMonitoring failed:', err);
             }
-            
+
             // Initialize live log stream with realistic entries
             const liveLog = document.getElementById('liveLog');
             if (liveLog && liveLog.textContent === '') {
@@ -13574,7 +13574,7 @@
                     `[${timestamp}] SUCCESS Health Score: 91.2% composite across all territories`,
                     `[${timestamp}] INFO  Live Runtime monitoring initialized`
                 ];
-                
+
                 liveLog.textContent = logEntries.join('\n');
                 liveLog.scrollTop = liveLog.scrollHeight;
             }
@@ -13597,11 +13597,11 @@
                 console.error('[ERROR] Failed to assign realAgentData:', e);
                 return;
             }
-            
+
             // PHASE 5: Apply filtering if enabled
             const filterState = tableFilterState.table1;
             let filteredData = [...territoryData];
-            
+
             if (filterState.showOnlyOutliers) {
                 filteredData = filteredData.filter(row => {
                     if (row.Territory === 'TOTAL') return true; // Always show TOTAL
@@ -13609,7 +13609,7 @@
                     return status.hasCritical || status.hasWarning;
                 });
             }
-            
+
             // PHASE 5: Apply zombie filter if enabled (Table 1)
             if (filterState.showZombies) {
                 filteredData = filteredData.filter(row => {
@@ -13617,7 +13617,7 @@
                     return isZombieTerritory(row.Territory);
                 });
             }
-            
+
             // PHASE 6: Apply toxicity filter if enabled
             if (toxicityFilterEnabled) {
                 filteredData = filteredData.filter(row => {
@@ -13637,14 +13637,14 @@
                 // TOTAL always LAST
                 if (aTerritory === 'TOTAL') return 1;
                 if (bTerritory === 'TOTAL') return -1;
-                
+
                 // PHASE 5: Sort by outlier count if enabled
                 if (filterState.sortByOutliers) {
                     const aOutliers = getTerritoryOutlierCount(aTerritory);
                     const bOutliers = getTerritoryOutlierCount(bTerritory);
                     if (aOutliers !== bOutliers) return bOutliers - aOutliers; // Higher outliers first
                 }
-                
+
                 // Default: L6→L5→L4→L3→L2→L1→L0, then Apps at bottom
                 const aMatch = aTerritory.match(/^L(\d)/);
                 const bMatch = bTerritory.match(/^L(\d)/);
@@ -13655,7 +13655,7 @@
                 return aTerritory.localeCompare(bTerritory);
             });
             territoryData = sortedData;
-            
+
             // Compute aggregate distribution stats across all territories
             const allHealthValues = territoryData.map(r => r.Health);
             const allTestValues = territoryData.map(r => r['Test %']);
@@ -13663,7 +13663,7 @@
             const allInvocationValues = territoryData.map(r => r['Invocation %']);
             const allHardenedValues = territoryData.map(r => r['Hardened %'] || 0);
             const allComplexityValues = territoryData.map(r => r['Complexity Health'] || 0);
-            
+
             const healthStats = computeDistributionStats(allHealthValues);
             const testStats = computeDistributionStats(allTestValues);
             const healCapStats = computeDistributionStats(allHealCapValues);
@@ -13675,7 +13675,7 @@
             let html = `
             <div style="margin-bottom:40px;">
                 <h3 style="font-size:1.4em; color:var(--primary); font-weight:700; margin-bottom:20px;">
-                    Territory Summary 
+                    Territory Summary
                     <span style="font-size:0.7em; font-weight:400; color:#6b7280; margin-left:10px;">
                         📊 Phase 1-6: Stats, Outliers, Worst Performers, Alerts, Drill-down & Toxicity
                     </span>
@@ -13698,7 +13698,7 @@
                             </tr>
                         </thead>
                         <tbody>`;
-            
+
             // Add TOTAL row first
             const totalRow = dashboardData.find(row => row.Territory === 'TOTAL');
             if (totalRow) {
@@ -13711,7 +13711,7 @@
                     }
                     const normalized = Math.max(0, Math.min(100, value)) / 100;
                     let r, g, b;
-                    
+
                     if (normalized < 0.2) {
                         // Deep Red (0-20%)
                         const t = normalized * 5;
@@ -13749,7 +13749,7 @@
                         g = Math.round(183 - (20) * t);
                         b = Math.round(74);
                     }
-                    
+
                     const alpha = normalized < 0.3 ? 0.35 : (0.15 + normalized * 0.15);
                     return `linear-gradient(135deg, rgba(${r}, ${g}, ${b}, ${alpha}) 0%, rgba(${r}, ${g}, ${b}, ${alpha * 0.6}) 100%)`;
                 };
@@ -13762,7 +13762,7 @@
                 const hardenedColor = (totalRow['Hardened %'] || 0) >= 85 ? '#065f46' : (totalRow['Hardened %'] || 0) >= 75 ? '#047857' : (totalRow['Hardened %'] || 0) >= 60 ? '#65a30d' : (totalRow['Hardened %'] || 0) >= 40 ? '#a16207' : (totalRow['Hardened %'] || 0) >= 20 ? '#c2410c' : '#991b1b';
                 const testColor = totalRow['Test %'] >= 85 ? '#065f46' : totalRow['Test %'] >= 75 ? '#047857' : totalRow['Test %'] >= 60 ? '#65a30d' : totalRow['Test %'] >= 40 ? '#a16207' : totalRow['Test %'] >= 20 ? '#c2410c' : '#991b1b';
                 const ccHealthColor = (totalRow['Complexity Health'] || 0) >= 85 ? '#065f46' : (totalRow['Complexity Health'] || 0) >= 75 ? '#047857' : (totalRow['Complexity Health'] || 0) >= 60 ? '#65a30d' : (totalRow['Complexity Health'] || 0) >= 40 ? '#a16207' : (totalRow['Complexity Health'] || 0) >= 20 ? '#c2410c' : '#991b1b';
-                
+
                 // PHASE 1: Use worst-case (min) coloring for TOTAL row
                 const healCapMinColor = getWorstCaseColor(healCapStats.min);
                 const invocationMinColor = getWorstCaseColor(invocationStats.min);
@@ -13770,7 +13770,7 @@
                 const testMinColor = getWorstCaseColor(testStats.min);
                 const complexityMinColor = getWorstCaseColor(complexityStats.min);
                 const healthMinColor = getWorstCaseColor(healthStats.min);
-                
+
                 // PHASE 2: Compute outlier counts across all agent data
                 const allHealCapValues = [], allInvocValues = [], allHardenedVals = [], allTestVals = [], allComplexVals = [], allHealthVals = [];
                 territoryData.forEach(row => {
@@ -13784,14 +13784,14 @@
                         allHealthVals.push(...globalAgentData[territory].health);
                     }
                 });
-                
+
                 const healCapOutliers = getOutlierSummary(allHealCapValues, 50);
                 const invocationOutliers = getOutlierSummary(allInvocValues, 50);
                 const hardenedOutliers = getOutlierSummary(allHardenedVals, 50);
                 const testOutliers = getOutlierSummary(allTestVals, 50);
                 const complexityOutliers = getOutlierSummary(allComplexVals, 30); // Lower threshold for complexity
                 const healthOutliers = getOutlierSummary(allHealthVals, 60);
-                
+
                 html += `
                     <tr style="background:#f0f9ff; border-bottom:2px solid var(--primary);">
                         <td style="padding:14px; font-weight:700; font-size:1.1em; border-right:1px solid #e5e7eb;">
@@ -13824,7 +13824,7 @@
                         </td>
                     </tr>`;
             }
-            
+
             territoryData.forEach((row, index) => {
                 // PHASE 4: Non-linear Intensity Gradient (Floor-based) - 7-color gradient
                 // Handles "N/A" values for L0 territories
@@ -13835,7 +13835,7 @@
                     }
                     const normalized = Math.max(0, Math.min(100, value)) / 100;
                     let r, g, b;
-                    
+
                     if (normalized < 0.2) {
                         const t = normalized * 5;
                         r = Math.round(139 + (220 - 139) * t);
@@ -13867,11 +13867,11 @@
                         g = Math.round(183 - (20) * t);
                         b = Math.round(74);
                     }
-                    
+
                     const alpha = normalized < 0.3 ? 0.35 : (0.15 + normalized * 0.15);
                     return `linear-gradient(135deg, rgba(${r}, ${g}, ${b}, ${alpha}) 0%, rgba(${r}, ${g}, ${b}, ${alpha * 0.6}) 100%)`;
                 };
-                
+
                 // PHASE 1: Get per-territory agent distribution stats
                 const territoryAgents = globalAgentData[row.Territory] || {};
                 const healCapTerritoryStats = computeDistributionStats(territoryAgents.healCap || []);
@@ -13880,7 +13880,7 @@
                 const testTerritoryStats = computeDistributionStats(territoryAgents.test || []);
                 const complexityTerritoryStats = computeDistributionStats(territoryAgents.complexityHealth || []);
                 const healthTerritoryStats = computeDistributionStats(territoryAgents.health || []);
-                
+
                 // PHASE 1: Use worst-case (min) for coloring instead of average
                 const healCapMin = healCapTerritoryStats.min || row['Heal Cap %'];
                 const invocationMin = invocationTerritoryStats.min || row['Invocation %'];
@@ -13888,13 +13888,13 @@
                 const testMin = testTerritoryStats.min || row['Test %'];
                 const complexityMin = complexityTerritoryStats.min || (row['Complexity Health'] || 0);
                 const healthMin = healthTerritoryStats.min || row.Health;
-                
+
                 const healthColor = getWorstCaseColor(healthMin);
                 const invocationColor = getWorstCaseColor(invocationMin);
                 const hardenedColor = getWorstCaseColor(hardenedMin);
                 const testColor = getWorstCaseColor(testMin);
                 const ccHealthColor = getWorstCaseColor(complexityMin);
-                
+
                 // PHASE 2: Compute outlier counts for this territory
                 const healCapTerritoryOutliers = getOutlierSummary(territoryAgents.healCap || [], 50);
                 const invocationTerritoryOutliers = getOutlierSummary(territoryAgents.invocation || [], 50);
@@ -13902,15 +13902,15 @@
                 const testTerritoryOutliers = getOutlierSummary(territoryAgents.test || [], 50);
                 const complexityTerritoryOutliers = getOutlierSummary(territoryAgents.complexityHealth || [], 30);
                 const healthTerritoryOutliers = getOutlierSummary(territoryAgents.health || [], 60);
-                
+
                 // PHASE 4: Get row outlier status for visual highlighting
                 const rowStatus = hasRowCriticalOutliers(row.Territory);
                 const rowBorderStyle = rowStatus.hasCritical ? 'border-left:4px solid #dc2626;' : (rowStatus.hasWarning ? 'border-left:4px solid #f59e0b;' : '');
-                
+
                 html += `
-                    <tr style="border-bottom:1px solid #e5e7eb; cursor:pointer; transition:background 0.2s; ${rowBorderStyle}" 
-                        onmouseover="this.style.background='#f0f9ff'" 
-                        onmouseout="this.style.background='${index % 2 === 0 ? '#f9fafb' : 'white'}'" 
+                    <tr style="border-bottom:1px solid #e5e7eb; cursor:pointer; transition:background 0.2s; ${rowBorderStyle}"
+                        onmouseover="this.style.background='#f0f9ff'"
+                        onmouseout="this.style.background='${index % 2 === 0 ? '#f9fafb' : 'white'}'"
                         onclick="openDrillModal('${row.Territory}')">
                         <td style="padding:12px; font-weight:600; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb; color:var(--primary);" title="Click to drill down">${formatRowWarningIcon(row.Territory)}${row.Territory}${formatToxicityBadge(row.Territory)}</td>
                         <td style="padding:12px; text-align:center; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb;">${row.Total}</td>
@@ -13939,7 +13939,7 @@
                         </td>
                     </tr>`;
             });
-            
+
             html += `
                         </tbody>
                     </table>
@@ -13955,18 +13955,18 @@
                     </div>
                 </div>
             </div>`;
-            
+
             container.innerHTML = html;
         }
-        
+
         function renderCodeQualityTable(territoryData) {
             const container = document.getElementById('codeQualityGrid');
             if (!container) return;
-            
+
             // PHASE 5: Apply filtering if enabled
             const filterState = tableFilterState.table2;
             let filteredData = [...territoryData];
-            
+
             if (filterState.showOnlyOutliers) {
                 filteredData = filteredData.filter(row => {
                     if (row.Territory === 'TOTAL') return true; // Always show TOTAL
@@ -13974,7 +13974,7 @@
                     return status.hasCritical || status.hasWarning;
                 });
             }
-            
+
             // PHASE 5: Apply zombie filter if enabled (Table 2)
             if (filterState.showZombies) {
                 filteredData = filteredData.filter(row => {
@@ -13982,7 +13982,7 @@
                     return isZombieTerritory(row.Territory);
                 });
             }
-            
+
             // PHASE 6: Apply toxicity filter if enabled
             if (toxicityFilterEnabled) {
                 filteredData = filteredData.filter(row => {
@@ -13991,7 +13991,7 @@
                     return fanIn >= 20; // Only show toxic hubs
                 });
             }
-            
+
             // Sort territories: Base/Root FIRST (SovereignBaseAgent), TOTAL LAST, then by layer
             const sortedData = [...filteredData].sort((a, b) => {
                 const aTerritory = a.Territory || '';
@@ -14002,14 +14002,14 @@
                 // TOTAL always LAST
                 if (aTerritory === 'TOTAL') return 1;
                 if (bTerritory === 'TOTAL') return -1;
-                
+
                 // PHASE 5: Sort by outlier count if enabled
                 if (filterState.sortByOutliers) {
                     const aOutliers = getTerritoryOutlierCount(aTerritory);
                     const bOutliers = getTerritoryOutlierCount(bTerritory);
                     if (aOutliers !== bOutliers) return bOutliers - aOutliers; // Higher outliers first
                 }
-                
+
                 // Default: L6→L5→L4→L3→L2→L1→L0, then Apps at bottom
                 const aMatch = aTerritory.match(/^L(\d)/);
                 const bMatch = bTerritory.match(/^L(\d)/);
@@ -14020,7 +14020,7 @@
                 return aTerritory.localeCompare(bTerritory);
             });
             territoryData = sortedData;
-            
+
             // Build Code Quality table with detailed metrics per territory
             let html = `
             <div style="margin-bottom:40px;">
@@ -14046,7 +14046,7 @@
                             </tr>
                         </thead>
                         <tbody>`;
-            
+
             // Helper function for gradient background
             // Handles "N/A" values for L0 territories
             const getGradientBg = (value) => {
@@ -14056,7 +14056,7 @@
                 }
                 const normalized = Math.max(0, Math.min(100, value)) / 100;
                 let r, g, b;
-                
+
                 if (normalized < 0.2) {
                     const t = normalized * 5;
                     r = Math.round(139 + (220 - 139) * t);
@@ -14088,11 +14088,11 @@
                     g = Math.round(183 - (20) * t);
                     b = Math.round(74);
                 }
-                
+
                 const alpha = normalized < 0.3 ? 0.35 : (0.15 + normalized * 0.15);
                 return `linear-gradient(135deg, rgba(${r}, ${g}, ${b}, ${alpha}) 0%, rgba(${r}, ${g}, ${b}, ${alpha * 0.6}) 100%)`;
             };
-            
+
             // Add TOTAL row first with distribution statistics (Phase 1)
             const totalRow = dashboardData.find(row => row.Territory === 'TOTAL');
             if (totalRow) {
@@ -14101,7 +14101,7 @@
                 const documented = parseFloat(totalRow['Documented %'] || 0);
                 const schemaStrictness = parseFloat(totalRow['Schema Strictness %'] || 100);
                 const properBase = parseFloat(totalRow['Canonical Inheritance %'] || 0);
-                
+
                 // Aggregate distribution stats across all territories for TOTAL row
                 const allTyped = [], allDocumented = [], allSchema = [], allBase = [], allQuality = [];
                 territoryData.forEach(row => {
@@ -14114,22 +14114,22 @@
                         allQuality.push(...globalAgentData[territory].codeQuality);
                     }
                 });
-                
+
                 const typedStats = computeDistributionStats(allTyped);
                 const documentedStats = computeDistributionStats(allDocumented);
                 const schemaStats = computeDistributionStats(allSchema);
                 const baseStats = computeDistributionStats(allBase);
                 const qualityStats = computeDistributionStats(allQuality);
-                
+
                 // PHASE 2: Compute outlier counts for Table 2 TOTAL row
                 const typedOutliers = getOutlierSummary(allTyped, 50);
                 const documentedOutliers = getOutlierSummary(allDocumented, 50);
                 const schemaOutliers = getOutlierSummary(allSchema, 80); // Higher threshold for schema
                 const baseOutliers = getOutlierSummary(allBase, 50);
                 const qualityOutliers = getOutlierSummary(allQuality, 60);
-                
+
                 const qualityColor = codeQuality >= 85 ? '#065f46' : codeQuality >= 75 ? '#047857' : codeQuality >= 60 ? '#65a30d' : codeQuality >= 40 ? '#a16207' : codeQuality >= 20 ? '#c2410c' : '#991b1b';
-                
+
                 html += `
                     <tr style="background:#f0f9ff; border-bottom:2px solid var(--primary);">
                         <td style="padding:14px; font-weight:700; font-size:1.1em; border-right:1px solid #e5e7eb;">
@@ -14157,7 +14157,7 @@
                         </td>
                     </tr>`;
             }
-            
+
             // Add territory rows with distribution statistics (Phase 1)
             territoryData.forEach((row, index) => {
                 const territory = row.Territory;
@@ -14166,7 +14166,7 @@
                 const documented = parseFloat(row['Documented %'] || 0);
                 const schemaStrictness = parseFloat(row['Schema Strictness %'] || 100);
                 const properBase = parseFloat(row['Canonical Inheritance %'] || 0);
-                
+
                 // Get distribution stats for this territory
                 const agentData = globalAgentData[territory] || {};
                 const typedStats = computeDistributionStats(agentData.typed || []);
@@ -14174,30 +14174,30 @@
                 const schemaStats = computeDistributionStats(agentData.schemaStrictness || []);
                 const baseStats = computeDistributionStats(agentData.properBase || []);
                 const qualityStats = computeDistributionStats(agentData.codeQuality || []);
-                
+
                 const qualityColor = codeQuality >= 85 ? '#065f46' : codeQuality >= 75 ? '#047857' : codeQuality >= 60 ? '#65a30d' : codeQuality >= 40 ? '#a16207' : codeQuality >= 20 ? '#c2410c' : '#991b1b';
-                
+
                 // Use worst-case (min) for color coding
                 const typedColorVal = typedStats.min !== undefined ? typedStats.min : typed;
                 const documentedColorVal = documentedStats.min !== undefined ? documentedStats.min : documented;
                 const schemaColorVal = schemaStats.min !== undefined ? schemaStats.min : schemaStrictness;
                 const baseColorVal = baseStats.min !== undefined ? baseStats.min : properBase;
                 const qualityColorVal = qualityStats.min !== undefined ? qualityStats.min : codeQuality;
-                
+
                 // PHASE 2: Compute outlier counts for this territory
                 const typedTerritoryOutliers = getOutlierSummary(agentData.typed || [], 50);
                 const documentedTerritoryOutliers = getOutlierSummary(agentData.documented || [], 50);
                 const schemaTerritoryOutliers = getOutlierSummary(agentData.schemaStrictness || [], 80);
                 const baseTerritoryOutliers = getOutlierSummary(agentData.properBase || [], 50);
                 const qualityTerritoryOutliers = getOutlierSummary(agentData.codeQuality || [], 60);
-                
+
                 // PHASE 4: Get row outlier status for visual highlighting
                 const rowStatus = hasRowCriticalOutliers(row.Territory);
                 const rowBorderStyle = rowStatus.hasCritical ? 'border-left:4px solid #dc2626;' : (rowStatus.hasWarning ? 'border-left:4px solid #f59e0b;' : '');
-                
+
                 html += `
-                    <tr style="border-bottom:1px solid #e5e7eb; cursor:pointer; transition:background 0.2s; ${rowBorderStyle}" 
-                        onmouseover="this.style.background='#f0f9ff'" 
+                    <tr style="border-bottom:1px solid #e5e7eb; cursor:pointer; transition:background 0.2s; ${rowBorderStyle}"
+                        onmouseover="this.style.background='#f0f9ff'"
                         onmouseout="this.style.background='${index % 2 === 0 ? '#f9fafb' : 'white'}'"
                         onclick="openDrillModal('${row.Territory}')">
                         <td style="padding:12px; font-weight:600; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb; color:var(--primary);" title="Click to drill down">${formatRowWarningIcon(row.Territory)}${row.Territory}${formatToxicityBadge(row.Territory)}</td>
@@ -14223,7 +14223,7 @@
                         </td>
                     </tr>`;
             });
-            
+
             html += `
                         </tbody>
                     </table>
@@ -14238,7 +14238,7 @@
                     </div>
                 </div>
             </div>`;
-            
+
             container.innerHTML = html;
         }
 
@@ -14249,7 +14249,7 @@
 
         function renderHealthGauge(totalRow) {
             if (window.PLOTLY_OFFLINE) {
-                document.getElementById('healthGauge').innerHTML = 
+                document.getElementById('healthGauge').innerHTML =
                     `<div style="text-align:center; padding:60px 20px; color:#6b7280;">
                         <div style="font-size:48px; font-weight:700; color:#2563eb;">${parseFloat(totalRow['Health']).toFixed(1)}%</div>
                         <div style="font-size:18px; margin-top:10px;">System Health</div>
@@ -14257,9 +14257,9 @@
                     </div>`;
                 return;
             }
-            
+
             const health = parseFloat(totalRow['Health']) || 0;
-            
+
             const data = [{
                 type: 'indicator',
                 mode: 'gauge+number',
@@ -14341,7 +14341,7 @@
                     line: { color: 'white', width: 2 }
                 },
                 customdata: territoryData.map((row, i) => [invocation[i], tests[i], observable[i], avgCC[i]]),
-                hovertemplate: 
+                hovertemplate:
                     '<b>%{x}</b><br>' +
                     'Health Score: <b>%{y:.1f}%</b> (target ≥80%)<br>' +
                     'Healing Invocation: <b>%{customdata[0]:.1f}%</b> (core autonomy)<br>' +
@@ -14365,7 +14365,7 @@
                 ]
             };
 
-            trace.hovertemplate = 
+            trace.hovertemplate =
                 '<b>%{x}</b><br><br>' +
                 'Health Score: <b>%{y:.1f}%</b> (target ≥80%)<br><br>' +
                 '<i>Didactic Analogy:</i> Full health checkup — averages healing ability, test fitness, observability vitals, and code cleanliness<br>' +
@@ -14395,7 +14395,7 @@
                 type: 'bar',
                 marker: { color: '#2563eb' },
                 customdata: territoryData.map((row, i) => [healingCap[i], health[i]]),
-                hovertemplate: 
+                hovertemplate:
                     '<b>%{x}</b><br>' +
                     'Healing Invocation: <b>%{y:.1f}%</b><br>' +
                     'Actual super().heal_repository() usage<br>' +
@@ -14419,7 +14419,7 @@
                 ]
             };
 
-            trace1.hovertemplate = 
+            trace1.hovertemplate =
                 '<b>%{x}</b><br>' +
                 'Healing Invocation: <b>%{y:.1f}%</b><br><br>' +
                 '<i>Factory Analogy:</i> Workers have personal toolkits (capabilities), but this shows how often they consult the master factory safety checklist when problems occur<br>' +
@@ -14431,20 +14431,20 @@
 
         function renderRiskMatrix(territoryData) {
             if (!territoryData || territoryData.length === 0) return;
-            
+
             // Calculate inverted complexity % for x-axis (100 - CC×2)
             const invertedComplexity = territoryData.map(d => {
                 const cc = parseFloat(d['Avg CC']) || 0;
                 return Math.max(0, Math.min(100, 100 - (cc * 2)));
             });
-            
+
             // SSOT FIX: Compute compliance % from Compliant/Total (same data source as tables)
             const complianceValues = territoryData.map(d => {
                 const compliant = parseFloat(d.Compliant) || 0;
                 const total = parseFloat(d.Total) || 1;
                 return (compliant / total) * 100;
             });
-            
+
             const trace = {
                 x: invertedComplexity,
                 y: complianceValues,
@@ -14464,7 +14464,7 @@
                     showscale: true,
                     colorbar: { title: 'Health' }
                 },
-                hovertemplate: 
+                hovertemplate:
                     '<b>%{text}</b><br>' +
                     'Health: <b>%{customdata[0]:.1f}%</b><br>' +
                     'Inverted Complexity: <b>%{x:.1f}%</b> (higher is better)<br>' +
@@ -14482,11 +14482,11 @@
                 paper_bgcolor: 'transparent',
                 plot_bgcolor: 'transparent',
                 font: { color: '#1f2937' },
-                xaxis: { 
+                xaxis: {
                     title: 'Inverted Complexity % (100 - CC×2, higher is better)',
                     range: [0, 100]
                 },
-                yaxis: { 
+                yaxis: {
                     title: 'Compliance %',
                     range: [0, 100]
                 },
@@ -14538,7 +14538,7 @@
                 ]
             };
 
-            trace.hovertemplate = 
+            trace.hovertemplate =
                 '<b>%{x}</b><br>' +
                 'Compliance: <b>%{y:.1f}%</b> (target ≥80%)<br><br>' +
                 '<i>Analogy:</i> Like seatbelt adoption rates — percentage of agents implementing healing<br>' +
@@ -14584,7 +14584,7 @@
                 ]
             };
 
-            trace.hovertemplate = 
+            trace.hovertemplate =
                 '<b>%{x}</b><br>' +
                 'Observability: <b>%{y:.1f}%</b><br><br>' +
                 '<i>Analogy:</i> Like dash cams + health trackers in a self-driving car — essential for diagnosing issues<br>' +
@@ -14638,7 +14638,7 @@
         function renderTopRecommendations() {
             const container = document.getElementById('topRecommendations');
             if (!container) return;
-            
+
             if (!recommendationsData || recommendationsData.length === 0) {
                 container.innerHTML = '<p style="text-align:center; color:var(--success);">All territories healthy!</p>';
                 return;
@@ -14648,7 +14648,7 @@
             let html = '';
             top3.forEach((rec, index) => {
                 const rank = index + 1;
-                
+
                 // Handle both old format (gaps, territory, rationale) and new format (title, description, impact)
                 const title = rec.title || rec.territory || `Priority #${rank}`;
                 const description = rec.description || rec.rationale || '';
@@ -14656,18 +14656,18 @@
                 const targetMetric = rec.target_metric || '';
                 const currentValue = rec.current_value !== undefined ? rec.current_value : 0;
                 const targetValue = rec.target_value !== undefined ? rec.target_value : 100;
-                
+
                 // Calculate gap from current vs target
                 const gapValue = targetValue > 0 ? Math.max(0, ((targetValue - currentValue) / targetValue) * 100) : 0;
-                
+
                 // Color based on impact
                 const borderColor = impact === 'HIGH' ? '#dc2626' : impact === 'MEDIUM' ? '#ea580c' : '#eab308';
-                const bgColor = impact === 'HIGH' 
+                const bgColor = impact === 'HIGH'
                     ? 'linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(220, 38, 38, 0.05) 100%)'
                     : impact === 'MEDIUM'
                     ? 'linear-gradient(135deg, rgba(234, 88, 12, 0.1) 0%, rgba(234, 88, 12, 0.05) 100%)'
                     : 'linear-gradient(135deg, rgba(234, 179, 8, 0.1) 0%, rgba(234, 179, 8, 0.05) 100%)';
-                
+
                 html += `
                 <div style="padding:20px; border-radius:8px; border-left:6px solid ${borderColor}; background:${bgColor}; box-shadow:var(--shadow);">
                     <div style="font-size:1.3em; font-weight:700; margin-bottom:8px; color:var(--text);">${title}</div>
@@ -14681,17 +14681,17 @@
         function renderRecommendations() {
             const container = document.getElementById('recommendationsList');
             if (!container) return;
-            
+
             if (!recommendationsData || recommendationsData.length === 0) {
                 container.innerHTML = '<p style="text-align:center; color:var(--success); font-size:1.4em;">All territories at target autonomy – excellent!</p>';
                 return;
             }
-            
+
             let html = '';
             recommendationsData.forEach((rec, index) => {
                 const rank = index + 1;
                 const impactClass = rec.impact === 'HIGH' ? 'danger' : rec.impact === 'MEDIUM' ? 'warning' : 'primary';
-                
+
                 // Handle both old format (score, territory, rationale) and new format (priority, title, description)
                 const title = rec.title || rec.territory || `Recommendation #${rank}`;
                 const description = rec.description || rec.rationale || '';
@@ -14701,22 +14701,22 @@
                 const targetMetric = rec.target_metric || '';
                 const currentValue = rec.current_value !== undefined ? rec.current_value : (rec.score || 0);
                 const targetValue = rec.target_value !== undefined ? rec.target_value : 100;
-                
+
                 html += `
                 <div class="kpi-box ${impactClass}" style="padding:30px; margin-bottom:30px;">
                     <div class="kpi-label" style="font-size:1.1em; font-weight:600;">
                         Priority #${priority} • ${impact} Impact • ${effort} Effort
                     </div>
                     <div class="kpi-value" style="font-size:1.6em; margin:15px 0; font-weight:700;">${title}</div>
-                    
+
                     <div style="margin:20px 0;">
                         <p style="line-height:1.6; font-size:1.1em;">${description}</p>
                     </div>
-                    
+
                     ${targetMetric ? `
                     <div style="margin:20px 0; padding:15px; background:#f8f9fa; border-radius:8px;">
                         <strong>Target Metric:</strong> ${targetMetric}<br>
-                        <strong>Current:</strong> ${typeof currentValue === 'number' ? currentValue.toFixed(1) : currentValue} → 
+                        <strong>Current:</strong> ${typeof currentValue === 'number' ? currentValue.toFixed(1) : currentValue} →
                         <strong>Target:</strong> ${targetValue}
                     </div>
                     ` : ''}
@@ -14912,26 +14912,26 @@
             const healthList = document.getElementById('healthAlertList');
             const qualityList = document.getElementById('qualityAlertList');
             const countBadge = document.getElementById('outlierCountBadge');
-            
+
             if (!banner || !healthList || !qualityList) return;
-            
+
             const criticalTable1 = alerts.table1.filter(a => a.type === 'critical');
             const criticalTable2 = alerts.table2.filter(a => a.type === 'critical');
-            
+
             if (criticalTable1.length === 0 && criticalTable2.length === 0) {
                 banner.style.display = 'none';
                 return;
             }
-            
+
             banner.style.display = 'block';
             countBadge.textContent = criticalTable1.length + criticalTable2.length;
-            
-            healthList.innerHTML = criticalTable1.slice(0, 5).map(a => 
-                `<li style="margin-bottom: 5px;"><strong>${a.territory}</strong>: ${a.message} in ${a.metric}</li>` 
+
+            healthList.innerHTML = criticalTable1.slice(0, 5).map(a =>
+                `<li style="margin-bottom: 5px;"><strong>${a.territory}</strong>: ${a.message} in ${a.metric}</li>`
             ).join('') || '<li>No critical health gaps.</li>';
-            
-            qualityList.innerHTML = criticalTable2.slice(0, 5).map(a => 
-                `<li style="margin-bottom: 5px;"><strong>${a.territory}</strong>: ${a.message} in ${a.metric}</li>` 
+
+            qualityList.innerHTML = criticalTable2.slice(0, 5).map(a =>
+                `<li style="margin-bottom: 5px;"><strong>${a.territory}</strong>: ${a.message} in ${a.metric}</li>`
             ).join('') || '<li>No critical quality gaps.</li>';
         }
 
@@ -14965,7 +14965,7 @@
             console.log('✅ renderInterviewQuestions done');
 
             document.getElementById('lastUpdated').textContent = lastUpdatedStr;
-            
+
             // Setup drill-down click handlers after all charts are rendered
             setTimeout(setupDrillDowns, 100);
             console.log('🎉 loadData() complete');
@@ -14975,7 +14975,7 @@
         function openDrillModal(territoryName) {
             const row = dashboardData.find(r => r.Territory === territoryName);
             if (!row) return;
-            
+
             // Get agents from globalAgentData (generated by generateMockAgentData)
             const territoryAgentData = globalAgentData[territoryName];
             const agents = territoryAgentData ? territoryAgentData.agents : [];
@@ -14996,7 +14996,7 @@
             content += `<li style="margin:5px 0;">Avg Complexity: <strong>${row['Avg CC'].toFixed(1)}</strong> (Health: ${row['Complexity Health'].toFixed(1)}%)</li>`;
             content += `<li style="margin:5px 0; font-weight:700; color:#166534;">Health Score: <strong>${row['Health'].toFixed(1)}%</strong></li>`;
             content += '</ul></div>';
-            
+
             // Code Quality Metrics Section
             content += '<div style="background:#eff6ff; padding:15px; border-radius:8px; border-left:4px solid #2563eb;">';
             content += '<strong style="font-size:1.1em; color:#1e40af;">📊 Code Quality Metrics</strong><ul style="margin-top:10px; list-style:none; padding:0;">';
@@ -15015,10 +15015,10 @@
                     const bViolation = b.has_base_violation ? 0 : 1;
                     return aViolation - bViolation;
                 });
-                
+
                 const violationCount = agents.filter(a => a.has_base_violation).length;
                 const violationWarning = violationCount > 0 ? ` <span style="color:#dc2626; font-weight:700;">⚠️ ${violationCount} INHERITANCE VIOLATION${violationCount > 1 ? 'S' : ''}</span>` : '';
-                
+
                 content += '<strong style="font-size:1.4em; margin:30px 0 15px 0; display:block;">Per-Agent Diagnostics (' + agents.length + ' agents)' + violationWarning + '</strong>';
                 content += '<table style="width:100%; border-collapse:collapse; font-size:0.95em; margin-top:10px;">';
                 content += '<thead><tr style="background:#f1f5f9; border-bottom:2px solid var(--border);">';
@@ -15034,14 +15034,14 @@
                 sortedAgents.forEach((agent, idx) => {
                     const rowBg = agent.has_base_violation ? '#fee2e2' : (idx % 2 === 0 ? '#ffffff' : '#f9fafb');
                     const rowStyle = agent.has_base_violation ? 'border-left:4px solid #dc2626;' : '';
-                    const baseClassCell = agent.proper_base_class 
+                    const baseClassCell = agent.proper_base_class
                         ? `<td style="padding:12px; text-align:center; background:#dcfce7;"><span style="color:#166534; font-weight:600;">✓ ${agent.base_class_name || 'Valid'}</span></td>`
                         : `<td style="padding:12px; text-align:center; background:#fecaca;"><span style="color:#991b1b; font-weight:700;">✗ ${agent.base_class_name || 'Missing'}</span></td>`;
-                    
-                    const mixinIcon = agent.has_mixin 
-                        ? '<span style="color:#16a34a; font-weight:700;">✓</span> <span style="color:#16a34a;">Yes</span>' 
+
+                    const mixinIcon = agent.has_mixin
+                        ? '<span style="color:#16a34a; font-weight:700;">✓</span> <span style="color:#16a34a;">Yes</span>'
                         : '<span style="color:#dc2626; font-weight:700;">✗</span> <span style="color:#dc2626;">No</span>';
-                    
+
                     let invIcon;
                     if (agent.invocation === "Yes" || agent.invocation === "Inherited") {
                         invIcon = '<span style="color:#16a34a; font-weight:700;">✓</span> <span style="color:#16a34a;">' + agent.invocation + '</span>';
@@ -15050,31 +15050,31 @@
                     } else {
                         invIcon = '<span style="color:#dc2626; font-weight:700;">✗</span> <span style="color:#dc2626;">' + agent.invocation + '</span>';
                     }
-                    
-                    const testIcon = agent.has_tests 
-                        ? '<span style="color:#16a34a; font-weight:700;">✓</span>' 
+
+                    const testIcon = agent.has_tests
+                        ? '<span style="color:#16a34a; font-weight:700;">✓</span>'
                         : '<span style="color:#dc2626; font-weight:700;">✗</span>';
-                    
+
                     const typedColor = getColor(agent.typed_pct, true);
                     const complexityColor = getColor(agent.complexity, false);
-                    
+
                     // Observability flags with color coding
                     const obsTitle = "Observability flags:\nLogging: structured logs\nMetrics: log_metric calls\nTracing: OpenTelemetry spans\nEssential for production debugging";
                     const obsSummary = agent.obs_summary || "Logging: ✗ | Metrics: ✗ | Tracing: ✗";
-                    
+
                     // MCP Hardening flags with color coding
                     const mcpTitle = "MCP Hardening flags:\nShield: MCPShield mixin (core protection)\n@hardened: method decorator\nSafe: no unsafe exec patterns\nCurrently 10.1% portfolio-wide — major L5 gap";
                     const mcpSummary = agent.mcp_summary || "Shield: ✗ | @hardened: ✗ | Safe: ✓";
-                    
+
                     // Typing flags with color coding
                     const typingTitle = "Typing flags:\nInit Typed: params + return hints\nMethods Typed: % of defs with hints\nReturns Annotated: return types\nCurrent portfolio ~58% — aim 90%+ for maintainability";
                     const typingSummary = agent.typing_summary || "Init: ✗ | Methods: 0% | Returns: 0%";
                     const overallTyped = agent.overall_typed_pct || 0;
-                    
+
                     // PHASE 5: Zombie Detection (if health < 40, it's a zombie)
                     const isZombie = agent.health < 40;
                     const statusLabel = isZombie ? '<span style="color:#dc2626; font-weight:900;">🧟 ZOMBIE</span>' : '<span style="color:#16a34a;">Active</span>';
-                    
+
                     content += `<tr style="border-bottom:1px solid var(--border); background:${rowBg}; ${rowStyle}">
                         <td style="padding:12px;">
                             <a href="vscode://file/${agent.abs_class}" target="_blank" style="color:var(--primary); font-family:monospace; font-size:0.9em; font-weight:600;">
@@ -15093,7 +15093,7 @@
                     </tr>`;
                 });
                 content += '</tbody></table>';
-                
+
                 content += '<p style="margin-top:15px; font-size:0.9em; color:var(--text-light); font-style:italic;">';
                 content += '<strong>Windsurf Priority:</strong> Agents with ✗ on HealerMixin, Invocation Chain, Observability, MCP Hardening, or weak Typing are sorted first. ';
                 content += 'Click any file link → add HealerMixin to bases, super().heal_repository() calls, observability imports (structured_log, log_metric), MCPShield mixin + @hardened decorators, or type annotations (: Type) → re-run report.';
@@ -15143,10 +15143,10 @@
 
         // Initialize semantic metrics on page load
         initializeSemanticMetrics();
-        
+
         // Initialize runtime monitoring (Live Runtime tab)
         initializeRuntimeMonitoring();
-        
+
         loadData();
     </script>
 </body>

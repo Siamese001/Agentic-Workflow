@@ -10,44 +10,44 @@ on:
 jobs:
   validate-golden-state:
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-    
+
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
-    
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install pytest pytest-asyncio
-    
+
     - name: Run Golden State Tests
       run: |
         pytest tests/golden_state/ -v --tb=short
       continue-on-error: false
-    
+
     - name: Generate Test Report
       if: always()
       run: |
         python -m pytest tests/golden_state/ --junitxml=golden-state-report.xml
-    
+
     - name: Upload Test Results
       if: always()
       uses: actions/upload-artifact@v3
       with:
         name: golden-state-results
         path: golden-state-report.xml
-    
+
     - name: Check Pass Rate
       run: |
         python scripts/check_golden_state_pass_rate.py --threshold 0.8
       continue-on-error: false
-    
+
     - name: Comment PR with Results
       if: github.event_name == 'pull_request'
       uses: actions/github-script@v6
@@ -67,7 +67,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: validate-golden-state
     if: failure()
-    
+
     steps:
     - name: Block merge on regression
       run: |

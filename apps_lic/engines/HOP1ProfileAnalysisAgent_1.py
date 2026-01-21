@@ -21,17 +21,17 @@ Logger = logging.getLogger(__name__)
 class HOP1ProfileAnalysisAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """
     v13.1: HOP-1 - Profile Analysis with state-based I/O (MCP Hardened)
-    
+
     Single Responsibility: Classify recipient Archetype
-    
+
     Input:  mission_input_LIC.json
     Output: state/1_profile_analysis.json
     """
-    
+
     def __init__(self, config: Dict[str, Any]) -> None:
         """
         Initialize with externalized configuration
-        
+
         Args:
             config: Loaded from config/agent_specs_LIC.json
         """
@@ -40,31 +40,31 @@ class HOP1ProfileAnalysisAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMi
         self.archetype_indicators = self.config["archetype_indicators"]
         self.default_archetype = self.config["default_archetype"]
         self.manual_override_threshold = self.config["manual_override_threshold"]
-    
+
     def execute(self, state_mgr: StateManager, mission: OutreachMission) -> str:
         """
         Execute HOP-1: Analyze profile and classify Archetype
-        
+
         Args:
             state_mgr: State manager for this mission
             mission: Mission specification
-        
+
         Returns:
             Path to output state file
         """
         print(f"\n{'='*80}")
         print("HOP-1: PROFILE ANALYSIS")
         print(f"{'='*80}\n")
-        
+
         # Extract profile data
         title = mission.recipient_profile.get('title', '').lower()
-        
+
         # Classify Archetype using config-based rules
         Archetype = None
         confidence = 0.0
         reasoning = ""
         key_indicators = []
-        
+
         for Archetype, arch_config in self.archetype_indicators.items():
             for keyword in arch_config["keywords"]:
                 if keyword in title:
@@ -72,19 +72,19 @@ class HOP1ProfileAnalysisAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMi
                     reasoning = f"Title '{title}' contains '{keyword}' indicator"
                     key_indicators = [keyword]
                     break
-            
+
             if Archetype:
                 break
-        
+
         # Default if no match
         if not Archetype:
             Archetype = self.default_archetype
             confidence = self.config["default_confidence"]
             reasoning = f"Default classification - ambiguous title '{title}'"
             key_indicators = [title]
-        
+
         needs_manual_override = confidence < self.manual_override_threshold
-        
+
         # Prepare output state
         output_state = {
             "Archetype": Archetype,
@@ -96,15 +96,15 @@ class HOP1ProfileAnalysisAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMi
             "recipient_name": mission.recipient_profile.get('name', ''),
             "recipient_company": mission.recipient_profile.get('company', '')
         }
-        
+
         # Write to state
         output_path = state_mgr.write_state("HOP-1", output_state)
-        
+
         print(f"✓ Profile Analysis Complete")
         print(f"  Archetype: {Archetype}")
         print(f"  Confidence: {confidence:.2f}")
         print(f"  Reasoning: {reasoning}\n")
-        
+
         return output_path
 
     def heal_repository(self) -> None:

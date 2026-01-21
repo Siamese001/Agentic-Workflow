@@ -23,7 +23,7 @@ from agentic_core.utils.core_extensions.decorators import standard_heal
 class NamingEnforcerAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin):
     """ROLE: Semantic Naming Guardian."""
     async def execute(self) -> None:
-                    
+
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Semantic Naming...")
         await asyncio.sleep(0)
 

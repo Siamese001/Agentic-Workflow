@@ -33,7 +33,7 @@ class AstRelocator(ast.NodeVisitor):
             "name": node.name,
             "lineno": node.lineno,
             # Python 3.8+ support for decorators in line count
-            "start_line": getattr(node, 'lineno', node.lineno), 
+            "start_line": getattr(node, 'lineno', node.lineno),
             "end_lineno": getattr(node, 'end_lineno', node.lineno),
             "node": node,
             "suggested_location": self._suggest_placement(node, node.name, "Class")
@@ -90,7 +90,7 @@ class AstRelocator(ast.NodeVisitor):
                 doc_words = set(doc_lower.split())
                 # Check for overlap in significant words (len > 3) to avoid "the", "and", etc.
                 matches = [w for w in purpose_words if len(w) > 3 and w in doc_words]
-                
+
                 if matches:
                     score += 1.5  # Base score for any match
                     # [BONUS] Reward high semantic overlap
@@ -112,7 +112,7 @@ class AstRelocator(ast.NodeVisitor):
         return best_match
 
     def get_movable_entities(self) -> List[Dict]:
-                    
+
         self.visit(self.tree)
         return self.entities
 

@@ -17,7 +17,7 @@ _embedding_cache: LRUCache = LRUCache(maxsize=10000)  # ~10k entries × 6KB ≈ 
 def get_embedding(text: str, model: str=config.DEFAULT_EMBEDDING_MODEL, dimensions: int=config.DEFAULT_EMBEDDING_DIM) -> List[float]:
     """
     Cached sovereign embedding function – used by bootstrap, healers, and RAG pipelines.
-    
+
     :param text: Input string (will be auto-truncated to model max ~8k tokens)
     :param model: OpenAI embedding model (defaults to config)
     :param dimensions: Output dimensionality (defaults to config: 1024)
@@ -25,23 +25,23 @@ def get_embedding(text: str, model: str=config.DEFAULT_EMBEDDING_MODEL, dimensio
     """
     # Normalize text (strip whitespace, replace newlines)
     normalized_text = text.strip().replace('\n', ' ').replace('\r', ' ')
-    
+
     # Cache key: hash of text + model + dimensions
     cache_key = hashlib.sha256(
         f"{normalized_text}{model}{dimensions}".encode('utf-8')
     ).hexdigest()
-    
+
     # Cache hit
     if cache_key in _embedding_cache:
         return _embedding_cache[cache_key]
-    
+
     # Cache miss → API call
     if not config.OPENAI_API_KEY:
         raise ValueError('OPENAI_API_KEY environment variable required for core embedder')
     client: Any = openai.OpenAI(api_key=config.OPENAI_API_KEY)
     response: Any = client.embeddings.create(input=normalized_text, model=model, dimensions=dimensions)
     embedding = response.data[0].embedding
-    
+
     # Cache and return
     _embedding_cache[cache_key] = embedding
     return embedding

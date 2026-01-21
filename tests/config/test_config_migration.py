@@ -75,10 +75,10 @@ def test_layer_dirs_consistency():
     """Verify LAYER_DIRS is consistent between registry and ssot_discovery."""
     from agentic_core.config.blueprint_sovereign.registry import LAYER_DIRS as REG_LAYER_DIRS
     from agentic_core.utils.ssot_discovery import LAYER_DIRS as DISC_LAYER_DIRS
-    
+
     # Both should have the same keys
     assert set(REG_LAYER_DIRS.keys()) == set(DISC_LAYER_DIRS.keys())
-    
+
     # Both should have the same values
     for key in REG_LAYER_DIRS:
         assert REG_LAYER_DIRS[key] == DISC_LAYER_DIRS[key]

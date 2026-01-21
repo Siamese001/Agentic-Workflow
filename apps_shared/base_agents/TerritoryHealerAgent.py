@@ -32,12 +32,12 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
     """
     Enforces exhaustive territory compliance by detecting intra-territory strays.
     """
-    
+
     def __init__(self, project_root: Path, ctx: Any) -> None:
         """Initialize the instance."""
         self.root = project_root
         self.ctx = ctx
-        
+
         from agentic_core.L5_safety.validators.structure_blueprint import (
             CANON_KEY_TO_FOLDER_MAP,
             CANON_SIGNALS_MK2,
@@ -46,15 +46,15 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
             TERRITORY_EXAMPLES,
         )
         from agentic_core.runtime.shared_runtime.void_compliance import get_placement_guidance
-        
+
         self.key_folders = CANON_KEY_TO_FOLDER_MAP
         self.key_positive_signals = CANON_SIGNALS_MK2  # Legacy bridge – migrate to CANON_SIGNALS_MK2
         # Flatten all mapped paths for fast check
         self.all_mapped_paths = {p for ps in self.key_folders.values() for p in ps}
-        
+
         self.root_protected = ROOT_PROTECTED_FILES
         self.get_placement_guidance = get_placement_guidance
-        
+
         # Create archive directory
         self.root_archive = project_root / "archives" / "deprecated_code"
         self.root_archive.mkdir(parents=True, exist_ok=True)
@@ -85,23 +85,23 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
             rel_path = file_path.relative_to(self.root)
             parts = rel_path.parts
             depth = len(parts)
-            
+
             agentic_core_exact_depth = SOVEREIGN_REGISTRY["agentic_core"]["depth"]  # Legacy bridge – migrate to SOVEREIGN_REGISTRY
             if parts[0] == "agentic_core" and depth != agentic_core_exact_depth:
                 return self._suggest_precision_move(file_path, agentic_core_exact_depth)
-                
+
         except ValueError:
             pass  # File outside root
-            
+
         return None
-    
+
     def _suggest_precision_move(self, file_path: Path, target_depth: int) -> dict:
         """
         Suggest a move to achieve the required precision depth.
         """
         rel_path = file_path.relative_to(self.root)
         parts = rel_path.parts
-        
+
         # For agentic_core, we need to ensure depth 4
         if parts[0] == "agentic_core" and len(parts) < 4:
             # Need to go deeper - suggest adding L3/L4 structure
@@ -122,7 +122,7 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
                 "target": str(target_path),
                 "reason": f"Depth precision: agentic_core requires depth {target_depth}, found {len(parts)}"
             }
-        
+
         return None
 
     def is_stray_in_territory(self, rel_path: str, content_lower: str, stem_lower: str) -> Optional[dict]:
@@ -136,7 +136,7 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
             if any(rel_path.startswith(p + "/") or rel_path == p for p in paths):
                 current_territory = key
                 break
-        
+
         if current_territory is None:
             return None  # Already handled by unmapped drift check
 
@@ -163,7 +163,7 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
                 if positive_score < 2:
                     move["reason"] += f" (weak positive: {positive_score}/3)"
                 return move
-        
+
         # [FINAL FALLBACK] Unknown but no negative -> archive safely (never delete)
         archive_dir = self.root / "archives/unknown_territory"
         archive_dir.mkdir(parents=True, exist_ok=True)
@@ -181,13 +181,13 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
         suggested = self.get_placement_guidance(content_lower)
         target_key = None
         target_folder = suggested
-        
+
         for k, folders in self.key_folders.items():
             if any(suggested.startswith(f) for f in folders):
                 target_key = k
                 target_folder = next(f for f in folders if suggested.startswith(f))
                 break
-        
+
         if target_key and target_key != current_territory:
             target = self.root / target_folder / Path(rel_path).name
             return {
@@ -208,18 +208,18 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
             # Skip hidden directories and protected files
             if any(part.startswith(".") for part in py_file.parts):
                 continue
-            
+
             rel = py_file.relative_to(self.root)
             rel_str = str(rel).replace("\\", "/")
-            
+
             # Skip protected files
             if rel.name in self.root_protected:
                 continue
-            
+
             # Skip __init__.py files
             if rel.name == "__init__.py":
                 continue
-                
+
             # Read file content for semantic analysis
             try:
                 content = py_file.read_text(encoding='utf-8', errors='ignore')
@@ -227,10 +227,10 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
                 stem_lower = py_file.stem.lower()
             except:
                 continue
-            
+
             # Check if file is in unmapped territory (root stray)
             is_mapped = any(rel_str.startswith(p + "/") or rel_str == p for p in self.all_mapped_paths)
-            
+
             if not is_mapped:
                 # Archive root strays
                 archive_path = self.root_archive / rel.name
@@ -241,12 +241,12 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
                     "reason": f"Root stray archived: '{rel.name}'"
                 })
                 continue
-            
+
             # Stray WITHIN key territories
             intra_stray = self.is_stray_in_territory(rel_str, content_lower, stem_lower)
             if intra_stray:
                 moves.append(intra_stray)
-                
+
         return moves
 
     @timeout(300)
@@ -276,21 +276,21 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
         Finds and executes all territory violations with cache purging.
         """
         print(f"\nimport logging\n\nLogger = logging.getLogger(__name__)\n   [*] TerritoryHealerAgent: Scanning for intra-territory strays...")
-        
+
         stray_actions = self.find_all_stray()
-        
+
         if not stray_actions:
             print(f"   [✓] No territory violations detected")
             return
-        
+
         print(f"\n   [!] Found {len(stray_actions)} territory violations:")
         for action in stray_actions[:10]:  # Show first 10
             print(f"      - {action['reason']}")
             print(f"        {action['source']} → {action['target']}")
-        
+
         if len(stray_actions) > 10:
             print(f"      ... and {len(stray_actions) - 10} more")
-        
+
         # [GHOST PURGE] Connect to Redis and Pinecone for cleanup
         try:
             from agentic_core.L2_execution.ToolRegistry.PineconeSovereignAgent import PineconeSovereignAgent
@@ -303,25 +303,25 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
 
         moved = [a for a in stray_actions if a["action"] == "move"]
         archived = [a for a in stray_actions if a["action"] == "deprecate"]
-        
+
         for action in moved:
             source_path = Path(action["source"])
             target_path = Path(action["target"])
-            
+
             # Ensure target directory exists
             target_path.parent.mkdir(parents=True, exist_ok=True)
-            
+
             # Move the file
             import shutil
             shutil.move(source_path, target_path)
             print(f"   [MOVED] {source_path.name} → {target_path.parent}")
-            
+
             # Purge old path immediately after move
             if redis_agent:
                 redis_agent.invalidate_by_path(source_path)
             if pinecone_agent:
                 pinecone_agent.purge_ghost_vector(source_path)
-        
+
         for action in archived:
             source_path = Path(action["source"])
             ctx.report("TerritoryHealer", 1, True, action["reason"])
@@ -331,10 +331,10 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
                 redis_agent.invalidate_by_path(source_path)
             if pinecone_agent:
                 pinecone_agent.purge_ghost_vector(source_path)
-        
+
         # Report to context if available
         if self.ctx:
             for action in stray_actions:
                 self.ctx.report("TerritoryViolation", 20, True, f"Fixed: {action['reason']}")
-        
+
         print(f"\n   [✓] Territory healing complete. Processed {len(stray_actions)} files.")

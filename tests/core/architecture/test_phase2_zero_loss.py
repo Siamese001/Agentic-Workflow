@@ -29,54 +29,54 @@ sys.path.insert(0, str(PROJECT_ROOT))
 def test_tc5_mode_parity():
     """
     TC-5: Mode Parity
-    
+
     Verify UnifiedOrchestratorAgent(mode="healing") produces the same
     MissionResult schema as expected from a legacy HealingOrchestratorAgent.
     """
     print("\n" + "="*60)
     print("TC-5: Mode Parity")
     print("="*60)
-    
+
     from agentic_core.L3_orchestration.UnifiedOrchestratorAgent import UnifiedOrchestratorAgent
     from agentic_core.L3_orchestration.interfaces import MissionResult
-    
+
     # Create orchestrator in healing mode
     orchestrator = UnifiedOrchestratorAgent(mode="healing")
-    
+
     # Verify mode is set correctly
     if orchestrator.mode.value != "healing":
         print(f"❌ FAIL: Mode should be 'healing', got '{orchestrator.mode.value}'")
         return False
-    
+
     # Run a mission and verify result schema
     result = orchestrator.run_mission(
         agents=["TestAgent1", "TestAgent2"],
         dry_run=True
     )
-    
+
     # Verify result is MissionResult
     if not isinstance(result, MissionResult):
         print(f"❌ FAIL: Result should be MissionResult, got {type(result)}")
         return False
-    
+
     # Verify MissionResult has all required fields
     required_fields = [
         'success', 'total_agents', 'successful_agents', 'failed_agents',
         'total_violations_found', 'total_violations_fixed', 'total_errors',
         'agent_results', 'phase', 'metadata'
     ]
-    
+
     result_dict = result.to_dict()
     for field in required_fields:
         if field not in result_dict:
             print(f"❌ FAIL: MissionResult missing field: {field}")
             return False
-    
+
     # Verify metadata contains mode
     if result.metadata.get("mode") != "healing":
         print(f"❌ FAIL: MissionResult metadata should contain mode='healing'")
         return False
-    
+
     print("✅ PASS: UnifiedOrchestratorAgent(mode='healing') produces correct MissionResult")
     print(f"   Mode: {orchestrator.mode.value}")
     print(f"   Result fields: {len(required_fields)} verified")
@@ -87,34 +87,34 @@ def test_tc5_mode_parity():
 def test_tc6_registry_resolution():
     """
     TC-6: Registry Resolution
-    
+
     Verify get_orchestrator returns an object that satisfies
     isinstance(obj, IOrchestratorAgent).
     """
     print("\n" + "="*60)
     print("TC-6: Registry Resolution")
     print("="*60)
-    
+
     from agentic_core.L3_orchestration.orchestrator_registry import get_orchestrator
     from agentic_core.L3_orchestration.interfaces import IOrchestratorAgent
-    
+
     # Test all valid modes
     modes = ["unified", "healing", "compliance", "ssot", "full"]
-    
+
     for mode in modes:
         orchestrator = get_orchestrator(mode)
-        
+
         if not isinstance(orchestrator, IOrchestratorAgent):
             print(f"❌ FAIL: get_orchestrator('{mode}') should return IOrchestratorAgent")
             return False
-        
+
         # Verify it has required protocol methods
         required_methods = ['run_mission', 'run_agent', 'get_available_agents', 'validate_mission']
         for method in required_methods:
             if not hasattr(orchestrator, method):
                 print(f"❌ FAIL: Orchestrator missing method: {method}")
                 return False
-    
+
     print("✅ PASS: get_orchestrator returns IOrchestratorAgent for all modes")
     print(f"   Tested modes: {modes}")
     print(f"   Protocol methods verified: {required_methods}")
@@ -124,19 +124,19 @@ def test_tc6_registry_resolution():
 def test_tc7_graceful_fallback():
     """
     TC-7: Graceful Fallback
-    
+
     Verify that providing an unknown mode raises a descriptive ValueError
     rather than a crash.
     """
     print("\n" + "="*60)
     print("TC-7: Graceful Fallback")
     print("="*60)
-    
+
     from agentic_core.L3_orchestration.orchestrator_registry import get_orchestrator
-    
+
     # Test with invalid mode
     invalid_modes = ["invalid", "unknown", "legacy", ""]
-    
+
     for invalid_mode in invalid_modes:
         try:
             orchestrator = get_orchestrator(invalid_mode)
@@ -144,21 +144,21 @@ def test_tc7_graceful_fallback():
             return False
         except ValueError as e:
             error_msg = str(e)
-            
+
             # Verify error message is descriptive
             if "Unknown orchestrator mode" not in error_msg:
                 print(f"❌ FAIL: Error message should mention 'Unknown orchestrator mode'")
                 print(f"   Got: {error_msg}")
                 return False
-            
+
             if invalid_mode not in error_msg:
                 print(f"❌ FAIL: Error message should include the invalid mode '{invalid_mode}'")
                 return False
-            
+
             if "Available modes" not in error_msg:
                 print(f"❌ FAIL: Error message should list available modes")
                 return False
-    
+
     print("✅ PASS: Unknown modes raise descriptive ValueError")
     print(f"   Tested invalid modes: {invalid_modes}")
     print(f"   Error message format verified")
@@ -168,34 +168,34 @@ def test_tc7_graceful_fallback():
 def test_tc8_discovery_integration():
     """
     TC-8: Discovery Integration
-    
+
     Ensure the Unified Orchestrator does NOT perform any rglob calls,
     exclusively using ssot_discovery.
     """
     print("\n" + "="*60)
     print("TC-8: Discovery Integration")
     print("="*60)
-    
+
     # Read the UnifiedOrchestratorAgent source code
     unified_path = PROJECT_ROOT / "agentic_core" / "L3_orchestration" / "UnifiedOrchestratorAgent.py"
-    
+
     if not unified_path.exists():
         print(f"❌ FAIL: UnifiedOrchestratorAgent.py not found at {unified_path}")
         return False
-    
+
     source_code = unified_path.read_text(encoding="utf-8")
-    
+
     # Parse AST to find all method calls
     try:
         tree = ast.parse(source_code)
     except SyntaxError as e:
         print(f"❌ FAIL: Syntax error in UnifiedOrchestratorAgent.py: {e}")
         return False
-    
+
     # Check for rglob or glob calls
     rglob_calls = []
     glob_calls = []
-    
+
     for node in ast.walk(tree):
         if isinstance(node, ast.Call):
             # Check for .rglob() or .glob() method calls
@@ -204,29 +204,29 @@ def test_tc8_discovery_integration():
                     rglob_calls.append(ast.get_source_segment(source_code, node) or "rglob call")
                 elif node.func.attr == "glob":
                     glob_calls.append(ast.get_source_segment(source_code, node) or "glob call")
-    
+
     if rglob_calls:
         print(f"❌ FAIL: UnifiedOrchestratorAgent contains rglob calls:")
         for call in rglob_calls:
             print(f"   - {call}")
         return False
-    
+
     if glob_calls:
         print(f"❌ FAIL: UnifiedOrchestratorAgent contains glob calls:")
         for call in glob_calls:
             print(f"   - {call}")
         return False
-    
+
     # Verify ssot_discovery is imported
     if "ssot_discovery" not in source_code:
         print("❌ FAIL: UnifiedOrchestratorAgent should import ssot_discovery")
         return False
-    
+
     # Verify get_agent_files or get_python_files is used
     if "get_agent_files" not in source_code and "get_python_files" not in source_code:
         print("❌ FAIL: UnifiedOrchestratorAgent should use get_agent_files or get_python_files")
         return False
-    
+
     print("✅ PASS: UnifiedOrchestratorAgent uses ssot_discovery exclusively")
     print("   - No rglob calls found")
     print("   - No glob calls found")
@@ -242,36 +242,36 @@ def test_deprecation_warnings():
     print("\n" + "="*60)
     print("BONUS: Deprecation Warnings")
     print("="*60)
-    
+
     from agentic_core.L3_orchestration.orchestrator_registry import (
         SSOTOrchestratorAgent,
         HealingOrchestratorAgent,
         ConsolidatedOrchestratorAgent
     )
-    
+
     legacy_classes = [
         ("SSOTOrchestratorAgent", SSOTOrchestratorAgent),
         ("HealingOrchestratorAgent", HealingOrchestratorAgent),
         ("ConsolidatedOrchestratorAgent", ConsolidatedOrchestratorAgent),
     ]
-    
+
     for class_name, cls in legacy_classes:
         with warnings.catch_warnings(record=True) as w:
             warnings.simplefilter("always")
             instance = cls()
-            
+
             if len(w) == 0:
                 print(f"❌ FAIL: {class_name} should emit DeprecationWarning")
                 return False
-            
+
             if not issubclass(w[-1].category, DeprecationWarning):
                 print(f"❌ FAIL: {class_name} should emit DeprecationWarning, got {w[-1].category}")
                 return False
-            
+
             if "deprecated" not in str(w[-1].message).lower():
                 print(f"❌ FAIL: Warning message should mention 'deprecated'")
                 return False
-    
+
     print("✅ PASS: All legacy classes emit DeprecationWarning")
     print(f"   Tested: {[c[0] for c in legacy_classes]}")
     return True
@@ -283,7 +283,7 @@ def main():
     print("PHASE 2 ZERO-LOSS VERIFICATION TEST SUITE")
     print("="*70)
     print(f"Project Root: {PROJECT_ROOT}")
-    
+
     tests = [
         ("TC-5: Mode Parity", test_tc5_mode_parity),
         ("TC-6: Registry Resolution", test_tc6_registry_resolution),
@@ -291,7 +291,7 @@ def main():
         ("TC-8: Discovery Integration", test_tc8_discovery_integration),
         ("BONUS: Deprecation Warnings", test_deprecation_warnings),
     ]
-    
+
     results = []
     for test_name, test_func in tests:
         try:
@@ -302,27 +302,27 @@ def main():
             import traceback
             traceback.print_exc()
             results.append((test_name, False))
-    
+
     # Summary
     print("\n" + "="*70)
     print("TEST SUMMARY")
     print("="*70)
-    
+
     passed_count = sum(1 for _, passed in results if passed)
     total_count = len(results)
-    
+
     # Core tests (TC-5 to TC-8)
     core_tests = results[:4]
     core_passed = sum(1 for _, passed in core_tests if passed)
-    
+
     for test_name, passed in results:
         status = "✅ PASS" if passed else "❌ FAIL"
         print(f"{status}: {test_name}")
-    
+
     print("\n" + "="*70)
     print(f"CORE TESTS: {core_passed}/4 passed")
     print(f"TOTAL: {passed_count}/{total_count} tests passed")
-    
+
     if core_passed == 4:
         print("✅ 100% PASS - All Phase 2 Zero-Loss tests passed!")
         print("\nPhase 2 Orchestrator Unification is verified and ready for Phase 3.")

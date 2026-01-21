@@ -33,17 +33,17 @@ from agentic_core.utils.security import safe_git_execute
 @dataclass
 class GitHygieneAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """L5 Safety agent that enforces Git repository hygiene.
-    
+
     This batch agent audits repository health by detecting stale branches,
     large files in history, and uncommitted/unpushed changes.
-    
+
     Attributes:
         project_root: Root directory of the Git repository.
         ctx: Execution context with reporting capabilities.
         dry_run: If True, only report what would be done (default: True).
         stale_days: Days after which a branch is considered stale (default: 90).
         large_file_mb: Size threshold in MB for large files (default: 10).
-        
+
     Inherits:
         SubatomicTestingMixin: Provides testing utilities.
         HealerMixin: Provides healing chain support.
@@ -51,7 +51,7 @@ class GitHygieneAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
     def __init__(self, project_root: Path, ctx: Any) -> None:
         """Initialize the Git hygiene agent.
-        
+
         Args:
             project_root: Root directory of the Git repository.
             ctx: Execution context with optional report() method.
@@ -64,11 +64,11 @@ class GitHygieneAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
     def _run_git(self, cmd: List[str], **kwargs: Any) -> str:
         """Run a git command and return stdout.
-        
+
         Args:
             cmd: Git command arguments (without 'git' prefix).
             **kwargs: Additional arguments passed to safe_git_execute.
-            
+
         Returns:
             Command stdout if successful, empty string otherwise.
         """
@@ -86,7 +86,7 @@ class GitHygieneAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
     def _get_stale_branches(self) -> List[Dict[str, Any]]:
         """Find branches with no commits in the last N days.
-        
+
         Returns:
             List of dictionaries with branch info:
                 - branch: Branch name
@@ -201,22 +201,22 @@ class GitHygieneAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         _call_path: Optional[Set[str]] = None
     ) -> Dict[str, int]:
         """Execute L5 safety healing operations.
-        
+
         This is an operational agent - no repository healing required.
         Implements cycle detection and depth limiting.
-        
+
         Args:
             dry_run: If True, only report what would be done (default: True).
             execute: If True, execute healing actions (default: False).
             depth: Current recursion depth for cycle detection (default: 0).
             max_depth: Maximum recursion depth allowed (default: 3).
             _call_path: Set of agent names in current call chain for cycle detection.
-            
+
         Returns:
             Dictionary with healing results: {"skipped": 1} for operational agents.
         """
         super().heal_repository()
-        
+
         if _call_path is None:
             _call_path = set()
         agent_name = self.__class__.__name__

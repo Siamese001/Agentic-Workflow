@@ -35,7 +35,7 @@ class SemanticDebuggerAgent(SubatomicTestingMixin, L5SafetyBaseAgent, CognitiveR
     def __init__(self, project_root: Any = None, ctx: Any = None, **kwargs: Any) -> None:
         """
         Initialize semantic debugger agent.
-        
+
         Args:
             project_root: Optional project root directory
             ctx: Optional execution context
@@ -55,7 +55,7 @@ class SemanticDebuggerAgent(SubatomicTestingMixin, L5SafetyBaseAgent, CognitiveR
                 - error_message: Error message string
                 - stack_trace: Stack trace string
                 - context: Optional context string
-        
+
         Returns:
             Dictionary with diagnosis results and fix proposals
         """
@@ -107,10 +107,10 @@ class SemanticDebuggerAgent(SubatomicTestingMixin, L5SafetyBaseAgent, CognitiveR
     def _find_healing_patterns(self, error_context: str) -> List[Any]:
         """
         Wrapper around the Mixin's client to search healing namespace directly.
-        
+
         Args:
             error_context: Error context string to search for
-        
+
         Returns:
             List of healing patterns matching the error context
         """
@@ -121,4 +121,4 @@ class SemanticDebuggerAgent(SubatomicTestingMixin, L5SafetyBaseAgent, CognitiveR
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
         """Autonomous healing with proper invocation chain."""
         super().heal_repository(dry_run=dry_run, execute=execute, **kwargs)
-        return {"violations": 0, "fixed": 0, "errors": 0}
+        return {"violations_found": 0, "violations_fixed": 0, "errors": 0}

@@ -21,10 +21,10 @@ def orphan_function_two(x: int) -> int:
 
 class OrphanClass:
     """A class that is never instantiated."""
-    
+
     def __init__(self):
         self.status = "orphaned"
-    
+
     def do_nothing(self) -> None:
         """A method that does nothing useful."""
         pass

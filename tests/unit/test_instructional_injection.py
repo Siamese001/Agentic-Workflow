@@ -18,11 +18,11 @@ def get_project_root() -> Path:
     import os
     if "PROJECT_ROOT" in os.environ:
         return Path(os.environ["PROJECT_ROOT"])
-    
+
     known_root = Path("C:/Git/Agentic-Workflow")
     if known_root.exists() and (known_root / "agentic_core").is_dir():
         return known_root
-    
+
     test_file = Path(__file__).resolve()
     return test_file.parent.parent.parent
 
@@ -70,11 +70,11 @@ class TestInstructionalInjectionMixin:
             INSTRUCTIONAL_PATTERNS,
             InjectionLayer,
         )
-        
+
         layers_covered = set()
         for pattern in INSTRUCTIONAL_PATTERNS.values():
             layers_covered.add(pattern.layer)
-        
+
         assert len(layers_covered) == 6
         for layer in InjectionLayer:
             assert layer in layers_covered, f"Missing layer: {layer}"
@@ -84,7 +84,7 @@ class TestInstructionalInjectionMixin:
         from agentic_core.utils.core_extensions.instructional_injection_mixin import (
             InstructionalInjectionMixin,
         )
-        
+
         required_methods = [
             "inject_framing_layer",
             "inject_context_layer",
@@ -97,7 +97,7 @@ class TestInstructionalInjectionMixin:
             "get_patterns_by_layer",
             "get_injection_summary",
         ]
-        
+
         for method in required_methods:
             assert hasattr(InstructionalInjectionMixin, method), f"Missing method: {method}"
 
@@ -107,7 +107,7 @@ class TestInstructionalInjectionMixin:
         from agentic_core.utils.core_extensions.instructional_injection_mixin import (
             InstructionalInjectionMixin,
         )
-        
+
         assert issubclass(HealerMixin, InstructionalInjectionMixin)
 
     def test_subatomic_testing_mixin_inherits_injection(self):
@@ -116,7 +116,7 @@ class TestInstructionalInjectionMixin:
         from agentic_core.utils.core_extensions.instructional_injection_mixin import (
             InstructionalInjectionMixin,
         )
-        
+
         assert issubclass(SubatomicTestingMixin, InstructionalInjectionMixin)
 
     def test_mcp_hardened_mixin_inherits_injection(self):
@@ -125,7 +125,7 @@ class TestInstructionalInjectionMixin:
         from agentic_core.utils.core_extensions.instructional_injection_mixin import (
             InstructionalInjectionMixin,
         )
-        
+
         assert issubclass(MCPHardenedMixin, InstructionalInjectionMixin)
 
     def test_inject_safety_layer_works(self):
@@ -133,11 +133,11 @@ class TestInstructionalInjectionMixin:
         from agentic_core.utils.core_extensions.instructional_injection_mixin import (
             InstructionalInjectionMixin,
         )
-        
+
         mixin = InstructionalInjectionMixin()
         original_prompt = "Do something"
         injected = mixin.inject_safety_layer(original_prompt)
-        
+
         # Should have safety patterns injected
         assert "[INJECTION SHIELD]" in injected
         assert "[CONSTITUTIONAL]" in injected
@@ -148,11 +148,11 @@ class TestInstructionalInjectionMixin:
         from agentic_core.utils.core_extensions.instructional_injection_mixin import (
             InstructionalInjectionMixin,
         )
-        
+
         mixin = InstructionalInjectionMixin()
         original_prompt = "Generate output"
         injected = mixin.inject_output_layer(original_prompt, schema='{"type": "object"}')
-        
+
         # Should have output patterns injected
         assert "[JSON-ONLY]" in injected
         assert "[SCHEMA]" in injected
@@ -163,10 +163,10 @@ class TestInstructionalInjectionMixin:
         from agentic_core.utils.core_extensions.instructional_injection_mixin import (
             InstructionalInjectionMixin,
         )
-        
+
         mixin = InstructionalInjectionMixin()
         summary = mixin.get_injection_summary()
-        
+
         assert "total_patterns" in summary
         assert summary["total_patterns"] == 30
         assert "layers" in summary
@@ -184,27 +184,27 @@ class TestAgentInstructionalInjection:
     def test_naming_agent_has_injection(self):
         """Verify NamingAgent has instructional injection."""
         from agentic_core.L5_safety.validators.NamingAgent import NamingAgent
-        
+
         assert hasattr(NamingAgent, 'inject_safety_layer')
         assert hasattr(NamingAgent, 'inject_all_layers')
 
     def test_location_agent_has_injection(self):
         """Verify LocationAgent has instructional injection."""
         from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
-        
+
         assert hasattr(LocationAgent, 'inject_safety_layer')
         assert hasattr(LocationAgent, 'get_injection_summary')
 
     def test_hierarchy_agent_has_injection(self):
         """Verify HierarchyAgent has instructional injection."""
         from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
-        
+
         assert hasattr(HierarchyAgent, 'inject_safety_layer')
 
     def test_ddd_alignment_agent_has_injection(self):
         """Verify DDDAlignmentAgent has instructional injection."""
         from agentic_core.L5_safety.validators.DDDAlignmentAgent import DDDAlignmentAgent
-        
+
         assert hasattr(DDDAlignmentAgent, 'inject_safety_layer')
 
 

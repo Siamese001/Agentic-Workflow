@@ -146,11 +146,11 @@ class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
         violation_formatter: Callable[[str, ast.AST], Optional[str]]
     ) -> Tuple[bool, List[str]]:
         """Generic AST pattern checker to reduce code duplication.
-        
+
         Args:
             node_filter: Function that returns True for nodes to check.
             violation_formatter: Function that returns violation string or None.
-            
+
         Returns:
             Tuple of (passed, violations_list).
         """
@@ -170,7 +170,7 @@ class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
         """Check for mutable default arguments in function definitions."""
         def check_node(node: ast.AST) -> bool:
             return isinstance(node, ast.FunctionDef)
-        
+
         def format_violation(fp: str, node: ast.AST) -> Optional[str]:
             if not isinstance(node, ast.FunctionDef):
                 return None
@@ -178,7 +178,7 @@ class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
                 if isinstance(default, (ast.List, ast.Dict, ast.Set)):
                     return f"{fp}:{node.lineno} in function '{node.name}'"
             return None
-        
+
         return self._check_ast_pattern(check_node, format_violation)
 
     def check_key_27_prefer_str_join(self) -> Tuple[bool, List[str]]:

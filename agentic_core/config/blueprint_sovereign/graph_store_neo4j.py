@@ -15,7 +15,7 @@ from typing import Any, Dict, List, Optional, Protocol
 class Neo4jGraphStore:
     """
     L4 State: Neo4j-backed graph store for entities, temporal relations, and queries.
-    
+
     [HARDENING] Now uses connection pooling and SSL enforcement (Jan 1, 2026)
     """
 
@@ -28,7 +28,7 @@ class Neo4jGraphStore:
         PWD = os.environ.get("NEO4J_PASSWORD")
         if not PWD:
             raise ValueError("[L6 CRITICAL] NEO4J_PASSWORD must be set in environment - no default allowed")
-        
+
         # [HARDENING G4] Connection pooling with SSL enforcement
         self._driver = GraphDatabase.driver(
             URI,

@@ -36,39 +36,39 @@ class TransformOperation(str, Enum):
 class CodeTransformArgs(BaseModel):
     """Arguments for code transformation operations."""
     operation: TransformOperation = Field(
-        ..., 
+        ...,
         description="Type of transformation to perform"
     )
     code: str = Field(
-        ..., 
+        ...,
         description="Source code to transform"
     )
     target: str = Field(
-        ..., 
+        ...,
         description="Target symbol name, line range, or expression to transform"
     )
     new_name: Optional[str] = Field(
-        None, 
+        None,
         description="New name for rename operations"
     )
     destination: Optional[str] = Field(
-        None, 
+        None,
         description="Destination for move operations"
     )
     decorator_name: Optional[str] = Field(
-        None, 
+        None,
         description="Decorator name for add/remove decorator operations"
     )
     extract_name: Optional[str] = Field(
-        None, 
+        None,
         description="Name for extracted function/variable"
     )
     line_start: Optional[int] = Field(
-        None, 
+        None,
         description="Start line for extraction (1-indexed)"
     )
     line_end: Optional[int] = Field(
-        None, 
+        None,
         description="End line for extraction (1-indexed)"
     )
 
@@ -82,7 +82,7 @@ class TransformResult:
     changes_made: List[str] = field(default_factory=list)
     warnings: List[str] = field(default_factory=list)
     error: Optional[str] = None
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {
@@ -97,79 +97,79 @@ class TransformResult:
 
 class SymbolRenamer(ast.NodeTransformer):
     """AST transformer for renaming symbols with scope awareness."""
-    
+
     def __init__(self, old_name: str, new_name: str):
         self.old_name = old_name
         self.new_name = new_name
         self.changes: List[str] = []
         self._scope_stack: List[Set[str]] = [set()]
-    
+
     def _push_scope(self, names: Set[str] = None):
         """Push a new scope onto the stack."""
         self._scope_stack.append(names or set())
-    
+
     def _pop_scope(self):
         """Pop the current scope."""
         if len(self._scope_stack) > 1:
             self._scope_stack.pop()
-    
+
     def _is_shadowed(self) -> bool:
         """Check if the target name is shadowed in current scope."""
         for scope in reversed(self._scope_stack[1:]):
             if self.old_name in scope:
                 return True
         return False
-    
+
     def visit_Name(self, node: ast.Name) -> ast.Name:
         """Rename Name nodes."""
         if node.id == self.old_name and not self._is_shadowed():
             self.changes.append(f"Renamed '{self.old_name}' to '{self.new_name}' at line {node.lineno}")
             node.id = self.new_name
         return node
-    
+
     def visit_FunctionDef(self, node: ast.FunctionDef) -> ast.FunctionDef:
         """Handle function definitions with scope tracking."""
         if node.name == self.old_name:
             self.changes.append(f"Renamed function '{self.old_name}' to '{self.new_name}' at line {node.lineno}")
             node.name = self.new_name
-        
+
         # Track parameters as local scope
         local_names = {arg.arg for arg in node.args.args}
         self._push_scope(local_names)
         self.generic_visit(node)
         self._pop_scope()
         return node
-    
+
     def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> ast.AsyncFunctionDef:
         """Handle async function definitions."""
         if node.name == self.old_name:
             self.changes.append(f"Renamed async function '{self.old_name}' to '{self.new_name}' at line {node.lineno}")
             node.name = self.new_name
-        
+
         local_names = {arg.arg for arg in node.args.args}
         self._push_scope(local_names)
         self.generic_visit(node)
         self._pop_scope()
         return node
-    
+
     def visit_ClassDef(self, node: ast.ClassDef) -> ast.ClassDef:
         """Handle class definitions."""
         if node.name == self.old_name:
             self.changes.append(f"Renamed class '{self.old_name}' to '{self.new_name}' at line {node.lineno}")
             node.name = self.new_name
-        
+
         self._push_scope()
         self.generic_visit(node)
         self._pop_scope()
         return node
-    
+
     def visit_arg(self, node: ast.arg) -> ast.arg:
         """Handle function arguments."""
         if node.arg == self.old_name:
             self.changes.append(f"Renamed argument '{self.old_name}' to '{self.new_name}' at line {node.lineno}")
             node.arg = self.new_name
         return node
-    
+
     def visit_alias(self, node: ast.alias) -> ast.alias:
         """Handle import aliases."""
         if node.asname == self.old_name:
@@ -180,13 +180,13 @@ class SymbolRenamer(ast.NodeTransformer):
 
 class DecoratorModifier(ast.NodeTransformer):
     """AST transformer for adding/removing decorators."""
-    
+
     def __init__(self, target_name: str, decorator_name: str, add: bool = True):
         self.target_name = target_name
         self.decorator_name = decorator_name
         self.add = add
         self.changes: List[str] = []
-    
+
     def visit_FunctionDef(self, node: ast.FunctionDef) -> ast.FunctionDef:
         """Modify decorators on function definitions."""
         if node.name == self.target_name:
@@ -199,15 +199,15 @@ class DecoratorModifier(ast.NodeTransformer):
                 # Remove decorator
                 original_count = len(node.decorator_list)
                 node.decorator_list = [
-                    d for d in node.decorator_list 
+                    d for d in node.decorator_list
                     if not (isinstance(d, ast.Name) and d.id == self.decorator_name)
                 ]
                 if len(node.decorator_list) < original_count:
                     self.changes.append(f"Removed @{self.decorator_name} from function '{self.target_name}'")
-        
+
         self.generic_visit(node)
         return node
-    
+
     def visit_ClassDef(self, node: ast.ClassDef) -> ast.ClassDef:
         """Modify decorators on class definitions."""
         if node.name == self.target_name:
@@ -218,12 +218,12 @@ class DecoratorModifier(ast.NodeTransformer):
             else:
                 original_count = len(node.decorator_list)
                 node.decorator_list = [
-                    d for d in node.decorator_list 
+                    d for d in node.decorator_list
                     if not (isinstance(d, ast.Name) and d.id == self.decorator_name)
                 ]
                 if len(node.decorator_list) < original_count:
                     self.changes.append(f"Removed @{self.decorator_name} from class '{self.target_name}'")
-        
+
         self.generic_visit(node)
         return node
 
@@ -246,12 +246,12 @@ def _unparse_code(tree: ast.AST) -> str:
 def rename_symbol(code: str, old_name: str, new_name: str) -> TransformResult:
     """
     Rename a symbol throughout the code with scope awareness.
-    
+
     Args:
         code: Source code
         old_name: Current symbol name
         new_name: New symbol name
-        
+
     Returns:
         TransformResult with renamed code
     """
@@ -263,10 +263,10 @@ def rename_symbol(code: str, old_name: str, new_name: str) -> TransformResult:
             operation="rename_symbol",
             error=error
         )
-    
+
     renamer = SymbolRenamer(old_name, new_name)
     new_tree = renamer.visit(tree)
-    
+
     if not renamer.changes:
         return TransformResult(
             success=False,
@@ -274,7 +274,7 @@ def rename_symbol(code: str, old_name: str, new_name: str) -> TransformResult:
             operation="rename_symbol",
             error=f"Symbol '{old_name}' not found in code"
         )
-    
+
     try:
         new_code = _unparse_code(new_tree)
         return TransformResult(
@@ -293,25 +293,25 @@ def rename_symbol(code: str, old_name: str, new_name: str) -> TransformResult:
 
 
 def extract_function(
-    code: str, 
-    line_start: int, 
-    line_end: int, 
+    code: str,
+    line_start: int,
+    line_end: int,
     function_name: str
 ) -> TransformResult:
     """
     Extract lines into a new function.
-    
+
     Args:
         code: Source code
         line_start: Start line (1-indexed)
         line_end: End line (1-indexed)
         function_name: Name for the extracted function
-        
+
     Returns:
         TransformResult with extracted function
     """
     lines = code.split('\n')
-    
+
     if line_start < 1 or line_end > len(lines) or line_start > line_end:
         return TransformResult(
             success=False,
@@ -319,20 +319,20 @@ def extract_function(
             operation="extract_function",
             error=f"Invalid line range: {line_start}-{line_end} (file has {len(lines)} lines)"
         )
-    
+
     # Extract the lines (convert to 0-indexed)
     extracted_lines = lines[line_start - 1:line_end]
-    
+
     # Detect indentation of extracted code
     min_indent = float('inf')
     for line in extracted_lines:
         if line.strip():
             indent = len(line) - len(line.lstrip())
             min_indent = min(min_indent, indent)
-    
+
     if min_indent == float('inf'):
         min_indent = 0
-    
+
     # Normalize indentation for function body
     normalized_lines = []
     for line in extracted_lines:
@@ -340,15 +340,15 @@ def extract_function(
             normalized_lines.append('    ' + line[min_indent:])
         else:
             normalized_lines.append('')
-    
+
     # Analyze extracted code for used variables
     extracted_code = '\n'.join(extracted_lines)
     tree, error = _parse_code(extracted_code)
-    
+
     # Find variables that are used but not defined in the extracted code
     used_names: Set[str] = set()
     defined_names: Set[str] = set()
-    
+
     if tree:
         for node in ast.walk(tree):
             if isinstance(node, ast.Name):
@@ -356,28 +356,28 @@ def extract_function(
                     used_names.add(node.id)
                 elif isinstance(node.ctx, ast.Store):
                     defined_names.add(node.id)
-    
+
     # Parameters are names used but not defined locally
     params = sorted(used_names - defined_names - {'print', 'len', 'range', 'str', 'int', 'float', 'list', 'dict', 'set', 'True', 'False', 'None'})
     params_str = ', '.join(params)
-    
+
     # Build the new function
     indent_str = ' ' * min_indent
     function_def = f"{indent_str}def {function_name}({params_str}):\n"
     function_body = '\n'.join(normalized_lines)
     new_function = function_def + function_body
-    
+
     # Replace extracted lines with function call
     call_args = ', '.join(params)
     function_call = f"{indent_str}{function_name}({call_args})"
-    
+
     # Build new code
     new_lines = (
-        lines[:line_start - 1] + 
-        [function_call] + 
+        lines[:line_start - 1] +
+        [function_call] +
         lines[line_end:]
     )
-    
+
     # Insert function definition before the call
     # Find appropriate insertion point (before the function containing the call)
     insertion_point = 0
@@ -385,15 +385,15 @@ def extract_function(
         if line.strip().startswith('def ') or line.strip().startswith('class '):
             insertion_point = i
             break
-    
+
     new_lines = (
-        new_lines[:insertion_point] + 
-        [new_function, ''] + 
+        new_lines[:insertion_point] +
+        [new_function, ''] +
         new_lines[insertion_point:]
     )
-    
+
     new_code = '\n'.join(new_lines)
-    
+
     return TransformResult(
         success=True,
         transformed_code=new_code,
@@ -409,12 +409,12 @@ def extract_function(
 def add_decorator(code: str, target_name: str, decorator_name: str) -> TransformResult:
     """
     Add a decorator to a function or class.
-    
+
     Args:
         code: Source code
         target_name: Name of function/class to decorate
         decorator_name: Name of decorator to add
-        
+
     Returns:
         TransformResult with decorated code
     """
@@ -426,10 +426,10 @@ def add_decorator(code: str, target_name: str, decorator_name: str) -> Transform
             operation="add_decorator",
             error=error
         )
-    
+
     modifier = DecoratorModifier(target_name, decorator_name, add=True)
     new_tree = modifier.visit(tree)
-    
+
     if not modifier.changes:
         return TransformResult(
             success=False,
@@ -437,7 +437,7 @@ def add_decorator(code: str, target_name: str, decorator_name: str) -> Transform
             operation="add_decorator",
             error=f"Target '{target_name}' not found in code"
         )
-    
+
     try:
         new_code = _unparse_code(new_tree)
         return TransformResult(
@@ -458,12 +458,12 @@ def add_decorator(code: str, target_name: str, decorator_name: str) -> Transform
 def remove_decorator(code: str, target_name: str, decorator_name: str) -> TransformResult:
     """
     Remove a decorator from a function or class.
-    
+
     Args:
         code: Source code
         target_name: Name of function/class
         decorator_name: Name of decorator to remove
-        
+
     Returns:
         TransformResult with decorator removed
     """
@@ -475,10 +475,10 @@ def remove_decorator(code: str, target_name: str, decorator_name: str) -> Transf
             operation="remove_decorator",
             error=error
         )
-    
+
     modifier = DecoratorModifier(target_name, decorator_name, add=False)
     new_tree = modifier.visit(tree)
-    
+
     if not modifier.changes:
         return TransformResult(
             success=False,
@@ -486,7 +486,7 @@ def remove_decorator(code: str, target_name: str, decorator_name: str) -> Transf
             operation="remove_decorator",
             warnings=[f"Decorator @{decorator_name} not found on '{target_name}'"]
         )
-    
+
     try:
         new_code = _unparse_code(new_tree)
         return TransformResult(
@@ -507,19 +507,19 @@ def remove_decorator(code: str, target_name: str, decorator_name: str) -> Transf
 def code_transform(args: CodeTransformArgs) -> Dict[str, Any]:
     """
     Main entry point for code transformations.
-    
+
     Dispatches to specific transformation functions based on operation type.
-    
+
     Args:
         args: CodeTransformArgs with operation details
-        
+
     Returns:
         Dict with transformation results
     """
     Logger.info(f"CTE: Executing {args.operation} on target '{args.target}'")
-    
+
     result: TransformResult
-    
+
     if args.operation == TransformOperation.RENAME_SYMBOL:
         if not args.new_name:
             return TransformResult(
@@ -529,7 +529,7 @@ def code_transform(args: CodeTransformArgs) -> Dict[str, Any]:
                 error="new_name required for rename_symbol operation"
             ).to_dict()
         result = rename_symbol(args.code, args.target, args.new_name)
-    
+
     elif args.operation == TransformOperation.RENAME_CLASS:
         if not args.new_name:
             return TransformResult(
@@ -539,7 +539,7 @@ def code_transform(args: CodeTransformArgs) -> Dict[str, Any]:
                 error="new_name required for rename_class operation"
             ).to_dict()
         result = rename_symbol(args.code, args.target, args.new_name)
-    
+
     elif args.operation == TransformOperation.EXTRACT_FUNCTION:
         if not args.line_start or not args.line_end or not args.extract_name:
             return TransformResult(
@@ -549,12 +549,12 @@ def code_transform(args: CodeTransformArgs) -> Dict[str, Any]:
                 error="line_start, line_end, and extract_name required for extract_function"
             ).to_dict()
         result = extract_function(
-            args.code, 
-            args.line_start, 
-            args.line_end, 
+            args.code,
+            args.line_start,
+            args.line_end,
             args.extract_name
         )
-    
+
     elif args.operation == TransformOperation.ADD_DECORATOR:
         if not args.decorator_name:
             return TransformResult(
@@ -564,7 +564,7 @@ def code_transform(args: CodeTransformArgs) -> Dict[str, Any]:
                 error="decorator_name required for add_decorator operation"
             ).to_dict()
         result = add_decorator(args.code, args.target, args.decorator_name)
-    
+
     elif args.operation == TransformOperation.REMOVE_DECORATOR:
         if not args.decorator_name:
             return TransformResult(
@@ -574,7 +574,7 @@ def code_transform(args: CodeTransformArgs) -> Dict[str, Any]:
                 error="decorator_name required for remove_decorator operation"
             ).to_dict()
         result = remove_decorator(args.code, args.target, args.decorator_name)
-    
+
     else:
         result = TransformResult(
             success=False,
@@ -582,7 +582,7 @@ def code_transform(args: CodeTransformArgs) -> Dict[str, Any]:
             operation=str(args.operation),
             error=f"Operation '{args.operation}' not yet implemented"
         )
-    
+
     Logger.info(f"CTE: {args.operation} {'succeeded' if result.success else 'failed'}")
     return result.to_dict()
 

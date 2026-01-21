@@ -28,7 +28,7 @@ MIGRATION_MAP: Dict[str, str] = {
     # Structure blueprint -> config
     r"from agentic_core\.L5_safety\.validators\.structure_blueprint import":
         "from agentic_core.config import",
-    
+
     # Unified agents -> unified API
     r"from agentic_core\.L5_safety\.unified\.UnifiedCodeValidatorAgent import UnifiedCodeValidatorAgent":
         "from agentic_core.unified import UnifiedCodeValidatorAgent",
@@ -40,7 +40,7 @@ MIGRATION_MAP: Dict[str, str] = {
         "from agentic_core.unified import UnifiedStructureEnforcerAgent",
     r"from agentic_core\.L5_safety\.unified\.UnifiedResourceManagerAgent import UnifiedResourceManagerAgent":
         "from agentic_core.unified import UnifiedResourceManagerAgent",
-    
+
     # HealerMixin -> SSOT location
     r"from agentic_core\.L5_safety\.validators\.healer_mixin import":
         "from agentic_core.utils.core_extensions.healer_mixin import",
@@ -61,59 +61,59 @@ SKIP_FILES = {
 def migrate_file(file_path: Path, dry_run: bool = True) -> Tuple[bool, List[str]]:
     """
     Migrate imports in a single file.
-    
+
     Args:
         file_path: Path to the Python file
         dry_run: If True, don't write changes
-        
+
     Returns:
         Tuple of (was_modified, list_of_changes)
     """
     content = safe_read_file(file_path)
     if content is None:
         return False, []
-    
+
     original_content = content
     changes = []
-    
+
     for pattern, replacement in MIGRATION_MAP.items():
         if re.search(pattern, content):
             content = re.sub(pattern, replacement, content)
             changes.append(f"  {pattern} -> {replacement}")
-    
+
     if content != original_content:
         if not dry_run:
             safe_write_file(file_path, content)
         return True, changes
-    
+
     return False, []
 
 
 def migrate_repo(dry_run: bool = True) -> Dict[str, List[str]]:
     """
     Migrate all Python files in the repository.
-    
+
     Args:
         dry_run: If True, only report changes without applying
-        
+
     Returns:
         Dict mapping file paths to their changes
     """
     root = get_project_root()
     files = get_python_files(root)
-    
+
     results = {}
-    
+
     for file_path in files:
         # Skip certain files
         if file_path.name in SKIP_FILES:
             continue
-        
+
         was_modified, changes = migrate_file(file_path, dry_run=dry_run)
-        
+
         if was_modified:
             results[str(file_path)] = changes
-    
+
     return results
 
 
@@ -124,13 +124,13 @@ def main():
     parser.add_argument("--apply", action="store_true",
                         help="Apply changes to files")
     args = parser.parse_args()
-    
+
     dry_run = not args.apply
-    
+
     print(f"{'DRY RUN' if dry_run else 'APPLYING CHANGES'}: Migrating imports...")
-    
+
     results = migrate_repo(dry_run=dry_run)
-    
+
     if results:
         print(f"\n{'Would modify' if dry_run else 'Modified'} {len(results)} files:\n")
         for file_path, changes in results.items():
@@ -139,7 +139,7 @@ def main():
                 print(f"    {change}")
     else:
         print("\nNo files need migration.")
-    
+
     if dry_run and results:
         print("\nRun with --apply to apply changes.")
 

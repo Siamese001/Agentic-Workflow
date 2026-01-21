@@ -13,7 +13,7 @@ class StateValidationError(Exception):
 class StateValidationMixin:
     """
     Phase 1 Critical Infrastructure: State Validation (Report 4.2).
-    
+
     Ensures data consistency through:
     - Pre-condition checks (guard clauses)
     - Post-condition verification (invariants)
@@ -54,12 +54,12 @@ class StateValidationMixin:
             return None
 
     @staticmethod
-    def validate_state(pre: Optional[Callable[[Any], bool]] = None, 
+    def validate_state(pre: Optional[Callable[[Any], bool]] = None,
                        post: Optional[Callable[[Any, Any], bool]] = None,
                        idempotent: bool = False):
         """
         Decorator to enforce state validity.
-        
+
         Args:
             pre: Callable(self) -> bool. Runs BEFORE method. Raises if False.
             post: Callable(self, result) -> bool. Runs AFTER method. Raises if False.

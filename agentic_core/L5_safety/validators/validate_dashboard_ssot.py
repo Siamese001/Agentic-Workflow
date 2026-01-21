@@ -48,27 +48,27 @@ def check_file_for_hardcoded_paths(file_path: Path) -> List[Tuple[int, str]]:
     Returns list of (line_number, matched_pattern) tuples.
     """
     violations = []
-    
+
     try:
         content = file_path.read_text(encoding='utf-8')
         lines = content.split('\n')
-        
+
         for line_num, line in enumerate(lines, 1):
             # Skip lines that import DASHBOARD_DIR (legitimate usage)
             if 'from agentic_core.L5_safety.validators.structure_blueprint import' in line:
                 continue
             if 'DASHBOARD_DIR' in line and 'import' in line:
                 continue
-                
+
             # Check for hardcoded patterns
             for pattern in HARDCODED_PATTERNS:
                 if re.search(pattern, line):
                     violations.append((line_num, line.strip()))
                     break
-                    
+
     except Exception as e:
         print(f"⚠️  Error reading {file_path}: {e}")
-        
+
     return violations
 
 def validate_dashboard_ssot() -> Tuple[bool, List[str]]:
@@ -79,21 +79,21 @@ def validate_dashboard_ssot() -> Tuple[bool, List[str]]:
     project_root = get_validated_project_root()
     violations_report = []
     total_violations = 0
-    
+
     print("=" * 80)
     print("DASHBOARD SSOT VALIDATION")
     print("=" * 80)
     print(f"\n📍 SSOT Location: structure_blueprint.py")
     print(f"📂 SSOT Value: {DASHBOARD_DIR}")
     print(f"🔍 Scanning project: {project_root}\n")
-    
+
     # Scan all Python files
     # Final True 20: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_python_files
     for py_file in get_python_files(project_root):
         if should_exclude(py_file):
             continue
-            
+
         violations = check_file_for_hardcoded_paths(py_file)
         if violations:
             total_violations += len(violations)
@@ -101,7 +101,7 @@ def validate_dashboard_ssot() -> Tuple[bool, List[str]]:
             violations_report.append(f"\n❌ {rel_path}")
             for line_num, line in violations:
                 violations_report.append(f"   Line {line_num}: {line}")
-    
+
     # Print results
     if total_violations == 0:
         print("✅ ALL FILES COMPLIANT - No hardcoded dashboard paths found!")

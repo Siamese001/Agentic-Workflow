@@ -30,10 +30,10 @@ merge_files() {
     local original="$1"
     shift
     local duplicates=("$@")
-    
+
     echo ""
     echo "Merging into: $original"
-    
+
     for dup in "${duplicates[@]}"; do
         if [ -f "/workspace/$dup" ]; then
             backup_file "$dup"

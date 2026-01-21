@@ -57,30 +57,30 @@ from agentic_core.L5_safety.validators.decorators import standard_heal
 class L0MaintenanceBaseAgent(L0DelegationTestingMixin, SovereignBaseAgent):
     """
     Consolidated base for L0 Maintenance agents.
-    
+
     MRO HARDENING:
     - HealerMixin: First (specialized capability)
     - L0DelegationTestingMixin: Second (L0-specific testing)
     - SovereignBaseAgent: Last (root - includes MCPHardenedMixin)
-    
+
     MRO: HealerMixin -> L0DelegationTestingMixin -> SovereignBaseAgent -> MCPHardenedMixin -> object
-    
+
     Guaranteed Capabilities:
     - heal_repository(): Self-repair method
     - _hardened_call(): MCP operations via SovereignBaseAgent
     - _delegate_tests(): Delegates testing to L1+ validators
-    
+
     L0 Table Decision:
     - Basic Self-Testing: NO (boot-time stability)
     - Delegation to TestSovereigntyAgent: YES (on failure)
     """
     name: str = "L0MaintenanceBaseAgent"
     layer: str = "L0"
-    
+
     def __post_init__(self) -> None:
         """Cooperative MRO initialization."""
         super().__post_init__()
-    
+
     @standard_heal
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set = None) -> Dict[str, Any]:
         """Invoke shared healing chain then allow subclass override."""

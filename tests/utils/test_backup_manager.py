@@ -25,7 +25,7 @@ def test_get_backup_dir_structure(tmp_path):
         project_root=tmp_path,
         timestamped=False
     )
-    
+
     # Assert
     expected = tmp_path / "archives/healing_backups/unit_test"
     assert backup_dir == expected
@@ -40,7 +40,7 @@ def test_get_backup_dir_timestamped(tmp_path):
         project_root=tmp_path,
         timestamped=True
     )
-    
+
     # Assert - use Path parts for cross-platform compatibility
     parts = backup_dir.parts
     assert "archives" in parts
@@ -56,14 +56,14 @@ def test_cleanup_old_backups(tmp_path):
     for i in range(5):
         d = tmp_path / "archives/healing_backups/cleanup_test" / f"20260120_10000{i}"
         d.mkdir(parents=True)
-        
+
     # Act: Keep only last 2
     removed = BackupManager.cleanup_old_backups(
-        category="cleanup_test", 
+        category="cleanup_test",
         keep_last_n=2,
         project_root=tmp_path
     )
-    
+
     # Assert
     remaining = list((tmp_path / "archives/healing_backups/cleanup_test").iterdir())
     assert removed == 3
@@ -79,14 +79,14 @@ def test_backup_file(tmp_path):
     # Arrange: Create a test file
     test_file = tmp_path / "test_file.txt"
     test_file.write_text("test content")
-    
+
     # Act
     backup_path = BackupManager.backup_file(
         target_file=test_file,
         category="file_test",
         project_root=tmp_path
     )
-    
+
     # Assert - use Path parts for cross-platform compatibility
     assert backup_path is not None
     assert backup_path.exists()
@@ -105,7 +105,7 @@ def test_backup_file_nonexistent(tmp_path):
         category="file_test",
         project_root=tmp_path
     )
-    
+
     # Assert
     assert result is None
 
@@ -116,13 +116,13 @@ def test_list_backups(tmp_path):
     for i in range(3):
         d = tmp_path / "archives/healing_backups/list_test" / f"20260120_10000{i}"
         d.mkdir(parents=True)
-    
+
     # Act
     backups = BackupManager.list_backups(
         category="list_test",
         project_root=tmp_path
     )
-    
+
     # Assert
     assert len(backups) == 3
     # Should be sorted newest first
@@ -137,7 +137,7 @@ def test_list_backups_empty_category(tmp_path):
         category="nonexistent",
         project_root=tmp_path
     )
-    
+
     # Assert
     assert backups == []
 
@@ -147,18 +147,18 @@ def test_restore_backup_file(tmp_path):
     # Arrange: Create backup and remove original
     original = tmp_path / "original.txt"
     original.write_text("original content")
-    
+
     backup = BackupManager.backup_file(
         target_file=original,
         category="restore_test",
         project_root=tmp_path
     )
     original.unlink()
-    
+
     # Act
     restored_path = tmp_path / "restored.txt"
     result = BackupManager.restore_backup(backup, restored_path)
-    
+
     # Assert
     assert result is True
     assert restored_path.exists()

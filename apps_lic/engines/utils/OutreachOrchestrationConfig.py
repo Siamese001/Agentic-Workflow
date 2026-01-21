@@ -43,7 +43,7 @@ class CharLimitConstraint:
     """Character limit constraint for a Route."""
     min: Optional[int] = None
     max: Optional[int] = None
-    
+
     def validate(self, count: int) -> bool:
         """Validate character count against constraints."""
         if self.min is not None and count < self.min:
@@ -58,7 +58,7 @@ class WordLimitConstraint:
     """Word limit constraint for a Route."""
     min: Optional[int] = None
     max: Optional[int] = None
-    
+
     def validate(self, count: int) -> bool:
         """Validate word count against constraints."""
         if self.min is not None and count < self.min:
@@ -283,7 +283,7 @@ ARCHETYPE_CONFIGS = {
 # Archetype Classification Tokens (from LinkedInCanonical v2.90)
 ARCHETYPE_TOKENS = {
     "C_LEVEL": [
-        "CEO", "Chief Executive Officer", "President", "COO", "CTO", "CIO", 
+        "CEO", "Chief Executive Officer", "President", "COO", "CTO", "CIO",
         "CFO", "CDO", "CRO", "CXO", "Chief", "CEO direct report"
     ],
     "EXECUTIVE": [
@@ -291,7 +291,7 @@ ARCHETYPE_TOKENS = {
         "Executive", "GTM Leader", "Vice President"
     ],
     "SENIOR_TA": [
-        "Talent Acquisition", "TA", "Recruiter", "Sourcer", 
+        "Talent Acquisition", "TA", "Recruiter", "Sourcer",
         "Talent Partner", "Global Talent Partner", "Recruiting"
     ],
     "RECRUITER": [
@@ -460,7 +460,7 @@ VALIDATION_RULES = [
 
 # Forbidden Words and Phrases (from v11.9)
 FORBIDDEN_VERBS = [
-    "spearheaded", "leveraged", "drove", "drive", "synergized", 
+    "spearheaded", "leveraged", "drove", "drive", "synergized",
     "utilized", "facilitated", "orchestrated"
 ]
 
@@ -661,10 +661,10 @@ BOOT_VALIDATOR_CONFIG = {
 
 def get_route_config(Route: Route) -> Optional[RouteConfig]:
     """Get Route configuration.
-    
+
     Args:
         Route: Message Route
-        
+
     Returns:
         RouteConfig or None if not defined
     """
@@ -673,10 +673,10 @@ def get_route_config(Route: Route) -> Optional[RouteConfig]:
 
 def get_archetype_config(Archetype: Archetype) -> Optional[ArchetypeConfig]:
     """Get Archetype configuration.
-    
+
     Args:
         Archetype: Recipient Archetype
-        
+
     Returns:
         ArchetypeConfig or None if not defined
     """
@@ -685,51 +685,51 @@ def get_archetype_config(Archetype: Archetype) -> Optional[ArchetypeConfig]:
 
 def classify_archetype(title: str, about: str = "") -> Archetype:
     """Classify recipient Archetype based on title and about.
-    
+
     Args:
         title: Recipient job title
         about: Recipient about section
-        
+
     Returns:
         Classified Archetype
     """
     combined_text = f"{title} {about}".upper()
-    
+
     # CXO precedence rule (v2.90)
     for token in CXO_PRECEDENCE_TOKENS:
         if token.upper() in combined_text:
             return Archetype.C_LEVEL
-    
+
     # C_LEVEL tokens
     for token in ARCHETYPE_TOKENS["C_LEVEL"]:
         if token.upper() in combined_text:
             return Archetype.C_LEVEL
-    
+
     # EXECUTIVE tokens
     for token in ARCHETYPE_TOKENS["EXECUTIVE"]:
         if token.upper() in combined_text:
             return Archetype.EXECUTIVE
-    
+
     # SENIOR_TA tokens
     for token in ARCHETYPE_TOKENS["SENIOR_TA"]:
         if token.upper() in combined_text:
             return Archetype.SENIOR_TA
-    
+
     # RECRUITER tokens
     for token in ARCHETYPE_TOKENS["RECRUITER"]:
         if token.upper() in combined_text:
             return Archetype.RECRUITER
-    
+
     # Default to EXECUTIVE if no match
     return Archetype.EXECUTIVE
 
 
 def get_validation_rules(phase: str) -> List[ValidationRule]:
     """Get validation rules for a specific phase.
-    
+
     Args:
         phase: Execution phase
-        
+
     Returns:
         List of validation rules
     """

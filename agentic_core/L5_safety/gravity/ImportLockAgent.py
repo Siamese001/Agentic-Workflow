@@ -55,7 +55,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 class SovereigntyError(ImportError):
     """
     Custom error raised when a runtime import violates the Law of Gravity.
-    
+
     This error is raised when a lower-layer module attempts to import from
     a higher layer, violating the SSOT architectural principles.
     """
@@ -66,23 +66,23 @@ class SovereigntyError(ImportError):
 class ImportLockAgent(SubatomicTestingMixin, MCPHardenedMixin, MetaPathFinder):
     """
     The Runtime Execution Guard.
-    
+
     Monitors sys.meta_path to ensure no L0-L4 component triggers an
     unauthorized static L5 dependency. Provides defense-in-depth by
     catching violations at runtime.
-    
+
     Features:
     - Runtime import interception via sys.meta_path
     - Layer-based validation (L5 → L0 flow enforcement)
     - Support for intentional dynamic imports
     - Annotation-aware ([SSOT DYNAMIC] comments)
     - Fail-fast with detailed error messages
-    
+
     Usage:
         # At application entry point
         lock = ImportLockAgent()
         lock.engage_lock()
-        
+
         # Now all imports are monitored
         # Violations will raise SovereigntyError
     """
@@ -91,11 +91,11 @@ class ImportLockAgent(SubatomicTestingMixin, MCPHardenedMixin, MetaPathFinder):
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
-        
+
         Args:
             dry_run: If True, only report violations without fixing
             execute: If True, apply fixes
-        
+
         Returns:
             Dict with healing summary
         """
@@ -108,14 +108,14 @@ class ImportLockAgent(SubatomicTestingMixin, MCPHardenedMixin, MetaPathFinder):
         super().__init__()
         self.enabled = False
         self.violations_caught = []
-        
+
         # Modules that are allowed to use dynamic imports
         # These correspond to the 4 intentional exceptions documented in Sprint 4
         self._intentional_exceptions = [
             "agentic_core.L3_orchestration.workflow_engines.NervousSystemAgent",
             "agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent",
         ]
-        
+
         # Modules that are always allowed (foundational)
         self._always_allowed = [
             "agentic_core.utils",
@@ -125,7 +125,7 @@ class ImportLockAgent(SubatomicTestingMixin, MCPHardenedMixin, MetaPathFinder):
     def engage_lock(self) -> bool:
         """
         Install the import hook into Python's sys.meta_path.
-        
+
         Returns:
             True if successfully engaged, False if already engaged
         """
@@ -139,7 +139,7 @@ class ImportLockAgent(SubatomicTestingMixin, MCPHardenedMixin, MetaPathFinder):
     def disengage_lock(self) -> bool:
         """
         Remove the import hook from sys.meta_path.
-        
+
         Returns:
             True if successfully disengaged, False if not engaged
         """
@@ -161,18 +161,18 @@ class ImportLockAgent(SubatomicTestingMixin, MCPHardenedMixin, MetaPathFinder):
     ) -> Optional[ModuleSpec]:
         """
         Intercept import attempts and validate architectural compliance.
-        
+
         This method is called by Python's import system for every import.
         It validates that imports follow the SSOT gravity rules.
-        
+
         Args:
             fullname: Full name of the module being imported
             path: Package path (unused)
             target: Target module (unused)
-            
+
         Returns:
             None (allows import to proceed via normal mechanisms)
-            
+
         Raises:
             SovereigntyError: If import violates architectural rules
         """
@@ -186,11 +186,11 @@ class ImportLockAgent(SubatomicTestingMixin, MCPHardenedMixin, MetaPathFinder):
             return None
 
         caller_name = caller_module.__name__
-        
+
         # Allow intentional dynamic exceptions
         if self._is_intentional_exception(caller_name):
             return None
-        
+
         # Allow imports from foundational modules
         if self._is_always_allowed(fullname):
             return None
@@ -209,7 +209,7 @@ class ImportLockAgent(SubatomicTestingMixin, MCPHardenedMixin, MetaPathFinder):
                     "target_layer": target_layer
                 }
                 self.violations_caught.append(violation)
-                
+
                 raise SovereigntyError(
                     f"\n{'!' * 80}\n"
                     f"  RUNTIME GRAVITY VIOLATION DETECTED\n"
@@ -228,7 +228,7 @@ class ImportLockAgent(SubatomicTestingMixin, MCPHardenedMixin, MetaPathFinder):
                     f"This import was blocked to maintain architectural integrity.\n"
                     f"{'!' * 80}\n"
                 )
-                
+
         except ValueError:
             # Not a layered module, allow import
             return None
@@ -239,7 +239,7 @@ class ImportLockAgent(SubatomicTestingMixin, MCPHardenedMixin, MetaPathFinder):
     def _get_caller_module(self) -> Optional[Any]:
         """
         Get the module that initiated the import.
-        
+
         Returns:
             The calling module or None if not found
         """
@@ -249,12 +249,12 @@ class ImportLockAgent(SubatomicTestingMixin, MCPHardenedMixin, MetaPathFinder):
             for frame_info in inspect.stack()[2:]:
                 frame = frame_info.frame
                 module = inspect.getmodule(frame)
-                
+
                 if module and module.__name__ != __name__:
                     # Skip importlib internals
                     if not module.__name__.startswith('importlib'):
                         return module
-            
+
             return None
         except Exception:
             return None
@@ -262,10 +262,10 @@ class ImportLockAgent(SubatomicTestingMixin, MCPHardenedMixin, MetaPathFinder):
     def _is_intentional_exception(self, module_name: str) -> bool:
         """
         Check if module is in the intentional exceptions list.
-        
+
         Args:
             module_name: Full module name to check
-            
+
         Returns:
             True if module is an intentional exception
         """
@@ -274,10 +274,10 @@ class ImportLockAgent(SubatomicTestingMixin, MCPHardenedMixin, MetaPathFinder):
     def _is_always_allowed(self, module_name: str) -> bool:
         """
         Check if module is always allowed (foundational).
-        
+
         Args:
             module_name: Full module name to check
-            
+
         Returns:
             True if module is foundational and always allowed
         """
@@ -286,13 +286,13 @@ class ImportLockAgent(SubatomicTestingMixin, MCPHardenedMixin, MetaPathFinder):
     def _get_layer_rank(self, module_name: str) -> int:
         """
         Extract the integer rank from the layer string.
-        
+
         Args:
             module_name: Full module name (e.g., "agentic_core.L3_orchestration.X")
-            
+
         Returns:
             Layer rank (0-5)
-            
+
         Raises:
             ValueError: If module is not in a ranked layer
         """
@@ -300,36 +300,36 @@ class ImportLockAgent(SubatomicTestingMixin, MCPHardenedMixin, MetaPathFinder):
         match = re.search(r'L(\d)', module_name)
         if match:
             return int(match.group(1))
-        
+
         # Utils is treated as L0-adjacent (foundational)
         if "utils" in module_name:
             return 0
-        
+
         # Config is also foundational
         if "config" in module_name:
             return 0
-        
+
         raise ValueError(f"Module {module_name} is not in a ranked layer")
 
     def get_violations_report(self) -> str:
         """
         Generate a report of all violations caught.
-        
+
         Returns:
             Formatted string with violation details
         """
         if not self.violations_caught:
             return "No violations caught."
-        
+
         report = f"\n{'=' * 80}\n"
         report += f"  IMPORT LOCK AGENT - Violations Report\n"
         report += f"{'=' * 80}\n"
         report += f"Total violations caught: {len(self.violations_caught)}\n\n"
-        
+
         for i, v in enumerate(self.violations_caught, 1):
             report += f"{i}. {v['caller']} (L{v['caller_layer']}) → "
             report += f"{v['target']} (L{v['target_layer']})\n"
-        
+
         report += f"{'=' * 80}\n"
         return report
 
@@ -339,9 +339,9 @@ _global_lock: Optional[ImportLockAgent] = None
 
 
 def engage_global_lock() -> ImportLockAgent:
-    """ 
+    """
     Sovereign Entry Point: Activates the global ImportLockAgent.
-    Ensures that once activated, the Law of Gravity is enforced for all 
+    Ensures that once activated, the Law of Gravity is enforced for all
     subsequent imports in the process lifecycle.
     """
     import logging
@@ -370,12 +370,12 @@ def engage_global_lock() -> ImportLockAgent:
 def disengage_global_lock() -> bool:
     """
     Disengage the global import lock.
-    
+
     Returns:
         True if successfully disengaged
     """
     global _global_lock
-    
+
     if _global_lock:
         return _global_lock.disengage_lock()
     return False
@@ -384,7 +384,7 @@ def disengage_global_lock() -> bool:
 def main() -> Any:
     """CLI entry point for testing the Import Lock Agent."""
     import argparse
-    
+
     parser = argparse.ArgumentParser(
         description="Import Lock Agent - Runtime import validation"
     )
@@ -393,14 +393,14 @@ def main() -> Any:
         action="store_true",
         help="Run a test import to verify the lock works"
     )
-    
+
     args = parser.parse_args()
-    
+
     if args.test:
         print("Testing Import Lock Agent...")
         lock = ImportLockAgent()
         lock.engage_lock()
-        
+
         print("\nAttempting a violation (this should fail)...")
         try:
             # This would violate if run from L0
@@ -408,7 +408,7 @@ def main() -> Any:
             print("Test import blocked successfully!")
         except SovereigntyError as e:
             print(f"✅ Violation caught: {e}")
-        
+
         lock.disengage_lock()
     else:
         parser.print_help()

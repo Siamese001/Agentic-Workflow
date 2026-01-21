@@ -12,7 +12,7 @@ class SecretAccessError(Exception):
 class SecretsManagementMixin:
     """
     Phase 1 Critical Infrastructure: Secrets Management (Report 4.4).
-    
+
     Centralizes credential access with:
     - Environment isolation (DEV/STAGING/PROD)
     - Access auditing (who requested what, when)
@@ -43,14 +43,14 @@ class SecretsManagementMixin:
     async def get_secret(self, key: str, default: Optional[str] = None) -> str:
         """
         Securely retrieve a secret value.
-        
+
         Args:
             key: The identifier for the secret (e.g., 'OPENAI_API_KEY')
             default: Value to return if not found (discouraged for sensitive data)
-            
+
         Returns:
             The secret string.
-            
+
         Raises:
             SecretAccessError: If secret is missing and no default provided.
         """
@@ -67,13 +67,13 @@ class SecretsManagementMixin:
 
         # 1. Retrieval Strategy (Env Vars now, extensible to Vault later)
         value = os.getenv(key)
-        
+
         # 2. Fallback handling
         if value is None:
             if default is not None:
                 self._audit_access(key, success=True) # Audit the default usage
                 return default
-            
+
             self._audit_access(key, success=False)
             raise SecretAccessError(
                 f"Secret '{key}' not found for agent '{self.__class__.__name__}' "

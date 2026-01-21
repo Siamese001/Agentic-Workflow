@@ -81,7 +81,7 @@ class PromptInjectionAgent(HealerMixin, MCPHardenedMixin):
     async def act(self) -> Dict[str, Any]:
         """Execute prompt injection tests."""
         logger.info(f"[{self.name}] Starting prompt injection vulnerability scan")
-        
+
         results = {
             "agent": self.name,
             "tests_executed": 0,
@@ -95,7 +95,7 @@ class PromptInjectionAgent(HealerMixin, MCPHardenedMixin):
             for vector in self.attack_vectors:
                 test_result = await self._test_attack_vector(vector)
                 results["tests_executed"] += 1
-                
+
                 if test_result.get("vulnerable"):
                     results["vulnerabilities_found"] += 1
                     results["attack_vectors_tested"].append({
@@ -226,4 +226,4 @@ class PromptInjectionAgent(HealerMixin, MCPHardenedMixin):
     def heal_repository(self, dry_run: bool = True, **kwargs) -> Dict[str, Any]:
         """Repository healing with parent chain invocation."""
         result = super().heal_repository(dry_run=dry_run, **kwargs)
-        return {"healed": 0, "skipped": 0, "parent": result}
+        return {"violations_fixed": 0, "skipped": 0, "parent": result}

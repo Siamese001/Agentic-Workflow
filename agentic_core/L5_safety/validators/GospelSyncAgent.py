@@ -9,7 +9,7 @@ from dataclasses import dataclass
 """
 GOSPEL SYNC AGENT
 -----------------
-L0 Maintenance Agent designed to ensure 100% synchronization between the 
+L0 Maintenance Agent designed to ensure 100% synchronization between the
 Gospel (structure_blueprint.py) and the physical filesystem.
 
 CANONICAL PATH: agentic_core/L0_maintenance/GospelSyncAgent.py
@@ -32,7 +32,7 @@ class GospelSyncAgent(L0MaintenanceBaseAgent):
     THE SSOT GUARDIAN
     Ensures the 'World as it Is' (Filesystem) matches the 'World as it Should Be' (Blueprint).
     Detects heretical files and missing canonical files to protect Toxic Hubs.
-    
+
     Inherits from L0MaintenanceBaseAgent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
     """
 
@@ -40,11 +40,11 @@ class GospelSyncAgent(L0MaintenanceBaseAgent):
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
-        
+
         Args:
             dry_run: If True, only report violations without fixing
             execute: If True, apply fixes
-        
+
         Returns:
             Dict with healing summary
         """
@@ -135,6 +135,6 @@ if __name__ == "__main__":
     agent = GospelSyncAgent()
     results = agent.perform_sync_audit()
     agent.report_drift()
-    
+
     import sys
     sys.exit(0 if results["synchronized"] else 1)

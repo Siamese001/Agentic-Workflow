@@ -57,7 +57,7 @@ if abs(actual_health - expected_health) < 0.1:
 else:
     print(f"\n❌ FAIL: Health score mismatch!")
     print(f"  Difference: {abs(actual_health - expected_health):.1f}%")
-    
+
     if actual_health == 100.0:
         print(f"\n⚠️  WARNING: Health score is hardcoded to 100%!")
         print(f"  This is incorrect - it should be calculated from actual metrics.")

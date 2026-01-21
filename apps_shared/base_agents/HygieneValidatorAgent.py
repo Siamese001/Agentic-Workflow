@@ -70,15 +70,15 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
     """
     Hygiene validation agent for code rot detection.
-    
+
     Detects code quality issues:
         - Dead Code: Orphaned files that are never imported.
         - Duplication: Files with identical content (MD5 hash).
-    
+
     Inherits:
         L0MaintenanceBaseAgent: HealerMixin, L0DelegationTestingMixin.
         MCPHardenedMixin: MCP protocol hardening.
-    
+
     Attributes:
         root_path: Path to project root for scanning.
         all_py_files: List of discovered Python files.
@@ -90,7 +90,7 @@ class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
     def __init__(self, root_path: str) -> None:
         """
         Initialize the hygiene validator.
-        
+
         Args:
             root_path: Path to project root directory for scanning.
         """
@@ -107,11 +107,11 @@ class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
             "__main__.py",
         }
         self._run_delegated_tests_safe()
-    
+
     def _run_delegated_tests_safe(self) -> None:
         """
         Run delegated tests safely.
-        
+
         Manual delegation for validators to avoid inheritance conflicts.
         Logs warning if tests soft-fail but does not halt boot.
         """
@@ -126,7 +126,7 @@ class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
     def scan(self) -> None:
         """
         Scan project and build file list and import graph.
-        
+
         Populates all_py_files, import_graph, and file_hashes.
         Skips virtual environments and cache directories.
         """
@@ -161,7 +161,7 @@ class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
     def _analyze_imports(self, full_path: str, rel_path: str) -> None:
         """
         Parse file and extract all import targets.
-        
+
         Args:
             full_path: Absolute path to the file.
             rel_path: Relative path from project root.
@@ -183,11 +183,11 @@ class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
     def _resolve_import_target(self, node: ast.AST, base_dir: str) -> List[str]:
         """
         Resolve import statement to potential file paths.
-        
+
         Args:
             node: AST Import or ImportFrom node.
             base_dir: Base directory for relative resolution.
-            
+
         Returns:
             List of potential file paths the import could resolve to.
         """
@@ -217,7 +217,7 @@ class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
     def get_duplicates(self) -> List[str]:
         """
         Get list of duplicate file violations.
-        
+
         Returns:
             List of violation messages for files with identical content.
             Excludes __init__.py files which are often legitimately similar.
@@ -235,10 +235,10 @@ class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
 
     def _should_skip_file(self, file: str) -> bool:
         """Check if file should be skipped in orphan detection.
-        
+
         Args:
             file: Relative file path.
-            
+
         Returns:
             True if file should be skipped.
         """
@@ -251,11 +251,11 @@ class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
 
     def _is_file_imported(self, file: str, imported_targets: Set[str]) -> bool:
         """Check if file is imported by any other file.
-        
+
         Args:
             file: Relative file path.
             imported_targets: Set of import target paths.
-            
+
         Returns:
             True if file is imported.
         """
@@ -266,7 +266,7 @@ class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
 
     def _find_orphan_files(self) -> List[str]:
         """Find all orphan files (never imported).
-        
+
         Returns:
             List of orphan file paths.
         """
@@ -281,7 +281,7 @@ class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
 
     def get_orphans(self) -> List[str]:
         """Get files that are never imported.
-        
+
         Returns:
             List of violation messages for orphaned files.
             Excludes entry points, test files, and scripts.
@@ -291,9 +291,9 @@ class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
 
     def get_orphans_raw(self) -> List[str]:
         """Get raw list of orphan file paths.
-        
+
         For use by pruner scripts. Returns paths without violation messages.
-        
+
         Returns:
             List of orphan file paths.
         """
@@ -302,7 +302,7 @@ class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
     def _run_self_tests(self) -> Dict[str, Any]:
         """
         Run internal self-tests.
-        
+
         Returns:
             Dict with passed count, failed count, and test details.
         """
@@ -319,7 +319,7 @@ class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
     def heal_repository(self) -> Dict[str, int]:
         """
         Execute healing chain via parent class.
-        
+
         Returns:
             Dict with healing results from parent implementation.
         """

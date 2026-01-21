@@ -42,7 +42,7 @@ from agentic_core.utils.core_extensions.subatomic_testing_mixin import Subatomic
 class StructuralEngineerAgent(MCPHardenedMixin, SubatomicTestingMixin, CanonBaseAgent):
     """
     Structural Engineer validates code structure and organization.
-    
+
     Validates:
     - No large classes (>20 methods or >500 lines)
     - Proper function size (<50 lines)
@@ -75,7 +75,7 @@ class StructuralEngineerAgent(MCPHardenedMixin, SubatomicTestingMixin, CanonBase
     def check_no_large_classes(self) -> Tuple[bool, List[str]]:
         """
         Check for classes with >20 methods or >500 lines.
-        
+
         Returns:
             Tuple of (passed, list of violations)
         """
@@ -108,7 +108,7 @@ class StructuralEngineerAgent(MCPHardenedMixin, SubatomicTestingMixin, CanonBase
     def check_no_large_functions(self) -> Tuple[bool, List[str]]:
         """
         Check for functions exceeding 50 lines.
-        
+
         Returns:
             Tuple of (passed, list of violations)
         """
@@ -134,7 +134,7 @@ class StructuralEngineerAgent(MCPHardenedMixin, SubatomicTestingMixin, CanonBase
     def check_cyclomatic_complexity(self) -> Tuple[bool, List[str]]:
         """
         Check for high cyclomatic complexity (>10).
-        
+
         Returns:
             Tuple of (passed, list of violations)
         """
@@ -157,7 +157,7 @@ class StructuralEngineerAgent(MCPHardenedMixin, SubatomicTestingMixin, CanonBase
     def _calculate_complexity(self, node: ast.AST) -> int:
         """
         Calculate cyclomatic complexity of a function.
-        
+
         Complexity = 1 + number of decision points (if, for, while, and, or, except)
         """
         complexity = 1
@@ -171,7 +171,7 @@ class StructuralEngineerAgent(MCPHardenedMixin, SubatomicTestingMixin, CanonBase
     async def _heal_violations(self, key: int, violations: List[str]):
         """
         Heal violations for a specific key.
-        
+
         Args:
             key: Canon key number
             violations: List of Violation descriptions
@@ -192,7 +192,7 @@ class StructuralEngineerAgent(MCPHardenedMixin, SubatomicTestingMixin, CanonBase
     async def _smart_fix(self, file_path: str, violation_key: int, violations: List[str]):
         """
         Apply smart fix to a file using Gemini 2.5 Flash.
-        
+
         Args:
             file_path: Path to file to fix
             violation_key: Canon key being fixed

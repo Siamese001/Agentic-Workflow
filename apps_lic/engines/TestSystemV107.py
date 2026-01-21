@@ -1458,4 +1458,3 @@ def test_wrap_mcp_sync_skips_when_disabled(
 
     assert result == {}
     assert calls["count"] == 0
-

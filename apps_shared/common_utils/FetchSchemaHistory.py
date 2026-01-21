@@ -100,19 +100,19 @@ class SchemaHistoryFetcher:
 
     def fetch_history(self, query: SchemaHistoryQuery) -> SchemaHistoryResult:
         """Fetch schema history based on query.
-        
+
         Args:
             query: History query configuration
-            
+
         Returns:
             SchemaHistoryResult: Query results with change records
         """
         self.logger.info(f"Fetching schema history: schema_id={query.schema_id}")
-        
+
         try:
             # Get relevant records
             all_records = []
-            
+
             if query.schema_id:
                 # Get history for specific schema
                 if query.schema_id in self._history_records:
@@ -121,17 +121,17 @@ class SchemaHistoryFetcher:
                 # Get all history
                 for records in self._history_records.values():
                     all_records.extend(records)
-            
+
             # Apply filters
             filtered_records = self._apply_filters(all_records, query)
-            
+
             # Sort by timestamp (descending)
             filtered_records.sort(key=lambda x: x.timestamp, reverse=True)
-            
+
             # Apply pagination
             total_count = len(filtered_records)
             paginated_records = filtered_records[query.offset:query.offset + query.limit]
-            
+
             # Filter changes if not requested
             if not query.include_changes:
                 for record in paginated_records:
@@ -147,7 +147,7 @@ class SchemaHistoryFetcher:
                         changes={},
                         metadata=record.metadata
                     )
-            
+
             result = SchemaHistoryResult(
                 records=paginated_records,
                 total_count=total_count,
@@ -159,13 +159,13 @@ class SchemaHistoryFetcher:
                     "fetcher": "SchemaHistoryFetcher"
                 }
             )
-            
+
             self.logger.info(
                 f"Schema history fetched: {len(paginated_records)} records (total: {total_count})"
             )
-            
+
             return result
-            
+
         except Exception as e:
             self.logger.error(f"Failed to fetch schema history: {str(e)}")
             return SchemaHistoryResult(
@@ -177,10 +177,10 @@ class SchemaHistoryFetcher:
 
     def add_change_record(self, record: SchemaChangeRecord) -> bool:
         """Add a change record to history.
-        
+
         Args:
             record: Change record to add
-            
+
         Returns:
             bool: True if record was added successfully
         """
@@ -188,49 +188,49 @@ class SchemaHistoryFetcher:
             # Initialize schema history if needed
             if record.schema_id not in self._history_records:
                 self._history_records[record.schema_id] = []
-            
+
             # Add record
             self._history_records[record.schema_id].append(record)
-            
+
             # Limit records per schema
             if len(self._history_records[record.schema_id]) > self.config.max_records_per_schema:
                 # Remove oldest records
                 self._history_records[record.schema_id].sort(key=lambda x: x.timestamp)
                 excess = len(self._history_records[record.schema_id]) - self.config.max_records_per_schema
                 self._history_records[record.schema_id] = self._history_records[record.schema_id][excess:]
-            
+
             # Save to disk
             self._save_schema_history(record.schema_id)
-            
+
             self.logger.debug(f"Added change record for schema: {record.schema_id}")
             return True
-            
+
         except Exception as e:
             self.logger.error(f"Failed to add change record: {str(e)}")
             return False
 
     def get_evolution_summary(self, schema_id: str) -> Optional[SchemaEvolutionSummary]:
         """Get evolution summary for a schema.
-        
+
         Args:
             schema_id: ID of schema
-            
+
         Returns:
             SchemaEvolutionSummary: Evolution summary if found
         """
         if schema_id not in self._history_records:
             return None
-        
+
         records = self._history_records[schema_id]
         if not records:
             return None
-        
+
         # Sort by timestamp
         records.sort(key=lambda x: x.timestamp)
-        
+
         # Extract information
         contributors = list(set(r.changed_by for r in records if r.changed_by))
-        
+
         # Find major changes
         major_changes = []
         for record in records:
@@ -239,11 +239,11 @@ class SchemaHistoryFetcher:
                     major_changes.append(
                         f"{record.action.value}: {record.change_summary}"
                     )
-        
+
         # Find first and latest versions
         first_record = records[0]
         latest_record = records[-1]
-        
+
         return SchemaEvolutionSummary(
             schema_id=schema_id,
             total_versions=len(set(r.version_to for r in records if r.version_to)),
@@ -258,19 +258,19 @@ class SchemaHistoryFetcher:
 
     def get_version_timeline(self, schema_id: str) -> List[Tuple[str, datetime, str]]:
         """Get timeline of versions for a schema.
-        
+
         Args:
             schema_id: ID of schema
-            
+
         Returns:
             List of (version, timestamp, action) tuples
         """
         if schema_id not in self._history_records:
             return []
-        
+
         records = self._history_records[schema_id]
         timeline = []
-        
+
         for record in records:
             if record.version_to:
                 timeline.append((
@@ -278,75 +278,75 @@ class SchemaHistoryFetcher:
                     record.timestamp,
                     record.action.value
                 ))
-        
+
         # Sort by timestamp
         timeline.sort(key=lambda x: x[1])
-        
+
         return timeline
 
     def get_contributor_stats(self) -> Dict[str, Dict[str, Any]]:
         """Get statistics for all contributors.
-        
+
         Returns:
             Dict: Contributor statistics
         """
         stats = {}
-        
+
         for schema_id, records in self._history_records.items():
             for record in records:
                 if record.changed_by:
                     contributor = record.changed_by
-                    
+
                     if contributor not in stats:
                         stats[contributor] = {
                             "total_changes": 0,
                             "schemas_modified": set(),
                             "actions": {}
                         }
-                    
+
                     stats[contributor]["total_changes"] += 1
                     stats[contributor]["schemas_modified"].add(schema_id)
-                    
+
                     action = record.action.value
                     stats[contributor]["actions"][action] = stats[contributor]["actions"].get(action, 0) + 1
-        
+
         # Convert sets to counts
         for contributor in stats:
             stats[contributor]["schemas_modified"] = len(stats[contributor]["schemas_modified"])
-        
+
         return stats
 
     def cleanup_old_records(self) -> int:
         """Clean up old records based on retention policy.
-        
+
         Returns:
             int: Number of records cleaned up
         """
         if not self.config.retention_days:
             return 0
-        
+
         cutoff_date = datetime.utcnow() - timedelta(days=self.config.retention_days)
         cleaned_count = 0
-        
+
         for schema_id in list(self._history_records.keys()):
             records = self._history_records[schema_id]
             original_count = len(records)
-            
+
             # Filter old records
             self._history_records[schema_id] = [
                 r for r in records if r.timestamp >= cutoff_date
             ]
-            
+
             cleaned_count += original_count - len(self._history_records[schema_id])
-            
+
             # Remove empty histories
             if not self._history_records[schema_id]:
                 del self._history_records[schema_id]
-        
+
         if cleaned_count > 0:
             self._save_all_histories()
             self.logger.info(f"Cleaned up {cleaned_count} old history records")
-        
+
         return cleaned_count
 
     def _load_history(self) -> None:
@@ -356,15 +356,15 @@ class SchemaHistoryFetcher:
             if not storage_path.exists():
                 storage_path.mkdir(parents=True, exist_ok=True)
                 return
-            
+
             # Load each schema history file
             for history_file in storage_path.glob("*.json"):
                 try:
                     schema_id = history_file.stem
-                    
+
                     with open(history_file, 'r', encoding='utf-8') as f:
                         data = json.load(f)
-                    
+
                     # Convert to change records
                     records = []
                     for record_data in data.get("records", []):
@@ -381,44 +381,44 @@ class SchemaHistoryFetcher:
                             metadata=record_data.get("metadata", {})
                         )
                         records.append(record)
-                    
+
                     self._history_records[schema_id] = records
-                
+
                 except Exception as e:
                     self.logger.error(f"Failed to load history from {history_file}: {str(e)}")
-            
+
             total_records = sum(len(records) for records in self._history_records.values())
             self.logger.info(f"Loaded {total_records} history records for {len(self._history_records)} schemas")
-            
+
         except Exception as e:
             self.logger.error(f"Failed to load schema history: {str(e)}")
 
     def _apply_filters(self, records: List[SchemaChangeRecord], query: SchemaHistoryQuery) -> List[SchemaChangeRecord]:
         """Apply filters to history records."""
         filtered = records.copy()
-        
+
         # Filter by actions
         if query.actions:
             filtered = [r for r in filtered if r.action in query.actions]
-        
+
         # Filter by contributor
         if query.changed_by:
             filtered = [r for r in filtered if r.changed_by == query.changed_by]
-        
+
         # Filter by version range
         if query.version_from:
             filtered = [r for r in filtered if r.version_from == query.version_from]
-        
+
         if query.version_to:
             filtered = [r for r in filtered if r.version_to == query.version_to]
-        
+
         # Filter by date range
         if query.date_from:
             filtered = [r for r in filtered if r.timestamp >= query.date_from]
-        
+
         if query.date_to:
             filtered = [r for r in filtered if r.timestamp <= query.date_to]
-        
+
         return filtered
 
     def _save_schema_history(self, schema_id: str) -> None:
@@ -426,9 +426,9 @@ class SchemaHistoryFetcher:
         try:
             storage_path = Path(self.config.storage_path)
             storage_path.mkdir(parents=True, exist_ok=True)
-            
+
             history_file = storage_path / f"{schema_id}.json"
-            
+
             # Convert to JSON
             data = {
                 "schema_id": schema_id,
@@ -449,10 +449,10 @@ class SchemaHistoryFetcher:
                 ],
                 "saved_at": datetime.utcnow().isoformat()
             }
-            
+
             with open(history_file, 'w', encoding='utf-8') as f:
                 json.dump(data, f, indent=2, ensure_ascii=False)
-            
+
         except Exception as e:
             self.logger.error(f"Failed to save schema history: {str(e)}")
 
@@ -487,7 +487,7 @@ def fetch_schema_history(
     config: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
     """Fetch schema history.
-    
+
     Args:
         schema_id: ID of schema to fetch history for
         actions: List of actions to filter by
@@ -498,14 +498,14 @@ def fetch_schema_history(
         limit: Maximum number of records
         offset: Number of records to skip
         config: Optional fetcher configuration
-        
+
     Returns:
         Dict: History results
     """
     # Create fetcher and fetch history
     fetcher_config = SchemaHistoryConfig(**config or {})
     fetcher = SchemaHistoryFetcher(fetcher_config)
-    
+
     query = SchemaHistoryQuery(
         schema_id=schema_id,
         actions=[HistoryAction(action) for action in (actions or [])],
@@ -516,9 +516,9 @@ def fetch_schema_history(
         limit=limit,
         offset=offset
     )
-    
+
     result = fetcher.fetch_history(query)
-    
+
     # Convert result to dict for JSON serialization
     return {
         "records": [

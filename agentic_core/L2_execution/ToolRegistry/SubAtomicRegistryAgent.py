@@ -54,7 +54,7 @@ Logger = logging.getLogger(__name__)
 def _get_unified_agent_mapping() -> Dict[str, Type]:
     """
     Lazy-load unified agent mapping to avoid circular imports.
-    
+
     Returns:
         Dictionary mapping legacy agent IDs to unified agent classes.
     """
@@ -64,7 +64,7 @@ def _get_unified_agent_mapping() -> Dict[str, Type]:
     from agentic_core.L4_state.ValidationContext.UnifiedCheckpointManagerAgent import UnifiedCheckpointManagerAgent
     from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import UnifiedCodeEnforcerAgent
     from agentic_core.L4_state.ValidationContext.UnifiedStateManagementAgent import UnifiedStateManagementAgent
-    
+
     return {
         # Phase 1: L1 AST Validator Consolidation
         "BareExceptValidator": UnifiedASTValidatorAgent,
@@ -77,19 +77,19 @@ def _get_unified_agent_mapping() -> Dict[str, Type]:
         "DangerousBuiltinsValidatorAgent": UnifiedASTValidatorAgent,
         "DebuggerValidator": UnifiedASTValidatorAgent,
         "DebuggerValidatorAgent": UnifiedASTValidatorAgent,
-        
+
         # Phase 2: L5 Hygiene Validator Consolidation
         "HygieneGuardian": UnifiedStructureValidatorAgent,
         "HygieneGuardianAgent": UnifiedStructureValidatorAgent,
         "HygieneValidator": UnifiedStructureValidatorAgent,
         "HygieneValidatorAgent": UnifiedStructureValidatorAgent,
-        
+
         # Phase 3: L4 Checkpoint Manager Consolidation
         "CheckpointManager": UnifiedCheckpointManagerAgent,
         "CheckpointManagerAgent": UnifiedCheckpointManagerAgent,
         "AutonomousCheckpointManager": UnifiedCheckpointManagerAgent,
         "AutonomousCheckpointManagerAgent": UnifiedCheckpointManagerAgent,
-        
+
         # Phase 4: L5 Code Standards Enforcer Consolidation
         "BaseClassEnforcer": UnifiedCodeEnforcerAgent,
         "BaseClassEnforcerAgent": UnifiedCodeEnforcerAgent,
@@ -97,7 +97,7 @@ def _get_unified_agent_mapping() -> Dict[str, Type]:
         "PatternEnforcerAgent": UnifiedCodeEnforcerAgent,
         "TypeHintEnforcement": UnifiedCodeEnforcerAgent,
         "TypeHintEnforcementAgent": UnifiedCodeEnforcerAgent,
-        
+
         # Phase 5: L4 State Management Consolidation
         "ManifestManager": UnifiedStateManagementAgent,
         "ManifestManagerAgent": UnifiedStateManagementAgent,
@@ -111,7 +111,7 @@ def _get_unified_agent_mapping() -> Dict[str, Type]:
 def _get_phase3_manager_enforcer_mapping() -> Dict[str, Type]:
     """
     Phase 3 Manager & Enforcer Consolidation: Hard Migration mappings.
-    
+
     Returns:
         Dictionary mapping legacy manager/enforcer names to unified classes.
     """
@@ -119,25 +119,25 @@ def _get_phase3_manager_enforcer_mapping() -> Dict[str, Type]:
     from agentic_core.L5_safety.unified.UnifiedSecurityManagerAgent import UnifiedSecurityManagerAgent
     from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import UnifiedCodeEnforcerAgent
     from agentic_core.L5_safety.unified.UnifiedStructureEnforcerAgent import UnifiedStructureEnforcerAgent
-    
+
     return {
         # Resource Managers -> UnifiedResourceManagerAgent
         "BudgetManagerAgent": UnifiedResourceManagerAgent,
         "ProactiveResourceManagerAgent": UnifiedResourceManagerAgent,
         "FallbackManagerAgent": UnifiedResourceManagerAgent,
-        
+
         # Security Managers -> UnifiedSecurityManagerAgent
         "AgentPermissionManagerAgent": UnifiedSecurityManagerAgent,
         "SecureCheckpointManagerAgent": UnifiedSecurityManagerAgent,
         "SecureConfigManagerAgent": UnifiedSecurityManagerAgent,
-        
+
         # Code Enforcers -> UnifiedCodeEnforcerAgent
         "CodeSSOTEnforcerAgent": UnifiedCodeEnforcerAgent,
         "UnifiedCodeEnforcerAgent": UnifiedCodeEnforcerAgent,
         "PatternEnforcerAgent": UnifiedCodeEnforcerAgent,
         "TypeEnforcerAgent": UnifiedCodeEnforcerAgent,
         "PythonFileSovereigntyEnforcerAgent": UnifiedCodeEnforcerAgent,
-        
+
         # Structure Enforcers -> UnifiedStructureEnforcerAgent
         "GravityEnforcerAgent": UnifiedStructureEnforcerAgent,
         "HierarchyEnforcerAgent": UnifiedStructureEnforcerAgent,
@@ -152,7 +152,7 @@ def _get_phase3_manager_enforcer_mapping() -> Dict[str, Type]:
 def _get_phase4_detector_healer_router_executor_mapping() -> Dict[str, Type]:
     """
     Phase 4 Detector/Healer/Router/Executor Consolidation: Hard Migration mappings.
-    
+
     Returns:
         Dictionary mapping legacy detector/healer/router/executor names to unified classes.
     """
@@ -162,7 +162,7 @@ def _get_phase4_detector_healer_router_executor_mapping() -> Dict[str, Type]:
     from agentic_core.L5_safety.unified.UnifiedStructureHealerAgent import UnifiedStructureHealerAgent
     from agentic_core.L2_execution.unified.UnifiedModelRouterAgent import UnifiedModelRouterAgent
     from agentic_core.L5_safety.unified.UnifiedSafetyExecutorAgent import UnifiedSafetyExecutorAgent
-    
+
     return {
         # Code Detectors -> UnifiedCodeDetectorAgent
         "DeadCodeDetectorAgent": UnifiedCodeDetectorAgent,
@@ -170,31 +170,31 @@ def _get_phase4_detector_healer_router_executor_mapping() -> Dict[str, Type]:
         "DriftDetectorAgent": UnifiedCodeDetectorAgent,
         "MethodChangeDetectorAgent": UnifiedCodeDetectorAgent,
         "MemoryLeakDetectorAgent": UnifiedCodeDetectorAgent,
-        
+
         # Safety Detectors -> UnifiedSafetyDetectorAgent
         "BiasDetectorAgent": UnifiedSafetyDetectorAgent,
         "HallucinationDetectorAgent": UnifiedSafetyDetectorAgent,
         "PromptInjectionDetectorAgent": UnifiedSafetyDetectorAgent,
-        
+
         # Code Healers -> UnifiedCodeHealerAgent
         "CanonHealerAgent": UnifiedCodeHealerAgent,
         "ImportHealerAgent": UnifiedCodeHealerAgent,
         "StructuralHealerAgent": UnifiedCodeHealerAgent,
-        
+
         # Structure Healers -> UnifiedStructureHealerAgent
         "GravityHealerAgent": UnifiedStructureHealerAgent,
         "HierarchyHealerAgent": UnifiedStructureHealerAgent,
         "NamingLawHealerAgent": UnifiedStructureHealerAgent,
         "TerritoryHealerAgent": UnifiedStructureHealerAgent,
         "BlueprintHierarchyHealerAgent": UnifiedStructureHealerAgent,
-        
+
         # Routers -> UnifiedModelRouterAgent
         "ModelRouterAgent": UnifiedModelRouterAgent,
         "DynamicModelRouterAgent": UnifiedModelRouterAgent,
         "MultiProviderRouterAgent": UnifiedModelRouterAgent,
         "ReasoningRouterAgent": UnifiedModelRouterAgent,
         "McpRouterAgent": UnifiedModelRouterAgent,
-        
+
         # Executors -> UnifiedSafetyExecutorAgent
         "IntegrityGateExecutorAgent": UnifiedSafetyExecutorAgent,
         "L5IntegrityGateExecutorAgent": UnifiedSafetyExecutorAgent,
@@ -205,14 +205,14 @@ def _get_phase4_detector_healer_router_executor_mapping() -> Dict[str, Type]:
 def _get_phase2_validator_mapping() -> Dict[str, Type]:
     """
     Phase 2 Validator Consolidation: Maps legacy validators to unified agents.
-    
+
     Returns:
         Dictionary mapping legacy validator names to unified validator classes.
     """
     from agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent import UnifiedCodeValidatorAgent
     from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import UnifiedStructureValidatorAgent
     from apps_lic.shared.validation.AppContentValidatorAgent import AppContentValidatorAgent
-    
+
     return {
         # Unified Code Validator (L5) - Single-pass AST validation
         "SyntaxValidatorAgent": UnifiedCodeValidatorAgent,
@@ -220,14 +220,14 @@ def _get_phase2_validator_mapping() -> Dict[str, Type]:
         "CanonValidatorAgent": UnifiedCodeValidatorAgent,
         "AsyncBlockingValidatorAgent": UnifiedCodeValidatorAgent,
         "PrintStatementValidatorAgent": UnifiedCodeValidatorAgent,
-        
+
         # Unified Structure Validator (L5) - Gravity/Hygiene/Registry
         "GravityValidatorAgent": UnifiedStructureValidatorAgent,
         "HygieneValidatorAgent": UnifiedStructureValidatorAgent,
         "UnifiedStructureValidatorAgent": UnifiedStructureValidatorAgent,
         "AgentRegistryValidatorAgent": UnifiedStructureValidatorAgent,
         "CognitiveContractValidatorAgent": UnifiedStructureValidatorAgent,
-        
+
         # App Content Validator (Apps) - Contact/Content/Diversity
         "ContactValidatorAgent": AppContentValidatorAgent,
         "ContentCleanlinessValidatorAgent": AppContentValidatorAgent,
@@ -239,13 +239,13 @@ def get_unified_agent_class(agent_id: str) -> Type:
     """
     Returns the unified agent class for a given legacy agent ID.
     Ensures backward compatibility for dynamic agent instantiation.
-    
+
     Args:
         agent_id: Legacy agent identifier (e.g., "BareExceptValidator")
-        
+
     Returns:
         Unified agent class that handles the legacy agent's functionality
-        
+
     Raises:
         ValueError: If agent_id is not found in the mapping
     """
@@ -254,7 +254,7 @@ def get_unified_agent_class(agent_id: str) -> Type:
     if agent_id in mapping:
         Logger.info(f"Registry: Mapping legacy agent '{agent_id}' to Unified Class (Phase 1).")
         return mapping[agent_id]
-    
+
     # Check Phase 2 validator mapping
     try:
         validator_mapping = _get_phase2_validator_mapping()
@@ -263,7 +263,7 @@ def get_unified_agent_class(agent_id: str) -> Type:
             return validator_mapping[agent_id]
     except ImportError as e:
         Logger.warning(f"Phase 2 validator mapping not available: {e}")
-    
+
     # Check Phase 3 manager/enforcer mapping
     try:
         phase3_mapping = _get_phase3_manager_enforcer_mapping()
@@ -272,7 +272,7 @@ def get_unified_agent_class(agent_id: str) -> Type:
             return phase3_mapping[agent_id]
     except ImportError as e:
         Logger.warning(f"Phase 3 manager/enforcer mapping not available: {e}")
-    
+
     # Check Phase 4 detector/healer/router/executor mapping
     try:
         phase4_mapping = _get_phase4_detector_healer_router_executor_mapping()
@@ -281,7 +281,7 @@ def get_unified_agent_class(agent_id: str) -> Type:
             return phase4_mapping[agent_id]
     except ImportError as e:
         Logger.warning(f"Phase 4 detector/healer/router/executor mapping not available: {e}")
-    
+
     raise ValueError(f"Agent ID '{agent_id}' not found in unified agent registry.")
 
 
@@ -398,7 +398,7 @@ class SubAtomicRegistryAgent(HealerMixin, MCPHardenedMixin):
         matches = self.find_method(task_description, top_k=1)
         if not matches:
             raise ValueError(f"No method found for Task: {task_description}")
-        
+
         meta = matches[0]['metadata']
         print(f"   [EXECUTE] Invoking {meta['method']} from {Path(meta['path']).name}")
         # Dynamic import and execution logic would go here
@@ -411,10 +411,10 @@ class SubAtomicRegistryAgent(HealerMixin, MCPHardenedMixin):
             module_path = Path(method_meta['path']).relative_to(self.root)
             module_name = str(module_path).replace(os.sep, '.')[:-3]
             module = importlib.import_module(module_name)
-            
+
             # Get the method
             method = getattr(module, method_meta['method'])
-            
+
             # Execute it
             if inspect.iscoroutinefunction(method):
                 return asyncio.run(method(*args, **kwargs))

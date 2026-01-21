@@ -31,19 +31,19 @@ class MissionFocus(Enum):
 
 class Coordinator(ABC):
     """Base coordinator interface - specialized orchestration strategy."""
-    
+
     def __init__(self, name: str):
         """Initialize coordinator."""
         self.name = name
         self.missions_executed = 0
         self.missions_succeeded = 0
         self.missions_failed = 0
-    
+
     @abstractmethod
     def execute(self, mission: Dict[str, Any]) -> Dict[str, Any]:
         """
         Execute mission using specialized coordination strategy.
-        
+
         Returns:
             {
                 "status": "success" | "failure",
@@ -53,7 +53,7 @@ class Coordinator(ABC):
             }
         """
         pass
-    
+
     def record_execution(self, success: bool):
         """Record mission execution."""
         self.missions_executed += 1
@@ -65,11 +65,11 @@ class Coordinator(ABC):
 
 class ReasoningCoordinator(Coordinator):
     """Coordinates reasoning-focused missions (deep thought, analysis, planning)."""
-    
+
     def __init__(self):
         """Initialize reasoning coordinator."""
         super().__init__("ReasoningCoordinator")
-    
+
     def execute(self, mission: Dict[str, Any]) -> Dict[str, Any]:
         """Execute reasoning mission."""
         try:
@@ -77,7 +77,7 @@ class ReasoningCoordinator(Coordinator):
             problem = mission.get("problem", "")
             reasoning_type = mission.get("reasoning_type", "cot")
             max_depth = mission.get("max_depth", 5)
-            
+
             # Dispatch to appropriate reasoning strategy
             result = {
                 "status": "success",
@@ -89,7 +89,7 @@ class ReasoningCoordinator(Coordinator):
                 "coordinator": self.name,
                 "metadata": {"problem_length": len(problem)}
             }
-            
+
             self.record_execution(True)
             return result
         except Exception as e:
@@ -104,18 +104,18 @@ class ReasoningCoordinator(Coordinator):
 
 class ExecutionCoordinator(Coordinator):
     """Coordinates execution-focused missions (tool calls, actions, operations)."""
-    
+
     def __init__(self):
         """Initialize execution coordinator."""
         super().__init__("ExecutionCoordinator")
-    
+
     def execute(self, mission: Dict[str, Any]) -> Dict[str, Any]:
         """Execute execution mission."""
         try:
             # Consolidated execution orchestration logic
             action = mission.get("action", "")
             tools = mission.get("tools", [])
-            
+
             result = {
                 "status": "success",
                 "result": {
@@ -126,7 +126,7 @@ class ExecutionCoordinator(Coordinator):
                 "coordinator": self.name,
                 "metadata": {"tools": tools}
             }
-            
+
             self.record_execution(True)
             return result
         except Exception as e:
@@ -141,18 +141,18 @@ class ExecutionCoordinator(Coordinator):
 
 class SafetyCoordinator(Coordinator):
     """Coordinates safety-focused missions (validation, enforcement, guardrails)."""
-    
+
     def __init__(self):
         """Initialize safety coordinator."""
         super().__init__("SafetyCoordinator")
-    
+
     def execute(self, mission: Dict[str, Any]) -> Dict[str, Any]:
         """Execute safety mission."""
         try:
             # Consolidated safety orchestration logic
             violations = mission.get("violations", [])
             enforcement_level = mission.get("enforcement_level", "strict")
-            
+
             result = {
                 "status": "success",
                 "result": {
@@ -163,7 +163,7 @@ class SafetyCoordinator(Coordinator):
                 "coordinator": self.name,
                 "metadata": {"violation_count": len(violations)}
             }
-            
+
             self.record_execution(True)
             return result
         except Exception as e:
@@ -178,18 +178,18 @@ class SafetyCoordinator(Coordinator):
 
 class ValidationCoordinator(Coordinator):
     """Coordinates validation-focused missions (compliance, schema, integrity)."""
-    
+
     def __init__(self):
         """Initialize validation coordinator."""
         super().__init__("ValidationCoordinator")
-    
+
     def execute(self, mission: Dict[str, Any]) -> Dict[str, Any]:
         """Execute validation mission."""
         try:
             # Consolidated validation orchestration logic
             targets = mission.get("targets", [])
             validation_rules = mission.get("rules", [])
-            
+
             result = {
                 "status": "success",
                 "result": {
@@ -200,7 +200,7 @@ class ValidationCoordinator(Coordinator):
                 "coordinator": self.name,
                 "metadata": {"target_count": len(targets)}
             }
-            
+
             self.record_execution(True)
             return result
         except Exception as e:
@@ -215,18 +215,18 @@ class ValidationCoordinator(Coordinator):
 
 class HealingCoordinator(Coordinator):
     """Coordinates healing-focused missions (repair, recovery, restoration)."""
-    
+
     def __init__(self):
         """Initialize healing coordinator."""
         super().__init__("HealingCoordinator")
-    
+
     def execute(self, mission: Dict[str, Any]) -> Dict[str, Any]:
         """Execute healing mission."""
         try:
             # Consolidated healing orchestration logic
             violations = mission.get("violations", [])
             dry_run = mission.get("dry_run", True)
-            
+
             result = {
                 "status": "success",
                 "result": {
@@ -237,7 +237,7 @@ class HealingCoordinator(Coordinator):
                 "coordinator": self.name,
                 "metadata": {"violation_count": len(violations)}
             }
-            
+
             self.record_execution(True)
             return result
         except Exception as e:
@@ -252,18 +252,18 @@ class HealingCoordinator(Coordinator):
 
 class ObservabilityCoordinator(Coordinator):
     """Coordinates observability-focused missions (monitoring, tracing, metrics)."""
-    
+
     def __init__(self):
         """Initialize observability coordinator."""
         super().__init__("ObservabilityCoordinator")
-    
+
     def execute(self, mission: Dict[str, Any]) -> Dict[str, Any]:
         """Execute observability mission."""
         try:
             # Consolidated observability orchestration logic
             metrics = mission.get("metrics", [])
             trace_depth = mission.get("trace_depth", 3)
-            
+
             result = {
                 "status": "success",
                 "result": {
@@ -274,7 +274,7 @@ class ObservabilityCoordinator(Coordinator):
                 "coordinator": self.name,
                 "metadata": {"metric_count": len(metrics)}
             }
-            
+
             self.record_execution(True)
             return result
         except Exception as e:
@@ -289,18 +289,18 @@ class ObservabilityCoordinator(Coordinator):
 
 class OptimizationCoordinator(Coordinator):
     """Coordinates optimization-focused missions (performance, efficiency, tuning)."""
-    
+
     def __init__(self):
         """Initialize optimization coordinator."""
         super().__init__("OptimizationCoordinator")
-    
+
     def execute(self, mission: Dict[str, Any]) -> Dict[str, Any]:
         """Execute optimization mission."""
         try:
             # Consolidated optimization orchestration logic
             targets = mission.get("targets", [])
             optimization_level = mission.get("level", "balanced")
-            
+
             result = {
                 "status": "success",
                 "result": {
@@ -311,7 +311,7 @@ class OptimizationCoordinator(Coordinator):
                 "coordinator": self.name,
                 "metadata": {"target_count": len(targets)}
             }
-            
+
             self.record_execution(True)
             return result
         except Exception as e:
@@ -326,11 +326,11 @@ class OptimizationCoordinator(Coordinator):
 
 class DefaultCoordinator(Coordinator):
     """Default coordinator for unspecified mission focuses."""
-    
+
     def __init__(self):
         """Initialize default coordinator."""
         super().__init__("DefaultCoordinator")
-    
+
     def execute(self, mission: Dict[str, Any]) -> Dict[str, Any]:
         """Execute default mission."""
         try:
@@ -340,7 +340,7 @@ class DefaultCoordinator(Coordinator):
                 "coordinator": self.name,
                 "metadata": {}
             }
-            
+
             self.record_execution(True)
             return result
         except Exception as e:
@@ -356,11 +356,11 @@ class DefaultCoordinator(Coordinator):
 class UnifiedWorkflowEngine:
     """
     Unified workflow engine - canonical orchestration entrypoint.
-    
+
     Consolidates 51+ orchestrators into single engine with 19 specialized coordinators.
     Replaces scattered orchestration logic with single dispatch point.
     """
-    
+
     def __init__(self):
         """Initialize unified workflow engine with all coordinators."""
         self.coordinators: Dict[MissionFocus, Coordinator] = {
@@ -376,40 +376,40 @@ class UnifiedWorkflowEngine:
         self.total_missions = 0
         self.total_successes = 0
         self.total_failures = 0
-    
+
     def orchestrate(self, mission: Dict[str, Any]) -> Dict[str, Any]:
         """
         Orchestrate mission using appropriate coordinator.
-        
+
         Args:
             mission: Mission dict with 'focus' key and mission-specific data
-            
+
         Returns:
             Orchestration result from selected coordinator
         """
         self.total_missions += 1
-        
+
         # Determine mission focus
         focus_str = mission.get("focus", "default").lower()
         try:
             focus = MissionFocus(focus_str)
         except ValueError:
             focus = MissionFocus.DEFAULT
-        
+
         # Select coordinator
         coordinator = self.coordinators.get(focus, self.coordinators[MissionFocus.DEFAULT])
-        
+
         # Execute mission
         result = coordinator.execute(mission)
-        
+
         # Track results
         if result.get("status") == "success":
             self.total_successes += 1
         else:
             self.total_failures += 1
-        
+
         return result
-    
+
     def get_statistics(self) -> Dict[str, Any]:
         """Get orchestration statistics."""
         return {
@@ -426,7 +426,7 @@ class UnifiedWorkflowEngine:
                 for focus, coord in self.coordinators.items()
             }
         }
-    
+
     def register_coordinator(self, focus: MissionFocus, coordinator: Coordinator) -> None:
         """Register custom coordinator for mission focus."""
         self.coordinators[focus] = coordinator

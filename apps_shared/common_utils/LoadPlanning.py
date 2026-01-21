@@ -128,45 +128,45 @@ class ConfigLoadPlanner:
 
     def plan_load(self, load_request: Dict[str, Any]) -> ConfigLoadResult:
         """Plan configuration data loading operations.
-        
+
         Args:
             load_request: Dictionary containing load requirements and sources
-            
+
         Returns:
             ConfigLoadResult: Complete planning result with load plan
         """
         self.logger.info(f"Starting config load planning for: {load_request.get('plan_name', 'unknown')}")
-        
+
         try:
             # Validate input request
             self._validate_request(load_request)
-            
+
             # Parse config sources
             sources = self._parse_sources(load_request)
-            
+
             # Parse validation rules
             validation_rules = (
-                self._parse_validation_rules(load_request) 
+                self._parse_validation_rules(load_request)
                 if self.config.enable_validation else []
             )
-            
+
             # Parse transformations
             transformations = self._parse_transformations(load_request)
-            
+
             # Create load plan
             load_plan = self._create_load_plan(
                 load_request, sources, validation_rules, transformations
             )
-            
+
             # Estimate config size
             config_size = self._estimate_config_size(load_plan)
-            
+
             # Estimate load time
             load_time = self._estimate_load_time(load_plan)
-            
+
             # Calculate security requirements
             security_requirements = self._calculate_security_requirements(load_plan)
-            
+
             result = ConfigLoadResult(
                 success=True,
                 load_plan=load_plan,
@@ -182,13 +182,13 @@ class ConfigLoadPlanner:
                     "planner": "ConfigLoadPlanner"
                 }
             )
-            
+
             self.logger.info(
                 f"Successfully planned config load: "
                 f"{len(sources)} sources, {len(validation_rules)} validations"
             )
             return result
-            
+
         except Exception as e:
             self.logger.error(f"Config load planning failed: {str(e)}")
             return ConfigLoadResult(
@@ -204,10 +204,10 @@ class ConfigLoadPlanner:
         """Validate config load planning request."""
         if not request:
             raise ValueError("Config load planning request cannot be empty")
-        
+
         if "plan_name" not in request:
             raise ValueError("Plan name is required in config load planning request")
-        
+
         if "sources" not in request:
             raise ValueError("Sources are required in config load planning request")
 
@@ -215,7 +215,7 @@ class ConfigLoadPlanner:
         """Parse config sources from request."""
         sources = []
         raw_sources = request.get("sources", [])
-        
+
         for raw_source in raw_sources:
             if isinstance(raw_source, dict):
                 # Map strings to enums
@@ -226,7 +226,7 @@ class ConfigLoadPlanner:
                     "service": ConfigType.SERVICE,
                     "security": ConfigType.SECURITY
                 }
-                
+
                 format_mapping = {
                     "json": ConfigFormat.JSON,
                     "yaml": ConfigFormat.YAML,
@@ -234,7 +234,7 @@ class ConfigLoadPlanner:
                     "xml": ConfigFormat.XML,
                     "properties": ConfigFormat.PROPERTIES
                 }
-                
+
                 scope_mapping = {
                     "global": ConfigScope.GLOBAL,
                     "region": ConfigScope.REGION,
@@ -242,7 +242,7 @@ class ConfigLoadPlanner:
                     "service": ConfigScope.SERVICE,
                     "instance": ConfigScope.INSTANCE
                 }
-                
+
                 source = ConfigSource(
                     id=raw_source.get("id", f"source_{len(sources)}"),
                     name=raw_source.get("name", "unnamed"),
@@ -264,21 +264,21 @@ class ConfigLoadPlanner:
                     credentials=raw_source.get("credentials", {})
                 )
                 sources.append(source)
-        
+
         # Validate source count
         if len(sources) > self.config.max_sources_per_plan:
             raise ValueError(
                 f"Number of sources ({len(sources)}) exceeds maximum "
                 f"({self.config.max_sources_per_plan})"
             )
-        
+
         return sources
 
     def _parse_validation_rules(self, request: Dict[str, Any]) -> List[ConfigValidationRule]:
         """Parse validation rules from request."""
         rules = []
         raw_rules = request.get("validation_rules", [])
-        
+
         for raw_rule in raw_rules:
             if isinstance(raw_rule, dict):
                 rule = ConfigValidationRule(
@@ -289,14 +289,14 @@ class ConfigLoadPlanner:
                     error_message=raw_rule.get("error_message", "")
                 )
                 rules.append(rule)
-        
+
         return rules
 
     def _parse_transformations(self, request: Dict[str, Any]) -> List[ConfigTransformation]:
         """Parse transformations from request."""
         transformations = []
         raw_transforms = request.get("transformations", [])
-        
+
         for raw_transform in raw_transforms:
             if isinstance(raw_transform, dict):
                 transform = ConfigTransformation(
@@ -308,7 +308,7 @@ class ConfigLoadPlanner:
                     parameters=raw_transform.get("parameters", {})
                 )
                 transformations.append(transform)
-        
+
         return transformations
 
     def _create_load_plan(
@@ -342,7 +342,7 @@ class ConfigLoadPlanner:
             ConfigType.SECURITY: 4096,
         }
         return size_map.get(config_type, 2048)
-    
+
     def _apply_format_multiplier(self, size: int, format: ConfigFormat) -> int:
         """Apply format-specific size multiplier."""
         if format == ConfigFormat.XML:
@@ -350,35 +350,35 @@ class ConfigLoadPlanner:
         elif format == ConfigFormat.YAML:
             return int(size * 0.8)
         return size
-    
+
     def _estimate_config_size(self, plan: ConfigLoadPlan) -> int:
         """Estimate configuration size in bytes."""
         total_size = 0
-        
+
         for source in plan.sources:
             base_size = self._get_base_size_for_type(source.config_type)
             total_size += self._apply_format_multiplier(base_size, source.format)
-        
+
         return total_size
 
     def _estimate_load_time(self, plan: ConfigLoadPlan) -> int:
         """Estimate load time in seconds."""
         base_time = 2  # Base setup time
-        
+
         # Add time per source
         source_time = len(plan.sources) * 1
-        
+
         # Add time for validation
         validation_time = len(plan.validation_rules) * 0.5
-        
+
         # Add time for transformations
         transform_time = len(plan.transformations) * 1
-        
+
         # Add time for encryption if enabled
         encryption_time = 5 if plan.enable_encryption else 0
-        
+
         total_time = base_time + source_time + validation_time + transform_time + encryption_time
-        
+
         return int(total_time)
 
     def _calculate_security_requirements(self, plan: ConfigLoadPlan) -> Dict[str, bool]:
@@ -389,24 +389,24 @@ class ConfigLoadPlanner:
             "authorization_needed": False,
             "audit_logging": False
         }
-        
+
         # Check if any source requires encryption
         if plan.enable_encryption or any(s.encryption for s in plan.sources):
             requirements["encryption_needed"] = True
-        
+
         # Check if any source has credentials
         if any(s.credentials for s in plan.sources):
             requirements["authentication_needed"] = True
-        
+
         # Security configs always need authorization
         if any(s.config_type == ConfigType.SECURITY for s in plan.sources):
             requirements["authorization_needed"] = True
             requirements["audit_logging"] = True
-        
+
         # Feature flags need audit logging
         if any(s.config_type == ConfigType.FEATURE_FLAG for s in plan.sources):
             requirements["audit_logging"] = True
-        
+
         return requirements
 
 
@@ -437,7 +437,7 @@ def plan_config_load(
     config: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
     """Plan config data load from simple parameters.
-    
+
     Args:
         plan_name: Name of the load plan
         sources: List of config source definitions
@@ -445,7 +445,7 @@ def plan_config_load(
         transformations: Optional list of transformation definitions
         merge_strategy: Strategy for merging configs (override, merge, keep_existing)
         config: Optional planner configuration overrides
-        
+
     Returns:
         Dict: Planning result with load plan and resource requirements
     """
@@ -457,12 +457,12 @@ def plan_config_load(
         "transformations": transformations or [],
         "merge_strategy": merge_strategy
     }
-    
+
     # Create planner and execute
     planner_config = ConfigLoadConfig(**config) if config else None
     planner = ConfigLoadPlanner(planner_config)
     result = planner.plan_load(request)
-    
+
     # Convert result to dict for JSON serialization
     return {
         "success": result.success,

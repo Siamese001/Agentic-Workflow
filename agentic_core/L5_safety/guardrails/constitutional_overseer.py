@@ -24,9 +24,9 @@ class ConstitutionalOverseer:
     async def verify(self, output: str) -> bool:
         """Final verification of the agent's work."""
         logging.info("Overseer: Performing final constitutional audit...")
-        
+
         # Look, in a real run, we might use a small 'critic' LLM here.
         if "PRIVATE_KEY" in output:
             raise SecurityError("Overseer Block: Output contains sensitive data!")
-            
+
         return True

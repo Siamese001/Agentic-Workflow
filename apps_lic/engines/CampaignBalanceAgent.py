@@ -15,7 +15,7 @@ from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import Subatom
 class CampaignBalanceAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin, OutreachAgent):
     """
     Ensures campaign elements are balanced.
-    
+
     Validates:
     - Lead to message template ratio
     - Campaign has required elements (name, goal)
@@ -25,7 +25,7 @@ class CampaignBalanceAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin,
     async def execute(self) -> None:
         """
         Execute campaign balance validation.
-        
+
         Checks:
         - Lead to message ratio (should be between 1:1 and 100:1)
         - Campaign has name and goal
@@ -65,12 +65,12 @@ class CampaignBalanceAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin,
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, int]:
         """
         Autonomous healing method (Canon Key 51 compliance).
-        
+
         Args:
             dry_run: If True, only report violations without fixing
             execute: If True, apply fixes
             **kwargs: Additional healing parameters
-        
+
         Returns:
             Dict with healing summary (violations, fixed, errors)
         """

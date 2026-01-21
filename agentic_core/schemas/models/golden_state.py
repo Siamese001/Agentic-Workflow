@@ -2,7 +2,7 @@ from __future__ import annotations
 """
 Golden State & Evaluation Schemas
 ================================
-Defines models for Ground Truth benchmarking and LM-as-a-Judge 
+Defines models for Ground Truth benchmarking and LM-as-a-Judge
 evaluation workflows.
 """
 

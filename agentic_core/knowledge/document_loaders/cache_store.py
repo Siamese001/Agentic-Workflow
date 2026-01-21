@@ -36,10 +36,10 @@ class ResearchCache:
         """Performs simple keyword-matching retrieval from the research cache."""
         query_lower: str = query.lower()
         results: List[str] = []
-        
+
         if not self.cache_file.exists():
             return results
-        
+
         with self.cache_file.open('r', encoding='utf-8') as f:
             for line in f:
                 if not line.strip():
@@ -52,16 +52,16 @@ class ResearchCache:
                     continue
                 if len(results) >= top_k:
                     break
-        
+
         return results
 
     def get_all_entries(self) -> List[Dict[str, Any]]:
         """Retrieve all cache entries."""
         entries: List[Dict[str, Any]] = []
-        
+
         if not self.cache_file.exists():
             return entries
-        
+
         with self.cache_file.open('r', encoding='utf-8') as f:
             for line in f:
                 if not line.strip():
@@ -70,7 +70,7 @@ class ResearchCache:
                     entries.append(json.loads(line))
                 except json.JSONDecodeError:
                     continue
-        
+
         return entries
 
     def clear(self) -> None:

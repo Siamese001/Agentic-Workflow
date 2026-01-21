@@ -100,7 +100,7 @@ _runtime_state = {
     "total_agents": 0,
     "completed_agents": [],
     "events": [],
-    
+
     # Meta-Learning Metrics (Phase 1.1)
     "meta_learning": {
         "enabled": False,
@@ -115,7 +115,7 @@ _runtime_state = {
         "recent_experiences": [],  # Last 10 experiences
         "pattern_history": []  # Pattern extraction timeline
     },
-    
+
     # Redis Metrics (Phase 1.1)
     "redis": {
         "connected": False,
@@ -130,7 +130,7 @@ _runtime_state = {
         "hit_rate": 0.0,
         "recent_operations": []  # Last 20 operations
     },
-    
+
     # Pinecone Metrics (Phase 1.1)
     "pinecone": {
         "connected": False,
@@ -144,7 +144,7 @@ _runtime_state = {
         "avg_similarity": 0.0,
         "recent_queries": []  # Last 10 queries with results
     },
-    
+
     # Agent Execution Timeline (Phase 1.1)
     "execution_timeline": []  # [{agent, layer, start, end, duration, success}]
 }
@@ -171,14 +171,14 @@ def _update_meta_learning_state(experience_data: dict):
     ml["enabled"] = True
     ml["total_experiences"] = experience_data.get("total_experiences", ml["total_experiences"])
     ml["patterns_extracted"] = experience_data.get("patterns_extracted", ml["patterns_extracted"])
-    
+
     if "strategy_weights" in experience_data:
         ml["strategy_weights"] = experience_data["strategy_weights"]
-    
+
     if "experience" in experience_data:
         ml["recent_experiences"].insert(0, experience_data["experience"])
         ml["recent_experiences"] = ml["recent_experiences"][:10]  # Keep last 10
-    
+
     if "pattern" in experience_data:
         ml["pattern_history"].append({
             "pattern": experience_data["pattern"],
@@ -189,20 +189,20 @@ def _update_redis_state(operation: str, key: str, hit: bool = None):
     """Update runtime state with Redis operation."""
     redis = _runtime_state["redis"]
     redis["connected"] = True
-    
+
     if operation in redis["operations"]:
         redis["operations"][operation] += 1
     redis["operations"]["total"] += 1
-    
+
     if hit is not None:
         if hit:
             redis["cache_hits"] += 1
         else:
             redis["cache_misses"] += 1
-        
+
         total = redis["cache_hits"] + redis["cache_misses"]
         redis["hit_rate"] = redis["cache_hits"] / total if total > 0 else 0.0
-    
+
     redis["recent_operations"].insert(0, {
         "operation": operation,
         "key": key,
@@ -215,15 +215,15 @@ def _update_pinecone_state(operation: str, metadata: dict = None):
     """Update runtime state with Pinecone operation."""
     pc = _runtime_state["pinecone"]
     pc["connected"] = True
-    
+
     if operation in pc["operations"]:
         pc["operations"][operation] += 1
     pc["operations"]["total"] += 1
-    
+
     if metadata:
         if "vectors_count" in metadata:
             pc["vectors_stored"] += metadata["vectors_count"]
-        
+
         if "similarity" in metadata:
             # Running average of similarity scores
             total_queries = pc["operations"]["query"]
@@ -231,7 +231,7 @@ def _update_pinecone_state(operation: str, metadata: dict = None):
                 pc["avg_similarity"] = (
                     (pc["avg_similarity"] * (total_queries - 1) + metadata["similarity"]) / total_queries
                 )
-        
+
         if operation == "query":
             pc["recent_queries"].insert(0, {
                 "results": metadata.get("results", []),
@@ -262,7 +262,7 @@ AGENT_LAYERS = {
     "StructuralHealerAgent": "L5 – Safety & Governance",
     "ComplianceOrchestratorAgent": "L5 – Safety & Governance",
     "AutonomyGuardianAgent": "L5 – Safety & Governance",
-    
+
     # Core Hygiene Agents (NEW)
     "ImportAgent": "L5 – Safety & Governance",
     "CodeDeduplicationAgent": "L5 – Safety & Governance",
@@ -272,20 +272,20 @@ AGENT_LAYERS = {
     "FileCleanupAgent": "L5 – Safety & Governance",
     "CodeJanitorAgent": "L5 – Safety & Governance",
     "HygieneGuardianAgent": "L5 – Safety & Governance",
-    
+
     # L2 Execution (Future Activation)
     "StructuralEngineerAgent": "L2 – Execution & Tools",
-    
+
     # L1 Cognition (Future Activation)
     "GovernanceAgent": "L1 – Cognition & Intelligence",
     "DocumentationAgent": "L1 – Cognition & Intelligence",
-    
+
     # L4 State & Memory (Phase 5 Activation)
     "CheckpointManagerAgent": "L4 – State & Memory",
-    
+
     # L6 Observability & Metrics (Phase 5 Activation)
     "PerformanceAnalystAgent": "L6 – Observability & Metrics",
-    
+
     # L0 Maintenance (Future Activation)
     "BootstrapAgent": "L0 – Maintenance & Infrastructure",
     "FilesystemSSOTReconcilerAgent": "L0 – Maintenance & Infrastructure",
@@ -325,11 +325,11 @@ for p in sovereign_paths:
 def main():
     """Main entry point for the Canon Validator."""
     global _mission_executed
-    
+
     parser = argparse.ArgumentParser(description="Canon Validator One-File Runner (Thin Wrapper)")
     parser.add_argument(
-        "--target", 
-        type=str, 
+        "--target",
+        type=str,
         default=".",  # [FULL REPO] Scan entire repo by default
         help="Target folder for validation (default: entire repo)"
     )
@@ -402,13 +402,13 @@ def main():
         help="Run mandatory preflight checks only (syntax, imports, location)"
     )
     args = parser.parse_args()
-    
+
     # Global mission timeout: 30 minutes
     MISSION_TIMEOUT = int(os.getenv("MISSION_TIMEOUT_SECONDS", "1800"))
-    
+
     print(f"\n[*] Canon Validator v3.2 - Full Repo Scan (Thin Wrapper)")
     print(f"   [OK] Sovereign Neural Link Active at Root: {project_root_str}")
-    
+
     # Handle reset if requested
     if args.reset:
         print("\n[*] SOVEREIGN STATE RESET ACTIVATED")
@@ -418,7 +418,7 @@ def main():
             print("   [OK] Volatile state purged - SSL fixes will take effect on clean slate")
         except Exception as e:
             print(f"   [!] Reset failed: {e}")
-    
+
     # Helper to process discovery data → agent tuples
     def process_discovery_data(data):
         processed = []
@@ -457,7 +457,7 @@ def main():
             agents = sorted(agents, key=lambda x: (x[0], x[1]))
 
         return agents
-    
+
     # Handle --list-agents
     if args.list_agents:
         print("\n[*] DISCOVERABLE AGENTS (from agent_discovery_full.json):\n")
@@ -468,7 +468,7 @@ def main():
         print("\n   Usage: python canon_validator_agentic_v2_thin.py --agent <name> [--execute]")
         print("   Example: python canon_validator_agentic_v2_thin.py --agent NamingAgent --execute")
         return
-    
+
     # Handle --report (compliance report shortcut)
     if args.report:
         print("\n[*] Running Autonomy Compliance Report...")
@@ -484,37 +484,37 @@ def main():
             print(f"   [!] Report failed: {e}")
             traceback.print_exc()
         return
-    
+
     # Handle single agent invocation via dynamic discovery
     if args.agent:
         print(f"\n[*] AGENT MODE - Direct invocation of {args.agent.upper()}")
-        
+
         execute = args.execute or args.execute_heal
         mode_str = "EXECUTE" if execute else "DRY-RUN"
         print(f"   [MODE] {mode_str}")
-        
+
         # AST-based agent discovery - find class by name
         def discover_agent(agent_name: str) -> tuple:
             """Discover agent by searching for matching class name via AST."""
             # Normalize search term
             search_term = agent_name.lower().replace("-", "").replace("_", "")
-            
+
             # Search through all discovered agents
             all_agents = list_available_agents()
-            
+
             # Exact match first
             for class_name, module_path in all_agents:
                 if class_name.lower() == search_term or class_name.lower() == search_term + "agent":
                     return (module_path, class_name)
-            
+
             # Partial match (prefix)
             for class_name, module_path in all_agents:
                 class_normalized = class_name.lower().replace("_", "")
                 if class_normalized.startswith(search_term) or search_term in class_normalized:
                     return (module_path, class_name)
-            
+
             return None
-        
+
         discovery_result = discover_agent(args.agent)
         if not discovery_result:
             print(f"   [!] Agent not found: {args.agent}")
@@ -523,13 +523,13 @@ def main():
                 print(f"      - {class_name}")
             print(f"   ... and more. Use --list-agents for full list.")
             sys.exit(1)
-        
+
         module_path, agent_name = discovery_result
         print(f"   [DISCOVERED] {module_path}.{agent_name}")
-        
+
         try:
             module = __import__(module_path, fromlist=[agent_name])
-            
+
             # Try getter function first, then class
             getter_name = f"get_{agent_name.lower()}" if not agent_name.startswith("get_") else agent_name
             if hasattr(module, getter_name):
@@ -547,16 +547,16 @@ def main():
                             break
                 else:
                     raise AttributeError(f"No Agent class found in {module_path}")
-            
+
             # Invoke specified method (default: heal_repository)
             method_name = args.method
             if not hasattr(agent, method_name):
                 print(f"   [!] Method '{method_name}' not found on {agent.__class__.__name__}")
                 print(f"   Available methods: {[m for m in dir(agent) if not m.startswith('_') and callable(getattr(agent, m))]}")
                 sys.exit(1)
-            
+
             print(f"   [AGENT] {agent.__class__.__name__}.{method_name}()\n")
-            
+
             method = getattr(agent, method_name)
             if method_name == "heal_repository":
                 result = method(
@@ -579,48 +579,48 @@ def main():
                 print(f"\n[AGENT COMPLETE]")
                 if result:
                     print(f"   Result: {result}")
-            
+
         except Exception as e:
             print(f"   [!] Agent invocation failed: {e}")
             traceback.print_exc()
             sys.exit(1)
-        
+
         return  # Exit after agent mode
-    
+
     # Handle hygiene modes
     if args.preflight_only or args.hygiene or args.full_hygiene:
         from agentic_core.L3_orchestration.unified_orchestrator import UnifiedOrchestratorAgent
         from agentic_core.L5_safety.validators.healing_strategy import HealingStrategy
         from agentic_core.config.core_hygiene_agents import CORE_HYGIENE_AGENTS, MANDATORY_PREFLIGHT
-        
+
         execute_heal = getattr(args, 'execute_heal', False) or getattr(args, 'execute', False)
         mode_str = "EXECUTE" if execute_heal else "DRY-RUN"
-        
+
         if args.preflight_only:
             print("\n[*] PREFLIGHT MODE - Running mandatory checks only")
             print(f"   Agents: {', '.join(MANDATORY_PREFLIGHT)}")
             print(f"   [MODE] {mode_str}")
-            
+
             # Create custom strategy with only preflight agents
             strategy = HealingStrategy(project_root=project_root)
             strategy._tiers = {
                 "Tier 0: Pre-Flight": MANDATORY_PREFLIGHT,
             }
-        
+
         elif args.hygiene:
             print("\n[*] CORE HYGIENE MODE - Running Tier 0-1 agents")
             print(f"   [MODE] {mode_str}")
-            
+
             strategy = HealingStrategy(project_root=project_root)
             strategy._tiers = {
                 "Tier 0: Pre-Flight": CORE_HYGIENE_AGENTS["tier_0_preflight"],
                 "Tier 1: Structural": CORE_HYGIENE_AGENTS["tier_1_structural"],
             }
-        
+
         elif args.full_hygiene:
             print("\n[*] FULL HYGIENE MODE - Running Tier 0-3 agents")
             print(f"   [MODE] {mode_str}")
-            
+
             strategy = HealingStrategy(project_root=project_root)
             strategy._tiers = {
                 "Tier 0: Pre-Flight": CORE_HYGIENE_AGENTS["tier_0_preflight"],
@@ -628,20 +628,20 @@ def main():
                 "Tier 2: Architectural": CORE_HYGIENE_AGENTS["tier_2_architectural"],
                 "Tier 3: Autonomy": CORE_HYGIENE_AGENTS["tier_3_autonomy"],
             }
-        
+
         # Run orchestrator with hygiene strategy
         orchestrator = UnifiedOrchestratorAgent(
             strategy=strategy,
             project_root=project_root,
             name="HygieneOrchestrator"
         )
-        
+
         mission_context = {
             "dry_run": not execute_heal,
             "execute": execute_heal,
             "scan_mode": "hygiene_sweep"
         }
-        
+
         try:
             print("\n" + "="*70)
             results = orchestrator.run_mission(mission_context)
@@ -653,25 +653,25 @@ def main():
             print(f"\n[!] Hygiene mode failed: {e}")
             traceback.print_exc()
             sys.exit(1)
-        
+
         return  # Exit after hygiene mode
-    
+
     # Handle autonomous healing mode
     if args.heal:
         print("\n[*] SOVEREIGN HEAL MODE - Autonomous Domain Healing")
         print("   [LAW] All healing via agent.heal_repository() — no external scripts")
-        
+
         execute_heal = getattr(args, 'execute_heal', False)
         mode_str = "EXECUTE" if execute_heal else "DRY-RUN"
         print(f"   [MODE] {mode_str}")
-        
+
         try:
             # [PHASE 3] UNIFIED ORCHESTRATION - Strategy Pattern
             # The 5-tier logic is now encapsulated in HealingStrategy
             from agentic_core.L3_orchestration.unified_orchestrator import UnifiedOrchestratorAgent
             from agentic_core.L5_safety.validators.healing_strategy import HealingStrategy
             from agentic_core.L4_state.ValidationContext.CheckpointManagerAgent import get_checkpoint_manager
-            
+
             # Helper to safely load Performance Analyst (L6)
             def get_performance_analyst_safe(root):
                 try:
@@ -687,7 +687,7 @@ def main():
             # [UNIFIED ENGINE] Create orchestrator with HealingStrategy
             # Support tiered execution via --tier argument
             strategy = HealingStrategy(project_root=project_root, target_tier=args.tier)
-            
+
             # Log tier filtering if active
             if args.tier is not None:
                 print(f"\n   [TIER FILTER] Running ONLY Tier {args.tier}")
@@ -698,10 +698,10 @@ def main():
                 project_root=project_root,
                 name="SovereignHealOrchestrator"
             )
-            
+
             checkpoint_manager = get_checkpoint_manager(project_root)
             performance_analyst = get_performance_analyst_safe(project_root)
-            
+
             # Build mission context
             mission_context = {
                 "dry_run": not execute_heal,
@@ -710,13 +710,13 @@ def main():
                 "performance_analyst": performance_analyst,
                 "scan_mode": "unified_sovereign_sweep"
             }
-            
+
             # Get tier info for runtime state
             tiers = strategy.get_tiers()
             all_agent_names = []
             for tier_agents in tiers.values():
                 all_agent_names.extend(tier_agents)
-            
+
             # Check for Gemini activation
             gemini_active = False
             try:
@@ -724,7 +724,7 @@ def main():
                 guardian = get_autonomy_guardian(project_root)
                 gemini_active = hasattr(guardian, 'gemini_embedder') and guardian.gemini_embedder is not None
             except: pass
-            
+
             # Initialize runtime state for dashboard
             _runtime_state.update({
                 "status": "healing",
@@ -741,11 +741,11 @@ def main():
 
             # --- UNIFIED MISSION EXECUTION ---
             print(mission_header("SOVEREIGN HEAL (UNIFIED)", execute=execute_heal))
-            
+
             mission_start = datetime.now()
             results = orchestrator.run_mission(mission_context)
             mission_end = datetime.now()
-            
+
             # Update runtime state with execution timeline from results
             for i, agent_result in enumerate(results.get("agent_results", [])):
                 _runtime_state["execution_timeline"].append({
@@ -756,12 +756,12 @@ def main():
                     "duration_ms": agent_result.get("execution_time_ms", 0)
                 })
             _save_runtime_state(project_root)
-            
+
             # Map MissionResult to reporting format
             total_fixes = results.get("total_fixed", 0)
             total_violations = results.get("total_violations", 0)
             agents_run = len(results.get("agent_results", []))
-            
+
             consolidated_results = [{
                 "domain": "Sovereign Repository",
                 "agents_run": agents_run,
@@ -769,29 +769,29 @@ def main():
                 "total_violations": total_violations,
                 "compliance_score": 100 if (total_fixes + total_violations) == 0 else int((1 - total_violations / max(total_fixes + total_violations, 1)) * 100)
             }]
-            
+
             # Log abort info if mission was aborted
             if results.get("aborted"):
                 _add_event("warning", f"Mission aborted: {results.get('abort_reason', 'Unknown')}")
                 log_status("warning", f"Mission aborted: {results.get('abort_reason', 'Unknown')}")
-            
+
             # Finalize runtime state
             _runtime_state["status"] = "idle"
             _runtime_state["current_agent"] = None
             _runtime_state["current_layer"] = None
             _add_event("info", f"Heal mode completed — Unified Engine ({results.get('status', 'UNKNOWN')})")
             _save_runtime_state(project_root)
-            
+
             # Phase 4.5: Autonomous Executive Summary
             report_consolidated_summary(consolidated_results, gemini_active)
-            
+
         except Exception as e:
             print(f"   [!] Heal mode failed: {e}")
             traceback.print_exc()
             _add_event("error", f"Heal mode failed: {str(e)[:300]}...")
             _runtime_state["status"] = "error"
             _save_runtime_state(project_root)
-        
+
         return  # Exit after heal mode
 
 
@@ -802,14 +802,14 @@ def report_consolidated_summary(results, gemini_active):
     total_fixed = sum(r.get("total_fixed", 0) for r in results)
     total_violations = sum(r.get("total_violations", 0) for r in results)
     total_errors = sum(r.get("total_errors", 0) for r in results)
-    
+
     success = total_violations == 0
     print(mission_summary(total_agents, total_fixed, total_violations, total_errors, 0, success))
-    
+
     print("\n" + "="*60)
     print(f"{Colors.BRIGHT_CYAN if COLORS_AVAILABLE else ''}FINAL CONSOLIDATED SOVEREIGN HEALTH REPORT{Colors.RESET if COLORS_AVAILABLE else ''}")
     print("="*60)
-    
+
     # Aggregate cross-domain metrics
     total_summary = {
         "agents_run": 0,
@@ -818,28 +818,28 @@ def report_consolidated_summary(results, gemini_active):
         "total_fixed": 0,
         "total_violations": 0
     }
-    
+
     print("\nDomain-by-Domain Health:")
     for res in results:
         domain = res.get("domain", "unknown")
         compliance = res.get("compliance_score", 0)
         fixed = res.get("total_fixed", 0)
         violations = res.get("total_violations", 0)
-        
+
         # Aggregate totals
         total_summary["agents_run"] += res.get("agents_run", 0)
         total_summary["total_renamed"] += res.get("total_renamed", 0)
         total_summary["total_errors"] += res.get("total_errors", 0)
         total_summary["total_fixed"] += fixed
         total_summary["total_violations"] += violations
-        
+
         status = "✅" if compliance == 100 else "⚠️" if compliance >= 80 else "❌"
         print(f"  {status} {domain:20} Compliance: {compliance}%  Fixed: {fixed}  Violations: {violations}")
-    
+
     # Calculate overall compliance
     total_checks = total_summary["total_violations"] + total_summary["total_fixed"]
     overall_compliance = 100 if total_checks == 0 else int((1 - total_summary["total_violations"] / max(total_checks, 1)) * 100)
-    
+
     print("\n" + "="*60)
     print("OVERALL SOVEREIGN HEALTH")
     print("="*60)
@@ -848,14 +848,14 @@ def report_consolidated_summary(results, gemini_active):
     print(f"  Total Fixed: {total_summary['total_fixed']}")
     print(f"  Total Violations: {total_summary['total_violations']}")
     print(f"  Total Errors: {total_summary['total_errors']}")
-    
+
     # Display Meta-Learning memory growth
     if gemini_active:
         print(f"\n  Meta-Learning: ACTIVE (Gemini 768D)")
         print(f"  L4 Memory: Historical snapshots persisted")
     else:
         print(f"\n  Meta-Learning: LOGGING ONLY (Set GOOGLE_API_KEY to activate)")
-    
+
     print("="*60)
 
 

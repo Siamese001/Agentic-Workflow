@@ -95,7 +95,7 @@ class TypeHintEnforcementAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
 
             fixer = TypeHintFixerAgent(self.FALLBACK_PARAM, self.FALLBACK_RETURN, self.FALLBACK_VAR)
             new_tree = fixer.visit(tree)
-            
+
             if fixer.added_count > 0:
                 ast.fix_missing_locations(new_tree)
                 new_source = ast.unparse(new_tree)
@@ -145,7 +145,7 @@ class TypeHintEnforcementAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
         """L5 safety/validators - operational only."""
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository()
-        
+
         if _call_path is None:
             _call_path = set()
         agent_name = self.__class__.__name__

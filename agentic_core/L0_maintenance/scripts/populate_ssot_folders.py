@@ -107,7 +107,7 @@ __all__ = []
 def main():
     print(f"[*] Starting Intelligent Sovereign Population...")
     populated = 0
-    
+
     # Ensure core root exists
     if not core_root.exists():
         print(f"[!] Error: {core_root} not found.")
@@ -115,7 +115,7 @@ def main():
 
     # Iterate over SSOT structure
     l1_folders = SOVEREIGN_REGISTRY.get("agentic_core", {}).get("subfolders", [])
-    
+
     for l1 in l1_folders:
         l1_path = core_root / l1
         if not l1_path.exists():

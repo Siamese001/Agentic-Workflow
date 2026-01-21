@@ -47,7 +47,7 @@ print()
 # Required fields for drill-down agent objects
 REQUIRED_FIELDS = [
     'name', 'path', 'rel', 'abs_file', 'abs_class', 'class_line',
-    'has_mixin', 'invocation', 'has_tests', 
+    'has_mixin', 'invocation', 'has_tests',
     'obs_summary', 'mcp_summary', 'typing_summary',
     'typed_pct', 'overall_typed_pct', 'complexity', 'health'
 ]
@@ -63,33 +63,33 @@ print()
 
 for territory, territory_data in real_agent_data.items():
     agents = territory_data.get('agents', [])
-    
+
     if not agents:
         continue
-    
+
     territories_with_agents += 1
     total_agents += len(agents)
-    
+
     # Validate each agent
     for idx, agent in enumerate(agents):
         agent_id = f"{territory}[{idx}]"
-        
+
         # Check required fields exist
         missing_fields = [f for f in REQUIRED_FIELDS if f not in agent]
         if missing_fields:
             errors.append(f"❌ {agent_id}: Missing fields: {', '.join(missing_fields)}")
             continue
-        
+
         # Check for "undefined" values in critical fields
         if agent.get('name') == 'undefined' or not agent.get('name'):
             errors.append(f"❌ {agent_id}: Agent name is undefined or empty")
-        
+
         if agent.get('rel') == 'undefined' or not agent.get('rel'):
             errors.append(f"❌ {agent_id}: Relative path is undefined or empty")
-        
+
         if agent.get('class_line') == 'undefined':
             errors.append(f"❌ {agent_id}: Class line is undefined")
-        
+
         # Validate metric values are numbers (not "undefined")
         numeric_fields = ['health', 'complexity', 'typed_pct', 'overall_typed_pct']
         for field in numeric_fields:
@@ -98,14 +98,14 @@ for territory, territory_data in real_agent_data.items():
                 errors.append(f"❌ {agent_id}: {field} is undefined")
             elif not isinstance(value, (int, float)):
                 errors.append(f"❌ {agent_id}: {field} is not numeric: {value}")
-        
+
         # Validate boolean fields
         boolean_fields = ['has_mixin', 'has_tests']
         for field in boolean_fields:
             value = agent.get(field)
             if value == 'undefined' or value is None:
                 errors.append(f"❌ {agent_id}: {field} is undefined")
-        
+
         # Validate summary strings
         summary_fields = ['obs_summary', 'mcp_summary', 'typing_summary']
         for field in summary_fields:
@@ -114,19 +114,19 @@ for territory, territory_data in real_agent_data.items():
                 errors.append(f"❌ {agent_id}: {field} is undefined or empty")
             elif 'undefined' in str(value):
                 errors.append(f"❌ {agent_id}: {field} contains 'undefined': {value}")
-        
+
         # Check invocation field
         inv_value = agent.get('invocation')
         valid_invocations = ['Yes', 'No', 'Inherited', 'Unknown']
         if inv_value not in valid_invocations:
             warnings.append(f"⚠️  {agent_id}: Unexpected invocation value: {inv_value}")
-        
+
         # Validate metric thresholds (< 50% and = 0%)
         if agent.get('health', 100) < 50:
             # This is expected for low-health agents, just validate it's a valid number
             if not isinstance(agent['health'], (int, float)):
                 errors.append(f"❌ {agent_id}: health < 50% but not a valid number: {agent['health']}")
-        
+
         if agent.get('health', 100) == 0:
             # Zero health should be explicitly 0, not undefined
             if agent['health'] != 0:
@@ -176,7 +176,7 @@ for territory_data in real_agent_data.values():
             agents_at_zero_health += 1
         elif health < 50:
             agents_below_50_health += 1
-        
+
         # Check for any undefined values
         agent_str = json.dumps(agent)
         if 'undefined' in agent_str:

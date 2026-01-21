@@ -293,17 +293,17 @@ class LICValidator:
             return RECENCY_FACTORS["91-180_days"]
         else:
             return RECENCY_FACTORS["180+_days"]
-    
+
     def _calculate_source_weight(self, source: Dict[str, object], recency_days: Optional[int]) -> float:
         """Calculate weight for a single source."""
         SourceType = source.get("SourceType", "GENERIC_SEARCH")
         base_weight = SIGNAL_SOURCE_WEIGHTS.get(SourceType, 0.4)
-        
+
         if recency_days is not None:
             base_weight *= self._get_recency_factor(recency_days)
-        
+
         return base_weight
-    
+
     def calculate_signal_score(
         self,
         sources: List[Dict[str, object]],

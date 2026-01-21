@@ -33,7 +33,7 @@ def test_two_phase_dedup_import():
     print("\n" + "=" * 70)
     print("Test 1: TwoPhaseDeduplicationAgent Import")
     print("=" * 70)
-    
+
     try:
         from apps_lic.engines.TwoPhaseDeduplicationAgent import TwoPhaseDeduplicationAgent
         test_pass("GIANT-01", "TwoPhaseDeduplicationAgent imports successfully")
@@ -50,17 +50,17 @@ def test_scripts_planning_validation():
     print("\n" + "=" * 70)
     print("Test 2: CoreOrchestrationAgent Task Validation")
     print("=" * 70)
-    
+
     try:
         from agentic_core.L3_orchestration.unified.CoreOrchestrationAgent import CoreOrchestrationAgent
-        
+
         agent = CoreOrchestrationAgent()
-        
+
         # Verify heal_repository exists and has proper signature
         if hasattr(agent, 'heal_repository'):
             # Call heal_repository in dry_run mode
             result = agent.heal_repository(dry_run=True)
-            
+
             if isinstance(result, dict):
                 test_pass("GIANT-02", f"heal_repository returns dict with keys: {list(result.keys())}")
             else:
@@ -78,20 +78,20 @@ def test_memory_leak_detector():
     print("\n" + "=" * 70)
     print("Test 3: MemoryLeakDetectorAgent Scan and Fix")
     print("=" * 70)
-    
+
     try:
         from agentic_core.L2_execution.ToolRegistry.MemoryLeakDetectorAgent import MemoryLeakDetectorAgent
-        
+
         # Create with mock context
         mock_ctx = MagicMock()
         mock_ctx.python_files = []
-        
+
         agent = MemoryLeakDetectorAgent(ctx=mock_ctx)
-        
+
         # Verify heal_repository exists
         if hasattr(agent, 'heal_repository'):
             result = agent.heal_repository(dry_run=True)
-            
+
             if isinstance(result, dict):
                 test_pass("GIANT-03", f"heal_repository returns dict: {result}")
             else:
@@ -109,16 +109,16 @@ def test_peer_intelligence_auditor():
     print("\n" + "=" * 70)
     print("Test 4: PeerIntelligenceAuditorAgent Search Count")
     print("=" * 70)
-    
+
     try:
         from agentic_core.L2_execution.ToolRegistry.PeerIntelligenceAuditorAgent import PeerIntelligenceAuditorAgent
-        
+
         agent = PeerIntelligenceAuditorAgent()
-        
+
         # Verify heal_repository exists
         if hasattr(agent, 'heal_repository'):
             result = agent.heal_repository(dry_run=True)
-            
+
             if isinstance(result, dict):
                 test_pass("GIANT-04", f"heal_repository returns dict: {result}")
             else:
@@ -136,17 +136,17 @@ def test_dag_mutator():
     print("\n" + "=" * 70)
     print("Test 5: DAGMutatorAgent Mutation Validation")
     print("=" * 70)
-    
+
     try:
         from archives.void_violations.DAGMutatorAgent import DAGMutatorAgent, DAGConfig
-        
+
         config = DAGConfig()
         agent = DAGMutatorAgent(config=config)
-        
+
         # Verify heal_repository exists
         if hasattr(agent, 'heal_repository'):
             result = agent.heal_repository(dry_run=True)
-            
+
             if isinstance(result, dict):
                 # Verify it's not just {"skipped": 1}
                 if result.get("skipped") == 1 and len(result) == 1:
@@ -168,16 +168,16 @@ def test_import_healer():
     print("\n" + "=" * 70)
     print("Test 6: ImportHealerAgent Directory Healing")
     print("=" * 70)
-    
+
     try:
         from archives.void_violations.ImportHealerAgent import ImportHealerAgent
-        
+
         agent = ImportHealerAgent(project_root=PROJECT_ROOT)
-        
+
         # Verify heal_repository exists
         if hasattr(agent, 'heal_repository'):
             result = agent.heal_repository(dry_run=True)
-            
+
             if isinstance(result, dict):
                 test_pass("GIANT-06", f"heal_repository returns dict: {result}")
             else:
@@ -194,14 +194,14 @@ def main():
     print("\n" + "=" * 70)
     print("SLEEPING GIANTS TEST SUITE")
     print("=" * 70)
-    
+
     test_two_phase_dedup_import()
     test_scripts_planning_validation()
     test_memory_leak_detector()
     test_peer_intelligence_auditor()
     test_dag_mutator()
     test_import_healer()
-    
+
     print("\n" + "=" * 70)
     print("TEST SUMMARY")
     print("=" * 70)
@@ -210,7 +210,7 @@ def main():
     print(f"  Passed: {PASSED}")
     print(f"  Failed: {FAILED}")
     print(f"  Pass Rate: {100 * PASSED / total:.1f}%")
-    
+
     if FAILED == 0:
         print("\n  ✅ ALL TESTS PASSED - SLEEPING GIANTS AWAKENED")
         return 0

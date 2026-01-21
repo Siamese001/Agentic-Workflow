@@ -29,7 +29,7 @@ def regenerate_dashboard():
     print("\n🔄 Source files changed → Regenerating autonomy_dashboard.html...")
     try:
         result = safe_execute(
-            [sys.executable, "-c", 
+            [sys.executable, "-c",
              "from pathlib import Path; from agentic_core.L5_safety.validators.AutonomyGuardianAgent import AutonomyGuardianAgent; "
              "agent = AutonomyGuardianAgent(project_root=Path('.')); agent.generate_compliance_report()"],
             capture_output=True,

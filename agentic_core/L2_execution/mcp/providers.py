@@ -49,10 +49,10 @@ DEFAULT_PROVIDER_CLASSES: Dict[str, str] = {
 
 def get_default_module(provider: str) -> Optional[str]:
     """Get default module name for a provider.
-    
+
     Args:
         provider: Provider type string
-        
+
     Returns:
         Module name or None if stub
     """
@@ -61,10 +61,10 @@ def get_default_module(provider: str) -> Optional[str]:
 
 def get_default_class(provider: str) -> Optional[str]:
     """Get default class name for a provider.
-    
+
     Args:
         provider: Provider type string
-        
+
     Returns:
         Class name or None
     """
@@ -77,7 +77,7 @@ def register_provider(
     class_name: str,
 ) -> None:
     """Register a custom provider mapping.
-    
+
     Args:
         provider: Provider identifier
         module: Python module path

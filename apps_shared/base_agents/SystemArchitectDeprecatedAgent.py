@@ -77,7 +77,7 @@ class SystemArchitectDeprecatedAgent(SubatomicTestingMixin, HealerMixin, CanonBa
         if not passed_49:
             # Signal critical failure after reporting
             self.ctx.signal_critical_failure()
-        
+
         # Key 50: Law of Void
         passed_50, details_50 = self.check_key_50_law_of_void()
         self.ctx.report(self.name, 50, passed_50, details_50)
@@ -125,7 +125,7 @@ class SystemArchitectDeprecatedAgent(SubatomicTestingMixin, HealerMixin, CanonBa
             tree = self._parse_python_file(file_path)
             if tree:
                 metaclass_violations.extend(self._check_tree_for_metaclasses(tree, file_path))
-        
+
         return len(metaclass_violations) == 0, metaclass_violations
 
     def check_key_41_scoped_nesting(self) -> Tuple[bool, List[str]]:
@@ -145,7 +145,7 @@ class SystemArchitectDeprecatedAgent(SubatomicTestingMixin, HealerMixin, CanonBa
             tree = self._parse_python_file(fp)
             if tree:
                 # Instantiate the module-level NestVisitor
-                visitor = NestVisitor(fp, MAX_NESTING_DEPTH) 
+                visitor = NestVisitor(fp, MAX_NESTING_DEPTH)
                 visitor.visit(tree)
                 violations.extend(visitor.violations_in_file)
         return len(violations) == 0, violations
@@ -170,11 +170,11 @@ class SystemArchitectDeprecatedAgent(SubatomicTestingMixin, HealerMixin, CanonBa
             # Path.parts includes all components
             parts = Path(file_path).parts
             depth = len(parts)
-            
+
             # Skip __init__.py files
             if file_path.endswith("__init__.py"):
                 continue
-            
+
             # [SSOT] Check against per-root required depth from SOVEREIGN_REGISTRY
             if parts and parts[0] in DEPTH_MAP:
                 root_folder = parts[0]
@@ -196,7 +196,7 @@ class SystemArchitectDeprecatedAgent(SubatomicTestingMixin, HealerMixin, CanonBa
         if tree:
             return self._has_definitions_in_tree(tree)
         # Treat unparseable as a Violation for safety if parsing failed
-        return True 
+        return True
 
     def _is_root_file_with_definitions(self, file_path: str) -> bool:
         """Helper to check if a file is at root depth and contains definitions."""

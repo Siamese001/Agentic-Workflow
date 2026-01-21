@@ -16,7 +16,7 @@ class RateLimitExceeded(Exception):
 class RateLimitMixin:
     """
     Phase 1 Critical Infrastructure: Universal Rate Limiting (Report 4.1).
-    
+
     Implements a Token Bucket algorithm to control operation frequency.
     Features:
     - Per-operation limits (rate/per/burst)
@@ -28,11 +28,11 @@ class RateLimitMixin:
     def __init__(self, **kwargs):
         # Cooperatively call next parent in MRO
         super().__init__(**kwargs)
-        
+
         # Internal state for token buckets
         # Structure: { "key": { "tokens": float, "last_updated": float } }
         self._bucket_state: Dict[str, Dict[str, float]] = {}
-        
+
         # Default limits if not defined in child class
         if not hasattr(self, "_rate_limits"):
             self._rate_limits: Dict[str, Dict[str, float]] = {}
@@ -44,7 +44,7 @@ class RateLimitMixin:
             self._redis = get_redis_client()
         except Exception:
             self._redis = None
-            
+
         self._rl_logger = logging.getLogger(self.__class__.__name__)
 
     def _sanitize_key(self, key: str) -> str:
@@ -53,7 +53,7 @@ class RateLimitMixin:
     def configure_rate_limit(self, key: str, rate: int, per: int = 60, burst: Optional[int] = None):
         """
         Dynamically configure a rate limit for a specific operation key.
-        
+
         Args:
             key: The operation identifier (e.g., 'mcp_call', 'heal')
             rate: Number of allowed operations per period
@@ -75,15 +75,15 @@ class RateLimitMixin:
 
         now = time.time()
         state = self._bucket_state.get(key, {"tokens": config["burst"], "last_updated": now})
-        
+
         # Calculate refill
         elapsed = now - state["last_updated"]
         refill_rate = config["rate"] / config["per"]
         new_tokens = elapsed * refill_rate
-        
+
         # Update state
         current_tokens = min(config["burst"], state["tokens"] + new_tokens)
-        
+
         # Update internal state with new values
         self._bucket_state[key] = {
             "tokens": current_tokens,
@@ -121,12 +121,12 @@ class RateLimitMixin:
     async def check_rate_limit(self, key: str, consume: int = 1, raise_exc: bool = True) -> bool:
         """
         Check if an operation is allowed. Consumes tokens if successful.
-        
+
         Args:
             key: Operation identifier
             consume: Number of tokens to consume (default 1)
             raise_exc: If True, raises RateLimitExceeded on failure.
-            
+
         Returns:
             bool: True if allowed, False if limit exceeded (and raise_exc=False)
         """
@@ -137,7 +137,7 @@ class RateLimitMixin:
             await self._load_state_from_redis(key)
 
         current_tokens = self._get_tokens(key)
-        
+
         if current_tokens >= consume:
             # Consume tokens
             self._bucket_state[key]["tokens"] -= consume
@@ -159,9 +159,9 @@ class RateLimitMixin:
                 self._rl_logger.warning(
                     f"Rate limit short-circuit: {key} - {self._violation_count[key]} violations"
                 )
-            
+
             msg = f"Rate limit hit for '{key}'. Allowed: {config['rate']}/{config['per']}s. Wait: {wait_time:.2f}s"
-            
+
             if raise_exc:
                 self._rl_logger.warning(msg)
                 raise RateLimitExceeded(key, wait_time)

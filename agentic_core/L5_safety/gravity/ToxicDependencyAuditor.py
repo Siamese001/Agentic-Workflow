@@ -49,21 +49,21 @@ class ToxicDependencyAuditor(MCPHardenedMixin):
 
     def audit_toxicity(self, coverage_data: Dict[str, float] = None) -> List[Dict]:
         """Builds the fan-in map and identifies toxic hubs with coverage weighting.
-        
+
         Args:
             coverage_data: Optional dict mapping module paths to coverage percentages (0.0-1.0)
-        
+
         Returns:
             List of toxic hubs sorted by systemic risk score
         """
         self._build_fan_in_map()
-        
+
         toxic_hubs = []
         for module, dependents in self.dependency_map.items():
             if len(dependents) >= self.threshold:
                 # Calculate base toxicity score (fan-in)
                 fan_in = len(dependents)
-                
+
                 # Apply coverage weighting if available
                 coverage_weight = 1.0
                 if coverage_data and module in coverage_data:
@@ -71,10 +71,10 @@ class ToxicDependencyAuditor(MCPHardenedMixin):
                     # Coverage 0% = 2.0x multiplier, 100% = 1.0x multiplier
                     coverage_pct = coverage_data[module]
                     coverage_weight = 2.0 - coverage_pct
-                
+
                 # Systemic risk = fan_in * coverage_weight
                 systemic_risk = fan_in * coverage_weight
-                
+
                 toxic_hubs.append({
                     "module": module,
                     "fan_in": fan_in,
@@ -83,7 +83,7 @@ class ToxicDependencyAuditor(MCPHardenedMixin):
                     "systemic_risk": systemic_risk,
                     "dependents": list(dependents)
                 })
-        
+
         # Sort by systemic risk (highest first)
         return sorted(toxic_hubs, key=lambda x: x['systemic_risk'], reverse=True)
 
@@ -94,7 +94,7 @@ class ToxicDependencyAuditor(MCPHardenedMixin):
         for py_file in get_python_files(self.root / "agentic_core"):
             current_module = self._get_module_name(py_file)
             imports = self._extract_internal_imports(py_file)
-            
+
             for imp in imports:
                 if imp not in self.dependency_map:
                     self.dependency_map[imp] = set()
@@ -136,7 +136,7 @@ class ToxicDependencyAuditor(MCPHardenedMixin):
         for hub in toxic_hubs:
             print(f"Module: {hub['module']}")
             print(f"Fan-in (Dependencies): {hub['fan_in']}")
-            
+
             if hub.get('coverage') is not None:
                 coverage_pct = hub['coverage'] * 100
                 print(f"Coverage: {coverage_pct:.1f}%")
@@ -144,7 +144,7 @@ class ToxicDependencyAuditor(MCPHardenedMixin):
                 print(f"Systemic Risk Score: {hub['systemic_risk']:.1f}")
             else:
                 print(f"Toxicity Score: {hub['fan_in']}")
-            
+
             print(f"Impact: A single violation here affects {hub['fan_in']} components.")
             print("-" * 60)
 

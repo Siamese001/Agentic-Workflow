@@ -27,9 +27,3 @@ def test_dag_executor_cycle_detection() -> None:
 
     with pytest.raises(RuntimeError):
         asyncio.run(executor.run())
-
-
-
-
-
-

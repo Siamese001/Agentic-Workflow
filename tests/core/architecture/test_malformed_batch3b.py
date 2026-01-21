@@ -30,34 +30,34 @@ def test_batch3b_orphan_moves():
     print("\n" + "=" * 70)
     print("Batch 3B Orphan Moves Tests (L4-L5)")
     print("=" * 70)
-    
+
     # Files that MUST have methods moved into the class
     true_orphans = [
-        ("agentic_core/L5_safety/validators/GapClosureArchitectAgent.py", 
+        ("agentic_core/L5_safety/validators/GapClosureArchitectAgent.py",
          ['__init__', '_build_initial_prompt', '_calculate_gap_coverage'], "GapClosureArchitectAgent"),
-        ("agentic_core/L5_safety/validators/CanonHealerAgent.py", 
+        ("agentic_core/L5_safety/validators/CanonHealerAgent.py",
          ['heal_repository', '_run_self_tests'], "CanonHealerAgent"),
-        ("agentic_core/L5_safety/validators/BudgetManagerAgent.py", 
+        ("agentic_core/L5_safety/validators/BudgetManagerAgent.py",
          ['heal_repository', '_clean_llm_code'], "BudgetManagerAgent"),
-        ("agentic_core/L5_safety/guardrails/ConstitutionalReviewerAgent.py", 
+        ("agentic_core/L5_safety/guardrails/ConstitutionalReviewerAgent.py",
          ['_run_self_tests'], "ConstitutionalReviewerAgent"),
-        ("agentic_core/L5_safety/guardrails/PromptInjectionDetectorAgent.py", 
+        ("agentic_core/L5_safety/guardrails/PromptInjectionDetectorAgent.py",
          ['_run_self_tests'], "PromptInjectionDetectorAgent"),
     ]
-    
+
     for rel_path, required_methods, class_name in true_orphans:
         full_path = PROJECT_ROOT / rel_path
         agent_name = Path(rel_path).stem
-        
+
         print(f"\n--- {agent_name} ---")
-        
+
         if not full_path.exists():
             test_fail(f"{agent_name}", f"File not found: {rel_path}")
             continue
-        
+
         content = full_path.read_text(encoding='utf-8')
         lines = content.splitlines()
-        
+
         # 1. Check for orphans (top-level functions)
         for method in required_methods:
             orphans = [i+1 for i, l in enumerate(lines) if l.startswith(f"def {method}(")]
@@ -65,7 +65,7 @@ def test_batch3b_orphan_moves():
                 test_fail(f"{agent_name}-{method}-ORPHAN", f"Top-level '{method}' still exists at lines: {orphans}")
             else:
                 test_pass(f"{agent_name}-{method}-ORPHAN", f"No top-level '{method}' found")
-        
+
         # 2. Syntax validation
         try:
             ast.parse(content)
@@ -73,18 +73,18 @@ def test_batch3b_orphan_moves():
         except SyntaxError as e:
             test_fail(f"{agent_name}-SYNTAX", f"Syntax error: {e}")
             continue
-        
+
         # 3. Check class has required methods
         try:
             tree = ast.parse(content)
             class_methods = set()
-            
+
             for node in ast.walk(tree):
                 if isinstance(node, ast.ClassDef) and node.name == class_name:
                     for item in node.body:
                         if isinstance(item, ast.FunctionDef):
                             class_methods.add(item.name)
-            
+
             for method in required_methods:
                 if method in class_methods:
                     test_pass(f"{agent_name}-{method}-METHOD", f"Class has '{method}' method")
@@ -98,9 +98,9 @@ def main():
     print("\n" + "=" * 70)
     print("BATCH 3B ORPHAN MOVES TEST SUITE (L4-L5)")
     print("=" * 70)
-    
+
     test_batch3b_orphan_moves()
-    
+
     print("\n" + "=" * 70)
     print("TEST SUMMARY")
     print("=" * 70)
@@ -109,7 +109,7 @@ def main():
     print(f"  Passed: {PASSED}")
     print(f"  Failed: {FAILED}")
     print(f"  Pass Rate: {100 * PASSED / total:.1f}%")
-    
+
     if FAILED == 0:
         print("\n  ✅ ALL TESTS PASSED - BATCH 3B COMPLETE")
         return 0

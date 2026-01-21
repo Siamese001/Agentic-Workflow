@@ -1,7 +1,7 @@
 # Repository-Wide Redundancy & Utility Extraction Analysis
 
-**Date:** January 18, 2026  
-**Scope:** `agentic_core/` and `scripts/` directories  
+**Date:** January 18, 2026
+**Scope:** `agentic_core/` and `scripts/` directories
 **Objective:** Identify repeated code patterns for centralized utility extraction
 
 ---
@@ -68,7 +68,7 @@ def normalize_agent_result(
 ) -> AgentResult:
     """
     Normalize any agent return value to AgentResult.
-    
+
     Handles:
     - None results
     - Dict with various key names (violations/violations_found, fixed/violations_fixed)
@@ -233,7 +233,7 @@ def path_to_module(
 ) -> str:
     """
     Convert file path to Python module path.
-    
+
     Examples:
         'agentic_core/L5_safety/validators/LocationAgent.py'
         -> 'agentic_core.L5_safety.validators.LocationAgent'

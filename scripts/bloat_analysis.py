@@ -14,7 +14,7 @@ def get_file_stats():
     """Get file statistics by extension and folder."""
     stats = defaultdict(lambda: {'count': 0, 'size': 0})
     folder_stats = defaultdict(lambda: {'py': 0, 'other': 0, 'total_size': 0})
-    
+
     for folder in APPROVED:
         folder_path = ROOT / folder
         if not folder_path.exists():
@@ -30,7 +30,7 @@ def get_file_stats():
                 else:
                     folder_stats[folder]['other'] += 1
                 folder_stats[folder]['total_size'] += size
-    
+
     return stats, folder_stats
 
 def find_large_files(min_size_kb=50):
@@ -185,7 +185,7 @@ def find_script_candidates():
     scripts_path = ROOT / 'scripts'
     if not scripts_path.exists():
         return candidates
-    
+
     for f in scripts_path.glob('*.py'):
         if f.name.startswith('__'):
             continue
@@ -206,7 +206,7 @@ def find_script_candidates():
                 signals.append('archive utility')
             if 'update_' in f.name.lower() and 'import' in f.name.lower():
                 signals.append('import migration')
-            
+
             if signals:
                 candidates.append({
                     'path': str(f.relative_to(ROOT)),
@@ -222,7 +222,7 @@ def main():
     print("BLOAT ANALYSIS REPORT")
     print(f"Generated: {datetime.now().isoformat()}")
     print("=" * 70)
-    
+
     # File stats
     stats, folder_stats = get_file_stats()
     print("\n## FILE STATISTICS BY EXTENSION")
@@ -230,7 +230,7 @@ def main():
     for ext, data in sorted(stats.items(), key=lambda x: -x[1]['count'])[:15]:
         ext_name = ext if ext else '(no ext)'
         print(f"  {ext_name:12} {data['count']:5} files  {data['size']/1024/1024:8.2f} MB")
-    
+
     print("\n## FILE STATISTICS BY FOLDER")
     print("-" * 50)
     total_py = 0
@@ -242,14 +242,14 @@ def main():
         total_other += data['other']
         total_size += data['total_size']
     print(f"  {'TOTAL':20} {total_py:5} .py  {total_other:5} other  {total_size/1024/1024:8.2f} MB")
-    
+
     # Large files
     large = find_large_files(100)
     print(f"\n## LARGE FILES (>100KB) - {len(large)} files")
     print("-" * 50)
     for f in large[:20]:
         print(f"  {f['size_kb']:7.1f} KB  {f['lines']:5} lines  {f['path']}")
-    
+
     # Duplicates
     dupes = find_duplicate_filenames()
     print(f"\n## DUPLICATE FILENAMES - {len(dupes)} duplicates")
@@ -258,28 +258,28 @@ def main():
         print(f"  {name}:")
         for p in paths:
             print(f"    - {p}")
-    
+
     # Stubs
     stubs = find_empty_or_stub_files()
     print(f"\n## EMPTY/STUB FILES (<5 code lines) - {len(stubs)} files")
     print("-" * 50)
     for s in stubs[:20]:
         print(f"  {s['code_lines']:2} lines  {s['path']}")
-    
+
     # Deprecated
     deprecated = find_deprecated_markers()
     print(f"\n## FILES WITH DEPRECATION MARKERS - {len(deprecated)} files")
     print("-" * 50)
     for d in deprecated[:20]:
         print(f"  [{d['marker']}] {d['path']}")
-    
+
     # Misplaced tests
     misplaced = find_test_files_outside_tests()
     print(f"\n## TEST FILES OUTSIDE tests/ - {len(misplaced)} files")
     print("-" * 50)
     for m in misplaced[:20]:
         print(f"  {m}")
-    
+
     # Script candidates
     scripts = find_script_candidates()
     print(f"\n## SCRIPT ARCHIVE CANDIDATES - {len(scripts)} files")
@@ -287,7 +287,7 @@ def main():
     for s in scripts:
         print(f"  {s['path']}")
         print(f"    Signals: {', '.join(s['signals'])}")
-    
+
     # Unused imports
     unused = find_unused_imports()
     print(f"\n## FILES WITH MANY UNUSED IMPORTS - {len(unused)} files")

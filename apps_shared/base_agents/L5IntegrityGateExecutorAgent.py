@@ -39,7 +39,7 @@ class SignalBusInterface(Protocol):
     to enable signal emission.
     """
     def emit(self, signal_type: Any, message: str, source: str, Severity: str) -> None:
-                    
+
         ...
 
 # Define local Enum for the specific signal types used by this executor.
@@ -374,7 +374,7 @@ class L5IntegrityGateExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
         text_parts = []
 
         def extract_recursive(obj: Any, depth: int = 0) -> None:
-                                    
+
             if depth > 10:  # Prevent infinite recursion
                 return
 

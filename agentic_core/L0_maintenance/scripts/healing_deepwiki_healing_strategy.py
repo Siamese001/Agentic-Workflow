@@ -22,7 +22,7 @@ Logger: Any = logging.getLogger(__name__)
 class DeepWikiHealingStrategy:
     """
     Autonomous healing for DeepWiki documentation drift.
-    
+
     Detects and corrects documentation inconsistencies by:
     - Identifying undocumented files in the codebase
     - Generating comprehensive documentation via DeepWiki MCP
@@ -41,10 +41,10 @@ class DeepWikiHealingStrategy:
     async def diagnose(self, issues: List[Dict]) -> List[Dict]:
         """
         Diagnose documentation drift via proactive scan.
-        
+
         Args:
             issues: List of issues from sovereignty auditor
-            
+
         Returns:
             List of fix dictionaries with action details
         """
@@ -61,7 +61,7 @@ class DeepWikiHealingStrategy:
     async def _find_undocumented_files(self) -> List[Path]:
         """
         Compares physical territory to documented structure.
-        
+
         Returns:
             List of undocumented file paths
         """
@@ -84,7 +84,7 @@ class DeepWikiHealingStrategy:
     async def _get_documented_paths(self) -> set:
         """
         Get set of documented paths from DeepWiki.
-        
+
         Returns:
             Set of documented file paths
         """
@@ -98,11 +98,11 @@ class DeepWikiHealingStrategy:
     async def apply(self, fix: Dict, ctx: Any=None) -> bool:
         """
         Apply DeepWiki healing via Sovereign Clients.
-        
+
         Args:
             fix: Fix dictionary with action details
             ctx: Execution context (unused)
-            
+
         Returns:
             True if fix applied successfully, False otherwise
         """
@@ -139,11 +139,11 @@ class DeepWikiHealingStrategy:
     async def _update_deepwiki(self, question: str, file_path: str) -> bool:
         """
         Update DeepWiki with documentation via MCP.
-        
+
         Args:
             question: Documentation generation prompt
             file_path: File path being documented
-            
+
         Returns:
             True if update succeeded, False otherwise
         """
@@ -163,7 +163,7 @@ class DeepWikiHealingStrategy:
 async def create_deepwiki_healing_strategy() -> DeepWikiHealingStrategy:
     """
     Factory function to create a DeepWiki healing strategy.
-    
+
     Returns:
         Initialized DeepWikiHealingStrategy instance
     """

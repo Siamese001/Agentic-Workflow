@@ -26,29 +26,29 @@ forbidden_path_patterns = {"..", "/etc", "/root", "~", ".ssh", ".env"}  # Rename
 # NAMING FIXED: SovereignFilesystemMCP → SovereignFilesystemMcp
 class SovereignFilesystemMcp:
     """Ultra-hardened filesystem client — enforcing atomic sovereignty."""
-    
+
     def __init__(self, manager: MCPConnectionManager, mission_id: str):
         self.manager = manager
         self.mission_id = mission_id
         self.roots_key = f"fs_roots:{mission_id}"
-    
+
     def _validate_path(self, path: str) -> str:
         """L5 path sovereignty check. Blocks traversals and absolute escapes."""
         # Convert to a clean, relative-style string for validation
         path_str = str(path).replace('\\', '/')
         if any(p in path_str for p in FORBIDDEN_PATH_PATTERNS):
             raise PermissionError(f"Sovereignty Breach: Forbidden path pattern in '{path}'")
-            
+
         # Ensure we are operating within our declared territory
         if not any(path_str.startswith(prefix) for prefix in ALLOWED_ROOT_PREFIXES):
             # We also allow absolute paths IF they resolve inside the project root
             # But for simplicity, we enforce relative-from-root strictly here
             raise PermissionError(f"Sovereignty Breach: Path '{path}' is outside sovereign roots.")
-        
+
         return path_str
 
     async def read_text_file(self, path: str) -> str:
-                    
+
         safe_path = self._validate_path(path)
         try:
             # We use the official MCP 'read_file' tool for auditable access
@@ -63,7 +63,7 @@ class SovereignFilesystemMcp:
         """Executes a physical fission event via the MCP server."""
         for p in files: self._validate_path(p)
         self._validate_path(monolith_path)
-        
+
         try:
             results = []
             for path, content in files.items():
@@ -74,7 +74,7 @@ class SovereignFilesystemMcp:
                     "content": content
                 })
                 results.append(result)
-            
+
             # [L4 LEDGER] Record the physical change history
             redis_shield.execute("rpush", f"fs_ops:{self.mission_id}", json.dumps({
                 "op": "fission",
@@ -82,7 +82,7 @@ class SovereignFilesystemMcp:
                 "targets": list(files.keys()),
                 "ts": datetime.utcnow().isoformat()
             }))
-            
+
             return {"status": "fission_complete", "count": len(results)}
         except Exception as e:
             Logger.critical(f"[L4 FS BREACH] Fission write failed: {e}")
@@ -94,7 +94,7 @@ class SovereignFilesystemMcp:
         validated = [r for r in roots if any(r.startswith(p) for p in ALLOWED_ROOT_PREFIXES)]
         if not validated:
             raise ValueError("No valid sovereign roots provided.")
-            
+
         # Notify the MCP server of our restricted scope
         try:
             await self.manager.call_tool("roots_update", {"roots": validated})

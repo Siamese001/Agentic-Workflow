@@ -81,7 +81,7 @@ def _fetch_company_content(url: str, fetch_tool: Any, max_length: int = 1000) ->
 def automated_lead_vetting(company_url: str, user_name: str, tools: Dict[str, Any], Logger: Optional[Any] = None) -> Dict[str, Any]:
     """
     DEPRECATED: Use LeadVettingAgent directly for new code.
-    
+
     Backward-compatible wrapper that delegates to LeadVettingAgent.
     """
     agent = LeadVettingAgent()
@@ -91,7 +91,7 @@ def automated_lead_vetting(company_url: str, user_name: str, tools: Dict[str, An
 def vet_lead_optimal_time(lead_email: str, lead_timezone: str, pitch_body: str, tools: Dict[str, Any], Logger: Optional[Any] = None) -> Dict[str, Any]:
     """
     DEPRECATED: Use OptimalTimeSchedulerAgent directly for new code.
-    
+
     Backward-compatible wrapper that delegates to OptimalTimeSchedulerAgent.
     """
     agent = OptimalTimeSchedulerAgent()
@@ -101,7 +101,7 @@ def vet_lead_optimal_time(lead_email: str, lead_timezone: str, pitch_body: str, 
 def execute_autonomous_job_application(app_url: str, user_name: str, code_sample_path: str, tools: Dict[str, Any], Logger: Optional[Any] = None) -> Dict[str, Any]:
     """
     DEPRECATED: Use JobApplicationAgent directly for new code.
-    
+
     Backward-compatible wrapper that delegates to JobApplicationAgent.
     """
     agent = JobApplicationAgent()
@@ -111,7 +111,7 @@ def execute_autonomous_job_application(app_url: str, user_name: str, code_sample
 def adaptive_browser_session(target_url: str, tools: Dict[str, Any] = None, Logger: Optional[Any] = None) -> Dict[str, Any]:
     """
     DEPRECATED: Use BrowserSessionAgent directly for new code.
-    
+
     Backward-compatible wrapper that delegates to BrowserSessionAgent.
     """
     agent = BrowserSessionAgent()
@@ -121,7 +121,7 @@ def adaptive_browser_session(target_url: str, tools: Dict[str, Any] = None, Logg
 def execute_resilient_application_pipeline(app_url: str, user_name: str, max_retries: int = 3, Logger: Optional[Any] = None) -> Dict[str, Any]:
     """
     DEPRECATED: Use ResilientPipelineAgent directly for new code.
-    
+
     Backward-compatible wrapper that delegates to ResilientPipelineAgent.
     """
     agent = ResilientPipelineAgent()
@@ -131,7 +131,7 @@ def execute_resilient_application_pipeline(app_url: str, user_name: str, max_ret
 def execute_resilient_application_pipeline_hardened(app_url: str, user_name: str, max_retries: int = 3, Logger: Optional[Any] = None) -> Dict[str, Any]:
     """
     DEPRECATED: Use ResilientPipelineAgent directly for new code.
-    
+
     This function is now an alias for execute_resilient_application_pipeline
     since ResilientPipelineAgent implements the hardened version by default.
     """
@@ -144,7 +144,7 @@ def vet_lead_snapshot_outreach(lead_profile_url: str, lead_email: str, user_name
     """
     Refined 'Lead Snapshot Vetting' (Outreach Engine). Uses L2 Playwright for efficient, verified context capture
     before committing to the outreach action, adhering to the 22/100 connection budget.
-    
+
     TODO: Convert to SnapshotOutreachAgent in future iteration.
     """
     if Logger:
@@ -223,7 +223,7 @@ def brand_compliant_outreach(company_url: str, user_name: str, brand_id: str = "
     """
     Outreach sequence with brand compliance and cost-controlled search.
     Integrates Figma (L2) for brand guidelines and rate-limited Brave Search (L1/L3).
-    
+
     TODO: Convert to BrandComplianceAgent in future iteration.
     """
     if Logger:
@@ -311,15 +311,15 @@ Best regards,
 async def run_outreach_engine(workflow: str, **kwargs) -> Dict[str, Any]:
     """
     Unified entrypoint for the Outreach Engine.
-    
+
     Args:
-        workflow: One of "lead_vetting", "optimal_time", "job_application", 
+        workflow: One of "lead_vetting", "optimal_time", "job_application",
                   "browser_session", "resilient_pipeline", "snapshot", "brand_compliant"
         **kwargs: Arguments passed to the selected workflow
-        
+
     Returns:
         Dict with workflow results
-        
+
     Example:
         result = await run_outreach_engine(
             "lead_vetting",
@@ -333,7 +333,7 @@ async def run_outreach_engine(workflow: str, **kwargs) -> Dict[str, Any]:
             kwargs['company_url'], kwargs['user_name'], kwargs['tools'], kwargs.get('Logger')
         ),
         "optimal_time": lambda: OptimalTimeSchedulerAgent().execute(
-            kwargs['lead_email'], kwargs['lead_timezone'], kwargs['pitch_body'], 
+            kwargs['lead_email'], kwargs['lead_timezone'], kwargs['pitch_body'],
             kwargs['tools'], kwargs.get('Logger')
         ),
         "job_application": lambda: JobApplicationAgent().execute(
@@ -341,7 +341,7 @@ async def run_outreach_engine(workflow: str, **kwargs) -> Dict[str, Any]:
             kwargs['tools'], kwargs.get('Logger')
         ),
         "browser_session": lambda: BrowserSessionAgent().execute(
-            kwargs['target_url'], kwargs.get('tools'), kwargs.get('max_retries', 3), 
+            kwargs['target_url'], kwargs.get('tools'), kwargs.get('max_retries', 3),
             kwargs.get('Logger')
         ),
         "resilient_pipeline": lambda: ResilientPipelineAgent().execute(
@@ -349,8 +349,8 @@ async def run_outreach_engine(workflow: str, **kwargs) -> Dict[str, Any]:
             kwargs.get('max_retries', 3), kwargs.get('Logger')
         ),
     }
-    
+
     if workflow not in workflows:
         return {"status": "error", "message": f"Unknown workflow: {workflow}. Available: {list(workflows.keys())}"}
-    
+
     return await workflows[workflow]()

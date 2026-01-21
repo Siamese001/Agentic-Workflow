@@ -23,11 +23,11 @@ class RoutingTier(str, Enum):
 @dataclass
 class RouteConfig:
     """Configuration for a routing tier.
-    
+
     Defines the primary provider and fallback chain for a specific
     routing tier. The router will attempt providers in order until
     one succeeds.
-    
+
     Attributes:
         tier_name: Name of the routing tier
         primary_provider: Primary provider to attempt first
@@ -35,33 +35,33 @@ class RouteConfig:
         timeout_ms: Timeout for each provider attempt
         model_overrides: Optional model name overrides per provider
     """
-    
+
     tier_name: str
     primary_provider: Provider
     fallback_providers: List[Provider]
     timeout_ms: int = 60000
     model_overrides: Optional[dict] = None
-    
+
     def __post_init__(self):
         """Validate configuration."""
         if not self.tier_name:
             raise ValueError("tier_name cannot be empty")
-        
+
         if not self.fallback_providers:
             raise ValueError("fallback_providers cannot be empty")
-        
+
         # Ensure no duplicate providers in the chain
         all_providers = [self.primary_provider] + self.fallback_providers
         if len(all_providers) != len(set(all_providers)):
             raise ValueError("Duplicate providers in routing chain")
-        
+
         if self.timeout_ms <= 0:
             raise ValueError("timeout_ms must be positive")
-    
+
     def get_all_providers(self) -> List[Provider]:
         """Get all providers in order (primary + fallbacks)."""
         return [self.primary_provider] + self.fallback_providers
-    
+
     def get_model_for_provider(self, provider: Provider) -> Optional[str]:
         """Get model override for a specific provider."""
         if self.model_overrides:

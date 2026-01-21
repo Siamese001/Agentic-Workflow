@@ -14,10 +14,10 @@ Logger: Any = logging.getLogger(__name__)
 def validate_python_syntax(file_path: str) -> Tuple[bool, Optional[str]]:
     """
     Parse a Python file to check for syntax errors without executing it.
-    
+
     Args:
         file_path: Path to the file to check
-        
+
     Returns:
         Tuple[bool, Optional[str]]: (True, None) if valid, (False, error_message) if invalid
     """
@@ -38,11 +38,11 @@ def validate_python_syntax(file_path: str) -> Tuple[bool, Optional[str]]:
 def run_ruff_check(file_path: str, fix: bool=False) -> Tuple[int, str, str]:
     """
     Run Ruff linter on a file.
-    
+
     Args:
         file_path: Path to the file to check
         fix: Whether to apply fixes automatically
-        
+
     Returns:
         Tuple[int, str, str]: (returncode, stdout, stderr)
     """
@@ -63,11 +63,11 @@ def run_ruff_check(file_path: str, fix: bool=False) -> Tuple[int, str, str]:
 def run_black_format(file_path: str, check_only: bool=False) -> Tuple[int, str, str]:
     """
     Run Black formatter on a file.
-    
+
     Args:
         file_path: Path to the file to format
         check_only: Only check formatting without modifying
-        
+
     Returns:
         Tuple[int, str, str]: (returncode, stdout, stderr)
     """
@@ -88,10 +88,10 @@ def run_black_format(file_path: str, check_only: bool=False) -> Tuple[int, str, 
 def analyze_ast(file_path: str) -> Dict[str, Any]:
     """
     Analyze Python file AST for structural information.
-    
+
     Args:
         file_path: Path to the file to analyze
-        
+
     Returns:
         Dict with AST analysis results
     """
@@ -124,10 +124,10 @@ def analyze_ast(file_path: str) -> Dict[str, Any]:
 def count_lines_of_code(file_path: str) -> Dict[str, int]:
     """
     Count lines of code, comments, and blank lines.
-    
+
     Args:
         file_path: Path to the file to analyze
-        
+
     Returns:
         Dict with line counts
     """
@@ -146,10 +146,10 @@ def count_lines_of_code(file_path: str) -> Dict[str, int]:
 def detect_security_issues(file_path: str) -> List[Dict[str, Any]]:
     """
     Detect common security issues in Python code.
-    
+
     Args:
         file_path: Path to the file to analyze
-        
+
     Returns:
         List of detected security issues
     """

@@ -61,7 +61,7 @@ cd C:\Git\Agentic-Workflow
 python canon_validator_agentic_v2_thin.py --report
 ```
 
-**Expected**: 
+**Expected**:
 - Exit code 0
 - No Python exceptions
 - Files generated:
@@ -85,7 +85,7 @@ with open('reports/autonomy_dashboard.html', 'r', encoding='utf-8') as f:
     html = f.read()
     critical = [
         'healthScoreValue',
-        'codeQualityScoreValue', 
+        'codeQualityScoreValue',
         'baseInheritanceValue',
         'execHealth',
         'execGap',
@@ -187,7 +187,7 @@ with open('reports/autonomy_compliance_data.csv', 'r') as f:
     reader = csv.DictReader(f)
     rows = list(reader)
     total_row = [r for r in rows if r['Territory'] == 'TOTAL'][0]
-    
+
 # Read dashboard HTML and extract embedded data
 with open('reports/autonomy_dashboard.html', 'r') as f:
     html = f.read()
@@ -292,19 +292,19 @@ def validate_template():
     """Check template syntax."""
     template = Path('agentic_core/L5_safety/validators/dashboard_template.html')
     content = template.read_text(encoding='utf-8')
-    
+
     # Check balanced tags
     if content.count('<div') != content.count('</div>'):
         print('❌ Mismatched div tags')
         return False
-    
+
     # Check duplicate IDs
     ids = re.findall(r'id=["\']([^"\'\s>]+)', content)
     if len(ids) != len(set(ids)):
         dupes = [x for x in ids if ids.count(x) > 1]
         print(f'❌ Duplicate IDs: {set(dupes)}')
         return False
-    
+
     print('✅ Template syntax valid')
     return True
 
@@ -314,9 +314,9 @@ def validate_generated():
     if not dashboard.exists():
         print('❌ Dashboard not generated')
         return False
-    
+
     content = dashboard.read_text(encoding='utf-8')
-    
+
     # Check critical elements
     critical = [
         'healthScoreValue',
@@ -332,28 +332,28 @@ def validate_generated():
     if missing:
         print(f'❌ Missing elements: {missing}')
         return False
-    
+
     # Check refresh interval
     if 'REFRESH_INTERVAL_MS = 300000' not in content:
         print('❌ Incorrect refresh interval')
         return False
-    
+
     # Check for old 30-second timer
     if re.search(r'setInterval.*30000.*forceReload', content):
         print('❌ Old 30-second timer still present')
         return False
-    
+
     print('✅ Generated dashboard valid')
     return True
 
 if __name__ == '__main__':
     print('Running Dashboard QA...\n')
-    
+
     checks = [
         validate_template(),
         validate_generated()
     ]
-    
+
     if all(checks):
         print('\n✅ All QA checks passed')
         sys.exit(0)
@@ -413,7 +413,7 @@ Before committing dashboard changes:
 
 **Root Cause**: JavaScript population logic not running or `totalRow` undefined.
 
-**Fix**: 
+**Fix**:
 1. Check browser console for errors
 2. Verify `dashboardData` is embedded in HTML
 3. Ensure `loadData()` function executes on page load

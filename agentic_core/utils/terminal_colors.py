@@ -39,7 +39,7 @@ class Colors:
     RESET = '\033[0m'
     BOLD = '\033[1m'
     DIM = '\033[2m'
-    
+
     # Standard colors
     BLACK = '\033[30m'
     RED = '\033[31m'
@@ -49,7 +49,7 @@ class Colors:
     MAGENTA = '\033[35m'
     CYAN = '\033[36m'
     WHITE = '\033[37m'
-    
+
     # Bright colors
     BRIGHT_RED = '\033[91m'
     BRIGHT_GREEN = '\033[92m'
@@ -58,7 +58,7 @@ class Colors:
     BRIGHT_MAGENTA = '\033[95m'
     BRIGHT_CYAN = '\033[96m'
     BRIGHT_WHITE = '\033[97m'
-    
+
     # Background colors
     BG_BLACK = '\033[40m'
     BG_RED = '\033[41m'
@@ -142,15 +142,15 @@ def status_bar(
         'pending': (Colors.DIM, Colors.BG_BLACK, SYMBOLS['pending']),
         'info': (Colors.BRIGHT_CYAN, Colors.BG_CYAN, SYMBOLS['info']),
     }
-    
+
     fg_color, bg_color, symbol = status_colors.get(status, status_colors['info'])
-    
+
     timestamp = f"[{datetime.now().strftime('%H:%M:%S')}] " if show_time else ""
     status_text = f" {status.upper()} "
-    
+
     bar = f"{timestamp}{fg_color}{symbol} {label}{Colors.RESET}"
     padding = width - len(timestamp) - len(label) - len(status_text) - 4
-    
+
     return f"{bar}{' ' * max(0, padding)}{bg_color}{Colors.BLACK}{status_text}{Colors.RESET}"
 
 
@@ -167,10 +167,10 @@ def progress_bar(
         percent = 0
     else:
         percent = min(100, int((current / total) * 100))
-    
+
     filled = int(width * current / max(total, 1))
     empty = width - filled
-    
+
     if percent >= 100:
         color = Colors.BRIGHT_GREEN
     elif percent >= 75:
@@ -181,9 +181,9 @@ def progress_bar(
         color = Colors.YELLOW
     else:
         color = Colors.DIM
-    
+
     bar = f"{color}{SYMBOLS['bar_full'] * filled}{Colors.DIM}{SYMBOLS['bar_empty'] * empty}{Colors.RESET}"
-    
+
     parts = [bar]
     if show_percent:
         parts.append(f"{color}{percent:3d}%{Colors.RESET}")
@@ -191,7 +191,7 @@ def progress_bar(
         parts.append(f"{Colors.DIM}({current}/{total}){Colors.RESET}")
     if label:
         parts.insert(0, f"{Colors.BRIGHT_WHITE}{label}{Colors.RESET}")
-    
+
     return " ".join(parts)
 
 
@@ -209,22 +209,22 @@ def phase_header(
         'pending': Colors.DIM,
     }
     color = status_colors.get(status, Colors.BRIGHT_CYAN)
-    
+
     if phase_num and total_phases:
         prefix = f"[{phase_num}/{total_phases}]"
     elif phase_num:
         prefix = f"[{phase_num}]"
     else:
         prefix = ""
-    
+
     border = "═" * 60
-    
+
     lines = [
         f"\n{color}╔{border}╗{Colors.RESET}",
         f"{color}║{Colors.BOLD} {prefix} {phase_name.upper()}{Colors.RESET}{color}{' ' * (58 - len(prefix) - len(phase_name))}║{Colors.RESET}",
         f"{color}╚{border}╝{Colors.RESET}",
     ]
-    
+
     return "\n".join(lines)
 
 
@@ -243,9 +243,9 @@ def agent_status(
         'skipped': (Colors.DIM, SYMBOLS['pending'], 'SKIPPED'),
         'healing': (Colors.BRIGHT_MAGENTA, SYMBOLS['running'], 'HEALING'),
     }
-    
+
     color, symbol, label = status_styles.get(status, status_styles['running'])
-    
+
     metrics = []
     if fixes > 0:
         metrics.append(f"{Colors.BRIGHT_GREEN}+{fixes} fixed{Colors.RESET}")
@@ -259,9 +259,9 @@ def agent_status(
         else:
             time_color = Colors.DIM
         metrics.append(f"{time_color}{duration_ms}ms{Colors.RESET}")
-    
+
     metrics_str = f" [{', '.join(metrics)}]" if metrics else ""
-    
+
     return f"  {color}{symbol} {agent_name}{Colors.RESET} {color}[{label}]{Colors.RESET}{metrics_str}"
 
 
@@ -283,9 +283,9 @@ def tier_summary(
         status_color = Colors.BRIGHT_RED
         status_symbol = SYMBOLS['error']
         status_text = "FAILED"
-    
+
     border = "─" * 58
-    
+
     lines = [
         f"\n{Colors.DIM}┌{border}┐{Colors.RESET}",
         f"{Colors.DIM}│{Colors.RESET} {status_color}{status_symbol} TIER {tier_num}: {tier_name}{Colors.RESET}",
@@ -293,7 +293,7 @@ def tier_summary(
         f"{Colors.DIM}│{Colors.RESET}   Duration: {duration_sec:.2f}s | Status: {status_color}{status_text}{Colors.RESET}",
         f"{Colors.DIM}└{border}┘{Colors.RESET}",
     ]
-    
+
     return "\n".join(lines)
 
 
@@ -301,7 +301,7 @@ def mission_header(mode: str, execute: bool = False) -> str:
     """Generate mission start header."""
     mode_color = Colors.BRIGHT_RED if execute else Colors.BRIGHT_YELLOW
     mode_label = "EXECUTE" if execute else "DRY-RUN"
-    
+
     lines = [
         f"\n{Colors.BRIGHT_MAGENTA}{'═' * 62}{Colors.RESET}",
         f"{Colors.BRIGHT_MAGENTA}║{Colors.RESET} {Colors.BOLD}SOVEREIGN MISSION: {mode.upper()}{Colors.RESET}",
@@ -309,7 +309,7 @@ def mission_header(mode: str, execute: bool = False) -> str:
         f"{Colors.BRIGHT_MAGENTA}║{Colors.RESET} Started: {Colors.DIM}{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}{Colors.RESET}",
         f"{Colors.BRIGHT_MAGENTA}{'═' * 62}{Colors.RESET}",
     ]
-    
+
     return "\n".join(lines)
 
 
@@ -328,9 +328,9 @@ def mission_summary(
     else:
         status_color = Colors.BRIGHT_RED
         status_text = "MISSION FAILED"
-    
+
     border = "═" * 60
-    
+
     lines = [
         f"\n{status_color}╔{border}╗{Colors.RESET}",
         f"{status_color}║{Colors.RESET} {Colors.BOLD}{status_text}{Colors.RESET}",
@@ -343,7 +343,7 @@ def mission_summary(
         f"{status_color}║{Colors.RESET}",
         f"{status_color}╚{border}╝{Colors.RESET}",
     ]
-    
+
     return "\n".join(lines)
 
 
@@ -356,7 +356,7 @@ def heartbeat(iteration: int) -> str:
 def log_status(level: str, message: str, **kwargs):
     """Log a status message with appropriate color."""
     timestamp = f"[{datetime.now().strftime('%H:%M:%S')}]"
-    
+
     level_styles = {
         'info': (Colors.BRIGHT_CYAN, 'INFO'),
         'success': (Colors.BRIGHT_GREEN, 'OK'),
@@ -365,13 +365,13 @@ def log_status(level: str, message: str, **kwargs):
         'debug': (Colors.DIM, 'DBG'),
         'trace': (Colors.DIM, 'TRC'),
     }
-    
+
     color, label = level_styles.get(level, level_styles['info'])
-    
+
     context = ""
     if kwargs:
         context = f" {Colors.DIM}({', '.join(f'{k}={v}' for k, v in kwargs.items())}){Colors.RESET}"
-    
+
     print(f"{Colors.DIM}{timestamp}{Colors.RESET} {color}[{label}]{Colors.RESET} {message}{context}")
 
 

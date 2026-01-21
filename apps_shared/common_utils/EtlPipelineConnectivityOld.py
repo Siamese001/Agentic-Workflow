@@ -323,4 +323,3 @@ def hydrate_cache() -> Dict[str, Any]:
     """
     pipeline = ETLPipeline()
     return pipeline.hydrate_cache()
-

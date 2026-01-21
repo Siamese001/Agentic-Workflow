@@ -21,15 +21,15 @@ DISCOVERY_FILE = PROJECT_ROOT / "agent_discovery_full.json"
 
 class ComplexityReducer(ast.NodeTransformer):
     """AST transformer to reduce cyclomatic complexity."""
-    
+
     def __init__(self):
         self.changes_made = 0
-    
+
     def visit_If(self, node):
         """Simplify if statements with early returns."""
         self.generic_visit(node)
         return node
-    
+
     def visit_For(self, node):
         """Convert simple for loops to comprehensions where safe."""
         self.generic_visit(node)
@@ -43,7 +43,7 @@ def analyze_complexity_patterns(file_path: Path) -> Dict[str, Any]:
         tree = ast.parse(content)
     except Exception as e:
         return {"error": str(e)}
-    
+
     patterns = {
         "if_chains": 0,
         "nested_loops": 0,
@@ -51,7 +51,7 @@ def analyze_complexity_patterns(file_path: Path) -> Dict[str, Any]:
         "long_methods": 0,
         "total_methods": 0,
     }
-    
+
     for node in ast.walk(tree):
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
             patterns["total_methods"] += 1
@@ -60,7 +60,7 @@ def analyze_complexity_patterns(file_path: Path) -> Dict[str, Any]:
                 method_lines = node.end_lineno - node.lineno
                 if method_lines > 50:
                     patterns["long_methods"] += 1
-        
+
         if isinstance(node, ast.If):
             # Count if/elif chains
             elif_count = 0
@@ -70,19 +70,19 @@ def analyze_complexity_patterns(file_path: Path) -> Dict[str, Any]:
                 current = current.orelse[0]
             if elif_count >= 3:
                 patterns["if_chains"] += 1
-        
+
         if isinstance(node, ast.For):
             # Check for nested loops
             for child in ast.walk(node):
                 if child != node and isinstance(child, ast.For):
                     patterns["nested_loops"] += 1
                     break
-        
+
         if isinstance(node, ast.BoolOp):
             # Count complex boolean conditions
             if len(node.values) >= 3:
                 patterns["complex_conditions"] += 1
-    
+
     return patterns
 
 
@@ -92,13 +92,13 @@ def refactor_if_chains_to_dispatch(content: str) -> Tuple[str, int]:
     This is a text-based transformation for safety.
     """
     changes = 0
-    
+
     # Pattern: if "X" in msg: ... elif "Y" in msg: ...
     # This is a common pattern in agents that can be converted to dispatch tables
-    
+
     # For now, we'll focus on simpler transformations
     # Complex if/elif chains require manual review
-    
+
     return content, changes
 
 
@@ -118,35 +118,35 @@ def main():
     print("=" * 70)
     print("COMPLEXITY REFACTORING ANALYSIS")
     print("=" * 70)
-    
+
     # Load agent discovery
     with open(DISCOVERY_FILE, 'r', encoding='utf-8') as f:
         agents = json.load(f)
-    
+
     # Find high-complexity agents
     high_cc_agents = [
-        a for a in agents 
+        a for a in agents
         if a.get('cyclomatic_complexity', 0) > 50
     ]
-    
+
     print(f"\nTotal agents: {len(agents)}")
     print(f"High complexity agents (CC > 50): {len(high_cc_agents)}")
-    
+
     print("\n" + "=" * 70)
     print("ANALYZING TOP 10 COMPLEXITY OFFENDERS")
     print("=" * 70)
-    
+
     # Sort by complexity
     high_cc_agents.sort(key=lambda a: a.get('cyclomatic_complexity', 0), reverse=True)
-    
+
     for i, agent in enumerate(high_cc_agents[:10], 1):
         name = agent['class_name']
         cc = agent.get('cyclomatic_complexity', 0)
         path = PROJECT_ROOT / agent['path']
-        
+
         print(f"\n{i}. {name} (CC: {cc})")
         print(f"   Path: {agent['path']}")
-        
+
         if path.exists():
             patterns = analyze_complexity_patterns(path)
             print(f"   Patterns found:")
@@ -155,7 +155,7 @@ def main():
             print(f"     - Complex conditions: {patterns.get('complex_conditions', 0)}")
             print(f"     - Long methods (>50 lines): {patterns.get('long_methods', 0)}")
             print(f"     - Total methods: {patterns.get('total_methods', 0)}")
-    
+
     print("\n" + "=" * 70)
     print("RECOMMENDATION")
     print("=" * 70)

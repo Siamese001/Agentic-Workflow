@@ -32,15 +32,15 @@ class StateEventType(str, Enum):
 class StatePath:
     """Immutable representation of a path in the state tree."""
     parts: tuple[str, ...] = field(default_factory=tuple)
-    
+
     def __truediv__(self, other: str) -> StatePath:
         """Create a new path by appending a component."""
         return StatePath(self.parts + (str(other),))
-    
+
     def __str__(self) -> str:
         """Convert to dot notation."""
         return ".".join(self.parts)
-    
+
     @classmethod
     def from_string(cls, path_str: str) -> StatePath:
         """Create from a dot-separated string."""
@@ -55,7 +55,7 @@ class StateTransition(Generic[T]):
     condition: Optional[Callable[[T], bool]] = field(default=None, compare=False)
     metadata: Dict[str, object] = field(default_factory=dict, compare=False)
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc), compare=False)
-    
+
     def with_metadata(self, **kwargs: object) -> StateTransition[T]:
         """Create a new transition with updated metadata."""
         return StateTransition(
@@ -76,7 +76,7 @@ class StateSnapshot(Generic[T]):
     transition: Optional[StateTransition[T]] = None
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     metadata: Dict[str, object] = field(default_factory=dict)
-    
+
     def get_hash(self) -> str:
         """Generate a deterministic hash of this snapshot."""
         data = {
@@ -104,6 +104,3 @@ class StateValidationError(StateError):
 class StateRollbackError(StateError):
     """Raised when a rollback operation fails."""
     pass
-
-
-

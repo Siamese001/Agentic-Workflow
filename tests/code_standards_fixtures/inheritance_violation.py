@@ -14,10 +14,10 @@ from typing import Any, Dict
 # VIOLATION: This class is in L2_execution but doesn't inherit from L2ExecutionBaseAgent
 class BadL2Agent:
     """A class that should inherit from L2ExecutionBaseAgent but doesn't."""
-    
+
     def __init__(self) -> None:
         self.name = "BadL2Agent"
-    
+
     def execute(self) -> Dict[str, Any]:
         """Execute some operation."""
         return {"status": "ok"}
@@ -26,6 +26,6 @@ class BadL2Agent:
 # Another violation - inherits from wrong base
 class AnotherBadAgent(object):
     """Another class that should inherit from L2ExecutionBaseAgent."""
-    
+
     def run(self) -> None:
         pass

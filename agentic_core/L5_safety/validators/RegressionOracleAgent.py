@@ -24,12 +24,12 @@ from agentic_core.L5_safety.validators.decorators import standard_heal
 class RegressionOracleAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin):
     """
     The Regression Oracle - Automated Test Synthesizer
-    
+
     Subscribes to AtomicBlackboard FILE_MODIFIED signals.
     Generates pytest cases for changed methods.
     Queries Pinecone for historical edge cases.
     Runs tests and performs self-correction.
-    
+
     Process:
     1. Detect file modification
     2. Identify changed methods via diff
@@ -42,7 +42,7 @@ class RegressionOracleAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMi
     def __init__(self, ctx: Any) -> None:
         """
         Initialize Regression Oracle.
-        
+
         Args:
             ctx: ValidationContext
         """
@@ -80,7 +80,7 @@ class RegressionOracleAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMi
     async def execute(self) -> Any:
         """
         Execute regression oracle monitoring.
-        
+
         Listens for FILE_MODIFIED signals and generates tests.
         """
         Logger.info('🔮 Regression Oracle: Monitoring for FILE_MODIFIED signals...')
@@ -148,11 +148,11 @@ class RegressionOracleAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMi
 
         GOLD STANDARD: Post-heal validation confirming test coverage.
         Verifies tests were successfully generated and pass.
-        
+
         Args:
             generated_tests: Tests generated during healing
             dry_run: If True, only preview without applying
-            
+
         Returns:
             Dict with validation status and details
         """
@@ -199,12 +199,12 @@ class RegressionOracleAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMi
     ) -> List[Dict[str, Any]]:
         """
         GOLD STANDARD: Cleanup regression violations with test regeneration.
-        
+
         Args:
             violations: List of RegressionViolation objects
             dry_run: If True, only preview actions
             max_actions: Maximum cleanup actions per run
-            
+
         Returns:
             List of action dicts with results and batch summary
         """
@@ -256,10 +256,10 @@ class RegressionOracleAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMi
         """
         GOLD STANDARD: Full regression oracle with autonomous cleanup.
         Detects method changes, generates tests, and validates coverage.
-        
+
         Args:
             dry_run: If True, only preview cleanup actions
-            
+
         Returns:
             Dict with comprehensive execution and cleanup summaries
         """

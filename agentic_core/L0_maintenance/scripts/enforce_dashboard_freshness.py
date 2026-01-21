@@ -53,43 +53,43 @@ log = logging.getLogger("dashboard_enforcer")
 def check_dashboard_freshness() -> tuple[bool, str]:
     """
     Check if dashboard is fresh and sourced from SSOT.
-    
+
     Returns:
         (is_fresh, reason)
     """
     dashboard_path = PROJECT_ROOT / REPORTS_DIR / "autonomy_dashboard.html"
     discovery_json = PROJECT_ROOT / AGENT_DISCOVERY_JSON
-    
+
     # Check if dashboard exists
     if not dashboard_path.exists():
         return False, "Dashboard HTML does not exist"
-    
+
     # Check if discovery JSON exists
     if not discovery_json.exists():
         return False, "Discovery JSON does not exist"
-    
+
     # Check if discovery is stale
     is_stale, stale_reason = is_discovery_stale()
     if is_stale:
         return False, f"Discovery JSON is stale: {stale_reason}"
-    
+
     # Check if dashboard is older than discovery JSON
     try:
         dashboard_mtime = datetime.fromtimestamp(dashboard_path.stat().st_mtime)
         json_mtime = get_json_mtime()
-        
+
         if json_mtime and dashboard_mtime < json_mtime:
             return False, f"Dashboard ({dashboard_mtime}) is older than discovery JSON ({json_mtime})"
     except Exception as e:
         return False, f"Failed to check dashboard mtime: {e}"
-    
+
     return True, "Dashboard is fresh"
 
 
 def regenerate_dashboard() -> bool:
     """
     Regenerate discovery and dashboard.
-    
+
     Returns:
         True if successful, False otherwise
     """
@@ -97,12 +97,12 @@ def regenerate_dashboard() -> bool:
         log.info("🔄 Regenerating discovery JSON...")
         from scripts.smart_discovery import ensure_fresh_discovery
         ensure_fresh_discovery()
-        
+
         log.info("🔄 Regenerating dashboard...")
         from agentic_core.L5_safety.validators.AutonomyGuardianAgent import AutonomyGuardianAgent
         agent = AutonomyGuardianAgent(PROJECT_ROOT)
         agent.generate_compliance_report(markdown=True)
-        
+
         log.info("✅ Dashboard regenerated successfully")
         return True
     except Exception as e:
@@ -113,34 +113,34 @@ def regenerate_dashboard() -> bool:
 def main():
     """Main enforcement logic."""
     import argparse
-    
+
     parser = argparse.ArgumentParser(description="Enforce dashboard freshness")
     parser.add_argument("--check-only", action="store_true", help="Only check, don't regenerate")
     args = parser.parse_args()
-    
+
     log.info("=" * 80)
     log.info("DASHBOARD FRESHNESS ENFORCEMENT")
     log.info("=" * 80)
-    
+
     # Check freshness
     is_fresh, reason = check_dashboard_freshness()
-    
+
     if is_fresh:
         log.info("✅ Dashboard is fresh and up-to-date")
         log.info(f"   Reason: {reason}")
         return 0
-    
+
     log.warning(f"⚠️  Dashboard is stale: {reason}")
-    
+
     if args.check_only:
         log.error("❌ Dashboard freshness check failed (check-only mode)")
         return 1
-    
+
     # Auto-regenerate
     log.info("")
     log.info("🔧 Auto-regenerating dashboard to ensure freshness...")
     log.info("")
-    
+
     if regenerate_dashboard():
         log.info("")
         log.info("=" * 80)

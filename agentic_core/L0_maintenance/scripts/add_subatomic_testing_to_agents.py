@@ -26,32 +26,32 @@ error_count = 0
 for agent in agents_without_tests:
     class_name = agent['class_name']
     agent_path = Path(agent['path'])
-    
+
     if not agent_path.exists():
         print(f"⚠️ File not found: {agent_path}")
         error_count += 1
         continue
-    
+
     try:
         content = agent_path.read_text(encoding='utf-8')
-        
+
         # Check if already has SubatomicTestingMixin
         if 'SubatomicTestingMixin' in content:
             skipped_count += 1
             continue
-        
+
         # Check if already has _run_self_tests
         if '_run_self_tests' in content:
             skipped_count += 1
             continue
-        
+
         modified = False
-        
+
         # Find the class definition and add SubatomicTestingMixin
         # Pattern: class ClassName(Base1, Base2):
         class_pattern = rf'class\s+{class_name}\s*\(([^)]+)\)\s*:'
         match = re.search(class_pattern, content)
-        
+
         if match:
             bases = match.group(1)
             # Add SubatomicTestingMixin as first base (for proper MRO)
@@ -67,7 +67,7 @@ for agent in agents_without_tests:
                 new_class_def = f"class {class_name}(SubatomicTestingMixin):"
                 content = content[:match.start()] + new_class_def + content[match.end():]
                 modified = True
-        
+
         if modified:
             # Add import if not present
             if 'from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin' not in content:
@@ -94,14 +94,14 @@ for agent in agents_without_tests:
                         content = content[:end_docstring] + '\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\n' + content[end_docstring:]
                     else:
                         content = 'from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\n' + content
-            
+
             agent_path.write_text(content, encoding='utf-8')
             modified_count += 1
             print(f"✅ Modified: {agent_path}")
         else:
             print(f"⚠️ Could not find class definition: {class_name} in {agent_path}")
             error_count += 1
-            
+
     except Exception as e:
         print(f"❌ Error processing {agent_path}: {e}")
         error_count += 1

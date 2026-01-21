@@ -255,7 +255,7 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     1. Law of The Void (Root hygiene)
     2. Law of Depth (Depth 3-5)
     3. Law of Impact (Blast radius awareness)
-    
+
     GOLD STANDARD FEATURES (2026-01-02):
     - Structured Violation dataclass with severity levels
     - HierarchyAgent integration for structure validation
@@ -313,7 +313,7 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             except ImportError:
                 pass
         return self._hierarchy_agent
-    
+
     @property
     def import_agent(self) -> Any:
         """Lazy-load ImportAgent to avoid circular import."""
@@ -378,7 +378,7 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             if auto_sanitize:
                 action: Any = self._sanitize_root_file(item)
                 sanitized.append(f'{item.name} -> {action}')
-    
+
     def _check_root_directory(self, item: Path, violations: List) -> None:
         """Check if root directory is authorized."""
         if not item.name.startswith('.') and item.name not in self.ALLOWED_ROOT_FOLDERS:
@@ -426,38 +426,38 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     def _prompt_user_for_move_approval(self, source: Path, target: Path, reason: str) -> bool:
         """
         Prompt user for approval before moving a file.
-        
+
         CRITICAL: All file moves require explicit user approval.
-        
+
         Args:
             source: Source file path
             target: Target file path
             reason: Reason for the move
-            
+
         Returns:
             True if user approves, False otherwise
         """
         # Check for skip-all flag
         if getattr(self, '_skip_all_moves', False):
             return False
-        
+
         # Check for approve-all flag
         if getattr(self, '_approve_all_moves', False):
             return True
-        
+
         # Check if we're in a non-interactive environment
         import sys
         if not sys.stdin.isatty():
             LOGGER.warning(f"[GovernanceAgent] Non-interactive mode - skipping move: {source.name}")
             return False
-        
+
         try:
             rel_source = source.relative_to(self.root_dir)
             rel_target = target.relative_to(self.root_dir)
         except ValueError:
             rel_source = source
             rel_target = target
-        
+
         print(f"\n{'='*60}")
         print(f"FILE MOVE APPROVAL REQUIRED")
         print(f"{'='*60}")
@@ -465,7 +465,7 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         print(f"Target: {rel_target}")
         print(f"Reason: {reason}")
         print(f"{'='*60}")
-        
+
         try:
             response = input("Approve move? [y/n/a(ll)/s(kip all)]: ").strip().lower()
             if response == 'y':
@@ -532,7 +532,7 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     def enforce_depth_law(self, file_path: str) -> Optional[str]:
         """
         [DEPRECATED - P4 CONSOLIDATION] Use HealerAgent.heal_file_moves() instead.
-        
+
         This method now only returns the SUGGESTED target path without moving.
         Actual file moves should be performed by HealerAgent.
 
@@ -549,7 +549,7 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             DeprecationWarning,
             stacklevel=2
         )
-        
+
         path: Any = Path(file_path)
         Violation: Any = self.check_depth_law(str(path))
         if not Violation:
@@ -557,7 +557,7 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         for part in path.parts:
             if part in self.sovereign_dirs:
                 return None
-        
+
         # [P4] Return suggested path only - no actual move
         if 'shallow' in Violation.lower():
             target_dir: Any = self.root_dir / 'agentic_core' / 'L1_cognition'
@@ -565,7 +565,7 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         else:
             target_dir: Any = self.root_dir / 'scripts'
             target: Any = target_dir / path.name
-        
+
         # Return suggestion without executing move
         return str(target)
 
@@ -684,7 +684,7 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                 new_path = self.enforce_depth_law(file_path)
                 if new_path:
                     report['enforced_actions'].append(f'Moved {file_path} to {new_path}')
-        
+
         atomicity_violation = self.check_atomicity_law(file_path)
         if atomicity_violation:
             report['atomicity_violations'].append(atomicity_violation)
@@ -705,12 +705,12 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         """Perform full architecture validation."""
         report = self._create_empty_report()
         report['root_violations'] = self.check_root_hygiene(auto_sanitize=enforce)
-        
+
         if file_paths:
             for file_path in file_paths:
                 self._validate_single_file(file_path, report, enforce)
             report['BlastRadius'] = self.get_blast_radius(file_paths)
-        
+
         if self._has_violations(report):
             report['overall_status'] = 'FAIL'
         return report
@@ -739,7 +739,7 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             violations = self.hierarchy_agent.run()
             relevant = [v for v in violations if any(fp in str(v[0]) for fp in file_paths)]
             report["hierarchy_violations"] = len(relevant)
-            
+
             if not relevant:
                 report["hierarchy_status"] = "FULL_SUCCESS"
                 report["message"] = "All affected files hierarchy-compliant"
@@ -768,7 +768,7 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             path_objects = [Path(fp) for fp in file_paths if Path(fp).exists()]
             violations = self.import_agent.run(path_objects)
             report["import_violations"] = len(violations)
-            
+
             if not violations:
                 report["import_status"] = "FULL_SUCCESS"
                 report["message"] = "All affected files import-compliant"
@@ -784,7 +784,7 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     def cleanup_violations(self, file_paths: List[str] = None, dry_run: bool = True) -> List[Dict[str, Any]]:
         """
         GOLD STANDARD CLEANUP ENGINE — Multi-stage autonomous governance.
-        
+
         Healing stages:
         1. Check and fix root hygiene
         2. Check depth violations (suggest moves via HealerAgent)
@@ -847,7 +847,7 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             batch_report["import_validation"] = import_report
             batch_report["batch_message"] += f" | Imports: {import_report['import_status']}"
 
-            if (hierarchy_report["hierarchy_status"] == "FULL_SUCCESS" and 
+            if (hierarchy_report["hierarchy_status"] == "FULL_SUCCESS" and
                 import_report["import_status"] == "FULL_SUCCESS"):
                 batch_report["batch_post_heal_status"] = "FULL_SUCCESS"
             else:
@@ -891,7 +891,7 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                 super().heal_repository(dry_run=dry_run)
             except Exception as e:
                 Logger.warning(f"[HEAL_REPOSITORY] Parent chain warning: {e}")
-        
+
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
             return {"errors": 1, "cycle_detected": True}
@@ -900,7 +900,7 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         _call_path.add(agent_name)
         try:
             violations_found = 0
-            
+
             # Check Law of The Void (Root Hygiene)
             root_violations = self.check_root_hygiene(auto_sanitize=False)
             if root_violations:
@@ -908,10 +908,10 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                 for v in root_violations[:5]:
                     print(f"  - {v}")
                 violations_found += len(root_violations)
-            
+
             # Skip dependency graph building for now (has path resolution issues)
             # TODO: Fix build_graph to handle relative/absolute path mixing
-            
+
             print(f"[{agent_name} HEAL @ depth {depth}] Found {violations_found} governance violations")
             return {"violations_found": violations_found, "fixed": 0}
         finally:

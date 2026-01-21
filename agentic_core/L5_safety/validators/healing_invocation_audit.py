@@ -50,7 +50,7 @@ class HealingInvocationAudit:
     def audit_all_methods(self) -> Dict:
         """
         Audit all heal_repository() methods in codebase.
-        
+
         Returns:
             Audit results dictionary
         """
@@ -60,26 +60,26 @@ class HealingInvocationAudit:
             str(self.agentic_core),
             '--include=*.py'
         ]
-        
+
         try:
             result = safe_execute(grep_cmd, capture_output=True, text=True, check=False)
             matches = result.stdout.strip().split('\n') if result.stdout else []
-            
+
             for match in matches:
                 if not match:
                     continue
-                
+
                 file_path, line_content = match.split(':', 1)
                 file_path = Path(file_path)
-                
+
                 # Extract agent class name from file
                 agent_name = self._extract_agent_name(file_path)
-                
+
                 # Check if super() is called in the method
                 has_super = self._check_super_presence(file_path)
-                
+
                 self.results['total_methods'] += 1
-                
+
                 if has_super:
                     self.results['with_super'] += 1
                     self.results['confirmed_agents'].append({
@@ -96,10 +96,10 @@ class HealingInvocationAudit:
                         'reason': 'Missing super().heal_repository() call',
                         'priority': 'HIGH'
                     })
-        
+
         except Exception as e:
             print(f"Error during audit: {e}")
-        
+
         return self.results
 
     def _extract_agent_name(self, file_path: Path) -> str:
@@ -113,7 +113,7 @@ class HealingInvocationAudit:
                     return match.group(1)
         except Exception:
             pass
-        
+
         return file_path.stem
 
     def _check_super_presence(self, file_path: Path) -> bool:
@@ -121,44 +121,44 @@ class HealingInvocationAudit:
         try:
             with open(file_path, 'r') as f:
                 content = f.read()
-                
+
                 # Find heal_repository method
                 method_match = re.search(
                     r'def heal_repository\(.*?\).*?:.*?(?=\n    def |\nclass |\Z)',
                     content,
                     re.DOTALL
                 )
-                
+
                 if method_match:
                     method_body = method_match.group(0)
                     # Check for super().heal_repository() call
                     return 'super().heal_repository(' in method_body
-        
+
         except Exception:
             pass
-        
+
         return False
 
     def generate_report(self, output_file: Path = None) -> str:
         """
         Generate markdown audit report.
-        
+
         Args:
             output_file: Path to save report
-            
+
         Returns:
             Report markdown string
         """
         if output_file is None:
             output_file = self.agentic_core / 'L0_maintenance' / 'logs' / 'healing_invocation_audit_2026-01-03.md'
-        
+
         output_file.parent.mkdir(parents=True, exist_ok=True)
-        
+
         # Calculate percentages
         total = self.results['total_methods']
         with_super = self.results['with_super']
         percentage = (with_super / total * 100) if total > 0 else 0
-        
+
         report = f"""# Healing Invocation Audit Report
 
 **Date**: {datetime.now().isoformat()}
@@ -180,26 +180,26 @@ class HealingInvocationAudit:
 | File | Agent | Status | Notes |
 |------|-------|--------|-------|
 """
-        
+
         for agent in self.results['confirmed_agents']:
             report += f"| {agent['file']} | {agent['agent']} | {agent['status']} | {agent['notes']} |\n"
-        
+
         report += f"""
 ---
 
 ## Missed Agents (Without super())
 
 """
-        
+
         if self.results['missed_agents']:
             report += "| File | Agent | Reason | Priority |\n"
             report += "|------|-------|--------|----------|\n"
-            
+
             for agent in self.results['missed_agents']:
                 report += f"| {agent['file']} | {agent['agent']} | {agent['reason']} | {agent['priority']} |\n"
-            
+
             report += "\n### Proposed Fixes\n\n"
-            
+
             for agent in self.results['missed_agents']:
                 report += f"#### {agent['agent']} ({agent['file']})\n\n"
                 report += """```python
@@ -223,10 +223,10 @@ try:
         max_depth=max_depth,
         _call_path=_call_path
     )
-    
+
     # Agent-specific healing logic (preserve existing)
     agent_result = self._perform_healing(dry_run, execute)
-    
+
     # Standardized merge
     merged = {
         "healed": parent_result.get("healed", 0) + agent_result.get("healed", 0),
@@ -238,7 +238,7 @@ finally:
 ```\n\n"""
         else:
             report += "**✓ All agents have super() calls - chain is complete!**\n\n"
-        
+
         report += f"""
 ---
 
@@ -257,11 +257,11 @@ Phase 5.1 audit complete. {f'{len(self.results["missed_agents"])} agents require
 
 **Status**: ✓ AUDIT COMPLETE
 """
-        
+
         # Save report
         with open(output_file, 'w') as f:
             f.write(report)
-        
+
         print(f"Report saved to: {output_file}")
         return report
 
@@ -270,33 +270,33 @@ Phase 5.1 audit complete. {f'{len(self.results["missed_agents"])} agents require
         total = self.results['total_methods']
         with_super = self.results['with_super']
         percentage = (with_super / total * 100) if total > 0 else 0
-        
+
         print("\n" + "="*70)
         print("HEALING INVOCATION AUDIT SUMMARY")
         print("="*70)
         print(f"Total heal_repository() methods: {total}")
         print(f"With super() call: {with_super} ({percentage:.1f}%)")
         print(f"Missing super() call: {len(self.results['missed_agents'])}")
-        
+
         if self.results['missed_agents']:
             print("\nMissed Agents:")
             for agent in self.results['missed_agents']:
                 print(f"  - {agent['agent']} ({agent['file']})")
         else:
             print("\n✓ All agents confirmed with super() - chain fully active!")
-        
+
         print("="*70 + "\n")
 
 
 def main():
     """Main entry point."""
     audit = HealingInvocationAudit()
-    
+
     print("Starting healing invocation audit...")
     audit.audit_all_methods()
     audit.print_summary()
     audit.generate_report()
-    
+
     print("Audit complete!")
 
 

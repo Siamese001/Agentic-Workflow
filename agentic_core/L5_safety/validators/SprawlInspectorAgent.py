@@ -45,7 +45,7 @@ from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 class SprawlInspectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     Sprawl Inspector - Pre-Flight Architectural Survey.
-    
+
     Identifies low-density folders and excessive breadth for consolidation.
     Implements Key 49 (Universal Depth Law) and Key 41 (Modular Atomicity).
     """
@@ -53,7 +53,7 @@ class SprawlInspectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
     def __init__(self, target_path: Path = AGENTIC_CORE_DIR) -> None:
         """
         Initialize sprawl inspector.
-        
+
         Args:
             target_path: Root directory to inspect for sprawl violations
         """
@@ -73,7 +73,7 @@ class SprawlInspectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
     def inspect(self) -> Dict[str, Any]:
         """
         Scan directory tree for sprawl violations.
-        
+
         Returns:
             Report dictionary with violations and flattening candidates
         """
@@ -89,7 +89,7 @@ class SprawlInspectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
     def print_summary(self) -> None:
         """
         Print human-readable summary of sprawl violations.
-        
+
         Displays breadth violations and flattening candidates.
         """
         print('\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n' + '=' * 70)

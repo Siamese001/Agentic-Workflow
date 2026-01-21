@@ -15,10 +15,10 @@ import time
 class LicHealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
     """
     Orchestrates the complete self-healing process for outreach campaigns.
-    
+
     Manages multiple healing cycles with convergence detection, budget tracking,
     and automatic rollback on critical failures.
-    
+
     Attributes:
         ctx: Outreach engine context containing campaign state
         max_cycles: Maximum number of healing cycles to run
@@ -34,7 +34,7 @@ class LicHealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTest
     ) -> None:
         """
         Initialize the healing orchestrator.
-        
+
         Args:
             ctx: Outreach engine context
             max_cycles: Maximum healing cycles (default: 5)
@@ -48,10 +48,10 @@ class LicHealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTest
     async def run(self) -> 'OutreachHealingResult':
         """
         Run the complete healing process.
-        
+
         Executes multiple healing cycles until convergence is achieved,
         budget is exhausted, or max cycles is reached.
-        
+
         Returns:
             OutreachHealingResult with complete execution details
         """
@@ -140,12 +140,12 @@ class LicHealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTest
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs: Any) -> Dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
-        
+
         Args:
             dry_run: If True, only report violations without fixing
             execute: If True, apply fixes
             **kwargs: Additional healing parameters
-        
+
         Returns:
             Dict with healing summary (violations, fixed, errors)
         """

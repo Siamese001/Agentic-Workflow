@@ -23,7 +23,7 @@ class ExecutionContext:
     """
     Shared execution context for all domain operations.
     Previously duplicated 15+ times across codebase.
-    
+
     Usage:
         from apps_shared.utils.common_patterns import ExecutionContext
     """
@@ -33,7 +33,7 @@ class ExecutionContext:
     metadata: Dict[str, Any] = field(default_factory=dict)
     trace_id: Optional[str] = None
     parent_span_id: Optional[str] = None
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
@@ -50,40 +50,40 @@ class BaseRefiner:
     """
     Base class for refinement operations.
     Previously duplicated 11+ times as refine() function.
-    
+
     Usage:
         from apps_shared.utils.common_patterns import BaseRefiner
-        
+
         class MyRefiner(BaseRefiner):
             def refine(self, data, weights):
                 return super().refine(data, weights)
     """
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {}
         self.weights = self.config.get("weights", {})
-    
+
     def refine(self, data: Dict[str, Any], weights: Optional[Dict[str, float]] = None) -> Dict[str, Any]:
         """
         Apply refinement weights to data.
-        
+
         Args:
             data: Input data to refine
             weights: Optional weight overrides
-            
+
         Returns:
             Refined data with weights applied
         """
         active_weights = weights or self.weights
         result = data.copy()
-        
+
         for key, weight in active_weights.items():
             if key in result:
                 if isinstance(result[key], (int, float)):
                     result[key] = result[key] * weight
                 elif isinstance(result[key], list):
                     result[key] = result[key][:int(len(result[key]) * weight)]
-        
+
         result["_refined"] = True
         result["_weights_applied"] = active_weights
         return result
@@ -93,23 +93,23 @@ class BaseTaskExecutor(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """
     Base class for task execution with error handling.
     Previously duplicated 7+ times as execute() function.
-    
+
     Usage:
         from apps_shared.utils.common_patterns import BaseTaskExecutor
     """
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {}
         self.max_retries = self.config.get("max_retries", 3)
         self.timeout = self.config.get("timeout", 30)
-    
+
     def execute(self, task: Dict[str, Any]) -> Dict[str, Any]:
         """
         Execute a task with retry and timeout handling.
-        
+
         Args:
             task: Task specification
-            
+
         Returns:
             Execution result
         """
@@ -120,7 +120,7 @@ class BaseTaskExecutor(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             "output": None,
             "error": None,
         }
-        
+
         for attempt in range(self.max_retries):
             try:
                 result["output"] = self._do_execute(task)
@@ -131,9 +131,9 @@ class BaseTaskExecutor(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
                 result["error"] = str(e)
                 if attempt == self.max_retries - 1:
                     result["status"] = "failed"
-        
+
         return result
-    
+
     def _do_execute(self, task: Dict[str, Any]) -> Any:
         """Override in subclass to implement actual execution."""
         raise NotImplementedError("Subclass must implement _do_execute")
@@ -147,21 +147,21 @@ class BaseDiagnoser:
     """
     Base class for diagnostic operations.
     Previously duplicated 6+ times as diagnose() function.
-    
+
     Usage:
         from apps_shared.utils.common_patterns import BaseDiagnoser
     """
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {}
-    
+
     def diagnose(self, target: Any) -> Dict[str, Any]:
         """
         Run diagnostics on a target.
-        
+
         Args:
             target: Object to diagnose
-            
+
         Returns:
             Diagnostic report
         """
@@ -172,14 +172,14 @@ class BaseDiagnoser:
             "suggestions": [],
             "health_score": 100,
         }
-        
+
         # Run diagnostic checks
         issues = self._check_issues(target)
         report["issues"] = issues
         report["health_score"] = max(0, 100 - len(issues) * 10)
-        
+
         return report
-    
+
     def _check_issues(self, target: Any) -> List[str]:
         """Override in subclass to implement specific checks."""
         return []
@@ -190,7 +190,7 @@ class PolicyResult:
     """
     Result of a policy evaluation.
     Previously duplicated 3+ times.
-    
+
     Usage:
         from apps_shared.utils.common_patterns import PolicyResult
     """
@@ -200,7 +200,7 @@ class PolicyResult:
     severity: str = "info"
     findings: List[Dict[str, Any]] = field(default_factory=list)
     context: Dict[str, Any] = field(default_factory=dict)
-    
+
     def final_verdict(self) -> str:
         """Return the final verdict string."""
         if self.passed:
@@ -211,7 +211,7 @@ class PolicyResult:
 # Export all
 __all__ = [
     "ExecutionContext",
-    "BaseRefiner", 
+    "BaseRefiner",
     "BaseTaskExecutor",
     "BaseDiagnoser",
     "PolicyResult",

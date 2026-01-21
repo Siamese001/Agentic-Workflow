@@ -10,10 +10,10 @@ def validate_ast_integrity(file_path: Path) -> Tuple[bool, str]:
     """Validate that a Python file has valid AST structure."""
     if not file_path.exists():
         return False, "File does not exist"
-    
+
     if file_path.suffix != '.py':
         return True, "Non-Python file - skipping AST validation"
-    
+
     try:
         content = file_path.read_text(encoding='utf-8')
         ast.parse(content)

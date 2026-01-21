@@ -86,13 +86,13 @@ class InternalSchemaConverter:
         """Validate external data against schema."""
         if not external_schema or not self.config.validate_types:
             return
-        
+
         validation_errors = self._validate_external_data(external_data, external_schema)
         if validation_errors and self.config.strategy == ConversionStrategy.STRICT:
             errors.extend(validation_errors)
         else:
             warnings.extend(validation_errors)
-    
+
     def _process_field_mapping(self, mapping: FieldMapping, external_data: Dict[str, Any],
                               converted_data: Dict[str, Any], errors: List[str],
                               warnings: List[str]) -> None:
@@ -106,23 +106,23 @@ class InternalSchemaConverter:
                 errors.append(error_msg)
             else:
                 warnings.append(error_msg)
-    
+
     def _extract_and_transform_value(self, mapping: FieldMapping,
                                     external_data: Dict[str, object],
                                     errors: List[str], warnings: List[str]) -> object:
         """Extract and transform value from external data."""
         external_value = self._extract_nested_value(external_data, mapping.external_path)
-        
+
         if mapping.transform_func and self.config.apply_transforms:
             external_value = self._apply_transform(external_value, mapping.transform_func)
-        
+
         if mapping.type_conversion:
             external_value = self._convert_with_error_handling(
                 external_value, mapping, errors, warnings
             )
-        
+
         return external_value
-    
+
     def _convert_with_error_handling(self, value: Any, mapping: FieldMapping,
                                     errors: List[str], warnings: List[str]) -> object:
         """Convert type with error handling."""
@@ -135,7 +135,7 @@ class InternalSchemaConverter:
             else:
                 warnings.append(error_msg)
             return mapping.default_value
-    
+
     def _set_converted_value(self, mapping: FieldMapping, external_value: object,
                            converted_data: Dict[str, object], errors: List[str],
                            warnings: List[str]) -> None:
@@ -144,7 +144,7 @@ class InternalSchemaConverter:
             self._set_nested_value(converted_data, mapping.internal_path, external_value)
         elif mapping.required:
             self._handle_missing_required_field(mapping, converted_data, errors, warnings)
-    
+
     def _handle_missing_required_field(self, mapping: FieldMapping,
                                       converted_data: Dict[str, object],
                                       errors: List[str], warnings: List[str]) -> None:
@@ -154,37 +154,37 @@ class InternalSchemaConverter:
             warnings.append(f"Using default for required field: {mapping.internal_path}")
         else:
             errors.append(f"Missing required field: {mapping.internal_path}")
-    
+
     def _finalize_conversion(self, converted_data: Dict[str, object],
                            internal_schema: InternalSchema,
                            errors: List[str]) -> None:
         """Finalize conversion with validation and cleanup."""
         if not self.config.preserve_unknown:
             self._remove_unknown_fields(converted_data, internal_schema)
-        
+
         if self.config.validate_types:
             validation_errors = self._validate_internal_data(converted_data, internal_schema)
             errors.extend(validation_errors)
-    
+
     def convert_to_internal(self, external_data: Dict[str, object],
                            internal_schema: InternalSchema,
                            field_mappings: List[FieldMapping],
                            external_schema: Optional[Dict[str, object]] = None) -> ConversionResult:
         """Convert external data to internal schema format."""
         self.logger.info(f"Converting to internal schema: {internal_schema.name}")
-        
+
         try:
             converted_data = {}
             errors = []
             warnings = []
-            
+
             self._validate_external_schema(external_data, external_schema, errors, warnings)
-            
+
             for mapping in field_mappings:
                 self._process_field_mapping(mapping, external_data, converted_data, errors, warnings)
-            
+
             self._finalize_conversion(converted_data, internal_schema, errors)
-            
+
             result = ConversionResult(
                 internal_schema=internal_schema,
                 converted_data=converted_data,
@@ -198,10 +198,10 @@ class InternalSchemaConverter:
                     "internal_fields": len(converted_data)
                 }
             )
-            
+
             self.logger.info(f"Conversion completed with {len(errors)} errors and {len(warnings)} warnings")
             return result
-            
+
         except Exception as e:
             self.logger.error(f"Schema conversion failed: {str(e)}")
             return ConversionResult(
@@ -215,17 +215,17 @@ class InternalSchemaConverter:
     def auto_generate_mappings(self, external_schema: Dict[str, object],
                               internal_schema: InternalSchema) -> List[FieldMapping]:
         """Automatically generate field mappings between schemas.
-        
+
         Args:
             external_schema: External schema definition
             internal_schema: Internal schema definition
-            
+
         Returns:
             List[FieldMapping]: Generated field mappings
         """
         mappings = []
         external_fields = self._extract_schema_fields(external_schema)
-        
+
         for internal_field, internal_def in internal_schema.fields.items():
             # Try exact match first
             if internal_field in external_fields:
@@ -236,10 +236,10 @@ class InternalSchemaConverter:
                     required=internal_def.get("required", False)
                 ))
                 continue
-            
+
             # Try fuzzy matching
             best_match = self._find_best_field_match(
-                internal_field, 
+                internal_field,
                 external_fields.keys()
             )
             if best_match:
@@ -250,11 +250,11 @@ class InternalSchemaConverter:
                     required=internal_def.get("required", False)
                 ))
                 continue
-            
+
             # No match found
             if internal_def.get("required", False):
                 self.logger.warning(f"No mapping found for required field: {internal_field}")
-        
+
         return mappings
 
     def convert_batch(self, external_data_list: List[Dict[str, object]],
@@ -262,35 +262,35 @@ class InternalSchemaConverter:
                      internal_schema: InternalSchema = None,
                      field_mappings: List[FieldMapping] = None) -> List[ConversionResult]:
         """Convert multiple external data items.
-        
+
         Args:
             external_data_list: List of external data items
             external_schema: Optional external schema
             internal_schema: Internal schema
             field_mappings: Field mappings to use
-            
+
         Returns:
             List[ConversionResult]: Results for each item
         """
         results = []
-        
+
         for i, external_data in enumerate(external_data_list):
             self.logger.debug(f"Converting item {i+1}/{len(external_data_list)}")
             result = self.convert_to_internal(
-                external_data, 
-                external_schema, 
-                internal_schema, 
+                external_data,
+                external_schema,
+                internal_schema,
                 field_mappings
             )
             results.append(result)
-        
+
         return results
 
     def _extract_nested_value(self, data: Dict[str, object], path: str) -> object:
         """Extract value from nested data structure."""
         keys = path.split(".")
         current = data
-        
+
         for key in keys:
             if isinstance(current, dict) and key in current:
                 current = current[key]
@@ -302,19 +302,19 @@ class InternalSchemaConverter:
                     raise IndexError(f"Index {index} out of range")
             else:
                 raise KeyError(f"Key '{key}' not found in path '{path}'")
-        
+
         return current
 
     def _set_nested_value(self, data: Dict[str, object], path: str, value: object) -> None:
         """Set value in nested data structure."""
         keys = path.split(".")
         current = data
-        
+
         for key in keys[:-1]:
             if key not in current:
                 current[key] = {}
             current = current[key]
-        
+
         current[keys[-1]] = value
 
     def _apply_transform(self, value: object, transform_func: str) -> object:
@@ -332,34 +332,34 @@ class InternalSchemaConverter:
         else:
             return value
 
-    def _validate_external_data(self, data: Dict[str, Any], 
+    def _validate_external_data(self, data: Dict[str, Any],
                                schema: Dict[str, Any]) -> List[str]:
         """Validate external data against external schema."""
         errors = []
-        
+
         # Simple validation - can be enhanced
         required_fields = schema.get("required", [])
         for field in required_fields:
             if field not in data:
                 errors.append(f"Missing required field in external data: {field}")
-        
+
         return errors
 
-    def _validate_internal_data(self, data: Dict[str, Any], 
+    def _validate_internal_data(self, data: Dict[str, Any],
                                schema: InternalSchema) -> List[str]:
         """Validate internal data against internal schema."""
         errors = []
-        
+
         for field_name, field_def in schema.fields.items():
             if field_def.get("required", False) and field_name not in data:
                 errors.append(f"Missing required field in internal data: {field_name}")
-        
+
         return errors
 
     def _extract_schema_fields(self, schema: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
         """Extract field definitions from schema."""
         fields = {}
-        
+
         if "properties" in schema:
             fields.update(schema["properties"])
         elif "fields" in schema:
@@ -369,29 +369,29 @@ class InternalSchemaConverter:
             for key, value in schema.items():
                 if isinstance(value, dict) and "type" in value:
                     fields[key] = value
-        
+
         return fields
 
-    def _find_best_field_match(self, target_field: str, 
+    def _find_best_field_match(self, target_field: str,
                               candidate_fields: List[str]) -> Optional[str]:
         """Find best matching field for target field."""
         # Exact match
         if target_field in candidate_fields:
             return target_field
-        
+
         # Case-insensitive match
         for field in candidate_fields:
             if field.lower() == target_field.lower():
                 return field
-        
+
         # Substring match
         for field in candidate_fields:
             if target_field.lower() in field.lower() or field.lower() in target_field.lower():
                 return field
-        
+
         return None
 
-    def _remove_unknown_fields(self, data: Dict[str, Any], 
+    def _remove_unknown_fields(self, data: Dict[str, Any],
                               schema: InternalSchema) -> None:
         """Remove fields not defined in schema."""
         def _remove_unknown_recursive(obj, path=""):
@@ -399,15 +399,15 @@ class InternalSchemaConverter:
                 keys_to_remove = []
                 for key, value in obj.items():
                     current_path = f"{path}.{key}" if path else key
-                    
+
                     if current_path not in schema.fields:
                         keys_to_remove.append(key)
                     else:
                         _remove_unknown_recursive(value, current_path)
-                
+
                 for key in keys_to_remove:
                     del obj[key]
-        
+
         _remove_unknown_recursive(data)
 
     def _initialize_type_converters(self) -> Dict[str, Callable]:
@@ -459,19 +459,19 @@ def convert_to_internal_schema(
     strategy: str = "lenient"
 ) -> Dict[str, Any]:
     """Convert data to internal schema format.
-    
+
     Args:
         external_data: External data to convert
         internal_schema_def: Internal schema definition
         field_mappings: Optional field mappings
         external_schema: Optional external schema
         strategy: Conversion strategy
-        
+
     Returns:
         Dict: Conversion result
     """
     converter = create_internal_schema_converter(strategy=strategy)
-    
+
     # Convert internal schema
     internal_schema = InternalSchema(
         name=internal_schema_def.get("name", "unnamed"),
@@ -480,7 +480,7 @@ def convert_to_internal_schema(
         fields=internal_schema_def.get("fields", {}),
         metadata=internal_schema_def.get("metadata", {})
     )
-    
+
     # Convert mappings
     mappings = []
     if field_mappings:
@@ -490,15 +490,15 @@ def convert_to_internal_schema(
         # Auto-generate if external schema provided
         if external_schema:
             mappings = converter.auto_generate_mappings(external_schema, internal_schema)
-    
+
     # Convert
     result = converter.convert_to_internal(
-        external_data, 
-        external_schema, 
-        internal_schema, 
+        external_data,
+        external_schema,
+        internal_schema,
         mappings
     )
-    
+
     return {
         "internal_schema": {
             "name": result.internal_schema.name,

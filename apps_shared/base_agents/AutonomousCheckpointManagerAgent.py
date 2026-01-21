@@ -53,7 +53,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 class AutonomousCheckpointManagerAgent(HealerMixin):
     """
     Manages state checkpoints with automatic recovery capabilities.
-    
+
     Features:
     - Automatic Checkpoint creation at critical points
     - State consistency verification
@@ -123,12 +123,12 @@ class AutonomousCheckpointManagerAgent(HealerMixin):
     async def create_checkpoint(self, state: Dict[str, Any], files_to_track: List[str], metadata: Optional[Dict[str, Any]]=None) -> str:
         """
         Create a new Checkpoint.
-        
+
         Args:
             state: Current state to Checkpoint
             files_to_track: List of file paths to include in Checkpoint
             metadata: Optional metadata
-            
+
         Returns:
             Checkpoint ID
         """
@@ -157,12 +157,12 @@ class AutonomousCheckpointManagerAgent(HealerMixin):
     async def auto_checkpoint_if_needed(self, state: Dict[str, Any], files_to_track: List[str], force: bool=False) -> Optional[str]:
         """
         Automatically create Checkpoint if interval has passed.
-        
+
         Args:
             state: Current state
             files_to_track: Files to track
             force: Force Checkpoint creation
-            
+
         Returns:
             Checkpoint ID if created, None otherwise
         """
@@ -178,10 +178,10 @@ class AutonomousCheckpointManagerAgent(HealerMixin):
     async def verify_checkpoint(self, checkpoint_id: str) -> Tuple[bool, List[str]]:
         """
         Verify Checkpoint integrity.
-        
+
         Args:
             checkpoint_id: Checkpoint to verify
-            
+
         Returns:
             Tuple of (is_valid, errors)
         """
@@ -211,12 +211,12 @@ class AutonomousCheckpointManagerAgent(HealerMixin):
     async def rollback_to_checkpoint(self, checkpoint_id: str, restore_files: bool=True, restore_state: bool=True) -> RecoveryResult:
         """
         Rollback to a specific Checkpoint.
-        
+
         Args:
             checkpoint_id: Checkpoint to rollback to
             restore_files: Whether to restore files
             restore_state: Whether to restore state
-            
+
         Returns:
             Recovery result
         """
@@ -254,11 +254,11 @@ class AutonomousCheckpointManagerAgent(HealerMixin):
     async def auto_recover_on_failure(self, current_state: Dict[str, Any], error: Exception) -> Optional[RecoveryResult]:
         """
         Automatically recover from failure using best Checkpoint.
-        
+
         Args:
             current_state: Current (failed) state
             error: The error that occurred
-            
+
         Returns:
             Recovery result if recovery attempted, None otherwise
         """

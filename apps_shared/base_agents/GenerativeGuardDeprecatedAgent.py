@@ -39,11 +39,11 @@ class GenerativeGuardDeprecatedAgent(HealerMixin, CanonBaseAgentInterface, MCPHa
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
-        
+
         Args:
             dry_run: If True, only report violations without fixing
             execute: If True, apply fixes
-        
+
         Returns:
             Dict with healing summary
         """
@@ -83,7 +83,7 @@ class GenerativeGuardDeprecatedAgent(HealerMixin, CanonBaseAgentInterface, MCPHa
         violations = []
 
         project_root = getattr(self.ctx, 'project_root', '.')
-        
+
         for root, dirs, files in os.walk(project_root):
             dirs[:] = [d for d in dirs if d not in EXCLUDED_DIRS]
             violations.extend(self._find_runaway_violations_in_dir(root, files))
@@ -130,8 +130,8 @@ class GenerativeGuardDeprecatedAgent(HealerMixin, CanonBaseAgentInterface, MCPHa
         violations_in_dir = []
         for file in files:
             file_path = os.path.join(root, file)
-            normalized_file_path = Path(file_path).as_posix() 
-            
+            normalized_file_path = Path(file_path).as_posix()
+
             if self._is_runaway_file(normalized_file_path):
                 violations_in_dir.append(file_path)
         return violations_in_dir

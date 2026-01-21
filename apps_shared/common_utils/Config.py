@@ -55,11 +55,11 @@ def _load_json_config(filename: str, description: str, required: bool = True) ->
     It now checks the provided path first, then checks relative to DATA_DIR.
     """
     path_to_check = Path(filename)
-    
+
     # If the provided path doesn't exist, check relative to DATA_DIR
     if not path_to_check.is_absolute() and not path_to_check.exists():
         path_to_check = DATA_DIR / filename
-        
+
     if path_to_check.exists():
         try:
             with open(path_to_check, 'r', encoding='utf-8') as f:
@@ -69,11 +69,11 @@ def _load_json_config(filename: str, description: str, required: bool = True) ->
         except json.JSONDecodeError as e:
             logging.error(f"CRITICAL: Invalid JSON in {description} file '{path_to_check}': {e}. Halting.")
             raise
-    
+
     if required:
         logging.error(f"CRITICAL: {description} file not found. Tried: {filename} and {path_to_check}. Halting.")
         raise FileNotFoundError(f"{description} file not found: {path_to_check}")
-    
+
     logging.warning(f"Optional config file '{filename}' not found, returning empty dict")
     return {}
 
@@ -100,18 +100,18 @@ class ArtistConfig:
     provenance_split_targets: Dict = field(default_builder=dict)
     bullet_word_count_ranges: Dict = field(default_builder=dict)
     narrative_config: Dict = field(default_builder=dict)
-    
+
     @classmethod
     def from_json(cls, json_path: Path = DATA_DIR / "artist_constraints.json") -> 'ArtistConfig':
         """Load ArtistConfig from JSON file."""
         data = _load_json_config(str(json_path), "Artist Constraints", required=False)
-        
+
         # Convert bullet_word_count_ranges from list to tuple format
         bullet_ranges = {}
         for section, range_list in data.get("bullet_word_count_ranges", {}).items():
             if isinstance(range_list, list) and len(range_list) == 2:
                 bullet_ranges[section] = tuple(range_list)
-        
+
         return cls(
             provenance_split_targets=data.get("provenance_split_targets", {}),
             bullet_word_count_ranges=bullet_ranges,
@@ -127,12 +127,12 @@ class ValidatorConfig:
     bullet_word_count_sections_to_check: Set[str] = field(default_builder=set)
     provenance_split_targets: Dict = field(default_builder=dict)
     pipeline_status_enum: List[str] = field(default_builder=list)
-    
+
     @classmethod
     def from_json(cls, json_path: Path = DATA_DIR / "validator_rules.json") -> 'ValidatorConfig':
         """Load ValidatorConfig from JSON file."""
         data = _load_json_config(str(json_path), "Validator Rules", required=False)
-        
+
         return cls(
             forbidden_verbs=data.get("forbidden_verbs", []),
             required_sections=set(data.get("required_sections", [])),
@@ -146,32 +146,32 @@ class ValidatorConfig:
 class PromptsConfig:
     """Configuration for all prompt templates."""
     prompts: Dict[str, Dict[str, str]] = field(default_builder=dict)
-    
+
     @classmethod
     def from_json(cls, json_path: Path = DATA_DIR / "prompts.json") -> 'PromptsConfig':
         """Load PromptsConfig from JSON file."""
         data = _load_json_config(str(json_path), "Prompts", required=True)
         return cls(prompts=data)
-    
+
     def get_prompt(self, prompt_name: str, section: str = "default") -> str:
         """
         Retrieve a prompt template by name and section.
-        
+
         Args:
             prompt_name: Name of the prompt (e.g., "RAG_MISSION_EXTRACTION")
             section: Section key (e.g., "PHASE_1", "PHASE_2", "default")
-            
+
         Returns:
             The prompt template string
-            
+
         Raises:
             KeyError: If prompt or section doesn't exist
         """
         if prompt_name not in self.prompts:
             raise KeyError(f"Prompt '{prompt_name}' not found in prompts.json")
-        
+
         prompt_data = self.prompts[prompt_name]
-        
+
         if section in prompt_data:
             return prompt_data[section]
         elif "default" in prompt_data:
@@ -196,15 +196,15 @@ class WebRagConfig:
 class EnricherConfig:
     """Configuration for data enrichment."""
     canonical_verbs: Dict = field(default_builder=lambda: {
-        "led": ["led", "lead", "leading"], 
+        "led": ["led", "lead", "leading"],
         "built": ["built", "build", "building"],
-        "drove": ["drove", "drive", "driving"], 
+        "drove": ["drove", "drive", "driving"],
         "launched": ["launched", "launch", "launching"],
-        "scaled": ["scaled", "scale", "scaling"], 
+        "scaled": ["scaled", "scale", "scaling"],
         "delivered": ["delivered", "deliver", "delivering"],
-        "achieved": ["achieved", "achieve", "achieving"], 
+        "achieved": ["achieved", "achieve", "achieving"],
         "established": ["established", "establish", "establishing"],
-        "managed": ["managed", "manage", "managing"], 
+        "managed": ["managed", "manage", "managing"],
         "developed": ["developed", "develop", "developing"]
     })
 
@@ -212,7 +212,7 @@ class EnricherConfig:
 @dataclass
 class RAGConfig:
     """Configuration for RAG (Retrieval Augmented Generation) system."""
-    
+
     # --- FIX: Changed model name to gemini-2.5-pro ---
     model: str = "gemini-2.5-pro"
     max_tokens: int = 8192
@@ -236,7 +236,7 @@ class RAGConfig:
 
     telemetry_enabled: bool = True
     telemetry_log_dir: Path = CACHE_DIR / "rag_telemetry"
-    
+
     # NEW: ChromaDB configuration for Librarian
     chroma_persist_dir: Path = CACHE_DIR / "chroma_memory"
     chroma_collection_name: str = "rag_librarian_v1"
@@ -250,15 +250,15 @@ class RAGConfig:
         "SOURCE_GENERIC_PROFILE": 0.5,
         "LOCAL_NLP": 0.2
     })
-    
+
     def __post_init__(self) -> None:
         """Ensure source_weights is a dict, not a field builder."""
         if not isinstance(self.source_weights, dict):
             logging.error("source_weights must be a dict.")
             raise TypeError("source_weights must be a dict")
-        
+
         self._validate_source_weights()
-        
+
         # --- Create cache directories with error handling ---
         try:
             self.cache_dir.mkdir(parents=True, exist_ok=True)
@@ -279,17 +279,17 @@ class RAGConfig:
                 raise ValueError(f"Weight for '{source}' cannot be negative: {weight}")
             if weight > 10.0:
                 logging.warning(f"Unusually high weight for '{source}': {weight}")
-          
+
 @dataclass
 class ReasoningConfig:
     """
     Configuration for reasoning strategies (CoT, ToT, Self-Consistency, Reflexion).
-    
+
     PHASE 2 CHANGE: Rationalized reasoning parameters.
     - Lowered self_consistency intensity since Inspector handles evaluation
     - CoT/ToT remain strategic for planning, but SC reduced from 8 -> 3 for K1
     """
-    
+
     cot_min_paths: int = 2
     tot_branches: int = 3
     min_tot_depth: int = 2
@@ -316,7 +316,7 @@ class ReasoningConfig:
 @dataclass
 class ContentConstraintsConfig:
     """Content-level constraints for word counts, sentence counts, etc."""
-    
+
     TOTAL_WORD_COUNT_MIN: int = 870
     TOTAL_WORD_COUNT_MAX: int = 1030
     MIN_JD_KEYWORDS: int = 7
@@ -361,7 +361,7 @@ class ContentConstraintsConfig:
 @dataclass
 class SignalControlConfig:
     """Signal control thresholds for quality and relevance."""
-    
+
     K1_MAX_DIFFERENTIATORS: int = 4
     RESUME_MAX_JD_KEYWORDS: int = 16
     CL_MAX_JD_SIMILARITY: float = 0.65
@@ -370,7 +370,7 @@ class SignalControlConfig:
 @dataclass
 class PromptAddendumConfig:
     """Configuration for reasoning prompt addendums."""
-    
+
     HEADER: str = "\n\n**REASONING IMPLEMENTATION DIRECTIVES (v16.40):**\n\n"
     FOOTER: str = "\nAll directives MUST be followed in the output.\n"
 
@@ -424,9 +424,9 @@ ReasoningConfig.DEFAULT = ReasoningConfig(self_consistency=3)
 
 # K0_HEADLINE: Lightweight (unchanged)
 ReasoningConfig.K0_HEADLINE_CONFIG = ReasoningConfig(
-    cot_min_paths=2, 
-    tot_branches=2, 
-    min_tot_depth=2, 
+    cot_min_paths=2,
+    tot_branches=2,
+    min_tot_depth=2,
     self_consistency=3,  # Unchanged
     reflexion=True
 )
@@ -434,102 +434,102 @@ ReasoningConfig.K0_HEADLINE_CONFIG = ReasoningConfig(
 # K1_EXECUTIVE_SUMMARY: RATIONALIZED - Reduced SC from 8 -> 3
 # Inspector handles evaluation, no need for extreme SC
 ReasoningConfig.K1_EXECUTIVE_SUMMARY_CONFIG = ReasoningConfig(
-    cot_min_paths=3, 
-    tot_branches=3, 
-    min_tot_depth=3, 
+    cot_min_paths=3,
+    tot_branches=3,
+    min_tot_depth=3,
     self_consistency=3,  # CHANGED: Was 8
-    reflexion=True, 
+    reflexion=True,
     max_reflexion_loops=4
 )
 
 # K2_UNIFY_BULLETS: Reduced SC from 6 -> 3
 ReasoningConfig.K2_UNIFY_BULLETS_CONFIG = ReasoningConfig(
-    cot_min_paths=3, 
-    tot_branches=3, 
-    min_tot_depth=2, 
+    cot_min_paths=3,
+    tot_branches=3,
+    min_tot_depth=2,
     self_consistency=3,  # CHANGED: Was 6
     reflexion=True
 )
 
 # K2_UNIFY_OVERVIEW: Reduced SC from 4 -> 3
 ReasoningConfig.K2_UNIFY_OVERVIEW_CONFIG = ReasoningConfig(
-    cot_min_paths=3, 
-    tot_branches=3, 
-    min_tot_depth=3, 
+    cot_min_paths=3,
+    tot_branches=3,
+    min_tot_depth=3,
     self_consistency=3,  # Unchanged (was already 4)
     reflexion=True
 )
 
 # K3_IBM_BULLETS: Reduced SC from 5 -> 3
 ReasoningConfig.K3_IBM_BULLETS_CONFIG = ReasoningConfig(
-    cot_min_paths=3, 
-    tot_branches=3, 
-    min_tot_depth=2, 
+    cot_min_paths=3,
+    tot_branches=3,
+    min_tot_depth=2,
     self_consistency=3,  # CHANGED: Was 5
     reflexion=True
 )
 
 # K3_IBM_OVERVIEW: Reduced SC from 4 -> 3
 ReasoningConfig.K3_IBM_OVERVIEW_CONFIG = ReasoningConfig(
-    cot_min_paths=3, 
-    tot_branches=3, 
-    min_tot_depth=3, 
+    cot_min_paths=3,
+    tot_branches=3,
+    min_tot_depth=3,
     self_consistency=3,  # Unchanged (was already 4)
     reflexion=True
 )
 
 # K4_TRADERSENSE_NARRATIVE: Unchanged
 ReasoningConfig.K4_TRADERSENSE_NARRATIVE_CONFIG = ReasoningConfig(
-    cot_min_paths=2, 
-    tot_branches=2, 
-    min_tot_depth=2, 
-    self_consistency=3, 
+    cot_min_paths=2,
+    tot_branches=2,
+    min_tot_depth=2,
+    self_consistency=3,
     reflexion=False
 )
 
 # K5_EY_NARRATIVE: Reduced SC from 4 -> 3
 ReasoningConfig.K5_EY_NARRATIVE_CONFIG = ReasoningConfig(
-    cot_min_paths=3, 
-    tot_branches=2, 
-    min_tot_depth=3, 
+    cot_min_paths=3,
+    tot_branches=2,
+    min_tot_depth=3,
     self_consistency=3,  # Unchanged (was already 4)
     reflexion=True
 )
 
 # K6_EARLY_CAREER_NARRATIVE: Unchanged
 ReasoningConfig.K6_EARLY_CAREER_NARRATIVE_CONFIG = ReasoningConfig(
-    cot_min_paths=2, 
-    tot_branches=2, 
-    min_tot_depth=2, 
-    self_consistency=3, 
+    cot_min_paths=2,
+    tot_branches=2,
+    min_tot_depth=2,
+    self_consistency=3,
     reflexion=False
 )
 
 # K9_COMPETENCIES: Reduced SC from 6 -> 3
 ReasoningConfig.K9_COMPETENCIES_CONFIG = ReasoningConfig(
-    cot_min_paths=3, 
-    tot_branches=2, 
-    min_tot_depth=2, 
+    cot_min_paths=3,
+    tot_branches=2,
+    min_tot_depth=2,
     self_consistency=3,  # CHANGED: Was 6
     reflexion=True
 )
 
 # K10_SKILLS: Unchanged (already minimal)
 ReasoningConfig.K10_SKILLS_CONFIG = ReasoningConfig(
-    cot_min_paths=1, 
-    tot_branches=2, 
-    min_tot_depth=1, 
-    self_consistency=1, 
+    cot_min_paths=1,
+    tot_branches=2,
+    min_tot_depth=1,
+    self_consistency=1,
     reflexion=False
 )
 
 # K11_COVER_LETTER: Reduced SC from 6 -> 3
 ReasoningConfig.K11_COVER_LETTER_CONFIG = ReasoningConfig(
-    cot_min_paths=4, 
-    tot_branches=3, 
-    min_tot_depth=3, 
+    cot_min_paths=4,
+    tot_branches=3,
+    min_tot_depth=3,
     self_consistency=3,  # CHANGED: Was 6
-    reflexion=True, 
+    reflexion=True,
     max_reflexion_loops=2
 )
 

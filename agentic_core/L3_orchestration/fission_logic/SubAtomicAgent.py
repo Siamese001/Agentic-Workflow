@@ -16,7 +16,7 @@ from agentic_core.L5_safety.validators.decorators import standard_heal
 # NAMING FIXED: SubAtomicAgent → SubAtomicAgent
 class SubAtomicAgent:
     """Base class stub for structural agents."""
-    
+
     @timeout(300)
     @standard_heal
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
@@ -40,15 +40,15 @@ class SubAtomicAgent:
 # NOT_AN_AGENT — base implementation class, not a true agent — excluded from discovery
 class sub_atomic_agent_impl:
     '''Brief description of functionality and purpose.'''
-    
+
     def __init__(self, ctx: Any, name: str):
         self.ctx = ctx
         self.name = name
     def can_run(self) -> bool:
-                    
+
         return True
     def execute(self) -> None:
-                    
+
         pass
 
 # NAMING FIXED: NestingDepthVisitor → nesting_depth_visitor
@@ -87,47 +87,47 @@ class nesting_depth_visitor(ast.NodeVisitor):
 
     # Override visit methods for nodes that increase nesting
     def visit_FunctionDef(self, node):
-                    
+
         self._generic_visit_with_depth(node)
 
     def visit_AsyncFunctionDef(self, node):
-                    
+
         self._generic_visit_with_depth(node)
 
     def visit_ClassDef(self, node):
-                    
+
         self._generic_visit_with_depth(node)
 
     def visit_If(self, node):
-                    
+
         self._generic_visit_with_depth(node)
 
     def visit_For(self, node):
-                    
+
         self._generic_visit_with_depth(node)
 
     def visit_AsyncFor(self, node):
-                    
+
         self._generic_visit_with_depth(node)
 
     def visit_While(self, node):
-                    
+
         self._generic_visit_with_depth(node)
 
     def visit_With(self, node):
-                    
+
         self._generic_visit_with_depth(node)
 
     def visit_AsyncWith(self, node):
-                    
+
         self._generic_visit_with_depth(node)
 
     def visit_Try(self, node):
-                    
+
         self._generic_visit_with_depth(node)
 
     def visit_ExceptHandler(self, node):
-                    
+
         self._generic_visit_with_depth(node)
 
 

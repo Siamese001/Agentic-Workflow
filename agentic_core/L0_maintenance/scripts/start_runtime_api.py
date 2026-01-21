@@ -8,10 +8,10 @@ flow visualization.
 
 Usage:
     python scripts/start_runtime_api.py
-    
+
     # With custom port
     python scripts/start_runtime_api.py --port 8081
-    
+
     # With reload for development
     python scripts/start_runtime_api.py --reload
 
@@ -44,7 +44,7 @@ def main():
     parser.add_argument("--reload", action="store_true", help="Enable auto-reload for development")
     parser.add_argument("--workers", type=int, default=1, help="Number of worker processes (default: 1)")
     args = parser.parse_args()
-    
+
     print("=" * 70)
     print("RUNTIME API SERVER")
     print("=" * 70)
@@ -67,11 +67,11 @@ def main():
     print()
     print("Press Ctrl+C to stop the server")
     print("=" * 70)
-    
+
     try:
         import uvicorn
         from agentic_core.L6_observability.api.runtime_api import app
-        
+
         uvicorn.run(
             "agentic_core.L6_observability.api.runtime_api:app",
             host=args.host,

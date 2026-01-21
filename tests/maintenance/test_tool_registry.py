@@ -33,13 +33,13 @@ class TestToolSafetyVerification:
         """
         def rogue_func():
             return "rogue"
-        
+
         result = tool_registry.register_tool(
             tool_name="rogue_tool",
             tool_path="archives/void_violations/rogue_tool.py",
             tool_func=rogue_func
         )
-        
+
         assert result is False, "Registry should reject tools in archives/"
         assert "rogue_tool" not in tool_registry
 
@@ -50,13 +50,13 @@ class TestToolSafetyVerification:
         """
         def temp_func():
             return "temp"
-        
+
         result = tool_registry.register_tool(
             tool_name="temp_tool",
             tool_path="/tmp/temp_tool.py",
             tool_func=temp_func
         )
-        
+
         assert result is False, "Registry should reject tools in /tmp/"
         assert "temp_tool" not in tool_registry
 
@@ -67,17 +67,17 @@ class TestToolSafetyVerification:
         """
         def valid_func():
             return "valid"
-        
+
         result = tool_registry.register_tool(
             tool_name="valid_tool",
             tool_path="agentic_core/L2_execution/ToolRegistry/file_io_tools.py",
             tool_func=valid_func,
             description="File I/O operations"
         )
-        
+
         assert result is True, "Registry should accept tools in agentic_core/"
         assert "valid_tool" in tool_registry
-        
+
         # Verify tool data
         tool = tool_registry.get_tool("valid_tool")
         assert tool is not None
@@ -91,13 +91,13 @@ class TestToolSafetyVerification:
         """
         def shared_func():
             return "shared"
-        
+
         result = tool_registry.register_tool(
             tool_name="shared_tool",
             tool_path="apps_shared/utils/tool_registry.py",
             tool_func=shared_func
         )
-        
+
         assert result is True, "Registry should accept tools in apps_shared/"
         assert "shared_tool" in tool_registry
 
@@ -111,9 +111,9 @@ class TestToolDiscovery:
         Expected: Should find tools in agentic_core/L2_execution/ToolRegistry/.
         """
         discovered = tool_registry.discover_tools("*_tools.py")
-        
+
         assert len(discovered) > 0, "Should discover at least one *_tools.py file"
-        
+
         # Verify at least one known tool file is found
         tool_names = [p.name for p in discovered]
         assert any("tools" in name for name in tool_names), \
@@ -130,13 +130,13 @@ class TestToolRetrieval:
         """
         def my_tool():
             return "executed"
-        
+
         tool_registry.register_tool(
             tool_name="my_tool",
             tool_path="agentic_core/L2_execution/ToolRegistry/tools.py",
             tool_func=my_tool
         )
-        
+
         func = tool_registry.get_tool_func("my_tool")
         assert func is not None
         assert callable(func)
@@ -159,10 +159,10 @@ class TestToolRetrieval:
             pass
         def tool2():
             pass
-        
+
         tool_registry.register_tool("tool1", "agentic_core/utils/sovereign_index.py", tool1)
         tool_registry.register_tool("tool2", "agentic_core/L2_execution/ToolRegistry/tools.py", tool2)
-        
+
         tools = tool_registry.list_tools()
         assert "tool1" in tools
         assert "tool2" in tools
@@ -179,14 +179,14 @@ class TestToolUnregistration:
         """
         def temp_tool():
             pass
-        
+
         tool_registry.register_tool(
-            "temp_tool", 
-            "agentic_core/L2_execution/ToolRegistry/tools.py", 
+            "temp_tool",
+            "agentic_core/L2_execution/ToolRegistry/tools.py",
             temp_tool
         )
         assert "temp_tool" in tool_registry
-        
+
         result = tool_registry.unregister_tool("temp_tool")
         assert result is True
         assert "temp_tool" not in tool_registry

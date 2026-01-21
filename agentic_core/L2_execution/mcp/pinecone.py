@@ -36,11 +36,11 @@ Logger = logging.getLogger(__name__)
 
 class SovereignPineconeClient(MCPHardenedMixin, HealerMixin):
     """Sovereign Pinecone client - audit + safe exec for all vector operations."""
-    
+
     def __init__(self, index_name: Optional[str] = None, namespace: Optional[str] = None):
         """
         Initialize Pinecone client.
-        
+
         Args:
             index_name: Pinecone index name (defaults to env var)
             namespace: Default namespace for operations
@@ -52,7 +52,7 @@ class SovereignPineconeClient(MCPHardenedMixin, HealerMixin):
         self._pc = None
         self._index = None
         self._mcp_audit('init')
-    
+
     def _get_client(self):
         """Lazy-load Pinecone client."""
         if self._pc is None:
@@ -72,7 +72,7 @@ class SovereignPineconeClient(MCPHardenedMixin, HealerMixin):
                 Logger.error(f"[SOVEREIGN PINECONE] Connection failed: {e}")
                 return None
         return self._index
-    
+
     def _audit(self, operation: str, payload: Dict[str, Any], result: Any) -> None:
         """Record operation to audit log."""
         self.audit_log.append({
@@ -80,23 +80,23 @@ class SovereignPineconeClient(MCPHardenedMixin, HealerMixin):
             'namespace': self.namespace,
             'success': result.get('success', False) if isinstance(result, dict) else True
         })
-    
+
     def execute(self, operation: str, **payload) -> Dict[str, Any]:
         """
         Route Pinecone operations safely.
-        
+
         Args:
             operation: Pinecone operation (upsert, query, delete, etc.)
             **payload: Operation-specific parameters
-        
+
         Returns:
             Result dictionary with success status and data
         """
         Logger.debug(f"[SOVEREIGN PINECONE] {operation}")
-        
+
         index = self._get_client()
         namespace = payload.get('namespace', self.namespace)
-        
+
         if index is None:
             # Stub mode - return mock response
             result = {
@@ -106,13 +106,13 @@ class SovereignPineconeClient(MCPHardenedMixin, HealerMixin):
             }
             self._audit(operation, payload, result)
             return result
-        
+
         try:
             if operation == 'upsert':
                 vectors = payload.get('vectors', [])
                 response = index.upsert(vectors=vectors, namespace=namespace)
                 result = {'success': True, 'upserted_count': response.upserted_count}
-            
+
             elif operation == 'query':
                 vector = payload.get('vector', [])
                 top_k = payload.get('top_k', 10)
@@ -130,24 +130,24 @@ class SovereignPineconeClient(MCPHardenedMixin, HealerMixin):
                         for m in response.matches
                     ]
                 }
-            
+
             elif operation == 'delete':
                 ids = payload.get('ids', [])
                 if ids:
                     index.delete(ids=ids, namespace=namespace)
                 result = {'success': True, 'deleted': len(ids)}
-            
+
             elif operation == 'describe_stats':
                 response = index.describe_index_stats()
                 result = {'success': True, 'stats': response.to_dict()}
-            
+
             else:
                 result = {'success': False, 'error': f'Unsupported Pinecone operation: {operation}'}
-        
+
         except Exception as e:
             Logger.error(f"[SOVEREIGN PINECONE] {operation} failed: {e}")
             result = {'success': False, 'error': str(e)}
-        
+
         self._audit(operation, payload, result)
         return result
 

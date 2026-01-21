@@ -6,7 +6,7 @@ from typing import Any, List, Dict, Callable, Coroutine, Optional
 class BatchOperationMixin:
     """
     Phase 2 Observability Infrastructure: Batch Operations (Report 4.6).
-    
+
     Enables safe parallelization and batch execution for high-volume tasks.
     Features:
     - Concurrency limiting via Semaphores
@@ -19,19 +19,19 @@ class BatchOperationMixin:
         super().__init__(**kwargs)
         self._bo_logger = logging.getLogger(self.__class__.__name__)
 
-    async def batch_execute(self, 
-                            tasks: List[Coroutine], 
-                            max_workers: int = 5, 
+    async def batch_execute(self,
+                            tasks: List[Coroutine],
+                            max_workers: int = 5,
                             sequential: bool = False) -> List[Any]:
         # Hardened: overall batch timeout + better failure classification
         """
         Executes a collection of tasks with controlled concurrency.
-        
+
         Args:
             tasks: A list of coroutines to execute.
             max_workers: Maximum number of concurrent tasks (semaphore limit).
             sequential: If True, ignores max_workers and runs one by one.
-            
+
         Returns:
             List[Any]: A list of results in the same order as tasks.
         """
@@ -71,7 +71,7 @@ class BatchOperationMixin:
 
         # Wrap tasks with semaphore logic
         wrapped_tasks = [_sem_task(t, i) for i, t in enumerate(tasks)]
-        
+
         # Execute all tasks and maintain order
         try:
             results = await asyncio.wait_for(
@@ -81,7 +81,7 @@ class BatchOperationMixin:
         except asyncio.TimeoutError:
             self._bo_logger.critical(f"Entire batch timed out after {BATCH_TIMEOUT}s")
             results = [asyncio.TimeoutError("Batch level timeout")] * len(tasks)
-        
+
         duration = time.time() - start_time
         timeout_count = sum(1 for r in results if isinstance(r, asyncio.TimeoutError))
         success_count = sum(1 for r in results if not isinstance(r, Exception))
@@ -91,5 +91,5 @@ class BatchOperationMixin:
             f"({timeout_count} timeouts) in {duration:.2f}s | "
             f"Error types: {', '.join(sorted(error_types)) or 'none'}"
         )
-        
+
         return results

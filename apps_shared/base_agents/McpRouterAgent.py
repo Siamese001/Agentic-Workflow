@@ -46,7 +46,7 @@ class McpRouterAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     def __init__(self, tui_handle: Optional[Any] = None) -> None:
         """
         Initialize MCP Router.
-        
+
         Args:
             tui_handle: Optional TUI dashboard for status updates
         """
@@ -57,11 +57,11 @@ class McpRouterAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     async def resolve_failure(self, layer: str, error_context: str) -> Dict[str, Any]:
         """
         Hardens the implementation by selecting the best tool for the layer.
-        
+
         Args:
             layer: Layer identifier (L1-L5)
             error_context: Error description or context
-            
+
         Returns:
             Resolution result from MCP
         """
@@ -87,11 +87,11 @@ class McpRouterAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     async def call_mcp(self, mcp_name: str, params: Dict[str, Any]) -> Dict[str, Any]:
         """
         Interface with specific MCP server.
-        
+
         Args:
             mcp_name: Name of MCP to invoke
             params: Parameters for MCP call
-            
+
         Returns:
             MCP response
         """
@@ -104,10 +104,10 @@ class McpRouterAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     def get_available_mcps(self, layer: Optional[str]=None) -> Dict[str, list]:
         """
         Get available MCPs for a layer or all layers.
-        
+
         Args:
             layer: Optional layer identifier
-            
+
         Returns:
             Dictionary of layer -> MCP list
         """
@@ -118,7 +118,7 @@ class McpRouterAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     async def health_check(self) -> Dict[str, bool]:
         """
         Check health of all registered MCPs.
-        
+
         Returns:
             Dictionary of MCP -> health status
         """
@@ -141,10 +141,10 @@ class McpRouterAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 def get_mcp_router(tui_handle: Any=None) -> MCPRouter:
     """
     Factory function to create MCPRouter instance.
-    
+
     Args:
         tui_handle: Optional TUI dashboard handle
-        
+
     Returns:
         MCPRouter instance
     """

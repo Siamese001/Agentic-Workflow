@@ -1,6 +1,6 @@
 # Master Architect Audit Protocol (Zero-Trust)
 
-**Mode:** Adversarial Analysis  
+**Mode:** Adversarial Analysis
 **Assumption:** The code contains hidden flaws. Use ONLY provided evidence.
 
 ---

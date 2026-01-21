@@ -25,10 +25,10 @@ class AnomalySeverity(Enum):
 class AnomalyReport:
     """
     Sovereign anomaly report — immutable, auditable structure.
-    
+
     Emitted by detectors (self-testing, validators, monitors).
     Consumed by HealerMixin._perform_healing().
-    
+
     Attributes:
         type: Machine-readable anomaly type (e.g., "graph_corruption", "scoring_drift")
         severity: AnomalySeverity level

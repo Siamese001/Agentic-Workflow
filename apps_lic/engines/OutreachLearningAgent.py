@@ -27,7 +27,7 @@ from .context import OutreachEngineContext
 class OutreachConfidenceLevel(Enum):
     """
     Confidence levels for outreach decisions.
-    
+
     Defines the confidence thresholds used to categorize the reliability
     of outreach decisions and predictions.
     """
@@ -41,7 +41,7 @@ class OutreachConfidenceLevel(Enum):
 class OutreachLearningExample:
     """
     A learning example from past outreach.
-    
+
     Attributes:
         example_id: Unique identifier for the example
         TaskType: Type of task performed
@@ -64,7 +64,7 @@ class OutreachLearningExample:
 class OutreachInstruction:
     """
     An instruction for outreach agents.
-    
+
     Attributes:
         text: Instruction text
         priority: Priority level (higher = more important)
@@ -83,7 +83,7 @@ class OutreachLearningLoop:
 
     Tracks patterns and improves over time through example recording
     and pattern recognition.
-    
+
     Attributes:
         ctx: Outreach engine context
         _examples: List of recorded learning examples
@@ -93,7 +93,7 @@ class OutreachLearningLoop:
     def __init__(self, ctx: 'OutreachEngineContext') -> None:
         """
         Initialize the learning loop.
-        
+
         Args:
             ctx: Outreach engine context
         """

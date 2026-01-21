@@ -45,7 +45,7 @@ def analyze_class(node: ast.ClassDef) -> Dict[str, Any]:
             bases.append(base.id)
         elif isinstance(base, ast.Attribute):
             bases.append(base.attr)
-    
+
     methods = []
     for item in node.body:
         if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
@@ -56,12 +56,12 @@ def analyze_class(node: ast.ClassDef) -> Dict[str, Any]:
                 'is_async': isinstance(item, ast.AsyncFunctionDef),
                 'docstring': extract_docstring(item)[:100] if extract_docstring(item) else ""
             })
-    
+
     # Detect class type
     is_agent = node.name.endswith('Agent') or any('Agent' in b for b in bases)
     is_model = any(b in ('BaseModel', 'Enum', 'TypedDict') for b in bases) or 'Model' in node.name
     is_mixin = 'Mixin' in node.name
-    
+
     return {
         'name': node.name,
         'bases': bases,
@@ -87,16 +87,16 @@ def analyze_function(node: ast.FunctionDef) -> Dict[str, Any]:
 def infer_domain(content: str, classes: List[Dict], functions: List[Dict]) -> str:
     """Infer the domain (resume/outreach/shared/infra) from content analysis."""
     content_lower = content.lower()
-    
+
     # Strong signals
     resume_signals = ['resume', 'cv', 'job description', 'skill', 'experience', 'ats', 'bullet']
     outreach_signals = ['outreach', 'linkedin', 'recipient', 'campaign', 'message', 'personalization', 'sender']
     infra_signals = ['cache', 'redis', 'pinecone', 'mcp', 'heal', 'validate', 'orchestrat']
-    
+
     resume_score = sum(content_lower.count(s) for s in resume_signals)
     outreach_score = sum(content_lower.count(s) for s in outreach_signals)
     infra_score = sum(content_lower.count(s) for s in infra_signals)
-    
+
     # Check class/function names
     all_names = [c['name'].lower() for c in classes] + [f['name'].lower() for f in functions]
     for name in all_names:
@@ -104,7 +104,7 @@ def infer_domain(content: str, classes: List[Dict], functions: List[Dict]) -> st
             resume_score += 5
         if any(s in name for s in ['outreach', 'message', 'recipient', 'campaign']):
             outreach_score += 5
-    
+
     if resume_score > 10 and outreach_score > 10:
         return 'shared'
     elif resume_score > outreach_score and resume_score > infra_score:
@@ -119,12 +119,12 @@ def infer_domain(content: str, classes: List[Dict], functions: List[Dict]) -> st
 def infer_purpose(classes: List[Dict], functions: List[Dict], docstring: str) -> str:
     """Infer the purpose of the file from its contents."""
     purposes = []
-    
+
     # From docstring
     if docstring:
         first_line = docstring.split('\n')[0][:100]
         purposes.append(first_line)
-    
+
     # From class names and types
     for cls in classes:
         if cls['is_agent']:
@@ -133,12 +133,12 @@ def infer_purpose(classes: List[Dict], functions: List[Dict], docstring: str) ->
             purposes.append(f"Model: {cls['name']}")
         elif cls['is_mixin']:
             purposes.append(f"Mixin: {cls['name']}")
-    
+
     # From function names
     func_names = [f['name'] for f in functions if not f['name'].startswith('_')]
     if func_names:
         purposes.append(f"Functions: {', '.join(func_names[:5])}")
-    
+
     return ' | '.join(purposes[:3]) if purposes else "Unknown"
 
 def analyze_file(file_path: Path) -> Optional[FileAnalysis]:
@@ -150,11 +150,11 @@ def analyze_file(file_path: Path) -> Optional[FileAnalysis]:
         return None
     except Exception:
         return None
-    
+
     analysis = FileAnalysis(path=str(file_path))
     analysis.loc = len(content.splitlines())
     analysis.docstring = extract_docstring(tree)[:300] if extract_docstring(tree) else ""
-    
+
     # Extract imports
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
@@ -171,7 +171,7 @@ def analyze_file(file_path: Path) -> Optional[FileAnalysis]:
                 analysis.internal_deps.append(module)
             elif not module.startswith(('typing', 'pathlib', 'os', 'sys', 're', 'json', 'dataclasses', 'enum')):
                 analysis.external_deps.append(module)
-    
+
     # Extract classes and functions
     for node in ast.iter_child_nodes(tree):
         if isinstance(node, ast.ClassDef):
@@ -185,20 +185,20 @@ def analyze_file(file_path: Path) -> Optional[FileAnalysis]:
             func_info = analyze_function(node)
             analysis.functions.append(func_info)
             analysis.has_utilities = True
-    
+
     # Infer domain and purpose
     analysis.domain = infer_domain(content, analysis.classes, analysis.functions)
     analysis.purpose = infer_purpose(analysis.classes, analysis.functions, analysis.docstring)
-    
+
     # Calculate complexity (simplified)
     analysis.complexity = len(analysis.classes) * 3 + len(analysis.functions) + analysis.loc // 50
-    
+
     return analysis
 
 def find_similar_in_codebase(analysis: FileAnalysis, current_dirs: List[str]) -> List[Dict]:
     """Find similar functionality in current codebase using AST comparison."""
     similar = []
-    
+
     # Get class and function names from archived file
     archived_classes = {c['name'].lower() for c in analysis.classes}
     archived_functions = {f['name'].lower() for f in analysis.functions}
@@ -206,22 +206,22 @@ def find_similar_in_codebase(analysis: FileAnalysis, current_dirs: List[str]) ->
     for c in analysis.classes:
         for m in c['methods']:
             archived_methods.add(m['name'].lower())
-    
+
     for dir_path in current_dirs:
         for py_file in Path(dir_path).rglob('*.py'):
             if '__pycache__' in str(py_file):
                 continue
-            
+
             try:
                 content = py_file.read_text(encoding='utf-8', errors='replace')
                 tree = ast.parse(content)
             except:
                 continue
-            
+
             current_classes = set()
             current_functions = set()
             current_methods = set()
-            
+
             for node in ast.walk(tree):
                 if isinstance(node, ast.ClassDef):
                     current_classes.add(node.name.lower())
@@ -230,12 +230,12 @@ def find_similar_in_codebase(analysis: FileAnalysis, current_dirs: List[str]) ->
                             current_methods.add(item.name.lower())
                 elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                     current_functions.add(node.name.lower())
-            
+
             # Calculate similarity
             class_overlap = archived_classes & current_classes
             func_overlap = archived_functions & current_functions
             method_overlap = archived_methods & current_methods
-            
+
             if class_overlap or func_overlap or (len(method_overlap) > 3):
                 similarity_score = len(class_overlap) * 10 + len(func_overlap) * 5 + len(method_overlap)
                 similar.append({
@@ -245,7 +245,7 @@ def find_similar_in_codebase(analysis: FileAnalysis, current_dirs: List[str]) ->
                     'method_overlap': list(method_overlap)[:5],
                     'similarity_score': similarity_score
                 })
-    
+
     return sorted(similar, key=lambda x: -x['similarity_score'])[:5]
 
 def main():
@@ -262,26 +262,26 @@ def main():
         'archives/Reachout Engine Archive/Agentic LIC/workflow_LIC.py',
         'archives/Reachout Engine Archive/Agentic LIC/state_manager_LIC.py',
     ]
-    
+
     current_dirs = ['agentic_core', 'apps_rg', 'apps_lic', 'apps_shared']
-    
+
     print('=' * 80)
     print('ADVANCED AST-BASED ARCHIVE ANALYSIS')
     print('=' * 80)
-    
+
     results = []
-    
+
     for archive_path in archive_files:
         path = Path(archive_path)
         if not path.exists():
             print(f"\n[NOT FOUND] {archive_path}")
             continue
-        
+
         analysis = analyze_file(path)
         if not analysis:
             print(f"\n[PARSE ERROR] {archive_path}")
             continue
-        
+
         print(f"\n{'=' * 80}")
         print(f"FILE: {path.name}")
         print(f"{'=' * 80}")
@@ -289,7 +289,7 @@ def main():
         print(f"  Purpose:    {analysis.purpose[:70]}")
         print(f"  LOC:        {analysis.loc}")
         print(f"  Complexity: {analysis.complexity}")
-        
+
         if analysis.classes:
             print(f"\n  CLASSES ({len(analysis.classes)}):")
             for cls in analysis.classes:
@@ -300,18 +300,18 @@ def main():
                 print(f"      Methods: {[m['name'] for m in cls['methods'][:5]]}")
                 if cls['docstring']:
                     print(f"      Doc: {cls['docstring'][:60]}...")
-        
+
         if analysis.functions:
             print(f"\n  FUNCTIONS ({len(analysis.functions)}):")
             for func in analysis.functions[:8]:
                 print(f"    - {func['name']}({', '.join(func['params'][:3])})")
-        
+
         if analysis.external_deps:
             print(f"\n  EXTERNAL DEPS: {analysis.external_deps[:5]}")
-        
+
         if analysis.internal_deps:
             print(f"  INTERNAL DEPS: {analysis.internal_deps[:5]}")
-        
+
         # Find similar in current codebase
         similar = find_similar_in_codebase(analysis, current_dirs)
         if similar:
@@ -321,7 +321,7 @@ def main():
                 print(f"      Score: {s['similarity_score']}, Classes: {s['class_overlap']}, Funcs: {s['func_overlap'][:3]}")
         else:
             print(f"\n  NO SIMILAR FILES FOUND - UNIQUE FUNCTIONALITY")
-        
+
         # Recommendation
         print(f"\n  RECOMMENDATION:")
         if not similar:
@@ -339,30 +339,30 @@ def main():
         else:
             print(f"    REVIEW - Partial overlap with: {similar[0]['file']}")
             print(f"    Reason: May contain unique methods/logic worth merging")
-        
+
         results.append({
             'path': archive_path,
             'analysis': analysis,
             'similar': similar
         })
-    
+
     # Summary
     print("\n" + "=" * 80)
     print("SUMMARY")
     print("=" * 80)
-    
+
     restore = [r for r in results if not r['similar']]
     skip = [r for r in results if r['similar'] and r['similar'][0]['similarity_score'] > 20]
     review = [r for r in results if r['similar'] and r['similar'][0]['similarity_score'] <= 20]
-    
+
     print(f"\n  RESTORE (unique functionality): {len(restore)}")
     for r in restore:
         print(f"    - {Path(r['path']).name} [{r['analysis'].domain}]")
-    
+
     print(f"\n  SKIP (exists in codebase): {len(skip)}")
     for r in skip:
         print(f"    - {Path(r['path']).name} -> {Path(r['similar'][0]['file']).name}")
-    
+
     print(f"\n  REVIEW (partial overlap): {len(review)}")
     for r in review:
         print(f"    - {Path(r['path']).name} (score: {r['similar'][0]['similarity_score']})")

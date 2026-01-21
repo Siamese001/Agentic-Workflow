@@ -49,11 +49,11 @@ if l2_core:
     print(f"  Hardened %: {l2_core['Hardened %']}")
     print(f"  MCP Capable %: {l2_core['MCP Capable %']}")
     print()
-    
+
     # Compare
     print("VALIDATION:")
     dashboard_mcp = l2_core['MCP Capable %']
-    
+
     if dashboard_mcp == 80.0:
         print("  ❌ STILL HARDCODED 80% - NOT FIXED")
     elif abs(dashboard_mcp - expected_mcp_pct) < 5:

@@ -56,12 +56,12 @@ class FissionResult:
 class FissionManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     L3 Orchestration Layer: Manages transition from healing to atomic fission.
-    
+
     Triggers when:
     1. L4 State: File exceeds line limit (Key 42 Violation)
     2. L5 Safety: Destructive mass deletion detected (>110 lines)
     3. L1 Cognition: Reasoning exhausted after 3+ rounds
-    
+
     Strategy:
     - Partition monoliths into 3 sub-modules
     - Preserve function signatures (backward compatibility)
@@ -72,7 +72,7 @@ class FissionManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     def __init__(self, gemini_client: Optional[Any]=None, line_limit: int=800, deletion_guardrail: int=110, max_rounds: int=3) -> None:
         """
         Initialize Fission Manager.
-        
+
         Args:
             gemini_client: Optional Gemini client (creates new if None)
             line_limit: L4 State line limit (Key 42)
@@ -102,13 +102,13 @@ class FissionManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     def should_trigger_fission(self, file_path: str, current_round: int, last_error: Optional[str]=None, lines_deleted: int=0) -> Tuple[bool, Optional[str]]:
         """
         Determines if L4 State requires partitioning based on L1/L5 signals.
-        
+
         Args:
             file_path: Path to file being healed
             current_round: Current healing round
             last_error: Last error message
             lines_deleted: Number of lines that would be deleted
-            
+
         Returns:
             Tuple of (should_trigger, reason)
         """
@@ -129,11 +129,11 @@ class FissionManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     def get_fission_prompt(self, file_name: str, content: str) -> str:
         """
         Generates the Atomic Fission prompt for SystemArchitect.
-        
+
         Args:
             file_name: Name of file to decompose
             content: File content
-            
+
         Returns:
             Fission prompt for Gemini
         """
@@ -144,12 +144,12 @@ class FissionManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     async def execute_fission(self, file_path: str, content: str, reason: str) -> FissionResult:
         """
         Execute atomic fission decomposition.
-        
+
         Args:
             file_path: Path to monolithic file
             content: File content
             reason: Reason for fission trigger
-            
+
         Returns:
             FissionResult with decomposed files
         """
@@ -176,11 +176,11 @@ class FissionManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     def _parse_fission_response(self, response: Any, original_file: str) -> Dict[str, str]:
         """
         Parse Gemini response to extract decomposed files.
-        
+
         Args:
             response: Gemini API response
             original_file: Original file path
-            
+
         Returns:
             Dictionary mapping file paths to content
         """
@@ -210,12 +210,12 @@ class FissionManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     def handle_architect_output(self, output_text: str, mission_type: str, current_target: Optional[str]=None) -> bool:
         """
         L3 Orchestrator: Decides how to write L1 Cognition results to L4 State.
-        
+
         Args:
             output_text: Output from SystemArchitect
             mission_type: "ATOMIC_FISSION" or "HEALING"
             current_target: Current file being processed
-            
+
         Returns:
             True if successful, False otherwise
         """
@@ -252,10 +252,10 @@ class FissionManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     def write_decomposed_files(self, result: FissionResult) -> bool:
         """
         Write decomposed files to disk.
-        
+
         Args:
             result: FissionResult with new files
-            
+
         Returns:
             True if successful, False otherwise
         """
@@ -278,18 +278,18 @@ class FissionManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     def heal(self, ctx: Any) -> Dict[str, Any]:
         """
         Healing method for canon validator integration.
-        
+
         Args:
             ctx: ValidationContext with target files and configuration
-            
+
         Returns:
             Dict with healing results
         """
         results = {"healed": 0, "failed": 0, "skipped": 0, "errors": []}
-        
+
         # Get files from context
         python_files = getattr(ctx, 'python_files', [])
-        
+
         for file_path in python_files:
             try:
                 # Check if file needs fission
@@ -299,17 +299,17 @@ class FissionManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
                     last_error=None,
                     lines_deleted=0
                 )
-                
+
                 if trigger:
                     Logger.info(f"[FISSION] {file_path}: {reason}")
                     results["healed"] += 1
                 else:
                     results["skipped"] += 1
-                    
+
             except Exception as e:
                 results["failed"] += 1
                 results["errors"].append(f"{file_path}: {e}")
-        
+
         return results
 
     def run_validation(self, ctx: Any) -> Dict[str, Any]:
@@ -342,10 +342,10 @@ def get_fission_manager(gemini_client: Optional[Any]=None) -> FissionManagerAgen
     super().heal_repository()
 
     Factory function to create FissionManagerAgent instance.
-    
+
     Args:
         gemini_client: Optional Gemini client
-        
+
     Returns:
         FissionManagerAgent instance
     """

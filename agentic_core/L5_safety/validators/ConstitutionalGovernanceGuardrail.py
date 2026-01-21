@@ -51,13 +51,13 @@ class GovernanceResult:
 class ConstitutionalGovernanceGuardrail:
     """
     Consolidated Constitutional Governance Guardrail.
-    
+
     Provides unified constitutional AI with:
     - Constitutional principle enforcement
     - Governance rule checking
     - Oversight and audit trails
     """
-    
+
     def __init__(self):
         """Initialize constitutional governance guardrail."""
         self.enabled_rules: List[str] = [
@@ -65,7 +65,7 @@ class ConstitutionalGovernanceGuardrail:
             "governance",
             "oversight",
         ]
-        
+
         # Constitutional principles with detection patterns
         self.principle_checks = {
             ConstitutionalPrinciple.HARMLESSNESS: {
@@ -94,57 +94,57 @@ class ConstitutionalGovernanceGuardrail:
                 "weight": 0.8
             }
         }
-        
+
         # Audit log
         self.audit_log: List[Dict[str, Any]] = []
         self.audit_counter = 0
-        
+
         # Statistics
         self.reviews_performed = 0
         self.violations_found = 0
         self.revisions_suggested = 0
-    
+
     async def review(self, content: str, context: Optional[Dict[str, Any]] = None) -> GovernanceResult:
         """
         Review content for constitutional compliance.
-        
+
         Args:
             content: Content to review
             context: Optional context
-            
+
         Returns:
             GovernanceResult
         """
         self.reviews_performed += 1
         violations = []
-        
+
         # Apply constitutional review
         if "constitutional_review" in self.enabled_rules:
             violations.extend(self._check_principles(content))
-        
+
         # Apply governance rules
         if "governance" in self.enabled_rules:
             violations.extend(self._check_governance(content, context))
-        
+
         # Create audit trail
         audit_id = None
         if "oversight" in self.enabled_rules:
             audit_id = self._create_audit(content, violations)
-        
+
         self.violations_found += len(violations)
-        
+
         return GovernanceResult(
             compliant=len(violations) == 0,
             violations=violations,
             audit_id=audit_id,
             review_notes=self._generate_notes(violations)
         )
-    
+
     def _check_principles(self, content: str) -> List[PrincipleViolation]:
         """Check content against constitutional principles."""
         violations = []
         content_lower = content.lower()
-        
+
         for principle, config in self.principle_checks.items():
             for pattern in config["negative_patterns"]:
                 if pattern in content_lower:
@@ -156,13 +156,13 @@ class ConstitutionalGovernanceGuardrail:
                     ))
                     self.revisions_suggested += 1
                     break  # One violation per principle
-        
+
         return violations
-    
+
     def _check_governance(self, content: str, context: Optional[Dict[str, Any]]) -> List[PrincipleViolation]:
         """Check governance rules."""
         violations = []
-        
+
         # Check content length governance
         if len(content) > 10000:
             violations.append(PrincipleViolation(
@@ -170,14 +170,14 @@ class ConstitutionalGovernanceGuardrail:
                 severity="minor",
                 description="Content exceeds governance length limit"
             ))
-        
+
         return violations
-    
+
     def _create_audit(self, content: str, violations: List[PrincipleViolation]) -> str:
         """Create audit trail entry."""
         self.audit_counter += 1
         audit_id = f"audit_{self.audit_counter}_{int(time.time())}"
-        
+
         self.audit_log.append({
             "audit_id": audit_id,
             "timestamp": time.time(),
@@ -192,28 +192,28 @@ class ConstitutionalGovernanceGuardrail:
                 for v in violations
             ]
         })
-        
+
         return audit_id
-    
+
     def _generate_notes(self, violations: List[PrincipleViolation]) -> str:
         """Generate review notes."""
         if not violations:
             return "Content is compliant with constitutional principles."
-        
+
         notes = []
         for v in violations:
             notes.append(f"- {v.principle.value}: {v.description}")
-        
+
         return "\n".join(notes)
-    
+
     def revise_content(self, content: str, violations: List[PrincipleViolation]) -> str:
         """
         Suggest revised content based on violations.
-        
+
         Args:
             content: Original content
             violations: List of violations
-            
+
         Returns:
             Revised content suggestion
         """
@@ -221,11 +221,11 @@ class ConstitutionalGovernanceGuardrail:
         if violations:
             return f"[REVISED] {content}\n\n[Note: Content was flagged for potential issues with: {', '.join(v.principle.value for v in violations)}]"
         return content
-    
+
     def get_audit_log(self, limit: int = 100) -> List[Dict[str, Any]]:
         """Get recent audit log entries."""
         return self.audit_log[-limit:]
-    
+
     def get_statistics(self) -> Dict[str, Any]:
         """Get governance statistics."""
         return {

@@ -1,4 +1,4 @@
-# File: main_v10_7.py  
+# File: main_v10_7.py
 # Version: 10.7 (Refactored)
 #
 # v10.7 REFACTOR CHANGES:
@@ -42,9 +42,9 @@ def setup_logging(config: ConfigV10_7, debug_mode: bool = False):
     """Configure logging, now accepts a config object."""
     log_dir = os.path.dirname(config.logging_config.log_file)
     os.makedirs(log_dir, exist_ok=True)
-    
+
     level = logging.DEBUG if debug_mode else logging.INFO
-    
+
     logging.basicConfig(
         level=level,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -53,7 +53,7 @@ def setup_logging(config: ConfigV10_7, debug_mode: bool = False):
             logging.StreamHandler(sys.stdout) # v10.7: Log to stdout for streaming
         ]
     )
-    
+
     # Configure metrics logger
     metrics_log_path = config.logging_config.metrics_log_path
     metrics_logger = logging.getLogger("core_v10_7.MetricsCollector")
@@ -62,7 +62,7 @@ def setup_logging(config: ConfigV10_7, debug_mode: bool = False):
         metrics_logger.addHandler(logging.FileHandler(metrics_log_path))
     except (IOError, OSError) as e:
         logging.error(f"Failed to add file handler for metrics logger: {e}")
-    
+
     logger.info(f"v10.7 Logging initialized: {config.logging_config.log_file}")
     logger.info(f"v10.7 Metrics logging to: {metrics_log_path}")
 
@@ -87,25 +87,25 @@ async def run_workflow_async(
     enable_mcp: Optional[bool] = None
 ) -> Dict[str, Any]:
     """Run workflow asynchronously with v10.7 streaming and validation"""
-    
+
     logger.info(f"===== Starting v10.7 Instructional Injection Workflow =====")
-    
+
     job_input_data = load_job_input(job_input_path)
     master_resume = load_job_input(master_resume_path)
-    
+
     company = job_input_data.get('company_name', 'N/A')
     title = job_input_data.get('job_title', 'N/A')
-    
+
     logger.info(f"Job: {company} - {title}")
-    
+
     # --- v10.7: REFACTOR: COMPOSITION ROOT ---
     context = create_workflow_context(config, db=config.redis_config.db)
     # --- v10.7: REFACTOR END ---
 
     checkpointer = get_checkpointer(config)
-    
+
     app = get_graph_app(checkpointer, context, enable_hil=enable_hil, enable_mcp=enable_mcp)
-    
+
     workflow_id = str(uuid.uuid4())
     context.workflow_id = workflow_id
     run_config = {"configurable": {"thread_id": workflow_id}}
@@ -116,24 +116,24 @@ async def run_workflow_async(
     initial_state.job.company = job_input_data['company_name']
     initial_state.job.job_title = job_input_data['job_title']
     initial_state.metadata.workflow_id = workflow_id
-    
+
     state_dict = initial_state.to_dict()
-    
+
     logger.info(f"Workflow ID: {workflow_id}")
-    
+
     try:
         final_state_dict = None
-        
+
         # v10.7 (Fix #9): Use astream_events for real-time streaming
         current_node = ""
         print("\n--- Workflow Stream (v10.7) ---", flush=True)
-        
+
         async for event in app.astream_events(state_dict, run_config, version="v1"):
             kind = event["event"]
-            
+
             if kind == "on_graph_start":
                 logger.info(f"Graph execution started.")
-            
+
             if kind == "on_node_start":
                 current_node = event["data"]["name"]
                 logger.info(f"\n--- Executing Node: {current_node} ---")
@@ -144,47 +144,47 @@ async def run_workflow_async(
                 if chunk.content:
                     # Print the streaming token to stdout
                     print(chunk.content, end="", flush=True)
-            
+
             if kind == "on_node_end":
                 if current_node in event["data"]["output"]:
                     final_state_dict = event["data"]["output"][current_node]
-                
+
                 if current_node == "HIL_PAUSE":
                     print("\n", flush=True) # Newline after streaming
                     logger.warning("="*80)
                     logger.warning("🛑 WORKFLOW PAUSED: HUMAN INPUT REQUIRED 🛑")
                     logger.warning(f"Please review and provide feedback for: {workflow_id}")
                     logger.warning("="*80)
-            
+
             if kind == "on_graph_end":
                 final_state_dict = event["data"]["output"]
                 print("\n--- Workflow Stream Complete ---", flush=True)
 
         if final_state_dict is None:
             raise WorkflowError("Graph stream finished with no final state.")
-        
+
         # v10.7: Check for rejection
         if "REJECT_JOB" in final_state_dict:
              logger.error(f"Workflow {workflow_id} REJECTED.")
              raise WorkflowError("Workflow rejected, likely due to prompt injection.")
-        
+
         # v10.7 (Fix #30): Check for constitutional failure
         if "failed_constitution" in final_state_dict.get("qa", {}).get("constitutional_review", {}):
              logger.error(f"Workflow {workflow_id} FAILED CONSTITUTIONAL REVIEW.")
              raise WorkflowError("Workflow rejected due to constitutional failure.")
 
         final_state = MainGraphState.from_dict(final_state_dict)
-        
+
         cache_stats = context.cache_manager.get_stats()
         logger.info(f"Cache performance: {cache_stats}")
-        
+
         cost_summary = context.cost_tracker.get_cost_summary(workflow_id)
         logger.info(f"Total workflow cost: ${cost_summary['total_workflow_cost']:.4f}")
-        
+
         logger.info(f"--- Workflow Metrics Summary (v10.7) ---")
         for metric in context.metrics_collector.get_summary():
              logger.info(f"  - {metric['agent_name']}::{metric['task_name']} | {metric['duration_ms']:.2f}ms | Success: {metric['success']}")
-        
+
         # v10.7 REFACTOR: Call centralized cleanup helper
         cleanup_workflow_chroma_collection(context)
 
@@ -195,7 +195,7 @@ async def run_workflow_async(
             "cache_stats": cache_stats,
             "final_artifacts": final_state.artifacts.artifacts
         }
-        
+
     except Exception as e:
         logger.error(f"Workflow failed: {e}", exc_info=True)
         return {
@@ -203,7 +203,7 @@ async def run_workflow_async(
             "workflow_id": workflow_id,
             "error": str(e)
         }
-    
+
     finally:
         logger.info(f"===== v10.7 Workflow Complete =====")
 
@@ -218,18 +218,18 @@ def main():
     mcp_group = parser.add_mutually_exclusive_group()
     mcp_group.add_argument('--disable-mcp', action='store_true', help='Disable MCP wrapping even if config enables it')
     mcp_group.add_argument('--enable-mcp', action='store_true', help='Force enable MCP wrapping even if config disables it')
-    
+
     args = parser.parse_args()
-    
+
     # v10.7: Instantiate ConfigV10_7 here, ONCE.
     try:
         config = ConfigV10_7("master_config_v10_7.json")
     except Exception as e:
         print(f"FATAL: Failed to load master_config_v10_7.json: {e}", file=sys.stderr)
         sys.exit(1)
-    
+
     setup_logging(config, debug_mode=args.debug)
-    
+
     mcp_toggle: Optional[bool] = None
     if args.disable_mcp:
         mcp_toggle = False
@@ -244,7 +244,7 @@ def main():
         enable_hil=not args.no_hil,
         enable_mcp=mcp_toggle
     ))
-    
+
     print("\n" + "="*80)
     print(f"WORKFLOW RESULT: {result['status']}")
     print(f"Workflow ID: {result.get('workflow_id')}")
@@ -254,7 +254,7 @@ def main():
     else:
         print(f"Error: {result.get('error')}")
     print("="*80)
-    
+
     if result['status'] == 'SUCCESS':
         sys.exit(0)
     else:

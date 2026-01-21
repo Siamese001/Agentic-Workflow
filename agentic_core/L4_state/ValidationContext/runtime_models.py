@@ -81,42 +81,42 @@ class InjectionType(Enum):
     EXAMPLE_INJECTION = "example_injection"
     METADATA_ENRICHMENT = "metadata_enrichment"
     STRUCTURE_IMPROVEMENT = "structure_improvement"
-    
+
     # Instructional injection types - Framing Layer
     GOAL_STATE_ALIGNMENT = "goal_state_alignment"
     SUCCESS_CRITERIA_SPECIFICATION = "success_criteria_specification"
     TASK_MODE_SPECIFICATION = "task_mode_specification"
     SCOPE_BOUNDARY_DEFINITION = "scope_boundary_definition"
     COST_CONSTRAINT_SPECIFICATION = "cost_constraint_specification"
-    
+
     # Instructional injection types - Context Layer
     UNTRUSTED_WRAPPING_DETECTION = "untrusted_wrapping_detection"
     CANONICALIZATION_ENFORCEMENT = "canonicalization_enforcement"
     CONTEXTUAL_PRUNING = "contextual_pruning"
     CONSISTENCY_VALIDATION = "consistency_validation"
     ORDERING_PRESERVATION = "ordering_preservation"
-    
+
     # Instructional injection types - Reasoning Layer
     FAILURE_ANTICIPATION = "failure_anticipation"
     MULTI_BRANCH_REASONING = "multi_branch_reasoning"
     CONFIDENCE_CALIBRATION = "confidence_calibration"
     REASON_THEN_ANSWER = "reason_then_answer"
     ERROR_SIMULATION = "error_simulation"
-    
+
     # Instructional injection types - Tooling Layer
     FEEDBACK_LOOP_INTEGRATION = "feedback_loop_integration"
     EVIDENCE_BINDING = "evidence_binding"
     RECONCILIATION_ENFORCEMENT = "reconciliation_enforcement"
     SHADOW_VALIDATION = "shadow_validation"
     MODEL_AWARENESS = "model_awareness"
-    
+
     # Instructional injection types - Safety Layer
     INJECTION_SHIELDING = "injection_shielding"
     DATA_INSTRUCTION_SEPARATION = "data_instruction_separation"
     CONSTITUTIONAL_GUARDRAILS = "constitutional_guardrails"
     DELEGATION_GUARDS = "delegation_guards"
     ADVERSARIAL_MODE = "adversarial_mode"
-    
+
     # Instructional injection types - Output Layer
     JSON_ONLY_OUTPUT = "json_only_output"
     SCHEMA_ENFORCEMENT = "schema_enforcement"
@@ -143,7 +143,7 @@ class InjectionPattern(BaseModel):
     scope: InjectionScope = Field(default_factory=InjectionScope)
     priority: int = Field(default=0, ge=0, le=10)
     enabled: bool = True
-    
+
     class Config:
         use_enum_values = True
 

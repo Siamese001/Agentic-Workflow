@@ -26,14 +26,14 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 class BudgetAgent(SubatomicTestingMixin, SubAtomicAgent):
     """
     Budget enforcement agent for code complexity management.
-    
+
     Validates Canon Keys:
         - Key 17: No large functions (exceeding MAX_FUNCTION_LINES)
         - Key 19: No complex functions (exceeding MAX_CYCLOMATIC_COMPLEXITY)
-    
+
     Role:
         The Comptroller. Proactively marks functions exceeding size/complexity limits.
-    
+
     Attributes:
         ctx: ValidationContext for accessing python_files and reporting.
         name: Agent name for logging and reporting.
@@ -48,12 +48,12 @@ class BudgetAgent(SubatomicTestingMixin, SubAtomicAgent):
     ) -> Dict[str, int]:
         """
         Execute autonomous healing for Canon Key 51 compliance.
-        
+
         Args:
             dry_run: If True, only report violations without fixing.
             execute: If True, apply fixes to detected violations.
             **kwargs: Additional healing parameters passed to parent.
-        
+
         Returns:
             Dict with keys: violations, fixed, errors.
         """
@@ -74,10 +74,10 @@ class BudgetAgent(SubatomicTestingMixin, SubAtomicAgent):
 
     def _parse_file_safe(self, fp: str) -> Tuple[ast.AST, None] | Tuple[None, str]:
         """Safely parse a Python file into AST.
-        
+
         Args:
             fp: File path to parse.
-            
+
         Returns:
             Tuple of (tree, None) on success or (None, error_msg) on failure.
         """
@@ -95,13 +95,13 @@ class BudgetAgent(SubatomicTestingMixin, SubAtomicAgent):
         self, fp: str, tree: ast.AST, checker: callable, formatter: callable
     ) -> List[str]:
         """Check all functions in a file using provided checker and formatter.
-        
+
         Args:
             fp: File path for violation messages.
             tree: Parsed AST tree.
             checker: Function(node) -> bool, returns True if violation.
             formatter: Function(fp, node, value) -> str, formats violation message.
-            
+
         Returns:
             List of violation messages.
         """
@@ -115,9 +115,9 @@ class BudgetAgent(SubatomicTestingMixin, SubAtomicAgent):
 
     def check_key_17_no_large_functions(self) -> Tuple[bool, List[str]]:
         """Check for functions exceeding maximum line count.
-        
+
         The limit is configurable via MAX_FUNCTION_LINES env var (default: 50).
-        
+
         Returns:
             Tuple of (passed: bool, violations: List[str]).
         """
@@ -141,9 +141,9 @@ class BudgetAgent(SubatomicTestingMixin, SubAtomicAgent):
 
     def check_key_19_no_complex_functions(self) -> Tuple[bool, List[str]]:
         """Check for functions exceeding maximum cyclomatic complexity.
-        
+
         The limit is configurable via MAX_CYCLOMATIC_COMPLEXITY env var (default: 10).
-        
+
         Returns:
             Tuple of (passed: bool, violations: List[str]).
         """
@@ -168,12 +168,12 @@ class BudgetAgent(SubatomicTestingMixin, SubAtomicAgent):
     def _calculate_complexity(self, node: ast.FunctionDef) -> int:
         """
         Calculate simplified cyclomatic complexity for a function AST node.
-        
+
         Complexity increments for: if, for, while, except, elif, and, or.
-        
+
         Args:
             node: AST FunctionDef node to analyze.
-            
+
         Returns:
             Integer complexity score (minimum 1 for the function itself).
         """

@@ -93,7 +93,7 @@ class ImportUpdater(ast.NodeVisitor):
     def __init__(self, target_symbols: Optional[Set[str]] = None) -> None:
         """
         Initialize import updater.
-        
+
         Args:
             target_symbols: Optional set of symbols to track
         """
@@ -149,18 +149,18 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
         self.dry_run = dry_run
         self.backup_dir = self.project_root / "runtime" / "backups"
         self.archives_root = self.project_root / "runtime" / "archives"
-        
+
         # [HARDENING 12] Staging directory for atomic healing operations
         self.staging_dir: Optional[Path] = None
         self.staging_active = False
         self.staged_changes: List[Dict[str, Any]] = []
-        
+
         self.moves_applied = self.fissions_applied = self.fusions_applied = self.imports_cleaned = 0
         self.NamingAgent = NamingAgent(self.project_root)
-        
+
         # [CANON COMPLIANCE] ChangeTracker for sovereign healing audit trail
         self.change_tracker = ChangeTracker()
-        
+
         # Tree-sitter setup for AST-based diff application
         self.ts_parser = None
         if TREE_SITTER_AVAILABLE:
@@ -188,7 +188,7 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
             self.metrics = MetricsAgent(project_root)
         except ImportError:
             self.tracing = self.telemetry = self.metrics = None
-        
+
         # [HARDENING 9] Initialize audit Logger
         if AUDIT_LOGGER_AVAILABLE:
             self.audit = AuditLogger(project_root)
@@ -204,14 +204,14 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
             self.location_agent = LocationAgent(self.project_root)
         except ImportError:
             self.location_agent = None
-        
+
         # HierarchyAgent for structure validation after heals
         try:
             from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
             self.hierarchy_agent = HierarchyAgent(self.project_root)
         except ImportError:
             self.hierarchy_agent = None
-        
+
         # ImportAgent for gravity compliance after heals
         try:
             from agentic_core.L5_safety.gravity.ImportAgent import ImportAgent
@@ -223,128 +223,128 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
             self.backup_dir.mkdir(parents=True, exist_ok=True)
             self.archives_root.mkdir(exist_ok=True)
             Logger.info(f"[HealerAgent] Backup initialized: {self.backup_dir}")
-    
+
     def enable_staging(self) -> None:
         """
         [HARDENING 12] Enable staging mode for atomic healing operations.
-        
+
         Creates a temporary staging directory where all heals are applied.
         Changes are only committed to the actual project on explicit commit.
         """
         if self.staging_active:
             Logger.warning("[HealerAgent] Staging already active")
             return
-        
+
         try:
             # Create staging directory
             self.staging_dir = Path(mkdtemp(prefix='sovereign_heal_staging_'))
-            
+
             # Copy project structure (not full content, just directories)
             for root, dirs, files in os.walk(self.project_root):
                 root_path = Path(root)
-                
+
                 # Skip excluded directories
                 dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
-                
+
                 # Create corresponding directory in staging
                 rel_path = root_path.relative_to(self.project_root)
                 staging_path = self.staging_dir / rel_path
                 staging_path.mkdir(parents=True, exist_ok=True)
-            
+
             self.staging_active = True
             self.staged_changes = []
             Logger.info(f"[HealerAgent] Staging enabled: {self.staging_dir}")
             print(f"   [STAGING] Enabled at {self.staging_dir}")
-            
+
         except Exception as e:
             Logger.error(f"[HealerAgent] Failed to enable staging: {e}")
             self.staging_dir = None
             self.staging_active = False
-    
+
     def commit_heals(self) -> Dict[str, Any]:
         """
         [HARDENING 12] Commit staged heals to the actual project.
-        
+
         Atomically applies all staged changes with full backup.
-        
+
         Returns:
             Dict with commit results
         """
         if not self.staging_active or not self.staging_dir:
             Logger.warning("[HealerAgent] No staging to commit")
             return {"committed": False, "reason": "No staging active"}
-        
+
         try:
             # Create timestamped backup of entire project
             timestamp = int(time.time())
             backup_path = self.project_root.parent / f"{self.project_root.name}.bak.{timestamp}"
-            
+
             print(f"\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\n[STAGING] Committing {len(self.staged_changes)} changes...")
             print(f"   [BACKUP] Creating full backup at {backup_path.name}")
-            
+
             # Backup current state
             shutil.copytree(self.project_root, backup_path, dirs_exist_ok=True)
-            
+
             # Apply staged changes
             applied_count = 0
             for change in self.staged_changes:
                 try:
                     source = Path(change['staged_path'])
                     target = Path(change['original_path'])
-                    
+
                     if source.exists():
                         target.parent.mkdir(parents=True, exist_ok=True)
                         shutil.copy2(source, target)
                         applied_count += 1
                 except Exception as e:
                     Logger.error(f"Failed to apply change to {change['original_path']}: {e}")
-            
+
             print(f"   [OK] Applied {applied_count}/{len(self.staged_changes)} changes")
             print(f"   [BACKUP] Backup preserved at {backup_path}")
-            
+
             # Clean up staging
             self._cleanup_staging()
-            
+
             return {
                 "committed": True,
                 "changes_applied": applied_count,
                 "backup_path": str(backup_path)
             }
-            
+
         except Exception as e:
             Logger.error(f"[HealerAgent] Commit failed: {e}")
             return {"committed": False, "reason": str(e)}
-    
+
     def rollback(self) -> Dict[str, Any]:
         """
         [HARDENING 12] Discard all staged heals without applying.
-        
+
         Returns:
             Dict with rollback results
         """
         if not self.staging_active or not self.staging_dir:
             Logger.warning("[HealerAgent] No staging to rollback")
             return {"rolled_back": False, "reason": "No staging active"}
-        
+
         try:
             changes_count = len(self.staged_changes)
-            
+
             print(f"\n[STAGING] Rolling back {changes_count} staged changes...")
-            
+
             # Clean up staging
             self._cleanup_staging()
-            
+
             print(f"   [OK] Rollback complete - no changes applied to project")
-            
+
             return {
                 "rolled_back": True,
                 "changes_discarded": changes_count
             }
-            
+
         except Exception as e:
             Logger.error(f"[HealerAgent] Rollback failed: {e}")
             return {"rolled_back": False, "reason": str(e)}
-    
+
     def _cleanup_staging(self) -> None:
         """
         Clean up staging directory and reset state.
@@ -354,56 +354,56 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
                 shutil.rmtree(self.staging_dir)
             except Exception as e:
                 Logger.error(f"Failed to clean up staging directory: {e}")
-        
+
         self.staging_dir = None
         self.staging_active = False
         self.staged_changes = []
-    
+
     def _get_working_path(self, file_path: Path) -> Path:
         """
         [HARDENING 12] Get the working path for a file (staged or actual).
-        
+
         Args:
             file_path: Original file path
-            
+
         Returns:
             Path to work on (staged if staging active, otherwise original)
         """
         if not self.staging_active or not self.staging_dir:
             return file_path
-        
+
         try:
             rel_path = file_path.relative_to(self.project_root)
             staged_path = self.staging_dir / rel_path
-            
+
             # Copy original file to staging if not already there
             if not staged_path.exists() and file_path.exists():
                 staged_path.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(file_path, staged_path)
-            
+
             return staged_path
-            
+
         except ValueError:
             # File outside project root
             return file_path
-    
+
     def _track_staged_change(self, original_path: Path, staged_path: Path) -> None:
         """
         Track a staged change for later commit.
-        
+
         Args:
             original_path: Original file path in project
             staged_path: Staged file path
         """
         if not self.staging_active:
             return
-        
+
         self.staged_changes.append({
             "original_path": str(original_path),
             "staged_path": str(staged_path),
             "timestamp": time.time()
         })
-    
+
     def _detect_layer(self, file_path: Path) -> str:
         """Detect which layer a file belongs to based on its path."""
         try:
@@ -413,7 +413,7 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
         except (ValueError, IndexError):
             pass
         return 'unknown'
-    
+
     def _get_layer_directory(self, file_path: Path) -> Optional[Path]:
         """Get the layer directory for a file (e.g., agentic_core/L5_safety)."""
         if self._detect_layer(file_path) == 'unknown':
@@ -454,7 +454,7 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
             # Extract target path and create action
             target_path = self._resolve_target_path(file_path, msg)
             action = self._create_move_action(file_path, target_path, msg)
-            
+
             # Execute move if applicable
             if target_path.exists():
                 action["reason"] += " [BLOCKED: target exists]"
@@ -467,11 +467,11 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
             actions.append(action)
 
         return actions
-    
+
     def _has_move_guidance(self, msg: str) -> bool:
         """Check if message contains move guidance."""
         return "Suggested placement:" in msg or "Invalid depth" in msg
-    
+
     def _resolve_target_path(self, file_path: Path, msg: str) -> Path:
         """Resolve target path from guidance message."""
         if "Suggested placement:" in msg:
@@ -482,9 +482,9 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
             rel = file_path.relative_to(self.project_root)
             parts = list(rel.parts)
             target_str = "/".join(parts[:3]) if len(parts) >= 3 else parts[0]
-        
+
         return self.project_root / target_str / file_path.name
-    
+
     def _create_move_action(self, file_path: Path, target_path: Path, msg: str) -> Dict[str, Any]:
         """Create move action dictionary."""
         return {
@@ -494,7 +494,7 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
             "reason": msg,
             "applied": False
         }
-    
+
     def _execute_file_move(self, file_path: Path, target_path: Path, msg: str, action: Dict[str, Any]) -> None:
         """Execute file move with tracking and audit logging."""
         try:
@@ -504,13 +504,13 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
             action["applied"] = True
             self.moves_applied += 1
             Logger.info(f"[HEALED] Moved {file_path.name} -> {target_path.parent}/")
-            
+
             # Track change and log
             self._track_move_change(file_path, target_path, msg)
-            
+
         except Exception as e:
             action["reason"] += f" [FAILED: {e}]"
-    
+
     def _track_move_change(self, file_path: Path, target_path: Path, msg: str) -> None:
         """Track move change for audit trail."""
         # [CANON COMPLIANCE] Track change for sovereign audit trail
@@ -519,7 +519,7 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
             file_path=target_path,
             description=f"Moved from {file_path} (reason: {msg[:50]}...)"
         )
-        
+
         # [HARDENING 9] Log structural change
         if self.audit:
             self.audit.log_structural_change(
@@ -540,7 +540,7 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
                 continue
 
             action = self._create_import_action(file_path)
-            
+
             if self.dry_run:
                 action["removed"] = [m.split(": ")[-1] for m in unused]
                 action["applied"] = True
@@ -550,7 +550,7 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
             actions.append(action)
 
         return actions
-    
+
     def _create_import_action(self, file_path: Path) -> Dict[str, Any]:
         """Create import cleaning action dictionary."""
         return {
@@ -559,21 +559,21 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
             "removed": [],
             "applied": False
         }
-    
+
     def _remove_unused_imports(self, file_path: Path, unused: List[str], action: Dict[str, Any]) -> None:
         """Remove unused imports from file."""
         try:
             self._backup_file(file_path)
             content = file_path.read_text(encoding="utf-8")
             lines = content.splitlines()
-            
+
             new_lines = self._filter_import_lines(lines, unused, action)
-            
+
             if action["removed"]:
                 file_path.write_text("\n".join(new_lines) + "\n", encoding="utf-8")
                 action["applied"] = True
                 self.imports_cleaned += len(action["removed"])
-                
+
                 # [CANON COMPLIANCE] Track change for sovereign audit trail
                 self.change_tracker.record(
                     agent="HealerAgent — Import Cleaner",
@@ -583,7 +583,7 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
 
         except Exception as e:
             action["reason"] = str(e)
-    
+
     def _filter_import_lines(self, lines: List[str], unused: List[str], action: Dict[str, Any]) -> List[str]:
         """Filter out unused import lines."""
         new_lines = []
@@ -591,7 +591,7 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
             if self._should_keep_line(line, unused, action):
                 new_lines.append(line)
         return new_lines
-    
+
     def _should_keep_line(self, line: str, unused: List[str], action: Dict[str, Any]) -> bool:
         """Check if line should be kept (not an unused import)."""
         for u in unused:
@@ -607,7 +607,7 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
             tree = ast.parse(content)
         except (SyntaxError, ValueError):
             return set()
-        symbols = {node.name for node in ast.walk(tree) 
+        symbols = {node.name for node in ast.walk(tree)
                    if isinstance(node, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef))
                    and not node.name.startswith("_")}
         return symbols
@@ -675,16 +675,16 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
         except SyntaxError:
             return False
 
-    def _apply_structural_patch(self, original_content: str, patch_content: str, 
+    def _apply_structural_patch(self, original_content: str, patch_content: str,
                                mode: str = 'replace', anchor: str = '') -> str:
         """Apply patch semantically using AST matching.
-        
+
         Args:
             original_content: Original file content
             patch_content: Patch to apply
             mode: 'replace', 'insert', or 'move'
             anchor: Anchor point (e.g., 'def old_func')
-            
+
         Returns:
             Updated content with patch applied
         """
@@ -693,25 +693,25 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
             if not self._validate_ast_integrity(original_content):
                 Logger.warning("Original content has syntax errors; using string fallback")
                 return self._string_fallback_patch(original_content, patch_content, mode, anchor)
-            
+
             if patch_content and not self._validate_ast_integrity(patch_content):
                 Logger.warning("Patch content has syntax errors; using string fallback")
                 return self._string_fallback_patch(original_content, patch_content, mode, anchor)
-            
+
             # Parse both trees
             orig_tree = ast.parse(original_content)
             patch_tree = ast.parse(patch_content) if patch_content else None
-            
+
             # For replace mode: Find and replace matching node
             if mode == 'replace' and anchor:
                 lines = original_content.splitlines()
                 new_lines = []
                 skip_until = -1
-                
+
                 for i, line in enumerate(lines):
                     if i < skip_until:
                         continue
-                    
+
                     # Check if this line matches anchor
                     if anchor in line:
                         # Add patch content
@@ -720,12 +720,12 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
                         skip_until = self._find_block_end(lines, i)
                     else:
                         new_lines.append(line)
-                
+
                 return '\n'.join(new_lines)
-            
+
             # For other modes, use string fallback
             return self._string_fallback_patch(original_content, patch_content, mode, anchor)
-            
+
         except Exception as e:
             Logger.warning(f"Structural patch failed: {e}; using string fallback")
             return self._string_fallback_patch(original_content, patch_content, mode, anchor)
@@ -734,11 +734,11 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
         """Find the end of a code block (function/class) starting at start_idx."""
         if start_idx >= len(lines):
             return start_idx
-        
+
         # Get indentation of start line
         start_line = lines[start_idx]
         base_indent = len(start_line) - len(start_line.lstrip())
-        
+
         # Find next line with same or less indentation
         for i in range(start_idx + 1, len(lines)):
             line = lines[i]
@@ -746,7 +746,7 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
                 indent = len(line) - len(line.lstrip())
                 if indent <= base_indent:
                     return i
-        
+
         return len(lines)
 
     def _string_fallback_patch(self, original: str, patch: str, mode: str, anchor: str) -> str:
@@ -762,7 +762,7 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
                     else:
                         new_lines.append(line)
                 return '\n'.join(new_lines)
-        
+
         # Default: return patch or original
         return patch if patch else original
 
@@ -781,7 +781,7 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
                         break
                 except Exception:
                     continue
-        
+
         guidance = "agentic_core/utils"
         if combined_preview.strip():
             guidance = self.NamingAgent.get_placement_guidance(combined_preview)
@@ -794,10 +794,10 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
         lower_preview = combined_preview.lower()
         strong_signals = ["engine", "manager", "handler", "validator", "strategy", "orchestrator", "guardian"]
         matched_signal = next((kw for kw in strong_signals if kw in lower_preview), None)
-        
+
         merged_name = f"{matched_signal}.py" if matched_signal else f"{suggested_domain}.py"
         naming_source = f"Strong keyword: {matched_signal}" if matched_signal else "NamingAgent guidance"
-        
+
         return merged_name, naming_source, guidance if combined_preview else "N/A", matched_signal or ""
 
     def heal_deletions(self, dead_files: List[Path]) -> List[Dict[str, Any]]:
@@ -806,9 +806,9 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
         for file_path in dead_files:
             if self.deletions_applied >= self.max_deletions:
                 break
-            
+
             action = {"type": "DELETE_DEAD", "file": str(file_path), "applied": False}
-            
+
             if self.dry_run:
                 action["applied"] = True
                 action["note"] = "DRY-RUN"
@@ -819,7 +819,7 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
                     action["applied"] = True
                     self.deletions_applied += 1
                     Logger.info(f"[DELETED] Pruned dead file: {file_path.name}")
-                    
+
                     # [CANON COMPLIANCE] Track change for sovereign audit trail
                     self.change_tracker.record(
                         agent="HealerAgent — Dead Code Pruner",
@@ -828,21 +828,21 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
                     )
                 except Exception as e:
                     action["reason"] = str(e)
-            
+
             actions.append(action)
         return actions
 
     def _find_cross_directory_consumers(self, old_modules: List[str], moved_symbols: Set[str], scope_dirs: Optional[List[Path]] = None) -> List[Path]:
         """
         Search for files using moved symbols, optionally scoped to specific directories.
-        
+
         Args:
             old_modules: List of old module names being replaced
             moved_symbols: Set of symbols that were moved
             scope_dirs: Optional list of directories to limit search scope
         """
         consumers = []
-        
+
         # [HARDENING] Phase 4.1: Use ssot_discovery instead of rglob
         from agentic_core.utils.ssot_discovery import get_python_files
         if scope_dirs:
@@ -858,7 +858,7 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
             # Performance & Safety: Skip excluded territories (venv, git, etc)
             if any(ex in file_path.parts for ex in SOVEREIGN_EXCLUDED_FOLDERS):
                 continue
-            
+
             # Skip the source/target modules being mutated
             if file_path.stem in old_modules:
                 continue
@@ -912,7 +912,7 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
                     action["applied"] = True
                     action["added_imports"].append(import_stmt.strip())
                     Logger.info(f"[CROSS_IMPORT] Updated {consumer_path.name}")
-                
+
                 actions.append(action)
             except Exception as e:
                 Logger.error(f"Cross-import update failed for {consumer_path}: {e}")
@@ -925,7 +925,7 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
         """
         actions = []
         new_module_name = new_file.stem
-        
+
         # [HARDENING] Restrict scan to layer directory only
         layer_dir = self._get_layer_directory(new_file)
         if layer_dir and layer_dir != affected_dir:
@@ -939,7 +939,7 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
         from agentic_core.utils.ssot_discovery import get_python_files
         for consumer_path in get_python_files(scan_dir):
             if consumer_path in old_files or consumer_path == new_file:
-                continue 
+                continue
 
             try:
                 content = consumer_path.read_text(encoding="utf-8")
@@ -996,11 +996,11 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
             tree = ast.parse(content)
         except SyntaxError:
             return []
-            
+
         # Collect end line numbers for all top-level structures
-        points = [node.end_lineno for node in ast.walk(tree) 
+        points = [node.end_lineno for node in ast.walk(tree)
                  if isinstance(node, (ast.ClassDef, ast.FunctionDef)) and node.end_lineno]
-        
+
         return sorted(set(p for p in points if p))
 
     def heal_fission(self, large_files: List[Path]) -> List[Dict[str, Any]]:
@@ -1018,7 +1018,7 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
                 # [HARDENING] Detect layer and validate fission is allowed
                 layer = self._detect_layer(file_path)
                 layer_dir = self._get_layer_directory(file_path)
-                
+
                 if layer == 'unknown' or not layer_dir:
                     actions.append({
                         "type": "FISSION_BLOCKED",
@@ -1027,7 +1027,7 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
                     })
                     Logger.warning(f"[FISSION_BLOCKED] {file_path.name} not in layer structure")
                     continue
-                
+
                 lines = file_path.read_text(encoding="utf-8").splitlines(keepends=True)
                 if len(lines) <= MAX_LINES_PER_FILE:
                     continue
@@ -1068,15 +1068,15 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
                     stem = file_path.stem
                     chunk_symbols_map = []
                     new_files_created = []
-                    
+
                     # [HARDENING] Ensure all fission targets stay within layer directory
                     allowed_target_dir = layer_dir
-                    
+
                     for i in range(len(valid_splits)):
                         start = valid_splits[i]
                         end = valid_splits[i+1] if i+1 < len(valid_splits) else len(lines)
                         chunk_content = "".join(lines[start:end])
-                        
+
                         if i == 0:
                             # Original file retains the first chunk
                             file_path.write_text(chunk_content, encoding="utf-8")
@@ -1084,11 +1084,11 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
                             new_name = f"{stem}_part{i+1}.py"
                             # [HARDENING] Validate target stays in same layer
                             new_path = file_path.parent / new_name
-                            
+
                             if not new_path.is_relative_to(allowed_target_dir):
                                 Logger.error(f"[FISSION_BLOCKED] Target {new_path} outside layer {layer}")
                                 raise ValueError(f"Fission target outside allowed layer directory: {layer}")
-                            
+
                             new_path.write_text(chunk_content, encoding="utf-8")
                             action["new_files"].append(str(new_path))
                             new_files_created.append(str(new_path))
@@ -1096,25 +1096,25 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
                             symbols = self._extract_symbols(chunk_content)
                             if symbols:
                                 chunk_symbols_map.append((new_path, symbols))
-                    
+
                     # [HARDENING] Execute import remediation scoped to layer only
                     for n_path, syms in chunk_symbols_map:
                         updates = self._update_imports_after_change(file_path.parent, [file_path], n_path, syms)
                         action["import_updates"].extend(updates)
-                        
+
                         # [HARDENING] Cross-directory remediation limited to same layer + direct dependents
                         allowed_scan_dirs = [layer_dir]
                         cross_updates = self._update_imports_cross_directory(
-                            [file_path.stem], 
-                            str(n_path), 
+                            [file_path.stem],
+                            str(n_path),
                             syms
                         )
                         action["import_updates"].extend(cross_updates)
-                    
+
                     action["applied"] = True
                     self.fissions_applied += 1
                     Logger.info(f"[FISSION] Split {file_path.name} into {len(valid_splits)} modules")
-                    
+
                     # [CANON COMPLIANCE] Track change for sovereign audit trail
                     self.change_tracker.record(
                         agent="HealerAgent — Fission Surgeon",
@@ -1127,7 +1127,7 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
                             file_path=new_file,
                             description=f"Created as fission fragment from {file_path.name}"
                         )
-                    
+
                     # [HARDENING 9] Log structural change
                     if self.audit:
                         self.audit.log_structural_change(
@@ -1156,14 +1156,14 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
     def heal_all(self, violations: List[Tuple[Path, str]], large_files: List[Path] = None, dust_files: List[Path] = None, dead_files: List[Path] = None) -> Dict[str, Any]:
         """Orchestrate all healing actions with tracing and telemetry."""
         trace_ctx = self.tracing.create_span("healing_mission") if self.tracing else nullcontext()
-        
+
         with trace_ctx as Span:
             if Span:
                 Span.set_attribute("violations_in", len(violations))
                 Span.set_attribute("large_files", len(large_files or []))
 
             move_violations = [v for v in violations if "VIOLATION" in v[1] and ("depth" in v[1].lower() or "placement" in v[1].lower())]
-            import_violations = [] 
+            import_violations = []
             large_files = large_files or []
             dust_files = dust_files or []
             dead_files = dead_files or []
@@ -1184,7 +1184,7 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
                     results["import_updates"].extend(op["import_updates"])
 
             results["total_actions"] = sum([len(results[k]) for k in ["moves", "imports_cleaned", "fissions", "deletions", "import_updates"]])
-            
+
             # Final Observability Dispatch
             if self.telemetry:
                 self.telemetry.emit("healing.mission_completed", details={"total": results["total_actions"]})
@@ -1217,13 +1217,13 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
             "large_files_flagged": 0,
             "healing_available": True
         }
-        
+
         # Phase 4.1: Use ssot_discovery instead of rglob
         from agentic_core.utils.ssot_discovery import get_python_files
         for py_file in get_python_files(self.project_root):
             if any(ex in py_file.parts for ex in SOVEREIGN_EXCLUDED_FOLDERS):
                 continue
-            
+
             results["scanned"] += 1
             try:
                 content = py_file.read_text(encoding="utf-8")
@@ -1232,7 +1232,7 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
                     results["large_files_flagged"] += 1
             except Exception:
                 continue
-        
+
         return results
 
     # ==================== GOLD STANDARD METHODS (2026-01-02) ====================
@@ -1249,7 +1249,7 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
             py_files = [p for p in affected_paths if p.suffix == ".py" and p.exists()]
             violations = self.location_agent.run(py_files)
             report["location_violations"] = len(violations) if violations else 0
-            
+
             if not violations:
                 report["location_status"] = "FULL_SUCCESS"
                 report["message"] = f"All {len(py_files)} files location-compliant"
@@ -1274,7 +1274,7 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
             violations = self.hierarchy_agent.run()
             relevant = [v for v in violations if any(str(p) in str(v[0]) for p in affected_paths)]
             report["hierarchy_violations"] = len(relevant)
-            
+
             if not relevant:
                 report["hierarchy_status"] = "FULL_SUCCESS"
                 report["message"] = "All affected files hierarchy-compliant"
@@ -1299,7 +1299,7 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
             py_files = [p for p in affected_paths if p.suffix == ".py" and p.exists()]
             violations = self.import_agent.run(py_files)
             report["import_violations"] = len(violations)
-            
+
             if not violations:
                 report["import_status"] = "FULL_SUCCESS"
                 report["message"] = f"All {len(py_files)} files import-compliant"
@@ -1315,7 +1315,7 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
     def run_with_cleanup(self, dry_run: bool = True) -> Dict[str, Any]:
         """
         GOLD STANDARD WORKFLOW — Full healing with coordinated multi-agent validation.
-        
+
         Executes healing sweep and validates results with:
         1. LocationAgent for territory compliance
         2. HierarchyAgent for structure compliance
@@ -1323,7 +1323,7 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
         """
         # Run base healing sweep
         base_results = self.run()
-        
+
         # Collect affected paths from recent heals
         affected_paths = [
             Path(p) for p in self.change_tracker.get_all_paths()
@@ -1358,16 +1358,16 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
     @timeout(300)
     @standard_heal
     def heal_repository(
-        self, 
-        dry_run: bool = True, 
-        execute: bool = False, 
-        depth: int = 0, 
-        max_depth: int = 3, 
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
         _call_path: Optional[set] = None
     ) -> Dict[str, int]:
         """
         Sovereign structural healing - file relocation, fission/fusion, import sync.
-        
+
         WIRED CAPABILITIES:
         - heal_file_moves(): Relocate misplaced files per LocationAgent signals
         - heal_oversized_files(): Fission files > 800 LOC
@@ -1375,7 +1375,7 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
         """
         # CRITICAL FIRST: Shared HealerMixin chain
         super().heal_repository()
-        
+
         # Cycle detection
         if _call_path is None:
             _call_path = set()
@@ -1385,49 +1385,49 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
         if depth > max_depth:
             return {"errors": 1, "depth_limited": True}
         _call_path.add(agent_name)
-        
+
         # Phase 6.3: Use standardized HealResult keys
         violations_found = 0
         violations_fixed = 0
         errors = 0
-        
+
         try:
             # Enable staging for atomic operations
             if execute and not dry_run:
                 if hasattr(self, 'enable_staging'):
                     self.enable_staging()
-            
+
             # 1. Detect and heal file location violations
             if hasattr(self, 'heal_file_moves'):
                 location_result = self.heal_file_moves(dry_run=dry_run)
                 violations_found += location_result.get('violations_found', location_result.get('violations', 0))
                 violations_fixed += location_result.get('violations_fixed', location_result.get('fixed', 0))
-            
+
             # 2. Detect and heal oversized files (fission)
             # Defensive check: ensure method exists before call
             if hasattr(self, '_heal_oversized_files'):
                 fission_result = self._heal_oversized_files(dry_run=dry_run)
                 violations_found += fission_result.get('violations_found', fission_result.get('violations', 0))
                 violations_fixed += fission_result.get('violations_fixed', fission_result.get('fixed', 0))
-            
+
             # 3. Commit staged changes if executing
             if execute and not dry_run and getattr(self, 'staging_active', False):
                 if hasattr(self, 'commit_heals'):
                     commit_result = self.commit_heals()
                     if not commit_result.get('committed'):
                         errors += 1
-                        
+
         except Exception as e:
             Logger.error(f"[{agent_name}] Healing failed: {e}")
             errors += 1
             if getattr(self, 'staging_active', False) and hasattr(self, 'rollback'):
                 self.rollback()
-                
+
         finally:
             _call_path.discard(agent_name)
             if hasattr(self, '_cleanup_staging'):
                 self._cleanup_staging()
-        
+
         return {
             "violations_found": violations_found,
             "violations_fixed": violations_fixed,

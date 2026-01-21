@@ -21,7 +21,7 @@ class TestAgentCategorization(unittest.TestCase):
             "CheckerAgent",
             "AuditAgent",
         ]
-        
+
         for agent in test_agents:
             cat = self._categorize(agent)
             self.assertEqual(
@@ -40,7 +40,7 @@ class TestAgentCategorization(unittest.TestCase):
             "ReconcileAgent",
             "RestoreAgent",
         ]
-        
+
         for agent in test_agents:
             cat = self._categorize(agent)
             self.assertEqual(
@@ -62,7 +62,7 @@ class TestAgentCategorization(unittest.TestCase):
             "ImmuneAgent",
             "ThreatAgent",
         ]
-        
+
         for agent in test_agents:
             cat = self._categorize(agent)
             self.assertEqual(
@@ -84,7 +84,7 @@ class TestAgentCategorization(unittest.TestCase):
             "UnusedAgent",
             "PruneAgent",
         ]
-        
+
         for agent in test_agents:
             cat = self._categorize(agent)
             self.assertEqual(
@@ -104,7 +104,7 @@ class TestAgentCategorization(unittest.TestCase):
             "ImportAgent",
             "GravityAgent",
         ]
-        
+
         for agent in test_agents:
             cat = self._categorize(agent)
             self.assertEqual(
@@ -122,7 +122,7 @@ class TestAgentCategorization(unittest.TestCase):
             "ConductorAgent",
             "SchedulerAgent",
         ]
-        
+
         for agent in test_agents:
             cat = self._categorize(agent)
             self.assertEqual(
@@ -141,7 +141,7 @@ class TestAgentCategorization(unittest.TestCase):
             "LoggerAgent",
             "ReportingAgent",
         ]
-        
+
         for agent in test_agents:
             cat = self._categorize(agent)
             self.assertEqual(
@@ -159,7 +159,7 @@ class TestAgentCategorization(unittest.TestCase):
             "CoverageAgent",
             "VerificationAgent",
         ]
-        
+
         for agent in test_agents:
             cat = self._categorize(agent)
             self.assertEqual(
@@ -172,7 +172,7 @@ class TestAgentCategorization(unittest.TestCase):
         # HealerAgent should NOT be in Validation & Compliance
         cat = self._categorize("HealerValidator")
         self.assertNotEqual(cat, "Validation & Compliance")
-        
+
         # GuardianAgent should be Safety & Security, not Validation
         cat = self._categorize("GuardianAgent")
         self.assertEqual(cat, "Safety & Security")
@@ -182,14 +182,14 @@ class TestAgentCategorization(unittest.TestCase):
         folder = Path("c:/Git/Agentic-Workflow/agentic_core/L5_safety/guardrails")
         if folder.exists():
             categories = categorize_agents_for_dashboard(folder)
-            
+
             # Should have multiple categories
             self.assertGreater(len(categories), 1, "Should have multiple categories for 75 agents")
-            
+
             # Total agents should match
             total = sum(len(agents) for agents in categories.values())
             self.assertGreater(total, 10, "Should have >10 agents")
-            
+
             # Check for expected categories
             category_names = set(categories.keys())
             self.assertTrue(
@@ -202,10 +202,10 @@ class TestAgentCategorization(unittest.TestCase):
         folder = Path("c:/Git/Agentic-Workflow/agentic_core/L5_safety/validators")
         if folder.exists():
             categories = categorize_agents_for_dashboard(folder)
-            
+
             # Should have multiple categories
             self.assertGreater(len(categories), 1, "Should have multiple categories for 20 agents")
-            
+
             # Total agents should match
             total = sum(len(agents) for agents in categories.values())
             self.assertGreater(total, 10, "Should have >10 agents")
@@ -218,14 +218,14 @@ class TestAgentCategorization(unittest.TestCase):
         for agent in agents:
             cat = self._categorize(agent)
             categories[cat] = categories.get(cat, 0) + 1
-        
+
         # With only 3 agents, should have minimal categories
         self.assertLessEqual(len(categories), 3)
 
     def _categorize(self, agent_name: str) -> str:
         """Helper to categorize a single agent."""
         import re
-        
+
         patterns = [
             {
                 "name": "Validation & Compliance",
@@ -268,7 +268,7 @@ class TestAgentCategorization(unittest.TestCase):
                 "exclude": [r"Validator", r"Healer", r"Compliance"],
             },
         ]
-        
+
         for category in patterns:
             # Check exclude patterns
             excluded = False
@@ -278,12 +278,12 @@ class TestAgentCategorization(unittest.TestCase):
                     break
             if excluded:
                 continue
-            
+
             # Check include patterns
             for pattern in category["patterns"]:
                 if re.search(pattern, agent_name, re.IGNORECASE):
                     return category["name"]
-        
+
         return "Specialized Agents"
 
 
@@ -323,7 +323,7 @@ class TestDashboardDisplay(unittest.TestCase):
             {"class_name": "ValidationAgent"},
             {"class_name": "HealerAgent"},
         ]
-        
+
         categories = {}
         for agent in agents:
             name = agent["class_name"]
@@ -334,7 +334,7 @@ class TestDashboardDisplay(unittest.TestCase):
             else:
                 cat = "Other"
             categories[cat] = categories.get(cat, 0) + 1
-        
+
         self.assertEqual(categories.get("Validation & Compliance", 0), 2)
         self.assertEqual(categories.get("Self-Healing & Recovery", 0), 1)
 

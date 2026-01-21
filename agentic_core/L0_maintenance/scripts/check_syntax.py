@@ -11,10 +11,10 @@ def main():
     project_root = Path(__file__).parent.parent
     agent = UnifiedCodeValidatorAgent(project_root=project_root)
     result = agent.validate_repository()
-    
+
     print(f"Total errors: {result['total_violations']}")
     print()
-    
+
     for v in result.get('violations', []):
         print(f"{v.file_path}:{v.line_number}:{v.column} - {v.error_message}")
 

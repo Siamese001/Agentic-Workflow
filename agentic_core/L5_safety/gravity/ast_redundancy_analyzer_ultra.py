@@ -226,7 +226,7 @@ def main():
     print("─" * 80)
     agents = find_agents()
     print(f"Discovered {len(agents)} true PascalCase *Agent classes in agentic_core/")
-    
+
     # Count by layer
     layer_counts = defaultdict(int)
     for a in agents:
@@ -246,10 +246,10 @@ def main():
     print("  • Import removal")
     print("  • Long string normalization")
     print("\nGenerating SHA256 fingerprints...")
-    
+
     for agent in agents:
         agent.fingerprint, agent.normalized_source = generate_ultra_fingerprint(agent)
-    
+
     valid_fps = sum(1 for a in agents if not a.fingerprint.startswith("ERROR"))
     print(f"Successfully fingerprinted: {valid_fps}/{len(agents)} agents")
 
@@ -257,7 +257,7 @@ def main():
     print("\n" + "─" * 80)
     print("PHASE 3: EXACT DUPLICATE DETECTION")
     print("─" * 80)
-    
+
     fp_groups = defaultdict(list)
     for agent in agents:
         if not agent.fingerprint.startswith("ERROR") and agent.fingerprint != "NO_CLASS":
@@ -290,7 +290,7 @@ def main():
     print("\n" + "─" * 80)
     print("PHASE 4: NEAR-DUPLICATE ANALYSIS (>92% similarity)")
     print("─" * 80)
-    
+
     near = []
     agents_with_src = [a for a in agents if a.normalized_source]
     for i, a1 in enumerate(agents_with_src):
@@ -301,7 +301,7 @@ def main():
                     near.append((a1, a2, sim))
 
     near.sort(key=lambda x: -x[2])
-    
+
     if near:
         print(f"⚠️  FOUND {len(near)} near-duplicate pair(s):\n")
         for a1, a2, sim in near[:15]:
@@ -316,17 +316,17 @@ def main():
     print("\n" + "─" * 80)
     print("PHASE 5: COMPLETE AGENT FINGERPRINT REGISTRY")
     print("─" * 80)
-    
+
     print("\n┌" + "─" * 42 + "┬" + "─" * 8 + "┬" + "─" * 8 + "┬" + "─" * 18 + "┐")
     print("│ {:^40} │ {:^6} │ {:^6} │ {:^16} │".format("Agent Name", "Layer", "Methods", "Fingerprint"))
     print("├" + "─" * 42 + "┼" + "─" * 8 + "┼" + "─" * 8 + "┼" + "─" * 18 + "┤")
-    
+
     for agent in agents:
         fp_display = agent.fingerprint[:16] if len(agent.fingerprint) >= 16 else agent.fingerprint
         print("│ {:40} │ {:^6} │ {:^6} │ {:16} │".format(
             agent.name[:40], agent.layer, agent.method_count, fp_display
         ))
-    
+
     print("└" + "─" * 42 + "┴" + "─" * 8 + "┴" + "─" * 8 + "┴" + "─" * 18 + "┘")
 
     # SUMMARY
@@ -375,7 +375,7 @@ def main():
             for a1, a2, sim in near
         ]
     }
-    
+
     report_path = PROJECT_ROOT / "ast_redundancy_report_ultra.json"
     report_path.write_text(json.dumps(report, indent=2))
     print(f"\nJSON report saved to: {report_path}")

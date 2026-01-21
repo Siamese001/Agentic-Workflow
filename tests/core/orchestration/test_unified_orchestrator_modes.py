@@ -8,14 +8,14 @@ import pytest
 from unittest.mock import MagicMock, patch
 
 from agentic_core.L3_orchestration.UnifiedOrchestratorAgent import (
-    UnifiedOrchestratorAgent, 
+    UnifiedOrchestratorAgent,
     OrchestratorMode
 )
 
 
 class TestUnifiedOrchestratorModes:
     """Test suite for orchestrator mode-based execution."""
-    
+
     @pytest.fixture
     def orchestrator(self):
         """Create a UnifiedOrchestratorAgent instance."""
@@ -33,10 +33,10 @@ class TestUnifiedOrchestratorModes:
         """Test orchestrator initializes with specified mode."""
         healing_orch = UnifiedOrchestratorAgent(mode="healing")
         assert healing_orch.mode == OrchestratorMode.HEALING
-        
+
         compliance_orch = UnifiedOrchestratorAgent(mode="compliance")
         assert compliance_orch.mode == OrchestratorMode.COMPLIANCE
-        
+
         ssot_orch = UnifiedOrchestratorAgent(mode="ssot")
         assert ssot_orch.mode == OrchestratorMode.SSOT
 
@@ -49,14 +49,14 @@ class TestUnifiedOrchestratorModes:
         """Test that HEALING mode triggers healing flow."""
         orch = UnifiedOrchestratorAgent(mode="healing")
         result = orch.run_agent("TestAgent", dry_run=True)
-        
+
         assert result.metadata.get("mode") == "healing"
         assert "Healing operations" in result.message
 
     def test_run_agent_compliance_mode(self):
         """Test that COMPLIANCE mode triggers compliance flow with credential scan."""
         orch = UnifiedOrchestratorAgent(mode="compliance")
-        
+
         with patch('agentic_core.L5_safety.validators.CredentialScannerAgent.CredentialScannerAgent') as MockScanner:
             mock_scanner = MockScanner.return_value
             mock_scanner.scan_for_credentials.return_value = {
@@ -64,9 +64,9 @@ class TestUnifiedOrchestratorModes:
                 "summary": {"by_severity": {"high": 0}},
                 "recommendations": []
             }
-            
+
             result = orch.run_agent("TestAgent", dry_run=True)
-            
+
             assert result.metadata.get("mode") == "compliance"
             # Credential scan may be complete or error depending on import
             assert "credential_scan" in result.metadata
@@ -75,7 +75,7 @@ class TestUnifiedOrchestratorModes:
         """Test that SSOT mode triggers SSOT flow."""
         orch = UnifiedOrchestratorAgent(mode="ssot")
         result = orch.run_agent("TestAgent", dry_run=True)
-        
+
         assert result.metadata.get("mode") == "ssot"
         assert "SSOT compliance" in result.message
 
@@ -83,18 +83,18 @@ class TestUnifiedOrchestratorModes:
         """Test that FULL mode runs all operations."""
         orch = UnifiedOrchestratorAgent(mode="full")
         result = orch.run_agent("TestAgent", dry_run=True)
-        
+
         assert result.metadata.get("mode") == "full"
 
     def test_run_mission_with_multiple_agents(self):
         """Test run_mission coordinates multiple agents."""
         orch = UnifiedOrchestratorAgent(mode="unified")
-        
+
         result = orch.run_mission(
             agents=["Agent1", "Agent2", "Agent3"],
             dry_run=True
         )
-        
+
         assert result.total_agents == 3
         assert len(result.agent_results) == 3
         assert result.metadata.get("mode") == "unified"
@@ -112,7 +112,7 @@ class TestUnifiedOrchestratorModes:
     def test_validate_mission_with_valid_agents(self):
         """Test validate_mission returns True for available agents."""
         orch = UnifiedOrchestratorAgent()
-        
+
         try:
             # Get some available agents
             available = orch.get_available_agents()
@@ -127,7 +127,7 @@ class TestUnifiedOrchestratorModes:
     def test_dispatch_to_strategy(self):
         """Test dispatch routes to correct strategy."""
         orch = UnifiedOrchestratorAgent()
-        
+
         # Test dispatch with unknown domain
         result = orch.dispatch("unknown_domain", "action", {})
         assert result["status"] == "error"

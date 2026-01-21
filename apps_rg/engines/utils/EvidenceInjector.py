@@ -42,10 +42,10 @@ class EvidenceItem(BaseModel):
 
 class EvidenceInjector:
     """Injects evidence links into resume bullets."""
-    
+
     def __init__(self, max_links_per_bullet: int = 1, max_links_per_resume: int = 5):
         """Initialize evidence injector.
-        
+
         Args:
             max_links_per_bullet: Maximum links to inject per bullet
             max_links_per_resume: Maximum total links per resume
@@ -54,21 +54,21 @@ class EvidenceInjector:
         self.max_links_per_resume = max_links_per_resume
         self.evidence_library: List[EvidenceItem] = []
         self._links_used = 0
-        
+
         logger.info(f"Initialized EvidenceInjector (max {max_links_per_bullet}/bullet, {max_links_per_resume}/resume)")
-    
+
     def load_library(self, path: str) -> None:
         """Load evidence library from file.
-        
+
         Args:
             path: Path to JSON/YAML file containing evidence
         """
         file_path = Path(path)
-        
+
         if not file_path.exists():
             logger.warning(f"Evidence library file not found: {path}")
             return
-        
+
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 if file_path.suffix.lower() in ['.yaml', '.yml']:
@@ -76,118 +76,118 @@ class EvidenceInjector:
                     data = yaml.safe_load(f)
                 else:
                     data = json.load(f)
-            
+
             # Parse evidence items
             self.evidence_library = []
             for item_data in data.get('evidence', []):
                 # Convert type string to enum
                 if 'type' in item_data and isinstance(item_data['type'], str):
                     item_data['type'] = EvidenceType(item_data['type'])
-                
+
                 evidence = EvidenceItem(**item_data)
                 self.evidence_library.append(evidence)
-            
+
             logger.info(f"Loaded {len(self.evidence_library)} evidence items from {path}")
-            
+
         except Exception as e:
             logger.error(f"Failed to load evidence library: {e}")
             raise
-    
+
     def inject(self, bullets: List[str]) -> List[str]:
         """Inject evidence links into resume bullets.
-        
+
         Args:
             bullets: List of resume bullet points
-            
+
         Returns:
             Bullets with injected evidence links
         """
         if not self.evidence_library:
             logger.warning("No evidence library loaded")
             return bullets
-        
+
         injected_bullets = []
         self._links_used = 0
-        
+
         for bullet in bullets:
             if self._links_used >= self.max_links_per_resume:
                 # Reached max links, add remaining bullets as-is
                 injected_bullets.append(bullet)
                 continue
-            
+
             injected_bullet = self._inject_into_bullet(bullet)
             injected_bullets.append(injected_bullet)
-        
+
         logger.info(f"Injected {self._links_used} evidence links into {len(bullets)} bullets")
         return injected_bullets
-    
+
     def _inject_into_bullet(self, bullet: str) -> str:
         """Inject evidence links into a single bullet.
-        
+
         Args:
             bullet: Single resume bullet
-            
+
         Returns:
             Bullet with injected links
         """
         best_matches = self._find_best_matches(bullet)
-        
+
         if not best_matches:
             return bullet
-        
+
         # Take top match based on priority and relevance
         best_match = max(best_matches, key=lambda m: (m[1].priority, m[0]))
-        
+
         # Inject link
         evidence = best_match[1]
         similarity_score = best_match[0]
-        
+
         # Find the best phrase to link
         link_phrase = self._find_link_phrase(bullet, evidence)
-        
+
         if link_phrase:
             # Create markdown link
             link_text = f"[{link_phrase}]({evidence.url})"
             injected_bullet = bullet.replace(link_phrase, link_text, 1)
-            
+
             self._links_used += 1
-            
+
             logger.debug(f"Injected link for '{evidence.id}' (similarity: {similarity_score:.2f})")
             return injected_bullet
-        
+
         return bullet
-    
+
     def _find_best_matches(self, bullet: str) -> List[Tuple[float, EvidenceItem]]:
         """Find best matching evidence for a bullet.
-        
+
         Args:
             bullet: Resume bullet text
-            
+
         Returns:
             List of (similarity_score, evidence) tuples
         """
         matches = []
         bullet_lower = bullet.lower()
-        
+
         for evidence in self.evidence_library:
             # Calculate similarity score
             similarity = self._calculate_similarity(bullet_lower, evidence)
-            
+
             if similarity >= evidence.confidence_threshold:
                 matches.append((similarity, evidence))
-        
+
         # Sort by similarity (descending)
         matches.sort(key=lambda m: m[0], reverse=True)
-        
+
         return matches[:self.max_links_per_bullet]
-    
+
     def _calculate_similarity(self, bullet: str, evidence: EvidenceItem) -> float:
         """Calculate similarity between bullet and evidence.
-        
+
         Args:
             bullet: Lowercase bullet text
             evidence: Evidence item
-            
+
         Returns:
             Similarity score between 0.0 and 1.0
         """
@@ -196,14 +196,14 @@ class EvidenceInjector:
         if evidence.keywords:
             matches = sum(1 for kw in evidence.keywords if kw.lower() in bullet)
             keyword_score = matches / len(evidence.keywords)
-        
+
         # Title matching score
         title_score = 0.0
         title_words = evidence.title.lower().split()
         if title_words:
             matches = sum(1 for word in title_words if word in bullet)
             title_score = matches / len(title_words)
-        
+
         # Description matching score
         desc_score = 0.0
         if evidence.description:
@@ -211,19 +211,19 @@ class EvidenceInjector:
             if desc_words:
                 matches = sum(1 for word in desc_words[:20] if word in bullet)  # Check first 20 words
                 desc_score = matches / min(len(desc_words), 20)
-        
+
         # Weighted combination
         total_score = (keyword_score * 0.5) + (title_score * 0.3) + (desc_score * 0.2)
-        
+
         return min(total_score, 1.0)
-    
+
     def _find_link_phrase(self, bullet: str, evidence: EvidenceItem) -> Optional[str]:
         """Find the best phrase in bullet to link to evidence.
-        
+
         Args:
             bullet: Resume bullet text
             evidence: Evidence item
-            
+
         Returns:
             Phrase to link or None
         """
@@ -235,7 +235,7 @@ class EvidenceInjector:
                 match = pattern.search(bullet)
                 if match:
                     return match.group()
-        
+
         # Try to find title words
         title_words = evidence.title.split()
         for word in title_words:
@@ -244,37 +244,37 @@ class EvidenceInjector:
                 match = pattern.search(bullet)
                 if match:
                     return match.group()
-        
+
         # Try to find technical terms or achievements
         technical_patterns = [
             r'\b[A-Z][a-z]+(?:[A-Z][a-z]+)*\b',  # CamelCase terms
             r'\b\w+(?:-\w+)+\b',  # Hyphenated terms
             r'\b\w+(?:\s+\w+){1,3}\b'  # 2-4 word phrases
         ]
-        
+
         for pattern in technical_patterns:
             matches = re.findall(pattern, bullet)
             for match in matches:
                 if len(match) > 3 and match.lower() not in ['and', 'the', 'for', 'with', 'from']:
                     return match
-        
+
         return None
-    
+
     def add_evidence(self, evidence: EvidenceItem) -> None:
         """Add a single evidence item to the library.
-        
+
         Args:
             evidence: Evidence item to add
         """
         self.evidence_library.append(evidence)
         logger.debug(f"Added evidence item: {evidence.id}")
-    
+
     def remove_evidence(self, evidence_id: str) -> bool:
         """Remove evidence item by ID.
-        
+
         Args:
             evidence_id: ID of evidence to remove
-            
+
         Returns:
             True if removed
         """
@@ -284,17 +284,17 @@ class EvidenceInjector:
                 logger.debug(f"Removed evidence item: {evidence_id}")
                 return True
         return False
-    
+
     def get_stats(self) -> Dict[str, any]:
         """Get injector statistics.
-        
+
         Returns:
             Statistics dictionary
         """
         type_counts = {}
         for evidence in self.evidence_library:
             type_counts[evidence.type.value] = type_counts.get(evidence.type.value, 0) + 1
-        
+
         return {
             "total_evidence": len(self.evidence_library),
             "type_distribution": type_counts,
@@ -310,7 +310,7 @@ _evidence_injector: Optional[EvidenceInjector] = None
 
 def get_evidence_injector() -> EvidenceInjector:
     """Get global evidence injector instance.
-    
+
     Returns:
         EvidenceInjector instance
     """
@@ -323,26 +323,26 @@ def get_evidence_injector() -> EvidenceInjector:
 # Convenience function
 def inject_evidence_links(bullets: List[str], library_path: Optional[str] = None) -> List[str]:
     """Inject evidence links into resume bullets.
-    
+
     Args:
         bullets: Resume bullet points
         library_path: Path to evidence library file
-        
+
     Returns:
         Bullets with injected links
     """
     injector = get_evidence_injector()
-    
+
     if library_path:
         injector.load_library(library_path)
-    
+
     return injector.inject(bullets)
 
 
 # Create sample evidence library
 def create_sample_library(path: str = "evidence_library.json") -> None:
     """Create a sample evidence library file.
-    
+
     Args:
         path: Path to create library file
     """
@@ -393,10 +393,10 @@ def create_sample_library(path: str = "evidence_library.json") -> None:
             "priority": 1
         }
     ]
-    
+
     library_data = {"evidence": sample_evidence}
-    
+
     with open(path, 'w', encoding='utf-8') as f:
         json.dump(library_data, f, indent=2)
-    
+
     logger.info(f"Created sample evidence library at {path}")

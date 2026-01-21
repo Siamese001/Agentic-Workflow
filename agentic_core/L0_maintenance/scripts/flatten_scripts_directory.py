@@ -34,13 +34,13 @@ def flatten_scripts() -> Any:
             path_prefix: Any = '_'.join(parts[2:-1])
             # [SAFEGUARD] Use SSOT function to prevent duplicate prefix sprawl
             new_name: Any = safe_prefixed_filename(path_prefix, py_file.name)
-            
+
             # Validate no duplicate prefix was created
             has_dup, dup_msg = validate_no_duplicate_prefix(new_name)
             if has_dup:
                 print(f'  [!] BLOCKED: {dup_msg}')
                 continue
-                
+
             target: Any = SCRIPTS_DIR / new_name
             counter: Any = 1
             while target.exists():

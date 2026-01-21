@@ -23,7 +23,7 @@ class ExecutionResult:
 class InjectionPatterns:
     """
     Executor for shared injection_patterns operations.
-    
+
     Ensures consistent handling of configuration context and error boundaries
     across the sovereign domain.
     """
@@ -35,11 +35,11 @@ class InjectionPatterns:
     def process(self, payload: Union[str, int, float, bool, List, Dict], context: Optional[Dict] = None) -> ExecutionResult:
         """
         Execute the primary logic for this module.
-        
+
         Args:
             payload: The input data to process
             context: Optional execution context
-            
+
         Returns:
             ExecutionResult indicating success or failure
         """

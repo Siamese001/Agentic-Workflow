@@ -29,7 +29,7 @@ class AgentPlan(BaseModel):
 
 class SubatomicHop:
     """Sovereign SubatomicHop with Dependency Injection.
-    
+
     All dependencies are injected via constructor to maintain Gravity Compliance.
     No upward imports allowed - all tools passed down from orchestration layer.
     """
@@ -54,7 +54,7 @@ class SubatomicHop:
         telemetry: Optional[Any] = None,
     ) -> None:
         """Initialize SubatomicHop with injected dependencies.
-        
+
         Args:
             role: Agent role identifier
             config: Configuration dictionary
@@ -71,14 +71,14 @@ class SubatomicHop:
             StructuredEngine: StructuredEngine instance (injected)
             gatekeeper: SemanticGatekeeper instance (injected)
             telemetry: TelemetryRecorder instance (injected)
-            
+
         Raises:
             SovereignDependencyError: If required dependencies are Missing
         """
         self.role = role
         self.id = str(uuid.uuid4())
         self.config = config
-        
+
         # Validate and assign injected dependencies
         if storage is None:
             raise SovereignDependencyError(
@@ -86,73 +86,73 @@ class SubatomicHop:
                 "Cannot import from higher layers - must be passed from orchestrator."
             )
         self.storage = storage
-        
+
         if genealogy is None:
             raise SovereignDependencyError(
                 "SubatomicHop requires 'genealogy' (GenealogyRegistry) to be injected."
             )
         self.genealogy = genealogy
-        
+
         if PiiVault is None:
             raise SovereignDependencyError(
                 "SubatomicHop requires 'PiiVault' (PIIVault) to be injected."
             )
         self.pii = PiiVault
-        
+
         if CostGovernor is None:
             raise SovereignDependencyError(
                 "SubatomicHop requires 'CostGovernor' (CostGovernor) to be injected."
             )
         self.governor = CostGovernor
-        
+
         if overseer is None:
             raise SovereignDependencyError(
                 "SubatomicHop requires 'overseer' (ConstitutionalOverseer) to be injected."
             )
         self.overseer = overseer
-        
+
         if membrane is None:
             raise SovereignDependencyError(
                 "SubatomicHop requires 'membrane' (InputMembrane) to be injected."
             )
         self.membrane = membrane
-        
+
         if airlock is None:
             raise SovereignDependencyError(
                 "SubatomicHop requires 'airlock' (AirlockProtocol) to be injected."
             )
         self.airlock = airlock
-        
+
         if SupremeCourt is None:
             raise SovereignDependencyError(
                 "SubatomicHop requires 'SupremeCourt' (SupremeCourt) to be injected."
             )
         self.SupremeCourt = SupremeCourt
-        
+
         if mcp_manager is None:
             raise SovereignDependencyError(
                 "SubatomicHop requires 'mcp_manager' (MCPConnectionManager) to be injected."
             )
         self.mcp = mcp_manager
-        
+
         if sandbox is None:
             raise SovereignDependencyError(
                 "SubatomicHop requires 'sandbox' (DockerSandbox) to be injected."
             )
         self.sandbox = sandbox
-        
+
         if StructuredEngine is None:
             raise SovereignDependencyError(
                 "SubatomicHop requires 'StructuredEngine' (StructuredEngine) to be injected."
             )
         self.StructuredEngine = StructuredEngine
-        
+
         if gatekeeper is None:
             raise SovereignDependencyError(
                 "SubatomicHop requires 'gatekeeper' (SemanticGatekeeper) to be injected."
             )
         self.gatekeeper = gatekeeper
-        
+
         if telemetry is None:
             raise SovereignDependencyError(
                 "SubatomicHop requires 'telemetry' (TelemetryRecorder) to be injected."

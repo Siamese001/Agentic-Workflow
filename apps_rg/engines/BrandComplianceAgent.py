@@ -47,12 +47,12 @@ class BrandComplianceAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin)
     async def execute(self) -> None:
         """
         Execute brand compliance check.
-        
+
         Validates resume content for:
         - Professional language (no forbidden phrases)
         - Power verbs in experience section
         - Consistent professional tone
-        
+
         Raises:
             BRAND_VIOLATION signal if issues found
         """
@@ -94,10 +94,10 @@ class BrandComplianceAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin)
     def _to_string(self, content: Any) -> str:
         """
         Convert content to string for analysis.
-        
+
         Args:
             content: Content to convert (str, list, dict, or other)
-        
+
         Returns:
             String representation of content
         """
@@ -112,12 +112,12 @@ class BrandComplianceAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin)
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs: Any) -> Dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
-        
+
         Args:
             dry_run: If True, only report violations without fixing
             execute: If True, apply fixes
             **kwargs: Additional healing parameters
-        
+
         Returns:
             Dict with healing summary (violations, fixed, errors)
         """
