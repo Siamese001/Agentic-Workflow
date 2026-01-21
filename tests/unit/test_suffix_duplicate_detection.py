@@ -89,16 +89,18 @@ class TestSuffixDuplicateDetection:
         assert len(agent.filename_duplicates) == 0
     
     def test_multiple_suffix_duplicates_in_directory(self, tmp_path):
-        """Test detection of multiple suffix duplicates."""
+        """Test detection of multiple suffix duplicates with various patterns."""
         from agentic_core.L5_safety.validators.CodeDeduplicationAgent import (
             CodeDeduplicationAgent,
         )
         
-        # Create multiple canonical + duplicate pairs
+        # Create multiple canonical + duplicate pairs with various suffixes
         pairs = [
             ("Agent1.py", "Agent1_flat.py"),
-            ("Agent2.py", "Agent2_flat.py"),
+            ("Agent2.py", "Agent2_from_utils.py"),
             ("Agent3.py", "Agent3_1.py"),
+            ("Agent4.py", "Agent4_copy.py"),
+            ("Agent5.py", "Agent5_backup.py"),
         ]
         
         for canonical_name, dup_name in pairs:
@@ -113,8 +115,8 @@ class TestSuffixDuplicateDetection:
         
         agent.scan_filename_duplicates(python_files, tmp_path)
         
-        # Should detect all 3 suffix duplicate groups
-        assert len(agent.filename_duplicates) >= 3
+        # Should detect all 5 suffix duplicate groups
+        assert len(agent.filename_duplicates) >= 5
 
 
 class TestArchitectureGovernorIntegration:
