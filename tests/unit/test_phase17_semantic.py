@@ -430,3 +430,184 @@ class TestEmbeddingEngine:
             # Verify content was truncated
             call_args = mock_client.models.embed_content.call_args
             assert len(call_args.kwargs["contents"]) <= 2000
+
+
+class TestThreadSafety:
+    """Phase 17 Tests: Thread safety verification."""
+    
+    def test_thread_safe_stats(self):
+        """[Phase 17] Verify stats are thread-safe under concurrent access."""
+        import threading
+        from agentic_core.L5_safety.cognition.SemanticCacheManager import (
+            SemanticCacheManager,
+        )
+        
+        with patch("redis.from_url") as mock_redis:
+            mock_redis.return_value.ping.side_effect = Exception("Redis unavailable")
+            
+            cache = SemanticCacheManager(api_key="test_key")
+            cache.redis_enabled = False
+            cache.pinecone_enabled = False
+            
+            # Reset stats
+            cache.stats = {
+                "redis_hits": 0,
+                "pinecone_hits": 0,
+                "cache_misses": 0,
+                "cache_stores": 0,
+            }
+            
+            num_threads = 10
+            iterations_per_thread = 100
+            
+            def increment_stats():
+                for _ in range(iterations_per_thread):
+                    with cache._lock:
+                        cache.stats["cache_stores"] += 1
+            
+            threads = [threading.Thread(target=increment_stats) for _ in range(num_threads)]
+            
+            for t in threads:
+                t.start()
+            for t in threads:
+                t.join()
+            
+            # Verify exact count
+            assert cache.stats["cache_stores"] == num_threads * iterations_per_thread
+
+    def test_thread_safe_embedding_client_init(self):
+        """[Phase 17] Verify embedding client is initialized only once under concurrent access."""
+        import threading
+        from agentic_core.L5_safety.cognition.SemanticCacheManager import (
+            SemanticCacheManager,
+        )
+        
+        init_count = {"count": 0}
+        
+        def mock_client_init(*args, **kwargs):
+            init_count["count"] += 1
+            return MagicMock()
+        
+        with patch("redis.from_url") as mock_redis:
+            mock_redis.return_value.ping.side_effect = Exception("Redis unavailable")
+            
+            cache = SemanticCacheManager(api_key="test_key")
+            
+            with patch("google.genai.Client", side_effect=mock_client_init):
+                threads = [
+                    threading.Thread(target=cache._get_embedding_client)
+                    for _ in range(10)
+                ]
+                
+                for t in threads:
+                    t.start()
+                for t in threads:
+                    t.join()
+            
+            # Client should only be initialized once due to lock
+            assert init_count["count"] <= 1
+
+
+class TestRedisFallback:
+    """Phase 17 Tests: Redis fallback behavior."""
+    
+    def test_redis_fallback_on_connection_failure(self):
+        """[Phase 17] Verify graceful fallback when Redis is unreachable."""
+        from agentic_core.L5_safety.cognition.SemanticCacheManager import (
+            SemanticCacheManager,
+        )
+        
+        with patch("redis.from_url") as mock_redis:
+            # Simulate connection failure
+            mock_redis.return_value.ping.side_effect = Exception("Connection refused")
+            
+            # Should not raise exception
+            cache = SemanticCacheManager(api_key="test_key")
+            
+            # Redis should be disabled
+            assert cache.redis_enabled is False
+            
+            # get_cached_decision should return None without crashing
+            result = cache.get_cached_decision("test content", "ORPHAN")
+            assert result is None
+
+    def test_redis_get_failure_graceful(self):
+        """[Phase 17] Verify graceful handling of Redis get failures."""
+        from agentic_core.L5_safety.cognition.SemanticCacheManager import (
+            SemanticCacheManager,
+        )
+        
+        mock_redis = MagicMock()
+        mock_redis.ping.return_value = True
+        mock_redis.get.side_effect = Exception("Redis timeout")
+        
+        with patch("redis.from_url", return_value=mock_redis):
+            cache = SemanticCacheManager(api_key="test_key")
+            cache.redis_enabled = True
+            cache.redis_client = mock_redis
+            cache.pinecone_enabled = False
+            
+            # Should not raise, should return None
+            result = cache.get_cached_decision("test content", "ORPHAN")
+            assert result is None
+
+
+class TestPineconeInitFailure:
+    """Phase 17 Tests: Pinecone initialization failure handling."""
+    
+    def test_pinecone_init_failure_graceful(self):
+        """[Phase 17] Verify graceful handling of Pinecone init failure."""
+        import os
+        from agentic_core.L5_safety.cognition.SemanticCacheManager import (
+            SemanticCacheManager,
+        )
+        
+        # Set invalid API key
+        original_key = os.environ.get("PINECONE_API_KEY")
+        os.environ["PINECONE_API_KEY"] = "invalid_key_12345"
+        
+        try:
+            with patch("redis.from_url") as mock_redis:
+                mock_redis.return_value.ping.side_effect = Exception("Redis unavailable")
+                
+                with patch("pinecone.Pinecone") as mock_pinecone:
+                    mock_pinecone.side_effect = Exception("Invalid API key")
+                    
+                    # Should not crash
+                    cache = SemanticCacheManager(api_key="test_key")
+                    
+                    # Pinecone should be disabled
+                    assert cache.pinecone_enabled is False
+        finally:
+            if original_key:
+                os.environ["PINECONE_API_KEY"] = original_key
+            else:
+                os.environ.pop("PINECONE_API_KEY", None)
+
+    def test_pinecone_query_failure_graceful(self):
+        """[Phase 17] Verify graceful handling of Pinecone query failures."""
+        from agentic_core.L5_safety.cognition.SemanticCacheManager import (
+            SemanticCacheManager,
+        )
+        
+        mock_index = MagicMock()
+        mock_index.query.side_effect = Exception("Pinecone timeout")
+        
+        mock_embedding = MagicMock()
+        mock_embedding.embeddings = [MagicMock(values=[0.1] * 768)]
+        
+        mock_client = MagicMock()
+        mock_client.models.embed_content.return_value = mock_embedding
+        
+        with patch("redis.from_url") as mock_redis:
+            mock_redis.return_value.ping.side_effect = Exception("Redis unavailable")
+            
+            cache = SemanticCacheManager(api_key="test_key")
+            cache.redis_enabled = False
+            cache.pinecone_enabled = True
+            cache.pinecone_index = mock_index
+            cache._embedding_client = mock_client
+            
+            # Should not raise, should return None
+            result = cache.get_cached_decision("test content", "ORPHAN")
+            assert result is None
