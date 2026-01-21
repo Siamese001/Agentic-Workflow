@@ -16,6 +16,7 @@ class TestSingletonEnforcement:
     
     def test_singleton_get_instance(self):
         """[Phase 20] Verify get_instance returns the same instance."""
+        import os
         from agentic_core.L4_state.memory.SemanticCacheManager import (
             SemanticCacheManager,
         )
@@ -23,19 +24,28 @@ class TestSingletonEnforcement:
         # Reset singleton for clean test
         SemanticCacheManager.reset_instance()
         
-        with patch("redis.from_url") as mock_redis:
-            mock_redis.return_value.ping.side_effect = Exception("Redis unavailable")
-            
-            instance1 = SemanticCacheManager.get_instance()
-            instance2 = SemanticCacheManager.get_instance()
-            
-            assert instance1 is instance2
+        # Use resilient mode for this test
+        original_strict = os.environ.get("HIVE_MIND_STRICT_MODE")
+        os.environ["HIVE_MIND_STRICT_MODE"] = "false"
         
-        # Clean up
-        SemanticCacheManager.reset_instance()
+        try:
+            with patch("redis.from_url") as mock_redis:
+                mock_redis.return_value.ping.side_effect = Exception("Redis unavailable")
+                
+                instance1 = SemanticCacheManager.get_instance()
+                instance2 = SemanticCacheManager.get_instance()
+                
+                assert instance1 is instance2
+        finally:
+            if original_strict:
+                os.environ["HIVE_MIND_STRICT_MODE"] = original_strict
+            else:
+                os.environ.pop("HIVE_MIND_STRICT_MODE", None)
+            SemanticCacheManager.reset_instance()
 
     def test_singleton_direct_instantiation_blocked(self):
         """[Phase 20] Verify direct instantiation raises RuntimeError."""
+        import os
         from agentic_core.L4_state.memory.SemanticCacheManager import (
             SemanticCacheManager,
         )
@@ -43,23 +53,32 @@ class TestSingletonEnforcement:
         # Reset singleton
         SemanticCacheManager.reset_instance()
         
-        with patch("redis.from_url") as mock_redis:
-            mock_redis.return_value.ping.side_effect = Exception("Redis unavailable")
-            
-            # First, create via get_instance
-            SemanticCacheManager.get_instance()
-            
-            # Now direct instantiation should fail
-            with pytest.raises(RuntimeError) as exc_info:
-                SemanticCacheManager()
-            
-            assert "SINGLETON VIOLATION" in str(exc_info.value)
+        # Use resilient mode for this test
+        original_strict = os.environ.get("HIVE_MIND_STRICT_MODE")
+        os.environ["HIVE_MIND_STRICT_MODE"] = "false"
         
-        # Clean up
-        SemanticCacheManager.reset_instance()
+        try:
+            with patch("redis.from_url") as mock_redis:
+                mock_redis.return_value.ping.side_effect = Exception("Redis unavailable")
+                
+                # First, create via get_instance
+                SemanticCacheManager.get_instance()
+                
+                # Now direct instantiation should fail
+                with pytest.raises(RuntimeError) as exc_info:
+                    SemanticCacheManager()
+                
+                assert "SINGLETON VIOLATION" in str(exc_info.value)
+        finally:
+            if original_strict:
+                os.environ["HIVE_MIND_STRICT_MODE"] = original_strict
+            else:
+                os.environ.pop("HIVE_MIND_STRICT_MODE", None)
+            SemanticCacheManager.reset_instance()
 
     def test_singleton_thread_safe(self):
         """[Phase 20] Verify singleton is thread-safe."""
+        import os
         import threading
         from agentic_core.L4_state.memory.SemanticCacheManager import (
             SemanticCacheManager,
@@ -68,28 +87,34 @@ class TestSingletonEnforcement:
         # Reset singleton
         SemanticCacheManager.reset_instance()
         
+        # Use resilient mode for this test
+        original_strict = os.environ.get("HIVE_MIND_STRICT_MODE")
+        os.environ["HIVE_MIND_STRICT_MODE"] = "false"
+        
         instances = []
         
-        def get_instance():
+        try:
             with patch("redis.from_url") as mock_redis:
                 mock_redis.return_value.ping.side_effect = Exception("Redis unavailable")
-                instances.append(SemanticCacheManager.get_instance())
-        
-        with patch("redis.from_url") as mock_redis:
-            mock_redis.return_value.ping.side_effect = Exception("Redis unavailable")
+                
+                def get_instance():
+                    instances.append(SemanticCacheManager.get_instance())
+                
+                threads = [threading.Thread(target=get_instance) for _ in range(10)]
+                
+                for t in threads:
+                    t.start()
+                for t in threads:
+                    t.join()
             
-            threads = [threading.Thread(target=get_instance) for _ in range(10)]
-            
-            for t in threads:
-                t.start()
-            for t in threads:
-                t.join()
-        
-        # All instances should be the same
-        assert len(set(id(i) for i in instances)) == 1
-        
-        # Clean up
-        SemanticCacheManager.reset_instance()
+            # All instances should be the same
+            assert len(set(id(i) for i in instances)) == 1
+        finally:
+            if original_strict:
+                os.environ["HIVE_MIND_STRICT_MODE"] = original_strict
+            else:
+                os.environ.pop("HIVE_MIND_STRICT_MODE", None)
+            SemanticCacheManager.reset_instance()
 
 
 class TestInstinctiveBypass:
@@ -274,7 +299,8 @@ class TestLobotomyResilience:
     """Phase 20 Tests: Graceful degradation when memory is unavailable."""
     
     def test_lobotomy_resilience_redis_down(self):
-        """[Phase 20] Verify agent works when Redis is down."""
+        """[Phase 20] Verify agent works when Redis is down (resilient mode)."""
+        import os
         from agentic_core.L4_state.memory.SemanticCacheManager import (
             SemanticCacheManager,
         )
@@ -282,21 +308,29 @@ class TestLobotomyResilience:
         # Reset singleton
         SemanticCacheManager.reset_instance()
         
-        with patch("redis.from_url") as mock_redis:
-            mock_redis.return_value.ping.side_effect = Exception("Connection refused")
-            
-            # Should not crash
-            cache = SemanticCacheManager.get_instance()
-            
-            # Redis should be disabled
-            assert cache.redis_enabled is False
-            
-            # Recall should return None gracefully
-            result = cache.recall("test context", "TestAgent")
-            assert result is None
+        # Use resilient mode for this test
+        original_strict = os.environ.get("HIVE_MIND_STRICT_MODE")
+        os.environ["HIVE_MIND_STRICT_MODE"] = "false"
         
-        # Clean up
-        SemanticCacheManager.reset_instance()
+        try:
+            with patch("redis.from_url") as mock_redis:
+                mock_redis.return_value.ping.side_effect = Exception("Connection refused")
+                
+                # Should not crash
+                cache = SemanticCacheManager.get_instance()
+                
+                # Redis should be disabled
+                assert cache.redis_enabled is False
+                
+                # Recall should return None gracefully
+                result = cache.recall("test context", "TestAgent")
+                assert result is None
+        finally:
+            if original_strict:
+                os.environ["HIVE_MIND_STRICT_MODE"] = original_strict
+            else:
+                os.environ.pop("HIVE_MIND_STRICT_MODE", None)
+            SemanticCacheManager.reset_instance()
 
     def test_lobotomy_resilience_execution_continues(self):
         """[Phase 20] Verify execution continues when memory is unavailable."""
@@ -342,7 +376,8 @@ class TestLobotomyResilience:
         MetaLearningMixin._lobotomized = False
 
     def test_lobotomy_warning_logged(self, caplog):
-        """[Phase 20] Verify LOBOTOMY WARNING is logged when Redis unavailable."""
+        """[Phase 20] Verify STATELESS warning is logged when Redis unavailable (resilient mode)."""
+        import os
         import logging
         from agentic_core.L4_state.memory.SemanticCacheManager import (
             SemanticCacheManager,
@@ -351,17 +386,25 @@ class TestLobotomyResilience:
         # Reset singleton
         SemanticCacheManager.reset_instance()
         
-        with caplog.at_level(logging.CRITICAL):
-            with patch("redis.from_url") as mock_redis:
-                mock_redis.return_value.ping.side_effect = Exception("Connection refused")
-                
-                SemanticCacheManager.get_instance()
+        # Use resilient mode for this test
+        original_strict = os.environ.get("HIVE_MIND_STRICT_MODE")
+        os.environ["HIVE_MIND_STRICT_MODE"] = "false"
         
-        # Check for lobotomy warning
-        assert any("LOBOTOMY" in record.message for record in caplog.records)
-        
-        # Clean up
-        SemanticCacheManager.reset_instance()
+        try:
+            with caplog.at_level(logging.ERROR):
+                with patch("redis.from_url") as mock_redis:
+                    mock_redis.return_value.ping.side_effect = Exception("Connection refused")
+                    
+                    SemanticCacheManager.get_instance()
+            
+            # Check for STATELESS warning (resilient mode logs this)
+            assert any("STATELESS" in record.message for record in caplog.records)
+        finally:
+            if original_strict:
+                os.environ["HIVE_MIND_STRICT_MODE"] = original_strict
+            else:
+                os.environ.pop("HIVE_MIND_STRICT_MODE", None)
+            SemanticCacheManager.reset_instance()
 
 
 class TestContextHashing:
@@ -567,3 +610,303 @@ class TestSerializationGuard:
         
         MetaLearningMixin._memory = None
         MetaLearningMixin._lobotomized = False
+
+
+class TestStrictModeCompliance:
+    """Phase 20 Tests: HIVE_MIND_STRICT_MODE compliance policy."""
+    
+    def test_strict_mode_raises_on_infrastructure_failure(self):
+        """[Phase 20] Verify STRICT_MODE raises CriticalInfrastructureError when Redis down."""
+        import os
+        from agentic_core.L4_state.memory.SemanticCacheManager import (
+            SemanticCacheManager,
+            CriticalInfrastructureError,
+        )
+        
+        # Reset singleton
+        SemanticCacheManager.reset_instance()
+        
+        # Set STRICT_MODE
+        original_strict = os.environ.get("HIVE_MIND_STRICT_MODE")
+        original_pinecone = os.environ.get("PINECONE_API_KEY")
+        os.environ["HIVE_MIND_STRICT_MODE"] = "true"
+        os.environ.pop("PINECONE_API_KEY", None)  # Ensure Pinecone also fails
+        
+        try:
+            with patch("redis.from_url") as mock_redis:
+                mock_redis.return_value.ping.side_effect = Exception("Connection refused")
+                
+                # Should raise CriticalInfrastructureError
+                with pytest.raises(CriticalInfrastructureError) as exc_info:
+                    SemanticCacheManager.get_instance()
+                
+                assert "STRICT mode" in str(exc_info.value)
+        finally:
+            # Restore environment
+            if original_strict:
+                os.environ["HIVE_MIND_STRICT_MODE"] = original_strict
+            else:
+                os.environ.pop("HIVE_MIND_STRICT_MODE", None)
+            if original_pinecone:
+                os.environ["PINECONE_API_KEY"] = original_pinecone
+            SemanticCacheManager.reset_instance()
+
+    def test_resilient_mode_survives_infrastructure_failure(self):
+        """[Phase 20] Verify non-STRICT_MODE degrades gracefully when Redis down."""
+        import os
+        from agentic_core.L4_state.memory.SemanticCacheManager import (
+            SemanticCacheManager,
+        )
+        
+        # Reset singleton
+        SemanticCacheManager.reset_instance()
+        
+        # Set RESILIENT_MODE (strict=false)
+        original_strict = os.environ.get("HIVE_MIND_STRICT_MODE")
+        original_pinecone = os.environ.get("PINECONE_API_KEY")
+        os.environ["HIVE_MIND_STRICT_MODE"] = "false"
+        os.environ.pop("PINECONE_API_KEY", None)  # Ensure Pinecone also fails
+        
+        try:
+            with patch("redis.from_url") as mock_redis:
+                mock_redis.return_value.ping.side_effect = Exception("Connection refused")
+                
+                # Should NOT raise - should degrade gracefully
+                cache = SemanticCacheManager.get_instance()
+                
+                # Should be in stateless mode
+                assert cache.stateless_mode is True
+                assert cache.redis_enabled is False
+                assert cache.pinecone_enabled is False
+                
+                # Operations should work (return None/no-op)
+                result = cache.recall("test", "TestAgent")
+                assert result is None
+                
+                # Learn should be a no-op in stateless mode
+                cache.learn("test", "TestAgent", {"result": "data"})
+                # No exception = success
+        finally:
+            # Restore environment
+            if original_strict:
+                os.environ["HIVE_MIND_STRICT_MODE"] = original_strict
+            else:
+                os.environ.pop("HIVE_MIND_STRICT_MODE", None)
+            if original_pinecone:
+                os.environ["PINECONE_API_KEY"] = original_pinecone
+            SemanticCacheManager.reset_instance()
+
+
+class TestTraceSampling:
+    """Phase 20 Tests: Trace sampling rate configuration."""
+    
+    def test_trace_sampling_rate_zero_skips_all(self):
+        """[Phase 20] Verify sampling_rate=0.0 skips all traces."""
+        import os
+        from agentic_core.L4_state.memory.SemanticCacheManager import (
+            SemanticCacheManager,
+        )
+        
+        # Reset singleton
+        SemanticCacheManager.reset_instance()
+        
+        original_rate = os.environ.get("HIVE_MIND_TRACE_SAMPLING_RATE")
+        original_strict = os.environ.get("HIVE_MIND_STRICT_MODE")
+        os.environ["HIVE_MIND_TRACE_SAMPLING_RATE"] = "0.0"
+        os.environ["HIVE_MIND_STRICT_MODE"] = "false"
+        
+        try:
+            mock_redis = MagicMock()
+            mock_redis.ping.return_value = True
+            
+            with patch("redis.from_url", return_value=mock_redis):
+                cache = SemanticCacheManager.get_instance()
+                cache.redis_enabled = True
+                cache.redis_client = mock_redis
+                
+                # Learn multiple times
+                for i in range(10):
+                    cache.learn(f"context_{i}", "TestAgent", {"result": i})
+                
+                # All should be skipped
+                assert cache.stats["traces_skipped"] == 10
+                assert cache.stats["traces_sampled"] == 0
+        finally:
+            if original_rate:
+                os.environ["HIVE_MIND_TRACE_SAMPLING_RATE"] = original_rate
+            else:
+                os.environ.pop("HIVE_MIND_TRACE_SAMPLING_RATE", None)
+            if original_strict:
+                os.environ["HIVE_MIND_STRICT_MODE"] = original_strict
+            else:
+                os.environ.pop("HIVE_MIND_STRICT_MODE", None)
+            SemanticCacheManager.reset_instance()
+
+    def test_trace_sampling_rate_one_captures_all(self):
+        """[Phase 20] Verify sampling_rate=1.0 captures all traces."""
+        import os
+        from agentic_core.L4_state.memory.SemanticCacheManager import (
+            SemanticCacheManager,
+        )
+        
+        # Reset singleton
+        SemanticCacheManager.reset_instance()
+        
+        original_rate = os.environ.get("HIVE_MIND_TRACE_SAMPLING_RATE")
+        original_strict = os.environ.get("HIVE_MIND_STRICT_MODE")
+        os.environ["HIVE_MIND_TRACE_SAMPLING_RATE"] = "1.0"
+        os.environ["HIVE_MIND_STRICT_MODE"] = "false"
+        
+        try:
+            mock_redis = MagicMock()
+            mock_redis.ping.return_value = True
+            
+            with patch("redis.from_url", return_value=mock_redis):
+                cache = SemanticCacheManager.get_instance()
+                cache.redis_enabled = True
+                cache.redis_client = mock_redis
+                
+                # Learn multiple times
+                for i in range(10):
+                    cache.learn(f"context_{i}", "TestAgent", {"result": i})
+                
+                # All should be sampled
+                assert cache.stats["traces_sampled"] == 10
+                assert cache.stats["traces_skipped"] == 0
+        finally:
+            if original_rate:
+                os.environ["HIVE_MIND_TRACE_SAMPLING_RATE"] = original_rate
+            else:
+                os.environ.pop("HIVE_MIND_TRACE_SAMPLING_RATE", None)
+            if original_strict:
+                os.environ["HIVE_MIND_STRICT_MODE"] = original_strict
+            else:
+                os.environ.pop("HIVE_MIND_STRICT_MODE", None)
+            SemanticCacheManager.reset_instance()
+
+
+class TestMemoryLifecycle:
+    """Phase 20 Tests: Memory lifecycle with feedback score promotion."""
+    
+    def test_promotion_requires_feedback_threshold(self):
+        """[Phase 20] Verify promotion requires feedback_score >= threshold."""
+        import os
+        from agentic_core.L4_state.memory.SemanticCacheManager import (
+            SemanticCacheManager,
+        )
+        
+        # Reset singleton
+        SemanticCacheManager.reset_instance()
+        
+        original_strict = os.environ.get("HIVE_MIND_STRICT_MODE")
+        original_threshold = os.environ.get("HIVE_MIND_PROMOTION_THRESHOLD")
+        os.environ["HIVE_MIND_STRICT_MODE"] = "false"
+        os.environ["HIVE_MIND_PROMOTION_THRESHOLD"] = "0.8"
+        
+        try:
+            mock_redis = MagicMock()
+            mock_redis.ping.return_value = True
+            
+            mock_pinecone = MagicMock()
+            
+            with patch("redis.from_url", return_value=mock_redis):
+                cache = SemanticCacheManager.get_instance()
+                cache.pinecone_enabled = True
+                cache.pinecone_index = mock_pinecone
+                
+                # Try to promote with low score
+                result = cache.promote_to_long_term(
+                    "test context",
+                    "TestAgent",
+                    {"result": "data"},
+                    feedback_score=0.5,  # Below threshold
+                )
+                
+                # Should be rejected
+                assert result is False
+                assert cache.stats["promotions"] == 0
+                mock_pinecone.upsert.assert_not_called()
+        finally:
+            if original_strict:
+                os.environ["HIVE_MIND_STRICT_MODE"] = original_strict
+            else:
+                os.environ.pop("HIVE_MIND_STRICT_MODE", None)
+            if original_threshold:
+                os.environ["HIVE_MIND_PROMOTION_THRESHOLD"] = original_threshold
+            else:
+                os.environ.pop("HIVE_MIND_PROMOTION_THRESHOLD", None)
+            SemanticCacheManager.reset_instance()
+
+    def test_promotion_succeeds_with_high_feedback(self):
+        """[Phase 20] Verify promotion succeeds with feedback_score >= threshold."""
+        import os
+        from agentic_core.L4_state.memory.SemanticCacheManager import (
+            SemanticCacheManager,
+        )
+        
+        # Reset singleton
+        SemanticCacheManager.reset_instance()
+        
+        original_strict = os.environ.get("HIVE_MIND_STRICT_MODE")
+        original_threshold = os.environ.get("HIVE_MIND_PROMOTION_THRESHOLD")
+        os.environ["HIVE_MIND_STRICT_MODE"] = "false"
+        os.environ["HIVE_MIND_PROMOTION_THRESHOLD"] = "0.8"
+        
+        try:
+            mock_redis = MagicMock()
+            mock_redis.ping.return_value = True
+            
+            mock_pinecone = MagicMock()
+            
+            # Mock embedding client
+            mock_embedding = MagicMock()
+            mock_embedding.embeddings = [MagicMock(values=[0.1] * 768)]
+            
+            mock_client = MagicMock()
+            mock_client.models.embed_content.return_value = mock_embedding
+            
+            with patch("redis.from_url", return_value=mock_redis):
+                cache = SemanticCacheManager.get_instance()
+                cache.pinecone_enabled = True
+                cache.pinecone_index = mock_pinecone
+                cache._embedding_client = mock_client
+                
+                # Promote with high score
+                result = cache.promote_to_long_term(
+                    "test context",
+                    "TestAgent",
+                    {"result": "data"},
+                    feedback_score=0.9,  # Above threshold
+                )
+                
+                # Should succeed
+                assert result is True
+                assert cache.stats["promotions"] == 1
+                mock_pinecone.upsert.assert_called_once()
+        finally:
+            if original_strict:
+                os.environ["HIVE_MIND_STRICT_MODE"] = original_strict
+            else:
+                os.environ.pop("HIVE_MIND_STRICT_MODE", None)
+            if original_threshold:
+                os.environ["HIVE_MIND_PROMOTION_THRESHOLD"] = original_threshold
+            else:
+                os.environ.pop("HIVE_MIND_PROMOTION_THRESHOLD", None)
+            SemanticCacheManager.reset_instance()
+
+
+class TestPIISanitizer:
+    """Phase 20 Tests: PII Sanitizer stub."""
+    
+    def test_pii_sanitizer_passthrough(self):
+        """[Phase 20] Verify PIISanitizer is currently a pass-through."""
+        from agentic_core.L4_state.memory.SemanticCacheManager import PIISanitizer
+        
+        test_content = "This is test content with email@example.com"
+        
+        # Currently pass-through
+        sanitized = PIISanitizer.sanitize(test_content)
+        assert sanitized == test_content
+        
+        # is_safe should return True
+        assert PIISanitizer.is_safe(test_content) is True
