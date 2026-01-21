@@ -1,0 +1,18 @@
+repos:
+  - repo: local
+    hooks:
+      - id: check-agent-duplicates
+        name: Check for Agent Duplicate Filenames
+        entry: python scripts/maintenance/check_duplicate_filenames.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [commit]
+        
+      - id: check-deprecated-imports
+        name: Check for Deprecated Agent Imports
+        entry: pytest tests/infrastructure/test_agent_consolidation_hardening.py::TestConsolidationStaticAnalysis -v --tb=short
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [commit]

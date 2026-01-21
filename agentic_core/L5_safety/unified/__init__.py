@@ -29,10 +29,28 @@ from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import (
     create_legacy_hygiene_validator,
     create_legacy_registry_validator,
 )
+from agentic_core.L5_safety.unified.UnifiedCodeDetectorAgent import UnifiedCodeDetectorAgent
+from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import UnifiedCodeEnforcerAgent
+from agentic_core.L5_safety.unified.UnifiedCodeHealerAgent import UnifiedCodeHealerAgent
+from agentic_core.L5_safety.unified.UnifiedResourceManagerAgent import UnifiedResourceManagerAgent
+from agentic_core.L5_safety.unified.UnifiedSafetyDetectorAgent import UnifiedSafetyDetectorAgent
+from agentic_core.L5_safety.unified.UnifiedSafetyExecutorAgent import UnifiedSafetyExecutorAgent
+from agentic_core.L5_safety.unified.UnifiedSecurityManagerAgent import UnifiedSecurityManagerAgent
+from agentic_core.L5_safety.unified.UnifiedStructureEnforcerAgent import UnifiedStructureEnforcerAgent
+from agentic_core.L5_safety.unified.UnifiedStructureHealerAgent import UnifiedStructureHealerAgent
 
 __all__ = [
     "UnifiedCodeValidatorAgent",
     "UnifiedStructureValidatorAgent",
+    "UnifiedCodeDetectorAgent",
+    "UnifiedCodeEnforcerAgent",
+    "UnifiedCodeHealerAgent",
+    "UnifiedResourceManagerAgent",
+    "UnifiedSafetyDetectorAgent",
+    "UnifiedSafetyExecutorAgent",
+    "UnifiedSecurityManagerAgent",
+    "UnifiedStructureEnforcerAgent",
+    "UnifiedStructureHealerAgent",
     "RuleSet",
     "ValidationReport",
     "Violation",
