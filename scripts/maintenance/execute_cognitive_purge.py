@@ -60,6 +60,16 @@ def run_cognitive_purge(
     Returns:
         Exit code (0=success, 1=no API key, 2=error)
     """
+    # Load .env file first
+    try:
+        from dotenv import load_dotenv, find_dotenv
+        env_file = find_dotenv(usecwd=True)
+        if env_file:
+            load_dotenv(env_file)
+            Logger.info(f"Loaded environment from: {env_file}")
+    except ImportError:
+        pass
+    
     # Check for API key
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
