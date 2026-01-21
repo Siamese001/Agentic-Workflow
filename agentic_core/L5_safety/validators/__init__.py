@@ -13,6 +13,7 @@ __all__ = [
     "LocationAgent",
     "NamingAgent",
     "HierarchyAgent",
+    "HygieneGuardianAgent",
     "FilesystemAgent",
     "CodeDeduplicationAgent",
     "PatternEnforcerAgent",
