@@ -42,6 +42,13 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     validate_path_within_project
 )
 
+# Import instructional injection patterns for all agents
+from agentic_core.utils.core_extensions.instructional_injection_mixin import (
+    InstructionalInjectionMixin,
+    INSTRUCTIONAL_PATTERNS,
+    InjectionLayer,
+)
+
 Logger = logging.getLogger(__name__)
 
 
@@ -60,7 +67,7 @@ class HealResult(TypedDict):
     skipped: int
 
 
-class HealerMixin:
+class HealerMixin(InstructionalInjectionMixin):
     """
     Phase 3: Default-on healing mixin for autonomous repair.
     
@@ -69,6 +76,7 @@ class HealerMixin:
     - Atomic write with rollback on failure
     - Self-test verification after healing (leverages Phase 1)
     - Logging and observability
+    - All 30 instructional injection patterns (via InstructionalInjectionMixin)
     
     Subclasses should override apply_fix() to implement specific transformers.
     Set _healing_enabled = False to opt-out for justified cases.
@@ -77,6 +85,11 @@ class HealerMixin:
     - Uses cooperative multiple inheritance via **kwargs
     - Always calls super().__init__(**kwargs) to propagate up the chain
     - Private attributes use _healer_ prefix to avoid collisions
+    
+    INSTRUCTIONAL INJECTION (Jan 2026):
+    - Inherits InstructionalInjectionMixin providing all 30 patterns
+    - All worker agents automatically get inject_*_layer() methods
+    - Patterns from: data/prompt_governance/prompt_injections/Instructional_Injection_Enhanced_v5.md
     """
     
     # Default ON - opt-out only where justified

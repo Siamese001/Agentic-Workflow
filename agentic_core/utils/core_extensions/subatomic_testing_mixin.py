@@ -22,10 +22,20 @@ except (ImportError, AttributeError):
         pass
 from agentic_core.schemas.models.anomaly_report import AnomalyReport, AnomalySeverity
 
+# Import instructional injection patterns for all agents
+try:
+    from agentic_core.utils.core_extensions.instructional_injection_mixin import (
+        InstructionalInjectionMixin,
+    )
+except ImportError:
+    class InstructionalInjectionMixin:
+        """Stub for healing resilience."""
+        pass
+
 Logger = logging.getLogger(__name__)
 
 
-class SubatomicTestingMixin:
+class SubatomicTestingMixin(InstructionalInjectionMixin):
     """
     Phase 1: Canonical self-testing mixin for L2 agents.
     
