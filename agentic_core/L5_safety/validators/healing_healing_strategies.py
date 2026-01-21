@@ -88,10 +88,32 @@ class StructureHealing(HealingStrategy):
         """Physically relocate files to compliant territories."""
         try:
             import shutil
+            import sys
             source = Path(fix["source"])
             target = Path(fix["target"])
             
             if not source.exists():
+                return False
+            
+            # SSOT COMPLIANCE: All moves require user approval
+            if sys.stdin.isatty():
+                print(f"\n{'='*60}")
+                print(f"MOVE APPROVAL REQUIRED")
+                print(f"{'='*60}")
+                print(f"Source: {source}")
+                print(f"Target: {target}")
+                print(f"Reason: L0 Structure relocation")
+                print(f"{'='*60}")
+                try:
+                    response = input("Approve? [y/n]: ").strip().lower()
+                    if response != 'y':
+                        Logger.info(f"[L0 STRUCTURE] Skipped move of {source.name} - user declined")
+                        return False
+                except (EOFError, KeyboardInterrupt):
+                    Logger.info(f"[L0 STRUCTURE] Move cancelled by user")
+                    return False
+            else:
+                Logger.warning(f"[L0 STRUCTURE] Non-interactive mode - skipping move: {source.name}")
                 return False
                 
             # Ensure target parent exists

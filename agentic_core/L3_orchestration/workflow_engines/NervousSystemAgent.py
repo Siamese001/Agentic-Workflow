@@ -95,7 +95,8 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
         self.InterventionServer = InterventionServer()
 
         # L6 Architecture Governor
-        self.ArchitectureGovernor = ArchitectureGovernor()
+        from agentic_core.L5_safety.validators.GovernanceAgent import GovernanceAgent
+        self.ArchitectureGovernor = GovernanceAgent()
 
         # GOLD STANDARD: Domain-specific agent integrations for post-phase validation
         self.project_root = Path(__file__).resolve().parents[3]

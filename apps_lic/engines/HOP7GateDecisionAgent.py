@@ -1,3 +1,9 @@
+
+# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
+# File appears to be a sovereign component but missing canon high-signal keywords.
+# Suggested keywords to add in docstring/code: engine, memory, prompt, validator
+# This boosts alignment detection — review and integrate appropriately
+
 from __future__ import annotations
 from dataclasses import dataclass
 """HOP-7: Gate Decision Agent - Make the 'Slow Loop' decision."""
