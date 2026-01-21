@@ -48,7 +48,9 @@ def sync_pre_commit(dry_run: bool = False):
     print(f"   [PATTERN] Files: {files_pattern}")
 
     # Locate the pre-commit config
-    config_path = project_root / "agentic_core" / "L0_maintenance" / "scripts" / ".pre-commit-config.yaml"
+    config_path = (
+        project_root / "agentic_core" / "L0_maintenance" / "scripts" / ".pre-commit-config.yaml"
+    )
 
     if not config_path.exists():
         print(f"   [!] Config not found at: {config_path}")
@@ -62,21 +64,20 @@ def sync_pre_commit(dry_run: bool = False):
     print(f"   [OK] Found config at: {config_path}")
 
     # Read current config
-    with open(config_path, encoding='utf-8') as f:
+    with open(config_path, encoding="utf-8") as f:
         content = f.read()
-
 
     # Pattern replacements - target the hardcoded folder lists
     replacements = [
         # Exclude patterns (with data/archives)
         (
-            r'exclude: \^[(]agentic_core\|apps_lic\|apps_rg\|apps_shared\|schemas\|prompt_governance\|observability\|config\|data\|archives[)]/',
-            f'exclude: ^({all_roots_pattern})/'
+            r"exclude: \^[(]agentic_core\|apps_lic\|apps_rg\|apps_shared\|schemas\|prompt_governance\|observability\|config\|data\|archives[)]/",
+            f"exclude: ^({all_roots_pattern})/",
         ),
         # Files patterns (sovereign only)
         (
-            r'files: \^[(]agentic_core\|apps_lic\|apps_rg\|apps_shared\|schemas\|prompt_governance\|observability\|config[)]/\.\*\\\.py\$',
-            f'files: ^({roots_pattern})/.*\\.py$'
+            r"files: \^[(]agentic_core\|apps_lic\|apps_rg\|apps_shared\|schemas\|prompt_governance\|observability\|config[)]/\.\*\\\.py\$",
+            f"files: ^({roots_pattern})/.*\\.py$",
         ),
     ]
 
@@ -99,7 +100,7 @@ def sync_pre_commit(dry_run: bool = False):
         return True
 
     # Write updated config
-    with open(config_path, 'w', encoding='utf-8') as f:
+    with open(config_path, "w", encoding="utf-8") as f:
         f.write(content)
 
     print(f"   [✓] Updated {changes_made} pattern(s) in {config_path.name}")

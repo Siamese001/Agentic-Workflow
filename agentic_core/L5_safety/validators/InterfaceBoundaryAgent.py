@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, healer, memory, orchestrator, prompt, workflow
@@ -39,9 +38,10 @@ class InterfaceBoundaryAgent(MCPHardenedMixin):
     Prevents L0 utilities from polluting the upper layers by enforcing interface boundaries.
     """
 
-
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -68,46 +68,46 @@ class InterfaceBoundaryAgent(MCPHardenedMixin):
         all_py = get_python_files(self.root)
         for py_file in [f for f in all_py if str(f).startswith(str(l0_path))]:
             metrics = self._analyze_file_complexity(py_file)
-            if metrics['method_count'] > self.threshold:
-                self.violations.append({
-                    'file': str(py_file),
-                    'complexity': metrics,
-                    'action': 'EXTRACT_INTERFACE'
-                })
+            if metrics["method_count"] > self.threshold:
+                self.violations.append(
+                    {"file": str(py_file), "complexity": metrics, "action": "EXTRACT_INTERFACE"}
+                )
         return self.violations
 
     def _analyze_file_complexity(self, file_path: Path) -> dict:
         """Uses AST to count classes and methods within a utility file."""
         try:
-            tree = ast.parse(file_path.read_text(encoding='utf-8'))
+            tree = ast.parse(file_path.read_text(encoding="utf-8"))
             methods = [n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef)]
             classes = [n for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
             return {
-                'method_count': len(methods),
-                'class_count': len(classes),
-                'loc': len(file_path.read_text().splitlines())
+                "method_count": len(methods),
+                "class_count": len(classes),
+                "loc": len(file_path.read_text().splitlines()),
             }
         except Exception:
-            return {'method_count': 0, 'class_count': 0, 'loc': 0}
+            return {"method_count": 0, "class_count": 0, "loc": 0}
 
     def generate_interface_stub(self, violation: dict) -> str:
         """Creates a proposed abstract base class for a 'Heavy' L0 utility."""
-        source_path = Path(violation['file'])
+        source_path = Path(violation["file"])
         interface_name = f"I{source_path.stem}"
 
         content = [
-            'from abc import ABC, abstractmethod',
-            '',
-            f'class {interface_name}(ABC):',
-            f'    """Automatically extracted interface for {source_path.name}"""'
+            "from abc import ABC, abstractmethod",
+            "",
+            f"class {interface_name}(ABC):",
+            f'    """Automatically extracted interface for {source_path.name}"""',
         ]
 
         # Extract method signatures for the interface
         tree = ast.parse(source_path.read_text())
         for node in ast.walk(tree):
-            if isinstance(node, ast.FunctionDef) and not node.name.startswith('_'):
+            if isinstance(node, ast.FunctionDef) and not node.name.startswith("_"):
                 args = ast.unparse(node.args)
-                content.append(f'    @abstractmethod\n    def {node.name}(self, {args}):\n        pass')
+                content.append(
+                    f"    @abstractmethod\n    def {node.name}(self, {args}):\n        pass"
+                )
 
         return "\n".join(content)
 
@@ -119,8 +119,12 @@ class InterfaceBoundaryAgent(MCPHardenedMixin):
 
         print(f"⚠️  ARCHITECTURAL DRIFT: Found {len(self.violations)} heavy L0 utilities.")
         for v in self.violations:
-            print(f"   [!] {v['file']} exceeds method threshold ({v['complexity']['method_count']}/{self.threshold})")
-            print(f"   Recommended: Extract to utils/core_extensions/Interface_{Path(v['file']).stem}.py")
+            print(
+                f"   [!] {v['file']} exceeds method threshold ({v['complexity']['method_count']}/{self.threshold})"
+            )
+            print(
+                f"   Recommended: Extract to utils/core_extensions/Interface_{Path(v['file']).stem}.py"
+            )
 
 
 if __name__ == "__main__":

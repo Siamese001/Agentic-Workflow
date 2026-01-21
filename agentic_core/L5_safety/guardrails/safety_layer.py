@@ -17,10 +17,11 @@ if TYPE_CHECKING:
     from agentic_core.PiiVault import create_pii_vault
 Logger: Any = logging.getLogger(__name__)
 
+
 class L5SafetyLayer:
     """L5 Safety Layer that validates all actions before execution."""
 
-    def __init__(self, cost_limit_usd: float=5.0):
+    def __init__(self, cost_limit_usd: float = 5.0):
         """Initialize the safety layer.
 
         Args:
@@ -29,10 +30,10 @@ class L5SafetyLayer:
         self.PiiVault = create_pii_vault()
         self.overseer = create_overseer()
         self.CostGovernor = create_cost_governor(cost_limit_usd)
-        self.session_id = 'mission-session'
+        self.session_id = "mission-session"
         self.validation_count = 0
         self.blocked_count = 0
-        LOGGER.info('L5 Safety Layer initialized')
+        LOGGER.info("L5 Safety Layer initialized")
 
     async def validate_action(self, request: ActionRequest) -> bool:
         """Validate an action request through all safety checks.
@@ -48,18 +49,18 @@ class L5SafetyLayer:
             Violation: Any = await self.overseer.validate_action(request)
             if Violation.is_violation:
                 self.blocked_count += 1
-                LOGGER.error(f'L5: Action BLOCKED - {Violation.reason}')
+                LOGGER.error(f"L5: Action BLOCKED - {Violation.reason}")
                 return False
             await self._check_and_redact_pii(request)
             if not self._validate_cost_estimate(request):
                 self.blocked_count += 1
-                LOGGER.error('L5: Action BLOCKED - Cost limit would be exceeded')
+                LOGGER.error("L5: Action BLOCKED - Cost limit would be exceeded")
                 return False
-            LOGGER.info('L5: Action Validated - [SAFE]')
+            LOGGER.info("L5: Action Validated - [SAFE]")
             return True
         except Exception as e:
             self.blocked_count += 1
-            LOGGER.error(f'L5: Validation error - {e}')
+            LOGGER.error(f"L5: Validation error - {e}")
             return False
 
     async def _check_and_redact_pii(self, request: ActionRequest):
@@ -70,7 +71,9 @@ class L5SafetyLayer:
         """
         for key, value in request.parameters.items():
             if isinstance(value, str) and len(value) > 10:
-                if any(keyword in value.lower() for keyword in ['email', 'phone', 'ssn', 'address']):
+                if any(
+                    keyword in value.lower() for keyword in ["email", "phone", "ssn", "address"]
+                ):
                     redacted = self.PiiVault.redact(self.session_id, value)
                     if redacted != value:
                         LOGGER.warning(f"L5: PII detected and redacted in parameter '{key}'")
@@ -85,7 +88,11 @@ class L5SafetyLayer:
         Returns:
             True if cost is acceptable, False otherwise
         """
-        estimated_tokens = {'tool_execution': 100, 'file_operations': 50, 'diagnostic_tool_creation': 500}.get(request.action_type, 100)
+        estimated_tokens = {
+            "tool_execution": 100,
+            "file_operations": 50,
+            "diagnostic_tool_creation": 500,
+        }.get(request.action_type, 100)
         return self.CostGovernor.check_action_cost(estimated_tokens)
 
     def track_action_cost(self, model: str, input_tokens: int, output_tokens: int) -> float:
@@ -110,14 +117,22 @@ class L5SafetyLayer:
         Returns:
             Dictionary with safety statistics
         """
-        return {'validations_performed': self.validation_count, 'actions_blocked': self.blocked_count, 'block_rate_percent': self.blocked_count / max(self.validation_count, 1) * 100, 'pii_vault_stats': self.PiiVault.get_stats(), 'cost_governor_stats': self.CostGovernor.get_stats(), 'forbidden_patterns_count': len(self.overseer.get_forbidden_patterns())}
+        return {
+            "validations_performed": self.validation_count,
+            "actions_blocked": self.blocked_count,
+            "block_rate_percent": self.blocked_count / max(self.validation_count, 1) * 100,
+            "pii_vault_stats": self.PiiVault.get_stats(),
+            "cost_governor_stats": self.CostGovernor.get_stats(),
+            "forbidden_patterns_count": len(self.overseer.get_forbidden_patterns()),
+        }
 
     def cleanup(self) -> Any:
         """Cleanup resources and sessions."""
         self.PiiVault.clear_session(self.session_id)
-        LOGGER.info('L5 Safety Layer cleanup complete')
+        LOGGER.info("L5 Safety Layer cleanup complete")
 
-def create_l5_safety_layer(cost_limit_usd: float=5.0) -> L5SafetyLayer:
+
+def create_l5_safety_layer(cost_limit_usd: float = 5.0) -> L5SafetyLayer:
     """Factory function to create L5 safety layer.
 
     Args:

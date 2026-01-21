@@ -19,7 +19,6 @@ project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 
-
 async def main():
     """Run duplicate scan and generate review table."""
     print("=" * 80)
@@ -60,17 +59,17 @@ async def main():
         size_kb = rec["size"] / 1024
         file_type = rec["file_type"]
 
-        table_data.append([
-            i,
-            file_type,
-            f"{size_kb:.1f} KB",
-            keep_file,
-            delete_files,
-            rationale
-        ])
+        table_data.append([i, file_type, f"{size_kb:.1f} KB", keep_file, delete_files, rationale])
 
     headers = ["#", "Type", "Size", "Keep", "Delete", "Rationale"]
-    print(tabulate(table_data, headers=headers, tablefmt="grid", maxcolwidths=[None, None, None, 50, 50, 40]))
+    print(
+        tabulate(
+            table_data,
+            headers=headers,
+            tablefmt="grid",
+            maxcolwidths=[None, None, None, 50, 50, 40],
+        )
+    )
 
     print()
     print("=" * 80)

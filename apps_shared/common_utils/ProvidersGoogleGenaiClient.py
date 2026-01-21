@@ -37,14 +37,14 @@ def run_llm_google(
 
             api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
             if not api_key:
-                raise RuntimeError("GOOGLE_API_KEY or GEMINI_API_KEY must be set for Google provider")
+                raise RuntimeError(
+                    "GOOGLE_API_KEY or GEMINI_API_KEY must be set for Google provider"
+                )
 
             client = genai.Client(api_key=api_key)
 
             # Prepare input for interactions.create
-            input_messages = [
-                {"role": "user", "content": prompt}
-            ]
+            input_messages = [{"role": "user", "content": prompt}]
 
             # Execute the interaction
             response = client.interactions.create(
@@ -53,13 +53,13 @@ def run_llm_google(
                 config={
                     "temperature": temperature,
                     "max_output_tokens": max_tokens,
-                }
+                },
             )
 
             # Extract content from response
-            if hasattr(response, 'candidates') and response.candidates:
+            if hasattr(response, "candidates") and response.candidates:
                 candidate = response.candidates[0]
-                if hasattr(candidate, 'content') and candidate.content:
+                if hasattr(candidate, "content") and candidate.content:
                     return candidate.content.parts[0].text if candidate.content.parts else ""
 
             return ""
@@ -70,6 +70,7 @@ def run_llm_google(
         except Exception as e:
             # Log error and fallback to legacy
             import logging
+
             logging.warning(f"Google GenAI v1beta API failed, falling back to legacy: {e}")
 
     # Legacy SDK implementation

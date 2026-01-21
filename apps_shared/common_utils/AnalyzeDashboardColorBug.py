@@ -8,6 +8,7 @@ User reports:
 
 This script extracts and analyzes the color coding logic.
 """
+
 import json
 import re
 
@@ -26,14 +27,14 @@ def analyze_color_bug():
 
     # Load dashboard HTML
     dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
-    html = dashboard_path.read_text(encoding='utf-8')
+    html = dashboard_path.read_text(encoding="utf-8")
 
     # Extract dashboardData
-    start_marker = 'const dashboardData = ['
-    end_marker = '];'
+    start_marker = "const dashboardData = ["
+    end_marker = "];"
     start_idx = html.find(start_marker)
     end_idx = html.find(end_marker, start_idx) + len(end_marker)
-    json_str = html[start_idx+len(start_marker)-1:end_idx-1]
+    json_str = html[start_idx + len(start_marker) - 1 : end_idx - 1]
     data = json.loads(json_str)
 
     total_row = data[0]
@@ -46,14 +47,16 @@ def analyze_color_bug():
     print(f"   Health: {total_row['Health']}")
 
     # Find getGradientBg function
-    gradient_match = re.search(r'const getGradientBg = \(value, target = \d+\) => \{(.*?)\};', html, re.DOTALL)
+    gradient_match = re.search(
+        r"const getGradientBg = \(value, target = \d+\) => \{(.*?)\};", html, re.DOTALL
+    )
     if gradient_match:
         print("\n🎨 getGradientBg Function Found:")
         print("   Uses value parameter to determine color")
         print("   Line ~2434: const getGradientBg = (value, target = 80) => {")
 
     # Find where Heal Cap cell background is set
-    heal_cap_bg_match = re.search(r'background:\$\{getGradientBg\(healCapStats\.min\)\}', html)
+    heal_cap_bg_match = re.search(r"background:\$\{getGradientBg\(healCapStats\.min\)\}", html)
     if heal_cap_bg_match:
         print("\n❌ BUG FOUND: Heal Cap Cell Background")
         print("   Line ~2525: background:${getGradientBg(healCapStats.min)}")
@@ -61,7 +64,7 @@ def analyze_color_bug():
         print("   NOT: totalRow['Heal Cap %'] (which is 100.0%)")
 
     # Calculate what healCapStats.min likely is
-    heal_cap_values = [r['Heal Cap %'] for r in data[1:] if r.get('Total', 0) > 0]
+    heal_cap_values = [r["Heal Cap %"] for r in data[1:] if r.get("Total", 0) > 0]
     min_heal_cap = min(heal_cap_values) if heal_cap_values else 0
 
     print("\n🔍 Calculated healCapStats.min:")
@@ -71,7 +74,9 @@ def analyze_color_bug():
     print(f"   But TOTAL row shows: {total_row['Heal Cap %']}% (100.0%)")
 
     # Find outlier badge logic
-    outlier_match = re.search(r'function formatOutlierBadge\(countAtZero, countBelowThreshold, threshold = \d+\)', html)
+    outlier_match = re.search(
+        r"function formatOutlierBadge\(countAtZero, countBelowThreshold, threshold = \d+\)", html
+    )
     if outlier_match:
         print("\n🏷️  Outlier Badge Logic:")
         print("   formatOutlierBadge(countAtZero, countBelowThreshold, threshold)")
@@ -79,9 +84,14 @@ def analyze_color_bug():
         print("   Badge shows: '34 <50%' means 34 agents below 50%")
 
     # Find where outlier badges are added
-    badge_match = re.search(r'\$\{formatOutlierBadge\(healCapOutliers\.atZero, healCapOutliers\.belowThreshold, 50\)\}', html)
+    badge_match = re.search(
+        r"\$\{formatOutlierBadge\(healCapOutliers\.atZero, healCapOutliers\.belowThreshold, 50\)\}",
+        html,
+    )
     if badge_match:
-        print("\n   Line ~2526: formatOutlierBadge(healCapOutliers.atZero, healCapOutliers.belowThreshold, 50)")
+        print(
+            "\n   Line ~2526: formatOutlierBadge(healCapOutliers.atZero, healCapOutliers.belowThreshold, 50)"
+        )
         print("   This adds the outlier badges to cells")
 
     print("\n" + "=" * 70)
@@ -121,11 +131,12 @@ def analyze_color_bug():
     print("   - Health")
 
     return {
-        'total_heal_cap': total_row['Heal Cap %'],
-        'min_heal_cap': min_heal_cap,
-        'bug_confirmed': True,
-        'fix_location': 'Lines 2525-2545 (TOTAL row cell backgrounds)'
+        "total_heal_cap": total_row["Heal Cap %"],
+        "min_heal_cap": min_heal_cap,
+        "bug_confirmed": True,
+        "fix_location": "Lines 2525-2545 (TOTAL row cell backgrounds)",
     }
+
 
 if __name__ == "__main__":
     results = analyze_color_bug()

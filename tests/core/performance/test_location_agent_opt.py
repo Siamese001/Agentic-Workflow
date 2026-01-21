@@ -5,6 +5,7 @@ Test Suite: LocationAgent Performance Optimization
 Verifies that LocationAgent uses SovereignIndex for file discovery
 instead of slow rglob calls that cause timeouts.
 """
+
 import ast
 import sys
 from pathlib import Path
@@ -15,10 +16,12 @@ sys.path.insert(0, str(PROJECT_ROOT))
 PASSED = 0
 FAILED = 0
 
+
 def test_pass(test_id: str, msg: str):
     global PASSED
     PASSED += 1
     print(f"  ✅ {test_id}: {msg}")
+
 
 def test_fail(test_id: str, msg: str):
     global FAILED
@@ -33,7 +36,7 @@ def test_sovereign_index_import():
     print("=" * 70)
 
     location_agent = PROJECT_ROOT / "agentic_core/L5_safety/validators/LocationAgent.py"
-    content = location_agent.read_text(encoding='utf-8')
+    content = location_agent.read_text(encoding="utf-8")
 
     if "from agentic_core.utils.sovereign_index import SovereignIndex" in content:
         test_pass("IMPORT", "SovereignIndex import present (canonical)")
@@ -55,7 +58,7 @@ def test_helper_function():
     print("=" * 70)
 
     location_agent = PROJECT_ROOT / "agentic_core/L5_safety/validators/LocationAgent.py"
-    content = location_agent.read_text(encoding='utf-8')
+    content = location_agent.read_text(encoding="utf-8")
 
     if "def _get_python_files(" in content:
         test_pass("HELPER", "_get_python_files helper function exists")
@@ -75,7 +78,7 @@ def test_no_direct_rglob():
     print("=" * 70)
 
     location_agent = PROJECT_ROOT / "agentic_core/L5_safety/validators/LocationAgent.py"
-    content = location_agent.read_text(encoding='utf-8')
+    content = location_agent.read_text(encoding="utf-8")
 
     # Count rglob occurrences
     rglob_count = content.count('.rglob("*.py")')
@@ -101,7 +104,7 @@ def test_syntax_valid():
     print("=" * 70)
 
     location_agent = PROJECT_ROOT / "agentic_core/L5_safety/validators/LocationAgent.py"
-    content = location_agent.read_text(encoding='utf-8')
+    content = location_agent.read_text(encoding="utf-8")
 
     try:
         ast.parse(content)
@@ -124,7 +127,7 @@ def test_sovereign_index_exists():
         test_fail("FILE_EXISTS", "sovereign_index.py not found")
         return
 
-    content = sovereign_index.read_text(encoding='utf-8')
+    content = sovereign_index.read_text(encoding="utf-8")
 
     if "class SovereignIndex" in content:
         test_pass("CLASS", "SovereignIndex class defined")
@@ -170,5 +173,6 @@ def main():
         print(f"\n  ❌ {FAILED} TESTS FAILED")
         return 1
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     sys.exit(main())

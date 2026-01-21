@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import hashlib
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
 import logging
 import os
@@ -18,6 +18,7 @@ Logger = logging.getLogger(__name__)
 
 try:
     import dspy
+
     DSPY_AVAILABLE = True
 except ImportError:
     DSPY_AVAILABLE = False
@@ -28,6 +29,7 @@ except ImportError:
 # NAMING FIXED: OptimizationExample → OptimizationExample
 class OptimizationExample:
     """A single training example for DSPy optimization."""
+
     inputs: dict[str, Any]
     ideal_output: dict[str, Any]
     metadata: dict[str, Any] = field(default_factory=dict)
@@ -37,6 +39,7 @@ class OptimizationExample:
 # NAMING FIXED: OptimizationResult → OptimizationResult
 class OptimizationResult:
     """Result of a DSPy optimization run."""
+
     optimized_prompt: str
     performance_score: float
     improvement_percentage: float
@@ -57,9 +60,7 @@ class DsPyOptimizer:
     """
 
     def __init__(
-        self,
-        model_name: str = "gpt-4o",
-        optimization_cache_dir: str = "./optimization_cache"
+        self, model_name: str = "gpt-4o", optimization_cache_dir: str = "./optimization_cache"
     ):
         """
         Initialize the DSPy optimizer.
@@ -102,7 +103,7 @@ class DsPyOptimizer:
         training_examples: list[OptimizationExample],
         validation_examples: list[OptimizationExample],
         metric_func: Callable,
-        max_examples: int = 50
+        max_examples: int = 50,
     ) -> OptimizationResult:
         """
         Optimize a prompt using DSPy.
@@ -129,7 +130,7 @@ class DsPyOptimizer:
 
         # Limit examples to prevent excessive computation
         train_examples = training_examples[:max_examples]
-        val_examples = validation_examples[:max_examples // 5]  # 20% for validation
+        val_examples = validation_examples[: max_examples // 5]  # 20% for validation
 
         LOGGER.info(f"Starting optimization with {len(train_examples)} examples")
 
@@ -139,33 +140,23 @@ class DsPyOptimizer:
 
             # Create the teleprompter (optimizer)
             teleprompter = dspy.teleprompt.BootstrapFewShot(
-                Metric=metric_func,
-                max_bootstrapped_demos=5,
-                max_labeled_demos=3
+                Metric=metric_func, max_bootstrapped_demos=5, max_labeled_demos=3
             )
 
             # Run optimization
             optimized_module = teleprompter.compile(
-                student=student_module,
-                trainset=self._convert_to_dspy_examples(train_examples)
+                student=student_module, trainset=self._convert_to_dspy_examples(train_examples)
             )
 
             # Evaluate on validation set
-            validation_score = self._evaluate_module(
-                optimized_module,
-                val_examples,
-                metric_func
-            )
+            validation_score = self._evaluate_module(optimized_module, val_examples, metric_func)
 
             # Extract optimized prompt
             optimized_prompt = self._extract_prompt_from_module(optimized_module)
 
             # Calculate improvement
             baseline_score = self._evaluate_baseline(
-                base_prompt,
-                signature_class,
-                val_examples,
-                metric_func
+                base_prompt, signature_class, val_examples, metric_func
             )
 
             improvement = ((validation_score - baseline_score) / baseline_score) * 100
@@ -176,7 +167,7 @@ class DsPyOptimizer:
                 performance_score=validation_score,
                 improvement_percentage=improvement,
                 best_examples=train_examples[:5],  # Top 5 examples
-                optimization_time_seconds=time.time() - start_time
+                optimization_time_seconds=time.time() - start_time,
             )
 
             # Cache the result
@@ -193,21 +184,19 @@ class DsPyOptimizer:
                 performance_score=0.0,
                 improvement_percentage=0.0,
                 best_examples=[],
-                optimization_time_seconds=time.time() - start_time
+                optimization_time_seconds=time.time() - start_time,
             )
 
     def _create_student_module(self, signature_class: type, base_prompt: str):
         """Create a DSPy module from a signature and prompt."""
 
         class OptimizedModule(dspy.Module):
-
             def __init__(self, signature, prompt_template):
                 super().__init__()
                 self.generate = dspy.ChainOfThought(signature)
                 self.prompt_template = prompt_template
 
             def forward(self, **kwargs):
-
                 # Apply the prompt template
                 self.prompt_template.format(**kwargs)
                 return self.generate(**kwargs)
@@ -235,10 +224,7 @@ class DsPyOptimizer:
         return dspy_examples
 
     def _evaluate_module(
-        self,
-        module: dspy.Module,
-        examples: list[OptimizationExample],
-        metric_func: Callable
+        self, module: dspy.Module, examples: list[OptimizationExample], metric_func: Callable
     ) -> float:
         """Evaluate a module on examples."""
         scores = []
@@ -262,7 +248,7 @@ class DsPyOptimizer:
         prompt: str,
         signature_class: type,
         examples: list[OptimizationExample],
-        metric_func: Callable
+        metric_func: Callable,
     ) -> float:
         """Evaluate baseline performance without optimization."""
         # For now, return a mock baseline
@@ -273,7 +259,7 @@ class DsPyOptimizer:
         """Extract the optimized prompt from a DSPy module."""
         # This would extract the actual optimized prompt
         # For now, return the module's demonstration as the prompt
-        if hasattr(module, 'generate') and hasattr(module.generate, 'demos'):
+        if hasattr(module, "generate") and hasattr(module.generate, "demos"):
             demos = module.generate.demos
             if demos:
                 # Convert demonstrations back to prompt format
@@ -294,7 +280,7 @@ class DsPyOptimizer:
         """Save optimization result to cache."""
         cache_file = self.cache_dir / f"opt_{key}.pkl"
         try:
-            with open(cache_file, 'wb') as f:
+            with open(cache_file, "wb") as f:
                 pickle.dump(result, f)
         except Exception as e:
             LOGGER.warning(f"Failed to cache result: {e}")
@@ -304,7 +290,7 @@ class DsPyOptimizer:
         cache_file = self.cache_dir / f"opt_{key}.pkl"
         try:
             if cache_file.exists():
-                with open(cache_file, 'rb') as f:
+                with open(cache_file, "rb") as f:
                     return pickle.load(f)
         except Exception as e:
             LOGGER.warning(f"Failed to load from cache: {e}")
@@ -320,14 +306,14 @@ class PromptSignatureRegistry:
         "Generate robust python code based on requirements.",
         REQUIREMENTS=dspy.InputField(),
         CONTEXT=dspy.InputField(),
-        verified_code=dspy.OutputField(desc="Python code that passes tests")
+        verified_code=dspy.OutputField(desc="Python code that passes tests"),
     )
 
     RESEARCH_ANALYSIS = dspy.Signature(
         "Analyze research data and provide insights.",
         research_data=dspy.InputField(),
         QUESTION=dspy.InputField(),
-        ANALYSIS=dspy.OutputField(desc="Detailed analysis with citations")
+        ANALYSIS=dspy.OutputField(desc="Detailed analysis with citations"),
     )
 
     TOOL_SELECTION = dspy.Signature(
@@ -335,7 +321,7 @@ class PromptSignatureRegistry:
         task_description=dspy.InputField(),
         available_tools=dspy.InputField(),
         selected_tool=dspy.OutputField(desc="Name of the best tool"),
-        REASONING=dspy.OutputField(desc="Why this tool was chosen")
+        REASONING=dspy.OutputField(desc="Why this tool was chosen"),
     )
     SUBATOMIC_HOP = dspy.Signature(
         """You are an intelligent agent responsible for a single atomic Task.
@@ -345,7 +331,7 @@ class PromptSignatureRegistry:
         context_summary=dspy.InputField(desc="Relevant data from previous hops"),
         task_goal=dspy.InputField(desc="What needs to be achieved in this hop"),
         REASONING=dspy.OutputField(desc="Chain of thought analysis"),
-        action_plan=dspy.OutputField(desc="Concrete steps to take")
+        action_plan=dspy.OutputField(desc="Concrete steps to take"),
     )
 
     @classmethod
@@ -355,7 +341,7 @@ class PromptSignatureRegistry:
             "coder": cls.CODE_GENERATION,
             "researcher": cls.RESEARCH_ANALYSIS,
             "tool_selector": cls.TOOL_SELECTION,
-            "SubatomicHop": cls.SUBATOMIC_HOP
+            "SubatomicHop": cls.SUBATOMIC_HOP,
         }
         return signatures.get(agent_type.lower())
 
@@ -371,9 +357,7 @@ class OptimizedHopModule(dspy.Module):
     def forward(self, role_description, context_summary, task_goal):
         """Execute the optimized hop reasoning."""
         return self.prog(
-            role_description=role_description,
-            context_summary=context_summary,
-            task_goal=task_goal
+            role_description=role_description, context_summary=context_summary, task_goal=task_goal
         )
 
 
@@ -424,8 +408,7 @@ def tool_selection_metric(predicted: dict[str, Any], ground_truth: dict[str, Any
 
 
 def create_dspy_optimizer(
-    model_name: str = "gpt-4o",
-    cache_dir: str = "./optimization_cache"
+    model_name: str = "gpt-4o", cache_dir: str = "./optimization_cache"
 ) -> DSPyOptimizer:
     """
     Factory function to create a DSPy optimizer.
@@ -437,7 +420,4 @@ def create_dspy_optimizer(
     Returns:
         DSPyOptimizer instance
     """
-    return DSPyOptimizer(
-        model_name=model_name,
-        optimization_cache_dir=cache_dir
-    )
+    return DSPyOptimizer(model_name=model_name, optimization_cache_dir=cache_dir)

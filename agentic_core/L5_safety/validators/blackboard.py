@@ -23,24 +23,39 @@ from typing import Any
 @dataclass
 class FileHealthScore:
     """Health score for a single file."""
+
     file_path: str
     current_violations: int
     last_healed_timestamp: float
     healing_attempts: int = 0
-    last_hash: str = ''
+    last_hash: str = ""
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for storage."""
-        return {'file_path': self.file_path, 'current_violations': self.current_violations, 'last_healed_timestamp': self.last_healed_timestamp, 'healing_attempts': self.healing_attempts, 'last_hash': self.last_hash}
+        return {
+            "file_path": self.file_path,
+            "current_violations": self.current_violations,
+            "last_healed_timestamp": self.last_healed_timestamp,
+            "healing_attempts": self.healing_attempts,
+            "last_hash": self.last_hash,
+        }
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> FileHealthScore:
         """Create from dictionary."""
-        return cls(file_path=data['file_path'], current_violations=data['current_violations'], last_healed_timestamp=data['last_healed_timestamp'], healing_attempts=data.get('healing_attempts', 0), last_hash=data.get('last_hash', ''))
+        return cls(
+            file_path=data["file_path"],
+            current_violations=data["current_violations"],
+            last_healed_timestamp=data["last_healed_timestamp"],
+            healing_attempts=data.get("healing_attempts", 0),
+            last_hash=data.get("last_hash", ""),
+        )
+
 
 @dataclass
 class HealingLease:
     """Represents a healing lease on a file."""
+
     file_path: str
     agent_name: str
     acquired_at: float
@@ -54,6 +69,7 @@ class HealingLease:
     def time_remaining(self) -> float:
         """Get remaining time in seconds."""
         return max(0, self.expires_at - time.time())
+
 
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L4_state.validation_context.l4_subatomic_testing_mixin import (
@@ -88,12 +104,12 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
         self.redis_client = redis_client
         self.pinecone_index = pinecone_index
         self.redis_fallback: dict[str, Any] = {}
-        self.lease_duration = int(os.getenv('HEALING_LEASE_DURATION', '30'))
-        self.max_backoff = int(os.getenv('MAX_LEASE_BACKOFF', '60'))
-        self.health_score_ttl = int(os.getenv('HEALTH_SCORE_TTL', '86400'))
+        self.lease_duration = int(os.getenv("HEALING_LEASE_DURATION", "30"))
+        self.max_backoff = int(os.getenv("MAX_LEASE_BACKOFF", "60"))
+        self.health_score_ttl = int(os.getenv("HEALTH_SCORE_TTL", "86400"))
         self._leases: dict[str, HealingLease] = {}
         self._health_scores: dict[str, FileHealthScore] = {}
-        self._mcp_audit('init')
+        self._mcp_audit("init")
 
     def _run_self_tests(self) -> bool:
         """Run self-tests for AtomicBlackboard."""
@@ -178,7 +194,7 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
                 severity=AnomalySeverity.HIGH,
                 description=str(e),
                 source=self.__class__.__name__,
-                details={"file_path": file_path}
+                details={"file_path": file_path},
             )
             await self.heal_async({}, anomaly)  # Non-blocking
             raise
@@ -194,30 +210,50 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
         Returns:
             HealingLease if acquired, None if file is locked
         """
-        lock_key: Any = f'lock:{file_path}'
-        lease_id: Any = f'{agent_name}:{time.time()}'
+        lock_key: Any = f"lock:{file_path}"
+        lease_id: Any = f"{agent_name}:{time.time()}"
         acquired_at: Any = time.time()
         expires_at: Any = acquired_at + self.lease_duration
         if self.redis_client:
             try:
-                acquired: Any = self.redis_client.set(lock_key, lease_id, nx=True, ex=self.lease_duration)
+                acquired: Any = self.redis_client.set(
+                    lock_key, lease_id, nx=True, ex=self.lease_duration
+                )
                 if acquired:
-                    return HealingLease(file_path=file_path, agent_name=agent_name, acquired_at=acquired_at, expires_at=expires_at, lease_id=lease_id)
+                    return HealingLease(
+                        file_path=file_path,
+                        agent_name=agent_name,
+                        acquired_at=acquired_at,
+                        expires_at=expires_at,
+                        lease_id=lease_id,
+                    )
                 else:
                     existing_lease: Any = self.redis_client.get(lock_key)
                     if existing_lease:
                         print(f"      🔒 File locked by {existing_lease.split(':')[0]}")
                     return None
             except Exception as e:
-                print(f'      [!] Redis lease acquisition failed: {e}')
+                print(f"      [!] Redis lease acquisition failed: {e}")
         if lock_key not in self.redis_fallback:
-            self.redis_fallback[lock_key] = {'lease_id': lease_id, 'expires_at': expires_at}
-            return HealingLease(file_path=file_path, agent_name=agent_name, acquired_at=acquired_at, expires_at=expires_at, lease_id=lease_id)
+            self.redis_fallback[lock_key] = {"lease_id": lease_id, "expires_at": expires_at}
+            return HealingLease(
+                file_path=file_path,
+                agent_name=agent_name,
+                acquired_at=acquired_at,
+                expires_at=expires_at,
+                lease_id=lease_id,
+            )
         else:
             existing: Any = self.redis_fallback[lock_key]
-            if time.time() > existing['expires_at']:
-                self.redis_fallback[lock_key] = {'lease_id': lease_id, 'expires_at': expires_at}
-                return HealingLease(file_path=file_path, agent_name=agent_name, acquired_at=acquired_at, expires_at=expires_at, lease_id=lease_id)
+            if time.time() > existing["expires_at"]:
+                self.redis_fallback[lock_key] = {"lease_id": lease_id, "expires_at": expires_at}
+                return HealingLease(
+                    file_path=file_path,
+                    agent_name=agent_name,
+                    acquired_at=acquired_at,
+                    expires_at=expires_at,
+                    lease_id=lease_id,
+                )
             return None
 
     def release_lease(self, lease: HealingLease) -> bool:
@@ -230,7 +266,7 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
         Returns:
             True if released successfully
         """
-        lock_key: Any = f'lock:{lease.file_path}'
+        lock_key: Any = f"lock:{lease.file_path}"
         if self.redis_client:
             try:
                 existing: Any = self.redis_client.get(lock_key)
@@ -239,14 +275,14 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
                     return True
                 return False
             except Exception as e:
-                print(f'      [!] Redis lease release failed: {e}')
+                print(f"      [!] Redis lease release failed: {e}")
         if lock_key in self.redis_fallback:
-            if self.redis_fallback[lock_key]['lease_id'] == lease.lease_id:
+            if self.redis_fallback[lock_key]["lease_id"] == lease.lease_id:
                 del self.redis_fallback[lock_key]
                 return True
         return False
 
-    def extend_lease(self, lease: HealingLease, additional_seconds: int=None) -> bool:
+    def extend_lease(self, lease: HealingLease, additional_seconds: int = None) -> bool:
         """
         Extend an existing lease.
 
@@ -259,7 +295,7 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
         """
         if additional_seconds is None:
             additional_seconds: Any = self.lease_duration
-        lock_key: Any = f'lock:{lease.file_path}'
+        lock_key: Any = f"lock:{lease.file_path}"
         if self.redis_client:
             try:
                 existing: Any = self.redis_client.get(lock_key)
@@ -269,15 +305,17 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
                     return True
                 return False
             except Exception as e:
-                print(f'      [!] Redis lease extension failed: {e}')
+                print(f"      [!] Redis lease extension failed: {e}")
         if lock_key in self.redis_fallback:
-            if self.redis_fallback[lock_key]['lease_id'] == lease.lease_id:
-                self.redis_fallback[lock_key]['expires_at'] = time.time() + additional_seconds
+            if self.redis_fallback[lock_key]["lease_id"] == lease.lease_id:
+                self.redis_fallback[lock_key]["expires_at"] = time.time() + additional_seconds
                 lease.expires_at = time.time() + additional_seconds
                 return True
         return False
 
-    def wait_for_lease(self, file_path: str, agent_name: str, max_wait: int=None) -> HealingLease | None:
+    def wait_for_lease(
+        self, file_path: str, agent_name: str, max_wait: int = None
+    ) -> HealingLease | None:
         """
         Wait for a lease with exponential backoff.
 
@@ -298,11 +336,11 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
             if lease:
                 return lease
             wait_time: Any = min(backoff, max_wait - total_waited)
-            print(f'      ⏳ Waiting {wait_time}s for lease on {os.path.basename(file_path)}...')
+            print(f"      ⏳ Waiting {wait_time}s for lease on {os.path.basename(file_path)}...")
             time.sleep(wait_time)
             total_waited += wait_time
             backoff *= 2
-        print(f'      ⏰ Timeout waiting for lease on {os.path.basename(file_path)}')
+        print(f"      ⏰ Timeout waiting for lease on {os.path.basename(file_path)}")
         return None
 
     def get_health_score(self, file_path: str) -> FileHealthScore | None:
@@ -315,19 +353,21 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
         Returns:
             FileHealthScore if exists, None otherwise
         """
-        score_key: Any = f'health:{file_path}'
+        score_key: Any = f"health:{file_path}"
         if self.redis_client:
             try:
                 data: Any = self.redis_client.get(score_key)
                 if data:
                     return FileHealthScore.from_dict(json.loads(data))
             except Exception as e:
-                print(f'      [!] Redis health score retrieval failed: {e}')
+                print(f"      [!] Redis health score retrieval failed: {e}")
         if score_key in self.redis_fallback:
             return FileHealthScore.from_dict(self.redis_fallback[score_key])
         return None
 
-    def update_health_score(self, file_path: str, current_violations: int, file_hash: str='') -> FileHealthScore:
+    def update_health_score(
+        self, file_path: str, current_violations: int, file_hash: str = ""
+    ) -> FileHealthScore:
         """
         Update health score for a file.
 
@@ -339,23 +379,39 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
         Returns:
             Updated FileHealthScore
         """
-        score_key: Any = f'health:{file_path}'
+        score_key: Any = f"health:{file_path}"
         existing: Any = self.get_health_score(file_path)
         if existing:
-            score: Any = FileHealthScore(file_path=file_path, current_violations=current_violations, last_healed_timestamp=time.time(), healing_attempts=existing.healing_attempts + 1, last_hash=file_hash)
+            score: Any = FileHealthScore(
+                file_path=file_path,
+                current_violations=current_violations,
+                last_healed_timestamp=time.time(),
+                healing_attempts=existing.healing_attempts + 1,
+                last_hash=file_hash,
+            )
         else:
-            score: Any = FileHealthScore(file_path=file_path, current_violations=current_violations, last_healed_timestamp=time.time(), healing_attempts=1, last_hash=file_hash)
+            score: Any = FileHealthScore(
+                file_path=file_path,
+                current_violations=current_violations,
+                last_healed_timestamp=time.time(),
+                healing_attempts=1,
+                last_hash=file_hash,
+            )
         if self.redis_client:
             try:
-                self.redis_client.setex(score_key, self.health_score_ttl, json.dumps(score.to_dict()))
+                self.redis_client.setex(
+                    score_key, self.health_score_ttl, json.dumps(score.to_dict())
+                )
             except Exception as e:
-                print(f'      [!] Redis health score update failed: {e}')
+                print(f"      [!] Redis health score update failed: {e}")
                 self.redis_fallback[score_key] = score.to_dict()
         else:
             self.redis_fallback[score_key] = score.to_dict()
         return score
 
-    def check_regression(self, file_path: str, new_violations: int, new_hash: str) -> tuple[bool, str]:
+    def check_regression(
+        self, file_path: str, new_violations: int, new_hash: str
+    ) -> tuple[bool, str]:
         """
         Check if a mutation would cause regression (increase errors).
 
@@ -369,13 +425,19 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
         """
         existing: Any = self.get_health_score(file_path)
         if not existing:
-            return (True, 'No previous health score')
+            return (True, "No previous health score")
         if new_violations > existing.current_violations:
             increase: Any = new_violations - existing.current_violations
-            return (False, f'Regression: Violations increased by {increase} ({existing.current_violations} → {new_violations})')
+            return (
+                False,
+                f"Regression: Violations increased by {increase} ({existing.current_violations} → {new_violations})",
+            )
         if new_hash and new_hash == existing.last_hash:
-            return (False, 'No change: File hash unchanged')
-        return (True, f'Improvement: Violations decreased from {existing.current_violations} to {new_violations}')
+            return (False, "No change: File hash unchanged")
+        return (
+            True,
+            f"Improvement: Violations decreased from {existing.current_violations} to {new_violations}",
+        )
 
     def revert_file(self, file_path: str, backup_content: str) -> bool:
         """
@@ -389,15 +451,17 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
             True if reverted successfully
         """
         try:
-            with open(file_path, 'w', encoding='utf-8') as f:
+            with open(file_path, "w", encoding="utf-8") as f:
                 f.write(backup_content)
-            print(f'      ↩️  Reverted {os.path.basename(file_path)} due to regression')
+            print(f"      ↩️  Reverted {os.path.basename(file_path)} due to regression")
             return True
         except Exception as e:
-            print(f'      [X] Failed to revert {file_path}: {e}')
+            print(f"      [X] Failed to revert {file_path}: {e}")
             return False
 
-    def store_healing_pattern(self, violation_key: int, violation_desc: str, fix_code: str, success_rate: float=1.0) -> Any:
+    def store_healing_pattern(
+        self, violation_key: int, violation_desc: str, fix_code: str, success_rate: float = 1.0
+    ) -> Any:
         """
         Store successful healing pattern in Pinecone.
 
@@ -411,16 +475,31 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
             return
         try:
             import openai
-            text: Any = f'Canon Key {violation_key}: {violation_desc}'
-            response: Any = openai.Embedding.create(input=text, model='text-embedding-ada-002')
-            embedding: Any = response['data'][0]['embedding']
-            pattern_id: Any = f'pattern_{violation_key}_{hash(text)}'
-            self.pinecone_index.upsert([{'id': pattern_id, 'values': embedding, 'metadata': {'violation_key': violation_key, 'violation_desc': violation_desc, 'fix': fix_code[:1000], 'success_rate': success_rate, 'timestamp': time.time()}}])
-            print(f'      [SAVE] Stored healing pattern for Key {violation_key} in Pinecone')
-        except Exception as e:
-            print(f'      [!] Failed to store pattern in Pinecone: {e}')
 
-    def find_similar_patterns(self, violation_desc: str, top_k: int=3) -> list[dict[str, Any]]:
+            text: Any = f"Canon Key {violation_key}: {violation_desc}"
+            response: Any = openai.Embedding.create(input=text, model="text-embedding-ada-002")
+            embedding: Any = response["data"][0]["embedding"]
+            pattern_id: Any = f"pattern_{violation_key}_{hash(text)}"
+            self.pinecone_index.upsert(
+                [
+                    {
+                        "id": pattern_id,
+                        "values": embedding,
+                        "metadata": {
+                            "violation_key": violation_key,
+                            "violation_desc": violation_desc,
+                            "fix": fix_code[:1000],
+                            "success_rate": success_rate,
+                            "timestamp": time.time(),
+                        },
+                    }
+                ]
+            )
+            print(f"      [SAVE] Stored healing pattern for Key {violation_key} in Pinecone")
+        except Exception as e:
+            print(f"      [!] Failed to store pattern in Pinecone: {e}")
+
+    def find_similar_patterns(self, violation_desc: str, top_k: int = 3) -> list[dict[str, Any]]:
         """
         Find similar healing patterns from Pinecone.
 
@@ -435,15 +514,28 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
             return []
         try:
             import openai
-            response: Any = openai.Embedding.create(input=violation_desc, model='text-embedding-ada-002')
-            embedding: Any = response['data'][0]['embedding']
-            results: Any = self.pinecone_index.query(vector=embedding, top_k=top_k, include_metadata=True)
+
+            response: Any = openai.Embedding.create(
+                input=violation_desc, model="text-embedding-ada-002"
+            )
+            embedding: Any = response["data"][0]["embedding"]
+            results: Any = self.pinecone_index.query(
+                vector=embedding, top_k=top_k, include_metadata=True
+            )
             patterns: Any = []
             for match in results.matches:
-                patterns.append({'score': match.score, 'violation_key': match.metadata.get('violation_key'), 'violation_desc': match.metadata.get('violation_desc'), 'fix': match.metadata.get('fix'), 'success_rate': match.metadata.get('success_rate', 1.0)})
+                patterns.append(
+                    {
+                        "score": match.score,
+                        "violation_key": match.metadata.get("violation_key"),
+                        "violation_desc": match.metadata.get("violation_desc"),
+                        "fix": match.metadata.get("fix"),
+                        "success_rate": match.metadata.get("success_rate", 1.0),
+                    }
+                )
             return patterns
         except Exception as e:
-            print(f'      [!] Failed to query Pinecone: {e}')
+            print(f"      [!] Failed to query Pinecone: {e}")
             return []
 
     def get_cached_result(self, cache_key: str) -> dict | None:
@@ -456,7 +548,7 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
                 pass
         return self.redis_fallback.get(cache_key)
 
-    def cache_result(self, cache_key: str, result: dict, ttl: int=3600) -> Any:
+    def cache_result(self, cache_key: str, result: dict, ttl: int = 3600) -> Any:
         """Cache validation result."""
         if self.redis_client:
             try:
@@ -470,20 +562,27 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
     def compute_file_hash(file_path: str) -> str:
         """Compute SHA256 hash of file content."""
         try:
-            with open(file_path, 'rb') as f:
+            with open(file_path, "rb") as f:
                 return hashlib.sha256(f.read()).hexdigest()
         except:
-            return ''
+            return ""
 
     def get_stats(self) -> dict[str, Any]:
         """Get blackboard statistics."""
-        stats: Any = {'redis_connected': self.redis_client is not None, 'pinecone_connected': self.pinecone_index is not None, 'fallback_entries': len(self.redis_fallback), 'lease_duration': self.lease_duration, 'max_backoff': self.max_backoff}
+        stats: Any = {
+            "redis_connected": self.redis_client is not None,
+            "pinecone_connected": self.pinecone_index is not None,
+            "fallback_entries": len(self.redis_fallback),
+            "lease_duration": self.lease_duration,
+            "max_backoff": self.max_backoff,
+        }
         if self.redis_client:
             try:
-                stats['redis_keys'] = self.redis_client.dbsize()
+                stats["redis_keys"] = self.redis_client.dbsize()
             except:
                 pass
         return stats
+
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()

@@ -105,14 +105,10 @@ def instantiate_mcp_client(spec: MCPClientSpec) -> object:
                 f"Optional MCP client '{spec.name}' module '{module_name}' "
                 f"not available, using stub: {exc}"
             )
-            return MCPClientStub(
-                spec.name,
-                {"error": f"Module not available: {exc}"}
-            )
+            return MCPClientStub(spec.name, {"error": f"Module not available: {exc}"})
 
         raise MCPClientInitializationError(
-            f"Failed to import MCP module '{module_name}' "
-            f"for client '{spec.name}': {exc}",
+            f"Failed to import MCP module '{module_name}' for client '{spec.name}': {exc}",
             client_name=spec.name,
             Provider=spec.Provider,
         ) from exc
@@ -125,35 +121,24 @@ def instantiate_mcp_client(spec: MCPClientSpec) -> object:
                 f"Optional MCP client '{spec.name}' class '{class_name}' "
                 f"not found in '{module_name}', using stub"
             )
-            return MCPClientStub(
-                spec.name,
-                {"error": f"Class not found: {class_name}"}
-            )
+            return MCPClientStub(spec.name, {"error": f"Class not found: {class_name}"})
 
         raise MCPClientInitializationError(
-            f"Module '{module_name}' Missing class '{class_name}' "
-            f"for MCP client '{spec.name}'.",
+            f"Module '{module_name}' Missing class '{class_name}' for MCP client '{spec.name}'.",
             client_name=spec.name,
             Provider=spec.Provider,
         ) from exc
 
     try:
         instance = client_cls(**spec.parameters)
-        Logger.info(
-            f"Initialized MCP client '{spec.name}' "
-            f"via {module_name}.{class_name}"
-        )
+        Logger.info(f"Initialized MCP client '{spec.name}' via {module_name}.{class_name}")
         return instance
     except Exception as exc:
         if spec.optional:
             Logger.warning(
-                f"Optional MCP client '{spec.name}' failed to initialize, "
-                f"using stub: {exc}"
+                f"Optional MCP client '{spec.name}' failed to initialize, using stub: {exc}"
             )
-            return MCPClientStub(
-                spec.name,
-                {"error": f"Initialization failed: {exc}"}
-            )
+            return MCPClientStub(spec.name, {"error": f"Initialization failed: {exc}"})
 
         raise MCPClientInitializationError(
             f"Failed to instantiate MCP client '{spec.name}': {exc}",
@@ -189,8 +174,7 @@ def create_mcp_registry(
                 raise
 
             Logger.warning(
-                f"Failed to initialize MCP client '{spec.name}', "
-                f"registering stub: {exc}"
+                f"Failed to initialize MCP client '{spec.name}', registering stub: {exc}"
             )
             stub = MCPClientStub(spec.name, {"error": str(exc)})
             registry.register(spec, stub)

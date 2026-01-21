@@ -96,7 +96,9 @@ class HardenedAnthropicExecutor(HardeningMixin):
         try:
             import anthropic
         except ImportError as exc:
-            raise ImportError("Anthropic package not installed. Install with: pip install anthropic") from exc
+            raise ImportError(
+                "Anthropic package not installed. Install with: pip install anthropic"
+            ) from exc
 
         api_key = os.getenv("ANTHROPIC_API_KEY")
         if not api_key:
@@ -150,10 +152,7 @@ class HardenedAnthropicExecutor(HardeningMixin):
 
         # Add user/assistant messages
         for msg in messages:
-            anthropic_messages.append({
-                "role": msg.role,
-                "content": msg.content
-            })
+            anthropic_messages.append({"role": msg.role, "content": msg.content})
 
         return anthropic_messages, system_prompt
 
@@ -276,7 +275,7 @@ class HardenedAnthropicExecutor(HardeningMixin):
         if raw_response.content:
             content = raw_response.content[0].text
 
-        if hasattr(raw_response, 'usage'):
+        if hasattr(raw_response, "usage"):
             usage = {
                 "prompt_tokens": raw_response.usage.input_tokens,
                 "completion_tokens": raw_response.usage.output_tokens,
@@ -322,22 +321,30 @@ class HardenedAnthropicExecutor(HardeningMixin):
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 future = executor.submit(
                     asyncio.run,
-                    self.run_llm(prompt, temperature=temperature, max_tokens=max_tokens,
-                                system_prompt=system_prompt, messages=messages)
+                    self.run_llm(
+                        prompt,
+                        temperature=temperature,
+                        max_tokens=max_tokens,
+                        system_prompt=system_prompt,
+                        messages=messages,
+                    ),
                 )
                 return future.result()
         else:
             return asyncio.run(
-                self.run_llm(prompt, temperature=temperature, max_tokens=max_tokens,
-                           system_prompt=system_prompt, messages=messages)
+                self.run_llm(
+                    prompt,
+                    temperature=temperature,
+                    max_tokens=max_tokens,
+                    system_prompt=system_prompt,
+                    messages=messages,
+                )
             )
 
 
 # Factory function for backward compatibility
 def create_hardened_anthropic_executor(
-    model: str = "claude-3-5-sonnet-20241022",
-    temperature: float = 0.7,
-    **kwargs
+    model: str = "claude-3-5-sonnet-20241022", temperature: float = 0.7, **kwargs
 ) -> HardenedAnthropicExecutor:
     """Create a hardened Anthropic executor.
 

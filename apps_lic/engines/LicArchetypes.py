@@ -74,16 +74,14 @@ ARCHETYPE_TEMPLATES: dict[RecipientArchetype, ArchetypeTemplate] = {
             "thought leadership and strategic alignment."
         ),
         tone=(
-            "Strategic, confident, focused on business impact and "
-            "organizational transformation."
+            "Strategic, confident, focused on business impact and organizational transformation."
         ),
         approach=(
             "Lead with macro trends, demonstrate understanding of strategic "
             "challenges, position yourself as a peer with complementary expertise."
         ),
         avoid=(
-            "Tactical details, overt sales language, assumptions about their "
-            "specific pain points."
+            "Tactical details, overt sales language, assumptions about their specific pain points."
         ),
         creative_brief=CreativeBrief(
             subject_line=SubjectLineBrief(
@@ -110,16 +108,13 @@ ARCHETYPE_TEMPLATES: dict[RecipientArchetype, ArchetypeTemplate] = {
             "collaboration and mutual value."
         ),
         tone=(
-            "Professional, collaborative, focused on team objectives and "
-            "operational excellence."
+            "Professional, collaborative, focused on team objectives and operational excellence."
         ),
         approach=(
             "Reference their role and responsibilities, demonstrate understanding "
             "of their team's challenges, offer concrete value."
         ),
-        avoid=(
-            "Overly formal language, standard value propositions, excessive deference."
-        ),
+        avoid=("Overly formal language, standard value propositions, excessive deference."),
         creative_brief=CreativeBrief(
             subject_line=SubjectLineBrief(
                 word_count=(5, 8),
@@ -186,8 +181,7 @@ ARCHETYPE_TEMPLATES: dict[RecipientArchetype, ArchetypeTemplate] = {
             "job description, emphasize career growth potential."
         ),
         avoid=(
-            "standard qualifications, vague interest statements, over-selling "
-            "unrelated experience."
+            "standard qualifications, vague interest statements, over-selling unrelated experience."
         ),
         creative_brief=CreativeBrief(
             subject_line=SubjectLineBrief(
@@ -308,9 +302,7 @@ class ArchetypeTemplateManager:
         template = self.get_template(Archetype)
         return template.creative_brief
 
-    def get_word_count_range(
-        self, Archetype: RecipientArchetype
-    ) -> tuple[int, int]:
+    def get_word_count_range(self, Archetype: RecipientArchetype) -> tuple[int, int]:
         """Get word count range for an Archetype."""
         template = self.get_template(Archetype)
         return template.creative_brief.message_body.word_count

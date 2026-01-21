@@ -18,6 +18,7 @@ import pytest
 def get_project_root() -> Path:
     """Get project root directory."""
     import os
+
     if "PROJECT_ROOT" in os.environ:
         return Path(os.environ["PROJECT_ROOT"])
 
@@ -47,9 +48,9 @@ class TestVoidViolationHandling:
         """Verify LocationHealerAgent has _heal_void_violation method."""
         from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
 
-        assert hasattr(LocationHealerAgent, '_heal_void_violation')
-        assert hasattr(LocationHealerAgent, '_relocate_to_existing_subfolder')
-        assert hasattr(LocationHealerAgent, '_create_new_subfolder_and_update_ssot')
+        assert hasattr(LocationHealerAgent, "_heal_void_violation")
+        assert hasattr(LocationHealerAgent, "_relocate_to_existing_subfolder")
+        assert hasattr(LocationHealerAgent, "_create_new_subfolder_and_update_ssot")
 
     def test_void_violation_dry_run_shows_options(self, project_root):
         """Verify dry run shows all options instead of archiving."""
@@ -65,7 +66,7 @@ class TestVoidViolationHandling:
             msg="VOID VIOLATION: Path 'agentic_core/unknown_folder/test_file.py' not in sovereign territory",
             dry_run=True,
             affected_paths=[],
-            import_touched_paths=[]
+            import_touched_paths=[],
         )
 
         # Should show options, not archive
@@ -93,7 +94,9 @@ class TestVoidViolationHandling:
         healer = LocationHealerAgent(project_root=project_root)
 
         # Mock the _heal_void_violation method
-        healer._heal_void_violation = MagicMock(return_value={"applied": True, "action_taken": "MOCKED"})
+        healer._heal_void_violation = MagicMock(
+            return_value={"applied": True, "action_taken": "MOCKED"}
+        )
 
         mock_file = project_root / "agentic_core" / "unknown_folder" / "test_file.py"
         archives_root = project_root / "archives"
@@ -104,7 +107,7 @@ class TestVoidViolationHandling:
             archives_root=archives_root,
             dry_run=True,
             affected_paths=[],
-            import_touched_paths=[]
+            import_touched_paths=[],
         )
 
         # Should have called _heal_void_violation, not _heal_via_archiving

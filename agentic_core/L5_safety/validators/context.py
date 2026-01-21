@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import ast
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
 import asyncio
 import functools
@@ -123,6 +123,7 @@ few_shot_style = """
 # SOVEREIGN UTILITIES
 # ==============================================================================
 
+
 def _get_python_files(base_path: str = ".") -> list[str]:
     """
     Recursively finds all Python files in the given base path.
@@ -134,48 +135,56 @@ def _get_python_files(base_path: str = ".") -> list[str]:
                 python_files.append(os.path.join(root, file))
     return python_files
 
+
 def _clean_llm_code(text: str) -> str:
     """
     Cleans LLM generated code by removing common markdown fences.
     """
     # Remove markdown code block fences
     if text.startswith("```python"):
-        text = text[len("```python"):].strip()
+        text = text[len("```python") :].strip()
     if text.startswith("```"):
-        text = text[len("```"):].strip()
+        text = text[len("```") :].strip()
     if text.endswith("```"):
-        text = text[:-len("```")].strip()
+        text = text[: -len("```")].strip()
     return text
+
 
 def _rate_limited_retry(max_attempts: int = 3, delay_seconds: float = 1.0):
     """
     A simple retry decorator for async functions with a delay.
     """
-    def decorator(func):
 
+    def decorator(func):
         @functools.wraps(func)
         async def wrapper(*args, **kwargs):
-
             for attempt in range(1, max_attempts + 1):
                 try:
                     return await func(*args, **kwargs)
                 except Exception as e:
                     if attempt < max_attempts:
-                        print(f"   [RETRY] Attempt {attempt}/{max_attempts} failed: {e}. Retrying in {delay_seconds}s...")
+                        print(
+                            f"   [RETRY] Attempt {attempt}/{max_attempts} failed: {e}. Retrying in {delay_seconds}s..."
+                        )
                         await asyncio.sleep(delay_seconds)
                     else:
                         # Re-raise the last exception if all attempts fail
                         raise
+
         return wrapper
+
     return decorator
+
 
 # ==============================================================================
 # LEVEL 6: SOVEREIGN ARCHITECTURE
 # ==============================================================================
 
+
 # NAMING FIXED: DependencyGraph → DependencyGraph
 class DependencyGraph:
     """Builds a directed graph of imports and class hierarchies."""
+
     def __init__(self):
         self.graph: dict[str, dict[str, list[Any]]] = {}
         self.reverse_graph: dict[str, list[str]] = {}
@@ -219,6 +228,7 @@ class DependencyGraph:
 # NAMING FIXED: BudgetManager → BudgetManager
 class BudgetManager:
     """Tracks estimated token usage and financial safety limits."""
+
     def __init__(self, limit_usd: float | None = None):
         # SAFETY FIX: Prioritize environment variables for resource limits
         env_limit = os.getenv("AGENTIC_BUDGET_USD")
@@ -253,6 +263,7 @@ class BudgetManager:
 # NAMING FIXED: ValidationContext → ValidationContext
 class ValidationContext:
     """Shared memory and infrastructure state for all agents."""
+
     results: dict[int, Any] = field(default_factory=dict)
     signals: set[str] = field(default_factory=set)
     instructions: list[str] = field(default_factory=list)
@@ -266,7 +277,9 @@ class ValidationContext:
     memory_file: Path = field(default_factory=lambda: Path("canon_memory.json"))
     file_hashes: dict[str, str] = field(default_factory=dict)
     skip_files: set[str] = field(default_factory=set)
-    flapping_files: list[str] = field(default_factory=list) # Changed from set to list to match default_factory
+    flapping_files: list[str] = field(
+        default_factory=list
+    )  # Changed from set to list to match default_factory
     successful_traces: list[str] = field(default_factory=list)
 
     # Infrastructure
@@ -286,7 +299,7 @@ class ValidationContext:
 
     def __post_init__(self):
         print("   [CTX] 🧠 INITIALIZING TRI-BRAIN...")
-        self.python_files = _get_python_files() # Refactored
+        self.python_files = _get_python_files()  # Refactored
         self._load_memory()
         self._init_intelligence()
 
@@ -305,29 +318,27 @@ class ValidationContext:
             try:
                 with open(self.memory_file) as f:
                     data = json.load(f)
-                    self.file_hashes = data.get('hashes', {})
-                    self.skip_files = set(data.get('skip', []))
+                    self.file_hashes = data.get("hashes", {})
+                    self.skip_files = set(data.get("skip", []))
             except Exception:
                 pass
 
     def _save_memory(self):
         try:
-            data = {'hashes': self.file_hashes, 'skip': list(self.skip_files)}
-            with open(self.memory_file, 'w') as f:
+            data = {"hashes": self.file_hashes, "skip": list(self.skip_files)}
+            with open(self.memory_file, "w") as f:
                 json.dump(data, f)
         except Exception:
             pass
 
     def report(self, agent: str, key: int, passed: bool, details: Any):
-
         self.results[key] = {"passed": passed, "details": details, "agent": agent}
         if not passed:
             print(f"   [{agent}] Key {key}: FAIL")
 
     def get_file_content(self, file_path: str) -> str:
-
         try:
-            with open(file_path, encoding='utf-8') as f:
+            with open(file_path, encoding="utf-8") as f:
                 return f.read()
         except Exception:
             return ""
@@ -338,7 +349,7 @@ class ValidationContext:
         """
         try:
             os.makedirs(os.path.dirname(path), exist_ok=True)
-            with open(path, 'w', encoding='utf-8') as f:
+            with open(path, "w", encoding="utf-8") as f:
                 f.write(content)
             return True
         except Exception:
@@ -346,24 +357,28 @@ class ValidationContext:
 
     @property
     def client(self):
-
         return self._client
 
-    @_rate_limited_retry() # Refactored
-    async def resilient_mutation(self, agent_name: str, Task: str, code: str = "", file_path: str = None, max_attempts: int = 3, **kwargs) -> str:
-
+    @_rate_limited_retry()  # Refactored
+    async def resilient_mutation(
+        self,
+        agent_name: str,
+        Task: str,
+        code: str = "",
+        file_path: str = None,
+        max_attempts: int = 3,
+        **kwargs,
+    ) -> str:
         if not self.intelligence_enabled or not self.budget.check_budget():
             return code
 
         try:
             prompt = f"Agent: {agent_name}\nTask: {Task}\nContext:\n{code[:4000]}"
             response = await asyncio.to_thread(
-                self._client.models.generate_content,
-                model=self.model_id,
-                contents=[prompt]
+                self._client.models.generate_content, model=self.model_id, contents=[prompt]
             )
             await self.budget.track(prompt, response.text)
-            return _clean_llm_code(response.text) # Refactored
+            return _clean_llm_code(response.text)  # Refactored
         except Exception as e:
             print(f"   [{agent_name}] Mutation failed: {e}")
             return code
@@ -407,7 +422,7 @@ class ValidationContext:
         if self.file_backups:
             for file_path, content in self.file_backups.items():
                 try:
-                    with open(file_path, 'w', encoding='utf-8') as f:
+                    with open(file_path, "w", encoding="utf-8") as f:
                         f.write(content)
                     print(f"   ↩️ Rolled back: {file_path}")
                 except Exception as e:

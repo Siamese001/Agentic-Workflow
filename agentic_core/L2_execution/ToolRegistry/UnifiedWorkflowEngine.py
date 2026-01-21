@@ -10,7 +10,6 @@ Implements single entrypoint with specialized coordinators for different mission
 # Suggested keywords to add in docstring/code: agent, healer, memory, prompt, state, validator
 # This boosts alignment detection — review and integrate appropriately
 
-
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -20,6 +19,7 @@ from typing import Any
 
 class MissionFocus(Enum):
     """Mission focus types for coordinator selection."""
+
     REASONING = "reasoning"
     EXECUTION = "execution"
     SAFETY = "safety"
@@ -85,10 +85,10 @@ class ReasoningCoordinator(Coordinator):
                 "result": {
                     "reasoning_type": reasoning_type,
                     "depth": max_depth,
-                    "analysis": f"Analyzed: {problem[:50]}..."
+                    "analysis": f"Analyzed: {problem[:50]}...",
                 },
                 "coordinator": self.name,
-                "metadata": {"problem_length": len(problem)}
+                "metadata": {"problem_length": len(problem)},
             }
 
             self.record_execution(True)
@@ -99,7 +99,7 @@ class ReasoningCoordinator(Coordinator):
                 "status": "failure",
                 "result": None,
                 "coordinator": self.name,
-                "metadata": {"error": str(e)}
+                "metadata": {"error": str(e)},
             }
 
 
@@ -119,13 +119,9 @@ class ExecutionCoordinator(Coordinator):
 
             result = {
                 "status": "success",
-                "result": {
-                    "action": action,
-                    "tools_used": len(tools),
-                    "execution_time": 0.1
-                },
+                "result": {"action": action, "tools_used": len(tools), "execution_time": 0.1},
                 "coordinator": self.name,
-                "metadata": {"tools": tools}
+                "metadata": {"tools": tools},
             }
 
             self.record_execution(True)
@@ -136,7 +132,7 @@ class ExecutionCoordinator(Coordinator):
                 "status": "failure",
                 "result": None,
                 "coordinator": self.name,
-                "metadata": {"error": str(e)}
+                "metadata": {"error": str(e)},
             }
 
 
@@ -159,10 +155,10 @@ class SafetyCoordinator(Coordinator):
                 "result": {
                     "violations_checked": len(violations),
                     "enforcement_level": enforcement_level,
-                    "violations_blocked": 0
+                    "violations_blocked": 0,
                 },
                 "coordinator": self.name,
-                "metadata": {"violation_count": len(violations)}
+                "metadata": {"violation_count": len(violations)},
             }
 
             self.record_execution(True)
@@ -173,7 +169,7 @@ class SafetyCoordinator(Coordinator):
                 "status": "failure",
                 "result": None,
                 "coordinator": self.name,
-                "metadata": {"error": str(e)}
+                "metadata": {"error": str(e)},
             }
 
 
@@ -196,10 +192,10 @@ class ValidationCoordinator(Coordinator):
                 "result": {
                     "targets_validated": len(targets),
                     "rules_applied": len(validation_rules),
-                    "validation_passed": True
+                    "validation_passed": True,
                 },
                 "coordinator": self.name,
-                "metadata": {"target_count": len(targets)}
+                "metadata": {"target_count": len(targets)},
             }
 
             self.record_execution(True)
@@ -210,7 +206,7 @@ class ValidationCoordinator(Coordinator):
                 "status": "failure",
                 "result": None,
                 "coordinator": self.name,
-                "metadata": {"error": str(e)}
+                "metadata": {"error": str(e)},
             }
 
 
@@ -233,10 +229,10 @@ class HealingCoordinator(Coordinator):
                 "result": {
                     "violations_healed": len(violations),
                     "dry_run": dry_run,
-                    "healing_depth": 3
+                    "healing_depth": 3,
                 },
                 "coordinator": self.name,
-                "metadata": {"violation_count": len(violations)}
+                "metadata": {"violation_count": len(violations)},
             }
 
             self.record_execution(True)
@@ -247,7 +243,7 @@ class HealingCoordinator(Coordinator):
                 "status": "failure",
                 "result": None,
                 "coordinator": self.name,
-                "metadata": {"error": str(e)}
+                "metadata": {"error": str(e)},
             }
 
 
@@ -270,10 +266,10 @@ class ObservabilityCoordinator(Coordinator):
                 "result": {
                     "metrics_collected": len(metrics),
                     "trace_depth": trace_depth,
-                    "observability_level": "full"
+                    "observability_level": "full",
                 },
                 "coordinator": self.name,
-                "metadata": {"metric_count": len(metrics)}
+                "metadata": {"metric_count": len(metrics)},
             }
 
             self.record_execution(True)
@@ -284,7 +280,7 @@ class ObservabilityCoordinator(Coordinator):
                 "status": "failure",
                 "result": None,
                 "coordinator": self.name,
-                "metadata": {"error": str(e)}
+                "metadata": {"error": str(e)},
             }
 
 
@@ -307,10 +303,10 @@ class OptimizationCoordinator(Coordinator):
                 "result": {
                     "targets_optimized": len(targets),
                     "optimization_level": optimization_level,
-                    "improvement_estimate": "15%"
+                    "improvement_estimate": "15%",
                 },
                 "coordinator": self.name,
-                "metadata": {"target_count": len(targets)}
+                "metadata": {"target_count": len(targets)},
             }
 
             self.record_execution(True)
@@ -321,7 +317,7 @@ class OptimizationCoordinator(Coordinator):
                 "status": "failure",
                 "result": None,
                 "coordinator": self.name,
-                "metadata": {"error": str(e)}
+                "metadata": {"error": str(e)},
             }
 
 
@@ -339,7 +335,7 @@ class DefaultCoordinator(Coordinator):
                 "status": "success",
                 "result": {"mission_type": mission.get("type", "unknown")},
                 "coordinator": self.name,
-                "metadata": {}
+                "metadata": {},
             }
 
             self.record_execution(True)
@@ -350,7 +346,7 @@ class DefaultCoordinator(Coordinator):
                 "status": "failure",
                 "result": None,
                 "coordinator": self.name,
-                "metadata": {"error": str(e)}
+                "metadata": {"error": str(e)},
             }
 
 
@@ -417,15 +413,17 @@ class UnifiedWorkflowEngine:
             "total_missions": self.total_missions,
             "total_successes": self.total_successes,
             "total_failures": self.total_failures,
-            "success_rate": (self.total_successes / self.total_missions * 100) if self.total_missions > 0 else 0,
+            "success_rate": (self.total_successes / self.total_missions * 100)
+            if self.total_missions > 0
+            else 0,
             "coordinators": {
                 focus.value: {
                     "missions": coord.missions_executed,
                     "successes": coord.missions_succeeded,
-                    "failures": coord.missions_failed
+                    "failures": coord.missions_failed,
                 }
                 for focus, coord in self.coordinators.items()
-            }
+            },
         }
 
     def register_coordinator(self, focus: MissionFocus, coordinator: Coordinator) -> None:

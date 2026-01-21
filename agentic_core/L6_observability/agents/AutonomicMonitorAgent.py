@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: memory, orchestrator, prompt, state
@@ -43,7 +42,13 @@ class AutonomicMonitorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
     - Self-healing recommendations
     """
 
-    def __init__(self, success_rate_threshold: float=0.8, error_rate_threshold: float=0.2, response_time_threshold_ms: float=5000.0, enable_logging: bool=True) -> None:
+    def __init__(
+        self,
+        success_rate_threshold: float = 0.8,
+        error_rate_threshold: float = 0.2,
+        response_time_threshold_ms: float = 5000.0,
+        enable_logging: bool = True,
+    ) -> None:
         """Initialize autonomic monitor.
 
         Args:
@@ -60,7 +65,14 @@ class AutonomicMonitorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
         self._alerts: list[HealthAlert] = []
         self._alert_callbacks: list[Callable[[HealthAlert], None]] = []
         if self.enable_logging:
-            Logger.info('autonomic_monitor_initialized', EXTRA={'success_threshold': success_rate_threshold, 'error_threshold': error_rate_threshold, 'response_time_threshold': response_time_threshold_ms})
+            Logger.info(
+                "autonomic_monitor_initialized",
+                EXTRA={
+                    "success_threshold": success_rate_threshold,
+                    "error_threshold": error_rate_threshold,
+                    "response_time_threshold": response_time_threshold_ms,
+                },
+            )
 
     def record_metrics(self, metrics: HealthMetrics) -> None:
         """Record health metrics for an agent.
@@ -94,13 +106,21 @@ class AutonomicMonitorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
         avg_success_rate: Any = sum(m.success_rate for m in recent) / len(recent)
         avg_error_rate: Any = sum(m.error_rate for m in recent) / len(recent)
         avg_response_time: Any = sum(m.avg_response_time_ms for m in recent) / len(recent)
-        if avg_success_rate < 0.5 or avg_error_rate > 0.5 or avg_response_time > self.response_time_threshold_ms * 2:
+        if (
+            avg_success_rate < 0.5
+            or avg_error_rate > 0.5
+            or avg_response_time > self.response_time_threshold_ms * 2
+        ):
             return HealthStatus.CRITICAL
-        elif avg_success_rate < self.success_rate_threshold or avg_error_rate > self.error_rate_threshold or avg_response_time > self.response_time_threshold_ms:
+        elif (
+            avg_success_rate < self.success_rate_threshold
+            or avg_error_rate > self.error_rate_threshold
+            or avg_response_time > self.response_time_threshold_ms
+        ):
             return HealthStatus.DEGRADED
         return HealthStatus.HEALTHY
 
-    def get_metrics(self, agent_id: str, limit: int=10) -> list[HealthMetrics]:
+    def get_metrics(self, agent_id: str, limit: int = 10) -> list[HealthMetrics]:
         """Get recent metrics for an agent.
 
         Args:
@@ -113,7 +133,9 @@ class AutonomicMonitorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
         self._metrics_history.get(agent_id, [])
         return history[-limit:] if history else []
 
-    def get_alerts(self, agent_id: str | None=None, Severity: AlertSeverity | None=None) -> list[HealthAlert]:
+    def get_alerts(
+        self, agent_id: str | None = None, Severity: AlertSeverity | None = None
+    ) -> list[HealthAlert]:
         """Get health alerts.
 
         Args:
@@ -151,7 +173,14 @@ class AutonomicMonitorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
         else:
             pass
         self._generate_recommendations(metrics, status)
-        HealthAlert(alert_id=f'alert_{metrics.agent_id}_{int(time.time())}', agent_id=metrics.agent_id, SEVERITY=Severity, MESSAGE=message, METRICS=metrics, recommended_actions=recommendations)
+        HealthAlert(
+            alert_id=f"alert_{metrics.agent_id}_{int(time.time())}",
+            agent_id=metrics.agent_id,
+            SEVERITY=Severity,
+            MESSAGE=message,
+            METRICS=metrics,
+            recommended_actions=recommendations,
+        )
         self._alerts.append(alert)
         if len(self._alerts) > 100:
             self._alerts = self._alerts[-100:]
@@ -160,9 +189,17 @@ class AutonomicMonitorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
                 callback(alert)
             except Exception as e:
                 if self.enable_logging:
-                    Logger.error('alert_callback_failed', extra={'error': str(e)}, exc_info=True)
+                    Logger.error("alert_callback_failed", extra={"error": str(e)}, exc_info=True)
         if self.enable_logging:
-            Logger.warning('health_alert_triggered', EXTRA={'alert_id': alert.alert_id, 'agent_id': metrics.agent_id, 'Severity': Severity.value, 'status': status.value})
+            Logger.warning(
+                "health_alert_triggered",
+                EXTRA={
+                    "alert_id": alert.alert_id,
+                    "agent_id": metrics.agent_id,
+                    "Severity": Severity.value,
+                    "status": status.value,
+                },
+            )
 
     def _generate_recommendations(self, metrics: HealthMetrics, status: HealthStatus) -> list[str]:
         """Generate improvement recommendations.
@@ -175,23 +212,34 @@ class AutonomicMonitorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
             List of recommendations
         """
         if metrics.success_rate < self.success_rate_threshold:
-            recommendations.append(f'Success rate ({metrics.success_rate:.1%}) below threshold - Consider retraining in Agent Gym')
+            recommendations.append(
+                f"Success rate ({metrics.success_rate:.1%}) below threshold - Consider retraining in Agent Gym"
+            )
         if metrics.error_rate > self.error_rate_threshold:
-            recommendations.append(f'Error rate ({metrics.error_rate:.1%}) above threshold - Review error logs and failure patterns')
+            recommendations.append(
+                f"Error rate ({metrics.error_rate:.1%}) above threshold - Review error logs and failure patterns"
+            )
         if metrics.avg_response_time_ms > self.response_time_threshold_ms:
-            recommendations.append(f'Response time ({metrics.avg_response_time_ms:.0f}ms) above threshold - Optimize performance or increase resources')
+            recommendations.append(
+                f"Response time ({metrics.avg_response_time_ms:.0f}ms) above threshold - Optimize performance or increase resources"
+            )
         if metrics.circuit_breaker_trips > 5:
-            recommendations.append(f'Circuit breaker trips ({metrics.circuit_breaker_trips}) high - Check external service health and implement fallbacks')
+            recommendations.append(
+                f"Circuit breaker trips ({metrics.circuit_breaker_trips}) high - Check external service health and implement fallbacks"
+            )
         if status == HealthStatus.CRITICAL:
-            recommendations.append('CRITICAL: Consider taking agent offline for maintenance')
+            recommendations.append("CRITICAL: Consider taking agent offline for maintenance")
         return recommendations
 
     @standard_heal
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()
 
-def create_autonomic_monitor(success_rate_threshold: float=0.8, error_rate_threshold: float=0.2) -> AutonomicMonitorAgent:
+
+def create_autonomic_monitor(
+    success_rate_threshold: float = 0.8, error_rate_threshold: float = 0.2
+) -> AutonomicMonitorAgent:
     """Factory function to create autonomic monitor.
 
     Args:
@@ -201,4 +249,6 @@ def create_autonomic_monitor(success_rate_threshold: float=0.8, error_rate_thres
     Returns:
         AutonomicMonitorAgent instance
     """
-    return AutonomicMonitorAgent(success_rate_threshold=success_rate_threshold, error_rate_threshold=error_rate_threshold)
+    return AutonomicMonitorAgent(
+        success_rate_threshold=success_rate_threshold, error_rate_threshold=error_rate_threshold
+    )

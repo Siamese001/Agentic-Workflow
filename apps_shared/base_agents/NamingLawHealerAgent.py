@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: orchestrator, state, workflow
@@ -36,7 +35,7 @@ warnings.warn(
     "NamingLawHealerAgent is deprecated (conflicts with PascalCase naming). "
     "Use NamingAgent for validation or PascalSovereigntyEnforcerAgent for fixes.",
     DeprecationWarning,
-    stacklevel=2
+    stacklevel=2,
 )
 
 from agentic_core.L5_safety.validators.decorators import standard_heal
@@ -116,12 +115,15 @@ Current date: December 24, 2025
             return await self._execute_per_file(file_path)
 
         # Batch mode (legacy)
-        print("\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n   [*] NamingLawHealerAgent: Scanning for naming violations...")
+        print(
+            "\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n   [*] NamingLawHealerAgent: Scanning for naming violations..."
+        )
         self.healed_count = 0
         self.healed_files = []
 
         # Sub-20: Use ssot_discovery instead of rglob
         from agentic_core.utils.ssot_discovery import get_python_files
+
         for py_file in get_python_files(self.root):
             # Skip protected files and __init__ files
             if py_file.name == "__init__.py" or self._is_protected_file(py_file):
@@ -142,10 +144,12 @@ Current date: December 24, 2025
                     print(f"   [HEALING] NamingLawHealer: Renaming {py_file.name} -> {new_name}")
                     py_file.rename(new_path)
                     self.healed_count += 1
-                    self.healed_files.append({
-                        "old": str(py_file.relative_to(self.root)),
-                        "new": str(new_path.relative_to(self.root))
-                    })
+                    self.healed_files.append(
+                        {
+                            "old": str(py_file.relative_to(self.root)),
+                            "new": str(new_path.relative_to(self.root)),
+                        }
+                    )
                     self.ctx.report("NamingLawHealer", 1, True, f"Renamed {py_file.name}")
                 except Exception as e:
                     print(f"   [!] Failed to rename {py_file.name}: {e}")
@@ -161,7 +165,7 @@ Current date: December 24, 2025
         # [SOVEREIGN MUTATION]
         response = await self.ctx.engine.resilient_mutation(
             prompt=f"{self.SYSTEM_PROMPT}\n\nTarget: {file_path}",
-            response_format={"type": "json_object"}
+            response_format={"type": "json_object"},
         )
 
         result = json.loads(response)
@@ -213,7 +217,7 @@ Current date: December 24, 2025
         is_low_signal = not any(sig in stem for sig in CANON_SIGNALS)
 
         # File needs healing if it violates either rule
-        if (is_forbidden or is_low_signal):
+        if is_forbidden or is_low_signal:
             # Heuristic: Add appropriate suffix based on Violation
             if is_forbidden:
                 # Forbidden patterns get sovereign prefix
@@ -261,7 +265,7 @@ Current date: December 24, 2025
         stem = current_name.lower()
 
         # Extract class names from code
-        class_matches = re.findall(r'class\s+(\w+)', code)
+        class_matches = re.findall(r"class\s+(\w+)", code)
         for cls in class_matches:
             suggestions.append(f"{cls.lower()}")
 
@@ -305,12 +309,19 @@ Current date: December 24, 2025
             "healed_count": self.healed_count,
             "healed_files": self.healed_files,
             "canon_signals": list(CANON_SIGNALS),
-            "forbidden_patterns": list(FORBIDDEN_PATTERNS)
+            "forbidden_patterns": list(FORBIDDEN_PATTERNS),
         }
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """Naming/utils agent - operational only."""
         if _call_path is None:
             # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)

@@ -87,25 +87,25 @@ def get_placement_guidance(content_preview: str) -> str:
     """
     content_lower = content_preview.lower()
 
-    if any(x in content_lower for x in ['planner', 'strategy', 'reasoning', 'mission']):
-        return 'agentic_core/L1_cognition'
-    if 'node' in content_lower or 'execute' in content_lower:
-        return 'agentic_core/L1_cognition/thought_engine'
-    if any(x in content_lower for x in ['router', 'orchestrator', 'fission', 'hop']):
-        return 'agentic_core/L3_orchestration'
-    if any(x in content_lower for x in ['pinecone', 'redis', 'storage', 'cache']):
-        return 'agentic_core/L4_state'
-    if any(x in content_lower for x in ['safety', 'guardrail', 'guard', 'validator']):
-        return 'agentic_core/L5_safety'
-    if any(x in content_lower for x in ['Metric', 'telemetry', 'trace', 'observ']):
-        return 'agentic_core/observability'
-    if any(x in content_lower for x in ['prompt', 'persona', 'instruct']):
-        return 'agentic_core/prompt_governance'
-    if any(x in content_lower for x in ['schema', 'model', 'request', 'response']):
-        return 'agentic_core/schemas'
+    if any(x in content_lower for x in ["planner", "strategy", "reasoning", "mission"]):
+        return "agentic_core/L1_cognition"
+    if "node" in content_lower or "execute" in content_lower:
+        return "agentic_core/L1_cognition/thought_engine"
+    if any(x in content_lower for x in ["router", "orchestrator", "fission", "hop"]):
+        return "agentic_core/L3_orchestration"
+    if any(x in content_lower for x in ["pinecone", "redis", "storage", "cache"]):
+        return "agentic_core/L4_state"
+    if any(x in content_lower for x in ["safety", "guardrail", "guard", "validator"]):
+        return "agentic_core/L5_safety"
+    if any(x in content_lower for x in ["Metric", "telemetry", "trace", "observ"]):
+        return "agentic_core/observability"
+    if any(x in content_lower for x in ["prompt", "persona", "instruct"]):
+        return "agentic_core/prompt_governance"
+    if any(x in content_lower for x in ["schema", "model", "request", "response"]):
+        return "agentic_core/schemas"
 
     # Default fallback
-    return 'agentic_core/L1_cognition'
+    return "agentic_core/L1_cognition"
 
 
 def get_best_target_l1(folder_name: str, approved_l1: set) -> str:

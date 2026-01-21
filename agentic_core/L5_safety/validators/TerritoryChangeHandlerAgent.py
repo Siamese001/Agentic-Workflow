@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, prompt, workflow
@@ -33,8 +32,11 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 # NAMING FIXED: TerritoryChangeHandlerAgent → TerritoryChangeHandlerAgent
 @dataclass
-class TerritoryChangeHandlerAgent(MCPHardenedMixin, SubatomicTestingMixin, FileSystemEventHandler, HealerMixin):
+class TerritoryChangeHandlerAgent(
+    MCPHardenedMixin, SubatomicTestingMixin, FileSystemEventHandler, HealerMixin
+):
     """L0-L3: Watch for territory healing/ingestion changes with debouncing"""
+
     def __init__(self, daemon: bool) -> None:
         """Initialize the instance."""
         self.daemon = daemon
@@ -56,7 +58,14 @@ class TerritoryChangeHandlerAgent(MCPHardenedMixin, SubatomicTestingMixin, FileS
                 )
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L3 orchestration agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -72,6 +81,7 @@ class TerritoryChangeHandlerAgent(MCPHardenedMixin, SubatomicTestingMixin, FileS
             return {"skipped": 1}
         finally:
             _call_path.discard(agent_name)
+
 
 # NAMING FIXED: AutonomousRAGDaemon → AutonomousRagDaemon
 class AutonomousRagDaemon:
@@ -110,6 +120,7 @@ class AutonomousRagDaemon:
         asyncio.create_task(self.periodic_reindex())
 
         print("[DAEMON] Autonomous RAG Daemon online")
+
     async def health_check(self) -> Any:
         """L5: Sovereign validation – testing the Canon against reality"""
         while self.running:
@@ -117,20 +128,27 @@ class AutonomousRagDaemon:
 
             try:
                 # Randomize from a small pool of 'Golden Queries'
-                test_queries = ["Purpose of the Canon?", "Explain L5 safety", "How does L1 expansion work?"]
+                test_queries = [
+                    "Purpose of the Canon?",
+                    "Explain L5 safety",
+                    "How does L1 expansion work?",
+                ]
                 import random
+
                 query = random.choice(test_queries)
 
                 result = await self.orchestrator.sovereign_retrieve(query)
                 faithfulness = result.get("faithfulness", 0.0)
 
                 # Log health metrics
-                self.Historian.log_event({
-                    "event": "health_check",
-                    "query": query,
-                    "faithfulness": faithfulness,
-                    "timestamp": time.time()
-                })
+                self.Historian.log_event(
+                    {
+                        "event": "health_check",
+                        "query": query,
+                        "faithfulness": faithfulness,
+                        "timestamp": time.time(),
+                    }
+                )
 
                 if faithfulness < 0.75:
                     print(f"[!] Health check warning: faithfulness {faithfulness:.2f}")

@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 class ContractStage:
     """Stage in a cognitive contract."""
+
     INIT = "init"
     VALIDATE = "validate"
     EXECUTE = "execute"
@@ -28,6 +29,7 @@ class ContractStage:
 
 class CognitiveContract:
     """A cognitive contract definition."""
+
     def __init__(self, name: str, required: list[str] | None = None, **kwargs):
         self.name = name
         self.required = required or []
@@ -36,6 +38,7 @@ class CognitiveContract:
 
 class CognitiveContractEnforcer:
     """Enforcer for cognitive contracts."""
+
     def __init__(self, contracts: list[CognitiveContract] | None = None):
         self.contracts = contracts or []
 
@@ -48,6 +51,7 @@ class CognitiveContractEnforcer:
 
 class Constraint:
     """A constraint in a cognitive contract."""
+
     def __init__(self, name: str, condition: str):
         self.name = name
         self.condition = condition
@@ -55,6 +59,7 @@ class Constraint:
 
 class Plan:
     """A plan in a cognitive contract."""
+
     def __init__(self, name: str, steps: list[str] | None = None):
         self.name = name
         self.steps = steps or []
@@ -62,11 +67,13 @@ class Plan:
 
 class PlanQualityError(Exception):
     """Error raised when plan quality is insufficient."""
+
     pass
 
 
 class ConsistencyError(Exception):
     """Error raised when consistency checks fail."""
+
     pass
 
 

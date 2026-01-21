@@ -51,7 +51,9 @@ class DomainPlannerAgent(BaseAgent):
             )
 
         rationale = (
-            "Focus areas reference role/company context." if focus_matches else "No explicit domain alignment detected."
+            "Focus areas reference role/company context."
+            if focus_matches
+            else "No explicit domain alignment detected."
         )
 
         assessment = PlannerAssessment(
@@ -188,20 +190,27 @@ class StrategyScenarioSimulatorAgent(BaseAgent):
         focus_lower = [focus.lower() for focus in plan.focus_areas]
         technical_focus = any("tech" in focus for focus in focus_lower)
         leadership_focus = any("lead" in focus for focus in focus_lower)
-        quantified = any(any(ch.isdigit() for ch in achievement) for achievement in plan.key_achievements_to_highlight)
+        quantified = any(
+            any(ch.isdigit() for ch in achievement)
+            for achievement in plan.key_achievements_to_highlight
+        )
 
         scenarios: list[ScenarioSimulationResult] = []
 
         adoption_risk = "low" if quantified else "medium"
         adoption_impact = 0.35 if quantified else 0.65
-        adoption_mitigations = [] if quantified else ["Add quantified impact statements for key achievements."]
+        adoption_mitigations = (
+            [] if quantified else ["Add quantified impact statements for key achievements."]
+        )
         scenarios.append(
             ScenarioSimulationResult(
                 scenario_name="Hiring Manager Adoption",
                 risk_level=adoption_risk,
                 impact_score=adoption_impact,
                 summary=(
-                    "Metrics-driven achievements improve adoption." if quantified else "Lack of metrics may slow stakeholder buy-in."
+                    "Metrics-driven achievements improve adoption."
+                    if quantified
+                    else "Lack of metrics may slow stakeholder buy-in."
                 ),
                 mitigation_actions=adoption_mitigations,
             )
@@ -209,7 +218,11 @@ class StrategyScenarioSimulatorAgent(BaseAgent):
 
         technical_risk = "low" if technical_focus else "medium"
         technical_impact = 0.4 if technical_focus else 0.7
-        technical_mitigations = [] if technical_focus else ["Add a focus area covering technical depth or tooling expertise."]
+        technical_mitigations = (
+            []
+            if technical_focus
+            else ["Add a focus area covering technical depth or tooling expertise."]
+        )
         scenarios.append(
             ScenarioSimulationResult(
                 scenario_name="Technical Deep Dive",
@@ -342,7 +355,9 @@ class StrategyCoordinatorAgent(BaseAgent):
 
         signals: list[str] = []
 
-        qa_feedback = downstream_feedback.get("qa") if isinstance(downstream_feedback, dict) else None
+        qa_feedback = (
+            downstream_feedback.get("qa") if isinstance(downstream_feedback, dict) else None
+        )
         if isinstance(qa_feedback, dict):
             jd_skills = qa_feedback.get("jd_skills")
             if isinstance(jd_skills, dict):
@@ -356,7 +371,9 @@ class StrategyCoordinatorAgent(BaseAgent):
                         + ", ".join(missing_keywords[:5])
                     )
 
-        hil_feedback = downstream_feedback.get("hil") if isinstance(downstream_feedback, dict) else None
+        hil_feedback = (
+            downstream_feedback.get("hil") if isinstance(downstream_feedback, dict) else None
+        )
         if isinstance(hil_feedback, dict):
             payload = hil_feedback.get("payload")
             if isinstance(payload, str) and payload:

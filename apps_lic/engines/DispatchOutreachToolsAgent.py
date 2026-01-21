@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt, validator, workflow
@@ -32,7 +31,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 class DispatchOutreachToolsAgent(HealerMixin, MCPHardenedMixin):
     """Executor for outreach domain."""
 
-    def __init__(self, config: dict[str, object] | None=None) -> None:
+    def __init__(self, config: dict[str, object] | None = None) -> None:
         """
         Initialize dispatch outreach tools agent.
 
@@ -40,12 +39,12 @@ class DispatchOutreachToolsAgent(HealerMixin, MCPHardenedMixin):
             config: Optional configuration dictionary with timeout settings
         """
         self.CONFIG = config or {}
-        self.TIMEOUT = self.config.get('timeout', 30.0)
-        Logger.info(f'Initialized {self.__class__.__name__}')
+        self.TIMEOUT = self.config.get("timeout", 30.0)
+        Logger.info(f"Initialized {self.__class__.__name__}")
 
     def _run_self_tests(self) -> bool:
         """Phase 1: Self-testing for L3 compliance."""
-        assert hasattr(self, 'CONFIG'), "Missing CONFIG"
+        assert hasattr(self, "CONFIG"), "Missing CONFIG"
         return True
 
     def execute(self, action: str, params: dict[str, object]) -> ExecutionResult:
@@ -62,14 +61,18 @@ class DispatchOutreachToolsAgent(HealerMixin, MCPHardenedMixin):
         START: Any = time.time()
         try:
             OUTPUT: Any = self._perform_action(action, params)
-            return ExecutionResult(SUCCESS=True, OUTPUT=output, duration_ms=(time.time() - start) * 1000)
+            return ExecutionResult(
+                SUCCESS=True, OUTPUT=output, duration_ms=(time.time() - start) * 1000
+            )
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            return ExecutionResult(SUCCESS=False, ERROR=str(e), duration_ms=(time.time() - start) * 1000)
+            return ExecutionResult(
+                SUCCESS=False, ERROR=str(e), duration_ms=(time.time() - start) * 1000
+            )
 
     def _perform_action(self, action: str, params: dict[str, object]) -> object:
         """Perform the action."""
-        Logger.info(f'Executing {action} with {params}')
-        return {'action': action, 'params': params, 'status': 'completed'}
+        Logger.info(f"Executing {action} with {params}")
+        return {"action": action, "params": params, "status": "completed"}
 
     def heal_repository(self) -> None:
         """Autonomy healing: Validate and auto-correct agent state/config for reliable outreach dispatch.
@@ -98,22 +101,23 @@ class DispatchOutreachToolsAgent(HealerMixin, MCPHardenedMixin):
         if not isinstance(self.CONFIG, dict):
             Logger.warning("CONFIG corrupted — resetting to defaults")
             self.CONFIG = {}
-        required_keys = ['timeout']
+        required_keys = ["timeout"]
         for key in required_keys:
             if key not in self.CONFIG:
                 Logger.warning(f"Missing config key {key} — setting default")
-                if key == 'timeout':
+                if key == "timeout":
                     self.CONFIG[key] = 30.0
 
     def _run_outreach_diagnostics(self) -> None:
         """Run outreach-specific health checks (e.g., mock action smoke test)."""
         try:
-            test_result = self._perform_action('test', {'query': 'diagnostic test'})
-            if isinstance(test_result, dict) and 'error' in test_result:
+            test_result = self._perform_action("test", {"query": "diagnostic test"})
+            if isinstance(test_result, dict) and "error" in test_result:
                 Logger.error(f"Diagnostics failed: {test_result['error']}")
         except Exception as e:
             Logger.error(f"Diagnostics exception: {e}")
 
-def execute(action: str, params: dict[str, object], config: dict | None=None) -> ExecutionResult:
+
+def execute(action: str, params: dict[str, object], config: dict | None = None) -> ExecutionResult:
     """Execute action."""
     return DispatchOutreachToolsAgent(config).execute(action, params)

@@ -3,6 +3,7 @@
 Find REAL duplicate agent files by NAME (not content hash).
 Shows files with same name in different locations.
 """
+
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
@@ -44,8 +45,9 @@ def infer_rationale(canonical: Path, duplicate: Path, project_root: Path) -> str
     if "blueprint_sovereign" in dup_str:
         return "Leftover blueprint template — production version is canonical"
 
-    if ("validators" in can_str and "agents" in dup_str) or \
-       ("agents" in can_str and "validators" in dup_str):
+    if ("validators" in can_str and "agents" in dup_str) or (
+        "agents" in can_str and "validators" in dup_str
+    ):
         return "Location overlap: same agent in agents/ vs validators/ directories"
 
     if "runtime" in dup_str or "runtime" in can_str:
@@ -62,6 +64,7 @@ def main():
     # Find all agent files
     # Phase 6.9: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_agent_files
+
     agent_files = [f for f in get_agent_files(project_root) if is_agent_file(f)]
 
     print(f"[SCAN] Found {len(agent_files)} agent files")
@@ -86,7 +89,7 @@ def main():
 
     total_files_to_delete = sum(len(files) - 1 for files in duplicates.values())
 
-    with open(output_file, 'w', encoding='utf-8') as f:
+    with open(output_file, "w", encoding="utf-8") as f:
         f.write("# Real Duplicate Agents (By Name)\n")
         f.write(f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
         f.write(f"**Duplicate Agent Names:** {len(duplicates)}\n")
@@ -106,13 +109,15 @@ def main():
                 duplicate_rel = duplicate.relative_to(project_root)
                 rationale = infer_rationale(canonical, duplicate, project_root)
 
-                f.write(f"| {agent_name.replace('.py', '')} | `{canonical_rel}` | `{duplicate_rel}` | {rationale} |\n")
+                f.write(
+                    f"| {agent_name.replace('.py', '')} | `{canonical_rel}` | `{duplicate_rel}` | {rationale} |\n"
+                )
 
         f.write("\n---\n\n")
         f.write("## Delete Commands\n\n")
         f.write("**IMPORTANT:** Review each file before deleting. Use diff to compare:\n")
         f.write("```bash\n")
-        f.write("code --diff \"canonical_path\" \"duplicate_path\"\n")
+        f.write('code --diff "canonical_path" "duplicate_path"\n')
         f.write("```\n\n")
 
         f.write("### Delete Duplicates\n")
@@ -132,9 +137,9 @@ def main():
     print(f"   Files to delete: {total_files_to_delete}")
 
     # Print summary
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("REAL DUPLICATES FOUND (BY NAME)")
-    print("="*80)
+    print("=" * 80)
 
     for agent_name, files in sorted(duplicates.items()):
         files_sorted = sorted(files, key=lambda f: (get_priority(f, project_root), str(f)))

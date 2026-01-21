@@ -12,25 +12,11 @@ Triggers the ConvergenceEngine to heal low-coverage modules.
 from __future__ import annotations
 import asyncio
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import Any
 import sys
-import os
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
     L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
 
 # Add project root to path
@@ -43,27 +29,30 @@ class CoverageValidator:
     def __init__(self, target_coverage: float = 30.0):
         self.target_coverage = target_coverage
 
-    async def validate(self) -> List[Dict[str, Any]]:
+    async def validate(self) -> list[dict[str, Any]]:
         """Identify modules with coverage below target."""
         violations = []
 
         # Simulate coverage check for L0 utilities
         # Phase 6.9: Use ssot_discovery instead of rglob
         from agentic_core.utils.ssot_discovery import get_python_files
+
         l0_modules = list(get_python_files(Path(L0_MAINTENANCE_DIR)))
 
         for module in l0_modules[:20]:  # Sample first 20 for demo
-            if '__pycache__' in str(module):
+            if "__pycache__" in str(module):
                 continue
 
             # Simulate 0% coverage detection
-            violations.append({
-                'path': str(module),
-                'coverage': 0.0,
-                'target': self.target_coverage,
-                'impact_score': 50,  # Medium impact
-                'audit_fail_count': 0
-            })
+            violations.append(
+                {
+                    "path": str(module),
+                    "coverage": 0.0,
+                    "target": self.target_coverage,
+                    "impact_score": 50,  # Medium impact
+                    "audit_fail_count": 0,
+                }
+            )
 
         return violations
 
@@ -71,9 +60,9 @@ class CoverageValidator:
 class CoverageHealer:
     """Heals coverage violations by creating tests."""
 
-    async def heal(self, violation: Dict[str, Any]) -> bool:
+    async def heal(self, violation: dict[str, Any]) -> bool:
         """Attempt to heal a coverage violation."""
-        file_path = Path(violation['path'])
+        file_path = Path(violation["path"])
 
         print(f"  🔧 Healing: {file_path.name}")
 
@@ -92,7 +81,9 @@ class CoverageHealer:
 
 async def run_autonomous_remediation():
     """Execute Phase 6 autonomous remediation loop."""
-    from agentic_core.L3_orchestration.workflow_engines.mission_controller_convergence import ConvergenceEngine
+    from agentic_core.L3_orchestration.workflow_engines.mission_controller_convergence import (
+        ConvergenceEngine,
+    )
 
     print("🚀 Phase 6: Autonomous Remediation Loop")
     print("=" * 60)
@@ -132,9 +123,10 @@ def main():
     except Exception as e:
         print(f"\n\n❌ Remediation failed: {e}")
         import traceback
+
         traceback.print_exc()
         sys.exit(1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -9,16 +9,13 @@ to ensure consistent resume improvement and job alignment.
 """
 
 
-
-
-
-
 class StoredPrompt:
     """
     Represents a stored resume generation prompt with metadata.
 
     Ensures prompt storage supports consistent resume improvement.
     """
+
     id: str
     content: str
     template: str | None = None

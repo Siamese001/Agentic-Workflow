@@ -12,6 +12,7 @@ Usage:
     python -m agentic_core.L0_maintenance.scripts.migrate_imports --dry-run
     python -m agentic_core.L0_maintenance.scripts.migrate_imports --apply
 """
+
 from __future__ import annotations
 
 import argparse
@@ -25,28 +26,17 @@ from agentic_core.utils.ssot_discovery import get_python_files
 # Migration patterns: (regex_pattern, replacement)
 MIGRATION_MAP: dict[str, str] = {
     # Structure blueprint -> config
-    r"from agentic_core\.L5_safety\.validators\.structure_blueprint import":
-        "from agentic_core.config import",
-
+    r"from agentic_core\.L5_safety\.validators\.structure_blueprint import": "from agentic_core.config import",
     # Unified agents -> unified API
-    r"from agentic_core\.L5_safety\.unified\.UnifiedCodeValidatorAgent import UnifiedCodeValidatorAgent":
-        "from agentic_core.unified import UnifiedCodeValidatorAgent",
-    r"from agentic_core\.L5_safety\.unified\.UnifiedStructureValidatorAgent import UnifiedStructureValidatorAgent":
-        "from agentic_core.unified import UnifiedStructureValidatorAgent",
-    r"from agentic_core\.L5_safety\.unified\.UnifiedCodeEnforcerAgent import UnifiedCodeEnforcerAgent":
-        "from agentic_core.unified import UnifiedCodeEnforcerAgent",
-    r"from agentic_core\.L5_safety\.unified\.UnifiedStructureEnforcerAgent import UnifiedStructureEnforcerAgent":
-        "from agentic_core.unified import UnifiedStructureEnforcerAgent",
-    r"from agentic_core\.L5_safety\.unified\.UnifiedResourceManagerAgent import UnifiedResourceManagerAgent":
-        "from agentic_core.unified import UnifiedResourceManagerAgent",
-
+    r"from agentic_core\.L5_safety\.unified\.UnifiedCodeValidatorAgent import UnifiedCodeValidatorAgent": "from agentic_core.unified import UnifiedCodeValidatorAgent",
+    r"from agentic_core\.L5_safety\.unified\.UnifiedStructureValidatorAgent import UnifiedStructureValidatorAgent": "from agentic_core.unified import UnifiedStructureValidatorAgent",
+    r"from agentic_core\.L5_safety\.unified\.UnifiedCodeEnforcerAgent import UnifiedCodeEnforcerAgent": "from agentic_core.unified import UnifiedCodeEnforcerAgent",
+    r"from agentic_core\.L5_safety\.unified\.UnifiedStructureEnforcerAgent import UnifiedStructureEnforcerAgent": "from agentic_core.unified import UnifiedStructureEnforcerAgent",
+    r"from agentic_core\.L5_safety\.unified\.UnifiedResourceManagerAgent import UnifiedResourceManagerAgent": "from agentic_core.unified import UnifiedResourceManagerAgent",
     # HealerMixin -> SSOT location
-    r"from agentic_core\.L5_safety\.validators\.healer_mixin import":
-        "from agentic_core.utils.core_extensions.healer_mixin import",
-    r"from agentic_core\.L5_safety\.guardrails\.healer_mixin import":
-        "from agentic_core.utils.core_extensions.healer_mixin import",
-    r"from agentic_core\.common\.healing\.healer_mixin import":
-        "from agentic_core.utils.core_extensions.healer_mixin import",
+    r"from agentic_core\.L5_safety\.validators\.healer_mixin import": "from agentic_core.utils.core_extensions.healer_mixin import",
+    r"from agentic_core\.L5_safety\.guardrails\.healer_mixin import": "from agentic_core.utils.core_extensions.healer_mixin import",
+    r"from agentic_core\.common\.healing\.healer_mixin import": "from agentic_core.utils.core_extensions.healer_mixin import",
 }
 
 # Files to skip during migration
@@ -118,10 +108,13 @@ def migrate_repo(dry_run: bool = True) -> dict[str, list[str]]:
 
 def main():
     parser = argparse.ArgumentParser(description="Migrate imports to SSOT patterns")
-    parser.add_argument("--dry-run", action="store_true", default=True,
-                        help="Show changes without applying (default)")
-    parser.add_argument("--apply", action="store_true",
-                        help="Apply changes to files")
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        default=True,
+        help="Show changes without applying (default)",
+    )
+    parser.add_argument("--apply", action="store_true", help="Apply changes to files")
     args = parser.parse_args()
 
     dry_run = not args.apply

@@ -18,6 +18,7 @@ from typing import Any
 @dataclass
 class CognitiveResult:
     """Result of cognitive processing."""
+
     output: str
     thought_type: str
     plan: dict[str, Any] = field(default_factory=dict)
@@ -36,7 +37,7 @@ class PerceptionNode:
             "query": raw_input.get("user_query", ""),
             "context": context,
             "timestamp": time.time(),
-            "input_type": self._classify_input(raw_input)
+            "input_type": self._classify_input(raw_input),
         }
 
     def _classify_input(self, raw_input: dict) -> str:
@@ -75,7 +76,7 @@ class ReasoningNode:
             "domain": reasoning.get("domain", "general"),
             "thought_type": thought_type,
             "reasoning": reasoning,
-            "confidence": reasoning.get("confidence", 0.7)
+            "confidence": reasoning.get("confidence", 0.7),
         }
 
     def _biased_select(self, strategy_bias: dict[str, float]) -> str:
@@ -85,6 +86,7 @@ class ReasoningNode:
 
         # Weighted random selection
         import random
+
         strategies = list(strategy_bias.keys())
         weights = list(strategy_bias.values())
 
@@ -102,14 +104,16 @@ class ReasoningNode:
 
         return strategies[-1] if strategies else "cot"
 
-    def _generate_reasoning(self, query: str, thought_type: str, patterns: list[Any]) -> dict[str, Any]:
+    def _generate_reasoning(
+        self, query: str, thought_type: str, patterns: list[Any]
+    ) -> dict[str, Any]:
         """Generate reasoning based on query and thought type."""
         reasoning = {
             "goal": query,
             "domain": "general",
             "thought_type": thought_type,
             "steps": [],
-            "confidence": 0.8
+            "confidence": 0.8,
         }
 
         # Adjust based on thought type
@@ -144,7 +148,7 @@ class PlanningCoordinator:
             "domain": domain,
             "steps": self._generate_steps(goal, domain),
             "score": 0.8,
-            "patterns_applied": 0
+            "patterns_applied": 0,
         }
 
         # Adjust with memory patterns
@@ -215,12 +219,14 @@ class CognitiveNode:
         # Phase 3 components
         try:
             from agentic_core.L1_cognition.learning.MetaLearningAgent import MetaLearningAgent
+
             self.meta_learner = MetaLearningAgent()
         except ImportError:
             self.meta_learner = None
 
         try:
             from agentic_core.L1_cognition.memory.SemanticMemory import SemanticMemory
+
             self.semantic_memory = SemanticMemory()
         except ImportError:
             self.semantic_memory = None
@@ -264,11 +270,7 @@ class CognitiveNode:
             reasoned = await self.reasoning.reason_async(perceived)
 
             # 4. Planning with reasoning input
-            plan = self.planning.plan(
-                reasoned["goal"],
-                reasoned["domain"],
-                perceived
-            )
+            plan = self.planning.plan(reasoned["goal"], reasoned["domain"], perceived)
             reasoned["plan"] = plan
 
             # 5. Action execution
@@ -281,7 +283,7 @@ class CognitiveNode:
                     state=perceived,
                     thought_type=reasoned["thought_type"],
                     outcome={"output": output, "success": True},
-                    reward=reward
+                    reward=reward,
                 )
 
                 # Async replay
@@ -298,7 +300,7 @@ class CognitiveNode:
                 memory_used=memory_used,
                 governance={"status": "compliant"},
                 latency_ms=latency_ms,
-                success=True
+                success=True,
             )
 
         except Exception as e:
@@ -307,7 +309,7 @@ class CognitiveNode:
                 output=f"Error: {str(e)}",
                 thought_type="error",
                 latency_ms=latency_ms,
-                success=False
+                success=False,
             )
 
     async def _query_semantic_memory(self, query: str) -> list[dict[str, Any]]:
@@ -349,12 +351,14 @@ class CognitiveNode:
 
     def get_statistics(self) -> dict[str, Any]:
         """Get pipeline statistics."""
-        avg_latency = (self.total_latency_ms / self.missions_processed) if self.missions_processed > 0 else 0
+        avg_latency = (
+            (self.total_latency_ms / self.missions_processed) if self.missions_processed > 0 else 0
+        )
 
         return {
             "missions_processed": self.missions_processed,
             "average_latency_ms": avg_latency,
             "semantic_memory_enabled": self.semantic_memory is not None,
             "meta_learning_enabled": self.meta_learner is not None,
-            "meta_learner_stats": self.meta_learner.get_statistics() if self.meta_learner else {}
+            "meta_learner_stats": self.meta_learner.get_statistics() if self.meta_learner else {},
         }

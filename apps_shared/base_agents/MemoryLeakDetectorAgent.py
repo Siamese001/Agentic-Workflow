@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: guardrail, orchestrator
@@ -9,7 +8,7 @@ from __future__ import annotations
 import ast
 from typing import Any
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
 import asyncio
 import datetime
@@ -33,26 +32,18 @@ class MemoryLeakDetectorAgent(HealerMixin):
 
     # Resource leak patterns for fast scanning
     LEAK_PATTERNS = {
-        'naked_open': re.compile(
-            r'\bopen\s*\(',
-            re.IGNORECASE
+        "naked_open": re.compile(r"\bopen\s*\(", re.IGNORECASE),
+        "naked_connect": re.compile(
+            r"\b(socket\.|urllib\.|http\.|mysql\.|psycopg2\.|sqlite3\.)", re.IGNORECASE
         ),
-        'naked_connect': re.compile(
-            r'\b(socket\.|urllib\.|http\.|mysql\.|psycopg2\.|sqlite3\.)',
-            re.IGNORECASE
+        "unbounded_cache": re.compile(r"@lru_cache\s*\(\s*\)", re.IGNORECASE),
+        "global_list_append": re.compile(
+            r"^[A-Z_]+\s*=\s*\[\]\s*\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n.*\.append\(",
+            re.IGNORECASE | re.MULTILINE,
         ),
-        'unbounded_cache': re.compile(
-            r'@lru_cache\s*\(\s*\)',
-            re.IGNORECASE
+        "file_no_close": re.compile(
+            r"open\s*\([^)]+\)\s*[^.\n]*\n(?!.*\.close\(\))", re.IGNORECASE | re.MULTILINE
         ),
-        'global_list_append': re.compile(
-            r'^[A-Z_]+\s*=\s*\[\]\s*\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n.*\.append\(',
-            re.IGNORECASE | re.MULTILINE
-        ),
-        'file_no_close': re.compile(
-            r'open\s*\([^)]+\)\s*[^.\n]*\n(?!.*\.close\(\))',
-            re.IGNORECASE | re.MULTILINE
-        )
     }
 
     async def execute(self) -> None:
@@ -61,7 +52,7 @@ class MemoryLeakDetectorAgent(HealerMixin):
         await asyncio.sleep(0)
 
         # Priority 1: Process modified files
-        modified_files = getattr(self.ctx, 'modified_files', set())
+        modified_files = getattr(self.ctx, "modified_files", set())
 
         # Priority 2: Fall back to all Python files if no tracking
         target_files = list(modified_files) if modified_files else self.ctx.python_files
@@ -71,7 +62,9 @@ class MemoryLeakDetectorAgent(HealerMixin):
             return
 
         print(f"   [SCAN] Scanning {len(target_files)} files for resource leaks...")
-        print(f"   🎯 Priority: Modified files ({len(modified_files)}) + {len(target_files) - len(modified_files)} others")
+        print(
+            f"   🎯 Priority: Modified files ({len(modified_files)}) + {len(target_files) - len(modified_files)} others"
+        )
 
         # Track leak fixes
         leak_log = []
@@ -79,7 +72,7 @@ class MemoryLeakDetectorAgent(HealerMixin):
 
         # Scan and fix files
         for file_path in target_files:
-            if not file_path.endswith('.py'):
+            if not file_path.endswith(".py"):
                 continue
 
             result = await self._scan_and_fix(file_path)
@@ -98,7 +91,7 @@ class MemoryLeakDetectorAgent(HealerMixin):
     async def _scan_and_fix(self, file_path):
         """Scan file for leaks and apply fixes."""
         try:
-            with open(file_path, encoding='utf-8') as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
 
             # Pass 1: Fast regex scanning
@@ -120,27 +113,21 @@ class MemoryLeakDetectorAgent(HealerMixin):
             print(f"   🛡️  Fixing resource leaks: {os.path.basename(file_path)}")
 
             # Generate leak-free code using Gemini
-            fixed_content = await self._generate_leak_free_code(
-                file_path, content, critical_leaks
-            )
+            fixed_content = await self._generate_leak_free_code(file_path, content, critical_leaks)
 
             # Apply fixes
             if fixed_content and fixed_content != content:
                 if self.ctx.write_compliant_file(file_path, fixed_content):
                     return {
-                        'file': file_path,
-                        'leaks': critical_leaks,
-                        'context': leak_context,
-                        'reasoning': 'Resource leaks detected and remediated'
+                        "file": file_path,
+                        "leaks": critical_leaks,
+                        "context": leak_context,
+                        "reasoning": "Resource leaks detected and remediated",
                     }
 
         except Exception as e:
             print(f"   [X] Failed to fix leaks in {file_path}: {e}")
-            return {
-                'file': file_path,
-                'error': str(e),
-                'reasoning': 'Failed to process file'
-            }
+            return {"file": file_path, "error": str(e), "reasoning": "Failed to process file"}
 
         return None
 
@@ -153,9 +140,9 @@ class MemoryLeakDetectorAgent(HealerMixin):
             if matches:
                 leaks[leak_name] = [
                     {
-                        'line': content[:match.start()].count('\n') + 1,
-                        'snippet': content[match.start():match.end()][:50],
-                        'full_match': match.group()
+                        "line": content[: match.start()].count("\n") + 1,
+                        "snippet": content[match.start() : match.end()][:50],
+                        "full_match": match.group(),
                     }
                     for match in matches
                 ]
@@ -165,10 +152,10 @@ class MemoryLeakDetectorAgent(HealerMixin):
     def _analyze_leak_context(self, content, leaks):
         """Analyze AST to understand leak context."""
         context = {
-            'global_containers': [],
-            'naked_opens': [],
-            'missing_context_managers': [],
-            'unbounded_caches': []
+            "global_containers": [],
+            "naked_opens": [],
+            "missing_context_managers": [],
+            "unbounded_caches": [],
         }
 
         try:
@@ -179,59 +166,67 @@ class MemoryLeakDetectorAgent(HealerMixin):
                 # Module-level growing containers
                 if isinstance(node, ast.Assign):
                     # Check if at module level (col_offset == 0)
-                    if hasattr(node, 'col_offset') and node.col_offset == 0:
+                    if hasattr(node, "col_offset") and node.col_offset == 0:
                         for target in node.targets:
                             if isinstance(target, ast.Name):
                                 var_name = target.id.upper()
                                 # Check if it's initialized as empty list/dict
                                 if isinstance(node.value, (ast.List, ast.Dict)):
                                     if isinstance(node.value, ast.List) and not node.value.elts:
-                                        context['global_containers'].append({
-                                            'variable': var_name,
-                                            'line': node.lineno,
-                                            'type': 'list'
-                                        })
+                                        context["global_containers"].append(
+                                            {
+                                                "variable": var_name,
+                                                "line": node.lineno,
+                                                "type": "list",
+                                            }
+                                        )
 
                 # Function-level analysis
                 elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                     func_name = node.name
                     func_start = node.lineno
-                    func_end = node.end_lineno if hasattr(node, 'end_lineno') else func_start
+                    func_end = node.end_lineno if hasattr(node, "end_lineno") else func_start
 
                     # Check for naked opens
                     for leak_name, leak_list in leaks.items():
-                        if leak_name in ['naked_open', 'naked_connect']:
+                        if leak_name in ["naked_open", "naked_connect"]:
                             for leak in leak_list:
-                                if func_start <= leak['line'] <= func_end:
-                                    context['naked_opens'].append({
-                                        'function': func_name,
-                                        'line': leak['line'],
-                                        'type': leak_name
-                                    })
+                                if func_start <= leak["line"] <= func_end:
+                                    context["naked_opens"].append(
+                                        {
+                                            "function": func_name,
+                                            "line": leak["line"],
+                                            "type": leak_name,
+                                        }
+                                    )
 
                     # Check for unclosed files
                     for child in ast.walk(node):
                         if isinstance(child, ast.Call):
-                            if isinstance(child.func, ast.Name) and child.func.id == 'open':
+                            if isinstance(child.func, ast.Name) and child.func.id == "open":
                                 # Check if wrapped in 'with' or has .close()
                                 if not self._is_in_with_block(child, node):
                                     if not self._has_close_call(child, node):
-                                        context['missing_context_managers'].append({
-                                            'function': func_name,
-                                            'line': child.lineno,
-                                            'resource': 'file'
-                                        })
+                                        context["missing_context_managers"].append(
+                                            {
+                                                "function": func_name,
+                                                "line": child.lineno,
+                                                "resource": "file",
+                                            }
+                                        )
 
                 # Check for unbounded lru_cache
                 elif isinstance(node, ast.FunctionDef):
                     for decorator in node.decorator_list:
                         if isinstance(decorator, ast.Call):
-                            if isinstance(decorator.func, ast.Name) and decorator.func.id == 'lru_cache':
+                            if (
+                                isinstance(decorator.func, ast.Name)
+                                and decorator.func.id == "lru_cache"
+                            ):
                                 if not decorator.args:  # No maxsize specified
-                                    context['unbounded_caches'].append({
-                                        'function': node.name,
-                                        'line': decorator.lineno
-                                    })
+                                    context["unbounded_caches"].append(
+                                        {"function": node.name, "line": decorator.lineno}
+                                    )
 
         except Exception as e:
             print(f"   [!]  AST analysis failed: {e}")
@@ -240,14 +235,14 @@ class MemoryLeakDetectorAgent(HealerMixin):
 
     def _is_in_with_block(self, node, function_node):
         """Check if a node is inside a 'with' statement."""
-        parent = node.parent if hasattr(node, 'parent') else None
+        parent = node.parent if hasattr(node, "parent") else None
         while parent and parent != function_node:
             if isinstance(parent, ast.With):
                 # Check if this node is part of the with items
                 for item in parent.items:
                     if item.context_expr == node:
                         return True
-            parent = parent.parent if hasattr(parent, 'parent') else None
+            parent = parent.parent if hasattr(parent, "parent") else None
         return False
 
     def _has_close_call(self, node, function_node):
@@ -258,44 +253,43 @@ class MemoryLeakDetectorAgent(HealerMixin):
 
     def _prioritize_leaks(self, context):
         """Prioritize leaks by Severity."""
-        prioritized = {
-            'critical': [],
-            'high': [],
-            'medium': []
-        }
+        prioritized = {"critical": [], "high": [], "medium": []}
 
         # Critical: Naked opens without context managers
-        for naked in context.get('naked_opens', []):
-            prioritized['critical'].append({
-                'type': 'naked_resource',
-                'function': naked['function'],
-                'line': naked['line'],
-                'Severity': 'critical'
-            })
+        for naked in context.get("naked_opens", []):
+            prioritized["critical"].append(
+                {
+                    "type": "naked_resource",
+                    "function": naked["function"],
+                    "line": naked["line"],
+                    "Severity": "critical",
+                }
+            )
 
         # High: Global growing containers
-        for container in context.get('global_containers', []):
-            prioritized['high'].append({
-                'type': 'global_container',
-                'variable': container['variable'],
-                'line': container['line'],
-                'Severity': 'high'
-            })
+        for container in context.get("global_containers", []):
+            prioritized["high"].append(
+                {
+                    "type": "global_container",
+                    "variable": container["variable"],
+                    "line": container["line"],
+                    "Severity": "high",
+                }
+            )
 
         # Medium: Missing context managers
-        for Missing in context.get('missing_context_managers', []):
-            prioritized['medium'].append({
-                'type': 'missing_context_manager',
-                'function': Missing['function'],
-                'line': Missing['line'],
-                'Severity': 'medium'
-            })
+        for Missing in context.get("missing_context_managers", []):
+            prioritized["medium"].append(
+                {
+                    "type": "missing_context_manager",
+                    "function": Missing["function"],
+                    "line": Missing["line"],
+                    "Severity": "medium",
+                }
+            )
 
         # Return only critical and high priority leaks for auto-fix
-        return {
-            k: v for k, v in prioritized.items()
-            if k in ['critical', 'high'] and v
-        }
+        return {k: v for k, v in prioritized.items() if k in ["critical", "high"] and v}
 
     async def _generate_leak_free_code(self, file_path: str, content: str, leaks: dict):
         """Generate leak-free code using Gemini."""
@@ -308,8 +302,7 @@ class MemoryLeakDetectorAgent(HealerMixin):
         prompt = (
             f"RESOURCE SAFETY TASK: Fix memory and resource leaks in Python code.\n\n"
             f"File: {file_path}\n\n"
-            f"Detected Leaks:\n"
-            + "\n".join(leak_summary) + "\n\n"
+            f"Detected Leaks:\n" + "\n".join(leak_summary) + "\n\n"
             "Safety Rules:\n"
             "1. Wrap all open() calls in 'with' statements for automatic cleanup\n"
             "2. Replace global growing lists with rotating buffers or logging\n"
@@ -326,9 +319,7 @@ class MemoryLeakDetectorAgent(HealerMixin):
             f"Code:\n{content}\n\n"
             "Return ONLY the complete leak-free Python code."
         )
-        return await self.ctx.request_mutation(
-            self.name, prompt, content, reasoning_mode=True
-        )
+        return await self.ctx.request_mutation(self.name, prompt, content, reasoning_mode=True)
 
     def _save_safety_report(self, log_entries, fixed_files):
         """Save the resource safety report."""
@@ -344,27 +335,31 @@ class MemoryLeakDetectorAgent(HealerMixin):
         if log_entries:
             report_content += "## Resource Fixes\n\n"
             for entry in log_entries:
-                if 'error' in entry:
+                if "error" in entry:
                     report_content += f"### [X] {entry['file']}\n\n"
                     report_content += f"**Error:** {entry['error']}\n\n"
                 else:
                     report_content += f"### [OK] {entry['file']}\n\n"
 
-                    leaks = entry['leaks']
+                    leaks = entry["leaks"]
                     report_content += "**Leaks Fixed:**\n"
                     for Severity, leak_list in leaks.items():
                         for leak in leak_list:
-                            report_content += f"- {leak['type']} ({Severity}): line {leak['line']}\n"
+                            report_content += (
+                                f"- {leak['type']} ({Severity}): line {leak['line']}\n"
+                            )
 
-                    context = entry['context']
-                    if context.get('global_containers'):
+                    context = entry["context"]
+                    if context.get("global_containers"):
                         report_content += "\n**Global Containers:**\n"
-                        for container in context['global_containers']:
-                            report_content += f"- {container['variable']} (line {container['line']})\n"
+                        for container in context["global_containers"]:
+                            report_content += (
+                                f"- {container['variable']} (line {container['line']})\n"
+                            )
 
-                    if context.get('naked_opens'):
+                    if context.get("naked_opens"):
                         report_content += "\n**Naked Resources:**\n"
-                        for naked in context['naked_opens']:
+                        for naked in context["naked_opens"]:
                             report_content += f"- {naked['function']} (line {naked['line']})\n"
 
                     report_content += f"\n**Reasoning:** {entry['reasoning']}\n\n"
@@ -378,7 +373,7 @@ class MemoryLeakDetectorAgent(HealerMixin):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: set | None = None
+        _call_path: set | None = None,
     ) -> dict[str, int]:
         """
         Memory Leak Healing - Scans for resource leaks and applies fixes.
@@ -388,7 +383,11 @@ class MemoryLeakDetectorAgent(HealerMixin):
         """
         # CRITICAL: Chain up to HealerMixin
         metrics = super().heal_repository(
-            dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path
+            dry_run=dry_run,
+            execute=execute,
+            depth=depth,
+            max_depth=max_depth,
+            _call_path=_call_path,
         )
         if not isinstance(metrics, dict):
             metrics = {"violations": 0, "fixed": 0, "errors": 0}
@@ -399,9 +398,9 @@ class MemoryLeakDetectorAgent(HealerMixin):
         try:
             # Wired Orphan: _scan_and_fix
             # This requires an async loop and a valid context
-            if hasattr(self, 'ctx') and self.ctx:
+            if hasattr(self, "ctx") and self.ctx:
                 # Get target files from context or default to empty
-                target_files = getattr(self.ctx, 'python_files', [])
+                target_files = getattr(self.ctx, "python_files", [])
 
                 if target_files:
                     # Run async scan synchronously
@@ -410,7 +409,7 @@ class MemoryLeakDetectorAgent(HealerMixin):
 
                     try:
                         for file_path in target_files:
-                            if not file_path.endswith('.py'):
+                            if not file_path.endswith(".py"):
                                 continue
 
                             # For safety in this healer wrapper, we only run if explicitly executed
@@ -418,7 +417,9 @@ class MemoryLeakDetectorAgent(HealerMixin):
                                 result = loop.run_until_complete(self._scan_and_fix(file_path))
                                 if result:
                                     metrics["fixed"] = metrics.get("fixed", 0) + 1
-                                    metrics["violations"] = metrics.get("violations", 0) + len(result.get('leaks', []))
+                                    metrics["violations"] = metrics.get("violations", 0) + len(
+                                        result.get("leaks", [])
+                                    )
                     finally:
                         loop.close()
 
@@ -458,11 +459,13 @@ class DeadlockAnalyzer(ast.NodeVisitor):
 
         # Record the lock sequence for this function
         if len(self.current_sequence) > 1:
-            self.lock_sequences.append({
-                'function': node.name,
-                'sequence': self.current_sequence.copy(),
-                'line': node.lineno
-            })
+            self.lock_sequences.append(
+                {
+                    "function": node.name,
+                    "sequence": self.current_sequence.copy(),
+                    "line": node.lineno,
+                }
+            )
 
             # Build graph edges from acquisition order
             for i in range(len(self.current_sequence) - 1):
@@ -501,20 +504,20 @@ class DeadlockAnalyzer(ast.NodeVisitor):
     def visit_Call(self, node) -> Any:
         """Check for .acquire() calls without timeout."""
         if isinstance(node.func, ast.Attribute):
-            if node.func.attr == 'acquire':
+            if node.func.attr == "acquire":
                 # Check if timeout parameter is provided
-                has_timeout = any(
-                    kw.arg == 'timeout' for kw in node.keywords
-                ) or len(node.args) > 1
+                has_timeout = any(kw.arg == "timeout" for kw in node.keywords) or len(node.args) > 1
 
                 if not has_timeout:
                     lock_name = self._extract_lock_name(node.func.value)
                     if lock_name:
-                        self.locks_without_timeout.append({
-                            'lock': lock_name,
-                            'line': node.lineno,
-                            'function': self.current_function
-                        })
+                        self.locks_without_timeout.append(
+                            {
+                                "lock": lock_name,
+                                "line": node.lineno,
+                                "function": self.current_function,
+                            }
+                        )
 
         self.generic_visit(node)
 
@@ -524,10 +527,10 @@ class DeadlockAnalyzer(ast.NodeVisitor):
             return node.id
         elif isinstance(node, ast.Attribute):
             # For self.lock, return 'self.lock'
-            if isinstance(node.value, ast.Name) and node.value.id == 'self':
-                return f'self.{node.attr}'
+            if isinstance(node.value, ast.Name) and node.value.id == "self":
+                return f"self.{node.attr}"
             # For other attributes, return the full path
-            return ast.unparse(node) if hasattr(ast, 'unparse') else str(node.lineno)
+            return ast.unparse(node) if hasattr(ast, "unparse") else str(node.lineno)
         return None
 
     def detect_cycles(self) -> Any:
@@ -614,13 +617,15 @@ class RaceAnalyzer(ast.NodeVisitor):
             if isinstance(stmt, ast.Assign):
                 for target in stmt.targets:
                     if isinstance(target, ast.Attribute) and isinstance(target.value, ast.Name):
-                        if target.value.id == 'self':
-                            self.shared_state.append({
-                                'type': 'class_attribute',
-                                'name': target.attr,
-                                'line': stmt.lineno,
-                                'class': node.name
-                            })
+                        if target.value.id == "self":
+                            self.shared_state.append(
+                                {
+                                    "type": "class_attribute",
+                                    "name": target.attr,
+                                    "line": stmt.lineno,
+                                    "class": node.name,
+                                }
+                            )
 
         self.generic_visit(node)
         self.current_class = old_class
@@ -648,13 +653,13 @@ class RaceAnalyzer(ast.NodeVisitor):
         is_lock_context = False
         for item in node.items:
             if isinstance(item.context_expr, ast.Name):
-                if 'lock' in item.context_expr.id.lower():
+                if "lock" in item.context_expr.id.lower():
                     is_lock_context = True
             elif isinstance(item.context_expr, ast.Attribute):
-                if 'lock' in item.context_expr.attr.lower():
+                if "lock" in item.context_expr.attr.lower():
                     is_lock_context = True
 
-        self.in_with_context.append(('lock' if is_lock_context else 'other', node.lineno))
+        self.in_with_context.append(("lock" if is_lock_context else "other", node.lineno))
         self.generic_visit(node)
         self.in_with_context.pop()
 
@@ -670,35 +675,41 @@ class RaceAnalyzer(ast.NodeVisitor):
                 # Module/global variable assignment
                 if target.id in self.global_variables:
                     if not self._is_in_lock_context():
-                        self.races.append({
-                            'type': 'global_mutable_assignment',
-                            'variable': target.id,
-                            'line': node.lineno,
-                            'function': self.current_function,
-                            'context': 'module'
-                        })
+                        self.races.append(
+                            {
+                                "type": "global_mutable_assignment",
+                                "variable": target.id,
+                                "line": node.lineno,
+                                "function": self.current_function,
+                                "context": "module",
+                            }
+                        )
 
             elif isinstance(target, ast.Attribute):
                 # Class attribute assignment (self.x)
-                if isinstance(target.value, ast.Name) and target.value.id == 'self':
+                if isinstance(target.value, ast.Name) and target.value.id == "self":
                     if not self._is_in_lock_context():
-                        self.races.append({
-                            'type': 'class_attribute_assignment',
-                            'attribute': target.attr,
-                            'line': node.lineno,
-                            'function': self.current_function,
-                            'class': self.current_class
-                        })
+                        self.races.append(
+                            {
+                                "type": "class_attribute_assignment",
+                                "attribute": target.attr,
+                                "line": node.lineno,
+                                "function": self.current_function,
+                                "class": self.current_class,
+                            }
+                        )
 
             elif isinstance(target, ast.Subscript):
                 # Dictionary/list element assignment (shared_dict[key])
                 if not self._is_in_lock_context():
-                    self.races.append({
-                        'type': 'shared_collection_assignment',
-                        'line': node.lineno,
-                        'function': self.current_function,
-                        'class': self.current_class
-                    })
+                    self.races.append(
+                        {
+                            "type": "shared_collection_assignment",
+                            "line": node.lineno,
+                            "function": self.current_function,
+                            "class": self.current_class,
+                        }
+                    )
 
         self.generic_visit(node)
 
@@ -709,26 +720,30 @@ class RaceAnalyzer(ast.NodeVisitor):
         if isinstance(node.target, ast.Name):
             if node.target.id in self.global_variables:
                 if not self._is_in_lock_context():
-                    self.races.append({
-                        'type': 'global_compound_operation',
-                        'variable': node.target.id,
-                        'operator': type(node.op).__name__,
-                        'line': node.lineno,
-                        'function': self.current_function,
-                        'context': 'module'
-                    })
+                    self.races.append(
+                        {
+                            "type": "global_compound_operation",
+                            "variable": node.target.id,
+                            "operator": type(node.op).__name__,
+                            "line": node.lineno,
+                            "function": self.current_function,
+                            "context": "module",
+                        }
+                    )
 
         elif isinstance(node.target, ast.Attribute):
-            if isinstance(node.target.value, ast.Name) and node.target.value.id == 'self':
+            if isinstance(node.target.value, ast.Name) and node.target.value.id == "self":
                 if not self._is_in_lock_context():
-                    self.races.append({
-                        'type': 'class_compound_operation',
-                        'attribute': node.target.attr,
-                        'operator': type(node.op).__name__,
-                        'line': node.lineno,
-                        'function': self.current_function,
-                        'class': self.current_class
-                    })
+                    self.races.append(
+                        {
+                            "type": "class_compound_operation",
+                            "attribute": node.target.attr,
+                            "operator": type(node.op).__name__,
+                            "line": node.lineno,
+                            "function": self.current_function,
+                            "class": self.current_class,
+                        }
+                    )
 
         self.generic_visit(node)
 
@@ -737,24 +752,38 @@ class RaceAnalyzer(ast.NodeVisitor):
         # Check for method calls on shared objects without locks
         if isinstance(node.func, ast.Attribute):
             # Check if it's a mutable method on shared state
-            mutable_methods = {'append', 'extend', 'insert', 'pop', 'remove', 'clear',
-                              'update', 'popitem', 'setdefault', 'add', 'discard',
-                              'intersection_update', 'difference_update'}
+            mutable_methods = {
+                "append",
+                "extend",
+                "insert",
+                "pop",
+                "remove",
+                "clear",
+                "update",
+                "popitem",
+                "setdefault",
+                "add",
+                "discard",
+                "intersection_update",
+                "difference_update",
+            }
 
             if node.func.attr in mutable_methods:
                 if isinstance(node.func.value, ast.Name):
                     if node.func.value.id in self.global_variables:
                         if not self._is_in_lock_context():
-                            self.races.append({
-                                'type': 'shared_mutable_method_call',
-                                'method': node.func.attr,
-                                'object': node.func.value.id,
-                                'line': node.lineno,
-                                'function': self.current_function
-                            })
+                            self.races.append(
+                                {
+                                    "type": "shared_mutable_method_call",
+                                    "method": node.func.attr,
+                                    "object": node.func.value.id,
+                                    "line": node.lineno,
+                                    "function": self.current_function,
+                                }
+                            )
 
         self.generic_visit(node)
 
     def _is_in_lock_context(self):
         """Check if current node is inside a 'with lock:' context."""
-        return any(context[0] == 'lock' for context in self.in_with_context)
+        return any(context[0] == "lock" for context in self.in_with_context)

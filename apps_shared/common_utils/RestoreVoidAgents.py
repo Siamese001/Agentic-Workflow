@@ -20,6 +20,7 @@ Usage:
     python scripts/restore_void_agents.py --dry-run
     python scripts/restore_void_agents.py
 """
+
 from __future__ import annotations
 
 import argparse
@@ -41,24 +42,19 @@ RESTORE_MAP: dict[str, str] = {
     "DagRuntimeInspectorAgent.py": "L3_orchestration/workflow_engines/",
     "WorkflowOrchestratorAgent.py": "L3_orchestration/workflow_engines/",
     "HardenedWorkflowOrchestratorAgent.py": "L3_orchestration/workflow_engines/",
-
     # Orchestration agents -> L3
     "NervousSystemAgent.py": "L3_orchestration/workflow_engines/",
     "OrchestrationHandshakeAgent.py": "L3_orchestration/workflow_engines/",
     "SelfRecoveringOrchestratorAgent.py": "L3_orchestration/workflow_engines/",
-
     # Observability agents -> L6
     "TracingAgent.py": "L6_observability/agents/",
     "AutonomicMonitorAgent.py": "L6_observability/agents/",
-
     # Safety/validation agents -> L5
     "GenerativeGuardAgent.py": "L5_safety/guardrails/",
     "GitSafetyHandlerAgent.py": "L5_safety/guardrails/",
-
     # Architecture/governance -> L5
     "ArchitectureGovernorAgent.py": "L5_safety/validators/",
     "AgentRegistryValidatorAgent.py": "L5_safety/validators/",
-
     # Bootstrap/core -> L0
     "BootstrapAgent.py": "L0_maintenance/scripts/",
 }
@@ -106,8 +102,8 @@ def restore_agent(filename: str, target_dir: str, dry_run: bool = False) -> tupl
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Restore functional agents from void_violations')
-    parser.add_argument('--dry-run', action='store_true', help='Show what would be done')
+    parser = argparse.ArgumentParser(description="Restore functional agents from void_violations")
+    parser.add_argument("--dry-run", action="store_true", help="Show what would be done")
     args = parser.parse_args()
 
     print("=" * 70)

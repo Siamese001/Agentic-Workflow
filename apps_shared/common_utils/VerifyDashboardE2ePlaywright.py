@@ -18,6 +18,7 @@ Usage:
     python verify_dashboard_e2e_playwright.py              # Visible browser
     python verify_dashboard_e2e_playwright.py --headless   # Headless mode
 """
+
 import argparse
 import subprocess
 import sys
@@ -52,14 +53,14 @@ def kill_existing_servers():
         pids_to_kill = []
 
         # Use psutil to find processes listening on port 8080
-        for proc in psutil.process_iter(['pid', 'name']):
+        for proc in psutil.process_iter(["pid", "name"]):
             try:
                 # Get connections for this process (use net_connections to avoid deprecation)
-                connections = proc.net_connections(kind='inet')
+                connections = proc.net_connections(kind="inet")
                 for conn in connections:
-                    if hasattr(conn, 'laddr') and conn.laddr.port == PORT:
+                    if hasattr(conn, "laddr") and conn.laddr.port == PORT:
                         # Check if it's a listening socket
-                        if conn.status == psutil.CONN_LISTEN or conn.status == 'LISTEN':
+                        if conn.status == psutil.CONN_LISTEN or conn.status == "LISTEN":
                             pids_to_kill.append(proc.pid)
                             break
             except (psutil.AccessDenied, psutil.NoSuchProcess, AttributeError):
@@ -97,13 +98,12 @@ def kill_existing_servers():
 def start_server():
     """Start HTTP server on port 8080."""
     from agentic_core.utils.security import safe_popen
+
     print(f"\n🚀 Starting HTTP server on port {PORT}...")
     serve_path = Path(__file__).parent / "serve_dashboard.py"
 
     proc = safe_popen(
-        [sys.executable, str(serve_path)],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL
+        [sys.executable, str(serve_path)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
     )
 
     # Wait for server to be ready
@@ -148,7 +148,7 @@ def verify_with_playwright(headless: bool = False, screenshot_dir: Path = None):
             print("\n1. Launching Chromium...")
             browser = p.chromium.launch(
                 headless=headless,
-                slow_mo=100 if not headless else 0  # Slow down for visibility
+                slow_mo=100 if not headless else 0,  # Slow down for visibility
             )
 
             context = browser.new_context()
@@ -171,7 +171,9 @@ def verify_with_playwright(headless: bool = False, screenshot_dir: Path = None):
 
                 if not response or response.status != 200:
                     print(f"   ❌ HTTP {response.status if response else 'NO RESPONSE'}")
-                    raise Exception(f"Failed to load page: HTTP {response.status if response else 'timeout'}")
+                    raise Exception(
+                        f"Failed to load page: HTTP {response.status if response else 'timeout'}"
+                    )
 
                 print(f"   ✅ HTTP {response.status} OK")
 
@@ -182,7 +184,7 @@ def verify_with_playwright(headless: bool = False, screenshot_dir: Path = None):
             # Wait for table to appear
             print("4. Waiting for tables to render...")
             try:
-                page.wait_for_selector('#kpiGrid table tbody tr', timeout=10000)
+                page.wait_for_selector("#kpiGrid table tbody tr", timeout=10000)
                 print("   ✅ Tables found in DOM")
             except PlaywrightTimeout:
                 print("   ❌ Tables did not appear within 10s")
@@ -193,15 +195,13 @@ def verify_with_playwright(headless: bool = False, screenshot_dir: Path = None):
 
             # Count table rows (excluding header)
             print("5. Verifying table content...")
-            row_locator = page.locator('#kpiGrid table tbody tr')
+            row_locator = page.locator("#kpiGrid table tbody tr")
             row_count = row_locator.count()
 
             print(f"   Found {row_count} table rows")
 
             if row_count < EXPECTED_MIN_ROWS:
-                raise AssertionError(
-                    f"Expected ≥{EXPECTED_MIN_ROWS} rows, got {row_count}"
-                )
+                raise AssertionError(f"Expected ≥{EXPECTED_MIN_ROWS} rows, got {row_count}")
 
             print(f"   ✅ Row count OK ({row_count} ≥ {EXPECTED_MIN_ROWS})")
 
@@ -211,7 +211,7 @@ def verify_with_playwright(headless: bool = False, screenshot_dir: Path = None):
                 total_row = page.locator('tr:has-text("TOTAL")').first
 
                 # Get second cell (Total agents column)
-                total_cell = total_row.locator('td').nth(1)
+                total_cell = total_row.locator("td").nth(1)
                 total_text = total_cell.inner_text().strip()
                 total_agents = int(total_text)
 
@@ -224,21 +224,21 @@ def verify_with_playwright(headless: bool = False, screenshot_dir: Path = None):
                     )
 
                 # P1 Enhancement: Verify Heal Cap % (3rd column)
-                heal_cap_cell = total_row.locator('td').nth(2)
+                heal_cap_cell = total_row.locator("td").nth(2)
                 heal_cap_full_text = heal_cap_cell.inner_text().strip()
 
                 # Extract just the percentage value (before any parentheses or newlines)
                 # Example: "100.0% (0-100, σ=47.9)\n↑" -> "100.0"
-                heal_cap_text = heal_cap_full_text.split('%')[0].split('(')[0].split('\n')[0].strip()
+                heal_cap_text = (
+                    heal_cap_full_text.split("%")[0].split("(")[0].split("\n")[0].strip()
+                )
                 heal_cap = float(heal_cap_text)
 
                 print(f"   Heal Cap %: {heal_cap}%")
 
                 # Check Heal Cap is reasonable (should be >80% for healthy codebase)
                 if heal_cap < 80:
-                    raise AssertionError(
-                        f"Heal Cap too low: {heal_cap}% (expected ≥80%)"
-                    )
+                    raise AssertionError(f"Heal Cap too low: {heal_cap}% (expected ≥80%)")
 
                 print(f"   ✅ TOTAL row verified ({total_agents} agents, Heal Cap {heal_cap}%)")
 
@@ -251,7 +251,7 @@ def verify_with_playwright(headless: bool = False, screenshot_dir: Path = None):
 
             # Check for console errors
             print("7. Checking for JavaScript errors...")
-            error_messages = [msg for msg in console_messages if 'error' in msg.lower()]
+            error_messages = [msg for msg in console_messages if "error" in msg.lower()]
 
             if error_messages:
                 print(f"   ❌ Found {len(error_messages)} console errors:")
@@ -320,19 +320,17 @@ def main():
     """Main entry point."""
     parser = argparse.ArgumentParser(
         description="Automated Dashboard E2E Verification with Playwright",
-        formatter_class=argparse.RawDescriptionHelpFormatter
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
 
     parser.add_argument(
-        '--headless',
-        action='store_true',
-        help='Run browser in headless mode (no visible window)'
+        "--headless", action="store_true", help="Run browser in headless mode (no visible window)"
     )
 
     parser.add_argument(
-        '--keep-server',
-        action='store_true',
-        help='Keep server running after verification (requires Ctrl+C to stop)'
+        "--keep-server",
+        action="store_true",
+        help="Keep server running after verification (requires Ctrl+C to stop)",
     )
 
     args = parser.parse_args()

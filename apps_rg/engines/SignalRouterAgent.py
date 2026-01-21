@@ -35,6 +35,7 @@ from .resume_base import ResumeAgent
 
 class HealingStrategy(Enum):
     """Strategy for selecting agents in a healing cycle."""
+
     FULL_DIAGNOSTIC = "full_diagnostic"  # Run all agents
     SURGICAL_STRIKE = "surgical_strike"  # Run only agents for specific signals
     VERIFICATION_ONLY = "verification_only"  # Run only TestPilot
@@ -45,6 +46,7 @@ class HealingStrategy(Enum):
 @dataclass
 class CycleResult:
     """Result of a single healing cycle."""
+
     cycle_number: int
     strategy: HealingStrategy
     agents_executed: list[str]
@@ -61,6 +63,7 @@ class CycleResult:
 @dataclass
 class HealingResult:
     """Result of the complete healing process."""
+
     success: bool
     total_cycles: int
     final_signals: set[str]
@@ -119,7 +122,9 @@ class SignalRouterAgent(MCPHardenedMixin, HealerMixin):
         return bool(signals & cls.CRITICAL_SIGNALS)
 
     @classmethod
-    def determine_strategy(cls, cycle: int, signals: set[str], modified_sections: set[str]) -> HealingStrategy:
+    def determine_strategy(
+        cls, cycle: int, signals: set[str], modified_sections: set[str]
+    ) -> HealingStrategy:
         """
         Determine the healing strategy based on current state.
 
@@ -149,8 +154,8 @@ class SignalRouterAgent(MCPHardenedMixin, HealerMixin):
         return HealingStrategy.SURGICAL_STRIKE
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()
 
 
 class AgentFactory(MCPHardenedMixin, HealerMixin):
@@ -243,8 +248,8 @@ class AgentFactory(MCPHardenedMixin, HealerMixin):
         ]
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()
 
 
 class HealingCycle:
@@ -274,6 +279,7 @@ class HealingCycle:
             CycleResult with cycle execution details
         """
         import time
+
         self.start_time = time.time()
 
         signals_before = set(self.ctx.signals)
@@ -374,9 +380,11 @@ class HealingCycle:
             return True
 
         # Rollback on test failure after cycle 1 with modifications
-        if (self.cycle_number > 1 and
-            self.ctx.has_signal("TEST_FAILURE") and
-            self.ctx.section_backups):
+        if (
+            self.cycle_number > 1
+            and self.ctx.has_signal("TEST_FAILURE")
+            and self.ctx.section_backups
+        ):
             return True
 
         return False

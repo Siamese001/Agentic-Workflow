@@ -41,6 +41,7 @@ from core_v10_7 import (
 # v10.7: Logger name updated
 logger = logging.getLogger("main_v10_7")
 
+
 def setup_logging(config: ConfigV10_7, debug_mode: bool = False):
     """Configure logging, now accepts a config object."""
     log_dir = os.path.dirname(config.logging_config.log_file)
@@ -50,11 +51,11 @@ def setup_logging(config: ConfigV10_7, debug_mode: bool = False):
 
     logging.basicConfig(
         level=level,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
         handlers=[
             logging.FileHandler(config.logging_config.log_file),
-            logging.StreamHandler(sys.stdout) # v10.7: Log to stdout for streaming
-        ]
+            logging.StreamHandler(sys.stdout),  # v10.7: Log to stdout for streaming
+        ],
     )
 
     # Configure metrics logger
@@ -69,6 +70,7 @@ def setup_logging(config: ConfigV10_7, debug_mode: bool = False):
     logger.info(f"v10.7 Logging initialized: {config.logging_config.log_file}")
     logger.info(f"v10.7 Metrics logging to: {metrics_log_path}")
 
+
 def load_job_input(path: str) -> dict[str, Any]:
     """Load job input JSON"""
     try:
@@ -81,13 +83,14 @@ def load_job_input(path: str) -> dict[str, Any]:
     except json.JSONDecodeError as e:
         raise FileIOError(f"Invalid JSON in {path}: {e}")
 
+
 async def run_workflow_async(
     config: ConfigV10_7,
     job_input_path: str,
     master_resume_path: str,
     debug_mode: bool = False,
     enable_hil: bool = True,
-    enable_mcp: bool | None = None
+    enable_mcp: bool | None = None,
 ) -> dict[str, Any]:
     """Run workflow asynchronously with v10.7 streaming and validation"""
 
@@ -96,8 +99,8 @@ async def run_workflow_async(
     job_input_data = load_job_input(job_input_path)
     master_resume = load_job_input(master_resume_path)
 
-    company = job_input_data.get('company_name', 'N/A')
-    title = job_input_data.get('job_title', 'N/A')
+    company = job_input_data.get("company_name", "N/A")
+    title = job_input_data.get("job_title", "N/A")
 
     logger.info(f"Job: {company} - {title}")
 
@@ -115,9 +118,9 @@ async def run_workflow_async(
 
     initial_state = MainGraphState()
     initial_state.resume.master_resume = master_resume
-    initial_state.job.raw_jd = job_input_data['job_description']
-    initial_state.job.company = job_input_data['company_name']
-    initial_state.job.job_title = job_input_data['job_title']
+    initial_state.job.raw_jd = job_input_data["job_description"]
+    initial_state.job.company = job_input_data["company_name"]
+    initial_state.job.job_title = job_input_data["job_title"]
     initial_state.metadata.workflow_id = workflow_id
 
     state_dict = initial_state.to_dict()
@@ -153,11 +156,11 @@ async def run_workflow_async(
                     final_state_dict = event["data"]["output"][current_node]
 
                 if current_node == "HIL_PAUSE":
-                    print("\n", flush=True) # Newline after streaming
-                    logger.warning("="*80)
+                    print("\n", flush=True)  # Newline after streaming
+                    logger.warning("=" * 80)
                     logger.warning("🛑 WORKFLOW PAUSED: HUMAN INPUT REQUIRED 🛑")
                     logger.warning(f"Please review and provide feedback for: {workflow_id}")
-                    logger.warning("="*80)
+                    logger.warning("=" * 80)
 
             if kind == "on_graph_end":
                 final_state_dict = event["data"]["output"]
@@ -168,13 +171,13 @@ async def run_workflow_async(
 
         # v10.7: Check for rejection
         if "REJECT_JOB" in final_state_dict:
-             logger.error(f"Workflow {workflow_id} REJECTED.")
-             raise WorkflowError("Workflow rejected, likely due to prompt injection.")
+            logger.error(f"Workflow {workflow_id} REJECTED.")
+            raise WorkflowError("Workflow rejected, likely due to prompt injection.")
 
         # v10.7 (Fix #30): Check for constitutional failure
         if "failed_constitution" in final_state_dict.get("qa", {}).get("constitutional_review", {}):
-             logger.error(f"Workflow {workflow_id} FAILED CONSTITUTIONAL REVIEW.")
-             raise WorkflowError("Workflow rejected due to constitutional failure.")
+            logger.error(f"Workflow {workflow_id} FAILED CONSTITUTIONAL REVIEW.")
+            raise WorkflowError("Workflow rejected due to constitutional failure.")
 
         final_state = MainGraphState.from_dict(final_state_dict)
 
@@ -186,7 +189,9 @@ async def run_workflow_async(
 
         logger.info("--- Workflow Metrics Summary (v10.7) ---")
         for metric in context.metrics_collector.get_summary():
-             logger.info(f"  - {metric['agent_name']}::{metric['task_name']} | {metric['duration_ms']:.2f}ms | Success: {metric['success']}")
+            logger.info(
+                f"  - {metric['agent_name']}::{metric['task_name']} | {metric['duration_ms']:.2f}ms | Success: {metric['success']}"
+            )
 
         # v10.7 REFACTOR: Call centralized cleanup helper
         cleanup_workflow_chroma_collection(context)
@@ -194,33 +199,36 @@ async def run_workflow_async(
         return {
             "status": "SUCCESS",
             "workflow_id": workflow_id,
-            "cost": cost_summary['total_workflow_cost'],
+            "cost": cost_summary["total_workflow_cost"],
             "cache_stats": cache_stats,
-            "final_artifacts": final_state.artifacts.artifacts
+            "final_artifacts": final_state.artifacts.artifacts,
         }
 
     except Exception as e:
         logger.error(f"Workflow failed: {e}", exc_info=True)
-        return {
-            "status": "FAILED_FATAL",
-            "workflow_id": workflow_id,
-            "error": str(e)
-        }
+        return {"status": "FAILED_FATAL", "workflow_id": workflow_id, "error": str(e)}
 
     finally:
         logger.info("===== v10.7 Workflow Complete =====")
 
+
 def main():
     """Main CLI entry point"""
     parser = argparse.ArgumentParser(description="Resume Generation Engine v10.7")
-    parser.add_argument('-j', '--job', required=True, help='Path to job_input.json')
-    parser.add_argument('-m', '--master', required=True, help='Path to master_resume.json')
-    parser.add_argument('--debug', action='store_true', help='Enable debug logging')
-    parser.add_argument('--no-hil', action='store_true', help='Disable Human-in-the-Loop')
+    parser.add_argument("-j", "--job", required=True, help="Path to job_input.json")
+    parser.add_argument("-m", "--master", required=True, help="Path to master_resume.json")
+    parser.add_argument("--debug", action="store_true", help="Enable debug logging")
+    parser.add_argument("--no-hil", action="store_true", help="Disable Human-in-the-Loop")
 
     mcp_group = parser.add_mutually_exclusive_group()
-    mcp_group.add_argument('--disable-mcp', action='store_true', help='Disable MCP wrapping even if config enables it')
-    mcp_group.add_argument('--enable-mcp', action='store_true', help='Force enable MCP wrapping even if config disables it')
+    mcp_group.add_argument(
+        "--disable-mcp", action="store_true", help="Disable MCP wrapping even if config enables it"
+    )
+    mcp_group.add_argument(
+        "--enable-mcp",
+        action="store_true",
+        help="Force enable MCP wrapping even if config disables it",
+    )
 
     args = parser.parse_args()
 
@@ -239,29 +247,32 @@ def main():
     elif args.enable_mcp:
         mcp_toggle = True
 
-    result = asyncio.run(run_workflow_async(
-        config=config,
-        job_input_path=args.job,
-        master_resume_path=args.master,
-        debug_mode=args.debug,
-        enable_hil=not args.no_hil,
-        enable_mcp=mcp_toggle
-    ))
+    result = asyncio.run(
+        run_workflow_async(
+            config=config,
+            job_input_path=args.job,
+            master_resume_path=args.master,
+            debug_mode=args.debug,
+            enable_hil=not args.no_hil,
+            enable_mcp=mcp_toggle,
+        )
+    )
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print(f"WORKFLOW RESULT: {result['status']}")
     print(f"Workflow ID: {result.get('workflow_id')}")
-    if result.get('status') == 'SUCCESS':
+    if result.get("status") == "SUCCESS":
         print(f"Total Cost: ${result.get('cost', 0.0):.4f}")
         print(f"Cache Stats: {result.get('cache_stats')}")
     else:
         print(f"Error: {result.get('error')}")
-    print("="*80)
+    print("=" * 80)
 
-    if result['status'] == 'SUCCESS':
+    if result["status"] == "SUCCESS":
         sys.exit(0)
     else:
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()

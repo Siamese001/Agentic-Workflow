@@ -14,6 +14,7 @@ Opportunity #3: rglob Scan Proliferation
 NOTE: Most tests use a temporary directory for speed.
 Only exclusion tests use PROJECT_ROOT (with os.walk pruning, this is fast).
 """
+
 import shutil
 import sys
 import tempfile
@@ -74,7 +75,7 @@ class TestFileCacheSingleton:
     def teardown_method(self):
         """Reset singleton and cleanup temp directory."""
         FileCache.reset_instance()
-        if hasattr(self, 'temp_dir') and self.temp_dir.exists():
+        if hasattr(self, "temp_dir") and self.temp_dir.exists():
             shutil.rmtree(self.temp_dir)
 
     def test_singleton_same_instance(self):
@@ -121,7 +122,7 @@ class TestFileCacheExclusion:
     def teardown_method(self):
         """Reset singleton and cleanup."""
         FileCache.reset_instance()
-        if hasattr(self, 'temp_dir') and self.temp_dir.exists():
+        if hasattr(self, "temp_dir") and self.temp_dir.exists():
             shutil.rmtree(self.temp_dir)
 
     def test_sovereign_healing_backup_excluded(self):
@@ -129,7 +130,7 @@ class TestFileCacheExclusion:
         cache = FileCache.get_instance(self.temp_dir)
         all_files = cache.get_all_files()
 
-        backup_files = [f for f in all_files if '.sovereign_healing_backup' in str(f)]
+        backup_files = [f for f in all_files if ".sovereign_healing_backup" in str(f)]
         assert len(backup_files) == 0, f"Backup files should be excluded: {backup_files}"
 
     def test_pycache_excluded(self):
@@ -137,7 +138,7 @@ class TestFileCacheExclusion:
         cache = FileCache.get_instance(self.temp_dir)
         all_files = cache.get_all_files()
 
-        pycache_files = [f for f in all_files if '__pycache__' in str(f)]
+        pycache_files = [f for f in all_files if "__pycache__" in str(f)]
         assert len(pycache_files) == 0, f"__pycache__ files should be excluded: {pycache_files}"
 
     def test_git_excluded(self):
@@ -145,7 +146,7 @@ class TestFileCacheExclusion:
         cache = FileCache.get_instance(self.temp_dir)
         all_files = cache.get_all_files()
 
-        git_files = [f for f in all_files if '.git' in f.parts]
+        git_files = [f for f in all_files if ".git" in f.parts]
         assert len(git_files) == 0, f".git files should be excluded: {git_files}"
 
     def test_valid_files_found(self):
@@ -175,7 +176,7 @@ class TestFileCacheInvalidation:
     def teardown_method(self):
         """Cleanup temp directory and reset singleton."""
         FileCache.reset_instance()
-        if hasattr(self, 'temp_dir') and self.temp_dir.exists():
+        if hasattr(self, "temp_dir") and self.temp_dir.exists():
             shutil.rmtree(self.temp_dir)
 
     def test_invalidation_clears_cache(self):
@@ -243,15 +244,15 @@ class TestFileCacheExtensionFiltering:
     def teardown_method(self):
         """Reset singleton and cleanup."""
         FileCache.reset_instance()
-        if hasattr(self, 'temp_dir') and self.temp_dir.exists():
+        if hasattr(self, "temp_dir") and self.temp_dir.exists():
             shutil.rmtree(self.temp_dir)
 
     def test_python_files_only_py(self):
         """Verify get_files_by_extension('.py') returns only .py files."""
         cache = FileCache.get_instance(self.temp_dir)
-        py_files = cache.get_files_by_extension('.py')
+        py_files = cache.get_files_by_extension(".py")
 
-        non_py = [f for f in py_files if f.suffix.lower() != '.py']
+        non_py = [f for f in py_files if f.suffix.lower() != ".py"]
         assert len(non_py) == 0, f"Non-.py files found: {non_py}"
         assert len(py_files) == 3, f"Should find 3 .py files: {py_files}"
 
@@ -260,7 +261,7 @@ class TestFileCacheExtensionFiltering:
         cache = FileCache.get_instance(self.temp_dir)
         md_files = cache.get_markdown_files()
 
-        valid_extensions = {'.md', '.markdown'}
+        valid_extensions = {".md", ".markdown"}
         invalid = [f for f in md_files if f.suffix.lower() not in valid_extensions]
         assert len(invalid) == 0, f"Non-markdown files found: {invalid}"
         assert len(md_files) == 1, f"Should find 1 .md file: {md_files}"
@@ -269,8 +270,8 @@ class TestFileCacheExtensionFiltering:
         """Verify extension is normalized (with/without dot)."""
         cache = FileCache.get_instance(self.temp_dir)
 
-        files_with_dot = cache.get_files_by_extension('.py')
-        files_without_dot = cache.get_files_by_extension('py')
+        files_with_dot = cache.get_files_by_extension(".py")
+        files_without_dot = cache.get_files_by_extension("py")
 
         assert files_with_dot == files_without_dot, "Extension should be normalized"
 
@@ -290,7 +291,7 @@ class TestFileCacheLazyLoading:
     def teardown_method(self):
         """Reset singleton and cleanup."""
         FileCache.reset_instance()
-        if hasattr(self, 'temp_dir') and self.temp_dir.exists():
+        if hasattr(self, "temp_dir") and self.temp_dir.exists():
             shutil.rmtree(self.temp_dir)
 
     def test_no_scan_on_instantiation(self):
@@ -331,7 +332,7 @@ class TestFileCacheConvenienceFunctions:
     def teardown_method(self):
         """Reset singleton and cleanup."""
         FileCache.reset_instance()
-        if hasattr(self, 'temp_dir') and self.temp_dir.exists():
+        if hasattr(self, "temp_dir") and self.temp_dir.exists():
             shutil.rmtree(self.temp_dir)
 
     def test_get_python_files_function(self):
@@ -339,7 +340,7 @@ class TestFileCacheConvenienceFunctions:
         files = get_python_files(self.temp_dir)
 
         assert len(files) == 3, f"Should find 3 Python files: {files}"
-        assert all(f.suffix == '.py' for f in files), "All should be .py files"
+        assert all(f.suffix == ".py" for f in files), "All should be .py files"
 
     def test_invalidate_cache_function(self):
         """Verify invalidate_cache convenience function."""
@@ -381,7 +382,7 @@ class TestFileCacheProjectRootIntegration:
         cache = FileCache.get_instance(PROJECT_ROOT)
         all_files = cache.get_all_files()
 
-        git_files = [f for f in all_files if '.git' in f.parts]
+        git_files = [f for f in all_files if ".git" in f.parts]
         assert len(git_files) == 0, f".git files should be excluded: {git_files[:5]}"
 
     def test_project_root_excludes_pycache(self):
@@ -389,7 +390,7 @@ class TestFileCacheProjectRootIntegration:
         cache = FileCache.get_instance(PROJECT_ROOT)
         all_files = cache.get_all_files()
 
-        pycache_files = [f for f in all_files if '__pycache__' in f.parts]
+        pycache_files = [f for f in all_files if "__pycache__" in f.parts]
         assert len(pycache_files) == 0, f"__pycache__ should be excluded: {pycache_files[:5]}"
 
 
@@ -408,7 +409,7 @@ class TestCacheRefreshOnDemand:
     def teardown_method(self):
         """Cleanup temp directory and reset singleton."""
         FileCache.reset_instance()
-        if hasattr(self, 'temp_dir') and self.temp_dir.exists():
+        if hasattr(self, "temp_dir") and self.temp_dir.exists():
             shutil.rmtree(self.temp_dir)
 
     def test_cache_refresh_on_demand(self):
@@ -445,7 +446,7 @@ class TestCIRglobLimitEnforcement:
         # Run audit
         report = audit_rglob_usage(PROJECT_ROOT)
 
-        total_calls = report['total_rglob_calls']
+        total_calls = report["total_rglob_calls"]
 
         # Enforce limit: fail if count exceeds 92
         assert total_calls <= 92, (

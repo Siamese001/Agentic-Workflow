@@ -40,13 +40,27 @@ class L2Agent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin):
     - Basic Self-Testing: YES (tool validation)
     - Delegation to TestSovereigntyAgent: YES (on failure)
     """
+
     name: str = "L2Agent"
     layer: str = "L2"
 
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set = None) -> dict[str, Any]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set = None,
+    ) -> dict[str, Any]:
         """Invoke shared healing chain then allow subclass override."""
         if _call_path is None:
             _call_path = set()
-        super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+        super().heal_repository(
+            dry_run=dry_run,
+            execute=execute,
+            depth=depth,
+            max_depth=max_depth,
+            _call_path=_call_path,
+        )
         return {"status": "not_implemented", "agent": self.name}

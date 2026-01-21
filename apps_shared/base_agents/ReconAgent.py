@@ -15,13 +15,15 @@ logger = logging.getLogger(__name__)
 
 class CompetitivePosition(str, Enum):
     """Position of company relative to target."""
+
     DIRECT_COMPETITOR = "DIRECT_COMPETITOR"  # e.g. Uber vs Lyft
-    ADJACENT_MARKET = "ADJACENT_MARKET"      # e.g. Uber vs DoorDash
+    ADJACENT_MARKET = "ADJACENT_MARKET"  # e.g. Uber vs DoorDash
     UNRELATED = "UNRELATED"
 
 
 class Company(BaseModel):
     """Company information."""
+
     name: str
     industry: str
     description: str | None = None
@@ -31,6 +33,7 @@ class Company(BaseModel):
 
 class ReconSignal(BaseModel):
     """Signal from competitive reconnaissance."""
+
     target_company: str
     competitor_detected: str | None = None
     position: CompetitivePosition
@@ -58,7 +61,7 @@ class ReconAgent:
             "cloud": ["infrastructure", "devops", "security"],
             "saas": ["enterprise", "productivity", "analytics"],
             "healthcare": ["biotech", "pharma", "wellness"],
-            "education": ["edtech", "training", "certification"]
+            "education": ["edtech", "training", "certification"],
         }
 
         logger.info("Initialized ReconAgent with competitor database")
@@ -76,106 +79,102 @@ class ReconAgent:
                 industry="rideshare",
                 description="Ridesharing and delivery platform",
                 competitors=["Lyft", "Didi", "Bolt", "Grab"],
-                adjacent_companies=["DoorDash", "Grubhub", "Postmates", "Instacart"]
+                adjacent_companies=["DoorDash", "Grubhub", "Postmates", "Instacart"],
             ),
             "Lyft": Company(
                 name="Lyft",
                 industry="rideshare",
                 description="Ridesharing platform",
                 competitors=["Uber", "Didi", "Bolt"],
-                adjacent_companies=["DoorDash", "Postmates"]
+                adjacent_companies=["DoorDash", "Postmates"],
             ),
             "DoorDash": Company(
                 name="DoorDash",
                 industry="delivery",
                 description="Food delivery platform",
                 competitors=["Uber Eats", "Grubhub", "Postmates", "Instacart"],
-                adjacent_companies=["Uber", "Lyft", "Grubhub"]
+                adjacent_companies=["Uber", "Lyft", "Grubhub"],
             ),
             "Airbnb": Company(
                 name="Airbnb",
                 industry="hospitality",
                 description="Vacation rental platform",
                 competitors=["Booking.com", "Expedia", "Vrbo"],
-                adjacent_companies=["Hotels.com", "TripAdvisor", "Hostelworld"]
+                adjacent_companies=["Hotels.com", "TripAdvisor", "Hostelworld"],
             ),
             "Stripe": Company(
                 name="Stripe",
                 industry="fintech",
                 description="Payment processing platform",
                 competitors=["PayPal", "Square", "Adyen", "Braintree"],
-                adjacent_companies=["Plaid", "Razorpay", "Klarna"]
+                adjacent_companies=["Plaid", "Razorpay", "Klarna"],
             ),
             "Square": Company(
                 name="Square",
                 industry="fintech",
                 description="Payment and business services",
                 competitors=["PayPal", "Stripe", "Adyen"],
-                adjacent_companies=["Toast", "Shopify", "Lightspeed"]
+                adjacent_companies=["Toast", "Shopify", "Lightspeed"],
             ),
             "Amazon": Company(
                 name="Amazon",
                 industry="ecommerce",
                 description="E-commerce and cloud platform",
                 competitors=["Walmart", "Target", "eBay", "Alibaba"],
-                adjacent_companies=["Shopify", "BigCommerce", "Magento"]
+                adjacent_companies=["Shopify", "BigCommerce", "Magento"],
             ),
             "Shopify": Company(
                 name="Shopify",
                 industry="ecommerce",
                 description="E-commerce platform",
                 competitors=["BigCommerce", "Magento", "WooCommerce"],
-                adjacent_companies=["Amazon", "eBay", "Etsy"]
+                adjacent_companies=["Amazon", "eBay", "Etsy"],
             ),
             "Google": Company(
                 name="Google",
                 industry="tech",
                 description="Search and advertising platform",
                 competitors=["Microsoft", "Amazon", "Apple", "Meta"],
-                adjacent_companies=["Salesforce", "Oracle", "SAP"]
+                adjacent_companies=["Salesforce", "Oracle", "SAP"],
             ),
             "Microsoft": Company(
                 name="Microsoft",
                 industry="tech",
                 description="Software and cloud platform",
                 competitors=["Google", "Amazon", "Apple", "Oracle"],
-                adjacent_companies=["Salesforce", "IBM", "Red Hat"]
+                adjacent_companies=["Salesforce", "IBM", "Red Hat"],
             ),
             "Meta": Company(
                 name="Meta",
                 industry="social",
                 description="Social media platform",
                 competitors=["Twitter", "Snapchat", "LinkedIn", "TikTok"],
-                adjacent_companies=["Discord", "Reddit", "Telegram"]
+                adjacent_companies=["Discord", "Reddit", "Telegram"],
             ),
             "Netflix": Company(
                 name="Netflix",
                 industry="streaming",
                 description="Video streaming platform",
                 competitors=["Disney+", "HBO Max", "Hulu", "Amazon Prime"],
-                adjacent_companies=["YouTube", "Twitch", "Vimeo"]
+                adjacent_companies=["YouTube", "Twitch", "Vimeo"],
             ),
             "Tesla": Company(
                 name="Tesla",
                 industry="automotive",
                 description="Electric vehicle manufacturer",
                 competitors=["BYD", "Rivian", "Lucid", "Nio"],
-                adjacent_companies=["Ford", "GM", "Volkswagen", "Toyota"]
+                adjacent_companies=["Ford", "GM", "Volkswagen", "Toyota"],
             ),
             "Spotify": Company(
                 name="Spotify",
                 industry="music",
                 description="Music streaming platform",
                 competitors=["Apple Music", "Amazon Music", "YouTube Music"],
-                adjacent_companies=["Pandora", "SoundCloud", "Tidal"]
-            )
+                adjacent_companies=["Pandora", "SoundCloud", "Tidal"],
+            ),
         }
 
-    def analyze(
-        self,
-        target_company: str,
-        candidate_history: list[str]
-    ) -> ReconSignal:
+    def analyze(self, target_company: str, candidate_history: list[str]) -> ReconSignal:
         """Analyze candidate history for competitive signals.
 
         Args:
@@ -193,7 +192,7 @@ class ReconAgent:
                 target_company=target_company,
                 position=CompetitivePosition.UNRELATED,
                 strategy_recommendation="No competitive intelligence available. Focus on transferable skills.",
-                confidence_score=0.0
+                confidence_score=0.0,
             )
 
         # Check for direct competitors
@@ -211,14 +210,10 @@ class ReconAgent:
             target_company=target_company,
             position=CompetitivePosition.UNRELATED,
             strategy_recommendation="No direct competitive experience. Emphasize industry expertise and transferable skills.",
-            confidence_score=0.0
+            confidence_score=0.0,
         )
 
-    def _find_direct_competitor(
-        self,
-        target: Company,
-        candidate_history: list[str]
-    ) -> str | None:
+    def _find_direct_competitor(self, target: Company, candidate_history: list[str]) -> str | None:
         """Find if candidate worked at direct competitor.
 
         Args:
@@ -237,9 +232,7 @@ class ReconAgent:
         return None
 
     def _find_adjacent_competitor(
-        self,
-        target: Company,
-        candidate_history: list[str]
+        self, target: Company, candidate_history: list[str]
     ) -> str | None:
         """Find if candidate worked at adjacent market company.
 
@@ -265,11 +258,7 @@ class ReconAgent:
 
         return None
 
-    def _generate_direct_competitor_signal(
-        self,
-        target: Company,
-        competitor: str
-    ) -> ReconSignal:
+    def _generate_direct_competitor_signal(self, target: Company, competitor: str) -> ReconSignal:
         """Generate signal for direct competitor experience.
 
         Args:
@@ -282,7 +271,7 @@ class ReconAgent:
         insights = [
             f"Understands {target.name}'s competitive landscape from inside {competitor}",
             "Has insider knowledge of competitor strategies and pain points",
-            "Can speak to industry-specific challenges and solutions"
+            "Can speak to industry-specific challenges and solutions",
         ]
 
         strategy = (
@@ -298,14 +287,10 @@ class ReconAgent:
             position=CompetitivePosition.DIRECT_COMPETITOR,
             strategy_recommendation=strategy,
             confidence_score=0.9,
-            market_insights=insights
+            market_insights=insights,
         )
 
-    def _generate_adjacent_signal(
-        self,
-        target: Company,
-        adjacent: str
-    ) -> ReconSignal:
+    def _generate_adjacent_signal(self, target: Company, adjacent: str) -> ReconSignal:
         """Generate signal for adjacent market experience.
 
         Args:
@@ -318,7 +303,7 @@ class ReconAgent:
         insights = [
             f"Understands adjacent market dynamics from {adjacent}",
             "Brings cross-industry perspective and fresh ideas",
-            "Familiar with related technologies and business models"
+            "Familiar with related technologies and business models",
         ]
 
         strategy = (
@@ -334,7 +319,7 @@ class ReconAgent:
             position=CompetitivePosition.ADJACENT_MARKET,
             strategy_recommendation=strategy,
             confidence_score=0.6,
-            market_insights=insights
+            market_insights=insights,
         )
 
     def add_company(self, company: Company) -> None:
@@ -373,13 +358,11 @@ class ReconAgent:
         return {
             "direct_competitors": company.competitors,
             "adjacent_companies": company.adjacent_companies,
-            "industry": company.industry
+            "industry": company.industry,
         }
 
     def batch_analyze(
-        self,
-        target_companies: list[str],
-        candidate_history: list[str]
+        self, target_companies: list[str], candidate_history: list[str]
     ) -> list[ReconSignal]:
         """Analyze multiple target companies.
 
@@ -415,10 +398,7 @@ def get_recon_agent() -> ReconAgent:
 
 
 # Convenience function
-def analyze_competitive_fit(
-    target_company: str,
-    candidate_history: list[str]
-) -> ReconSignal:
+def analyze_competitive_fit(target_company: str, candidate_history: list[str]) -> ReconSignal:
     """Analyze candidate's competitive fit for target company.
 
     Args:

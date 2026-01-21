@@ -12,20 +12,24 @@ class PromptTemplate:
         self.template_id = template_id
         self.content = content
         self.metadata = metadata if metadata is not None else {}
-        self.version = "0.0.0" # Placeholder for version, ideally managed by PromptVersionManager
+        self.version = "0.0.0"  # Placeholder for version, ideally managed by PromptVersionManager
 
 
 logger = logging.getLogger(__name__)
 
+
 class VersionTag(Enum):
     """Version environment tags."""
+
     DEV = "dev"
     STAGING = "staging"
     PROD = "prod"
 
+
 @dataclass
 class PromptVersion:
     """Versioned prompt template."""
+
     version_id: str
     template_id: str
     version: str
@@ -64,6 +68,7 @@ class PromptVersion:
             change_notes=data.get("change_notes", ""),
             metadata=data.get("metadata", {}),
         )
+
 
 class PromptVersionManager:
     """Manages prompt versions with semantic versioning.
@@ -143,7 +148,7 @@ class PromptVersionManager:
                     "template_id": template_id,
                     "version": next_version,
                     "tag": tag.value,
-                }
+                },
             )
 
         return version
@@ -189,7 +194,7 @@ class PromptVersionManager:
                     "template_id": template_id,
                     "version": version,
                     "to_tag": to_tag.value,
-                }
+                },
             )
 
         return target_version
@@ -235,7 +240,7 @@ class PromptVersionManager:
                     "template_id": template_id,
                     "tag": tag.value,
                     "to_version": to_version,
-                }
+                },
             )
 
         return target_version
@@ -377,6 +382,7 @@ class PromptVersionManager:
             return "1.0.0"
 
         return f"{major + 1}.0.0"
+
 
 def create_version_manager() -> PromptVersionManager:
     """Factory function to create version manager.

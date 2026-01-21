@@ -4,6 +4,7 @@ test_registry_mapping.py - Verify unified agent registry mapping
 
 Tests that legacy agent IDs correctly map to unified agent classes.
 """
+
 from __future__ import annotations
 
 import sys

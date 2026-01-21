@@ -19,4 +19,12 @@ def create_bias_auditor() -> BiasAuditorAgent:
     """Factory function to create bias auditor."""
     return BiasAuditorAgent()
 
-__all__ = ['BiasType', 'BiasMatch', 'BiasResult', 'BiasAuditorAgent', 'audit_bias', 'create_bias_auditor']
+
+__all__ = [
+    "BiasType",
+    "BiasMatch",
+    "BiasResult",
+    "BiasAuditorAgent",
+    "audit_bias",
+    "create_bias_auditor",
+]

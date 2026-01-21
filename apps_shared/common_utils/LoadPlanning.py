@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 class ConfigType(Enum):
     """Types of configurations to load."""
+
     ENVIRONMENT = "environment"
     FEATURE_FLAG = "feature_flag"
     DEPLOYMENT = "deployment"
@@ -25,6 +26,7 @@ class ConfigType(Enum):
 
 class ConfigFormat(Enum):
     """Supported configuration formats."""
+
     JSON = "json"
     YAML = "yaml"
     TOML = "toml"
@@ -34,6 +36,7 @@ class ConfigFormat(Enum):
 
 class ConfigScope(Enum):
     """Configuration scopes."""
+
     GLOBAL = "global"
     REGION = "region"
     ENVIRONMENT = "environment"
@@ -44,6 +47,7 @@ class ConfigScope(Enum):
 @dataclass
 class ConfigSource:
     """Definition of a configuration source."""
+
     id: str
     name: str
     config_type: ConfigType
@@ -58,6 +62,7 @@ class ConfigSource:
 @dataclass
 class ConfigValidationRule:
     """Definition of a configuration validation rule."""
+
     id: str
     field_path: str  # e.g., "database.host", "features.*.enabled"
     rule_type: str  # required, type, range, regex
@@ -68,6 +73,7 @@ class ConfigValidationRule:
 @dataclass
 class ConfigTransformation:
     """Definition of a configuration transformation."""
+
     id: str
     name: str
     transformation_type: str  # template, substitution, merge, override
@@ -79,6 +85,7 @@ class ConfigTransformation:
 @dataclass
 class ConfigLoadPlan:
     """Complete plan for configuration data loading."""
+
     id: str
     name: str
     sources: list[ConfigSource]
@@ -94,6 +101,7 @@ class ConfigLoadPlan:
 @dataclass
 class ConfigLoadConfig:
     """Configuration for config load planning."""
+
     enable_validation: bool = True
     enable_encryption: bool = False
     enable_caching: bool = True
@@ -106,6 +114,7 @@ class ConfigLoadConfig:
 @dataclass
 class ConfigLoadResult:
     """Result of config load planning."""
+
     success: bool
     load_plan: ConfigLoadPlan | None = None
     estimated_config_size: int = 0
@@ -135,7 +144,9 @@ class ConfigLoadPlanner:
         Returns:
             ConfigLoadResult: Complete planning result with load plan
         """
-        self.logger.info(f"Starting config load planning for: {load_request.get('plan_name', 'unknown')}")
+        self.logger.info(
+            f"Starting config load planning for: {load_request.get('plan_name', 'unknown')}"
+        )
 
         try:
             # Validate input request
@@ -146,8 +157,7 @@ class ConfigLoadPlanner:
 
             # Parse validation rules
             validation_rules = (
-                self._parse_validation_rules(load_request)
-                if self.config.enable_validation else []
+                self._parse_validation_rules(load_request) if self.config.enable_validation else []
             )
 
             # Parse transformations
@@ -179,8 +189,8 @@ class ConfigLoadPlanner:
                     "planned_at": datetime.utcnow().isoformat(),
                     "plan_name": load_request.get("plan_name"),
                     "source_count": len(sources),
-                    "planner": "ConfigLoadPlanner"
-                }
+                    "planner": "ConfigLoadPlanner",
+                },
             )
 
             self.logger.info(
@@ -196,8 +206,8 @@ class ConfigLoadPlanner:
                 errors=[str(e)],
                 metadata={
                     "failed_at": datetime.utcnow().isoformat(),
-                    "planner": "ConfigLoadPlanner"
-                }
+                    "planner": "ConfigLoadPlanner",
+                },
             )
 
     def _validate_request(self, request: dict[str, Any]) -> None:
@@ -224,7 +234,7 @@ class ConfigLoadPlanner:
                     "feature_flag": ConfigType.FEATURE_FLAG,
                     "deployment": ConfigType.DEPLOYMENT,
                     "service": ConfigType.SERVICE,
-                    "security": ConfigType.SECURITY
+                    "security": ConfigType.SECURITY,
                 }
 
                 format_mapping = {
@@ -232,7 +242,7 @@ class ConfigLoadPlanner:
                     "yaml": ConfigFormat.YAML,
                     "toml": ConfigFormat.TOML,
                     "xml": ConfigFormat.XML,
-                    "properties": ConfigFormat.PROPERTIES
+                    "properties": ConfigFormat.PROPERTIES,
                 }
 
                 scope_mapping = {
@@ -240,28 +250,21 @@ class ConfigLoadPlanner:
                     "region": ConfigScope.REGION,
                     "environment": ConfigScope.ENVIRONMENT,
                     "service": ConfigScope.SERVICE,
-                    "instance": ConfigScope.INSTANCE
+                    "instance": ConfigScope.INSTANCE,
                 }
 
                 source = ConfigSource(
                     id=raw_source.get("id", f"source_{len(sources)}"),
                     name=raw_source.get("name", "unnamed"),
                     config_type=config_type_mapping.get(
-                        raw_source.get("config_type", "environment"),
-                        ConfigType.ENVIRONMENT
+                        raw_source.get("config_type", "environment"), ConfigType.ENVIRONMENT
                     ),
-                    format=format_mapping.get(
-                        raw_source.get("format", "json"),
-                        ConfigFormat.JSON
-                    ),
+                    format=format_mapping.get(raw_source.get("format", "json"), ConfigFormat.JSON),
                     location=raw_source.get("location", ""),
-                    scope=scope_mapping.get(
-                        raw_source.get("scope", "global"),
-                        ConfigScope.GLOBAL
-                    ),
+                    scope=scope_mapping.get(raw_source.get("scope", "global"), ConfigScope.GLOBAL),
                     version=raw_source.get("version"),
                     encryption=raw_source.get("encryption", False),
-                    credentials=raw_source.get("credentials", {})
+                    credentials=raw_source.get("credentials", {}),
                 )
                 sources.append(source)
 
@@ -286,7 +289,7 @@ class ConfigLoadPlanner:
                     field_path=raw_rule.get("field_path", ""),
                     rule_type=raw_rule.get("rule_type", "required"),
                     parameters=raw_rule.get("parameters", {}),
-                    error_message=raw_rule.get("error_message", "")
+                    error_message=raw_rule.get("error_message", ""),
                 )
                 rules.append(rule)
 
@@ -305,7 +308,7 @@ class ConfigLoadPlanner:
                     transformation_type=raw_transform.get("transformation_type", "override"),
                     source_fields=raw_transform.get("source_fields", []),
                     target_field=raw_transform.get("target_field", ""),
-                    parameters=raw_transform.get("parameters", {})
+                    parameters=raw_transform.get("parameters", {}),
                 )
                 transformations.append(transform)
 
@@ -316,7 +319,7 @@ class ConfigLoadPlanner:
         request: dict[str, Any],
         sources: list[ConfigSource],
         validation_rules: list[ConfigValidationRule],
-        transformations: list[ConfigTransformation]
+        transformations: list[ConfigTransformation],
     ) -> ConfigLoadPlan:
         """Create config load plan from parsed components."""
         return ConfigLoadPlan(
@@ -329,7 +332,7 @@ class ConfigLoadPlanner:
             enable_validation=request.get("enable_validation", self.config.enable_validation),
             enable_encryption=request.get("enable_encryption", self.config.enable_encryption),
             cache_ttl=request.get("cache_ttl", self.config.default_cache_ttl),
-            metadata=request.get("metadata", {})
+            metadata=request.get("metadata", {}),
         )
 
     def _get_base_size_for_type(self, config_type: ConfigType) -> int:
@@ -387,7 +390,7 @@ class ConfigLoadPlanner:
             "encryption_needed": False,
             "authentication_needed": False,
             "authorization_needed": False,
-            "audit_logging": False
+            "audit_logging": False,
         }
 
         # Check if any source requires encryption
@@ -415,14 +418,14 @@ def create_config_load_planner(
     enable_validation: bool = True,
     enable_encryption: bool = False,
     enable_caching: bool = True,
-    **kwargs: object
+    **kwargs: object,
 ) -> ConfigLoadPlanner:
     """Create a configured config load planner."""
     config = ConfigLoadConfig(
         enable_validation=enable_validation,
         enable_encryption=enable_encryption,
         enable_caching=enable_caching,
-        **kwargs
+        **kwargs,
     )
     return ConfigLoadPlanner(config)
 
@@ -434,7 +437,7 @@ def plan_config_load(
     validation_rules: list[dict[str, Any]] | None = None,
     transformations: list[dict[str, Any]] | None = None,
     merge_strategy: str = "override",
-    config: dict[str, Any] | None = None
+    config: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Plan config data load from simple parameters.
 
@@ -455,7 +458,7 @@ def plan_config_load(
         "sources": sources,
         "validation_rules": validation_rules or [],
         "transformations": transformations or [],
-        "merge_strategy": merge_strategy
+        "merge_strategy": merge_strategy,
     }
 
     # Create planner and execute
@@ -479,7 +482,7 @@ def plan_config_load(
                     "scope": s.scope.value,
                     "version": s.version,
                     "encryption": s.encryption,
-                    "credentials": s.credentials
+                    "credentials": s.credentials,
                 }
                 for s in result.load_plan.sources
             ],
@@ -489,7 +492,7 @@ def plan_config_load(
                     "field_path": r.field_path,
                     "rule_type": r.rule_type,
                     "parameters": r.parameters,
-                    "error_message": r.error_message
+                    "error_message": r.error_message,
                 }
                 for r in result.load_plan.validation_rules
             ],
@@ -500,7 +503,7 @@ def plan_config_load(
                     "transformation_type": t.transformation_type,
                     "source_fields": t.source_fields,
                     "target_field": t.target_field,
-                    "parameters": t.parameters
+                    "parameters": t.parameters,
                 }
                 for t in result.load_plan.transformations
             ],
@@ -508,8 +511,10 @@ def plan_config_load(
             "enable_validation": result.load_plan.enable_validation,
             "enable_encryption": result.load_plan.enable_encryption,
             "cache_ttl": result.load_plan.cache_ttl,
-            "metadata": result.load_plan.metadata
-        } if result.load_plan else None,
+            "metadata": result.load_plan.metadata,
+        }
+        if result.load_plan
+        else None,
         "estimated_config_size": result.estimated_config_size,
         "validation_count": result.validation_count,
         "transformation_count": result.transformation_count,
@@ -517,5 +522,5 @@ def plan_config_load(
         "security_requirements": result.security_requirements,
         "warnings": result.warnings,
         "errors": result.errors,
-        "metadata": result.metadata
+        "metadata": result.metadata,
     }

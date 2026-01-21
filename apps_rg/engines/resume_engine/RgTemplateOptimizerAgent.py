@@ -55,8 +55,25 @@ class RgTemplateOptimizerAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMi
         """Detect job type from description."""
         job_lower = job_desc.lower()
 
-        technical_keywords = ["engineer", "developer", "programming", "software", "technical", "data", "cloud", "devops"]
-        executive_keywords = ["director", "vp", "vice president", "chief", "head of", "executive", "senior manager"]
+        technical_keywords = [
+            "engineer",
+            "developer",
+            "programming",
+            "software",
+            "technical",
+            "data",
+            "cloud",
+            "devops",
+        ]
+        executive_keywords = [
+            "director",
+            "vp",
+            "vice president",
+            "chief",
+            "head of",
+            "executive",
+            "senior manager",
+        ]
         creative_keywords = ["designer", "creative", "artist", "ux", "ui", "brand", "content"]
         entry_keywords = ["entry level", "junior", "associate", "intern", "graduate", "new grad"]
 
@@ -72,5 +89,5 @@ class RgTemplateOptimizerAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMi
         return "technical"  # Default
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()

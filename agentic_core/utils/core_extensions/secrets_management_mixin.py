@@ -6,7 +6,9 @@ import time
 
 class SecretAccessError(Exception):
     """Raised when a secret cannot be retrieved or accessed."""
+
     pass
+
 
 class SecretsManagementMixin:
     """
@@ -27,7 +29,7 @@ class SecretsManagementMixin:
         self._CACHE_TTL = 600
 
     def _is_valid_secret_key(self, key: str) -> bool:
-        return bool(re.match(r'^[A-Z][A-Z0-9_]{3,63}$', key))
+        return bool(re.match(r"^[A-Z][A-Z0-9_]{3,63}$", key))
 
     def _audit_access(self, secret_key: str, success: bool):
         """Internal: Log access attempts without revealing the secret value."""
@@ -70,7 +72,7 @@ class SecretsManagementMixin:
         # 2. Fallback handling
         if value is None:
             if default is not None:
-                self._audit_access(key, success=True) # Audit the default usage
+                self._audit_access(key, success=True)  # Audit the default usage
                 return default
 
             self._audit_access(key, success=False)
@@ -89,5 +91,7 @@ class SecretsManagementMixin:
         Trigger a rotation for a compromised or expired secret.
         (Placeholder for future Vault integration)
         """
-        self._sm_logger.warning(f"Secret rotation requested for '{key}' - Not implemented in EnvVar mode")
+        self._sm_logger.warning(
+            f"Secret rotation requested for '{key}' - Not implemented in EnvVar mode"
+        )
         return False

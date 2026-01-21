@@ -3,6 +3,7 @@
 Generate functionality metrics and unified diffs for blueprint duplicate pairs.
 Phase 1 of duplicate cleanup workflow.
 """
+
 from datetime import datetime
 from pathlib import Path
 
@@ -15,8 +16,8 @@ from agentic_core.utils.security import safe_git_execute
 def count_methods(file_path: Path) -> int:
     """Count method definitions in file."""
     try:
-        content = file_path.read_text(encoding='utf-8')
-        return sum(1 for line in content.split('\n') if line.strip().startswith('def '))
+        content = file_path.read_text(encoding="utf-8")
+        return sum(1 for line in content.split("\n") if line.strip().startswith("def "))
     except:
         return 0
 
@@ -24,7 +25,7 @@ def count_methods(file_path: Path) -> int:
 def has_pattern(file_path: Path, pattern: str) -> bool:
     """Check if file contains pattern."""
     try:
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
         return pattern in content
     except:
         return False
@@ -33,7 +34,7 @@ def has_pattern(file_path: Path, pattern: str) -> bool:
 def count_lines(file_path: Path) -> int:
     """Count lines in file."""
     try:
-        return len(file_path.read_text(encoding='utf-8').split('\n'))
+        return len(file_path.read_text(encoding="utf-8").split("\n"))
     except:
         return 0
 
@@ -42,10 +43,10 @@ def generate_unified_diff(canonical: Path, duplicate: Path) -> str:
     """Generate unified diff between files."""
     try:
         result = safe_git_execute(
-            ['diff', '--no-index', '--unified=3', str(canonical), str(duplicate)],
+            ["diff", "--no-index", "--unified=3", str(canonical), str(duplicate)],
             repo_root=canonical.parent,
             timeout=30,
-            check=False
+            check=False,
         )
         return result.stdout
     except:
@@ -64,6 +65,7 @@ def main():
     # Find blueprint agent files
     # Phase 6.9: Use ssot_discovery instead of glob
     from agentic_core.utils.ssot_discovery import get_agent_files
+
     blueprint_agents = list(get_agent_files(blueprint_dir))
 
     print("=" * 80)
@@ -78,7 +80,7 @@ def main():
     # Generate report
     report_file = project_root / REPORTS_DIR / "blueprint_metrics_report.md"
 
-    with open(report_file, 'w', encoding='utf-8') as f:
+    with open(report_file, "w", encoding="utf-8") as f:
         f.write("# Blueprint Duplicate Metrics Report\n")
         f.write(f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
 
@@ -87,7 +89,9 @@ def main():
         f.write("- **Diff output directory:** `reports/blueprint_diffs/`\n\n")
 
         f.write("## Metrics Comparison\n\n")
-        f.write("| Agent | Canonical Lines | Dup Lines | Can Methods | Dup Methods | Can Heal | Dup Heal | Recommendation |\n")
+        f.write(
+            "| Agent | Canonical Lines | Dup Lines | Can Methods | Dup Methods | Can Heal | Dup Heal | Recommendation |\n"
+        )
         f.write("| --- | --- | --- | --- | --- | --- | --- | --- |\n")
 
         pairs_found = 0
@@ -107,8 +111,8 @@ def main():
             dup_lines = count_lines(blueprint_file)
             can_methods = count_methods(canonical_file)
             dup_methods = count_methods(blueprint_file)
-            can_heal = has_pattern(canonical_file, 'def heal')
-            dup_heal = has_pattern(blueprint_file, 'def heal')
+            can_heal = has_pattern(canonical_file, "def heal")
+            dup_heal = has_pattern(blueprint_file, "def heal")
 
             # Recommendation
             if can_lines >= dup_lines and can_methods >= dup_methods:
@@ -123,13 +127,17 @@ def main():
             print(f"  Blueprint: {dup_lines} lines, {dup_methods} methods, heal={dup_heal}")
             print(f"  → {recommendation}")
 
-            f.write(f"| {agent_name} | {can_lines} | {dup_lines} | {can_methods} | {dup_methods} | ")
-            f.write(f"{'✅' if can_heal else '❌'} | {'✅' if dup_heal else '❌'} | {recommendation} |\n")
+            f.write(
+                f"| {agent_name} | {can_lines} | {dup_lines} | {can_methods} | {dup_methods} | "
+            )
+            f.write(
+                f"{'✅' if can_heal else '❌'} | {'✅' if dup_heal else '❌'} | {recommendation} |\n"
+            )
 
             # Generate diff
             diff_content = generate_unified_diff(canonical_file, blueprint_file)
             diff_file = diff_dir / f"{agent_name}_diff.patch"
-            diff_file.write_text(diff_content, encoding='utf-8')
+            diff_file.write_text(diff_content, encoding="utf-8")
 
         f.write("\n## Diff Files\n\n")
         f.write(f"Generated {pairs_found} diff files in `reports/blueprint_diffs/`\n\n")

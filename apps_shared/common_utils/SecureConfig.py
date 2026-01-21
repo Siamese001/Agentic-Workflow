@@ -29,7 +29,7 @@ class SecureConfigManager:
         self,
         config_dir: Path | None = None,
         master_password: str | None = None,
-        env_prefix: str = "AGENTIC_"
+        env_prefix: str = "AGENTIC_",
     ):
         """Initialize the secure config manager.
 
@@ -115,7 +115,7 @@ class SecureConfigManager:
             return {}
 
         try:
-            with open(self.config_file, 'rb') as f:
+            with open(self.config_file, "rb") as f:
                 encrypted_data = f.read()
 
             decrypted_data = self._decrypt_data(encrypted_data)
@@ -132,7 +132,7 @@ class SecureConfigManager:
 
             # Atomic write
             temp_file = self.config_file.with_suffix(".tmp")
-            with open(temp_file, 'wb') as f:
+            with open(temp_file, "wb") as f:
                 f.write(encrypted_data)
             temp_file.replace(self.config_file)
 
@@ -150,7 +150,7 @@ class SecureConfigManager:
             return {}
 
         try:
-            with open(self.keys_file, 'rb') as f:
+            with open(self.keys_file, "rb") as f:
                 encrypted_data = f.read()
 
             decrypted_data = self._decrypt_data(encrypted_data)
@@ -167,7 +167,7 @@ class SecureConfigManager:
 
             # Atomic write
             temp_file = self.keys_file.with_suffix(".tmp")
-            with open(temp_file, 'wb') as f:
+            with open(temp_file, "wb") as f:
                 f.write(encrypted_data)
             temp_file.replace(self.keys_file)
 
@@ -232,7 +232,7 @@ class SecureConfigManager:
                 "key": key_b64,
                 "created_at": time.time(),
                 "rotation_days": rotation_days,
-                "last_rotated": time.time()
+                "last_rotated": time.time(),
             }
 
             self._save_keys()
@@ -346,13 +346,7 @@ class SecureConfigManager:
             Exported configuration
         """
         with self._lock:
-            exported = {
-                "config": {},
-                "metadata": {
-                    "exported_at": time.time(),
-                    "version": "1.0"
-                }
-            }
+            exported = {"config": {}, "metadata": {"exported_at": time.time(), "version": "1.0"}}
 
             for key, value in self._config.items():
                 if self._is_sensitive_key(key) and not include_secrets:
@@ -372,8 +366,14 @@ class SecureConfigManager:
             True if key is sensitive
         """
         sensitive_patterns = [
-            "password", "secret", "token", "key", "credential",
-            "api_key", "private", "auth"
+            "password",
+            "secret",
+            "token",
+            "key",
+            "credential",
+            "api_key",
+            "private",
+            "auth",
         ]
 
         return any(pattern in key.lower() for pattern in sensitive_patterns)

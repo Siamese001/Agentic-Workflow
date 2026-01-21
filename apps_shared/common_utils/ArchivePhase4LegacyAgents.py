@@ -14,6 +14,7 @@ Usage:
     python scripts/archive_phase4_legacy_agents.py --dry-run
     python scripts/archive_phase4_legacy_agents.py
 """
+
 from __future__ import annotations
 
 import argparse
@@ -70,7 +71,11 @@ def find_agent(filename: str) -> Path | None:
     """Find an agent file in the codebase."""
     for path in (PROJECT_ROOT / "agentic_core").rglob(filename):
         path_str = str(path).lower()
-        if "__pycache__" not in path_str and "archive" not in path_str and "unified" not in path_str:
+        if (
+            "__pycache__" not in path_str
+            and "archive" not in path_str
+            and "unified" not in path_str
+        ):
             return path
     return None
 
@@ -95,8 +100,8 @@ def archive_file(source: Path, category: str, dry_run: bool = False) -> tuple[bo
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Archive Phase 4 legacy agents')
-    parser.add_argument('--dry-run', action='store_true', help='Show what would be done')
+    parser = argparse.ArgumentParser(description="Archive Phase 4 legacy agents")
+    parser.add_argument("--dry-run", action="store_true", help="Show what would be done")
     args = parser.parse_args()
 
     print("=" * 70)

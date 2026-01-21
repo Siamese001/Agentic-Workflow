@@ -76,8 +76,8 @@ class LeadQualityAgent(OutreachAgent):
             print(f"   [{self.name}] ✅ Lead quality validated")
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()
 
 
 # DUPLICATE ACCEPTED: App-specific customization valid

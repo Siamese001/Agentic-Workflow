@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: guardrail
@@ -223,13 +222,15 @@ class TestGeneratorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
         ]
 
         # Add fixture
-        lines.extend([
-            "    @pytest.fixture",
-            "    def instance(self):",
-            '        """Create test instance."""',
-            f"        return {cls['name']}()",
-            "",
-        ])
+        lines.extend(
+            [
+                "    @pytest.fixture",
+                "    def instance(self):",
+                '        """Create test instance."""',
+                f"        return {cls['name']}()",
+                "",
+            ]
+        )
 
         # Generate test for each method
         for method in cls["methods"]:

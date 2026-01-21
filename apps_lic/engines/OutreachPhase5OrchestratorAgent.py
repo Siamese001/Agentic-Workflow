@@ -25,6 +25,7 @@ class OutreachTraceLevel(Enum):
     Defines the severity levels for execution tracing in outreach campaigns,
     from debug information to critical errors.
     """
+
     DEBUG = "debug"
     INFO = "info"
     WARNING = "warning"
@@ -39,6 +40,7 @@ class OutreachMetricType(Enum):
     Defines the different metric types that can be collected during
     outreach campaign execution.
     """
+
     COUNTER = "counter"
     GAUGE = "gauge"
     HISTOGRAM = "histogram"
@@ -48,6 +50,7 @@ class OutreachMetricType(Enum):
 @dataclass
 class OutreachTraceStep:
     """A single step in an execution trace."""
+
     step_id: str
     agent_name: str
     action: str
@@ -61,6 +64,7 @@ class OutreachTraceStep:
 @dataclass
 class OutreachExecutionTrace:
     """Complete execution trace for a mission."""
+
     trace_id: str
     mission_name: str
     steps: list[OutreachTraceStep]
@@ -73,6 +77,7 @@ class OutreachExecutionTrace:
 @dataclass
 class OutreachMetric:
     """A single Metric measurement."""
+
     name: str
     metric_type: OutreachMetricType
     value: float
@@ -94,6 +99,7 @@ class OutreachExecutionTracer:
     def start_trace(self, mission_name: str) -> str:
         """Start a new execution trace."""
         import uuid
+
         trace_id = str(uuid.uuid4())[:8]
 
         self._traces[trace_id] = OutreachExecutionTrace(
@@ -178,32 +184,38 @@ class OutreachMetricsCollector:
         """Increment a counter Metric."""
         self._counters[name] = self._counters.get(name, 0) + value
 
-        self._metrics.append(OutreachMetric(
-            name=name,
-            metric_type=OutreachMetricType.COUNTER,
-            value=self._counters[name],
-            labels=labels or {},
-        ))
+        self._metrics.append(
+            OutreachMetric(
+                name=name,
+                metric_type=OutreachMetricType.COUNTER,
+                value=self._counters[name],
+                labels=labels or {},
+            )
+        )
 
     def gauge(self, name: str, value: float, labels: dict[str, str] = None) -> Any:
         """Set a gauge Metric."""
         self._gauges[name] = value
 
-        self._metrics.append(OutreachMetric(
-            name=name,
-            metric_type=OutreachMetricType.GAUGE,
-            value=value,
-            labels=labels or {},
-        ))
+        self._metrics.append(
+            OutreachMetric(
+                name=name,
+                metric_type=OutreachMetricType.GAUGE,
+                value=value,
+                labels=labels or {},
+            )
+        )
 
     def timer(self, name: str, duration_ms: float, labels: dict[str, str] = None) -> Any:
         """Record a timer Metric."""
-        self._metrics.append(OutreachMetric(
-            name=name,
-            metric_type=OutreachMetricType.TIMER,
-            value=duration_ms,
-            labels=labels or {},
-        ))
+        self._metrics.append(
+            OutreachMetric(
+                name=name,
+                metric_type=OutreachMetricType.TIMER,
+                value=duration_ms,
+                labels=labels or {},
+            )
+        )
 
     def get_counter(self, name: str) -> float:
         """Get a counter value."""
@@ -345,5 +357,5 @@ class OutreachPhase5OrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
         }
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()

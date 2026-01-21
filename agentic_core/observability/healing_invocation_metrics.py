@@ -21,43 +21,43 @@ class HealingMetricsCollector:
     def __init__(self, project_root: Path = None):
         """Initialize metrics collector."""
         self.project_root = project_root or Path.cwd()
-        self.metrics_dir = self.project_root / AGENTIC_CORE_DIR / 'L0_maintenance' / 'logs'
+        self.metrics_dir = self.project_root / AGENTIC_CORE_DIR / "L0_maintenance" / "logs"
         self.metrics_dir.mkdir(parents=True, exist_ok=True)
 
         self.counters = {
-            'healing_calls': 0,
-            'agent_activations': 0,
-            'successful_chains': 0,
-            'failed_chains': 0,
-            'cycle_detections': 0,
-            'depth_limits': 0
+            "healing_calls": 0,
+            "agent_activations": 0,
+            "successful_chains": 0,
+            "failed_chains": 0,
+            "cycle_detections": 0,
+            "depth_limits": 0,
         }
 
         self.historical_data = []
 
     def increment_healing_call(self):
         """Increment healing call counter."""
-        self.counters['healing_calls'] += 1
+        self.counters["healing_calls"] += 1
 
     def increment_agent_activation(self):
         """Increment agent activation counter."""
-        self.counters['agent_activations'] += 1
+        self.counters["agent_activations"] += 1
 
     def increment_successful_chain(self):
         """Increment successful chain counter."""
-        self.counters['successful_chains'] += 1
+        self.counters["successful_chains"] += 1
 
     def increment_failed_chain(self):
         """Increment failed chain counter."""
-        self.counters['failed_chains'] += 1
+        self.counters["failed_chains"] += 1
 
     def increment_cycle_detection(self):
         """Increment cycle detection counter."""
-        self.counters['cycle_detections'] += 1
+        self.counters["cycle_detections"] += 1
 
     def increment_depth_limit(self):
         """Increment depth limit counter."""
-        self.counters['depth_limits'] += 1
+        self.counters["depth_limits"] += 1
 
     def calculate_invocation_percentage(self) -> float:
         """
@@ -66,11 +66,11 @@ class HealingMetricsCollector:
         Returns:
             Percentage of agent activations that triggered healing
         """
-        total = self.counters['agent_activations']
+        total = self.counters["agent_activations"]
         if total == 0:
             return 0.0
 
-        healing = self.counters['healing_calls']
+        healing = self.counters["healing_calls"]
         return (healing / total) * 100
 
     def calculate_success_rate(self) -> float:
@@ -80,11 +80,11 @@ class HealingMetricsCollector:
         Returns:
             Percentage of chains that succeeded
         """
-        total = self.counters['successful_chains'] + self.counters['failed_chains']
+        total = self.counters["successful_chains"] + self.counters["failed_chains"]
         if total == 0:
             return 0.0
 
-        return (self.counters['successful_chains'] / total) * 100
+        return (self.counters["successful_chains"] / total) * 100
 
     def record_metrics(self):
         """Record current metrics to historical log."""
@@ -93,21 +93,21 @@ class HealingMetricsCollector:
         success_rate = self.calculate_success_rate()
 
         record = {
-            'timestamp': timestamp,
-            'invocation_percentage': invocation_pct,
-            'healing_calls': self.counters['healing_calls'],
-            'agent_activations': self.counters['agent_activations'],
-            'successful_chains': self.counters['successful_chains'],
-            'failed_chains': self.counters['failed_chains'],
-            'cycle_detections': self.counters['cycle_detections'],
-            'depth_limits': self.counters['depth_limits'],
-            'success_rate': success_rate
+            "timestamp": timestamp,
+            "invocation_percentage": invocation_pct,
+            "healing_calls": self.counters["healing_calls"],
+            "agent_activations": self.counters["agent_activations"],
+            "successful_chains": self.counters["successful_chains"],
+            "failed_chains": self.counters["failed_chains"],
+            "cycle_detections": self.counters["cycle_detections"],
+            "depth_limits": self.counters["depth_limits"],
+            "success_rate": success_rate,
         }
 
         self.historical_data.append(record)
         return record
 
-    def save_metrics_log(self, filename: str = 'healing_metrics.json'):
+    def save_metrics_log(self, filename: str = "healing_metrics.json"):
         """
         Save metrics to JSON log file.
 
@@ -116,12 +116,16 @@ class HealingMetricsCollector:
         """
         log_file = self.metrics_dir / filename
 
-        with open(log_file, 'w') as f:
-            json.dump({
-                'current_counters': self.counters,
-                'historical_data': self.historical_data,
-                'last_updated': datetime.now().isoformat()
-            }, f, indent=2)
+        with open(log_file, "w") as f:
+            json.dump(
+                {
+                    "current_counters": self.counters,
+                    "historical_data": self.historical_data,
+                    "last_updated": datetime.now().isoformat(),
+                },
+                f,
+                indent=2,
+            )
 
         return log_file
 
@@ -145,19 +149,19 @@ class HealingMetricsCollector:
 
 ### Invocation Statistics
 
-- **Healing Calls**: {self.counters['healing_calls']}
-- **Agent Activations**: {self.counters['agent_activations']}
+- **Healing Calls**: {self.counters["healing_calls"]}
+- **Agent Activations**: {self.counters["agent_activations"]}
 - **Invocation Percentage**: {invocation_pct:.1f}%
 - **Target**: >95%
-- **Status**: {'✓ TARGET MET' if invocation_pct >= 95 else '⚠ BELOW TARGET'}
+- **Status**: {"✓ TARGET MET" if invocation_pct >= 95 else "⚠ BELOW TARGET"}
 
 ### Chain Statistics
 
-- **Successful Chains**: {self.counters['successful_chains']}
-- **Failed Chains**: {self.counters['failed_chains']}
+- **Successful Chains**: {self.counters["successful_chains"]}
+- **Failed Chains**: {self.counters["failed_chains"]}
 - **Success Rate**: {success_rate:.1f}%
-- **Cycle Detections**: {self.counters['cycle_detections']}
-- **Depth Limits**: {self.counters['depth_limits']}
+- **Cycle Detections**: {self.counters["cycle_detections"]}
+- **Depth Limits**: {self.counters["depth_limits"]}
 
 ---
 
@@ -182,17 +186,17 @@ errors. A high success rate (>95%) indicates the chain is stable and reliable.
 
 ### Safety Metrics
 
-- **Cycle Detections**: {self.counters['cycle_detections']} (prevents infinite recursion)
-- **Depth Limits**: {self.counters['depth_limits']} (prevents runaway recursion)
+- **Cycle Detections**: {self.counters["cycle_detections"]} (prevents infinite recursion)
+- **Depth Limits**: {self.counters["depth_limits"]} (prevents runaway recursion)
 
 ---
 
 ## Validation Checklist
 
-- [{'x' if invocation_pct >= 95 else ' '}] Invocation percentage >= 95%
-- [{'x' if success_rate >= 95 else ' '}] Chain success rate >= 95%
-- [{'x' if self.counters['cycle_detections'] >= 0 else ' '}] Cycle detection active
-- [{'x' if self.counters['depth_limits'] >= 0 else ' '}] Depth limiting active
+- [{"x" if invocation_pct >= 95 else " "}] Invocation percentage >= 95%
+- [{"x" if success_rate >= 95 else " "}] Chain success rate >= 95%
+- [{"x" if self.counters["cycle_detections"] >= 0 else " "}] Cycle detection active
+- [{"x" if self.counters["depth_limits"] >= 0 else " "}] Depth limiting active
 
 ---
 
@@ -200,7 +204,7 @@ errors. A high success rate (>95%) indicates the chain is stable and reliable.
 
 Phase 5.3 metrics validation complete.
 
-**Status**: {'✓ METRICS TARGET MET' if invocation_pct >= 95 else '⚠ METRICS BELOW TARGET'}
+**Status**: {"✓ METRICS TARGET MET" if invocation_pct >= 95 else "⚠ METRICS BELOW TARGET"}
 """
 
         return report
@@ -210,9 +214,9 @@ Phase 5.3 metrics validation complete.
         invocation_pct = self.calculate_invocation_percentage()
         success_rate = self.calculate_success_rate()
 
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("HEALING INVOCATION METRICS SUMMARY")
-        print("="*70)
+        print("=" * 70)
         print(f"Healing Calls: {self.counters['healing_calls']}")
         print(f"Agent Activations: {self.counters['agent_activations']}")
         print(f"Invocation Percentage: {invocation_pct:.1f}%")
@@ -225,7 +229,7 @@ Phase 5.3 metrics validation complete.
         print()
         print(f"Cycle Detections: {self.counters['cycle_detections']}")
         print(f"Depth Limits: {self.counters['depth_limits']}")
-        print("="*70 + "\n")
+        print("=" * 70 + "\n")
 
 
 def simulate_healing_metrics():
@@ -278,13 +282,13 @@ def main():
     print(f"Metrics saved to: {log_file}")
 
     # Save report
-    report_file = collector.metrics_dir / 'healing_metrics_report.md'
-    with open(report_file, 'w') as f:
+    report_file = collector.metrics_dir / "healing_metrics_report.md"
+    with open(report_file, "w") as f:
         f.write(report)
     print(f"Report saved to: {report_file}")
 
     print("Metrics generation complete!")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

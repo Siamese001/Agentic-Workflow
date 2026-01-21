@@ -15,7 +15,6 @@ Purpose: Automated remediation of import violations using Dynamic Seal pattern
 # Suggested keywords to add in docstring/code: engine, healer, memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -33,6 +32,7 @@ from agentic_core.utils.core_extensions.unified_validator import UnifiedSSOTVali
 @dataclass
 class SealResult:
     """Result of a dynamic seal operation."""
+
     file_path: str
     violations_found: int
     violations_sealed: int
@@ -55,8 +55,9 @@ class DynamicSealAgent(SubatomicTestingMixin, MCPHardenedMixin):
         results = agent.execute_sprint(target_pattern="L3 → L5", dry_run=True)
     """
 
-
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -80,9 +81,7 @@ class DynamicSealAgent(SubatomicTestingMixin, MCPHardenedMixin):
         self.sealed_files: list[str] = []
 
     def execute_sprint(
-        self,
-        target_pattern: str | None = None,
-        dry_run: bool = True
+        self, target_pattern: str | None = None, dry_run: bool = True
     ) -> dict[str, Any]:
         """
         Execute a sprint to seal import violations.
@@ -113,7 +112,8 @@ class DynamicSealAgent(SubatomicTestingMixin, MCPHardenedMixin):
         violations = report.import_violations
         if target_pattern:
             violations = [
-                v for v in violations
+                v
+                for v in violations
                 if f"{v.source_layer} → {v.target_layer}" == target_pattern.replace("LL", "")
             ]
 
@@ -136,15 +136,11 @@ class DynamicSealAgent(SubatomicTestingMixin, MCPHardenedMixin):
             "errors": [],
             "total_violations": len(violations),
             "files_processed": 0,
-            "violations_sealed": 0
+            "violations_sealed": 0,
         }
 
         for file_path, file_violations in violations_by_file.items():
-            seal_result = self._apply_seal(
-                Path(file_path),
-                file_violations,
-                dry_run
-            )
+            seal_result = self._apply_seal(Path(file_path), file_violations, dry_run)
 
             results["files_processed"] += 1
 
@@ -153,10 +149,9 @@ class DynamicSealAgent(SubatomicTestingMixin, MCPHardenedMixin):
                 results["violations_sealed"] += seal_result.violations_sealed
                 self.refactor_count += 1
             elif seal_result.error:
-                results["errors"].append({
-                    "file": seal_result.file_path,
-                    "error": seal_result.error
-                })
+                results["errors"].append(
+                    {"file": seal_result.file_path, "error": seal_result.error}
+                )
 
         # Print summary
         print()
@@ -169,24 +164,19 @@ class DynamicSealAgent(SubatomicTestingMixin, MCPHardenedMixin):
         print(f"Errors: {len(results['errors'])}")
         print()
 
-        if results['modified']:
+        if results["modified"]:
             print("Modified files:")
-            for file_path in results['modified']:
+            for file_path in results["modified"]:
                 print(f"  ✅ {Path(file_path).relative_to(self.root)}")
 
-        if results['errors']:
+        if results["errors"]:
             print("\nErrors:")
-            for error in results['errors']:
+            for error in results["errors"]:
                 print(f"  ❌ {Path(error['file']).relative_to(self.root)}: {error['error']}")
 
         return results
 
-    def _apply_seal(
-        self,
-        file_path: Path,
-        violations: list[Any],
-        dry_run: bool
-    ) -> SealResult:
+    def _apply_seal(self, file_path: Path, violations: list[Any], dry_run: bool) -> SealResult:
         """
         Apply Dynamic Seal pattern to a file.
 
@@ -197,7 +187,7 @@ class DynamicSealAgent(SubatomicTestingMixin, MCPHardenedMixin):
         4. Preserve existing try/except dynamic imports
         """
         try:
-            content = file_path.read_text(encoding='utf-8')
+            content = file_path.read_text(encoding="utf-8")
             original_content = content
 
             violations_found = len(violations)
@@ -209,7 +199,7 @@ class DynamicSealAgent(SubatomicTestingMixin, MCPHardenedMixin):
                     file_path=str(file_path),
                     violations_found=violations_found,
                     violations_sealed=violations_found,
-                    success=True
+                    success=True,
                 )
 
             # Process each violation
@@ -228,19 +218,19 @@ class DynamicSealAgent(SubatomicTestingMixin, MCPHardenedMixin):
 
             # Write back if changed
             if content != original_content:
-                file_path.write_text(content, encoding='utf-8')
+                file_path.write_text(content, encoding="utf-8")
                 return SealResult(
                     file_path=str(file_path),
                     violations_found=violations_found,
                     violations_sealed=violations_sealed,
-                    success=True
+                    success=True,
                 )
             else:
                 return SealResult(
                     file_path=str(file_path),
                     violations_found=violations_found,
                     violations_sealed=0,
-                    success=True
+                    success=True,
                 )
 
         except Exception as e:
@@ -249,37 +239,37 @@ class DynamicSealAgent(SubatomicTestingMixin, MCPHardenedMixin):
                 violations_found=len(violations),
                 violations_sealed=0,
                 success=False,
-                error=str(e)
+                error=str(e),
             )
 
     def _is_dynamic_import(self, content: str, import_line: str) -> bool:
         """Check if an import is already inside a try/except block."""
-        lines = content.split('\n')
+        lines = content.split("\n")
 
         for i, line in enumerate(lines):
             if import_line in line:
                 # Look backwards for try: statement
                 for j in range(i - 1, max(0, i - 10), -1):
-                    if 'try:' in lines[j]:
+                    if "try:" in lines[j]:
                         return True
 
         return False
 
     def _remove_import_line(self, content: str, import_statement: str) -> str:
         """Remove an import statement from content."""
-        lines = content.split('\n')
+        lines = content.split("\n")
         new_lines = []
 
         for line in lines:
             # Skip lines that contain the import statement
-            if import_statement.strip() in line and 'import' in line:
+            if import_statement.strip() in line and "import" in line:
                 # Check if it's not inside a string or comment
                 stripped = line.strip()
-                if stripped.startswith('from ') or stripped.startswith('import '):
+                if stripped.startswith("from ") or stripped.startswith("import "):
                     continue
             new_lines.append(line)
 
-        return '\n'.join(new_lines)
+        return "\n".join(new_lines)
 
     def generate_report(self) -> str:
         """Generate a markdown report of sealed violations."""
@@ -322,32 +312,23 @@ def main() -> Any:
         description="Dynamic Seal Agent - Surgical refactoring of import violations"
     )
     parser.add_argument(
-        "--pattern",
-        help="Target violation pattern (e.g., 'L3 → L5')",
-        default=None
+        "--pattern", help="Target violation pattern (e.g., 'L3 → L5')", default=None
     )
     parser.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="Run in dry-run mode (no files modified)"
+        "--dry-run", action="store_true", help="Run in dry-run mode (no files modified)"
     )
-    parser.add_argument(
-        "--root",
-        default=".",
-        help="Repository root directory"
-    )
+    parser.add_argument("--root", default=".", help="Repository root directory")
 
     args = parser.parse_args()
 
     agent = DynamicSealAgent(root_dir=args.root)
-    results = agent.execute_sprint(
-        target_pattern=args.pattern,
-        dry_run=args.dry_run
-    )
+    results = agent.execute_sprint(target_pattern=args.pattern, dry_run=args.dry_run)
 
     print()
     print("✅ Dynamic Seal Agent completed")
-    print(f"   Sealed {results['violations_sealed']} violations in {len(results['modified'])} files")
+    print(
+        f"   Sealed {results['violations_sealed']} violations in {len(results['modified'])} files"
+    )
 
 
 if __name__ == "__main__":

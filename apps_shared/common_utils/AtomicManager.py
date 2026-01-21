@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 class StatePersistenceError(Exception):
     """Raised when state persistence operations fail."""
+
     pass
 
 
@@ -114,7 +115,9 @@ class AtomicStateManager:
                 checkpoint_id=checkpoint_id,
                 workflow_id=workflow_id,
                 k_node_index=new_state.current_k_node,
-                k_node_name=new_state.get_last_execution().k_node_name if new_state.get_last_execution() else "init",
+                k_node_name=new_state.get_last_execution().k_node_name
+                if new_state.get_last_execution()
+                else "init",
                 success=True,
                 duration_ms=duration_ms,
             )
@@ -155,7 +158,9 @@ class AtomicStateManager:
                 checkpoint_id=checkpoint_id,
                 workflow_id=workflow_id,
                 k_node_index=new_state.current_k_node,
-                k_node_name=new_state.get_last_execution().k_node_name if new_state.get_last_execution() else "init",
+                k_node_name=new_state.get_last_execution().k_node_name
+                if new_state.get_last_execution()
+                else "init",
                 success=False,
                 error_message=str(e),
                 duration_ms=duration_ms,
@@ -271,10 +276,10 @@ class AtomicStateManager:
         if self.backend == BackendType.FILE:
             # Write to file with fsync for durability
             file_path = Path(key)
-            temp_path = file_path.with_suffix('.tmp')
+            temp_path = file_path.with_suffix(".tmp")
 
             # Write to temp file first
-            with open(temp_path, 'w', encoding='utf-8') as f:
+            with open(temp_path, "w", encoding="utf-8") as f:
                 f.write(state.to_json())
                 f.flush()
                 os.fsync(f.fileno())  # Ensure data is written to disk
@@ -327,7 +332,7 @@ class AtomicStateManager:
                     logger.debug(f"No checkpoint found for workflow: {workflow_id}")
                     return None
 
-                with open(file_path, encoding='utf-8') as f:
+                with open(file_path, encoding="utf-8") as f:
                     json_data = f.read()
 
                 state = WorkflowState.from_json(json_data)

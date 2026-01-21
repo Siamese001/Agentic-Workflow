@@ -12,14 +12,16 @@ class TraceEvent:
             "role": ROLE,
             "type": event_type,
             "payload": PAYLOAD,
-            "time": TIMESTAMP
+            "time": TIMESTAMP,
         }
+
 
 class TelemetryRecorder:
     """
     L0 Maintenance: The Flight Recorder.
     Captures all system events for observability and audit.
     """
+
     def __init__(self, config: dict[str, Any]):
         self.config = config
 

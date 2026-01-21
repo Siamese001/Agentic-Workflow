@@ -14,6 +14,7 @@ Author: Cascade
 Date: January 19, 2026
 Phase: 6 - Legacy Key Cleanup & Discovery Expansion
 """
+
 import re
 import sys
 from pathlib import Path
@@ -30,9 +31,9 @@ def test_tc25_data_discovery_accuracy():
     Verify get_data_files returns the same count of JSON files as rglob
     (minus backups).
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-25: Data Discovery Accuracy")
-    print("="*60)
+    print("=" * 60)
 
     from agentic_core.utils.ssot_discovery import (
         compare_data_files_with_rglob,
@@ -48,10 +49,10 @@ def test_tc25_data_discovery_accuracy():
     print(f"      rglob (filtered): {json_result['rglob_count']} files")
     print(f"      Delta: {json_result['delta']}")
 
-    if json_result['delta'] != 0:
+    if json_result["delta"] != 0:
         print(f"⚠️  INFO: JSON delta is {json_result['delta']} (may be due to test file filtering)")
         # Allow small delta due to test file filtering differences
-        if json_result['delta'] > 10:
+        if json_result["delta"] > 10:
             print("❌ FAIL: JSON delta too large")
             return False
 
@@ -63,7 +64,7 @@ def test_tc25_data_discovery_accuracy():
     print(f"      rglob (filtered): {md_result['rglob_count']} files")
     print(f"      Delta: {md_result['delta']}")
 
-    if md_result['delta'] > 10:
+    if md_result["delta"] > 10:
         print("❌ FAIL: Markdown delta too large")
         return False
 
@@ -85,9 +86,9 @@ def test_tc26_maintenance_script_integrity():
 
     Verify that maintenance scripts correctly use violations_found key.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-26: Maintenance Script Integrity")
-    print("="*60)
+    print("=" * 60)
 
     from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
@@ -104,7 +105,7 @@ def test_tc26_maintenance_script_integrity():
     result = agent.heal_repository(dry_run=True)
 
     # Check for standardized keys
-    required_keys = ['violations_found', 'violations_fixed', 'status']
+    required_keys = ["violations_found", "violations_fixed", "status"]
     missing_keys = [k for k in required_keys if k not in result]
 
     if missing_keys:
@@ -120,13 +121,13 @@ def test_tc26_maintenance_script_integrity():
     legacy_result = {"violations": 5, "fixed": 3, "renamed": 2}
     normalized = agent._normalize_result(legacy_result)
 
-    if normalized['violations_found'] != 5:
+    if normalized["violations_found"] != 5:
         print("❌ FAIL: _normalize_result didn't map 'violations' to 'violations_found'")
         return False
 
     # 'fixed' and 'renamed' should both contribute to violations_fixed
     # The implementation uses: fixed = result.get('violations_fixed') or result.get('fixed') or result.get('renamed') or 0
-    if normalized['violations_fixed'] != 3:  # 'fixed' takes precedence
+    if normalized["violations_fixed"] != 3:  # 'fixed' takes precedence
         print("❌ FAIL: _normalize_result didn't map 'fixed' to 'violations_fixed'")
         return False
 
@@ -143,9 +144,9 @@ def test_tc27_key_exhaustion():
     Run a grep search for 'violations' in agentic_core/. It should return
     minimal results for logic-related usage (excluding strings, comments, logging).
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-27: Key Exhaustion")
-    print("="*60)
+    print("=" * 60)
 
     from agentic_core.utils.ssot_discovery import get_python_files
 
@@ -162,19 +163,19 @@ def test_tc27_key_exhaustion():
 
     for py_file in get_python_files(agentic_core):
         try:
-            content = py_file.read_text(encoding='utf-8')
+            content = py_file.read_text(encoding="utf-8")
 
             for pattern in logic_patterns:
                 matches = pattern.findall(content)
                 if matches:
                     # Exclude healer_mixin.py (it handles legacy key mapping)
-                    if 'healer_mixin' in py_file.name:
+                    if "healer_mixin" in py_file.name:
                         continue
                     # Exclude decorators.py (it handles legacy key mapping)
-                    if 'decorators' in py_file.name:
+                    if "decorators" in py_file.name:
                         continue
                     # Exclude test files
-                    if 'test_' in py_file.name:
+                    if "test_" in py_file.name:
                         continue
 
                     files_with_legacy.append(py_file.name)
@@ -214,7 +215,7 @@ def test_tc27_key_exhaustion():
     legacy_input = {"violations": 10, "fixed": 5}
     normalized = agent._normalize_result(legacy_input)
 
-    if normalized['violations_found'] != 10:
+    if normalized["violations_found"] != 10:
         print("❌ FAIL: _normalize_result failed to map 'violations' -> 'violations_found'")
         return False
 
@@ -229,9 +230,9 @@ def test_tc28_ci_threshold_hardening():
 
     Verify the CI check passes with the current rglob count.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-28: CI Threshold Hardening")
-    print("="*60)
+    print("=" * 60)
 
     # Import the CI check functions
     sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
@@ -264,9 +265,9 @@ def test_data_file_functions():
     """
     Bonus Test: Verify all new data file discovery functions work correctly.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("BONUS: Data File Discovery Functions")
-    print("="*60)
+    print("=" * 60)
 
     from agentic_core.utils.ssot_discovery import get_data_files
 
@@ -308,9 +309,9 @@ def test_data_file_functions():
 
 def main():
     """Run all Phase 6 Zero-Loss test cases."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("PHASE 6 ZERO-LOSS VERIFICATION TEST SUITE")
-    print("="*70)
+    print("=" * 70)
     print(f"Project Root: {PROJECT_ROOT}")
 
     tests = [
@@ -329,13 +330,14 @@ def main():
         except Exception as e:
             print(f"\n❌ EXCEPTION in {test_name}: {e}")
             import traceback
+
             traceback.print_exc()
             results.append((test_name, False))
 
     # Summary
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST SUMMARY")
-    print("="*70)
+    print("=" * 70)
 
     passed_count = sum(1 for _, passed in results if passed)
     total_count = len(results)
@@ -348,7 +350,7 @@ def main():
         status = "✅ PASS" if passed else "❌ FAIL"
         print(f"{status}: {test_name}")
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print(f"CORE TESTS: {core_passed}/4 passed")
     print(f"TOTAL: {passed_count}/{total_count} tests passed")
 

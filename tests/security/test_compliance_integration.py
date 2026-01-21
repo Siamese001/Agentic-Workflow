@@ -6,6 +6,7 @@ the CredentialScannerAgent when running in COMPLIANCE mode.
 
 Risk 4: Hardcoded Credential Detection Integration
 """
+
 from unittest.mock import patch
 
 from agentic_core.L3_orchestration.UnifiedOrchestratorAgent import UnifiedOrchestratorAgent
@@ -22,7 +23,9 @@ class TestComplianceIntegration:
         Verify that running the orchestrator in COMPLIANCE mode instantiates
         and calls the CredentialScannerAgent.
         """
-        with patch('agentic_core.L5_safety.validators.CredentialScannerAgent.CredentialScannerAgent') as MockScanner:
+        with patch(
+            "agentic_core.L5_safety.validators.CredentialScannerAgent.CredentialScannerAgent"
+        ) as MockScanner:
             # Setup Mock Scanner instance
             mock_scanner_instance = MockScanner.return_value
             mock_scanner_instance.scan_for_credentials.return_value = {
@@ -30,7 +33,7 @@ class TestComplianceIntegration:
                 "total_matches": 0,
                 "matches": [],
                 "summary": {"by_severity": {"high": 0, "medium": 0, "low": 0}},
-                "recommendations": ["✅ No high-priority credential leaks detected"]
+                "recommendations": ["✅ No high-priority credential leaks detected"],
             }
 
             orch = UnifiedOrchestratorAgent(mode="compliance")
@@ -50,7 +53,9 @@ class TestComplianceIntegration:
         Verify that if CredentialScanner finds high severity secrets,
         the Orchestrator reports a failure status.
         """
-        with patch('agentic_core.L5_safety.validators.CredentialScannerAgent.CredentialScannerAgent') as MockScanner:
+        with patch(
+            "agentic_core.L5_safety.validators.CredentialScannerAgent.CredentialScannerAgent"
+        ) as MockScanner:
             # Setup Mock Scanner to find a secret
             mock_scanner_instance = MockScanner.return_value
             mock_scanner_instance.scan_for_credentials.return_value = {
@@ -59,10 +64,10 @@ class TestComplianceIntegration:
                 "matches": [
                     {"type": "aws_access_key", "severity": "high"},
                     {"type": "github_token", "severity": "high"},
-                    {"type": "generic_secret", "severity": "medium"}
+                    {"type": "generic_secret", "severity": "medium"},
                 ],
                 "summary": {"by_severity": {"high": 2, "medium": 1, "low": 0}},
-                "recommendations": ["🚨 HIGH PRIORITY: Remove all hardcoded credentials"]
+                "recommendations": ["🚨 HIGH PRIORITY: Remove all hardcoded credentials"],
             }
 
             orch = UnifiedOrchestratorAgent(mode="compliance")
@@ -77,14 +82,16 @@ class TestComplianceIntegration:
         """
         Verify that zero credentials results in PASS status.
         """
-        with patch('agentic_core.L5_safety.validators.CredentialScannerAgent.CredentialScannerAgent') as MockScanner:
+        with patch(
+            "agentic_core.L5_safety.validators.CredentialScannerAgent.CredentialScannerAgent"
+        ) as MockScanner:
             mock_scanner_instance = MockScanner.return_value
             mock_scanner_instance.scan_for_credentials.return_value = {
                 "status": "success",
                 "total_matches": 0,
                 "matches": [],
                 "summary": {"by_severity": {"high": 0, "medium": 0, "low": 0}},
-                "recommendations": ["✅ No high-priority credential leaks detected"]
+                "recommendations": ["✅ No high-priority credential leaks detected"],
             }
 
             orch = UnifiedOrchestratorAgent(mode="compliance")
@@ -98,17 +105,19 @@ class TestComplianceIntegration:
         """
         Verify that medium severity credentials result in WARN status.
         """
-        with patch('agentic_core.L5_safety.validators.CredentialScannerAgent.CredentialScannerAgent') as MockScanner:
+        with patch(
+            "agentic_core.L5_safety.validators.CredentialScannerAgent.CredentialScannerAgent"
+        ) as MockScanner:
             mock_scanner_instance = MockScanner.return_value
             mock_scanner_instance.scan_for_credentials.return_value = {
                 "status": "success",
                 "total_matches": 2,
                 "matches": [
                     {"type": "generic_secret", "severity": "medium"},
-                    {"type": "jwt_token", "severity": "medium"}
+                    {"type": "jwt_token", "severity": "medium"},
                 ],
                 "summary": {"by_severity": {"high": 0, "medium": 2, "low": 0}},
-                "recommendations": ["Use environment variables for secrets"]
+                "recommendations": ["Use environment variables for secrets"],
             }
 
             orch = UnifiedOrchestratorAgent(mode="compliance")
@@ -122,14 +131,16 @@ class TestComplianceIntegration:
         """
         Verify the credential count is included in AgentResult metadata.
         """
-        with patch('agentic_core.L5_safety.validators.CredentialScannerAgent.CredentialScannerAgent') as MockScanner:
+        with patch(
+            "agentic_core.L5_safety.validators.CredentialScannerAgent.CredentialScannerAgent"
+        ) as MockScanner:
             mock_scanner_instance = MockScanner.return_value
             mock_scanner_instance.scan_for_credentials.return_value = {
                 "status": "success",
                 "total_matches": 5,
                 "matches": [],
                 "summary": {"by_severity": {"high": 1, "medium": 2, "low": 2}},
-                "recommendations": []
+                "recommendations": [],
             }
 
             orch = UnifiedOrchestratorAgent(mode="compliance")
@@ -142,7 +153,9 @@ class TestComplianceIntegration:
         """
         Verify that scanner errors are handled gracefully.
         """
-        with patch('agentic_core.L5_safety.validators.CredentialScannerAgent.CredentialScannerAgent') as MockScanner:
+        with patch(
+            "agentic_core.L5_safety.validators.CredentialScannerAgent.CredentialScannerAgent"
+        ) as MockScanner:
             mock_scanner_instance = MockScanner.return_value
             mock_scanner_instance.scan_for_credentials.side_effect = Exception("Scanner failed")
 

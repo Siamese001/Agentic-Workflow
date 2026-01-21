@@ -17,16 +17,17 @@ CORE_AGENTS_TO_VERIFY = [
     ("agentic_core.L5_safety.validators.HygieneGuardianAgent", "HygieneGuardianAgent"),
     ("agentic_core.L5_safety.validators.LocationAgent", "LocationAgent"),
     ("agentic_core.utils.sovereign_index", "SovereignIndex"),
-    ("agentic_core.L3_orchestration.orchestrator_registry", "get_orchestrator")
+    ("agentic_core.L3_orchestration.orchestrator_registry", "get_orchestrator"),
 ]
 
-class TestImportHarmonization:
 
+class TestImportHarmonization:
     def test_quarantine_leak_audit(self):
         """
         TC-001: Scans the code of key agents to ensure no 'from archives' imports exist.
         """
         import agentic_core.L5_safety.validators.structure_blueprint as ssot
+
         excluded_dirs = getattr(ssot, "GLOBAL_EXCLUDED_DIRS", [])
 
         # Verify 'archives' is strictly in the exclusion list
@@ -64,6 +65,7 @@ class TestImportHarmonization:
         assert any(d in idx._excluded_dirs for d in GLOBAL_EXCLUDED_DIRS), (
             f"SovereignIndex exclusions {idx._excluded_dirs} don't overlap with SSOT {GLOBAL_EXCLUDED_DIRS}"
         )
+
 
 if __name__ == "__main__":
     sys.exit(pytest.main(["-v", __file__]))

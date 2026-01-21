@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: memory, orchestrator, prompt, validator, workflow
@@ -8,7 +7,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
 import re
 from enum import Enum
@@ -33,6 +32,7 @@ class ValidationRejectionReason(Enum):
     ORPHANED_CLAIMS = "ORPHANED_CLAIMS"
     MISSING_CITATIONS = "MISSING_CITATIONS"
 
+
 # NAMING FIXED: Violation → Violation
 class Violation:
     """
@@ -53,6 +53,7 @@ class Violation:
         """
         self.reason: ValidationRejectionReason = reason
         self.message: str = message
+
 
 # NAMING FIXED: IntegrityGateResult → IntegrityGateResult
 class IntegrityGateResult:
@@ -88,6 +89,7 @@ class IntegrityGateResult:
         self.passed = False
         self.violations.append(Violation(reason, message))
 
+
 # Nested types for DeepResearchOutput
 # NAMING FIXED: FinancialProofPoint → FinancialProofPoint
 class FinancialProofPoint:
@@ -113,6 +115,7 @@ class FinancialProofPoint:
         self.value: str = value
         self.source_citation: str | None = source_citation
 
+
 # NAMING FIXED: KeyTechnology → KeyTechnology
 class KeyTechnology:
     """
@@ -124,7 +127,9 @@ class KeyTechnology:
         source_citation: Optional source citation
     """
 
-    def __init__(self, technology_name: str, implementation_details: str, source_citation: str | None = None) -> None:
+    def __init__(
+        self, technology_name: str, implementation_details: str, source_citation: str | None = None
+    ) -> None:
         """
         Initialize key technology.
 
@@ -136,6 +141,7 @@ class KeyTechnology:
         self.technology_name: str = technology_name
         self.implementation_details: str = implementation_details
         self.source_citation: str | None = source_citation
+
 
 # NAMING FIXED: KeyExecutive → KeyExecutive
 class KeyExecutive:
@@ -155,6 +161,7 @@ class KeyExecutive:
         """
         self.name: str = name
 
+
 # NAMING FIXED: StrategicLayer → StrategicLayer
 class StrategicLayer:
     """
@@ -166,7 +173,12 @@ class StrategicLayer:
         financial_proof_points: List of financial proof points
     """
 
-    def __init__(self, core_thesis: str, strategic_initiatives: list[str], financial_proof_points: list[FinancialProofPoint]) -> None:
+    def __init__(
+        self,
+        core_thesis: str,
+        strategic_initiatives: list[str],
+        financial_proof_points: list[FinancialProofPoint],
+    ) -> None:
         """
         Initialize strategic layer.
 
@@ -178,6 +190,7 @@ class StrategicLayer:
         self.core_thesis = core_thesis
         self.strategic_initiatives = strategic_initiatives
         self.financial_proof_points = financial_proof_points
+
 
 # NAMING FIXED: TechnicalLayer → TechnicalLayer
 class TechnicalLayer:
@@ -200,6 +213,7 @@ class TechnicalLayer:
         self.implementation_summary = implementation_summary
         self.key_technologies = key_technologies
 
+
 # NAMING FIXED: LeadershipLayer → LeadershipLayer
 class LeadershipLayer:
     """
@@ -217,6 +231,7 @@ class LeadershipLayer:
             key_executives: List of key executives
         """
         self.key_executives = key_executives
+
 
 # NAMING FIXED: CitationMap → CitationMap
 class CitationMap:
@@ -236,6 +251,7 @@ class CitationMap:
         """
         self.citations = citations
 
+
 # NAMING FIXED: DeepResearchOutput → DeepResearchOutput
 class DeepResearchOutput:
     """
@@ -253,7 +269,7 @@ class DeepResearchOutput:
         StrategicLayer: StrategicLayer,
         TechnicalLayer: TechnicalLayer,
         LeadershipLayer: LeadershipLayer,
-        CitationMap: CitationMap
+        CitationMap: CitationMap,
     ) -> None:
         """
         Initialize deep research output.
@@ -268,6 +284,7 @@ class DeepResearchOutput:
         self.TechnicalLayer = TechnicalLayer
         self.LeadershipLayer = LeadershipLayer
         self.CitationMap = CitationMap
+
 
 # --- End Inlined Type Definitions ---
 
@@ -286,17 +303,44 @@ class IntegrityGateExecutorAgent(MCPHardenedMixin, HealerMixin):
     """
 
     FLUFF_WORDS = {
-        "cutting-edge", "innovative", "world-class", "leading", "premier",
-        "revolutionary", "groundbreaking", "state-of-the-art", "best-in-class",
-        "industry-leading", "next-generation", "advanced", "sophisticated",
-        "robust", "powerful", "comprehensive", "extensive", "significant"
+        "cutting-edge",
+        "innovative",
+        "world-class",
+        "leading",
+        "premier",
+        "revolutionary",
+        "groundbreaking",
+        "state-of-the-art",
+        "best-in-class",
+        "industry-leading",
+        "next-generation",
+        "advanced",
+        "sophisticated",
+        "robust",
+        "powerful",
+        "comprehensive",
+        "extensive",
+        "significant",
     }
 
     TECHNICAL_NOUNS = {
-        "architecture", "model", "algorithm", "framework", "platform",
-        "system", "infrastructure", "stack", "pipeline", "engine",
-        "service", "API", "database", "network", "protocol"
+        "architecture",
+        "model",
+        "algorithm",
+        "framework",
+        "platform",
+        "system",
+        "infrastructure",
+        "stack",
+        "pipeline",
+        "engine",
+        "service",
+        "API",
+        "database",
+        "network",
+        "protocol",
     }
+
     def __init__(self, min_depth_score: float = 0.7) -> None:
         """
         Initialize integrity gate executor.
@@ -308,7 +352,7 @@ class IntegrityGateExecutorAgent(MCPHardenedMixin, HealerMixin):
 
     def _run_self_tests(self) -> bool:
         """Phase 1: Self-testing for L2 compliance."""
-        assert hasattr(self, 'min_depth_score'), "Missing min_depth_score"
+        assert hasattr(self, "min_depth_score"), "Missing min_depth_score"
         assert 0 <= self.min_depth_score <= 1, "min_depth_score must be 0-1"
         return True
 
@@ -332,32 +376,28 @@ class IntegrityGateExecutorAgent(MCPHardenedMixin, HealerMixin):
         if RESULT.depth_score < self.min_depth_score:
             RESULT.add_violation(
                 ValidationRejectionReason.INSUFFICIENT_DEPTH,
-                f"Depth score {RESULT.depth_score:.2f} below minimum {self.min_depth_score}"
+                f"Depth score {RESULT.depth_score:.2f} below minimum {self.min_depth_score}",
             )
 
         return RESULT
 
     def _check_unbound_metrics(
-        self,
-        research_output: DeepResearchOutput,
-        result: IntegrityGateResult
+        self, research_output: DeepResearchOutput, result: IntegrityGateResult
     ) -> None:
         for Metric in research_output.StrategicLayer.financial_proof_points:
             if not Metric.source_citation:
                 result.add_violation(
                     ValidationRejectionReason.UNBOUND_METRICS,
-                    f"Metric '{Metric.metric_name}' has no source citation"
+                    f"Metric '{Metric.metric_name}' has no source citation",
                 )
             if not self._has_specific_value(Metric.value):
                 result.add_violation(
                     ValidationRejectionReason.UNBOUND_METRICS,
-                    f"Metric '{Metric.metric_name}' has vague value: '{Metric.value}'"
+                    f"Metric '{Metric.metric_name}' has vague value: '{Metric.value}'",
                 )
 
     def _check_fluff_language(
-        self,
-        research_output: DeepResearchOutput,
-        result: IntegrityGateResult
+        self, research_output: DeepResearchOutput, result: IntegrityGateResult
     ) -> None:
         text_to_check = [
             research_output.StrategicLayer.core_thesis,
@@ -371,22 +411,20 @@ class IntegrityGateExecutorAgent(MCPHardenedMixin, HealerMixin):
             if not text:
                 continue
 
-            WORDS = re.findall(r'\b\w+(?:-\w+)*\b', text.lower())
+            WORDS = re.findall(r"\b\w+(?:-\w+)*\b", text.lower())
 
             for i, word in enumerate(WORDS):
                 if word in self.FLUFF_WORDS:
-                    next_words = WORDS[i+1:i+3] if i+1 < len(WORDS) else []
+                    next_words = WORDS[i + 1 : i + 3] if i + 1 < len(WORDS) else []
 
                     if not any(nw in self.TECHNICAL_NOUNS for nw in next_words):
                         result.add_violation(
                             ValidationRejectionReason.FLUFF_LANGUAGE,
-                            f"Fluff word '{word}' not followed by technical noun in: '{text[:100]}...'"
+                            f"Fluff word '{word}' not followed by technical noun in: '{text[:100]}...'",
                         )
 
     def _check_orphaned_claims(
-        self,
-        research_output: DeepResearchOutput,
-        result: IntegrityGateResult
+        self, research_output: DeepResearchOutput, result: IntegrityGateResult
     ) -> None:
         INITIATIVES = research_output.StrategicLayer.strategic_initiatives
         TECHNOLOGIES = [t.technology_name for t in research_output.TechnicalLayer.key_technologies]
@@ -399,66 +437,49 @@ class IntegrityGateExecutorAgent(MCPHardenedMixin, HealerMixin):
             if not (has_tech_link or has_exec_link):
                 result.add_violation(
                     ValidationRejectionReason.ORPHANED_CLAIMS,
-                    f"Initiative '{initiative}' not linked to specific technology or executive"
+                    f"Initiative '{initiative}' not linked to specific technology or executive",
                 )
 
     def _check_citation_coverage(
-        self,
-        research_output: DeepResearchOutput,
-        result: IntegrityGateResult
+        self, research_output: DeepResearchOutput, result: IntegrityGateResult
     ) -> None:
         if len(research_output.CitationMap.citations) < 3:
             result.add_violation(
                 ValidationRejectionReason.MISSING_CITATIONS,
-                f"Only {len(research_output.CitationMap.citations)} citations (minimum 3 required)"
+                f"Only {len(research_output.CitationMap.citations)} citations (minimum 3 required)",
             )
 
         financial_citations = sum(
-            1 for m in research_output.StrategicLayer.financial_proof_points
-            if m.source_citation
+            1 for m in research_output.StrategicLayer.financial_proof_points if m.source_citation
         )
         technical_citations = sum(
-            1 for t in research_output.TechnicalLayer.key_technologies
-            if t.source_citation
+            1 for t in research_output.TechnicalLayer.key_technologies if t.source_citation
         )
 
         if financial_citations == 0:
             result.add_violation(
-                ValidationRejectionReason.MISSING_CITATIONS,
-                "No citations for financial metrics"
+                ValidationRejectionReason.MISSING_CITATIONS, "No citations for financial metrics"
             )
 
         if technical_citations == 0:
             result.add_violation(
                 ValidationRejectionReason.MISSING_CITATIONS,
-                "No citations for technical implementations"
+                "No citations for technical implementations",
             )
 
     def _calculate_depth_score(self, research_output: DeepResearchOutput) -> float:
         """Calculate depth score."""
         SCORES = []
 
-        financial_score = min(
-            len(research_output.StrategicLayer.financial_proof_points) / 4.0,
-            1.0
-        )
+        financial_score = min(len(research_output.StrategicLayer.financial_proof_points) / 4.0, 1.0)
         SCORES.append(financial_score)
-        technical_score = min(
-            len(research_output.TechnicalLayer.key_technologies) / 3.0,
-            1.0
-        )
+        technical_score = min(len(research_output.TechnicalLayer.key_technologies) / 3.0, 1.0)
         SCORES.append(technical_score)
 
-        leadership_score = min(
-            len(research_output.LeadershipLayer.key_executives) / 3.0,
-            1.0
-        )
+        leadership_score = min(len(research_output.LeadershipLayer.key_executives) / 3.0, 1.0)
         SCORES.append(leadership_score)
 
-        citation_score = min(
-            len(research_output.CitationMap.citations) / 5.0,
-            1.0
-        )
+        citation_score = min(len(research_output.CitationMap.citations) / 5.0, 1.0)
         SCORES.append(citation_score)
 
         thesis_score = 1.0 if len(research_output.StrategicLayer.core_thesis) > 50 else 0.5
@@ -468,12 +489,19 @@ class IntegrityGateExecutorAgent(MCPHardenedMixin, HealerMixin):
 
     def _has_specific_value(self, value: str) -> bool:
         """Has specific value."""
-        number_pattern = r'\d+\.?\d*[KMBT%]?'
+        number_pattern = r"\d+\.?\d*[KMBT%]?"
         return bool(re.search(number_pattern, value))
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L2 execution agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -490,9 +518,9 @@ class IntegrityGateExecutorAgent(MCPHardenedMixin, HealerMixin):
         finally:
             _call_path.discard(agent_name)
 
+
 def validate_research_output(
-    research_output: DeepResearchOutput,
-    min_depth_score: float = 0.7
+    research_output: DeepResearchOutput, min_depth_score: float = 0.7
 ) -> IntegrityGateResult:
     """TODO: Add docstring."""
     # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)

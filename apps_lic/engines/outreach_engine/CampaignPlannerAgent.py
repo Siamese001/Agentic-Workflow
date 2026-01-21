@@ -4,6 +4,7 @@ CampaignPlannerAgent - Extracted for one-class-per-file pattern.
 Originally from: LeadQualityAgent.py
 Extracted: 2026-01-06 (Surgical Extraction)
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -61,8 +62,8 @@ class CampaignPlannerAgent(HealerMixin, SubatomicTestingMixin, OutreachAgent, MC
             prompt = f"""
 Analyze this outreach campaign and provide strategic recommendations:
 
-Campaign: {campaign.get('name', 'Unnamed')}
-Goal: {campaign.get('goal', 'Not specified')}
+Campaign: {campaign.get("name", "Unnamed")}
+Goal: {campaign.get("goal", "Not specified")}
 Target Company: {self.ctx.target_company}
 Lead Count: {len(leads)}
 
@@ -78,7 +79,9 @@ Provide 3 specific recommendations to improve campaign effectiveness.
         self.record_result(True, f"Generated {len(recommendations)} recommendations")
         print(f"   [{self.name}] ✅ Strategy planned ({len(recommendations)} recommendations)")
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, int]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict[str, int]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 

@@ -33,48 +33,63 @@ class AdaptiveRetrievalGate:
         # Compile regex patterns for efficiency
         self.patterns = {
             # Conversational patterns that don't need retrieval
-            'conversational': re.compile(
-                r'^(hi|hello|hey|thanks|thank you|ok|okay|bye|goodbye|yes|no|sure|got it|understood|cool|awesome|great|perfect)$',
-                re.IGNORECASE
+            "conversational": re.compile(
+                r"^(hi|hello|hey|thanks|thank you|ok|okay|bye|goodbye|yes|no|sure|got it|understood|cool|awesome|great|perfect)$",
+                re.IGNORECASE,
             ),
-
             # Reference patterns that should look at context, not vector DB
-            'reference': re.compile(
-                r'\b(previous|last|that|above|mentioned|earlier|said|told|asked|discussed)\b',
-                re.IGNORECASE
+            "reference": re.compile(
+                r"\b(previous|last|that|above|mentioned|earlier|said|told|asked|discussed)\b",
+                re.IGNORECASE,
             ),
-
             # Simple questions about the assistant itself
-            'self_reference': re.compile(
-                r'\b(who are you|what are you|what can you do|how do you work|your name|help)\b',
-                re.IGNORECASE
+            "self_reference": re.compile(
+                r"\b(who are you|what are you|what can you do|how do you work|your name|help)\b",
+                re.IGNORECASE,
             ),
-
             # Continuation markers
-            'continuation': re.compile(
-                r'^(and|but|so|then|also|plus|however|therefore|meanwhile)\b',
-                re.IGNORECASE
-            )
+            "continuation": re.compile(
+                r"^(and|but|so|then|also|plus|however|therefore|meanwhile)\b", re.IGNORECASE
+            ),
         }
 
         # Complex query indicators
         self.complex_keywords = {
-            'metrics', 'how to', 'latest', 'compare', 'strategy', 'plan',
-            'analyze', 'evaluate', 'recommend', 'implement', 'design',
-            'architecture', 'framework', 'best practices', 'guidelines',
-            'statistics', 'data', 'performance', 'optimization',
-            'trends', 'forecast', 'roadmap', 'timeline', 'requirements'
+            "metrics",
+            "how to",
+            "latest",
+            "compare",
+            "strategy",
+            "plan",
+            "analyze",
+            "evaluate",
+            "recommend",
+            "implement",
+            "design",
+            "architecture",
+            "framework",
+            "best practices",
+            "guidelines",
+            "statistics",
+            "data",
+            "performance",
+            "optimization",
+            "trends",
+            "forecast",
+            "roadmap",
+            "timeline",
+            "requirements",
         }
 
         # Question words that often need retrieval
         self.question_patterns = [
-            r'\bwhat\s+(is|are|were|do|does|did)\b',
-            r'\bwhen\s+(was|were|is|are|did|do)\b',
-            r'\bwhere\s+(is|are|was|were|did|do)\b',
-            r'\bwhich\s+(is|are|was|were|did|do)\b',
-            r'\bwho\s+(is|are|was|were|did|do)\b',
-            r'\bwhy\s+(is|are|was|were|did|do|does)\b',
-            r'\bhow\s+(can|could|should|would|will|do|does|did)\b'
+            r"\bwhat\s+(is|are|were|do|does|did)\b",
+            r"\bwhen\s+(was|were|is|are|did|do)\b",
+            r"\bwhere\s+(is|are|was|were|did|do)\b",
+            r"\bwhich\s+(is|are|was|were|did|do)\b",
+            r"\bwho\s+(is|are|was|were|did|do)\b",
+            r"\bwhy\s+(is|are|was|were|did|do|does)\b",
+            r"\bhow\s+(can|could|should|would|will|do|does|did)\b",
         ]
 
         # Compile question patterns
@@ -94,19 +109,19 @@ class AdaptiveRetrievalGate:
         query_lower = query.lower().strip()
 
         # Check conversational patterns
-        if self.patterns['conversational'].match(query):
+        if self.patterns["conversational"].match(query):
             return "CONVERSATIONAL"
 
         # Check self-reference
-        if self.patterns['self_reference'].search(query):
+        if self.patterns["self_reference"].search(query):
             return "SELF_REFERENCE"
 
         # Check reference patterns
-        if self.patterns['reference'].search(query):
+        if self.patterns["reference"].search(query):
             return "REFERENCE"
 
         # Check continuation
-        if self.patterns['continuation'].match(query):
+        if self.patterns["continuation"].match(query):
             return "CONTINUATION"
 
         # Check for complex keywords
@@ -137,7 +152,7 @@ class AdaptiveRetrievalGate:
             "REFERENCE": 0.1,
             "CONTINUATION": 0.2,
             "FACTUAL": 0.6,
-            "COMPLEX": 0.8
+            "COMPLEX": 0.8,
         }
 
         base_score = type_scores.get(query_type, 0.5)
@@ -150,7 +165,7 @@ class AdaptiveRetrievalGate:
             base_score = max(0.0, base_score - 0.1)
 
         # Adjust based on punctuation (questions often need retrieval)
-        if query.endswith('?'):
+        if query.endswith("?"):
             base_score = min(1.0, base_score + 0.1)
 
         # Adjust based on complex keywords presence
@@ -174,10 +189,7 @@ class AdaptiveRetrievalGate:
         query = query.strip()
         if not query:
             return RetrievalDecision(
-                should_retrieve=False,
-                reason="Empty query",
-                query_type="EMPTY",
-                confidence=1.0
+                should_retrieve=False, reason="Empty query", query_type="EMPTY", confidence=1.0
             )
 
         # Classify query type
@@ -229,20 +241,24 @@ class AdaptiveRetrievalGate:
         # Additional checks
         if should_retrieve:
             # Check if this might be a clarification
-            if len(query.split()) < 4 and not any(pattern.search(query) for pattern in self.compiled_questions):
+            if len(query.split()) < 4 and not any(
+                pattern.search(query) for pattern in self.compiled_questions
+            ):
                 should_retrieve = False
                 reason = "Short query likely a clarification"
                 confidence = 0.7
 
         # Log decision for monitoring
-        logger.info(f"Retrieval decision: {should_retrieve} | Type: {query_type} | "
-                   f"Reason: {reason} | Query: {query[:50]}...")
+        logger.info(
+            f"Retrieval decision: {should_retrieve} | Type: {query_type} | "
+            f"Reason: {reason} | Query: {query[:50]}..."
+        )
 
         return RetrievalDecision(
             should_retrieve=should_retrieve,
             reason=reason,
             query_type=query_type,
-            confidence=confidence
+            confidence=confidence,
         )
 
     def get_statistics(self, decisions: list[RetrievalDecision]) -> dict[str, float]:
@@ -268,8 +284,8 @@ class AdaptiveRetrievalGate:
         return {
             "total_queries": total,
             "retrieval_rate": retrieve_count / total,
-            "type_distribution": {k: v/total for k, v in type_counts.items()},
-            "avg_confidence": sum(d.confidence for d in decisions) / total
+            "type_distribution": {k: v / total for k, v in type_counts.items()},
+            "avg_confidence": sum(d.confidence for d in decisions) / total,
         }
 
 

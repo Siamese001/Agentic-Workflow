@@ -42,6 +42,7 @@ class L3Agent(HealerMixin, MCPHardenedMixin):
     - Basic Self-Testing: YES (plan validation)
     - Delegation to TestSovereigntyAgent: YES (on failure)
     """
+
     name: str = "L3Agent"
     layer: str = "L3"
 

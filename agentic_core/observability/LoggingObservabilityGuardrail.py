@@ -22,6 +22,7 @@ from typing import Any
 
 class LogLevel(Enum):
     """Log levels."""
+
     DEBUG = "debug"
     INFO = "info"
     WARNING = "warning"
@@ -33,6 +34,7 @@ class LogLevel(Enum):
 @dataclass
 class LogEntry:
     """Secure log entry."""
+
     level: LogLevel
     message: str
     timestamp: float
@@ -45,6 +47,7 @@ class LogEntry:
 @dataclass
 class AuditEntry:
     """Audit trail entry."""
+
     audit_id: str
     action: str
     actor: str
@@ -98,7 +101,7 @@ class LoggingObservabilityGuardrail:
         message: str,
         source: str,
         correlation_id: str | None = None,
-        metadata: dict[str, Any] | None = None
+        metadata: dict[str, Any] | None = None,
     ) -> LogEntry:
         """
         Create secure log entry.
@@ -129,7 +132,7 @@ class LoggingObservabilityGuardrail:
             source=source,
             correlation_id=correlation_id,
             metadata=metadata or {},
-            sanitized=was_sanitized
+            sanitized=was_sanitized,
         )
 
         self.logs.append(entry)
@@ -146,7 +149,7 @@ class LoggingObservabilityGuardrail:
         actor: str,
         target: str,
         outcome: str,
-        details: dict[str, Any] | None = None
+        details: dict[str, Any] | None = None,
     ) -> AuditEntry:
         """
         Create audit trail entry.
@@ -168,7 +171,7 @@ class LoggingObservabilityGuardrail:
                 actor=actor,
                 target=target,
                 timestamp=time.time(),
-                outcome=outcome
+                outcome=outcome,
             )
 
         self.audits_created += 1
@@ -183,7 +186,7 @@ class LoggingObservabilityGuardrail:
             target=target,
             timestamp=time.time(),
             outcome=outcome,
-            details=details or {}
+            details=details or {},
         )
 
         self.audit_trail.append(entry)
@@ -208,10 +211,7 @@ class LoggingObservabilityGuardrail:
         return sanitized, was_sanitized
 
     def get_logs(
-        self,
-        level: LogLevel | None = None,
-        source: str | None = None,
-        limit: int = 100
+        self, level: LogLevel | None = None, source: str | None = None, limit: int = 100
     ) -> list[dict[str, Any]]:
         """
         Get logs with optional filtering.
@@ -239,16 +239,13 @@ class LoggingObservabilityGuardrail:
                 "timestamp": l.timestamp,
                 "source": l.source,
                 "correlation_id": l.correlation_id,
-                "sanitized": l.sanitized
+                "sanitized": l.sanitized,
             }
             for l in filtered[-limit:]
         ]
 
     def get_audit_trail(
-        self,
-        action: str | None = None,
-        actor: str | None = None,
-        limit: int = 100
+        self, action: str | None = None, actor: str | None = None, limit: int = 100
     ) -> list[dict[str, Any]]:
         """
         Get audit trail with optional filtering.
@@ -276,7 +273,7 @@ class LoggingObservabilityGuardrail:
                 "actor": a.actor,
                 "target": a.target,
                 "timestamp": a.timestamp,
-                "outcome": a.outcome
+                "outcome": a.outcome,
             }
             for a in filtered[-limit:]
         ]
@@ -289,5 +286,5 @@ class LoggingObservabilityGuardrail:
             "audits_created": self.audits_created,
             "current_log_size": len(self.logs),
             "current_audit_size": len(self.audit_trail),
-            "enabled_rules": self.enabled_rules
+            "enabled_rules": self.enabled_rules,
         }

@@ -55,6 +55,7 @@ class FilesystemAgent(HealerMixin):
     Autonomous agent for physical filesystem purity.
     Targets technical debt markers in non-Python files with auto-remediation.
     """
+
     def __init__(self, project_root: Path, dry_run: bool = False) -> None:
         """Initialize the instance."""
         self.project_root = project_root.resolve()
@@ -67,7 +68,13 @@ class FilesystemAgent(HealerMixin):
         # [SSOT FIX 2026-01-19] Changed from .sovereign_healing_backup to archives/healing_backups
         # Per SSOT: Only archives/ is the canonical backup location
         self.max_cleanups = HEALING_CONFIG.get("max_filesystem_cleanups_per_run", 50)
-        self.backup_dir = self.project_root / "archives" / "healing_backups" / "filesystem" / datetime.now().strftime("%Y%m%d_%H%M%S")
+        self.backup_dir = (
+            self.project_root
+            / "archives"
+            / "healing_backups"
+            / "filesystem"
+            / datetime.now().strftime("%Y%m%d_%H%M%S")
+        )
         self.archives_root = self.project_root / "archives"
         self.cleanups_applied = 0
 
@@ -85,7 +92,10 @@ class FilesystemAgent(HealerMixin):
         violations: list[tuple[Path, str]] = []
 
         from agentic_core.utils.ssot_discovery import get_data_files, get_python_files
-        all_files = list(get_python_files(self.project_root)) + list(get_data_files(self.project_root))
+
+        all_files = list(get_python_files(self.project_root)) + list(
+            get_data_files(self.project_root)
+        )
         for file_path in all_files:
             if not file_path.is_file():
                 continue
@@ -100,7 +110,7 @@ class FilesystemAgent(HealerMixin):
 
             # [BUG FIX 2025-12-31] Skip files that are already in archives directory
             # Prevents re-processing archived files
-            if 'archives' in file_path.parts:
+            if "archives" in file_path.parts:
                 continue
 
             # 1. Detection: Repeated Suffixes
@@ -145,6 +155,7 @@ class FilesystemAgent(HealerMixin):
 
         dir_path = file_path.parent
         from agentic_core.utils.ssot_discovery import get_python_files
+
         py_files = list(get_python_files(dir_path))
 
         if not py_files:
@@ -225,6 +236,7 @@ class FilesystemAgent(HealerMixin):
         if content_preview:
             try:
                 from agentic_core.utils.naming.NamingAgent import NamingAgent
+
                 naming = NamingAgent(self.project_root)
                 guidance = naming.get_placement_guidance(content_preview)
                 if "/" in guidance:
@@ -262,7 +274,9 @@ class FilesystemAgent(HealerMixin):
 
         for file_path, msg in violations:
             if self.cleanups_applied >= self.max_cleanups:
-                Logger.warning(f"[FileSystemAgent] Healing budget exhausted ({self.max_cleanups} actions).")
+                Logger.warning(
+                    f"[FileSystemAgent] Healing budget exhausted ({self.max_cleanups} actions)."
+                )
                 break
 
             action = {
@@ -271,7 +285,7 @@ class FilesystemAgent(HealerMixin):
                 "Violation": msg,
                 "applied": False,
                 "action_taken": "",
-                "target": ""
+                "target": "",
             }
 
             # 1. Clean the filename (strip suffixes)
@@ -281,7 +295,7 @@ class FilesystemAgent(HealerMixin):
                 while marker in cleaned_name.lower():
                     # Regex-free iterative stripping to handle multiple extensions
                     idx = cleaned_name.lower().find(marker)
-                    cleaned_name = cleaned_name[:idx] + cleaned_name[idx+len(marker):]
+                    cleaned_name = cleaned_name[:idx] + cleaned_name[idx + len(marker) :]
 
             # 2. Determine Relocation Path
             archive_subpath = self._determine_archive_subpath(file_path)
@@ -300,7 +314,9 @@ class FilesystemAgent(HealerMixin):
                 action["reason"] = f"Aborted: Archive collision for {cleaned_name}"
             elif self.dry_run:
                 action["applied"] = True
-                action["action_taken"] = f"PURGE_PREVIEW: Would move to {target_path.relative_to(self.archives_root)}"
+                action["action_taken"] = (
+                    f"PURGE_PREVIEW: Would move to {target_path.relative_to(self.archives_root)}"
+                )
                 action["target"] = str(target_path)
             else:
                 try:
@@ -312,10 +328,14 @@ class FilesystemAgent(HealerMixin):
                     file_path.rename(target_path)
 
                     action["applied"] = True
-                    action["action_taken"] = f"PURGED: Relocated to archives/{target_path.relative_to(self.archives_root)}"
+                    action["action_taken"] = (
+                        f"PURGED: Relocated to archives/{target_path.relative_to(self.archives_root)}"
+                    )
                     action["target"] = str(target_path)
                     self.cleanups_applied += 1
-                    Logger.info(f"   [PURGED] {file_path.name} -> archives/{target_path.relative_to(self.archives_root)}")
+                    Logger.info(
+                        f"   [PURGED] {file_path.name} -> archives/{target_path.relative_to(self.archives_root)}"
+                    )
                 except Exception as e:
                     action["reason"] = f"Archival move error: {e}"
 
@@ -336,25 +356,28 @@ class FilesystemAgent(HealerMixin):
             healer.heal_file_moves(violations)
         """
         import warnings
+
         warnings.warn(
             "FilesystemAgent.run_with_cleanup() is deprecated. "
             "Use run() for detection, then HealerAgent for execution.",
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         original_dry_mode = self.dry_run
         self.dry_run = dry_run
 
         detected_violations = self.run()
-        cleanup_results = self.cleanup_violations(detected_violations) if detected_violations else []
+        cleanup_results = (
+            self.cleanup_violations(detected_violations) if detected_violations else []
+        )
 
-        self.dry_run = original_dry_mode # Restore state
+        self.dry_run = original_dry_mode  # Restore state
 
         return {
             "violations_detected": len(detected_violations),
             "actions_applied": len(cleanup_results),
             "detailed_actions": cleanup_results,
-            "backup_path": str(self.backup_dir) if not dry_run else "DRY-RUN_MODE"
+            "backup_path": str(self.backup_dir) if not dry_run else "DRY-RUN_MODE",
         }
 
     @timeout(300)
@@ -406,7 +429,9 @@ class FilesystemAgent(HealerMixin):
                     counts["errors"] += 1
                     print(f"  [!] ERROR on {file_path.name}: {e}")
 
-            print(f"\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\n[FILESYSTEM HEAL SUMMARY] Healed: {counts['healed']} | Skipped: {counts['skipped']} | Errors: {counts['errors']}")
+            print(
+                f"\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\n[FILESYSTEM HEAL SUMMARY] Healed: {counts['healed']} | Skipped: {counts['skipped']} | Errors: {counts['errors']}"
+            )
             return counts
         finally:
             _call_path.discard(agent_name)

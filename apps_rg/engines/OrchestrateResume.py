@@ -1,8 +1,6 @@
 # Ownership: apps_rg / L3_orchestration
 """Pure orchestration of resume generation using shared atoms."""
 
-
-
 from apps_rg.L2_execution.apply_clerk_extraction import ClerkExtractor
 from apps_rg.L2_execution.apply_data_enrichment import DataEnricher
 from apps_rg.L5_safety.validate_jd_enforcement import JDEnforcementValidator

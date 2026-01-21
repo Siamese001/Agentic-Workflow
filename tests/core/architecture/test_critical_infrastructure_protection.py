@@ -17,6 +17,7 @@ This test suite ensures:
 3. LocationAgent imports from correct paths
 4. Protected files are not in archives
 """
+
 import ast
 import sys
 from pathlib import Path
@@ -27,10 +28,12 @@ sys.path.insert(0, str(PROJECT_ROOT))
 PASSED = 0
 FAILED = 0
 
+
 def test_pass(test_id: str, msg: str):
     global PASSED
     PASSED += 1
     print(f"  ✅ {test_id}: {msg}")
+
 
 def test_fail(test_id: str, msg: str):
     global FAILED
@@ -48,14 +51,12 @@ CRITICAL_INFRASTRUCTURE_FILES = [
     "agentic_core/utils/core_extensions/decorators.py",
     "agentic_core/utils/core_extensions/infrastructure_mixin.py",
     "agentic_core/utils/core_extensions/subatomic_testing_mixin.py",
-
     # MCP infrastructure
     "agentic_core/L2_execution/mcp/mcp_hardened_mixin.py",
     "agentic_core/L2_execution/mcp/client.py",
     "agentic_core/L2_execution/mcp/factory.py",
     "agentic_core/L2_execution/mcp/providers.py",
     "agentic_core/L2_execution/mcp/exceptions.py",
-
     # Base agents
     "agentic_core/observability/SovereignBaseAgent.py",
     "agentic_core/L0_maintenance/scripts/L0MaintenanceBaseAgent.py",
@@ -63,15 +64,12 @@ CRITICAL_INFRASTRUCTURE_FILES = [
     "agentic_core/L2_execution/ToolRegistry/L2ExecutionBaseAgent.py",
     "agentic_core/L4_state/ValidationContext/L4StateBaseAgent.py",
     "agentic_core/L5_safety/validators/L5SafetyBaseAgent.py",
-
     # Core validators
     "agentic_core/L5_safety/validators/LocationAgent.py",
     "agentic_core/L5_safety/validators/NamingAgent.py",
     "agentic_core/L5_safety/validators/structure_blueprint.py",
-
     # Orchestration
     "agentic_core/L3_orchestration/unified_orchestrator.py",
-
     # Configuration - structure_blueprint is in L5_safety/validators (canonical)
 ]
 
@@ -131,7 +129,7 @@ def test_sovereign_index_location():
 
     test_pass("SOVEREIGN_INDEX_EXISTS", "sovereign_index.py in correct location")
 
-    content = sovereign_index.read_text(encoding='utf-8')
+    content = sovereign_index.read_text(encoding="utf-8")
 
     # Check for SovereignIndex class
     if "class SovereignIndex" in content:
@@ -158,7 +156,7 @@ def test_production_lens_active():
         test_fail("PRODUCTION_LENS", "Cannot check - sovereign_index.py missing")
         return
 
-    content = sovereign_index.read_text(encoding='utf-8')
+    content = sovereign_index.read_text(encoding="utf-8")
 
     # Check for 'tests' in DEFAULT_EXCLUDED_DIRS
     if "'tests'" in content and "DEFAULT_EXCLUDED_DIRS" in content:
@@ -185,7 +183,7 @@ def test_location_agent_imports():
 
     test_pass("LOCATION_AGENT_EXISTS", "LocationAgent.py exists")
 
-    content = location_agent.read_text(encoding='utf-8')
+    content = location_agent.read_text(encoding="utf-8")
 
     # Check import path
     if "from agentic_core.utils.sovereign_index import SovereignIndex" in content:
@@ -214,7 +212,7 @@ def test_syntax_validation():
             continue
 
         try:
-            content = full_path.read_text(encoding='utf-8')
+            content = full_path.read_text(encoding="utf-8")
             ast.parse(content)
             test_pass(f"SYNTAX-{Path(rel_path).stem}", "Valid syntax")
         except SyntaxError as e:
@@ -234,14 +232,14 @@ def test_no_archive_imports():
         if not full_path.exists():
             continue
 
-        content = full_path.read_text(encoding='utf-8')
+        content = full_path.read_text(encoding="utf-8")
 
         # Check for actual imports from archives (not comments or docstrings)
         has_archive_import = False
         for line in content.splitlines():
             stripped = line.strip()
             # Skip comments and docstrings
-            if stripped.startswith('#') or stripped.startswith('"""') or stripped.startswith("'''"):
+            if stripped.startswith("#") or stripped.startswith('"""') or stripped.startswith("'''"):
                 continue
             # Check for actual import statements
             if stripped.startswith("from archives") or stripped.startswith("import archives"):
@@ -289,5 +287,6 @@ def main():
         print(f"\n  ❌ {FAILED} TESTS FAILED - INFRASTRUCTURE AT RISK")
         return 1
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     sys.exit(main())

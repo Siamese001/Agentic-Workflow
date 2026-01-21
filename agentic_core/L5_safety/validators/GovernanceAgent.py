@@ -57,7 +57,7 @@ from typing import Any
 from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
 
 # GRAVITY FIXED (Upward Leak): Use L2 location for MCPHardenedMixin
-_mod = importlib.import_module('agentic_core.L2_execution.mcp.mcp_hardened_mixin')
+_mod = importlib.import_module("agentic_core.L2_execution.mcp.mcp_hardened_mixin")
 MCPHardenedMixin = _mod.MCPHardenedMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
@@ -65,6 +65,7 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger: Any = logging.getLogger(__name__)
 LOGGER = Logger  # Alias for compatibility
+
 
 class DependencyGraph:
     """
@@ -82,7 +83,7 @@ class DependencyGraph:
         self.module_map: dict[str, str] = {}
         self._built: bool = False
 
-    def build(self, files: list[str], root_dir: str=None) -> Any:
+    def build(self, files: list[str], root_dir: str = None) -> Any:
         """
         Build the dependency graph from a list of Python files.
 
@@ -90,7 +91,7 @@ class DependencyGraph:
             files: List of Python file paths
             root_dir: Root directory for relative path calculation
         """
-        LOGGER.info(f'🕸️ Building Holistic Code Graph from {len(files)} files...')
+        LOGGER.info(f"🕸️ Building Holistic Code Graph from {len(files)} files...")
         if root_dir:
             root_path: Any = Path(root_dir).resolve()
         else:
@@ -101,43 +102,53 @@ class DependencyGraph:
         self.module_map.clear()
         for file_path in files:
             file_path: Any = str(Path(file_path).relative_to(root_path))
-            self.graph[file_path] = {'imports': [], 'from_imports': [], 'classes': [], 'functions': [], 'dependencies': []}
+            self.graph[file_path] = {
+                "imports": [],
+                "from_imports": [],
+                "classes": [],
+                "functions": [],
+                "dependencies": [],
+            }
             try:
-                with open(file_path, encoding='utf-8') as f:
+                with open(file_path, encoding="utf-8") as f:
                     content: Any = f.read()
                     tree: Any = ast.parse(content)
                 for node in ast.walk(tree):
                     if isinstance(node, ast.Import):
                         for n in node.names:
-                            self.graph[file_path]['imports'].append(n.name)
+                            self.graph[file_path]["imports"].append(n.name)
                     elif isinstance(node, ast.ImportFrom):
                         if node.module:
-                            self.graph[file_path]['from_imports'].append({'module': node.module, 'names': [n.name for n in node.names]})
+                            self.graph[file_path]["from_imports"].append(
+                                {"module": node.module, "names": [n.name for n in node.names]}
+                            )
                     elif isinstance(node, ast.ClassDef):
-                        self.graph[file_path]['classes'].append(node.name)
+                        self.graph[file_path]["classes"].append(node.name)
                         self.class_map[node.name] = file_path
                     elif isinstance(node, ast.FunctionDef):
-                        self.graph[file_path]['functions'].append(node.name)
-                module_name: Any = file_path.replace('/', '.').replace('\\', '.').replace('.py', '')
+                        self.graph[file_path]["functions"].append(node.name)
+                module_name: Any = file_path.replace("/", ".").replace("\\", ".").replace(".py", "")
                 self.module_map[module_name] = file_path
             except SyntaxError as e:
-                LOGGER.warning(f'Syntax error in {file_path}: {e}')
+                LOGGER.warning(f"Syntax error in {file_path}: {e}")
             except Exception as e:
-                LOGGER.error(f'Error parsing {file_path}: {e}')
+                LOGGER.error(f"Error parsing {file_path}: {e}")
         self._build_reverse_index()
         self._calculate_dependencies()
         self._built = True
-        LOGGER.info(f'[OK] Code graph built: {len(self.graph)} files, {len(self.class_map)} classes')
+        LOGGER.info(
+            f"[OK] Code graph built: {len(self.graph)} files, {len(self.class_map)} classes"
+        )
 
     def _build_reverse_index(self):
         """Build reverse lookup indices."""
         for file_path, data in self.graph.items():
-            for imp in data['imports']:
+            for imp in data["imports"]:
                 if imp not in self.reverse_graph:
                     self.reverse_graph[imp] = []
                 self.reverse_graph[imp].append(file_path)
-            for from_imp in data['from_imports']:
-                module = from_imp['module']
+            for from_imp in data["from_imports"]:
+                module = from_imp["module"]
                 if module not in self.reverse_graph:
                     self.reverse_graph[module] = []
                 self.reverse_graph[module].append(file_path)
@@ -146,16 +157,16 @@ class DependencyGraph:
         """Calculate transitive dependencies for each file."""
         for file_path in self.graph:
             deps = set()
-            for imp in self.graph[file_path]['imports']:
+            for imp in self.graph[file_path]["imports"]:
                 if imp in self.module_map:
                     deps.add(self.module_map[imp])
-            for from_imp in self.graph[file_path]['from_imports']:
-                module = from_imp['module']
+            for from_imp in self.graph[file_path]["from_imports"]:
+                module = from_imp["module"]
                 if module in self.module_map:
                     deps.add(self.module_map[module])
-            self.graph[file_path]['dependencies'] = list(deps)
+            self.graph[file_path]["dependencies"] = list(deps)
 
-    def get_impact_radius(self, file_path: str, include_transitive: bool=True) -> list[str]:
+    def get_impact_radius(self, file_path: str, include_transitive: bool = True) -> list[str]:
         """
         Get files impacted by modifications to the given file.
 
@@ -167,16 +178,16 @@ class DependencyGraph:
             List of file paths that may be impacted
         """
         if not self._built:
-            LOGGER.warning('Dependency graph not built yet')
+            LOGGER.warning("Dependency graph not built yet")
             return []
         impacted: Any = set()
-        module_name: Any = file_path.replace('/', '.').replace('\\', '.').replace('.py', '')
+        module_name: Any = file_path.replace("/", ".").replace("\\", ".").replace(".py", "")
         if module_name in self.reverse_graph:
             impacted.update(self.reverse_graph[module_name])
         for key, dependents in self.reverse_graph.items():
-            if key.startswith(module_name + '.'):
+            if key.startswith(module_name + "."):
                 impacted.update(dependents)
-        classes: Any = self.graph.get(file_path, {}).get('classes', [])
+        classes: Any = self.graph.get(file_path, {}).get("classes", [])
         for class_name in classes:
             if class_name in self.reverse_graph:
                 impacted.update(self.reverse_graph[class_name])
@@ -188,7 +199,9 @@ class DependencyGraph:
                 if current in checked:
                     continue
                 checked.add(current)
-                current_module: Any = current.replace('/', '.').replace('\\', '.').replace('.py', '')
+                current_module: Any = (
+                    current.replace("/", ".").replace("\\", ".").replace(".py", "")
+                )
                 if current_module in self.reverse_graph:
                     for dependent in self.reverse_graph[current_module]:
                         if dependent not in impacted:
@@ -204,8 +217,8 @@ class DependencyGraph:
             Dictionary with 'direct' and 'transitive' dependencies
         """
         if not self._built:
-            return {'direct': [], 'transitive': []}
-        direct: Any = self.graph.get(file_path, {}).get('dependencies', [])
+            return {"direct": [], "transitive": []}
+        direct: Any = self.graph.get(file_path, {}).get("dependencies", [])
         transitive: Any = set()
         to_check: Any = list(direct)
         checked: Any = set()
@@ -215,13 +228,13 @@ class DependencyGraph:
                 continue
             checked.add(current)
             transitive.add(current)
-            current_deps: Any = self.graph.get(current, {}).get('dependencies', [])
+            current_deps: Any = self.graph.get(current, {}).get("dependencies", [])
             for dep in current_deps:
                 if dep not in checked and dep != file_path:
                     to_check.append(dep)
-        return {'direct': direct, 'transitive': sorted(transitive)}
+        return {"direct": direct, "transitive": sorted(transitive)}
 
-    def visualize_graph(self, output_file: str=None) -> str:
+    def visualize_graph(self, output_file: str = None) -> str:
         """
         Generate a DOT format visualization of the graph.
 
@@ -231,24 +244,25 @@ class DependencyGraph:
         Returns:
             DOT format string
         """
-        dot: Any = ['digraph DependencyGraph {']
-        dot.append('  rankdir=LR;')
-        dot.append('  node [shape=box];')
+        dot: Any = ["digraph DependencyGraph {"]
+        dot.append("  rankdir=LR;")
+        dot.append("  node [shape=box];")
         for file_path in self.graph:
-            safe_name: Any = file_path.replace('/', '_').replace('\\', '_').replace('.py', '')
+            safe_name: Any = file_path.replace("/", "_").replace("\\", "_").replace(".py", "")
             dot.append(f'  "{safe_name}" [label="{file_path}"];')
         for file_path, data in self.graph.items():
-            from_name: Any = file_path.replace('/', '_').replace('\\', '_').replace('.py', '')
-            for dep in data['dependencies']:
-                to_name: Any = dep.replace('/', '_').replace('\\', '_').replace('.py', '')
+            from_name: Any = file_path.replace("/", "_").replace("\\", "_").replace(".py", "")
+            for dep in data["dependencies"]:
+                to_name: Any = dep.replace("/", "_").replace("\\", "_").replace(".py", "")
                 dot.append(f'  "{from_name}" -> "{to_name}";')
-        dot.append('}')
-        dot_str: Any = '\n'.join(dot)
+        dot.append("}")
+        dot_str: Any = "\n".join(dot)
         if output_file:
-            with open(output_file, 'w') as f:
+            with open(output_file, "w") as f:
                 f.write(dot_str)
-            LOGGER.info(f'Graph visualization saved to {output_file}')
+            LOGGER.info(f"Graph visualization saved to {output_file}")
         return dot_str
+
 
 # NAMING CANON COMPLIANCE — renamed to GovernanceAgent for discovery and sovereignty — 2025-12-30
 class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
@@ -273,6 +287,7 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     @dataclass
     class Violation:
         """Structured violation output for deterministic healing."""
+
         is_valid: bool
         message: str
         file_path: Path | None = None
@@ -280,7 +295,7 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         blast_radius: int | None = None
         severity: int = 5
 
-    def __init__(self, root_dir: str=None) -> None:
+    def __init__(self, root_dir: str = None) -> None:
         """
         Initialize the ArchitectureGovernor.
         """
@@ -294,16 +309,46 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             )
         except ImportError:
             from agentic_core.config.blueprint_sovereign.registry import SOVEREIGN_REGISTRY
+
             ROOT_PROTECTED_FILES = frozenset()
         self.ALLOWED_ROOT_FILES = ROOT_PROTECTED_FILES
         self.ALLOWED_ROOT_FOLDERS = set(SOVEREIGN_REGISTRY.keys())
-        self.DEPTH_MAP = {root: cfg['depth'] for root, cfg in SOVEREIGN_REGISTRY.items()}
+        self.DEPTH_MAP = {root: cfg["depth"] for root, cfg in SOVEREIGN_REGISTRY.items()}
         self.MAX_COMPLEXITY = 10
         self.MAX_FUNC_LINES = 50
         self._backup_dir: Path | None = None
         self.MAX_NESTING_SPACES = 40
-        self.stats = {'files_checked': 0, 'violations_found': 0, 'files_sanitized': 0}
-        self.sovereign_dirs = {'agentic_core', 'schemas', 'scripts', 'docs', 'tests', 'config', 'data', 'cache', 'observability', '.git', '__pycache__', '.pytest_cache', '.tox', 'venv', '.venv', 'node_modules', '.idea', '.vscode', 'dist', 'build', 'coverage', '.github', 'htmlcov', '.mypy_cache', '.coverage', 'eggs', '.eggs', '*.egg-info'}
+        self.stats = {"files_checked": 0, "violations_found": 0, "files_sanitized": 0}
+        self.sovereign_dirs = {
+            "agentic_core",
+            "schemas",
+            "scripts",
+            "docs",
+            "tests",
+            "config",
+            "data",
+            "cache",
+            "observability",
+            ".git",
+            "__pycache__",
+            ".pytest_cache",
+            ".tox",
+            "venv",
+            ".venv",
+            "node_modules",
+            ".idea",
+            ".vscode",
+            "dist",
+            "build",
+            "coverage",
+            ".github",
+            "htmlcov",
+            ".mypy_cache",
+            ".coverage",
+            "eggs",
+            ".eggs",
+            "*.egg-info",
+        }
         self.MAX_FILE_LINES = 200
         self._hierarchy_agent = None
         self._import_agent = None
@@ -316,7 +361,7 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         if self._hierarchy_agent is None:
             try:
                 # GRAVITY FIXED (Upward Leak): from agentic_core.L5_safety.guardrails.HierarchyAgent import HierarchyAgent
-                _mod = importlib.import_module('agentic_core.L5_safety.guardrails.HierarchyAgent')
+                _mod = importlib.import_module("agentic_core.L5_safety.guardrails.HierarchyAgent")
                 HierarchyAgent = _mod.HierarchyAgent
                 self._hierarchy_agent = HierarchyAgent(self.root_dir)
             except ImportError:
@@ -329,14 +374,14 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         if self._import_agent is None:
             try:
                 # GRAVITY FIXED (Upward Leak): from agentic_core.L5_safety.gravity.ImportAgent import ImportAgent
-                _mod = importlib.import_module('agentic_core.L5_safety.gravity.ImportAgent')
+                _mod = importlib.import_module("agentic_core.L5_safety.gravity.ImportAgent")
                 ImportAgent = _mod.ImportAgent
                 self._import_agent = ImportAgent(self.root_dir)
             except ImportError:
                 pass
         return self._import_agent
 
-    def build_graph(self, file_patterns: list[str]=None) -> Any:
+    def build_graph(self, file_patterns: list[str] = None) -> Any:
         """
         Build the dependency graph for the project.
 
@@ -344,11 +389,11 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             file_patterns: Glob patterns for Python files
         """
         if file_patterns is None:
-            file_patterns = ['**/*.py']
+            file_patterns = ["**/*.py"]
         all_files: Any = [str(f) for f in get_python_files(self.root_dir)]
         self.DependencyGraph.build(all_files, str(self.root_dir))
 
-    def check_root_hygiene(self, auto_sanitize: bool=True) -> list[str]:
+    def check_root_hygiene(self, auto_sanitize: bool = True) -> list[str]:
         """
         Check Law of The Void - root directory hygiene.
 
@@ -366,34 +411,38 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             if item.is_dir():
                 self._check_root_directory(item, violations)
         if sanitized:
-            LOGGER.info(f'Root sanitation completed: {len(sanitized)} items processed')
+            LOGGER.info(f"Root sanitation completed: {len(sanitized)} items processed")
             for action in sanitized:
-                LOGGER.info(f'  {action}')
+                LOGGER.info(f"  {action}")
         return violations
 
-    def _check_root_file(self, file_path: Path, violations: list[str], sanitized: list[str], auto_sanitize: bool) -> None:
+    def _check_root_file(
+        self, file_path: Path, violations: list[str], sanitized: list[str], auto_sanitize: bool
+    ) -> None:
         if file_path.name not in self.ALLOWED_ROOT_FILES:
-            violations.append(f'Unauthorized file at root: {file_path.name}')
+            violations.append(f"Unauthorized file at root: {file_path.name}")
             if auto_sanitize:
                 action = self._sanitize_root_file(file_path)
-                sanitized.append(f'{file_path.name} -> {action}')
+                sanitized.append(f"{file_path.name} -> {action}")
 
     def _check_root_directory(self, dir_path: Path, violations: list[str]) -> None:
-        if not dir_path.name.startswith('.') and dir_path.name not in self.ALLOWED_ROOT_FOLDERS:
-            violations.append(f'Unauthorized directory at root: {dir_path.name}')
+        if not dir_path.name.startswith(".") and dir_path.name not in self.ALLOWED_ROOT_FOLDERS:
+            violations.append(f"Unauthorized directory at root: {dir_path.name}")
 
-    def _check_root_file(self, item: Path, violations: list, sanitized: list, auto_sanitize: bool) -> None:
+    def _check_root_file(
+        self, item: Path, violations: list, sanitized: list, auto_sanitize: bool
+    ) -> None:
         """Check if root file is authorized and sanitize if needed."""
         if item.name not in self.ALLOWED_ROOT_FILES:
-            violations.append(f'Unauthorized file at root: {item.name}')
+            violations.append(f"Unauthorized file at root: {item.name}")
             if auto_sanitize:
                 action: Any = self._sanitize_root_file(item)
-                sanitized.append(f'{item.name} -> {action}')
+                sanitized.append(f"{item.name} -> {action}")
 
     def _check_root_directory(self, item: Path, violations: list) -> None:
         """Check if root directory is authorized."""
-        if not item.name.startswith('.') and item.name not in self.ALLOWED_ROOT_FOLDERS:
-            violations.append(f'Unauthorized directory at root: {item.name}')
+        if not item.name.startswith(".") and item.name not in self.ALLOWED_ROOT_FOLDERS:
+            violations.append(f"Unauthorized directory at root: {item.name}")
 
     def _sanitize_root_file(self, file_path: Path) -> str:
         """
@@ -405,22 +454,20 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         Returns:
             Action taken
         """
-        scripts_dir = self.root_dir / 'scripts'
+        scripts_dir = self.root_dir / "scripts"
         scripts_dir.mkdir(exist_ok=True)
-        noise_patterns = ['temp', 'tmp', 'debug', 'test', '.log', '.tmp', '.bak']
+        noise_patterns = ["temp", "tmp", "debug", "test", ".log", ".tmp", ".bak"]
         is_noise = any(pattern in file_path.name.lower() for pattern in noise_patterns)
         if is_noise:
             # DELEGATION: Use ArchivalGatekeeper for safe deletion
             result = self.gatekeeper.safe_delete(
-                file_path,
-                "GovernanceAgent",
-                "Root noise file cleanup"
+                file_path, "GovernanceAgent", "Root noise file cleanup"
             )
             if result.success:
-                return 'DELETED (noise)'
+                return "DELETED (noise)"
             else:
-                LOGGER.error(f'Failed to delete {file_path}: {result.error}')
-                return 'FAILED to delete'
+                LOGGER.error(f"Failed to delete {file_path}: {result.error}")
+                return "FAILED to delete"
         else:
             try:
                 target = scripts_dir / file_path.name
@@ -428,25 +475,22 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                 while target.exists():
                     stem = file_path.stem
                     suffix = file_path.suffix
-                    target = scripts_dir / f'{stem}_{counter}{suffix}'
+                    target = scripts_dir / f"{stem}_{counter}{suffix}"
                     counter += 1
                 # DELEGATION: Use ArchivalGatekeeper for safe move (handles approval internally)
                 result = self.gatekeeper.safe_move(
-                    file_path,
-                    target,
-                    "GovernanceAgent",
-                    "Move root script to scripts/"
+                    file_path, target, "GovernanceAgent", "Move root script to scripts/"
                 )
                 if result.success:
-                    return f'MOVED to scripts/{target.name}'
+                    return f"MOVED to scripts/{target.name}"
                 elif result.approval_status == "DENIED":
-                    return 'SKIPPED: User declined move'
+                    return "SKIPPED: User declined move"
                 else:
-                    LOGGER.error(f'Failed to move {file_path}: {result.error}')
-                    return 'FAILED to move'
+                    LOGGER.error(f"Failed to move {file_path}: {result.error}")
+                    return "FAILED to move"
             except Exception as e:
-                LOGGER.error(f'Failed to move {file_path}: {e}')
-                return 'FAILED to move'
+                LOGGER.error(f"Failed to move {file_path}: {e}")
+                return "FAILED to move"
 
     def _prompt_user_for_move_approval(self, source: Path, target: Path, reason: str) -> bool:
         """
@@ -463,15 +507,16 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             True if user approves, False otherwise
         """
         # Check for skip-all flag
-        if getattr(self, '_skip_all_moves', False):
+        if getattr(self, "_skip_all_moves", False):
             return False
 
         # Check for approve-all flag
-        if getattr(self, '_approve_all_moves', False):
+        if getattr(self, "_approve_all_moves", False):
             return True
 
         # Check if we're in a non-interactive environment
         import sys
+
         if not sys.stdin.isatty():
             LOGGER.warning(f"[GovernanceAgent] Non-interactive mode - skipping move: {source.name}")
             return False
@@ -483,22 +528,22 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             rel_source = source
             rel_target = target
 
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print("FILE MOVE APPROVAL REQUIRED")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
         print(f"Source: {rel_source}")
         print(f"Target: {rel_target}")
         print(f"Reason: {reason}")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
 
         try:
             response = input("Approve move? [y/n/a(ll)/s(kip all)]: ").strip().lower()
-            if response == 'y':
+            if response == "y":
                 return True
-            elif response == 'a':
+            elif response == "a":
                 self._approve_all_moves = True
                 return True
-            elif response == 's':
+            elif response == "s":
                 self._skip_all_moves = True
                 return False
             else:
@@ -529,8 +574,8 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             return None
         depth: Any = len(path.parts) - 1
         if depth != required_depth:
-            reason: Any = 'SHALLOW' if depth < required_depth else 'DEEP'
-            return f'{reason} Violation: {file_path} at depth {depth} (required: {required_depth})'
+            reason: Any = "SHALLOW" if depth < required_depth else "DEEP"
+            return f"{reason} Violation: {file_path} at depth {depth} (required: {required_depth})"
         return None
 
     def check_atomicity_law(self, file_path: str) -> str | None:
@@ -544,15 +589,15 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             Violation message or None
         """
         try:
-            with open(file_path, encoding='utf-8') as f:
+            with open(file_path, encoding="utf-8") as f:
                 lines: Any = f.readlines()
             line_count: Any = len(lines)
             if line_count > self.MAX_FILE_LINES:
-                return f'Violation: {file_path} has {line_count} lines (max allowed: {self.MAX_FILE_LINES}) - SPLIT required'
+                return f"Violation: {file_path} has {line_count} lines (max allowed: {self.MAX_FILE_LINES}) - SPLIT required"
             return None
         except Exception as e:
-            LOGGER.error(f'Error checking file density for {file_path}: {e}')
-            return f'Error: Could not check {file_path}'
+            LOGGER.error(f"Error checking file density for {file_path}: {e}")
+            return f"Error: Could not check {file_path}"
 
     def enforce_depth_law(self, file_path: str) -> str | None:
         """
@@ -568,11 +613,12 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             Suggested target path if Violation detected, None if compliant
         """
         import warnings
+
         warnings.warn(
             "GovernanceAgent.enforce_depth_law() is deprecated. "
             "Use HealerAgent.heal_file_moves() for actual moves.",
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
 
         path: Any = Path(file_path)
@@ -584,11 +630,11 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                 return None
 
         # [P4] Return suggested path only - no actual move
-        if 'shallow' in Violation.lower():
-            target_dir: Any = self.root_dir / 'agentic_core' / 'L1_cognition'
+        if "shallow" in Violation.lower():
+            target_dir: Any = self.root_dir / "agentic_core" / "L1_cognition"
             target: Any = target_dir / path.name
         else:
-            target_dir: Any = self.root_dir / 'scripts'
+            target_dir: Any = self.root_dir / "scripts"
             target: Any = target_dir / path.name
 
         # Return suggestion without executing move
@@ -624,15 +670,22 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         """
         violations = []
         try:
-            with open(file_path, encoding='utf-8') as f:
+            with open(file_path, encoding="utf-8") as f:
                 lines = f.readlines()
             for line_num, line in enumerate(lines, 1):
-                if line.startswith(' '):
-                    spaces = len(line) - len(line.lstrip(' '))
+                if line.startswith(" "):
+                    spaces = len(line) - len(line.lstrip(" "))
                     if spaces > self.MAX_NESTING_SPACES:
-                        violations.append({'line': line_num, 'spaces': spaces, 'content': line.strip()[:100], 'message': f'Line {line_num}: Excessive nesting ({spaces} spaces > {self.MAX_NESTING_SPACES})'})
+                        violations.append(
+                            {
+                                "line": line_num,
+                                "spaces": spaces,
+                                "content": line.strip()[:100],
+                                "message": f"Line {line_num}: Excessive nesting ({spaces} spaces > {self.MAX_NESTING_SPACES})",
+                            }
+                        )
         except Exception as e:
-            LOGGER.error(f'Error checking nesting depth in {file_path}: {e}')
+            LOGGER.error(f"Error checking nesting depth in {file_path}: {e}")
         return violations
 
     def check_complexity(self, file_path: str) -> list[dict[str, Any]]:
@@ -647,24 +700,44 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         """
         violations: Any = []
         try:
-            with open(file_path, encoding='utf-8') as f:
+            with open(file_path, encoding="utf-8") as f:
                 content: Any = f.read()
             tree: Any = ast.parse(content)
             for node in ast.walk(tree):
                 if isinstance(node, ast.FunctionDef):
                     complexity: Any = self._calculate_mccabe(node)
-                    func_lines: Any = node.end_lineno - node.lineno + 1 if hasattr(node, 'end_lineno') else 0
+                    func_lines: Any = (
+                        node.end_lineno - node.lineno + 1 if hasattr(node, "end_lineno") else 0
+                    )
                     if complexity > self.MAX_COMPLEXITY:
-                        violations.append({'type': 'complexity', 'function': node.name, 'line': node.lineno, 'complexity': complexity, 'threshold': self.MAX_COMPLEXITY, 'message': f"Function '{node.name}' at line {node.lineno}: Complexity {complexity} > {self.MAX_COMPLEXITY}"})
+                        violations.append(
+                            {
+                                "type": "complexity",
+                                "function": node.name,
+                                "line": node.lineno,
+                                "complexity": complexity,
+                                "threshold": self.MAX_COMPLEXITY,
+                                "message": f"Function '{node.name}' at line {node.lineno}: Complexity {complexity} > {self.MAX_COMPLEXITY}",
+                            }
+                        )
                     if func_lines > self.MAX_FUNC_LINES:
-                        violations.append({'type': 'length', 'function': node.name, 'line': node.lineno, 'lines': func_lines, 'threshold': self.MAX_FUNC_LINES, 'message': f"Function '{node.name}' at line {node.lineno}: {func_lines} lines > {self.MAX_FUNC_LINES}"})
+                        violations.append(
+                            {
+                                "type": "length",
+                                "function": node.name,
+                                "line": node.lineno,
+                                "lines": func_lines,
+                                "threshold": self.MAX_FUNC_LINES,
+                                "message": f"Function '{node.name}' at line {node.lineno}: {func_lines} lines > {self.MAX_FUNC_LINES}",
+                            }
+                        )
         except SyntaxError as e:
-            violations.append({'type': 'syntax', 'message': f'Syntax error in {file_path}: {e}'})
+            violations.append({"type": "syntax", "message": f"Syntax error in {file_path}: {e}"})
         except Exception as e:
-            LOGGER.error(f'Error checking complexity in {file_path}: {e}')
+            LOGGER.error(f"Error checking complexity in {file_path}: {e}")
         nesting_violations: Any = self._check_nesting_depth(file_path)
         for Violation in nesting_violations:
-            Violation['type'] = 'nesting'
+            Violation["type"] = "nesting"
             violations.append(Violation)
         return violations
 
@@ -685,59 +758,66 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         for file_path in modified_files:
             impacted: Any = self.DependencyGraph.get_impact_radius(file_path)
             total_impacted.update(impacted)
-            file_impacts[file_path] = {'direct_count': len(impacted), 'impacted_files': impacted}
-        return {'modified_count': len(modified_files), 'total_impacted': len(total_impacted), 'BlastRadius': sorted(total_impacted), 'file_details': file_impacts}
+            file_impacts[file_path] = {"direct_count": len(impacted), "impacted_files": impacted}
+        return {
+            "modified_count": len(modified_files),
+            "total_impacted": len(total_impacted),
+            "BlastRadius": sorted(total_impacted),
+            "file_details": file_impacts,
+        }
 
     def _create_empty_report(self) -> dict[str, Any]:
         """Create empty validation report structure."""
         return {
-            'root_violations': [],
-            'depth_violations': [],
-            'atomicity_violations': [],
-            'complexity_violations': [],
-            'enforced_actions': [],
-            'BlastRadius': None,
-            'overall_status': 'PASS'
+            "root_violations": [],
+            "depth_violations": [],
+            "atomicity_violations": [],
+            "complexity_violations": [],
+            "enforced_actions": [],
+            "BlastRadius": None,
+            "overall_status": "PASS",
         }
 
     def _validate_single_file(self, file_path: str, report: dict[str, Any], enforce: bool) -> None:
         """Validate a single file and update report."""
         depth_violation = self.check_depth_law(file_path)
         if depth_violation:
-            report['depth_violations'].append(depth_violation)
+            report["depth_violations"].append(depth_violation)
             if enforce:
                 new_path = self.enforce_depth_law(file_path)
                 if new_path:
-                    report['enforced_actions'].append(f'Moved {file_path} to {new_path}')
+                    report["enforced_actions"].append(f"Moved {file_path} to {new_path}")
 
         atomicity_violation = self.check_atomicity_law(file_path)
         if atomicity_violation:
-            report['atomicity_violations'].append(atomicity_violation)
+            report["atomicity_violations"].append(atomicity_violation)
             complexity_violations = self.check_complexity(file_path)
             if complexity_violations:
-                report['complexity_violations'].extend(complexity_violations)
+                report["complexity_violations"].extend(complexity_violations)
 
     def _has_violations(self, report: dict[str, Any]) -> bool:
         """Check if report contains any violations."""
         return bool(
-            report['root_violations'] or
-            report['depth_violations'] or
-            report['atomicity_violations'] or
-            report['complexity_violations']
+            report["root_violations"]
+            or report["depth_violations"]
+            or report["atomicity_violations"]
+            or report["complexity_violations"]
         )
 
-    def validate_architecture(self, file_paths: list[str]=None, enforce: bool=False) -> dict[str, Any]:
+    def validate_architecture(
+        self, file_paths: list[str] = None, enforce: bool = False
+    ) -> dict[str, Any]:
         """Perform full architecture validation."""
         report = self._create_empty_report()
-        report['root_violations'] = self.check_root_hygiene(auto_sanitize=enforce)
+        report["root_violations"] = self.check_root_hygiene(auto_sanitize=enforce)
 
         if file_paths:
             for file_path in file_paths:
                 self._validate_single_file(file_path, report, enforce)
-            report['BlastRadius'] = self.get_blast_radius(file_paths)
+            report["BlastRadius"] = self.get_blast_radius(file_paths)
 
         if self._has_violations(report):
-            report['overall_status'] = 'FAIL'
+            report["overall_status"] = "FAIL"
         return report
 
     def _init_backup_dir(self) -> Path:
@@ -748,7 +828,9 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             self._backup_dir.mkdir(parents=True, exist_ok=True)
         return self._backup_dir
 
-    def post_hierarchy_validation(self, file_paths: list[str], dry_run: bool = True) -> dict[str, Any]:
+    def post_hierarchy_validation(
+        self, file_paths: list[str], dry_run: bool = True
+    ) -> dict[str, Any]:
         """Run HierarchyAgent validation after governance fixes."""
         report = {
             "hierarchy_status": "SKIPPED",
@@ -806,7 +888,9 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
         return report
 
-    def cleanup_violations(self, file_paths: list[str] = None, dry_run: bool = True) -> list[dict[str, Any]]:
+    def cleanup_violations(
+        self, file_paths: list[str] = None, dry_run: bool = True
+    ) -> list[dict[str, Any]]:
         """
         GOLD STANDARD CLEANUP ENGINE — Multi-stage autonomous governance.
 
@@ -823,35 +907,41 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
         root_violations = self.check_root_hygiene(auto_sanitize=not dry_run)
         for v in root_violations:
-            actions.append({
-                "violation": v,
-                "type": "ROOT_HYGIENE",
-                "applied": not dry_run,
-                "action_taken": "SANITIZED" if not dry_run else "PREVIEW",
-            })
+            actions.append(
+                {
+                    "violation": v,
+                    "type": "ROOT_HYGIENE",
+                    "applied": not dry_run,
+                    "action_taken": "SANITIZED" if not dry_run else "PREVIEW",
+                }
+            )
 
         if file_paths:
             for fp in file_paths:
                 depth_v = self.check_depth_law(fp)
                 if depth_v:
-                    actions.append({
-                        "violation": depth_v,
-                        "path": fp,
-                        "type": "DEPTH",
-                        "applied": False,
-                        "action_taken": "SUGGEST: Use HealerAgent.heal_file_moves()",
-                    })
+                    actions.append(
+                        {
+                            "violation": depth_v,
+                            "path": fp,
+                            "type": "DEPTH",
+                            "applied": False,
+                            "action_taken": "SUGGEST: Use HealerAgent.heal_file_moves()",
+                        }
+                    )
                     affected_paths.append(fp)
 
                 atom_v = self.check_atomicity_law(fp)
                 if atom_v:
-                    actions.append({
-                        "violation": atom_v,
-                        "path": fp,
-                        "type": "ATOMICITY",
-                        "applied": False,
-                        "action_taken": "SUGGEST: Use HealerAgent.heal_fission()",
-                    })
+                    actions.append(
+                        {
+                            "violation": atom_v,
+                            "path": fp,
+                            "type": "ATOMICITY",
+                            "applied": False,
+                            "action_taken": "SUGGEST: Use HealerAgent.heal_fission()",
+                        }
+                    )
                     affected_paths.append(fp)
 
         batch_report = {"batch_post_heal_status": "PENDING", "batch_message": ""}
@@ -872,8 +962,10 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             batch_report["import_validation"] = import_report
             batch_report["batch_message"] += f" | Imports: {import_report['import_status']}"
 
-            if (hierarchy_report["hierarchy_status"] == "FULL_SUCCESS" and
-                import_report["import_status"] == "FULL_SUCCESS"):
+            if (
+                hierarchy_report["hierarchy_status"] == "FULL_SUCCESS"
+                and import_report["import_status"] == "FULL_SUCCESS"
+            ):
                 batch_report["batch_post_heal_status"] = "FULL_SUCCESS"
             else:
                 batch_report["batch_post_heal_status"] = "PARTIAL"
@@ -883,7 +975,9 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
         return actions
 
-    def run_with_cleanup(self, file_paths: list[str] = None, dry_run: bool = True) -> dict[str, Any]:
+    def run_with_cleanup(
+        self, file_paths: list[str] = None, dry_run: bool = True
+    ) -> dict[str, Any]:
         """
         GOLD STANDARD WORKFLOW — Full governance compliance with autonomous cleanup.
         """
@@ -908,7 +1002,14 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         }
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L1 cognition agent - architectural governance enforcement."""
         if _call_path is None:
             _call_path = set()
@@ -937,20 +1038,25 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             # Skip dependency graph building for now (has path resolution issues)
             # TODO: Fix build_graph to handle relative/absolute path mixing
 
-            print(f"[{agent_name} HEAL @ depth {depth}] Found {violations_found} governance violations")
+            print(
+                f"[{agent_name} HEAL @ depth {depth}] Found {violations_found} governance violations"
+            )
             return {"violations_found": violations_found, "fixed": 0}
         finally:
             _call_path.discard(agent_name)
 
+
 # Alias for backwards compatibility
 ArchitectureGovernor = GovernanceAgent
 
-def create_architecture_governor(root_dir: str=None) -> GovernanceAgent:
+
+def create_architecture_governor(root_dir: str = None) -> GovernanceAgent:
     """Create an architecture governor instance."""
     # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
     super().heal_repository()
 
     return GovernanceAgent(root_dir)
+
 
 def get_governance_agent(project_root: Path, enforcement_mode: str = "audit") -> GovernanceAgent:
     """Factory function to get governance agent instance."""

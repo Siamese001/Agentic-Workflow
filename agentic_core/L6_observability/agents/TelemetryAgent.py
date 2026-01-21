@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, prompt, state, validator, workflow
@@ -62,7 +61,7 @@ class TelemetryAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         self,
         project_root: Path | None = None,
         log_file: Path | None = None,
-        max_events: int = 10_000
+        max_events: int = 10_000,
     ) -> None:
         """
         Initialize telemetry buffer.
@@ -83,7 +82,7 @@ class TelemetryAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         self.emit(
             event_type="telemetry.agent_started",
             level="INFO",
-            details={"log_file": str(log_file) if log_file else None}
+            details={"log_file": str(log_file) if log_file else None},
         )
 
     def emit(
@@ -91,7 +90,7 @@ class TelemetryAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         event_type: str,
         level: str = "INFO",
         agent: str = "TelemetryAgent",
-        details: dict[str, Any] | None = None
+        details: dict[str, Any] | None = None,
     ) -> None:
         """
         Emit a structured telemetry event.
@@ -140,15 +139,15 @@ class TelemetryAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         """Append event to log file (JSONL format)."""
         try:
             with open(self.log_file, "a", encoding="utf-8") as f:
-                f.write(json.dumps(event) + "\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\n")
+                f.write(
+                    json.dumps(event)
+                    + "\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\n"
+                )
         except Exception as e:
             Logger.warning(f"[TelemetryAgent] Failed to write event to file: {e}")
 
     def get_events(
-        self,
-        event_type: str | None = None,
-        level: str | None = None,
-        limit: int | None = None
+        self, event_type: str | None = None, level: str | None = None, limit: int | None = None
     ) -> list[dict[str, Any]]:
         """
         Query in-memory event buffer.
@@ -195,7 +194,7 @@ class TelemetryAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
             event_type="compliance.scan_started",
             level="INFO",
             agent="ComplianceOrchestratorAgent",
-            details={"file_count": file_count}
+            details={"file_count": file_count},
         )
 
     def emit_compliance_scan_completed(self, violation_count: int, duration_seconds: float) -> None:
@@ -207,46 +206,30 @@ class TelemetryAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
             details={
                 "violation_count": violation_count,
                 "duration_seconds": round(duration_seconds, 2),
-                "status": "clean" if violation_count == 0 else "violations_detected"
-            }
+                "status": "clean" if violation_count == 0 else "violations_detected",
+            },
         )
 
     def emit_violation_detected(
-        self,
-        file_path: str,
-        ViolationType: str,
-        message: str,
-        agent: str
+        self, file_path: str, ViolationType: str, message: str, agent: str
     ) -> None:
         """Emit individual Violation detection event."""
         self.emit(
             event_type="compliance.violation_detected",
             level="WARNING",
             agent=agent,
-            details={
-                "file": file_path,
-                "ViolationType": ViolationType,
-                "message": message
-            }
+            details={"file": file_path, "ViolationType": ViolationType, "message": message},
         )
 
     def emit_agent_action(
-        self,
-        agent: str,
-        action: str,
-        success: bool,
-        details: dict[str, Any] | None = None
+        self, agent: str, action: str, success: bool, details: dict[str, Any] | None = None
     ) -> None:
         """Emit agent action event."""
         self.emit(
             event_type=f"agent.{action}",
             level="INFO" if success else "ERROR",
             agent=agent,
-            details={
-                "action": action,
-                "success": success,
-                **(details or {})
-            }
+            details={"action": action, "success": success, **(details or {})},
         )
 
     def export_to_file(self, output_path: Path) -> None:
@@ -267,12 +250,25 @@ class TelemetryAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """Observability agent - invoke shared healing chain."""
         if _call_path is None:
             _call_path = set()
         # Invoke shared HealerMixin chain for diagnostics, rollback, MCP hardening
-        super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+        super().heal_repository(
+            dry_run=dry_run,
+            execute=execute,
+            depth=depth,
+            max_depth=max_depth,
+            _call_path=_call_path,
+        )
         print(f"[{self.__class__.__name__}] Observability agent - healing chain invoked")
         return {"skipped": 1}
 

@@ -12,6 +12,7 @@ CANONICAL SSOT: scripts/regenerate_dashboard_full.py
 
 This file is kept for reference only. DO NOT USE.
 """
+
 import sys
 
 print("[DEPRECATED] This script is deprecated. Use regenerate_dashboard_full.py instead.")
@@ -42,10 +43,11 @@ def load_discovery():
     if isinstance(data, list):
         agents = data
     else:
-        agents = data.get('agents', [])
+        agents = data.get("agents", [])
 
     print(f"✅ Loaded {len(agents)} agents from discovery")
     return agents
+
 
 def map_territory(agent):
     """
@@ -56,17 +58,18 @@ def map_territory(agent):
     This ensures consistency with regenerate_data.py.
     """
     # SSOT: Use territory from discovery data directly
-    territory = agent.get('territory', 'Unknown')
+    territory = agent.get("territory", "Unknown")
 
     # Fallback for agents without territory field
-    if not territory or territory == 'Unknown':
+    if not territory or territory == "Unknown":
         # Use layer as fallback
-        layer = agent.get('layer', '')
+        layer = agent.get("layer", "")
         if layer:
             return f"{layer}/Core"
         return "Unknown"
 
     return territory
+
 
 def calculate_metrics(agents_in_territory):
     """Calculate territory metrics from agent list"""
@@ -75,13 +78,13 @@ def calculate_metrics(agents_in_territory):
         return None
 
     # Count agents with heal capability (has_healing field in discovery)
-    heal_cap = sum(1 for a in agents_in_territory if a.get('has_healing', False))
+    heal_cap = sum(1 for a in agents_in_territory if a.get("has_healing", False))
 
     # Count agents with heal invocation (invocation field in discovery)
-    heal_invocation = sum(1 for a in agents_in_territory if a.get('invocation') == 'Yes')
+    heal_invocation = sum(1 for a in agents_in_territory if a.get("invocation") == "Yes")
 
     # Count agents with tests
-    has_tests = sum(1 for a in agents_in_territory if a.get('has_tests', False))
+    has_tests = sum(1 for a in agents_in_territory if a.get("has_tests", False))
 
     # Calculate averages
     heal_cap_pct = (heal_cap / total) * 100
@@ -89,38 +92,45 @@ def calculate_metrics(agents_in_territory):
     test_pct = (has_tests / total) * 100
 
     # Get complexity values (cyclomatic_complexity field)
-    complexities = [a.get('cyclomatic_complexity', 0) for a in agents_in_territory if a.get('cyclomatic_complexity')]
+    complexities = [
+        a.get("cyclomatic_complexity", 0)
+        for a in agents_in_territory
+        if a.get("cyclomatic_complexity")
+    ]
     avg_cc = sum(complexities) / len(complexities) if complexities else 0
 
     # Complexity health (inverse - lower CC is better)
     complexity_health = max(0, 100 - (avg_cc * 2)) if avg_cc else 100
 
     # Observable % - from observability field
-    observable_agents = sum(1 for a in agents_in_territory
-                           if a.get('observability', {}).get('logging') or
-                              a.get('observability', {}).get('metrics') or
-                              a.get('observability', {}).get('tracing'))
+    observable_agents = sum(
+        1
+        for a in agents_in_territory
+        if a.get("observability", {}).get("logging")
+        or a.get("observability", {}).get("metrics")
+        or a.get("observability", {}).get("tracing")
+    )
     observable_pct = (observable_agents / total) * 100 if total > 0 else 0
 
     # Typed % - from typed_pct field
-    typed_values = [a.get('typed_pct', 0) for a in agents_in_territory]
+    typed_values = [a.get("typed_pct", 0) for a in agents_in_territory]
     typed_pct = sum(typed_values) / len(typed_values) if typed_values else 0
 
     # Documented % - from documented_pct field
-    doc_values = [a.get('documented_pct', 0) for a in agents_in_territory]
+    doc_values = [a.get("documented_pct", 0) for a in agents_in_territory]
     documented_pct = sum(doc_values) / len(doc_values) if doc_values else 0
 
     # MCP Hardened % - from mcp_hardened field
-    hardened_count = sum(1 for a in agents_in_territory if a.get('mcp_hardened', False))
+    hardened_count = sum(1 for a in agents_in_territory if a.get("mcp_hardened", False))
     hardened_pct = (hardened_count / total) * 100 if total > 0 else 0
 
     # Calculate overall health (weighted average)
     health = (
-        heal_cap_pct * 0.30 +
-        heal_inv_pct * 0.10 +
-        test_pct * 0.25 +
-        observable_pct * 0.20 +
-        complexity_health * 0.15
+        heal_cap_pct * 0.30
+        + heal_inv_pct * 0.10
+        + test_pct * 0.25
+        + observable_pct * 0.20
+        + complexity_health * 0.15
     )
 
     # Risk assessment
@@ -154,8 +164,9 @@ def calculate_metrics(agents_in_territory):
         "Health": round(health, 1),
         "Risk": risk,
         "Hardened %": round(hardened_pct, 1),
-        "Criticality": 75
+        "Criticality": 75,
     }
+
 
 # TERRITORY_ORDER - Sovereign Base Agent first, then L6→L5→L4→L3→L2→L1→L0, then Apps
 TERRITORY_ORDER = [
@@ -201,6 +212,7 @@ TERRITORY_ORDER = [
     "Apps Shared",
 ]
 
+
 def generate_dashboard_data(agents):
     """Generate dashboard_data.js with territory rollups"""
 
@@ -236,7 +248,7 @@ def generate_dashboard_data(agents):
     output_path = Path("agentic_core/L6_observability/dashboards/data/dashboard_data.js")
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    with open(output_path, 'w') as f:
+    with open(output_path, "w") as f:
         f.write("/**\n")
         f.write(" * Strategic Dashboard Metrics\n")
         f.write(" * Loaded as global variable for file:// protocol compatibility\n")
@@ -247,6 +259,7 @@ def generate_dashboard_data(agents):
 
     print(f"✅ Generated {output_path} with {len(dashboard_data)} rows")
     return dashboard_data
+
 
 def generate_agent_data(agents, territories):
     """Generate agent_data.js with per-agent distributions and metric arrays for tooltips"""
@@ -276,37 +289,44 @@ def generate_agent_data(agents, territories):
         agent_objects = []
         for a in agents_list:
             # Calculate individual agent metrics
-            has_healing = a.get('has_healing', False)
+            has_healing = a.get("has_healing", False)
             heal_cap = 100.0 if has_healing else 0.0
 
-            invocation = a.get('invocation', 'No')
-            invocation_pct = 100.0 if invocation == 'Yes' else (50.0 if invocation == 'Inherited' else 0.0)
+            invocation = a.get("invocation", "No")
+            invocation_pct = (
+                100.0 if invocation == "Yes" else (50.0 if invocation == "Inherited" else 0.0)
+            )
 
-            mcp_hardened = a.get('mcp_hardened', False)
+            mcp_hardened = a.get("mcp_hardened", False)
             hardened_pct = 100.0 if mcp_hardened else 0.0
 
-            has_tests = a.get('has_tests', False)
+            has_tests = a.get("has_tests", False)
             test_pct = 100.0 if has_tests else 0.0
 
-            cc = a.get('cyclomatic_complexity', 0) or 0
+            cc = a.get("cyclomatic_complexity", 0) or 0
             complexity_health = max(0, 100 - (cc * 2))
 
-            typed_pct = a.get('typed_pct', 0) or 0
-            documented_pct = a.get('documented_pct', 0) or 0
+            typed_pct = a.get("typed_pct", 0) or 0
+            documented_pct = a.get("documented_pct", 0) or 0
             schema_pct = 100.0  # Assume schema strictness
             proper_base_pct = 100.0  # Assume canonical inheritance
 
             # Calculate health score
             health = (
-                heal_cap * 0.30 +
-                invocation_pct * 0.10 +
-                test_pct * 0.25 +
-                hardened_pct * 0.20 +
-                complexity_health * 0.15
+                heal_cap * 0.30
+                + invocation_pct * 0.10
+                + test_pct * 0.25
+                + hardened_pct * 0.20
+                + complexity_health * 0.15
             )
 
             # Code quality score
-            code_quality = (typed_pct * 0.30 + documented_pct * 0.30 + schema_pct * 0.25 + proper_base_pct * 0.15)
+            code_quality = (
+                typed_pct * 0.30
+                + documented_pct * 0.30
+                + schema_pct * 0.25
+                + proper_base_pct * 0.15
+            )
 
             # Store values for distribution arrays
             heal_cap_values.append(heal_cap)
@@ -322,43 +342,45 @@ def generate_agent_data(agents, territories):
             code_quality_values.append(code_quality)
 
             # Get file path
-            rel_path = a.get('rel_file', '') or a.get('path', '')
-            abs_path = a.get('abs_file', '') or a.get('file_path', '')
+            rel_path = a.get("rel_file", "") or a.get("path", "")
+            abs_path = a.get("abs_file", "") or a.get("file_path", "")
             if not abs_path and rel_path:
                 abs_path = f"C:/Git/Agentic-Workflow/{rel_path}"
 
             # Build agent object for drill-down modal
-            agent_objects.append({
-                "name": a.get('class_name', '') or a.get('name', 'Unknown'),
-                "path": rel_path,
-                "abs_file": abs_path,
-                "file_path": abs_path,
-                "class_line": a.get('class_line', 1),
-                # Table 1 metrics
-                "has_healing": has_healing,
-                "has_mixin": has_healing,
-                "invocation": invocation,
-                "invocation_pct": invocation_pct,
-                "mcp_hardened": mcp_hardened,
-                "hardened_pct": hardened_pct,
-                "has_tests": has_tests,
-                "test_pct": test_pct,
-                "cyclomatic_complexity": cc,
-                "complexity_health": complexity_health,
-                "health": round(health, 1),
-                # Table 2 metrics
-                "typed_pct": typed_pct,
-                "documented_pct": documented_pct,
-                "schema_pct": schema_pct,
-                "proper_base_pct": proper_base_pct,
-                "code_quality": round(code_quality, 1),
-                # Observability summary
-                "obs_summary": f"Logging: {'✓' if a.get('observability', {}).get('logging') else '✗'} | Metrics: {'✓' if a.get('observability', {}).get('metrics') else '✗'} | Tracing: {'✓' if a.get('observability', {}).get('tracing') else '✗'}",
-                # MCP summary
-                "mcp_summary": f"Shield: {'✓' if mcp_hardened else '✗'} | @hardened: {'✓' if hardened_pct > 40 else '✗'} | Safe: {'✓' if hardened_pct > 20 else '✗'}",
-                # Typing summary
-                "typing_summary": f"Init: {'✓' if typed_pct > 70 else '✗'} | Methods: {int(typed_pct)}% | Returns: {'✓' if typed_pct > 50 else '✗'}"
-            })
+            agent_objects.append(
+                {
+                    "name": a.get("class_name", "") or a.get("name", "Unknown"),
+                    "path": rel_path,
+                    "abs_file": abs_path,
+                    "file_path": abs_path,
+                    "class_line": a.get("class_line", 1),
+                    # Table 1 metrics
+                    "has_healing": has_healing,
+                    "has_mixin": has_healing,
+                    "invocation": invocation,
+                    "invocation_pct": invocation_pct,
+                    "mcp_hardened": mcp_hardened,
+                    "hardened_pct": hardened_pct,
+                    "has_tests": has_tests,
+                    "test_pct": test_pct,
+                    "cyclomatic_complexity": cc,
+                    "complexity_health": complexity_health,
+                    "health": round(health, 1),
+                    # Table 2 metrics
+                    "typed_pct": typed_pct,
+                    "documented_pct": documented_pct,
+                    "schema_pct": schema_pct,
+                    "proper_base_pct": proper_base_pct,
+                    "code_quality": round(code_quality, 1),
+                    # Observability summary
+                    "obs_summary": f"Logging: {'✓' if a.get('observability', {}).get('logging') else '✗'} | Metrics: {'✓' if a.get('observability', {}).get('metrics') else '✗'} | Tracing: {'✓' if a.get('observability', {}).get('tracing') else '✗'}",
+                    # MCP summary
+                    "mcp_summary": f"Shield: {'✓' if mcp_hardened else '✗'} | @hardened: {'✓' if hardened_pct > 40 else '✗'} | Safe: {'✓' if hardened_pct > 20 else '✗'}",
+                    # Typing summary
+                    "typing_summary": f"Init: {'✓' if typed_pct > 70 else '✗'} | Methods: {int(typed_pct)}% | Returns: {'✓' if typed_pct > 50 else '✗'}",
+                }
+            )
 
         # Store territory data with both agent objects AND metric arrays
         agent_data[territory] = {
@@ -375,17 +397,19 @@ def generate_agent_data(agents, territories):
             "documented": documented_values,
             "schemaStrictness": schema_values,
             "properBase": proper_base_values,
-            "codeQuality": code_quality_values
+            "codeQuality": code_quality_values,
         }
 
     # Write to file
     output_path = Path("agentic_core/L6_observability/dashboards/data/agent_data.js")
 
-    with open(output_path, 'w') as f:
+    with open(output_path, "w") as f:
         f.write("/**\n")
         f.write(" * Per-Agent Distribution Data\n")
         f.write(" * Loaded as global variable for file:// protocol compatibility\n")
-        f.write(" * Structure matches monolithic globalAgentData for full tooltip/drill-down support\n")
+        f.write(
+            " * Structure matches monolithic globalAgentData for full tooltip/drill-down support\n"
+        )
         f.write(" */\n")
         f.write("window.realAgentData = ")
         f.write(json.dumps(agent_data, indent=2))
@@ -393,10 +417,11 @@ def generate_agent_data(agents, territories):
 
     print(f"✅ Generated {output_path} with {len(agent_data)} territories (full metric arrays)")
 
+
 def main():
-    print("="*70)
+    print("=" * 70)
     print("MODULAR DASHBOARD DATA GENERATOR")
-    print("="*70)
+    print("=" * 70)
     print()
 
     # Load discovery
@@ -409,14 +434,15 @@ def main():
     generate_agent_data(agents, dashboard_data)
 
     print()
-    print("="*70)
+    print("=" * 70)
     print("✅ COMPLETE - Dashboard data files generated")
-    print("="*70)
+    print("=" * 70)
     print()
     print("Next steps:")
     print("1. Refresh browser at http://localhost:8765/autonomy_dashboard.html")
     print("2. Verify metrics show real values (not all 100%)")
     print("3. Run: python scripts/test_dashboard_end_to_end.py")
+
 
 if __name__ == "__main__":
     main()

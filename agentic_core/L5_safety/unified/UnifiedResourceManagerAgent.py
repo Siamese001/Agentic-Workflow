@@ -14,6 +14,7 @@ Features:
 - Fallback strategies for resource exhaustion
 - Concurrent agent support (10+ simultaneous requests)
 """
+
 from __future__ import annotations
 
 import logging
@@ -28,6 +29,7 @@ Logger = logging.getLogger(__name__)
 
 class ResourceType(Enum):
     """Types of resources managed."""
+
     BUDGET = auto()
     MEMORY = auto()
     CPU = auto()
@@ -37,6 +39,7 @@ class ResourceType(Enum):
 
 class AllocationStatus(Enum):
     """Status of resource allocation."""
+
     ALLOCATED = auto()
     DENIED = auto()
     FALLBACK = auto()
@@ -46,6 +49,7 @@ class AllocationStatus(Enum):
 @dataclass
 class ResourceAllocation:
     """Represents a resource allocation."""
+
     resource_type: ResourceType
     amount: float
     agent_id: str
@@ -56,6 +60,7 @@ class ResourceAllocation:
 @dataclass
 class ResourceBudget:
     """Budget configuration for a resource type."""
+
     resource_type: ResourceType
     total: float
     used: float = 0.0
@@ -81,6 +86,7 @@ class ResourceBudget:
 @dataclass
 class ResourceConfig:
     """Configuration for resource management."""
+
     enable_hard_caps: bool = True
     enable_proactive_allocation: bool = True
     enable_fallback: bool = True
@@ -166,7 +172,7 @@ class UnifiedResourceManagerAgent:
             if resource_type not in self._budgets:
                 self._budgets[resource_type] = ResourceBudget(
                     resource_type=resource_type,
-                    total=float('inf'),
+                    total=float("inf"),
                 )
 
             budget = self._budgets[resource_type]
@@ -200,7 +206,7 @@ class UnifiedResourceManagerAgent:
                 # Check warning threshold
                 if budget.utilization >= budget.warning_threshold:
                     Logger.warning(
-                        f"WARNING: {resource_type.name} at {budget.utilization*100:.1f}% utilization"
+                        f"WARNING: {resource_type.name} at {budget.utilization * 100:.1f}% utilization"
                     )
 
                 Logger.debug(f"Allocated {amount} {resource_type.name} to {agent_id}")
@@ -306,10 +312,7 @@ class UnifiedResourceManagerAgent:
     def get_all_budgets(self) -> dict[str, dict[str, Any]]:
         """Get status of all budgets."""
         with self._lock:
-            return {
-                rt.name: self.get_budget_status(rt)
-                for rt in self._budgets.keys()
-            }
+            return {rt.name: self.get_budget_status(rt) for rt in self._budgets.keys()}
 
 
 # Factory methods for backward compatibility (will be removed in future)

@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: memory, orchestrator, prompt, state, validator, workflow
@@ -31,6 +30,7 @@ Logger = logging.getLogger(__name__)
 
 class TaskType(Enum):
     """Types of tasks for reasoning strategy selection."""
+
     TOOL_USE = "tool_use"
     QUESTION_ANSWERING = "qa"
     CLASSIFICATION = "classification"
@@ -74,8 +74,24 @@ class ReasoningRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
 
     # Indicator lists for task classification
     _TOOL_INDICATORS = ["search", "retrieve", "lookup", "find", "fetch", "call", "execute", "run"]
-    _QA_INDICATORS = ["what is", "who is", "when did", "where is", "why", "how", "explain", "describe"]
-    _CLASSIFICATION_INDICATORS = ["classify", "categorize", "is this", "does this", "true or false", "yes or no"]
+    _QA_INDICATORS = [
+        "what is",
+        "who is",
+        "when did",
+        "where is",
+        "why",
+        "how",
+        "explain",
+        "describe",
+    ]
+    _CLASSIFICATION_INDICATORS = [
+        "classify",
+        "categorize",
+        "is this",
+        "does this",
+        "true or false",
+        "yes or no",
+    ]
     _PLANNING_INDICATORS = ["plan", "strategy", "approach", "steps to", "how to"]
 
     def _get_task_type_from_context(self, context: dict[str, Any] | None) -> TaskType | None:
@@ -87,7 +103,9 @@ class ReasoningRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
                 pass
         return None
 
-    def _match_indicators(self, task_lower: str, indicators: list, task_type: TaskType) -> TaskType | None:
+    def _match_indicators(
+        self, task_lower: str, indicators: list, task_type: TaskType
+    ) -> TaskType | None:
         """Check if any indicator matches and return task type."""
         for indicator in indicators:
             if indicator in task_lower:
@@ -144,7 +162,7 @@ class ReasoningRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
                 "TaskType": TaskType.value,
                 "strategy": strategy.value,
                 "task_preview": Task[:100],
-            }
+            },
         )
 
         return strategy
@@ -163,11 +181,18 @@ class ReasoningRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
             extra={
                 "TaskType": TaskType.value,
                 "new_strategy": mode.value,
-            }
+            },
         )
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L1 cognition agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:

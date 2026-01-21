@@ -45,6 +45,7 @@ class MissionPreflight:
         if self._location_agent is None:
             try:
                 from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+
                 self._location_agent = LocationAgent(self.project_root)
             except ImportError:
                 pass
@@ -55,6 +56,7 @@ class MissionPreflight:
         if self._hierarchy_agent is None:
             try:
                 from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+
                 self._hierarchy_agent = HierarchyAgent(self.project_root)
             except ImportError:
                 pass
@@ -65,6 +67,7 @@ class MissionPreflight:
         if self._import_agent is None:
             try:
                 from agentic_core.L5_safety.gravity.ImportAgent import ImportAgent
+
                 self._import_agent = ImportAgent(self.project_root)
             except ImportError:
                 pass
@@ -123,8 +126,10 @@ class MissionPreflight:
         # Print dashboard
         self._print_dashboard(results)
 
-        total_violations = results["Span"] + results["hierarchy"] + results["naming"] + results["gravity"]
-        results["compliant"] = (total_violations == 0)
+        total_violations = (
+            results["Span"] + results["hierarchy"] + results["naming"] + results["gravity"]
+        )
+        results["compliant"] = total_violations == 0
 
         return results
 
@@ -155,8 +160,7 @@ class MissionPreflight:
             try:
                 result = hierarchy_agent.validate_hierarchy()
                 violations = [
-                    v for v in result
-                    if '.git' not in str(v[0]) and '__init__.py' not in str(v[0])
+                    v for v in result if ".git" not in str(v[0]) and "__init__.py" not in str(v[0])
                 ]
                 if violations:
                     print(f"[!] L6 ALERT: Found {len(violations)} hierarchy violations:")
@@ -193,10 +197,12 @@ class MissionPreflight:
                 dirs[:] = [d for d in dirs if d not in self.protected_folders]
                 for file in files:
                     if scanned_count >= MAX_SCAN_FILES:
-                        print(f"   [WARNING] Scan limit reached ({MAX_SCAN_FILES} files) - stopping early")
+                        print(
+                            f"   [WARNING] Scan limit reached ({MAX_SCAN_FILES} files) - stopping early"
+                        )
                         scan_limit_reached = True
                         break
-                    if not file.endswith('.py'):
+                    if not file.endswith(".py"):
                         continue
                     scanned_count += 1
                     py_file = Path(root) / file
@@ -235,7 +241,7 @@ class MissionPreflight:
             for root, dirs, files in os.walk(target_path):
                 dirs[:] = [d for d in dirs if d not in self.protected_folders and d != ".git"]
                 for file in files:
-                    if not file.endswith('.py'):
+                    if not file.endswith(".py"):
                         continue
                     py_file = Path(root) / file
                     try:
@@ -247,13 +253,16 @@ class MissionPreflight:
 
         # Whitelist autonomous agents
         autonomous_agents = {
-            "autonomous_checkpoint_manager.py", "autonomous_state_guardian.py",
-            "self_updating_safety_engine.py", "neural_auto_immune_agent.py",
+            "autonomous_checkpoint_manager.py",
+            "autonomous_state_guardian.py",
+            "self_updating_safety_engine.py",
+            "neural_auto_immune_agent.py",
         }
         allowed_stages = {"policy", "shared", "hierarchy", "meta"}
 
         location_violations = [
-            v for v in location_violations
+            v
+            for v in location_violations
             if v[0].name not in autonomous_agents
             and not any(s in str(v[0]) for s in allowed_stages)
         ]
@@ -261,7 +270,7 @@ class MissionPreflight:
         if location_violations:
             print(f"[!] L6 ALERT: Found {len(location_violations)} file location violations:")
             for file_path, reason in location_violations[:3]:
-                safe_reason = reason.encode('ascii', 'replace').decode('ascii')
+                safe_reason = reason.encode("ascii", "replace").decode("ascii")
                 print(f"   [X] {file_path.name}: {safe_reason}")
             if len(location_violations) > 3:
                 print(f"   ... and {len(location_violations) - 3} more violations")
@@ -270,15 +279,15 @@ class MissionPreflight:
 
     def _print_dashboard(self, results: dict[str, Any]) -> None:
         """Print the sovereignty dashboard."""
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print(" SOVEREIGN INTEGRITY DASHBOARD (L6 PRE-FLIGHT)")
-        print("="*70)
+        print("=" * 70)
 
         metrics = [
             ("DEPTH / SPAN OF TWO", results["Span"]),
             ("HIERARCHY ALIGNMENT", results["hierarchy"]),
             ("NAMING / SIGNAL", results["naming"]),
-            ("GRAVITY / IMPORTS", results["gravity"])
+            ("GRAVITY / IMPORTS", results["gravity"]),
         ]
 
         for label, count in metrics:
@@ -292,6 +301,8 @@ class MissionPreflight:
         if total_violations == 0:
             print("[SUCCESS] All structural laws satisfied. Neural Link established.")
         else:
-            print(f"   [SOVEREIGN OVERRIDE] Forcing mutation for convergence ({total_violations} violations)")
+            print(
+                f"   [SOVEREIGN OVERRIDE] Forcing mutation for convergence ({total_violations} violations)"
+            )
 
-        print("="*70 + "\n")
+        print("=" * 70 + "\n")

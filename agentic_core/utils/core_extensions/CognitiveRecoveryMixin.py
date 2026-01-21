@@ -58,9 +58,7 @@ class CognitiveRecoveryMixin:
 
         query = f"Fix for error: {error_msg} Context: {tb[:200]}"
 
-        logger.info(
-            f"[{self.__class__.__name__}] 🧠 Consulted Semantic Memory for: {error_msg}"
-        )
+        logger.info(f"[{self.__class__.__name__}] 🧠 Consulted Semantic Memory for: {error_msg}")
 
         try:
             client = self._get_cognitive_client()
@@ -77,7 +75,7 @@ class CognitiveRecoveryMixin:
 -----------------------
 Pattern ID: {best_match.id}
 Confidence: {best_match.score:.2f}
-Source: {best_match.metadata.get('source', 'Unknown')}
+Source: {best_match.metadata.get("source", "Unknown")}
 
 Suggested Fix Context:
 {best_match.content[:500]}...

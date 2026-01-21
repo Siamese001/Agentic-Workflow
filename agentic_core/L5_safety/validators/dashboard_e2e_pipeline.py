@@ -12,6 +12,7 @@ Complete end-to-end pipeline that:
 
 Run this after ANY code changes to ensure dashboard reflects reality.
 """
+
 import json
 import re
 import subprocess
@@ -31,14 +32,14 @@ class DashboardE2EPipeline:
 
     def __init__(self):
         self.project_root = get_validated_project_root()
-        self.discovery_path = self.project_root / 'agent_discovery_full.json'
-        self.dashboard_path = self.project_root / DASHBOARD_DIR / 'autonomy_dashboard.html'
+        self.discovery_path = self.project_root / "agent_discovery_full.json"
+        self.dashboard_path = self.project_root / DASHBOARD_DIR / "autonomy_dashboard.html"
         self.stats = {
-            'heal_fixes': 0,
-            'agents_discovered': 0,
-            'dashboard_rows': 0,
-            'heal_invocation_before': 0,
-            'heal_invocation_after': 0
+            "heal_fixes": 0,
+            "agents_discovered": 0,
+            "dashboard_rows": 0,
+            "heal_invocation_before": 0,
+            "heal_invocation_after": 0,
         }
 
     def print_header(self, title: str):
@@ -63,11 +64,11 @@ class DashboardE2EPipeline:
 
         data = json.load(open(self.discovery_path))
         total = len(data)
-        has_invocation = sum(1 for a in data if a.get('invocation') == 'Yes')
-        needs_fix = [a for a in data if a.get('has_healing') and a.get('invocation') != 'Yes']
+        has_invocation = sum(1 for a in data if a.get("invocation") == "Yes")
+        needs_fix = [a for a in data if a.get("has_healing") and a.get("invocation") != "Yes"]
 
         coverage = has_invocation / total * 100 if total > 0 else 0
-        self.stats['heal_invocation_before'] = coverage
+        self.stats["heal_invocation_before"] = coverage
 
         print(f"   Total agents: {total}")
         print(f"   Heal invocation: {has_invocation} ({coverage:.1f}%)")
@@ -86,15 +87,15 @@ class DashboardE2EPipeline:
         fixed_count = 0
 
         for agent in agents_to_fix:
-            path = Path(agent['path'])
-            name = agent['class_name']
+            path = Path(agent["path"])
+            name = agent["class_name"]
 
             if not path.exists():
                 print(f"   ⚠️  SKIP: {name} - file not found")
                 continue
 
             try:
-                content = path.read_text(encoding='utf-8')
+                content = path.read_text(encoding="utf-8")
 
                 # Find heal_repository method
                 pattern = r'(    def heal_repository\([^)]*\)[^:]*:.*?)(\n        (?:""".*?"""|\'\'\'.*?\'\'\')\s*\n)?(.*?)(\n    def |\n\nclass |\Z)'
@@ -111,15 +112,20 @@ class DashboardE2EPipeline:
                 next_section = match.group(4)
 
                 # Check if super() call already exists
-                if 'super().heal_repository' in method_body:
+                if "super().heal_repository" in method_body:
                     continue
 
                 # Find first non-comment line
-                lines = method_body.split('\n')
+                lines = method_body.split("\n")
                 insert_index = 0
                 for i, line in enumerate(lines):
                     stripped = line.strip()
-                    if stripped and not stripped.startswith('#') and not stripped.startswith('"""') and not stripped.startswith("'''"):
+                    if (
+                        stripped
+                        and not stripped.startswith("#")
+                        and not stripped.startswith('"""')
+                        and not stripped.startswith("'''")
+                    ):
                         insert_index = i
                         break
 
@@ -127,12 +133,12 @@ class DashboardE2EPipeline:
                 indent = "        "
                 super_call = f"{indent}super().heal_repository()\n"
                 lines.insert(insert_index, super_call)
-                new_method_body = '\n'.join(lines)
+                new_method_body = "\n".join(lines)
 
                 # Reconstruct and write
                 new_method = method_sig + docstring + new_method_body + next_section
-                new_content = content[:match.start()] + new_method + content[match.end():]
-                path.write_text(new_content, encoding='utf-8')
+                new_content = content[: match.start()] + new_method + content[match.end() :]
+                path.write_text(new_content, encoding="utf-8")
 
                 print(f"   ✅ Fixed: {name}")
                 fixed_count += 1
@@ -140,7 +146,7 @@ class DashboardE2EPipeline:
             except Exception as e:
                 print(f"   ❌ ERROR: {name} - {str(e)}")
 
-        self.stats['heal_fixes'] = fixed_count
+        self.stats["heal_fixes"] = fixed_count
         print(f"\n   Fixed {fixed_count} agents")
         return fixed_count
 
@@ -149,7 +155,7 @@ class DashboardE2EPipeline:
         self.print_step("STEP 3: Regenerating agent discovery data...")
 
         # Use the working discovery script
-        discovery_script = self.project_root / 'scripts' / 'agent_discovery_audit.py'
+        discovery_script = self.project_root / "scripts" / "agent_discovery_audit.py"
 
         if not discovery_script.exists():
             print("   ❌ Discovery script not found")
@@ -164,7 +170,7 @@ class DashboardE2EPipeline:
                 capture_output=True,
                 check=False,
                 text=True,
-                timeout=300  # 5 minutes
+                timeout=300,  # 5 minutes
             )
 
             if result.returncode != 0:
@@ -177,12 +183,12 @@ class DashboardE2EPipeline:
                 return False
 
             data = json.load(open(self.discovery_path))
-            self.stats['agents_discovered'] = len(data)
+            self.stats["agents_discovered"] = len(data)
 
             # Calculate new heal invocation coverage
-            has_invocation = sum(1 for a in data if a.get('invocation') == 'Yes')
+            has_invocation = sum(1 for a in data if a.get("invocation") == "Yes")
             coverage = has_invocation / len(data) * 100 if len(data) > 0 else 0
-            self.stats['heal_invocation_after'] = coverage
+            self.stats["heal_invocation_after"] = coverage
 
             print(f"   ✅ Discovered {len(data)} agents")
             print(f"   ✅ Heal invocation: {has_invocation} ({coverage:.1f}%)")
@@ -200,7 +206,13 @@ class DashboardE2EPipeline:
         """Step 4: Regenerate dashboard HTML."""
         self.print_step("STEP 4: Regenerating dashboard HTML...")
 
-        dashboard_script = self.project_root / 'agentic_core' / 'L6_observability' / 'dashboards' / 'generate_dashboard.py'
+        dashboard_script = (
+            self.project_root
+            / "agentic_core"
+            / "L6_observability"
+            / "dashboards"
+            / "generate_dashboard.py"
+        )
 
         if not dashboard_script.exists():
             print("   ❌ Dashboard generator not found")
@@ -213,7 +225,7 @@ class DashboardE2EPipeline:
                 capture_output=True,
                 check=False,
                 text=True,
-                timeout=60
+                timeout=60,
             )
 
             if result.returncode != 0:
@@ -225,16 +237,16 @@ class DashboardE2EPipeline:
                 return False
 
             # Extract dashboard data
-            html = self.dashboard_path.read_text(encoding='utf-8')
-            start_marker = 'const dashboardData = ['
-            end_marker = '];'
+            html = self.dashboard_path.read_text(encoding="utf-8")
+            start_marker = "const dashboardData = ["
+            end_marker = "];"
             start_idx = html.find(start_marker)
             end_idx = html.find(end_marker, start_idx)
 
             if start_idx != -1 and end_idx != -1:
-                json_str = html[start_idx+len(start_marker)-1:end_idx+1]
+                json_str = html[start_idx + len(start_marker) - 1 : end_idx + 1]
                 territories = json.loads(json_str)
-                self.stats['dashboard_rows'] = len(territories)
+                self.stats["dashboard_rows"] = len(territories)
                 print(f"   ✅ Generated dashboard with {len(territories)} rows")
             else:
                 print("   ⚠️  Dashboard generated but data structure unclear")
@@ -249,7 +261,7 @@ class DashboardE2EPipeline:
         """Step 5: Run end-to-end validation tests."""
         self.print_step("STEP 5: Running end-to-end validation tests...")
 
-        test_script = self.project_root / 'scripts' / 'test_dashboard_end_to_end.py'
+        test_script = self.project_root / "scripts" / "test_dashboard_end_to_end.py"
 
         if not test_script.exists():
             print("   ❌ Test script not found")
@@ -263,7 +275,7 @@ class DashboardE2EPipeline:
                 check=False,
                 text=True,
                 timeout=30,
-                env={'PYTHONPATH': str(self.project_root)}
+                env={"PYTHONPATH": str(self.project_root)},
             )
 
             # Print test output
@@ -292,24 +304,36 @@ class DashboardE2EPipeline:
         print("┣" + "━" * 78 + "┫")
 
         # Heal invocation improvement
-        before = self.stats['heal_invocation_before']
-        after = self.stats['heal_invocation_after']
+        before = self.stats["heal_invocation_before"]
+        after = self.stats["heal_invocation_after"]
         improvement = after - before
 
         print("┃  Heal Invocation Coverage:                                              ┃")
-        print(f"┃    Before: {before:5.1f}%  →  After: {after:5.1f}%  (Δ +{improvement:4.1f}%)                    ┃")
+        print(
+            f"┃    Before: {before:5.1f}%  →  After: {after:5.1f}%  (Δ +{improvement:4.1f}%)                    ┃"
+        )
 
         if after >= 100.0:
             print("┃    🎯 TARGET ACHIEVED: 100% heal invocation coverage!                   ┃")
         elif after >= 99.0:
-            print(f"┃    ⚠️  Nearly complete: {100-after:.1f}% gap remaining                             ┃")
+            print(
+                f"┃    ⚠️  Nearly complete: {100 - after:.1f}% gap remaining                             ┃"
+            )
         else:
-            print(f"┃    ⚠️  Gap: {100-after:.1f}% ({int((100-after)/100*self.stats['agents_discovered'])} agents)                                      ┃")
+            print(
+                f"┃    ⚠️  Gap: {100 - after:.1f}% ({int((100 - after) / 100 * self.stats['agents_discovered'])} agents)                                      ┃"
+            )
 
         print("┃                                                                              ┃")
-        print(f"┃  Agents Fixed: {self.stats['heal_fixes']:3d}                                                      ┃")
-        print(f"┃  Agents Discovered: {self.stats['agents_discovered']:3d}                                                ┃")
-        print(f"┃  Dashboard Rows: {self.stats['dashboard_rows']:2d}                                                   ┃")
+        print(
+            f"┃  Agents Fixed: {self.stats['heal_fixes']:3d}                                                      ┃"
+        )
+        print(
+            f"┃  Agents Discovered: {self.stats['agents_discovered']:3d}                                                ┃"
+        )
+        print(
+            f"┃  Dashboard Rows: {self.stats['dashboard_rows']:2d}                                                   ┃"
+        )
         print("┃                                                                              ┃")
         print("┃  Dashboard Location:                                                         ┃")
         print(f"┃    {str(self.dashboard_path.relative_to(self.project_root)):<74}┃")

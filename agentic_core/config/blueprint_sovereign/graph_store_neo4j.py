@@ -27,7 +27,9 @@ class Neo4jGraphStore:
         USER = os.environ.get("NEO4J_USERNAME", "neo4j")
         PWD = os.environ.get("NEO4J_PASSWORD")
         if not PWD:
-            raise ValueError("[L6 CRITICAL] NEO4J_PASSWORD must be set in environment - no default allowed")
+            raise ValueError(
+                "[L6 CRITICAL] NEO4J_PASSWORD must be set in environment - no default allowed"
+            )
 
         # [HARDENING G4] Connection pooling with SSL enforcement
         self._driver = GraphDatabase.driver(
@@ -52,8 +54,9 @@ class Neo4jGraphStore:
         with self._driver.session() as session:
             return list(session.run(cypher, params or {}))
 
-    def upsert_entity(self, entity_id: str, etype: str, name: str,
-                        metadata: dict[str, object] | None = None) -> None:
+    def upsert_entity(
+        self, entity_id: str, etype: str, name: str, metadata: dict[str, object] | None = None
+    ) -> None:
         """
         MERGE an Entity node with basic fields + arbitrary metadata.
         """

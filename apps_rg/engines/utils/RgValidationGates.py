@@ -141,9 +141,7 @@ class RGValidationGates:
             ValidationGate(
                 gate_id=self.VG_AGENTIC_OUTPUT_VALIDATION,
                 name="Agentic Output Validation",
-                description=(
-                    "Validates that agentic outputs meet all quality standards."
-                ),
+                description=("Validates that agentic outputs meet all quality standards."),
                 Severity=GateSeverity.HIGH,
                 validator=self._validate_agentic_output,
             )
@@ -156,8 +154,7 @@ class RGValidationGates:
                 gate_id=self.VG_HEADER_INTEGRITY_CHECK,
                 name="Header Integrity Check",
                 description=(
-                    "Verifies that all section headers are correctly formatted "
-                    "and consistent."
+                    "Verifies that all section headers are correctly formatted and consistent."
                 ),
                 Severity=GateSeverity.MEDIUM,
                 validator=self._validate_header_integrity,
@@ -167,9 +164,7 @@ class RGValidationGates:
             ValidationGate(
                 gate_id=self.VG_REDUNDANCY_CHECK,
                 name="Redundancy Check",
-                description=(
-                    "Detects and flags redundant content across the resume."
-                ),
+                description=("Detects and flags redundant content across the resume."),
                 Severity=GateSeverity.MEDIUM,
                 validator=self._validate_redundancy,
             )
@@ -178,10 +173,7 @@ class RGValidationGates:
             ValidationGate(
                 gate_id=self.VG_COMPETENCY_WORD_COUNT_BALANCE,
                 name="Competency Word Count Balance",
-                description=(
-                    "Validates that competency descriptions are balanced in "
-                    "word count."
-                ),
+                description=("Validates that competency descriptions are balanced in word count."),
                 Severity=GateSeverity.MEDIUM,
                 validator=self._validate_competency_balance,
             )
@@ -191,8 +183,7 @@ class RGValidationGates:
                 gate_id=self.VG_SUMMARY_VOICE_TENSE,
                 name="Summary Voice and Tense",
                 description=(
-                    "Validates that the executive summary uses correct voice "
-                    "and tense throughout."
+                    "Validates that the executive summary uses correct voice and tense throughout."
                 ),
                 Severity=GateSeverity.MEDIUM,
                 validator=self._validate_summary_voice_tense,
@@ -205,10 +196,7 @@ class RGValidationGates:
             ValidationGate(
                 gate_id=self.VG_NATURAL_HYPHEN_PRESERVATION,
                 name="Natural Hyphen Preservation",
-                description=(
-                    "Ensures natural hyphens in compound words are preserved "
-                    "correctly."
-                ),
+                description=("Ensures natural hyphens in compound words are preserved correctly."),
                 Severity=GateSeverity.LOW,
                 validator=self._validate_hyphen_preservation,
             )
@@ -217,9 +205,7 @@ class RGValidationGates:
             ValidationGate(
                 gate_id=self.VG_BULLET_PUNCTUATION,
                 name="Bullet Punctuation",
-                description=(
-                    "Ensures consistent punctuation across all bullet points."
-                ),
+                description=("Ensures consistent punctuation across all bullet points."),
                 Severity=GateSeverity.LOW,
                 validator=self._validate_bullet_punctuation,
             )
@@ -362,9 +348,7 @@ class RGValidationGates:
             metrics = re.findall(r"\d+%|\$\d+|\d+x|\d+\+", bullet_text)
             for Metric in metrics:
                 if Metric not in source_material:
-                    violations.append(
-                        f"Bullet {i+1}: Metric '{Metric}' not found in source"
-                    )
+                    violations.append(f"Bullet {i + 1}: Metric '{Metric}' not found in source")
 
         decision = GateDecision.PASS if not violations else GateDecision.FAIL
 
@@ -401,7 +385,7 @@ class RGValidationGates:
 
                 if overlap > 0.6:
                     violations.append(
-                        f"Bullets {i+1} and {j+1} have high similarity ({overlap:.0%})"
+                        f"Bullets {i + 1} and {j + 1} have high similarity ({overlap:.0%})"
                     )
 
         decision = GateDecision.PASS if not violations else GateDecision.WARN
@@ -502,7 +486,7 @@ class RGValidationGates:
         for i, bullet in enumerate(bullets):
             if isinstance(bullet, dict):
                 if "source" not in bullet and "provenance" not in bullet:
-                    violations.append(f"Bullet {i+1}: Missing provenance information")
+                    violations.append(f"Bullet {i + 1}: Missing provenance information")
 
         decision = GateDecision.PASS if not violations else GateDecision.WARN
 
@@ -563,7 +547,7 @@ class RGValidationGates:
                 for i, wc in enumerate(word_counts):
                     if abs(wc - avg) > avg * 0.5:
                         violations.append(
-                            f"Competency {i+1}: Word count {wc} significantly differs from average {avg:.0f}"
+                            f"Competency {i + 1}: Word count {wc} significantly differs from average {avg:.0f}"
                         )
 
         decision = GateDecision.PASS if not violations else GateDecision.WARN
@@ -592,7 +576,7 @@ class RGValidationGates:
 
         for i, bullet in enumerate(bullets):
             if bullet and not bullet.rstrip().endswith((".", "!", "?")):
-                violations.append(f"Bullet {i+1}: Missing ending punctuation")
+                violations.append(f"Bullet {i + 1}: Missing ending punctuation")
 
         decision = GateDecision.PASS if not violations else GateDecision.WARN
 

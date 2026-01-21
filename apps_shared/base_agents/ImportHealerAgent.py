@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, validator, workflow
@@ -57,7 +56,7 @@ class ImportHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             Tuple of (was_healed, message)
         """
         try:
-            content = file_path.read_text(encoding='utf-8')
+            content = file_path.read_text(encoding="utf-8")
             original_content = content
 
             # Parse the file to find all imports
@@ -75,7 +74,9 @@ class ImportHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                         old_module = alias.name
                         new_module = self._get_relocated_module(old_module)
                         if new_module and new_module != old_module:
-                            content = content.replace(f"import {old_module}", f"import {new_module}")
+                            content = content.replace(
+                                f"import {old_module}", f"import {new_module}"
+                            )
                             imports_fixed += 1
 
                 elif isinstance(node, ast.ImportFrom):
@@ -91,7 +92,7 @@ class ImportHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
             if content != original_content:
                 if not dry_run:
-                    file_path.write_text(content, encoding='utf-8')
+                    file_path.write_text(content, encoding="utf-8")
                 return True, f"Fixed {imports_fixed} import(s)"
 
             return False, "No imports needed healing"
@@ -110,7 +111,7 @@ class ImportHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                 return new_module
             elif module_path.startswith(old_module + "."):
                 # Handle submodule imports
-                suffix = module_path[len(old_module):]
+                suffix = module_path[len(old_module) :]
                 return new_module + suffix
 
         return module_path
@@ -118,8 +119,8 @@ class ImportHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     def _path_to_module(self, file_path: str) -> str:
         """Convert file path to Python module path."""
         # Remove .py extension and convert path separators to dots
-        module = file_path.replace('\\', '/').replace('/', '.')
-        if module.endswith('.py'):
+        module = file_path.replace("\\", "/").replace("/", ".")
+        if module.endswith(".py"):
             module = module[:-3]
         return module
 
@@ -136,12 +137,12 @@ class ImportHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
             # Pattern: from .something import ...
             # Pattern: from ..something import ...
-            relative_import_pattern = r'from (\.+)(\w+)? import'
+            relative_import_pattern = r"from (\.+)(\w+)? import"
 
             def fix_relative(match) -> Any:
                 """Execute fix_relative operation."""
                 dots = match.group(1)
-                module = match.group(2) or ''
+                module = match.group(2) or ""
                 num_dots = len(dots)
 
                 # Calculate what the import should be based on current depth
@@ -151,8 +152,8 @@ class ImportHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                     parts = list(rel_path.parts[:-1])  # Exclude filename
                     if module:
                         parts.append(module)
-                    absolute_module = '.'.join(parts)
-                    return f'from {absolute_module} import'
+                    absolute_module = ".".join(parts)
+                    return f"from {absolute_module} import"
 
                 return match.group(0)  # Keep as-is
 
@@ -163,7 +164,9 @@ class ImportHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
         return content
 
-    def heal_all_imports_in_directory(self, directory: Path, dry_run: bool = False) -> dict[str, str]:
+    def heal_all_imports_in_directory(
+        self, directory: Path, dry_run: bool = False
+    ) -> dict[str, str]:
         """
         Heal imports in all Python files in a directory.
 
@@ -192,7 +195,7 @@ class ImportHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: set | None = None
+        _call_path: set | None = None,
     ) -> dict[str, int]:
         """
         Import Healing - Fixes broken imports after file relocations.
@@ -202,7 +205,11 @@ class ImportHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         """
         # CRITICAL: Chain up to HealerMixin
         metrics = super().heal_repository(
-            dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path
+            dry_run=dry_run,
+            execute=execute,
+            depth=depth,
+            max_depth=max_depth,
+            _call_path=_call_path,
         )
         if not isinstance(metrics, dict):
             metrics = {"violations": 0, "fixed": 0, "errors": 0}
@@ -222,6 +229,7 @@ class ImportHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
         except Exception as e:
             import logging
+
             Logger = logging.getLogger(__name__)
             Logger.error(f"Import healing failed: {e}")
             metrics["errors"] = metrics.get("errors", 0) + 1
@@ -234,19 +242,19 @@ def get_sovereign_ignore_list() -> set[str]:
     Helper for all agents to respect the .gitignore boundaries.
     Provides a unified source of truth for protected patterns.
     """
-    ignore_list = {'.git', 'venv', '__pycache__', '.env', 'node_modules'}
+    ignore_list = {".git", "venv", "__pycache__", ".env", "node_modules"}
 
     gitignore_path = Path(".gitignore")
     if gitignore_path.exists():
         try:
-            for line in gitignore_path.read_text(encoding='utf-8').splitlines():
+            for line in gitignore_path.read_text(encoding="utf-8").splitlines():
                 line = line.strip()
                 if line and not line.startswith("#"):
                     # Clean pattern
-                    pattern = line.rstrip('/')
-                    if '/' in pattern:
-                        pattern = pattern.split('/')[0]
-                    pattern = pattern.replace('*', '').strip()
+                    pattern = line.rstrip("/")
+                    if "/" in pattern:
+                        pattern = pattern.split("/")[0]
+                    pattern = pattern.replace("*", "").strip()
                     if pattern:
                         ignore_list.add(pattern)
         except Exception:

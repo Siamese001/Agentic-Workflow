@@ -26,23 +26,20 @@ from pathlib import Path
 
 # Protected files that require explicit override to modify
 PROTECTED_FILES = [
-    'agentic_core/L5_safety/core/ArchivalGatekeeper.py',
-    'agentic_core/L5_safety/validators/decorators.py',
+    "agentic_core/L5_safety/core/ArchivalGatekeeper.py",
+    "agentic_core/L5_safety/validators/decorators.py",
 ]
 
-OVERRIDE_FLAG = '#gatekeeper-override'
+OVERRIDE_FLAG = "#gatekeeper-override"
 
 
 def get_staged_files() -> list[str]:
     """Get list of files staged for commit."""
     try:
         result = subprocess.run(
-            ['git', 'diff', '--cached', '--name-only'],
-            capture_output=True,
-            text=True,
-            check=True
+            ["git", "diff", "--cached", "--name-only"], capture_output=True, text=True, check=True
         )
-        return [f.strip() for f in result.stdout.strip().split('\n') if f.strip()]
+        return [f.strip() for f in result.stdout.strip().split("\n") if f.strip()]
     except subprocess.CalledProcessError:
         return []
 
@@ -51,7 +48,7 @@ def get_commit_message() -> str:
     """Get the commit message if available."""
     try:
         # Try to get commit message from COMMIT_EDITMSG
-        commit_msg_file = Path('.git/COMMIT_EDITMSG')
+        commit_msg_file = Path(".git/COMMIT_EDITMSG")
         if commit_msg_file.exists():
             return commit_msg_file.read_text()
         return ""
@@ -84,21 +81,21 @@ def main():
     # Check for override flag in commit message
     commit_message = get_commit_message()
     if OVERRIDE_FLAG in commit_message:
-        print(f"\n✅ Gatekeeper override detected: {OVERRIDE_FLAG}")
+        print(f"\n[OK] Gatekeeper override detected: {OVERRIDE_FLAG}")
         print("   Allowing modifications to protected files:")
         for f in modified_protected:
             print(f"     - {f}")
         sys.exit(0)
 
     # Protected files modified without override
-    print(f"\n{'='*70}")
-    print("🛡️  GATEKEEPER PROTECTION: PROTECTED FILE MODIFICATION BLOCKED")
-    print(f"{'='*70}")
+    print(f"\n{'=' * 70}")
+    print("[GATEKEEPER PROTECTION] PROTECTED FILE MODIFICATION BLOCKED")
+    print(f"{'=' * 70}")
     print("\nThe following protected files are being modified:")
     for f in modified_protected:
-        print(f"  ❌ {f}")
+        print(f"  [X] {f}")
 
-    print(f"\n{'='*70}")
+    print(f"\n{'=' * 70}")
     print("WHY THIS MATTERS:")
     print("  These files are critical infrastructure components:")
     print("  - ArchivalGatekeeper.py: The Executioner (safe file operations)")
@@ -107,10 +104,10 @@ def main():
     print(f"  Add '{OVERRIDE_FLAG}' to your commit message to override.")
     print("\nEXAMPLE:")
     print(f"  git commit -m 'Fix gatekeeper bug {OVERRIDE_FLAG}'")
-    print(f"{'='*70}\n")
+    print(f"{'=' * 70}\n")
 
     sys.exit(1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

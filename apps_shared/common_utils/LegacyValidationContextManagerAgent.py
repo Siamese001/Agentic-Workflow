@@ -17,7 +17,7 @@ class ValidationContextManager(CachedStateLedger):
     through cache-first reflex pattern.
     """
 
-    def __init__(self, project_root: Path, session_id: str='global'):
+    def __init__(self, project_root: Path, session_id: str = "global"):
         super().__init__(project_root, session_id)
 
     def get_context(self, key: str) -> dict | None:
@@ -39,9 +39,15 @@ class ValidationContextManager(CachedStateLedger):
         Compute validation context from structural laws.
         This is where the expensive computation happens.
         """
-        return {'key': key, 'sovereign_depth': 3, 'gravity_rules': ['upstream_to_downstream'], 'validation_gates': ['VG_SUMMARY_GROUNDING_CHECK'], 'timestamp': '2025-12-24T10:46:00Z'}
+        return {
+            "key": key,
+            "sovereign_depth": 3,
+            "gravity_rules": ["upstream_to_downstream"],
+            "validation_gates": ["VG_SUMMARY_GROUNDING_CHECK"],
+            "timestamp": "2025-12-24T10:46:00Z",
+        }
 
-    def store_context(self, key: str, context: dict, ttl: int=86400) -> Any:
+    def store_context(self, key: str, context: dict, ttl: int = 86400) -> Any:
         """
         Manually store a validation context with custom TTL.
         """
@@ -51,13 +57,20 @@ class ValidationContextManager(CachedStateLedger):
         """
         Invalidate a cached context entry.
         """
-        full_key: Any = f'{self.prefix_context}:{key}'
+        full_key: Any = f"{self.prefix_context}:{key}"
         try:
             self.redis.delete(full_key)
         except Exception:
             pass
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path = None):
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path=None,
+    ):
         """L4 state/ValidationContext - operational only."""
         if _call_path is None:
             _call_path = set()

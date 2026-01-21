@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: memory, orchestrator, prompt, state, validator, workflow
@@ -22,6 +21,7 @@ Logger = logging.getLogger(__name__)
 
 class BiasType(Enum):
     """Types of bias to detect."""
+
     GENDER = "gender"
     AGE = "age"
     RACE = "race"
@@ -34,6 +34,7 @@ class BiasType(Enum):
 @dataclass
 class BiasMatch:
     """Single bias detection match."""
+
     BiasType: BiasType
     phrase: str
     context: str
@@ -43,6 +44,7 @@ class BiasMatch:
 @dataclass
 class BiasResult:
     """Bias detection result."""
+
     has_bias: bool
     bias_types: list[BiasType]
     flagged_phrases: list[str]
@@ -53,6 +55,7 @@ class BiasResult:
     def get_critical_biases(self) -> list[BiasMatch]:
         """Get high-Severity bias matches."""
         return [m for m in self.matches if m.Severity > 0.7]
+
 
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.L5_safety.validators.decorators import standard_heal
@@ -77,35 +80,35 @@ class BiasAuditorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
 
         self.bias_patterns = {
             BiasType.GENDER: [
-                r'\b(he|she|him|her|his|hers|himself|herself)\b',
-                r'\b(male|female|man|woman|men|women)\b',
-                r'\b(guy|girl|boy|lady|gentleman)\b',
+                r"\b(he|she|him|her|his|hers|himself|herself)\b",
+                r"\b(male|female|man|woman|men|women)\b",
+                r"\b(guy|girl|boy|lady|gentleman)\b",
             ],
             BiasType.AGE: [
-                r'\b(young|old|elderly|senior|junior)\b',
-                r'\b(\d{2,}\s*(years?|years?-old|y\.?o\.?))\b',
-                r'\b(millennial|boomer|gen-?[xz])\b',
+                r"\b(young|old|elderly|senior|junior)\b",
+                r"\b(\d{2,}\s*(years?|years?-old|y\.?o\.?))\b",
+                r"\b(millennial|boomer|gen-?[xz])\b",
             ],
             BiasType.RACE: [
-                r'\b(white|black|asian|hispanic|latino|african)\b',
-                r'\b(minority|majority|ethnic)\b',
-                r'\b(caucasian|african-american)\b',
+                r"\b(white|black|asian|hispanic|latino|african)\b",
+                r"\b(minority|majority|ethnic)\b",
+                r"\b(caucasian|african-american)\b",
             ],
             BiasType.DISABILITY: [
-                r'\b(disabled|handicapped|impaired|crippled)\b',
-                r'\b(special needs|wheelchair-bound)\b',
+                r"\b(disabled|handicapped|impaired|crippled)\b",
+                r"\b(special needs|wheelchair-bound)\b",
             ],
             BiasType.AFFILIATION: [
-                r'\b(republican|democrat|liberal|conservative)\b',
-                r'\b(christian|muslim|jewish|hindu|buddhist|atheist)\b',
+                r"\b(republican|democrat|liberal|conservative)\b",
+                r"\b(christian|muslim|jewish|hindu|buddhist|atheist)\b",
             ],
             BiasType.SOCIOECONOMIC: [
-                r'\b(poor|rich|wealthy|underprivileged)\b',
-                r'\b(lower class|upper class|working class)\b',
+                r"\b(poor|rich|wealthy|underprivileged)\b",
+                r"\b(lower class|upper class|working class)\b",
             ],
             BiasType.APPEARANCE: [
-                r'\b(attractive|ugly|beautiful|handsome)\b',
-                r'\b(overweight|obese|skinny|fat)\b',
+                r"\b(attractive|ugly|beautiful|handsome)\b",
+                r"\b(overweight|obese|skinny|fat)\b",
             ],
         }
 
@@ -142,12 +145,14 @@ class BiasAuditorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
                     context = self._extract_context(content, match.Span())
                     Severity = self._calculate_severity(BiasType, phrase)
 
-                    matches.append(BiasMatch(
-                        BiasType=BiasType,
-                        phrase=phrase,
-                        context=context,
-                        Severity=Severity,
-                    ))
+                    matches.append(
+                        BiasMatch(
+                            BiasType=BiasType,
+                            phrase=phrase,
+                            context=context,
+                            Severity=Severity,
+                        )
+                    )
 
         has_bias = len(detected_bias_types) > 0
         confidence_score = min(len(flagged_phrases) / 10.0, 1.0)
@@ -161,7 +166,7 @@ class BiasAuditorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
                     "bias_types": [bt.value for bt in detected_bias_types],
                     "phrase_count": len(flagged_phrases),
                     "confidence": confidence_score,
-                }
+                },
             )
 
         return BiasResult(
@@ -200,8 +205,13 @@ class BiasAuditorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
             Severity score (0.0-1.0)
         """
         high_severity_terms = {
-            "crippled", "handicapped", "retarded", "illegal alien",
-            "oriental", "colored", "negro",
+            "crippled",
+            "handicapped",
+            "retarded",
+            "illegal alien",
+            "oriental",
+            "colored",
+            "negro",
         }
 
         if phrase.lower() in high_severity_terms:
@@ -234,7 +244,9 @@ class BiasAuditorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
             BiasType.APPEARANCE: "Remove appearance-based descriptors",
         }
 
-        recommendations = [bias_recommendations.get(bt, "") for bt in bias_types if bt in bias_recommendations]
+        recommendations = [
+            bias_recommendations.get(bt, "") for bt in bias_types if bt in bias_recommendations
+        ]
 
         if not recommendations:
             recommendations.append("Content appears neutral and inclusive")
@@ -242,7 +254,9 @@ class BiasAuditorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         return recommendations
 
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, **kwargs) -> HealResult:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, depth: int = 0, **kwargs
+    ) -> HealResult:
         """Invoke healing chain via super(). Phase 5: Standardized signature."""
         return super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, **kwargs)
 

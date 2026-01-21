@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 
 class FeedbackCategory(Enum):
     """Categories of feedback."""
+
     QUALITY = "quality"  # General quality feedback
     ACCURACY = "accuracy"  # Factual accuracy issues
     RELEVANCE = "relevance"  # Relevance to context
@@ -77,7 +78,7 @@ class CrossEngineFeedback:
             "suggested_actions": self.suggested_actions,
             "transferable": self.transferable,
             "transfer_score": self.transfer_score,
-            "context": self.context
+            "context": self.context,
         }
 
 
@@ -134,7 +135,7 @@ class FeedbackAggregator:
                 "dimension_impact": self._analyze_dimensions(recent_feedback),
                 "engine_comparison": self._compare_engines(recent_feedback),
                 "transferable_insights": self._find_transferable_insights(recent_feedback),
-                "recommendations": self._generate_recommendations(recent_feedback)
+                "recommendations": self._generate_recommendations(recent_feedback),
             }
 
             return insights
@@ -162,7 +163,7 @@ class FeedbackAggregator:
                 "count": data["count"],
                 "avg_rating": sum(ratings) / len(ratings) if ratings else 0,
                 "min_rating": min(ratings) if ratings else 0,
-                "max_rating": max(ratings) if ratings else 0
+                "max_rating": max(ratings) if ratings else 0,
             }
 
         return result
@@ -187,7 +188,7 @@ class FeedbackAggregator:
             result[dimension] = {
                 "feedback_count": len(ratings),
                 "avg_rating": sum(ratings) / len(ratings) if ratings else 0,
-                "trend": "stable"  # Would calculate trend with more data
+                "trend": "stable",  # Would calculate trend with more data
             }
 
         return result
@@ -214,15 +215,15 @@ class FeedbackAggregator:
                 "avg_rating": sum(ratings) / len(ratings) if ratings else 0,
                 "total_feedback": len(ratings),
                 "top_categories": sorted(
-                    data["categories"].items(),
-                    key=lambda x: x[1],
-                    reverse=True
-                )[:3]
+                    data["categories"].items(), key=lambda x: x[1], reverse=True
+                )[:3],
             }
 
         return result
 
-    def _find_transferable_insights(self, feedback: list[CrossEngineFeedback]) -> list[dict[str, Any]]:
+    def _find_transferable_insights(
+        self, feedback: list[CrossEngineFeedback]
+    ) -> list[dict[str, Any]]:
         """Find insights that can be transferred between engines.
 
         Args:
@@ -241,12 +242,16 @@ class FeedbackAggregator:
         insights = []
         for category, items in grouped.items():
             if len(items) >= 2:  # Found in multiple engines
-                insights.append({
-                    "category": category,
-                    "engines": list(set(fb.source_engine.value for fb in items)),
-                    "common_issues": list(set(fb.comments or "" for fb in items if fb.comments)),
-                    "transfer_score": sum(fb.transfer_score for fb in items) / len(items)
-                })
+                insights.append(
+                    {
+                        "category": category,
+                        "engines": list(set(fb.source_engine.value for fb in items)),
+                        "common_issues": list(
+                            set(fb.comments or "" for fb in items if fb.comments)
+                        ),
+                        "transfer_score": sum(fb.transfer_score for fb in items) / len(items),
+                    }
+                )
 
         return sorted(insights, key=lambda x: x["transfer_score"], reverse=True)
 
@@ -319,10 +324,7 @@ class UnifiedFeedbackSystem:
             self.engine_loops[engine_type] = feedback_loop
             logger.info(f"Registered {engine_type.value} engine feedback loop")
 
-    def submit_feedback(
-        self,
-        feedback: CrossEngineFeedback
-    ) -> str:
+    def submit_feedback(self, feedback: CrossEngineFeedback) -> str:
         """Submit feedback to the unified system.
 
         Args:
@@ -347,7 +349,7 @@ class UnifiedFeedbackSystem:
                     timestamp=feedback.timestamp,
                     user_comments=feedback.comments,
                     hop_id=feedback.context.get("hop_id"),
-                    stage=feedback.context.get("stage")
+                    stage=feedback.context.get("stage"),
                 )
 
                 self.engine_loops[feedback.target_engine].add_feedback(engine_feedback)
@@ -373,7 +375,7 @@ class UnifiedFeedbackSystem:
                     timestamp=datetime.now(),
                     user_comments=f"[Cross-engine from {feedback.source_engine.value}] {feedback.comments}",
                     hop_id=None,
-                    stage=None
+                    stage=None,
                 )
 
                 loop.add_feedback(adapted_feedback)
@@ -412,7 +414,7 @@ class UnifiedFeedbackSystem:
         return {
             "resume_outreach_quality_correlation": 0.72,
             "feedback_pattern_similarity": 0.68,
-            "improvement_transfer_rate": 0.81
+            "improvement_transfer_rate": 0.81,
         }
 
     def export_feedback_data(self, engine_type: EngineType | None = None) -> dict[str, Any]:
@@ -427,7 +429,7 @@ class UnifiedFeedbackSystem:
         data = {
             "cross_engine_feedback": [fb.to_dict() for fb in self._cross_feedback],
             "insights": self.get_cross_engine_insights(),
-            "export_timestamp": datetime.now().isoformat()
+            "export_timestamp": datetime.now().isoformat(),
         }
 
         if engine_type and engine_type in self.engine_loops:
@@ -445,19 +447,23 @@ class UnifiedFeedbackSystem:
             Improvement plan
         """
         # Get engine-specific feedback
-        engine_feedback = [f for f in self._cross_feedback
-                          if f.target_engine == engine_type or f.target_engine is None]
+        engine_feedback = [
+            f
+            for f in self._cross_feedback
+            if f.target_engine == engine_type or f.target_engine is None
+        ]
 
         # Get transferable insights from other engines
-        other_engine_feedback = [f for f in self._cross_feedback
-                               if f.source_engine != engine_type and f.transferable]
+        other_engine_feedback = [
+            f for f in self._cross_feedback if f.source_engine != engine_type and f.transferable
+        ]
 
         plan = {
             "engine": engine_type.value,
             "created_at": datetime.now().isoformat(),
             "priority_areas": [],
             "cross_engine_opportunities": [],
-            "action_items": []
+            "action_items": [],
         }
 
         # Analyze engine-specific issues
@@ -468,11 +474,16 @@ class UnifiedFeedbackSystem:
         # Identify priority areas
         for category, count in sorted(category_counts.items(), key=lambda x: x[1], reverse=True):
             if count >= 3:  # Threshold for priority
-                plan["priority_areas"].append({
-                    "category": category,
-                    "feedback_count": count,
-                    "avg_rating": sum(f.rating for f in engine_feedback if f.category.value == category) / count
-                })
+                plan["priority_areas"].append(
+                    {
+                        "category": category,
+                        "feedback_count": count,
+                        "avg_rating": sum(
+                            f.rating for f in engine_feedback if f.category.value == category
+                        )
+                        / count,
+                    }
+                )
 
         # Identify cross-engine opportunities
         transferable_by_category = defaultdict(list)
@@ -482,21 +493,29 @@ class UnifiedFeedbackSystem:
 
         for category, feedback_list in transferable_by_category.items():
             if len(feedback_list) >= 2:
-                plan["cross_engine_opportunities"].append({
-                    "category": category,
-                    "source_engines": list(set(f.source_engine.value for f in feedback_list)),
-                    "transfer_score": sum(f.transfer_score for f in feedback_list) / len(feedback_list),
-                    "suggested_actions": list(set(action for f in feedback_list for action in f.suggested_actions))
-                })
+                plan["cross_engine_opportunities"].append(
+                    {
+                        "category": category,
+                        "source_engines": list(set(f.source_engine.value for f in feedback_list)),
+                        "transfer_score": sum(f.transfer_score for f in feedback_list)
+                        / len(feedback_list),
+                        "suggested_actions": list(
+                            set(action for f in feedback_list for action in f.suggested_actions)
+                        ),
+                    }
+                )
 
         # Generate action items
         for area in plan["priority_areas"][:3]:  # Top 3 priorities
-            plan["action_items"].append({
-                "action": f"Address {area['category']} issues",
-                "priority": "high",
-                "estimated_impact": "high",
-                "cross_pollination": area["category"] in [opp["category"] for opp in plan["cross_engine_opportunities"]]
-            })
+            plan["action_items"].append(
+                {
+                    "action": f"Address {area['category']} issues",
+                    "priority": "high",
+                    "estimated_impact": "high",
+                    "cross_pollination": area["category"]
+                    in [opp["category"] for opp in plan["cross_engine_opportunities"]],
+                }
+            )
 
         return plan
 
@@ -528,7 +547,7 @@ def submit_cross_engine_feedback(
     comments: str | None = None,
     target_engine: EngineType | None = None,
     transferable: bool = True,
-    context: dict[str, Any] | None = None
+    context: dict[str, Any] | None = None,
 ) -> str:
     """Submit cross-engine feedback.
 
@@ -558,7 +577,7 @@ def submit_cross_engine_feedback(
         rating=rating,
         comments=comments,
         transferable=transferable,
-        context=context or {}
+        context=context or {},
     )
 
     system = get_unified_feedback_system()

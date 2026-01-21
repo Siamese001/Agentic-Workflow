@@ -14,6 +14,7 @@ Usage:
     python scripts/test_code_standards_enforcer.py --patterns-only
     python scripts/test_code_standards_enforcer.py --types-only
 """
+
 from __future__ import annotations
 
 import argparse
@@ -54,10 +55,7 @@ def test_inheritance_audit() -> dict[str, Any]:
     inheritance_file = fixtures_dir / "inheritance_violation.py"
 
     if not inheritance_file.exists():
-        return {
-            "status": "SKIP",
-            "reason": f"Test fixture not found: {inheritance_file}"
-        }
+        return {"status": "SKIP", "reason": f"Test fixture not found: {inheritance_file}"}
 
     enforcer = get_code_standards_enforcer(PROJECT_ROOT)
 
@@ -67,7 +65,8 @@ def test_inheritance_audit() -> dict[str, Any]:
 
     # Parse and visit the file
     import ast
-    with open(inheritance_file, encoding='utf-8') as f:
+
+    with open(inheritance_file, encoding="utf-8") as f:
         tree = ast.parse(f.read())
     enforcer.visit(tree)
 
@@ -79,10 +78,7 @@ def test_inheritance_audit() -> dict[str, Any]:
     return {
         "status": "PASS" if len(inheritance_violations) >= 1 else "FAIL",
         "violations_found": len(inheritance_violations),
-        "details": [
-            {"class": v.message, "line": v.line_number}
-            for v in inheritance_violations
-        ],
+        "details": [{"class": v.message, "line": v.line_number} for v in inheritance_violations],
     }
 
 
@@ -104,10 +100,7 @@ def test_pattern_violations() -> dict[str, Any]:
     pattern_file = fixtures_dir / "pattern_violations.py"
 
     if not pattern_file.exists():
-        return {
-            "status": "SKIP",
-            "reason": f"Test fixture not found: {pattern_file}"
-        }
+        return {"status": "SKIP", "reason": f"Test fixture not found: {pattern_file}"}
 
     enforcer = get_code_standards_enforcer(PROJECT_ROOT)
 
@@ -115,9 +108,7 @@ def test_pattern_violations() -> dict[str, Any]:
     results = enforcer.validate_repository(targets=[pattern_file])
 
     # Count violations by canon key
-    pattern_violations = [
-        v for v in results["details"] if v["type"] == "PATTERN_VIOLATION"
-    ]
+    pattern_violations = [v for v in results["details"] if v["type"] == "PATTERN_VIOLATION"]
 
     key_26_count = sum(1 for v in pattern_violations if v.get("canon_key") == 26)
     key_34_count = sum(1 for v in pattern_violations if v.get("canon_key") == 34)
@@ -168,10 +159,7 @@ def test_type_hint_completeness() -> dict[str, Any]:
     type_file = fixtures_dir / "type_hint_violations.py"
 
     if not type_file.exists():
-        return {
-            "status": "SKIP",
-            "reason": f"Test fixture not found: {type_file}"
-        }
+        return {"status": "SKIP", "reason": f"Test fixture not found: {type_file}"}
 
     enforcer = get_code_standards_enforcer(PROJECT_ROOT)
 
@@ -179,16 +167,14 @@ def test_type_hint_completeness() -> dict[str, Any]:
     results = enforcer.validate_repository(targets=[type_file])
 
     # Count type hint violations
-    type_violations = [
-        v for v in results["details"] if v["type"] == "TYPE_HINT_ERR"
-    ]
+    type_violations = [v for v in results["details"] if v["type"] == "TYPE_HINT_ERR"]
 
     # Count by type
-    return_type_missing = sum(
-        1 for v in type_violations if "return type" in v["message"].lower()
-    )
+    return_type_missing = sum(1 for v in type_violations if "return type" in v["message"].lower())
     param_type_missing = sum(
-        1 for v in type_violations if "parameter" in v["message"].lower() or "argument" in v["message"].lower()
+        1
+        for v in type_violations
+        if "parameter" in v["message"].lower() or "argument" in v["message"].lower()
     )
 
     # We expect at least some violations
@@ -217,20 +203,14 @@ def test_combined_report() -> dict[str, Any]:
     fixtures_dir = PROJECT_ROOT / "tests" / "code_standards_fixtures"
 
     if not fixtures_dir.exists():
-        return {
-            "status": "SKIP",
-            "reason": f"Test fixtures directory not found: {fixtures_dir}"
-        }
+        return {"status": "SKIP", "reason": f"Test fixtures directory not found: {fixtures_dir}"}
 
     # Get all fixture files
     fixture_files = list(fixtures_dir.glob("*.py"))
     fixture_files = [f for f in fixture_files if f.name != "__init__.py"]
 
     if not fixture_files:
-        return {
-            "status": "SKIP",
-            "reason": "No fixture files found"
-        }
+        return {"status": "SKIP", "reason": "No fixture files found"}
 
     enforcer = get_code_standards_enforcer(PROJECT_ROOT)
 
@@ -242,8 +222,13 @@ def test_combined_report() -> dict[str, Any]:
     has_required_keys = all(k in results for k in required_keys)
 
     # Verify summary structure
-    summary_keys = ["files_scanned", "total_violations", "inheritance_errors",
-                    "pattern_violations", "type_hint_errors"]
+    summary_keys = [
+        "files_scanned",
+        "total_violations",
+        "inheritance_errors",
+        "pattern_violations",
+        "type_hint_errors",
+    ]
     has_summary_keys = all(k in results.get("summary", {}) for k in summary_keys)
 
     # Verify violation schema
@@ -263,26 +248,26 @@ def test_combined_report() -> dict[str, Any]:
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Test CodeStandardsEnforcerAgent')
-    parser.add_argument('--self-test', action='store_true', help='Run only self-tests')
-    parser.add_argument('--inheritance-only', action='store_true', help='Run only inheritance test')
-    parser.add_argument('--patterns-only', action='store_true', help='Run only pattern test')
-    parser.add_argument('--types-only', action='store_true', help='Run only type hint test')
-    parser.add_argument('--output-dir', type=str, default='test_results', help='Output directory')
+    parser = argparse.ArgumentParser(description="Test CodeStandardsEnforcerAgent")
+    parser.add_argument("--self-test", action="store_true", help="Run only self-tests")
+    parser.add_argument("--inheritance-only", action="store_true", help="Run only inheritance test")
+    parser.add_argument("--patterns-only", action="store_true", help="Run only pattern test")
+    parser.add_argument("--types-only", action="store_true", help="Run only type hint test")
+    parser.add_argument("--output-dir", type=str, default="test_results", help="Output directory")
     args = parser.parse_args()
 
     output_dir = PROJECT_ROOT / args.output_dir
     output_dir.mkdir(exist_ok=True)
 
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
     print("=" * 60)
     print("CodeStandardsEnforcerAgent Test Suite (Phase 4)")
     print("=" * 60)
 
     results = {
-        'timestamp': timestamp,
-        'tests': {},
+        "timestamp": timestamp,
+        "tests": {},
     }
 
     all_passed = True
@@ -293,15 +278,15 @@ def main():
         print("\n[1/5] Running self-tests...")
         try:
             self_test_results = run_self_tests()
-            results['tests']['self_tests'] = self_test_results
-            passed = self_test_results.get('passed', 0)
-            failed = self_test_results.get('failed', 0)
+            results["tests"]["self_tests"] = self_test_results
+            passed = self_test_results.get("passed", 0)
+            failed = self_test_results.get("failed", 0)
             print(f"  ✓ Self-tests: {passed} passed, {failed} failed")
             if failed > 0:
                 all_passed = False
         except Exception as e:
             print(f"  ✗ Self-tests failed: {e}")
-            results['tests']['self_tests'] = {'error': str(e)}
+            results["tests"]["self_tests"] = {"error": str(e)}
             all_passed = False
 
     # Inheritance audit
@@ -309,18 +294,20 @@ def main():
         print("\n[2/5] Running inheritance audit test...")
         try:
             inheritance_results = test_inheritance_audit()
-            results['tests']['inheritance_audit'] = inheritance_results
+            results["tests"]["inheritance_audit"] = inheritance_results
 
-            if inheritance_results.get('status') == 'PASS':
-                print(f"  ✓ Inheritance audit PASSED: {inheritance_results.get('violations_found')} violations detected")
-            elif inheritance_results.get('status') == 'SKIP':
+            if inheritance_results.get("status") == "PASS":
+                print(
+                    f"  ✓ Inheritance audit PASSED: {inheritance_results.get('violations_found')} violations detected"
+                )
+            elif inheritance_results.get("status") == "SKIP":
                 print(f"  ⊘ Inheritance audit SKIPPED: {inheritance_results.get('reason')}")
             else:
                 print("  ✗ Inheritance audit FAILED")
                 all_passed = False
         except Exception as e:
             print(f"  ✗ Inheritance audit failed: {e}")
-            results['tests']['inheritance_audit'] = {'error': str(e)}
+            results["tests"]["inheritance_audit"] = {"error": str(e)}
             all_passed = False
 
     # Pattern violations
@@ -328,15 +315,17 @@ def main():
         print("\n[3/5] Running pattern violation test...")
         try:
             pattern_results = test_pattern_violations()
-            results['tests']['pattern_violations'] = pattern_results
+            results["tests"]["pattern_violations"] = pattern_results
 
-            if pattern_results.get('status') == 'PASS':
-                print(f"  ✓ Pattern violations PASSED: {pattern_results.get('total_pattern_violations')} violations")
+            if pattern_results.get("status") == "PASS":
+                print(
+                    f"  ✓ Pattern violations PASSED: {pattern_results.get('total_pattern_violations')} violations"
+                )
                 print(f"    Key 26 (mutable defaults): {pattern_results['actual']['key_26']}")
                 print(f"    Key 34 (None comparison): {pattern_results['actual']['key_34']}")
                 print(f"    Key 33 (float equality): {pattern_results['actual']['key_33']}")
                 print(f"    Key 36 (shadowed builtins): {pattern_results['actual']['key_36']}")
-            elif pattern_results.get('status') == 'SKIP':
+            elif pattern_results.get("status") == "SKIP":
                 print(f"  ⊘ Pattern violations SKIPPED: {pattern_results.get('reason')}")
             else:
                 print("  ✗ Pattern violations FAILED")
@@ -345,7 +334,7 @@ def main():
                 all_passed = False
         except Exception as e:
             print(f"  ✗ Pattern violation test failed: {e}")
-            results['tests']['pattern_violations'] = {'error': str(e)}
+            results["tests"]["pattern_violations"] = {"error": str(e)}
             all_passed = False
 
     # Type hint completeness
@@ -353,20 +342,22 @@ def main():
         print("\n[4/5] Running type hint completeness test...")
         try:
             type_results = test_type_hint_completeness()
-            results['tests']['type_hints'] = type_results
+            results["tests"]["type_hints"] = type_results
 
-            if type_results.get('status') == 'PASS':
-                print(f"  ✓ Type hint test PASSED: {type_results.get('total_type_violations')} violations")
+            if type_results.get("status") == "PASS":
+                print(
+                    f"  ✓ Type hint test PASSED: {type_results.get('total_type_violations')} violations"
+                )
                 print(f"    Missing return types: {type_results.get('return_type_missing')}")
                 print(f"    Missing param types: {type_results.get('param_type_missing')}")
-            elif type_results.get('status') == 'SKIP':
+            elif type_results.get("status") == "SKIP":
                 print(f"  ⊘ Type hint test SKIPPED: {type_results.get('reason')}")
             else:
                 print("  ✗ Type hint test FAILED")
                 all_passed = False
         except Exception as e:
             print(f"  ✗ Type hint test failed: {e}")
-            results['tests']['type_hints'] = {'error': str(e)}
+            results["tests"]["type_hints"] = {"error": str(e)}
             all_passed = False
 
     # Combined report
@@ -374,26 +365,26 @@ def main():
         print("\n[5/5] Running combined report test...")
         try:
             combined_results = test_combined_report()
-            results['tests']['combined_report'] = combined_results
+            results["tests"]["combined_report"] = combined_results
 
-            if combined_results.get('status') == 'PASS':
+            if combined_results.get("status") == "PASS":
                 print("  ✓ Combined report PASSED")
-                summary = combined_results.get('summary', {})
+                summary = combined_results.get("summary", {})
                 print(f"    Files scanned: {summary.get('files_scanned', 0)}")
                 print(f"    Total violations: {summary.get('total_violations', 0)}")
-            elif combined_results.get('status') == 'SKIP':
+            elif combined_results.get("status") == "SKIP":
                 print(f"  ⊘ Combined report SKIPPED: {combined_results.get('reason')}")
             else:
                 print("  ✗ Combined report FAILED")
                 all_passed = False
         except Exception as e:
             print(f"  ✗ Combined report test failed: {e}")
-            results['tests']['combined_report'] = {'error': str(e)}
+            results["tests"]["combined_report"] = {"error": str(e)}
             all_passed = False
 
     # Save results
-    output_file = output_dir / f'code_standards_enforcer_test_{timestamp}.json'
-    with open(output_file, 'w', encoding='utf-8') as f:
+    output_file = output_dir / f"code_standards_enforcer_test_{timestamp}.json"
+    with open(output_file, "w", encoding="utf-8") as f:
         json.dump(results, f, indent=2, default=str)
 
     print(f"\n{'=' * 60}")
@@ -407,5 +398,5 @@ def main():
         return 1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

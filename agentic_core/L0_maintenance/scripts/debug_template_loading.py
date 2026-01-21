@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Debug which template is actually being loaded during generation."""
+
 import sys
 from pathlib import Path
 
@@ -12,7 +13,9 @@ sys.path.insert(0, str(Path.cwd()))
 project_root = Path.cwd()
 
 # Simulate the template loading logic from AutonomyGuardianAgent
-template_path = project_root / AGENTIC_CORE_DIR / "config" / "validators" / "dashboard_template.html"
+template_path = (
+    project_root / AGENTIC_CORE_DIR / "config" / "validators" / "dashboard_template.html"
+)
 
 print("=" * 80)
 print("TEMPLATE LOADING DEBUG")
@@ -28,16 +31,16 @@ if not template_path.exists():
     template_path = fallback_path
 
 if template_path.exists():
-    content = template_path.read_text(encoding='utf-8')
+    content = template_path.read_text(encoding="utf-8")
     print(f"\nTemplate being used: {template_path}")
     print(f"Template size: {len(content):,} bytes")
     print(f"Has 'Strategic Recommendations': {'Strategic Recommendations' in content}")
     print(f"Has 'STRATEGIC_REVIEW_INSERT': {'STRATEGIC_REVIEW_INSERT' in content}")
 
     # Show the section around Strategic Recommendations
-    if 'Strategic Recommendations' in content:
-        idx = content.find('Strategic Recommendations')
-        snippet = content[max(0, idx-100):idx+200]
+    if "Strategic Recommendations" in content:
+        idx = content.find("Strategic Recommendations")
+        snippet = content[max(0, idx - 100) : idx + 200]
         print("\nContext around 'Strategic Recommendations':")
         print(snippet)
 else:

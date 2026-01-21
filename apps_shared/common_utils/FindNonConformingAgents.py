@@ -19,7 +19,7 @@ import warnings
 warnings.warn(
     "find_non_conforming_agents.py is DEPRECATED. Use full_agent_discovery.py instead.",
     DeprecationWarning,
-    stacklevel=2
+    stacklevel=2,
 )
 import ast
 from pathlib import Path
@@ -71,11 +71,13 @@ class NonConformingAgentFinder(ast.NodeVisitor):
             if check_idx >= 0:
                 prev_line = self.source_lines[check_idx].strip()
                 if "NOT_AN_AGENT" in prev_line:
-                    self.excluded_classes.append({
-                        "name": class_name,
-                        "line": node.lineno,
-                        "reason": prev_line,
-                    })
+                    self.excluded_classes.append(
+                        {
+                            "name": class_name,
+                            "line": node.lineno,
+                            "reason": prev_line,
+                        }
+                    )
                     self.generic_visit(node)
                     return
 
@@ -87,11 +89,13 @@ class NonConformingAgentFinder(ast.NodeVisitor):
                     suspicious_methods.append(item.name)
 
         if suspicious_methods:
-            self.suspect_classes.append({
-                "name": class_name,
-                "line": node.lineno,
-                "methods": suspicious_methods,
-            })
+            self.suspect_classes.append(
+                {
+                    "name": class_name,
+                    "line": node.lineno,
+                    "methods": suspicious_methods,
+                }
+            )
 
         self.generic_visit(node)
 
@@ -105,6 +109,7 @@ def main():
 
     # Phase 6.9: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_python_files
+
     py_files = list(get_python_files(AGENTIC_CORE))
     for py_file in py_files:
         if any(ex in str(py_file) for ex in EXCLUDED_DIRS):
@@ -121,19 +126,23 @@ def main():
         finder.visit(tree)
 
         for suspect in finder.suspect_classes:
-            suspects.append({
-                "file": str(py_file.relative_to(PROJECT_ROOT)),
-                "line": suspect["line"],
-                "class_name": suspect["name"],
-                "suspicious_methods": ", ".join(suspect["methods"]),
-            })
+            suspects.append(
+                {
+                    "file": str(py_file.relative_to(PROJECT_ROOT)),
+                    "line": suspect["line"],
+                    "class_name": suspect["name"],
+                    "suspicious_methods": ", ".join(suspect["methods"]),
+                }
+            )
 
     # Output table
     # Count excluded classes
-    total_excluded = sum(len(f.get('excluded', [])) for f in [{'excluded': []}])  # placeholder
+    total_excluded = sum(len(f.get("excluded", [])) for f in [{"excluded": []}])  # placeholder
 
     if suspects:
-        print(f"\nFound {len(suspects)} non-conforming agent-like classes (excluding NOT_AN_AGENT marked):\n")
+        print(
+            f"\nFound {len(suspects)} non-conforming agent-like classes (excluding NOT_AN_AGENT marked):\n"
+        )
         print(f"{'File':<60} {'Line':<6} {'Class Name':<30} {'Suspicious Methods'}")
         print("-" * 140)
         for s in suspects:
@@ -143,13 +152,19 @@ def main():
         print("RECOMMENDATIONS")
         print("=" * 80)
         print("For each suspect:")
-        print(" • Rename class to PascalCase + 'Agent' suffix (e.g., NamingValidator → NamingValidatorAgent)")
+        print(
+            " • Rename class to PascalCase + 'Agent' suffix (e.g., NamingValidator → NamingValidatorAgent)"
+        )
         print(" • Rename file to match: NamingValidator.py → NamingValidatorAgent.py")
         print(" • Use IDE refactor (safe rename) to update all imports and references")
         print(" • After rename: class will be auto-discovered by ComplianceOrchestratorAgent")
-        print(" • If intentionally not an agent → add comment: # NOT_AN_AGENT — exclude from future audits")
+        print(
+            " • If intentionally not an agent → add comment: # NOT_AN_AGENT — exclude from future audits"
+        )
     else:
-        print("\n[OK] No non-conforming agent-like classes found — naming canon perfectly enforced.")
+        print(
+            "\n[OK] No non-conforming agent-like classes found — naming canon perfectly enforced."
+        )
 
     print("\n" + "=" * 80)
     print("NON-CONFORMING AGENT-LIKE CLASSES IDENTIFIED — CANON NAMING ENFORCEMENT READY")

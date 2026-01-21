@@ -15,15 +15,17 @@ logger = logging.getLogger(__name__)
 
 class ToneVoice(str, Enum):
     """Primary voice types for brand consistency."""
+
     AUTHORITATIVE = "AUTHORITATIVE"  # "Led", "Drove", "Built"
     COLLABORATIVE = "COLLABORATIVE"  # "Partnered", "Enabled", "Supported"
-    TECHNICAL = "TECHNICAL"          # High jargon density
-    EXECUTIVE = "EXECUTIVE"          # Strategic, high-level
-    CREATIVE = "CREATIVE"            # Innovative, visionary
+    TECHNICAL = "TECHNICAL"  # High jargon density
+    EXECUTIVE = "EXECUTIVE"  # Strategic, high-level
+    CREATIVE = "CREATIVE"  # Innovative, visionary
 
 
 class ToneSettings(BaseModel):
     """Settings for tone enforcement."""
+
     primary_voice: ToneVoice
     max_sentence_length: int = Field(default=25, ge=5, le=100)
     min_sentence_length: int = Field(default=5, ge=1, le=20)
@@ -37,6 +39,7 @@ class ToneSettings(BaseModel):
 
 class ToneViolation(BaseModel):
     """A tone rule violation."""
+
     type: str  # e.g., "sentence_length", "banned_word", "passive_voice"
     severity: str  # "error", "warning", "info"
     message: str
@@ -46,6 +49,7 @@ class ToneViolation(BaseModel):
 
 class ToneAnalysisResult(BaseModel):
     """Result of tone analysis."""
+
     is_compliant: bool
     violations: list[ToneViolation] = Field(default_factory=list)
     score: float = Field(ge=0.0, le=1.0)  # Overall compliance score
@@ -66,28 +70,28 @@ class ToneEnforcer:
             ToneVoice.AUTHORITATIVE: {
                 "verbs": ["led", "drove", "built", "created", "established", "pioneered"],
                 "patterns": [r"\bled\b", r"\bdrove\b", r"\bbuilt\b"],
-                "avoid": ["helped", "assisted", "participated"]
+                "avoid": ["helped", "assisted", "participated"],
             },
             ToneVoice.COLLABORATIVE: {
                 "verbs": ["partnered", "enabled", "supported", "collaborated", "facilitated"],
                 "patterns": [r"\bpartnered\b", r"\benabled\b", r"\bsupported\b"],
-                "avoid": ["controlled", "dictated", "commanded"]
+                "avoid": ["controlled", "dictated", "commanded"],
             },
             ToneVoice.TECHNICAL: {
                 "terms": ["architecture", "scalability", "optimization", "infrastructure"],
                 "patterns": [r"\bimplement\b", r"\boptimize\b", r"\barchitect\b"],
-                "avoid": ["simple", "easy", "basic"]
+                "avoid": ["simple", "easy", "basic"],
             },
             ToneVoice.EXECUTIVE: {
                 "verbs": ["strategized", "orchestrated", "spearheaded", "directed"],
                 "patterns": [r"\bstrategized\b", r"\borchestrated\b"],
-                "avoid": ["executed", "performed", "completed"]
+                "avoid": ["executed", "performed", "completed"],
             },
             ToneVoice.CREATIVE: {
                 "verbs": ["innovated", "envisioned", "imagined", "designed"],
                 "patterns": [r"\binnovated\b", r"\benvisioned\b"],
-                "avoid": ["maintained", "preserved", "followed"]
-            }
+                "avoid": ["maintained", "preserved", "followed"],
+            },
         }
 
         # Passive voice indicators
@@ -95,7 +99,7 @@ class ToneEnforcer:
             r"\b(was|were|is|are|am|been|being)\s+\w+ed\b",
             r"\b(was|were|is|are|am|been|being)\s+\w+en\b",
             r"\b\w+ed\s+by\s+the\b",
-            r"\b\w+ed\s+by\s+\w+\b"
+            r"\b\w+ed\s+by\s+\w+\b",
         ]
 
         logger.info("Initialized ToneEnforcer with default profiles")
@@ -115,9 +119,9 @@ class ToneEnforcer:
                 preferred_verbs={
                     "leadership": ["led", "directed", "managed", "orchestrated"],
                     "creation": ["built", "created", "developed", "established"],
-                    "impact": ["drove", "achieved", "delivered", "produced"]
+                    "impact": ["drove", "achieved", "delivered", "produced"],
                 },
-                max_passive_voice_percent=10.0
+                max_passive_voice_percent=10.0,
             ),
             ToneVoice.COLLABORATIVE: ToneSettings(
                 primary_voice=ToneVoice.COLLABORATIVE,
@@ -127,9 +131,9 @@ class ToneEnforcer:
                 preferred_verbs={
                     "teamwork": ["partnered", "collaborated", "teamed", "cooperated"],
                     "support": ["enabled", "supported", "facilitated", "empowered"],
-                    "guidance": ["mentored", "guided", "advised", "coached"]
+                    "guidance": ["mentored", "guided", "advised", "coached"],
                 },
-                max_passive_voice_percent=15.0
+                max_passive_voice_percent=15.0,
             ),
             ToneVoice.TECHNICAL: ToneSettings(
                 primary_voice=ToneVoice.TECHNICAL,
@@ -139,9 +143,9 @@ class ToneEnforcer:
                 preferred_verbs={
                     "development": ["implemented", "developed", "programmed", "coded"],
                     "architecture": ["architected", "designed", "structured", "engineered"],
-                    "optimization": ["optimized", "enhanced", "improved", "refined"]
+                    "optimization": ["optimized", "enhanced", "improved", "refined"],
                 },
-                max_passive_voice_percent=20.0
+                max_passive_voice_percent=20.0,
             ),
             ToneVoice.EXECUTIVE: ToneSettings(
                 primary_voice=ToneVoice.EXECUTIVE,
@@ -151,9 +155,9 @@ class ToneEnforcer:
                 preferred_verbs={
                     "strategy": ["strategized", "planned", "envisioned", "conceptualized"],
                     "leadership": ["orchestrated", "spearheaded", "directed", "guided"],
-                    "business": ["drove", "grew", "expanded", "scaled"]
+                    "business": ["drove", "grew", "expanded", "scaled"],
                 },
-                max_passive_voice_percent=5.0
+                max_passive_voice_percent=5.0,
             ),
             ToneVoice.CREATIVE: ToneSettings(
                 primary_voice=ToneVoice.CREATIVE,
@@ -163,10 +167,10 @@ class ToneEnforcer:
                 preferred_verbs={
                     "innovation": ["innovated", "pioneered", "invented", "conceived"],
                     "design": ["designed", "crafted", "shaped", "formed"],
-                    "vision": ["envisioned", "imagined", "conceptualized", "dreamed"]
+                    "vision": ["envisioned", "imagined", "conceptualized", "dreamed"],
                 },
-                max_passive_voice_percent=25.0
-            )
+                max_passive_voice_percent=25.0,
+            ),
         }
 
     def audit_content(self, text: str, settings: ToneSettings) -> list[ToneViolation]:
@@ -214,29 +218,33 @@ class ToneEnforcer:
         violations = []
 
         # Split into sentences
-        sentences = re.split(r'[.!?]+', text)
+        sentences = re.split(r"[.!?]+", text)
         sentences = [s.strip() for s in sentences if s.strip()]
 
         for sentence in sentences:
             word_count = len(sentence.split())
 
             if word_count > settings.max_sentence_length:
-                violations.append(ToneViolation(
-                    type="sentence_length",
-                    severity="warning",
-                    message=f"Sentence too long: {word_count} words (max: {settings.max_sentence_length})",
-                    location=sentence[:50] + "..." if len(sentence) > 50 else sentence,
-                    suggestion="Consider breaking into shorter sentences"
-                ))
+                violations.append(
+                    ToneViolation(
+                        type="sentence_length",
+                        severity="warning",
+                        message=f"Sentence too long: {word_count} words (max: {settings.max_sentence_length})",
+                        location=sentence[:50] + "..." if len(sentence) > 50 else sentence,
+                        suggestion="Consider breaking into shorter sentences",
+                    )
+                )
 
             elif word_count < settings.min_sentence_length:
-                violations.append(ToneViolation(
-                    type="sentence_length",
-                    severity="info",
-                    message=f"Sentence too short: {word_count} words (min: {settings.min_sentence_length})",
-                    location=sentence,
-                    suggestion="Consider expanding with more detail"
-                ))
+                violations.append(
+                    ToneViolation(
+                        type="sentence_length",
+                        severity="info",
+                        message=f"Sentence too short: {word_count} words (min: {settings.min_sentence_length})",
+                        location=sentence,
+                        suggestion="Consider expanding with more detail",
+                    )
+                )
 
         return violations
 
@@ -256,16 +264,18 @@ class ToneEnforcer:
         for word in settings.banned_words:
             if word.lower() in text_lower:
                 # Find word in context
-                pattern = re.compile(rf'\b{re.escape(word)}\b', re.IGNORECASE)
+                pattern = re.compile(rf"\b{re.escape(word)}\b", re.IGNORECASE)
                 match = pattern.search(text)
 
-                violations.append(ToneViolation(
-                    type="banned_word",
-                    severity="error",
-                    message=f"Banned word detected: '{word}'",
-                    location=match.group() if match else word,
-                    suggestion="Replace with stronger alternative"
-                ))
+                violations.append(
+                    ToneViolation(
+                        type="banned_word",
+                        severity="error",
+                        message=f"Banned word detected: '{word}'",
+                        location=match.group() if match else word,
+                        suggestion="Replace with stronger alternative",
+                    )
+                )
 
         return violations
 
@@ -288,12 +298,14 @@ class ToneEnforcer:
                 missing_keywords.append(keyword)
 
         if missing_keywords:
-            violations.append(ToneViolation(
-                type="missing_keyword",
-                severity="warning",
-                message=f"Missing required keywords: {', '.join(missing_keywords)}",
-                suggestion="Consider incorporating these keywords"
-            ))
+            violations.append(
+                ToneViolation(
+                    type="missing_keyword",
+                    severity="warning",
+                    message=f"Missing required keywords: {', '.join(missing_keywords)}",
+                    suggestion="Consider incorporating these keywords",
+                )
+            )
 
         return violations
 
@@ -325,21 +337,25 @@ class ToneEnforcer:
         # Check for avoided patterns
         for avoid_word in patterns["avoid"]:
             if avoid_word.lower() in text_lower:
-                violations.append(ToneViolation(
-                    type="voice_inconsistency",
-                    severity="warning",
-                    message=f"Voice inconsistency: '{avoid_word}' doesn't match {voice.value} tone",
-                    suggestion=f"Use {voice.value} voice alternatives: {', '.join(patterns['verbs'][:3])}"
-                ))
+                violations.append(
+                    ToneViolation(
+                        type="voice_inconsistency",
+                        severity="warning",
+                        message=f"Voice inconsistency: '{avoid_word}' doesn't match {voice.value} tone",
+                        suggestion=f"Use {voice.value} voice alternatives: {', '.join(patterns['verbs'][:3])}",
+                    )
+                )
 
         # Check if enough preferred patterns found
         if preferred_found == 0 and len(patterns["patterns"]) > 0:
-            violations.append(ToneViolation(
-                type="voice_weakness",
-                severity="info",
-                message=f"Weak {voice.value} voice: no preferred patterns detected",
-                suggestion=f"Consider using: {', '.join(patterns['verbs'][:3])}"
-            ))
+            violations.append(
+                ToneViolation(
+                    type="voice_weakness",
+                    severity="info",
+                    message=f"Weak {voice.value} voice: no preferred patterns detected",
+                    suggestion=f"Consider using: {', '.join(patterns['verbs'][:3])}",
+                )
+            )
 
         return violations
 
@@ -356,7 +372,7 @@ class ToneEnforcer:
         violations = []
 
         # Count sentences
-        sentences = re.split(r'[.!?]+', text)
+        sentences = re.split(r"[.!?]+", text)
         sentences = [s.strip() for s in sentences if s.strip()]
 
         if not sentences:
@@ -374,12 +390,14 @@ class ToneEnforcer:
         passive_percent = (passive_count / len(sentences)) * 100
 
         if passive_percent > settings.max_passive_voice_percent:
-            violations.append(ToneViolation(
-                type="passive_voice",
-                severity="warning",
-                message=f"Too much passive voice: {passive_percent:.1f}% (max: {settings.max_passive_voice_percent}%)",
-                suggestion="Use more active voice construction"
-            ))
+            violations.append(
+                ToneViolation(
+                    type="passive_voice",
+                    severity="warning",
+                    message=f"Too much passive voice: {passive_percent:.1f}% (max: {settings.max_passive_voice_percent}%)",
+                    suggestion="Use more active voice construction",
+                )
+            )
 
         return violations
 
@@ -402,34 +420,34 @@ class ToneEnforcer:
                 r"\bwanna\b",
                 r"\bgotta\b",
                 r"\bkinda\b",
-                r"\bsorta\b"
+                r"\bsorta\b",
             ]
 
             for pattern in informal_patterns:
                 if re.search(pattern, text.lower()):
-                    violations.append(ToneViolation(
-                        type="formality",
-                        severity="warning",
-                        message="Informal language detected in formal tone",
-                        suggestion="Use formal language"
-                    ))
+                    violations.append(
+                        ToneViolation(
+                            type="formality",
+                            severity="warning",
+                            message="Informal language detected in formal tone",
+                            suggestion="Use formal language",
+                        )
+                    )
 
         elif settings.formality_level == "professional":
             # Check for overly casual elements
-            casual_patterns = [
-                r"\by'all\b",
-                r"\bain't\b",
-                r"\bcuz\b"
-            ]
+            casual_patterns = [r"\by'all\b", r"\bain't\b", r"\bcuz\b"]
 
             for pattern in casual_patterns:
                 if re.search(pattern, text.lower()):
-                    violations.append(ToneViolation(
-                        type="formality",
-                        severity="error",
-                        message="Overly casual language detected",
-                        suggestion="Use professional language"
-                    ))
+                    violations.append(
+                        ToneViolation(
+                            type="formality",
+                            severity="error",
+                            message="Overly casual language detected",
+                            suggestion="Use professional language",
+                        )
+                    )
 
         return violations
 
@@ -462,7 +480,7 @@ class ToneEnforcer:
             violations=violations,
             score=score,
             voice_detected=voice_detected,
-            metrics=metrics
+            metrics=metrics,
         )
 
     def _detect_voice(self, text: str) -> ToneVoice:
@@ -535,14 +553,14 @@ class ToneEnforcer:
             violation_counts[violation.type] = violation_counts.get(violation.type, 0) + 1
 
         # Calculate text metrics
-        sentences = len(re.split(r'[.!?]+', text))
+        sentences = len(re.split(r"[.!?]+", text))
         words = len(text.split())
 
         return {
             "sentences": float(sentences),
             "words": float(words),
             "avg_sentence_length": words / sentences if sentences > 0 else 0.0,
-            "violations_by_type": {k: float(v) for k, v in violation_counts.items()}
+            "violations_by_type": {k: float(v) for k, v in violation_counts.items()},
         }
 
     def get_profile(self, voice: ToneVoice) -> ToneSettings:
@@ -556,11 +574,7 @@ class ToneEnforcer:
         """
         return self.profiles.get(voice, self.profiles[ToneVoice.AUTHORITATIVE])
 
-    def create_custom_profile(
-        self,
-        voice: ToneVoice,
-        settings: ToneSettings
-    ) -> None:
+    def create_custom_profile(self, voice: ToneVoice, settings: ToneSettings) -> None:
         """Create or update a custom profile.
 
         Args:

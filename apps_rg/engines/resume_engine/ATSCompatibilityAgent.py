@@ -4,6 +4,7 @@ ATSCompatibilityAgent - Extracted for one-class-per-file pattern.
 Originally from: ContentQualityAgent.py
 Extracted: 2026-01-06 (Surgical Extraction)
 """
+
 from __future__ import annotations
 
 import json
@@ -36,11 +37,11 @@ class ATSCompatibilityAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin
     }
 
     ATS_UNFRIENDLY_PATTERNS = [
-        r'[│┃┆┇┊┋]',  # Box drawing characters
-        r'[★☆●○◆◇■□▪▫]',  # Decorative bullets
-        r'[\u2500-\u257F]',  # Box drawing
-        r'<table',  # HTML tables
-        r'<img',  # Images
+        r"[│┃┆┇┊┋]",  # Box drawing characters
+        r"[★☆●○◆◇■□▪▫]",  # Decorative bullets
+        r"[\u2500-\u257F]",  # Box drawing
+        r"<table",  # HTML tables
+        r"<img",  # Images
     ]
 
     async def execute(self) -> None:
@@ -86,7 +87,12 @@ class ATSCompatibilityAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin
                     is_standard = True
                     break
 
-            if not is_standard and normalized not in ["contact", "projects", "certifications", "achievements"]:
+            if not is_standard and normalized not in [
+                "contact",
+                "projects",
+                "certifications",
+                "achievements",
+            ]:
                 issues.append(f"Non-standard section header: {section_name}")
 
         # Check keyword optimization if job description available
@@ -114,10 +120,37 @@ class ATSCompatibilityAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin
             Float between 0.0 and 1.0 representing keyword match percentage
         """
         # Extract keywords from job description
-        job_words = set(re.findall(r'\b[a-zA-Z]{3,}\b', job_desc.lower()))
+        job_words = set(re.findall(r"\b[a-zA-Z]{3,}\b", job_desc.lower()))
 
         # Common words to ignore
-        stop_words = {"the", "and", "for", "with", "you", "are", "will", "have", "this", "that", "from", "they", "been", "were", "being", "their", "would", "could", "should", "about", "which", "when", "what", "where", "there", "here"}
+        stop_words = {
+            "the",
+            "and",
+            "for",
+            "with",
+            "you",
+            "are",
+            "will",
+            "have",
+            "this",
+            "that",
+            "from",
+            "they",
+            "been",
+            "were",
+            "being",
+            "their",
+            "would",
+            "could",
+            "should",
+            "about",
+            "which",
+            "when",
+            "what",
+            "where",
+            "there",
+            "here",
+        }
         job_words -= stop_words
 
         if not job_words:
@@ -129,7 +162,9 @@ class ATSCompatibilityAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin
 
         return matches / len(job_words)
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, int]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict[str, int]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 

@@ -58,7 +58,7 @@ class ReasoningNode:
             "plan": plan,
             "strategy": strategy,
             "reasoning_time": reasoning_time,
-            "thought_count": len(thoughts)
+            "thought_count": len(thoughts),
         }
 
         return reasoning
@@ -80,18 +80,11 @@ class ReasoningNode:
 
         # Generate thoughts asynchronously
         thoughts = await asyncio.to_thread(
-            self._generate_thoughts,
-            perceived["query"],
-            strategy,
-            perceived
+            self._generate_thoughts, perceived["query"], strategy, perceived
         )
 
         # Generate plan asynchronously
-        plan = await asyncio.to_thread(
-            self._generate_plan,
-            thoughts,
-            perceived
-        )
+        plan = await asyncio.to_thread(self._generate_plan, thoughts, perceived)
 
         reasoning_time = time.time() - start_time
         self.total_reasoning_time += reasoning_time
@@ -101,7 +94,7 @@ class ReasoningNode:
             "plan": plan,
             "strategy": strategy,
             "reasoning_time": reasoning_time,
-            "thought_count": len(thoughts)
+            "thought_count": len(thoughts),
         }
 
         return reasoning
@@ -120,15 +113,12 @@ class ReasoningNode:
             "reasoning": "chain_of_thought",
             "action": "reactive",
             "memory": "retrieval",
-            "general": "balanced"
+            "general": "balanced",
         }
         return strategy_map.get(intent, "balanced")
 
     def _generate_thoughts(
-        self,
-        query: str,
-        strategy: str,
-        perceived: dict[str, Any]
+        self, query: str, strategy: str, perceived: dict[str, Any]
     ) -> list[dict[str, Any]]:
         """
         Generate prioritized thoughts using strategy.
@@ -152,22 +142,22 @@ class ReasoningNode:
             thoughts = [
                 {"step": 1, "thought": f"Analyzing: {query[:50]}...", "confidence": 0.8},
                 {"step": 2, "thought": "Identifying key concepts", "confidence": 0.75},
-                {"step": 3, "thought": "Forming hypothesis", "confidence": 0.7}
+                {"step": 3, "thought": "Forming hypothesis", "confidence": 0.7},
             ]
         elif strategy == "reactive":
             thoughts = [
                 {"step": 1, "thought": "Immediate action needed", "confidence": 0.9},
-                {"step": 2, "thought": "Execute primary action", "confidence": 0.85}
+                {"step": 2, "thought": "Execute primary action", "confidence": 0.85},
             ]
         elif strategy == "retrieval":
             thoughts = [
                 {"step": 1, "thought": "Searching memory", "confidence": 0.8},
-                {"step": 2, "thought": "Retrieving relevant context", "confidence": 0.75}
+                {"step": 2, "thought": "Retrieving relevant context", "confidence": 0.75},
             ]
         else:  # balanced
             thoughts = [
                 {"step": 1, "thought": f"Processing: {query[:50]}...", "confidence": 0.75},
-                {"step": 2, "thought": "Evaluating options", "confidence": 0.7}
+                {"step": 2, "thought": "Evaluating options", "confidence": 0.7},
             ]
 
         # Phase 1: Apply pruning (remove low-confidence thoughts)
@@ -184,9 +174,7 @@ class ReasoningNode:
         return thoughts
 
     def _generate_plan(
-        self,
-        thoughts: list[dict[str, Any]],
-        perceived: dict[str, Any]
+        self, thoughts: list[dict[str, Any]], perceived: dict[str, Any]
     ) -> dict[str, Any]:
         """
         Generate execution plan from thoughts.
@@ -204,11 +192,7 @@ class ReasoningNode:
 
         # Build plan steps from thoughts
         steps = [
-            {
-                "action": f"thought_{i}",
-                "description": thought.get("thought", ""),
-                "priority": i
-            }
+            {"action": f"thought_{i}", "description": thought.get("thought", ""), "priority": i}
             for i, thought in enumerate(thoughts)
         ]
 
@@ -223,7 +207,7 @@ class ReasoningNode:
             "score": score,
             "valid": valid,
             "estimated_cost": len(steps),
-            "constraints": ["coherence", "feasibility"]
+            "constraints": ["coherence", "feasibility"],
         }
 
         return plan
@@ -288,5 +272,5 @@ class ReasoningNode:
             "thoughts_generated": self.thoughts_generated,
             "plans_created": self.plans_created,
             "total_reasoning_time": self.total_reasoning_time,
-            "avg_reasoning_time": avg_reasoning_time
+            "avg_reasoning_time": avg_reasoning_time,
         }

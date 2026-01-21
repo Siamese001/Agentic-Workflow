@@ -79,7 +79,7 @@ class UnusedCleanupAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                 ],
                 capture_output=True,
                 text=True,
-                check=False
+                check=False,
             )
 
             # Check if file changed (autoflake returns 0 on success)
@@ -101,7 +101,7 @@ class UnusedCleanupAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: set[str] | None = None
+        _call_path: set[str] | None = None,
     ) -> dict[str, int]:
         """Execute L5 safety healing operations.
 

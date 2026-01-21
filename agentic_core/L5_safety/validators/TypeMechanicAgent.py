@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: healer, memory, orchestrator, prompt, validator, workflow
@@ -31,8 +30,9 @@ class TypeMechanicAgent(SubatomicTestingMixin, SubAtomicAgent):
     ROLE: Precision Engineering. Requires AST_VALID signal.
     """
 
-
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict[str, Any]:
         """
         Autonomous healing method.
 
@@ -72,11 +72,11 @@ class TypeMechanicAgent(SubatomicTestingMixin, SubAtomicAgent):
         Reads a file and parses it into an AST, handling errors.
         Returns (tree, error_message).
         """
-        try: # Depth 1
-            with open(fp, encoding="utf-8") as f: # Depth 2
+        try:  # Depth 1
+            with open(fp, encoding="utf-8") as f:  # Depth 2
                 tree = ast.parse(f.read(), filename=fp)
                 return tree, None
-        except (OSError, SyntaxError) as e: # Depth 2 (ExceptHandler)
+        except (OSError, SyntaxError) as e:  # Depth 2 (ExceptHandler)
             return None, f"Error parsing {fp}: {e}"
 
     def _get_missing_type_hint_violations_for_tree(self, fp: str, tree: ast.AST) -> list[str]:
@@ -84,12 +84,14 @@ class TypeMechanicAgent(SubatomicTestingMixin, SubAtomicAgent):
         Collects formatted Violation strings for Missing type hints in a given AST tree.
         """
         file_violations = []
-        for node in ast.walk(tree): # Depth 1
-            if isinstance(node, ast.FunctionDef) and \
-               not node.returns and node.name not in ("__init__", "__str__", "__repr__"): # Depth 2 (If)
-                file_violations.append( # Depth 3
-                    f"{fp}:{node.lineno}: Function '{node.name}' is Missing "
-                    "a return type hint."
+        for node in ast.walk(tree):  # Depth 1
+            if (
+                isinstance(node, ast.FunctionDef)
+                and not node.returns
+                and node.name not in ("__init__", "__str__", "__repr__")
+            ):  # Depth 2 (If)
+                file_violations.append(  # Depth 3
+                    f"{fp}:{node.lineno}: Function '{node.name}' is Missing a return type hint."
                 )
         return file_violations
 
@@ -100,24 +102,28 @@ class TypeMechanicAgent(SubatomicTestingMixin, SubAtomicAgent):
         Refactored to reduce nesting depth to meet max 4.
         """
         violations = []
-        for fp in self.ctx.python_files: # Depth 1 (from method definition)
-            tree, error_msg = self._read_and_parse_file(fp) # Depth 2
-            if error_msg: # Depth 3
-                self.ctx.log_error(error_msg) # Depth 4
-                continue # Depth 4
+        for fp in self.ctx.python_files:  # Depth 1 (from method definition)
+            tree, error_msg = self._read_and_parse_file(fp)  # Depth 2
+            if error_msg:  # Depth 3
+                self.ctx.log_error(error_msg)  # Depth 4
+                continue  # Depth 4
 
-            if tree: # Depth 3
-                violations.extend(self._get_missing_type_hint_violations_for_tree(fp, tree)) # Depth 4
+            if tree:  # Depth 3
+                violations.extend(
+                    self._get_missing_type_hint_violations_for_tree(fp, tree)
+                )  # Depth 4
         return len(violations) == 0, violations
 
-    def _check_function_for_unreachable_code(self, fp: str, func_node: ast.FunctionDef) -> list[str]:
+    def _check_function_for_unreachable_code(
+        self, fp: str, func_node: ast.FunctionDef
+    ) -> list[str]:
         """
         Checks a single function node for unreachable code after a return statement.
         """
-        func_violations = [] # Depth 1
-        for i, stmt in enumerate(func_node.body): # Depth 2
-            if isinstance(stmt, ast.Return) and i < len(func_node.body) - 1: # Depth 3
-                func_violations.append( # Depth 4
+        func_violations = []  # Depth 1
+        for i, stmt in enumerate(func_node.body):  # Depth 2
+            if isinstance(stmt, ast.Return) and i < len(func_node.body) - 1:  # Depth 3
+                func_violations.append(  # Depth 4
                     f"{fp}:{stmt.lineno}: Unreachable code after return "
                     f"in function '{func_node.name}'."
                 )
@@ -128,10 +134,12 @@ class TypeMechanicAgent(SubatomicTestingMixin, SubAtomicAgent):
         """
         Processes an AST tree to find unreachable code violations within functions.
         """
-        file_violations = [] # Depth 1
-        for node in ast.walk(tree): # Depth 2
-            if isinstance(node, ast.FunctionDef): # Depth 3
-                file_violations.extend(self._check_function_for_unreachable_code(fp, node)) # Depth 4
+        file_violations = []  # Depth 1
+        for node in ast.walk(tree):  # Depth 2
+            if isinstance(node, ast.FunctionDef):  # Depth 3
+                file_violations.extend(
+                    self._check_function_for_unreachable_code(fp, node)
+                )  # Depth 4
         return file_violations
 
     def check_no_unreachable_code(self) -> tuple[bool, list[str]]:
@@ -140,14 +148,16 @@ class TypeMechanicAgent(SubatomicTestingMixin, SubAtomicAgent):
         within a function body.
         Refactored to reduce nesting depth to meet max 4.
         """
-        violations = [] # Depth 1
-        for fp in self.ctx.python_files: # Depth 2
-            tree, error_msg = self._read_and_parse_file(fp) # Depth 3
-            if error_msg: # Depth 4
-                self.ctx.log_error(error_msg) # Depth 4
-                continue # Depth 4
-            if tree: # Depth 3
-                violations.extend(self._get_unreachable_code_violations_for_tree(fp, tree)) # Depth 4
+        violations = []  # Depth 1
+        for fp in self.ctx.python_files:  # Depth 2
+            tree, error_msg = self._read_and_parse_file(fp)  # Depth 3
+            if error_msg:  # Depth 4
+                self.ctx.log_error(error_msg)  # Depth 4
+                continue  # Depth 4
+            if tree:  # Depth 3
+                violations.extend(
+                    self._get_unreachable_code_violations_for_tree(fp, tree)
+                )  # Depth 4
         return len(violations) == 0, violations
 
     def _collect_variables(self, func_node: ast.FunctionDef) -> tuple[set[str], set[str]]:
@@ -161,8 +171,7 @@ class TypeMechanicAgent(SubatomicTestingMixin, SubAtomicAgent):
             if isinstance(child, ast.Assign):
                 # Flatten target processing using a list comprehension
                 names_assigned = [
-                    target.id for target in child.targets
-                    if isinstance(target, ast.Name)
+                    target.id for target in child.targets if isinstance(target, ast.Name)
                 ]
                 assigned.update(names_assigned)
             elif isinstance(child, ast.Name) and isinstance(child.ctx, ast.Load):
@@ -179,7 +188,7 @@ class TypeMechanicAgent(SubatomicTestingMixin, SubAtomicAgent):
                 assigned, used = self._collect_variables(node)
                 unused = assigned - used
                 # Exclude common "throwaway" variable names like '_'
-                unused = {var for var in unused if var != '_'}
+                unused = {var for var in unused if var != "_"}
                 if unused:
                     file_violations.append(
                         f"{fp}:{node.lineno}: Function '{node.name}' has unused "

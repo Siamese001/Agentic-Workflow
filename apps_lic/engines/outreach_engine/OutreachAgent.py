@@ -57,7 +57,9 @@ class OutreachAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin, ABC):
         """Get relevant instructions for this agent."""
         instructions = self.ctx.get_instructions()
         if instructions:
-            return "\nimport logging\n\nLogger = logging.getLogger(__name__)\n".join(f"- {i}" for i in instructions)
+            return "\nimport logging\n\nLogger = logging.getLogger(__name__)\n".join(
+                f"- {i}" for i in instructions
+            )
         return ""
 
     async def call_llm(self, prompt: str) -> str | None:
@@ -74,7 +76,14 @@ class OutreachAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin, ABC):
             return None
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """Apps/outreach base agent - operational only."""
         if _call_path is None:
             # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)

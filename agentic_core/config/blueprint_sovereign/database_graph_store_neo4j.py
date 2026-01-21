@@ -31,14 +31,14 @@ class Neo4jGraphStore:
 
         self._driver.close()
 
-
     def run(self, cypher: str, params: dict[str, object] | None = None) -> list[Any]:
         """TODO: Add docstring."""
         with self._driver.session() as session:
             return list(session.run(cypher, params or {}))
 
-    def upsert_entity(self, entity_id: str, etype: str, name: str,
-                        metadata: dict[str, object] | None = None) -> None:
+    def upsert_entity(
+        self, entity_id: str, etype: str, name: str, metadata: dict[str, object] | None = None
+    ) -> None:
         """
         MERGE an Entity node with basic fields + arbitrary metadata.
         """

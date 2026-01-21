@@ -24,6 +24,7 @@ Updated: January 20, 2026
 - Added FileCache reference (os.walk with directory pruning)
 - Added backup directory blocking
 """
+
 from __future__ import annotations
 
 import functools
@@ -37,11 +38,11 @@ Logger = logging.getLogger(__name__)
 
 # Dangerous directories that should never be scanned directly
 DANGEROUS_DIRECTORIES = {
-    '.sovereign_healing_backup',
-    'healing_backups',
-    '.git',
-    '__pycache__',
-    'node_modules',
+    ".sovereign_healing_backup",
+    "healing_backups",
+    ".git",
+    "__pycache__",
+    "node_modules",
 }
 
 
@@ -74,7 +75,7 @@ def guarded_rglob(path: Path, pattern: str, caller: str | None = None) -> Iterat
                 f"BLOCKED: Dangerous directory scan attempted: {path}. "
                 "This can cause infinite loops or extreme I/O. Use FileCache instead.",
                 RuntimeWarning,
-                stacklevel=2
+                stacklevel=2,
             )
             Logger.error(f"[SCAN_GUARD] BLOCKED: Dangerous directory scan: {path}")
             # Fail-safe: Return empty iterator instead of allowing scan
@@ -85,7 +86,7 @@ def guarded_rglob(path: Path, pattern: str, caller: str | None = None) -> Iterat
         "Please refactor to use agentic_core.utils.file_cache.FileCache "
         "for better performance (uses os.walk with directory pruning).",
         DeprecationWarning,
-        stacklevel=2
+        stacklevel=2,
     )
 
     Logger.warning(
@@ -117,7 +118,7 @@ def guarded_glob(path: Path, pattern: str, caller: str | None = None) -> Iterato
         f"Expensive glob('{pattern}') detected at {path}{caller_info}. "
         "Please refactor to use agentic_core.utils.ssot_discovery for better performance.",
         DeprecationWarning,
-        stacklevel=2
+        stacklevel=2,
     )
 
     Logger.warning(
@@ -137,15 +138,17 @@ def deprecate_rglob(func):
         def my_function_with_rglob():
             return path.rglob("*.py")
     """
+
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         warnings.warn(
             f"Function {func.__name__} uses rglob which is deprecated. "
             "Please refactor to use agentic_core.utils.ssot_discovery.",
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         return func(*args, **kwargs)
+
     return wrapper
 
 
@@ -164,13 +167,13 @@ def count_rglob_calls_in_file(file_path: Path) -> int:
     import re
 
     try:
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
     except (OSError, UnicodeDecodeError):
         return 0
 
     # Count .rglob( and .glob( calls
-    rglob_pattern = r'\.rglob\s*\('
-    glob_pattern = r'\.glob\s*\('
+    rglob_pattern = r"\.rglob\s*\("
+    glob_pattern = r"\.glob\s*\("
 
     rglob_count = len(re.findall(rglob_pattern, content))
     glob_count = len(re.findall(glob_pattern, content))
@@ -200,10 +203,7 @@ def audit_rglob_usage(project_root: Path) -> dict:
     for file_path in files:
         count = count_rglob_calls_in_file(file_path)
         if count > 0:
-            offenders.append({
-                "file": str(file_path.relative_to(project_root)),
-                "count": count
-            })
+            offenders.append({"file": str(file_path.relative_to(project_root)), "count": count})
             total_calls += count
 
     # Sort by count descending
@@ -214,7 +214,7 @@ def audit_rglob_usage(project_root: Path) -> dict:
         "files_with_rglob": len(offenders),
         "total_rglob_calls": total_calls,
         "top_offenders": offenders[:20],  # Top 20
-        "all_offenders": offenders
+        "all_offenders": offenders,
     }
 
 

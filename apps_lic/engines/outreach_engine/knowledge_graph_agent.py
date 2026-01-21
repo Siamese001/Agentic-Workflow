@@ -101,28 +101,32 @@ class KnowledgeGraphAgent:
                 relationships = []
 
                 for record in result:
-                    entities.append({
-                        "name": record["entity_name"],
-                        "influence_score": record["score"],
-                        "labels": record["labels"],
-                        "properties": record["properties"],
-                        "relations": record["relations"]
-                    })
+                    entities.append(
+                        {
+                            "name": record["entity_name"],
+                            "influence_score": record["score"],
+                            "labels": record["labels"],
+                            "properties": record["properties"],
+                            "relations": record["relations"],
+                        }
+                    )
 
                     # Extract relationships
                     for rel_type in set(record["relations"]):
-                        relationships.append({
-                            "type": rel_type,
-                            "source": entity,
-                            "target": record["entity_name"],
-                            "weight": record["score"]
-                        })
+                        relationships.append(
+                            {
+                                "type": rel_type,
+                                "source": entity,
+                                "target": record["entity_name"],
+                                "weight": record["score"],
+                            }
+                        )
 
                 return GraphContext(
                     entities=entities,
                     relationships=relationships,
                     paths=[],
-                    confidence=entities[0]["influence_score"] if entities else 0.0
+                    confidence=entities[0]["influence_score"] if entities else 0.0,
                 )
 
         except Exception as e:
@@ -159,19 +163,16 @@ class KnowledgeGraphAgent:
 
                 entities = []
                 for record in result:
-                    entities.append({
-                        "name": record["entity_name"],
-                        "influence_score": record["influence_score"],
-                        "labels": record["labels"],
-                        "properties": record["properties"]
-                    })
+                    entities.append(
+                        {
+                            "name": record["entity_name"],
+                            "influence_score": record["influence_score"],
+                            "labels": record["labels"],
+                            "properties": record["properties"],
+                        }
+                    )
 
-                return GraphContext(
-                    entities=entities,
-                    relationships=[],
-                    paths=[],
-                    confidence=1.0
-                )
+                return GraphContext(entities=entities, relationships=[], paths=[], confidence=1.0)
 
         except Exception as e:
             logger.error(f"Error in fallback context query: {str(e)}")
@@ -183,7 +184,7 @@ class KnowledgeGraphAgent:
         relation: str,
         object: str,
         confidence: float = 1.0,
-        source: str = "agent"
+        source: str = "agent",
     ) -> bool:
         """Store a new relationship in the knowledge graph.
 
@@ -210,7 +211,7 @@ class KnowledgeGraphAgent:
         relation: str,
         object: str,
         confidence: float = 1.0,
-        source: str = "agent"
+        source: str = "agent",
     ) -> bool:
         """Store relationship with entity disambiguation to prevent duplicates.
 
@@ -252,14 +253,15 @@ class KnowledgeGraphAgent:
                 RETURN r
                 """
 
-                session.run(cypher,
+                session.run(
+                    cypher,
                     final_subject=final_subject,
                     final_object=final_object,
                     relation=relation,
                     sub_embedding=sub_embedding,
                     obj_embedding=obj_embedding,
                     confidence=confidence,
-                    source=source
+                    source=source,
                 )
 
                 logger.debug(f"Stored relationship: {final_subject}-{relation}->{final_object}")
@@ -301,11 +303,7 @@ class KnowledgeGraphAgent:
 
                 if record:
                     entities = [
-                        {
-                            "id": node.id,
-                            "labels": list(node.labels),
-                            "properties": dict(node)
-                        }
+                        {"id": node.id, "labels": list(node.labels), "properties": dict(node)}
                         for node in record["nodes"]
                     ]
 
@@ -314,16 +312,13 @@ class KnowledgeGraphAgent:
                             "type": rel.type,
                             "properties": dict(rel),
                             "start": rel.start_node.id,
-                            "end": rel.end_node.id
+                            "end": rel.end_node.id,
                         }
                         for rel in record["rels"]
                     ]
 
                     return GraphContext(
-                        entities=entities,
-                        relationships=relationships,
-                        paths=[],
-                        confidence=1.0
+                        entities=entities, relationships=relationships, paths=[], confidence=1.0
                     )
 
                 return GraphContext()
@@ -337,7 +332,7 @@ class KnowledgeGraphAgent:
         agent_id: str,
         step_id: str,
         step_data: dict[str, Any],
-        state_embedding: list[float] | None = None
+        state_embedding: list[float] | None = None,
     ) -> bool:
         """Create a reasoning step in the agent's decision chain.
 
@@ -382,11 +377,12 @@ class KnowledgeGraphAgent:
                 RETURN s
                 """
 
-                session.run(cypher,
+                session.run(
+                    cypher,
                     agent_id=agent_id,
                     step_id=step_id,
                     data=json.dumps(step_data),
-                    embedding=state_embedding
+                    embedding=state_embedding,
                 )
 
                 return True
@@ -396,9 +392,7 @@ class KnowledgeGraphAgent:
             return False
 
     def find_similar_decisions(
-        self,
-        current_state_embedding: list[float],
-        limit: int = 3
+        self, current_state_embedding: list[float], limit: int = 3
     ) -> list[dict[str, Any]]:
         """Find past decisions made in similar contexts.
 
@@ -427,21 +421,20 @@ class KnowledgeGraphAgent:
                 LIMIT $limit
                 """
 
-                result = session.run(cypher,
-                    embedding=current_state_embedding,
-                    limit=limit
-                )
+                result = session.run(cypher, embedding=current_state_embedding, limit=limit)
 
                 decisions = []
                 for record in result:
-                    decisions.append({
-                        "step_id": record["step_id"],
-                        "decision": json.loads(record["decision_data"]),
-                        "timestamp": record["decision_time"],
-                        "similarity": record["score"],
-                        "history": [json.loads(d) for d in record["history"]],
-                        "outcomes": [json.loads(d) for d in record["outcomes"]]
-                    })
+                    decisions.append(
+                        {
+                            "step_id": record["step_id"],
+                            "decision": json.loads(record["decision_data"]),
+                            "timestamp": record["decision_time"],
+                            "similarity": record["score"],
+                            "history": [json.loads(d) for d in record["history"]],
+                            "outcomes": [json.loads(d) for d in record["outcomes"]],
+                        }
+                    )
 
                 return decisions
 
@@ -449,11 +442,7 @@ class KnowledgeGraphAgent:
             logger.error(f"Error finding similar decisions: {str(e)}")
             return []
 
-    def semantic_search(
-        self,
-        query_embedding: list[float],
-        top_k: int = 5
-    ) -> GraphContext:
+    def semantic_search(self, query_embedding: list[float], top_k: int = 5) -> GraphContext:
         """Perform semantic search using Neo4j vector index.
 
         Args:
@@ -476,33 +465,28 @@ class KnowledgeGraphAgent:
                 LIMIT $top_k
                 """
 
-                result = session.run(cypher,
-                    embedding=query_embedding,
-                    top_k=top_k
-                )
+                result = session.run(cypher, embedding=query_embedding, top_k=top_k)
 
                 entities = []
                 for record in result:
-                    entities.append({
-                        "id": record["node"].id,
-                        "labels": list(record["node"].labels),
-                        "properties": dict(record["node"]),
-                        "score": record["score"],
-                        "related": [
-                            {
-                                "id": rel.id,
-                                "labels": list(rel.labels),
-                                "properties": dict(rel)
-                            }
-                            for rel in record["related"] or []
-                        ]
-                    })
+                    entities.append(
+                        {
+                            "id": record["node"].id,
+                            "labels": list(record["node"].labels),
+                            "properties": dict(record["node"]),
+                            "score": record["score"],
+                            "related": [
+                                {"id": rel.id, "labels": list(rel.labels), "properties": dict(rel)}
+                                for rel in record["related"] or []
+                            ],
+                        }
+                    )
 
                 return GraphContext(
                     entities=entities,
                     relationships=[],
                     paths=[],
-                    confidence=entities[0]["score"] if entities else 0.0
+                    confidence=entities[0]["score"] if entities else 0.0,
                 )
 
         except Exception as e:
@@ -594,10 +578,7 @@ class KnowledgeGraphAgent:
             logger.warning(f"Error ensuring graph projection: {str(e)}")
 
     def find_semantic_match(
-        self,
-        entity: str,
-        embedding: list[float],
-        threshold: float | None = None
+        self, entity: str, embedding: list[float], threshold: float | None = None
     ) -> str | None:
         """Find semantically similar existing entities.
 
@@ -622,10 +603,8 @@ class KnowledgeGraphAgent:
                 LIMIT 1
                 """
 
-                result = session.run(cypher,
-                    embedding=embedding,
-                    threshold=threshold,
-                    entity=entity
+                result = session.run(
+                    cypher, embedding=embedding, threshold=threshold, entity=entity
                 )
 
                 record = result.single()
@@ -647,26 +626,23 @@ class KnowledgeGraphAgent:
         # In production, use proper embedding model (OpenAI, Sentence Transformers, etc.)
         # This is a simplified hash-based placeholder
         import hashlib
+
         hash_obj = hashlib.md5(text.encode())
         hash_hex = hash_obj.hexdigest()
 
         # Convert to float vector
         embedding = []
         for i in range(0, len(hash_hex), 2):
-            hex_pair = hash_hex[i:i+2]
+            hex_pair = hash_hex[i : i + 2]
             embedding.append(int(hex_pair, 16) / 255.0)
 
         # Pad to 1536 dimensions
         while len(embedding) < 1536:
-            embedding.extend(embedding[:min(1536 - len(embedding), len(embedding))])
+            embedding.extend(embedding[: min(1536 - len(embedding), len(embedding))])
 
         return embedding[:1536]
 
-    def prune_graph(
-        self,
-        confidence_threshold: float = 0.3,
-        days_old: int = 30
-    ) -> dict[str, int]:
+    def prune_graph(self, confidence_threshold: float = 0.3, days_old: int = 30) -> dict[str, int]:
         """Remove low-confidence and stale relationships.
 
         Args:
@@ -681,15 +657,16 @@ class KnowledgeGraphAgent:
 
             with self.driver.session() as session:
                 # Delete weak relationships
-                result = session.run("""
+                result = session.run(
+                    """
                 MATCH ()-[r:RELATION]->()
                 WHERE r.confidence < $threshold
                 OR (timestamp() - coalesce(r.last_verified, 0) > $cutoff_time)
                 DELETE r
                 RETURN count(r) as deleted
                 """,
-                threshold=confidence_threshold,
-                cutoff_time=days_old * 24 * 60 * 60 * 1000  # Convert to milliseconds
+                    threshold=confidence_threshold,
+                    cutoff_time=days_old * 24 * 60 * 60 * 1000,  # Convert to milliseconds
                 )
 
                 stats["relationships_deleted"] = result.single()["deleted"]
@@ -720,10 +697,7 @@ class KnowledgeGraphAgent:
 
 # Factory function
 def create_knowledge_graph_agent(
-    uri: str,
-    user: str,
-    password: str,
-    similarity_threshold: float = 0.9
+    uri: str, user: str, password: str, similarity_threshold: float = 0.9
 ) -> KnowledgeGraphAgent:
     """Create a KnowledgeGraphAgent instance.
 

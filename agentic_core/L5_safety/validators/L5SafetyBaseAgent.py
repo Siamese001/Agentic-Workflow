@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, state, validator, workflow
@@ -63,31 +62,33 @@ class L5SafetyBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent
 
     # PII patterns for redaction
     PII_PATTERNS = {
-        'email': r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b',
-        'phone': r'\b(?:\+?1[-.\s]?)?\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4}\b',
-        'ssn': r'\b\d{3}[-.\s]?\d{2}[-.\s]?\d{4}\b',
-        'credit_card': r'\b(?:\d{4}[-.\s]?){3}\d{4}\b',
-        'ip_address': r'\b(?:\d{1,3}\.){3}\d{1,3}\b',
-        'api_key': r'\b(?:sk[-_]|api[-_]?key[-_]?|token[-_]?)[a-zA-Z0-9]{20,}\b',
+        "email": r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b",
+        "phone": r"\b(?:\+?1[-.\s]?)?\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4}\b",
+        "ssn": r"\b\d{3}[-.\s]?\d{2}[-.\s]?\d{4}\b",
+        "credit_card": r"\b(?:\d{4}[-.\s]?){3}\d{4}\b",
+        "ip_address": r"\b(?:\d{1,3}\.){3}\d{1,3}\b",
+        "api_key": r"\b(?:sk[-_]|api[-_]?key[-_]?|token[-_]?)[a-zA-Z0-9]{20,}\b",
     }
 
     # Toxicity/harmful content patterns
     TOXICITY_PATTERNS = [
-        r'\b(kill|murder|attack|bomb|weapon)\b',
-        r'\b(hack|exploit|breach|steal)\b',
-        r'\b(racist|sexist|hate)\b',
+        r"\b(kill|murder|attack|bomb|weapon)\b",
+        r"\b(hack|exploit|breach|steal)\b",
+        r"\b(racist|sexist|hate)\b",
     ]
 
     # Jailbreak attempt patterns
     JAILBREAK_PATTERNS = [
-        r'ignore\s+(all\s+)?previous\s+instructions',
-        r'pretend\s+you\s+are',
-        r'act\s+as\s+if\s+you\s+have\s+no\s+restrictions',
-        r'bypass\s+safety',
-        r'DAN\s+mode',
+        r"ignore\s+(all\s+)?previous\s+instructions",
+        r"pretend\s+you\s+are",
+        r"act\s+as\s+if\s+you\s+have\s+no\s+restrictions",
+        r"bypass\s+safety",
+        r"DAN\s+mode",
     ]
 
-    def __init__(self, project_root: Any | None = None, ctx: Any | None = None, **kwargs: Any) -> None:
+    def __init__(
+        self, project_root: Any | None = None, ctx: Any | None = None, **kwargs: Any
+    ) -> None:
         """
         Initialize with cooperative MRO inheritance.
 
@@ -105,7 +106,7 @@ class L5SafetyBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent
 
     def _run_self_tests(self) -> bool:
         """Phase 1: Self-testing for L5 compliance."""
-        assert hasattr(self, 'name'), "Missing name"
+        assert hasattr(self, "name"), "Missing name"
         return True
 
     # =========================================================================
@@ -129,26 +130,26 @@ class L5SafetyBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent
         # Check 1: Toxicity detection
         toxicity_result = self._check_toxicity(input_text)
         checks.append(toxicity_result)
-        if not toxicity_result['passed']:
+        if not toxicity_result["passed"]:
             failures.append(toxicity_result)
 
         # Check 2: PII detection
         pii_result = self._check_pii(input_text)
         checks.append(pii_result)
-        if not pii_result['passed']:
+        if not pii_result["passed"]:
             failures.append(pii_result)
 
         # Check 3: Jailbreak probe detection
         jailbreak_result = self._check_jailbreak(input_text)
         checks.append(jailbreak_result)
-        if not jailbreak_result['passed']:
+        if not jailbreak_result["passed"]:
             failures.append(jailbreak_result)
 
         # Check 4: Policy violation (context-aware)
-        if context.get('policies'):
-            policy_result = self._check_policy_violation(input_text, context['policies'])
+        if context.get("policies"):
+            policy_result = self._check_policy_violation(input_text, context["policies"])
             checks.append(policy_result)
-            if not policy_result['passed']:
+            if not policy_result["passed"]:
                 failures.append(policy_result)
 
         # Aggregate result
@@ -159,11 +160,11 @@ class L5SafetyBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent
             super().heal_repository()
 
         return {
-            'passed': passed,
-            'checks': checks,
-            'failures': failures,
-            'check_count': len(checks),
-            'failure_count': len(failures)
+            "passed": passed,
+            "checks": checks,
+            "failures": failures,
+            "check_count": len(checks),
+            "failure_count": len(failures),
         }
 
     def redact(self, output_text: str, redact_types: list[str] = None) -> str:
@@ -182,7 +183,7 @@ class L5SafetyBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent
         for pii_type in redact_types:
             if pii_type in self.PII_PATTERNS:
                 pattern = self.PII_PATTERNS[pii_type]
-                replacement = f'[REDACTED_{pii_type.upper()}]'
+                replacement = f"[REDACTED_{pii_type.upper()}]"
                 redacted = re.sub(pattern, replacement, redacted, flags=re.IGNORECASE)
 
         if redacted != output_text:
@@ -207,17 +208,17 @@ class L5SafetyBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent
         sanitized = self.redact(output)
 
         # Step 3: If validation failed, further sanitize
-        if not validation['passed']:
+        if not validation["passed"]:
             # Remove harmful patterns
             for pattern in self.TOXICITY_PATTERNS:
-                sanitized = re.sub(pattern, '[REMOVED]', sanitized, flags=re.IGNORECASE)
+                sanitized = re.sub(pattern, "[REMOVED]", sanitized, flags=re.IGNORECASE)
 
         return {
-            'sanitized_output': sanitized,
-            'original_length': len(output),
-            'sanitized_length': len(sanitized),
-            'validation': validation,
-            'was_modified': sanitized != output
+            "sanitized_output": sanitized,
+            "original_length": len(output),
+            "sanitized_length": len(sanitized),
+            "validation": validation,
+            "was_modified": sanitized != output,
         }
 
     def _check_toxicity(self, text: str) -> dict[str, Any]:
@@ -229,10 +230,12 @@ class L5SafetyBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent
                 matches.extend(found)
 
         return {
-            'check': 'toxicity',
-            'passed': len(matches) == 0,
-            'matches': matches[:5] if matches else [],
-            'message': f"Found {len(matches)} toxic patterns" if matches else "No toxicity detected"
+            "check": "toxicity",
+            "passed": len(matches) == 0,
+            "matches": matches[:5] if matches else [],
+            "message": f"Found {len(matches)} toxic patterns"
+            if matches
+            else "No toxicity detected",
         }
 
     def _check_pii(self, text: str) -> dict[str, Any]:
@@ -244,10 +247,10 @@ class L5SafetyBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent
                 found_pii[pii_type] = len(matches)
 
         return {
-            'check': 'pii_detection',
-            'passed': len(found_pii) == 0,
-            'found_types': found_pii,
-            'message': f"Found PII: {list(found_pii.keys())}" if found_pii else "No PII detected"
+            "check": "pii_detection",
+            "passed": len(found_pii) == 0,
+            "found_types": found_pii,
+            "message": f"Found PII: {list(found_pii.keys())}" if found_pii else "No PII detected",
         }
 
     def _check_jailbreak(self, text: str) -> dict[str, Any]:
@@ -259,10 +262,12 @@ class L5SafetyBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent
                 matches.extend(found)
 
         return {
-            'check': 'jailbreak_probe',
-            'passed': len(matches) == 0,
-            'matches': matches[:3] if matches else [],
-            'message': f"Detected {len(matches)} jailbreak attempts" if matches else "No jailbreak detected"
+            "check": "jailbreak_probe",
+            "passed": len(matches) == 0,
+            "matches": matches[:3] if matches else [],
+            "message": f"Detected {len(matches)} jailbreak attempts"
+            if matches
+            else "No jailbreak detected",
         }
 
     def _check_policy_violation(self, text: str, policies: list[dict]) -> dict[str, Any]:
@@ -270,20 +275,27 @@ class L5SafetyBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent
         violations = []
 
         for policy in policies:
-            rule = policy.get('rule', '')
+            rule = policy.get("rule", "")
             if rule and re.search(rule, text, flags=re.IGNORECASE):
-                violations.append(policy.get('name', 'unnamed_policy'))
+                violations.append(policy.get("name", "unnamed_policy"))
 
         return {
-            'check': 'policy_violation',
-            'passed': len(violations) == 0,
-            'violations': violations,
-            'message': f"Policy violations: {violations}" if violations else "No policy violations"
+            "check": "policy_violation",
+            "passed": len(violations) == 0,
+            "violations": violations,
+            "message": f"Policy violations: {violations}" if violations else "No policy violations",
         }
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L5 safety base - operational healing with validation."""
         if _call_path is None:
             _call_path = set()

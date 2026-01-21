@@ -6,6 +6,7 @@ Tests for dashboard documentation.
 
 Migrated from: agentic_core/L1_cognition/intent_analysis/test_phase7_documentation.py
 """
+
 import sys
 from pathlib import Path
 
@@ -46,16 +47,22 @@ class TestDocumentationContent:
     def test_no_deprecated_script_references(self, project_root):
         """Verify documentation doesn't reference deprecated scripts as active."""
         deprecated_scripts = [
-            'regenerate_dashboard_from_discovery.py',
-            'regenerate_dashboard_complete.py',
-            'generate_modular_dashboard_data.py',
-            'generate_dashboard_ssot_WRAPPER.py',
+            "regenerate_dashboard_from_discovery.py",
+            "regenerate_dashboard_complete.py",
+            "generate_modular_dashboard_data.py",
+            "generate_dashboard_ssot_WRAPPER.py",
         ]
 
         # Files that are allowed to reference deprecated scripts (for documentation purposes)
         allowed_files = [
-            'archive', 'changelog', 'review', 'report', 'migration', 'deprecated',
-            'developer', 'guide'  # Developer guides document deprecated scripts
+            "archive",
+            "changelog",
+            "review",
+            "report",
+            "migration",
+            "deprecated",
+            "developer",
+            "guide",  # Developer guides document deprecated scripts
         ]
 
         docs_dir = project_root / "docs"
@@ -67,7 +74,7 @@ class TestDocumentationContent:
             if any(allowed in doc_file.name.lower() for allowed in allowed_files):
                 continue
 
-            content = doc_file.read_text(encoding='utf-8')
+            content = doc_file.read_text(encoding="utf-8")
             for deprecated in deprecated_scripts:
                 if deprecated in content:
                     pytest.fail(f"Deprecated script '{deprecated}' referenced in {doc_file.name}")

@@ -2,6 +2,7 @@
 Run HierarchyEnforcerAgent in dry-run mode (validation only)
 This will scan for hierarchy violations and depth issues without making changes.
 """
+
 import sys
 from pathlib import Path
 
@@ -17,8 +18,10 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 
 class MockContext:
     """Mock context for dry-run mode."""
+
     def report(self, agent_name, key, passed, details):
         pass
+
 
 def validate_l2_l3_structure(project_root: Path) -> dict:
     """Validate L2/L3 structure (CORE_SUBFOLDER_MAP) without making changes."""
@@ -43,16 +46,14 @@ def validate_l2_l3_structure(project_root: Path) -> dict:
         if missing_l2:
             for missing in missing_l2:
                 missing_dirs.append(f"agentic_core/{l1_name}/{missing}")
-            violations.append({
-                "path": f"{l1_name}",
-                "missing": list(missing_l2)
-            })
+            violations.append({"path": f"{l1_name}", "missing": list(missing_l2)})
 
     return {
         "violations": violations,
         "missing_dirs": missing_dirs,
-        "compliant": len(violations) == 0
+        "compliant": len(violations) == 0,
     }
+
 
 def validate_depth_precision(project_root: Path) -> dict:
     """Validate apps_* depth without archiving."""
@@ -61,7 +62,10 @@ def validate_depth_precision(project_root: Path) -> dict:
 
     # Phase 6.5: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_data_files, get_python_files
-    all_files = list(get_python_files(project_root)) + list(get_data_files(project_root, extensions=['.json', '.md', '.yaml', '.yml']))
+
+    all_files = list(get_python_files(project_root)) + list(
+        get_data_files(project_root, extensions=[".json", ".md", ".yaml", ".yml"])
+    )
     for file_path in all_files:
         if file_path.is_dir():
             continue
@@ -73,13 +77,12 @@ def validate_depth_precision(project_root: Path) -> dict:
         # [FIX] Depth = folder level where file resides, not path length
         depth = len(rel.parts) - 1  # Subtract 1 because file itself is not a level
         if depth != apps_exact_depth:
-            violations.append({
-                "file": str(rel),
-                "actual_depth": depth,
-                "expected_depth": apps_exact_depth
-            })
+            violations.append(
+                {"file": str(rel), "actual_depth": depth, "expected_depth": apps_exact_depth}
+            )
 
     return violations
+
 
 def validate_tests_depth(project_root: Path) -> dict:
     """Validate tests depth without archiving."""
@@ -88,7 +91,10 @@ def validate_tests_depth(project_root: Path) -> dict:
 
     # Phase 6.5: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_data_files, get_python_files
-    all_files = list(get_python_files(project_root)) + list(get_data_files(project_root, extensions=['.json', '.md', '.yaml', '.yml']))
+
+    all_files = list(get_python_files(project_root)) + list(
+        get_data_files(project_root, extensions=[".json", ".md", ".yaml", ".yml"])
+    )
     for file_path in all_files:
         if file_path.is_dir():
             continue
@@ -100,13 +106,12 @@ def validate_tests_depth(project_root: Path) -> dict:
         # [FIX] Depth = folder level where file resides, not path length
         depth = len(rel.parts) - 1  # Subtract 1 because file itself is not a level
         if depth != tests_exact_depth:
-            violations.append({
-                "file": str(rel),
-                "actual_depth": depth,
-                "expected_depth": tests_exact_depth
-            })
+            violations.append(
+                {"file": str(rel), "actual_depth": depth, "expected_depth": tests_exact_depth}
+            )
 
     return violations
+
 
 def validate_universal_depth(project_root: Path) -> dict:
     """Validate universal depth for non-Python files without archiving."""
@@ -115,6 +120,7 @@ def validate_universal_depth(project_root: Path) -> dict:
 
     # Phase 6.5: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_data_files
+
     target_exts = [".json", ".md", ".yaml", ".yml", ".toml", ".txt"]
     for file_path in get_data_files(project_root, extensions=target_exts):
         if file_path.is_dir():
@@ -128,14 +134,17 @@ def validate_universal_depth(project_root: Path) -> dict:
             # [FIX] Depth = folder level where file resides, not path length
             depth = len(rel.parts) - 1  # Subtract 1 because file itself is not a level
             if depth != agentic_core_exact_depth:
-                violations.append({
-                    "file": str(rel),
-                    "actual_depth": depth,
-                    "expected_depth": agentic_core_exact_depth,
-                    "type": file_path.suffix
-                })
+                violations.append(
+                    {
+                        "file": str(rel),
+                        "actual_depth": depth,
+                        "expected_depth": agentic_core_exact_depth,
+                        "type": file_path.suffix,
+                    }
+                )
 
     return violations
+
 
 def main():
     print("=" * 80)
@@ -169,7 +178,9 @@ def main():
         print(f"  ⚠️  Found {len(apps_violations)} apps_* depth violations")
         print("\n  Files that would be archived:")
         for violation in apps_violations[:5]:
-            print(f"    - {violation['file']} (depth {violation['actual_depth']}, expected {violation['expected_depth']})")
+            print(
+                f"    - {violation['file']} (depth {violation['actual_depth']}, expected {violation['expected_depth']})"
+            )
         if len(apps_violations) > 5:
             print(f"    ... and {len(apps_violations) - 5} more")
 
@@ -183,7 +194,9 @@ def main():
         print(f"  ⚠️  Found {len(tests_violations)} tests depth violations")
         print("\n  Files that would be archived:")
         for violation in tests_violations[:5]:
-            print(f"    - {violation['file']} (depth {violation['actual_depth']}, expected {violation['expected_depth']})")
+            print(
+                f"    - {violation['file']} (depth {violation['actual_depth']}, expected {violation['expected_depth']})"
+            )
         if len(tests_violations) > 5:
             print(f"    ... and {len(tests_violations) - 5} more")
 
@@ -197,7 +210,9 @@ def main():
         print(f"  ⚠️  Found {len(universal_violations)} universal depth violations")
         print("\n  Files that would be archived:")
         for violation in universal_violations[:5]:
-            print(f"    - {violation['file']} (depth {violation['actual_depth']}, expected {violation['expected_depth']})")
+            print(
+                f"    - {violation['file']} (depth {violation['actual_depth']}, expected {violation['expected_depth']})"
+            )
         if len(universal_violations) > 5:
             print(f"    ... and {len(universal_violations) - 5} more")
 
@@ -207,10 +222,10 @@ def main():
     print("=" * 80)
 
     total_issues = (
-        len(l2_l3_result["missing_dirs"]) +
-        len(apps_violations) +
-        len(tests_violations) +
-        len(universal_violations)
+        len(l2_l3_result["missing_dirs"])
+        + len(apps_violations)
+        + len(tests_violations)
+        + len(universal_violations)
     )
 
     print(f"L2/L3 directories to create: {len(l2_l3_result['missing_dirs'])}")
@@ -225,6 +240,7 @@ def main():
 
     if total_issues > 0:
         print("\n⚠️  To apply these changes, run HierarchyEnforcerAgent with execute=True")
+
 
 if __name__ == "__main__":
     main()

@@ -3,6 +3,7 @@
 Deep RCA using Playwright to diagnose dashboard data load error.
 Captures console errors, network requests, and JavaScript state.
 """
+
 import http.server
 import socketserver
 import threading
@@ -10,6 +11,7 @@ import time
 from pathlib import Path
 
 project_root = Path(__file__).parent.parent
+
 
 def debug_dashboard():
     """Use Playwright to deeply inspect dashboard loading."""
@@ -59,9 +61,9 @@ def debug_dashboard():
         page.goto(f"http://localhost:{PORT}/autonomy_dashboard.html", timeout=30000)
         time.sleep(5)  # Wait for everything to load
 
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("DIAGNOSTIC RESULTS")
-        print("="*70)
+        print("=" * 70)
 
         # Check if dashboardData loaded
         print("\n1. Checking dashboardData variable...")
@@ -76,11 +78,11 @@ def debug_dashboard():
             }
         """)
 
-        if dashboard_data_check['exists']:
+        if dashboard_data_check["exists"]:
             print("   ✅ dashboardData exists")
             print(f"   ✅ Type: {dashboard_data_check['type']}")
             print(f"   ✅ Length: {dashboard_data_check['length']} territories")
-            if dashboard_data_check['sample']:
+            if dashboard_data_check["sample"]:
                 print(f"   ✅ Sample: {dashboard_data_check['sample'].get('Territory', 'N/A')}")
         else:
             print("   ❌ dashboardData does NOT exist")
@@ -107,7 +109,11 @@ def debug_dashboard():
         error_msg = page.locator("text=Data Load Error").count()
         if error_msg > 0:
             print(f"   ❌ Found {error_msg} 'Data Load Error' message(s)")
-            error_content = page.locator(".error-message").text_content() if page.locator(".error-message").count() > 0 else "N/A"
+            error_content = (
+                page.locator(".error-message").text_content()
+                if page.locator(".error-message").count() > 0
+                else "N/A"
+            )
             print(f"   Error content: {error_content}")
         else:
             print("   ✅ No 'Data Load Error' message found")
@@ -160,11 +166,11 @@ def debug_dashboard():
         page.screenshot(path=str(screenshot_path), full_page=True)
         print(f"\n8. Screenshot saved: {screenshot_path}")
 
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("ANALYSIS")
-        print("="*70)
+        print("=" * 70)
 
-        if not dashboard_data_check['exists']:
+        if not dashboard_data_check["exists"]:
             print("\n❌ ROOT CAUSE: dashboardData variable is not defined")
             print("\nPossible causes:")
             print("  1. data/dashboard_data.js file not loading")
@@ -181,6 +187,7 @@ def debug_dashboard():
 
         input("\nPress Enter to close browser and continue...")
         browser.close()
+
 
 if __name__ == "__main__":
     debug_dashboard()

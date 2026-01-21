@@ -14,6 +14,7 @@ Additional Tests:
 7. test_legacy_factory_warnings - Verify deprecation warnings
 8. test_registry_mapping - Verify SubAtomicRegistryAgent mappings
 """
+
 from __future__ import annotations
 
 import sys
@@ -93,9 +94,15 @@ class TestAgent:
         time_single = time.perf_counter() - start_single
 
         # Measure multi-pass validation time (simulating separate validators)
-        rules_syntax = RuleSet(check_syntax=True, check_canon=False, check_async=False, check_print=False)
-        rules_canon = RuleSet(check_syntax=True, check_canon=True, check_async=False, check_print=False)
-        rules_async = RuleSet(check_syntax=True, check_canon=False, check_async=True, check_print=False)
+        rules_syntax = RuleSet(
+            check_syntax=True, check_canon=False, check_async=False, check_print=False
+        )
+        rules_canon = RuleSet(
+            check_syntax=True, check_canon=True, check_async=False, check_print=False
+        )
+        rules_async = RuleSet(
+            check_syntax=True, check_canon=False, check_async=True, check_print=False
+        )
 
         start_multi = time.perf_counter()
         for _ in range(100):
@@ -106,8 +113,9 @@ class TestAgent:
 
         # Assert single pass is faster (or at least not significantly slower)
         # Single pass should be at least 2x faster than 3 separate passes
-        assert time_single < time_multi, \
+        assert time_single < time_multi, (
             f"Single pass ({time_single:.4f}s) should be faster than multi-pass ({time_multi:.4f}s)"
+        )
 
         # Verify we still found violations
         assert len(report_single.violations) > 0, "Should find violations"
@@ -157,13 +165,16 @@ class BadAgent:
         violation_types = {v.violation_type for v in report.violations}
 
         # Should have multiple different violation types
-        assert len(violation_types) >= 2, \
+        assert len(violation_types) >= 2, (
             f"Should have at least 2 different violation types, got: {violation_types}"
+        )
 
         # Verify specific types are present
         assert ViolationType.CANON in violation_types, "Should have Canon violations"
-        assert ViolationType.PRINT_STATEMENT in violation_types or ViolationType.ASYNC_BLOCKING in violation_types, \
-            "Should have Print or Async violations"
+        assert (
+            ViolationType.PRINT_STATEMENT in violation_types
+            or ViolationType.ASYNC_BLOCKING in violation_types
+        ), "Should have Print or Async violations"
 
         # Verify we can filter by type
         canon_violations = report.by_type(ViolationType.CANON)
@@ -173,8 +184,9 @@ class BadAgent:
         async_violations = report.by_type(ViolationType.ASYNC_BLOCKING)
 
         # At least one of these should have violations
-        assert len(print_violations) > 0 or len(async_violations) > 0, \
+        assert len(print_violations) > 0 or len(async_violations) > 0, (
             "Should have Print or Async violations"
+        )
 
 
 class TestGravityViolationDetection:
@@ -196,9 +208,9 @@ class L3OrchestratorAgent:
 
         # Create a temporary file in L3 location
         with tempfile.NamedTemporaryFile(
-            mode='w',
-            suffix='.py',
-            prefix='L3_orchestration_test_',
+            mode="w",
+            suffix=".py",
+            prefix="L3_orchestration_test_",
             delete=False,
         ) as f:
             f.write(test_code)
@@ -215,27 +227,31 @@ class L3OrchestratorAgent:
             assert len(violations) > 0, "Should detect gravity violations"
 
             # Verify violation details
-            gravity_violations = [v for v in violations if v.violation_type == StructureViolationType.GRAVITY]
+            gravity_violations = [
+                v for v in violations if v.violation_type == StructureViolationType.GRAVITY
+            ]
             assert len(gravity_violations) > 0, "Should have GRAVITY type violations"
 
             # Check that L3 -> L5 is flagged
             for v in gravity_violations:
                 assert v.source_layer == "L3", f"Source should be L3, got {v.source_layer}"
                 assert v.target_layer == "L5", f"Target should be L5, got {v.target_layer}"
-                assert "cannot import" in v.message.lower(), f"Message should mention import violation: {v.message}"
+                assert "cannot import" in v.message.lower(), (
+                    f"Message should mention import violation: {v.message}"
+                )
 
         finally:
             temp_path.unlink()
 
     def test_valid_gravity_import(self):
         """L3 importing from L2 should NOT be flagged."""
-        test_code = '''
+        test_code = """
 from agentic_core.L2_execution.ToolRegistry.SomeTool import SomeTool
 from agentic_core.L1_cognition.SomeEngine import SomeEngine
 
 class L3OrchestratorAgent:
     pass
-'''
+"""
 
         fake_l3_path = Path("agentic_core/L3_orchestration/workflow_engines/TestAgent.py")
 
@@ -243,8 +259,12 @@ class L3OrchestratorAgent:
         violations = agent.check_gravity(fake_l3_path, test_code)
 
         # Should NOT have gravity violations for valid imports
-        gravity_violations = [v for v in violations if v.violation_type == StructureViolationType.GRAVITY]
-        assert len(gravity_violations) == 0, f"Should not flag valid imports, got: {gravity_violations}"
+        gravity_violations = [
+            v for v in violations if v.violation_type == StructureViolationType.GRAVITY
+        ]
+        assert len(gravity_violations) == 0, (
+            f"Should not flag valid imports, got: {gravity_violations}"
+        )
 
 
 class TestContentDiversityThreshold:
@@ -268,13 +288,17 @@ class TestContentDiversityThreshold:
         assert len(report.violations) > 0, "Should flag similar messages"
 
         # Check violation type
-        similarity_violations = [v for v in report.violations if v.violation_type == ContentViolationType.SIMILARITY]
+        similarity_violations = [
+            v for v in report.violations if v.violation_type == ContentViolationType.SIMILARITY
+        ]
         assert len(similarity_violations) > 0, "Should have SIMILARITY violations"
 
         # Check that similarity score is reported
         for v in similarity_violations:
             assert v.similarity_score is not None, "Should report similarity score"
-            assert v.similarity_score >= 0.90, f"Similarity should be >= 90%, got {v.similarity_score}"
+            assert v.similarity_score >= 0.90, (
+                f"Similarity should be >= 90%, got {v.similarity_score}"
+            )
 
     def test_diverse_messages_pass(self):
         """Diverse messages should pass the similarity check."""
@@ -290,8 +314,12 @@ class TestContentDiversityThreshold:
         report = agent.validate_diversity(messages, threshold=0.90)
 
         # Should NOT flag diverse messages
-        similarity_violations = [v for v in report.violations if v.violation_type == ContentViolationType.SIMILARITY]
-        assert len(similarity_violations) == 0, f"Should not flag diverse messages, got: {similarity_violations}"
+        similarity_violations = [
+            v for v in report.violations if v.violation_type == ContentViolationType.SIMILARITY
+        ]
+        assert len(similarity_violations) == 0, (
+            f"Should not flag diverse messages, got: {similarity_violations}"
+        )
 
         # Check pass rate
         assert report.pass_rate > 0.5, "Most messages should pass"
@@ -302,11 +330,11 @@ class TestRuleSetConfiguration:
 
     def test_ruleset_toggles(self):
         """RuleSet should control which checks are performed."""
-        test_code = '''
+        test_code = """
 class BadAgent:
     def method(self):
         print("test")
-'''
+"""
 
         agent = UnifiedCodeValidatorAgent()
 
@@ -319,8 +347,14 @@ class BadAgent:
         report_without = agent.validate_source(test_code, rules=rules_without_print)
 
         # Should have print violations only when enabled
-        print_with = [v for v in report_with.violations if v.violation_type == ViolationType.PRINT_STATEMENT]
-        print_without = [v for v in report_without.violations if v.violation_type == ViolationType.PRINT_STATEMENT]
+        print_with = [
+            v for v in report_with.violations if v.violation_type == ViolationType.PRINT_STATEMENT
+        ]
+        print_without = [
+            v
+            for v in report_without.violations
+            if v.violation_type == ViolationType.PRINT_STATEMENT
+        ]
 
         assert len(print_with) > 0, "Should find print violations when enabled"
         assert len(print_without) == 0, "Should not find print violations when disabled"
@@ -357,7 +391,9 @@ class TestStructureDuplicateDetection:
 
             # Should detect duplicate
             assert len(violations) > 0, "Should detect duplicate agents"
-            dup_violations = [v for v in violations if v.violation_type == StructureViolationType.DUPLICATE]
+            dup_violations = [
+                v for v in violations if v.violation_type == StructureViolationType.DUPLICATE
+            ]
             assert len(dup_violations) > 0, "Should have DUPLICATE type violations"
 
 
@@ -456,17 +492,20 @@ class TestLayerExtraction:
 # TEST RUNNER
 # =============================================================================
 
+
 def run_tests():
     """Run all tests and report results."""
     print("=" * 70)
     print("Phase 2 Validator Consolidation Test Suite")
     print("=" * 70)
 
-    exit_code = pytest.main([
-        __file__,
-        "-v",
-        "--tb=short",
-    ])
+    exit_code = pytest.main(
+        [
+            __file__,
+            "-v",
+            "--tb=short",
+        ]
+    )
 
     if exit_code == 0:
         print("\n" + "=" * 70)

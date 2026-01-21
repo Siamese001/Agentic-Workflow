@@ -29,6 +29,7 @@ except ImportError:
     HTMLDocumentLoader = None
     CSVDocumentLoader = None
 
+
 class SovereignRAGManager:
     """
     Sovereign RAG orchestrator — combines ingested docs, static facts, and cached research.
@@ -49,7 +50,7 @@ class SovereignRAGManager:
         try:
             self.embedding_cache_stats = lambda: {
                 "size": len(_embedding_cache),
-                "maxsize": _embedding_cache.maxsize
+                "maxsize": _embedding_cache.maxsize,
             }
         except:
             self.embedding_cache_stats = lambda: {"size": 0, "maxsize": 0}
@@ -60,6 +61,7 @@ class SovereignRAGManager:
             from agentic_core.semantic_memory.store.Bm25Store import get_bm25_store
 
             from agentic_core.semantic_memory.store.pinecone_store import PineconeVectorStore
+
             self.embedder = GeminiEmbedder()
             self.vector_store = PineconeVectorStore()
             self.Bm25Store = get_bm25_store()
@@ -113,10 +115,12 @@ class SovereignRAGManager:
 
             # BM25 indexing
             if self.Bm25Store:
-                self.Bm25Store.add_documents([
-                    {"id": f"{doc_id}_{i}", "text": chunk, "metadata": metadata or {}}
-                    for i, chunk in enumerate(text_chunks)
-                ])
+                self.Bm25Store.add_documents(
+                    [
+                        {"id": f"{doc_id}_{i}", "text": chunk, "metadata": metadata or {}}
+                        for i, chunk in enumerate(text_chunks)
+                    ]
+                )
             print(f"Indexed {len(text_chunks)} chunks for {doc_id}")
         except Exception as e:
             print(f"Document indexing failed: {e}")
@@ -160,19 +164,23 @@ class SovereignRAGManager:
         static_boost = []
         query_lower = query.lower()
         if "verb" in query_lower or "action" in query_lower:
-            static_boost.append({
-                "id": "static_verbs",
-                "source": "static_index.action_verbs",
-                "content": json.dumps(self.static_knowledge["action_verbs"], indent=2),
-                "score": 0.95
-            })
+            static_boost.append(
+                {
+                    "id": "static_verbs",
+                    "source": "static_index.action_verbs",
+                    "content": json.dumps(self.static_knowledge["action_verbs"], indent=2),
+                    "score": 0.95,
+                }
+            )
         if any(skill.lower() in query_lower for skill in ALL_SKILLS[:50]):
-            static_boost.append({
-                "id": "static_skills",
-                "source": "static_index.skill_taxonomy",
-                "content": json.dumps(SKILL_TAXONOMY, indent=2),
-                "score": 0.95
-            })
+            static_boost.append(
+                {
+                    "id": "static_skills",
+                    "source": "static_index.skill_taxonomy",
+                    "content": json.dumps(SKILL_TAXONOMY, indent=2),
+                    "score": 0.95,
+                }
+            )
 
         # 2. Reciprocal Rank Fusion (RRF)
         fused_candidates = self._rrf_fusion(vector_candidates, bm25_candidates, k=60)
@@ -181,11 +189,15 @@ class SovereignRAGManager:
         all_candidates = fused_candidates + static_boost
 
         # 3. Final LLM reranking for high precision
-        final_results = await self._llm_rerank(query, all_candidates[:top_k * 2], top_k)
+        final_results = await self._llm_rerank(query, all_candidates[: top_k * 2], top_k)
 
-        return final_results or [{"source": "fallback", "content": "No relevant knowledge found.", "score": 0.0}]
+        return final_results or [
+            {"source": "fallback", "content": "No relevant knowledge found.", "score": 0.0}
+        ]
 
-    def _rrf_fusion(self, vector_list: list[dict], bm25_list: list[dict], k: int = 60) -> list[dict]:
+    def _rrf_fusion(
+        self, vector_list: list[dict], bm25_list: list[dict], k: int = 60
+    ) -> list[dict]:
         """Reciprocal Rank Fusion — combines multiple retrieval scores."""
         scores = {}
 
@@ -198,7 +210,9 @@ class SovereignRAGManager:
             scores[item_id] = scores.get(item_id, 0) + 1 / (k + rank)
 
         # Map IDs back to full document objects
-        all_items = {item.get("id", f"item_{i}"): item for i, item in enumerate(vector_list + bm25_list)}
+        all_items = {
+            item.get("id", f"item_{i}"): item for i, item in enumerate(vector_list + bm25_list)
+        }
         sorted_ids = sorted(scores.keys(), key=lambda x: scores[x], reverse=True)
 
         # Update scores with RRF scores
@@ -229,10 +243,11 @@ Output ONLY a JSON list of indices in order of relevance (e.g., [2, 0, 1])."""
                 code=rerank_prompt,
                 Task="Rerank retrieval results",
                 round_num=1,
-                fission_active=False
+                fission_active=False,
             )
             # Extract indices from JSON response
             import json as json_lib
+
             indices = json_lib.loads(response)
             return [candidates[i] for i in indices if i < len(candidates)][:top_k]
         except Exception as e:
@@ -256,7 +271,14 @@ Output ONLY a JSON list of indices in order of relevance (e.g., [2, 0, 1])."""
         return "\n".join(context_parts)
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """Knowledge agent - operational only."""
         if _call_path is None:
             _call_path = set()

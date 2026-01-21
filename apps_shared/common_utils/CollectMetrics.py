@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class CollectedItem:
     """A collected item."""
+
     source: str
     data: Any
     timestamp: float = field(default_factory=lambda: __import__("time").time())
@@ -37,7 +38,7 @@ class BaseCollector:
 
         # Trim if over limit
         if len(self.items[source]) > self.max_items:
-            self.items[source] = self.items[source][-self.max_items:]
+            self.items[source] = self.items[source][-self.max_items :]
 
         logger.debug(f"Collected item from {source}")
 

@@ -14,6 +14,7 @@ maintaining 100% validation rigor and identical violation detection.
 Territory: agentic_core/L1_cognition/thought_engine/
 Canon Alignment: AST-based code quality validation
 """
+
 from __future__ import annotations
 
 import ast
@@ -28,7 +29,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 # GRAVITY FIXED: Dynamic import for MCPHardenedMixin
-_mod = importlib.import_module('agentic_core.L2_execution.mcp.mcp_hardened_mixin')
+_mod = importlib.import_module("agentic_core.L2_execution.mcp.mcp_hardened_mixin")
 MCPHardenedMixin = _mod.MCPHardenedMixin
 
 
@@ -54,10 +55,10 @@ class UnifiedASTValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValid
     """
 
     # Configuration constants
-    DANGEROUS_BUILTINS: set[str] = field(default_factory=lambda: {
-        'compile', '__import__', 'globals', 'locals', 'vars'
-    })
-    FORBIDDEN_CALLS: set[str] = field(default_factory=lambda: {'eval', 'exec'})
+    DANGEROUS_BUILTINS: set[str] = field(
+        default_factory=lambda: {"compile", "__import__", "globals", "locals", "vars"}
+    )
+    FORBIDDEN_CALLS: set[str] = field(default_factory=lambda: {"eval", "exec"})
 
     # Validation keys for each check type
     KEY_DEBUGGER: int = 3
@@ -70,10 +71,10 @@ class UnifiedASTValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValid
         """Initialize the unified validator."""
         super().__post_init__()
         # Ensure sets are initialized (dataclass field default_factory)
-        if not hasattr(self, 'DANGEROUS_BUILTINS') or self.DANGEROUS_BUILTINS is None:
-            self.DANGEROUS_BUILTINS = {'compile', '__import__', 'globals', 'locals', 'vars'}
-        if not hasattr(self, 'FORBIDDEN_CALLS') or self.FORBIDDEN_CALLS is None:
-            self.FORBIDDEN_CALLS = {'eval', 'exec'}
+        if not hasattr(self, "DANGEROUS_BUILTINS") or self.DANGEROUS_BUILTINS is None:
+            self.DANGEROUS_BUILTINS = {"compile", "__import__", "globals", "locals", "vars"}
+        if not hasattr(self, "FORBIDDEN_CALLS") or self.FORBIDDEN_CALLS is None:
+            self.FORBIDDEN_CALLS = {"eval", "exec"}
 
     def visit_ExceptHandler(self, node: ast.ExceptHandler) -> Any:
         """
@@ -93,21 +94,12 @@ class UnifiedASTValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValid
 
         # Key 5: Bare except detection (no exception type specified)
         if node.type is None:
-            self.report(
-                'Bare except: statement detected (should specify exception type)',
-                node
-            )
+            self.report("Bare except: statement detected (should specify exception type)", node)
 
         # Key 4: Empty except block detection (except: pass or empty body)
-        is_empty = (
-            not node.body or
-            (len(node.body) == 1 and isinstance(node.body[0], ast.Pass))
-        )
+        is_empty = not node.body or (len(node.body) == 1 and isinstance(node.body[0], ast.Pass))
         if is_empty:
-            self.report(
-                'Empty except block detected (except: pass)',
-                node
-            )
+            self.report("Empty except block detected (except: pass)", node)
 
         self.generic_visit(node)
 
@@ -134,35 +126,27 @@ class UnifiedASTValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValid
 
             # Key 6: Forbidden eval/exec calls
             if func_id in self.FORBIDDEN_CALLS:
-                self.report(
-                    f'Forbidden {func_id}() call detected',
-                    node
-                )
+                self.report(f"Forbidden {func_id}() call detected", node)
 
             # Key 42: Dangerous builtin calls
             if func_id in self.DANGEROUS_BUILTINS:
                 self.report(
-                    f'Dangerous builtin {func_id}() detected (potential security risk)',
-                    node
+                    f"Dangerous builtin {func_id}() detected (potential security risk)", node
                 )
 
             # Key 3: Debugger breakpoint() call
-            if func_id == 'breakpoint':
-                self.report(
-                    'Debugger breakpoint() detected',
-                    node
-                )
+            if func_id == "breakpoint":
+                self.report("Debugger breakpoint() detected", node)
 
         # Check for attribute calls (e.g., pdb.set_trace)
         elif isinstance(node.func, ast.Attribute):
             # Key 3: pdb.set_trace() detection
-            if (isinstance(node.func.value, ast.Name) and
-                node.func.value.id == 'pdb' and
-                node.func.attr == 'set_trace'):
-                self.report(
-                    'Debugger pdb.set_trace() detected',
-                    node
-                )
+            if (
+                isinstance(node.func.value, ast.Name)
+                and node.func.value.id == "pdb"
+                and node.func.attr == "set_trace"
+            ):
+                self.report("Debugger pdb.set_trace() detected", node)
 
         self.generic_visit(node)
 
@@ -173,7 +157,7 @@ class UnifiedASTValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValid
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: set[str] | None = None
+        _call_path: set[str] | None = None,
     ) -> dict[str, Any]:
         """
         Aggregated healing logic for all AST-based violations.
@@ -195,10 +179,12 @@ class UnifiedASTValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValid
             execute=execute,
             depth=depth,
             max_depth=max_depth,
-            _call_path=_call_path
+            _call_path=_call_path,
         )
 
-    def validate_all(self, source: str, file_path: Path | None = None) -> dict[str, list[dict[str, Any]]]:
+    def validate_all(
+        self, source: str, file_path: Path | None = None
+    ) -> dict[str, list[dict[str, Any]]]:
         """
         Validate source code and return violations grouped by key.
 
@@ -213,28 +199,28 @@ class UnifiedASTValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValid
 
         # Group violations by type for reporting
         grouped = {
-            'bare_except': [],
-            'empty_except': [],
-            'eval_exec': [],
-            'dangerous_builtins': [],
-            'debugger': [],
-            'other': [],
+            "bare_except": [],
+            "empty_except": [],
+            "eval_exec": [],
+            "dangerous_builtins": [],
+            "debugger": [],
+            "other": [],
         }
 
         for v in violations:
-            msg = v.get('message', '').lower()
-            if 'bare except' in msg:
-                grouped['bare_except'].append(v)
-            elif 'empty except' in msg:
-                grouped['empty_except'].append(v)
-            elif 'eval' in msg or 'exec' in msg:
-                grouped['eval_exec'].append(v)
-            elif 'dangerous builtin' in msg:
-                grouped['dangerous_builtins'].append(v)
-            elif 'debugger' in msg or 'breakpoint' in msg or 'pdb' in msg:
-                grouped['debugger'].append(v)
+            msg = v.get("message", "").lower()
+            if "bare except" in msg:
+                grouped["bare_except"].append(v)
+            elif "empty except" in msg:
+                grouped["empty_except"].append(v)
+            elif "eval" in msg or "exec" in msg:
+                grouped["eval_exec"].append(v)
+            elif "dangerous builtin" in msg:
+                grouped["dangerous_builtins"].append(v)
+            elif "debugger" in msg or "breakpoint" in msg or "pdb" in msg:
+                grouped["debugger"].append(v)
             else:
-                grouped['other'].append(v)
+                grouped["other"].append(v)
 
         return grouped
 
@@ -256,66 +242,80 @@ class UnifiedASTValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValid
             results["tests"].append({"name": "test_instantiation", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
+            results["tests"].append(
+                {"name": "test_instantiation", "status": "failed", "error": str(e)}
+            )
 
         # Test 2: Bare except detection
         try:
             test_code = "try:\n    pass\nexcept:\n    pass"
             violations = self.validate(test_code)
-            assert any('bare except' in v.get('message', '').lower() for v in violations)
+            assert any("bare except" in v.get("message", "").lower() for v in violations)
             results["passed"] += 1
             results["tests"].append({"name": "test_bare_except_detection", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append({"name": "test_bare_except_detection", "status": "failed", "error": str(e)})
+            results["tests"].append(
+                {"name": "test_bare_except_detection", "status": "failed", "error": str(e)}
+            )
 
         # Test 3: Empty except detection
         try:
             self.clear_violations()
             test_code = "try:\n    pass\nexcept Exception:\n    pass"
             violations = self.validate(test_code)
-            assert any('empty except' in v.get('message', '').lower() for v in violations)
+            assert any("empty except" in v.get("message", "").lower() for v in violations)
             results["passed"] += 1
             results["tests"].append({"name": "test_empty_except_detection", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append({"name": "test_empty_except_detection", "status": "failed", "error": str(e)})
+            results["tests"].append(
+                {"name": "test_empty_except_detection", "status": "failed", "error": str(e)}
+            )
 
         # Test 4: eval/exec detection
         try:
             self.clear_violations()
             test_code = "x = eval('1+1')"
             violations = self.validate(test_code)
-            assert any('eval' in v.get('message', '').lower() for v in violations)
+            assert any("eval" in v.get("message", "").lower() for v in violations)
             results["passed"] += 1
             results["tests"].append({"name": "test_eval_detection", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append({"name": "test_eval_detection", "status": "failed", "error": str(e)})
+            results["tests"].append(
+                {"name": "test_eval_detection", "status": "failed", "error": str(e)}
+            )
 
         # Test 5: Dangerous builtins detection
         try:
             self.clear_violations()
             test_code = "x = globals()"
             violations = self.validate(test_code)
-            assert any('dangerous builtin' in v.get('message', '').lower() for v in violations)
+            assert any("dangerous builtin" in v.get("message", "").lower() for v in violations)
             results["passed"] += 1
-            results["tests"].append({"name": "test_dangerous_builtins_detection", "status": "passed"})
+            results["tests"].append(
+                {"name": "test_dangerous_builtins_detection", "status": "passed"}
+            )
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append({"name": "test_dangerous_builtins_detection", "status": "failed", "error": str(e)})
+            results["tests"].append(
+                {"name": "test_dangerous_builtins_detection", "status": "failed", "error": str(e)}
+            )
 
         # Test 6: Debugger detection
         try:
             self.clear_violations()
             test_code = "breakpoint()"
             violations = self.validate(test_code)
-            assert any('breakpoint' in v.get('message', '').lower() for v in violations)
+            assert any("breakpoint" in v.get("message", "").lower() for v in violations)
             results["passed"] += 1
             results["tests"].append({"name": "test_debugger_detection", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append({"name": "test_debugger_detection", "status": "failed", "error": str(e)})
+            results["tests"].append(
+                {"name": "test_debugger_detection", "status": "failed", "error": str(e)}
+            )
 
         # Test 7: TYPE_CHECKING block skipping
         try:
@@ -326,12 +326,14 @@ if TYPE_CHECKING:
     eval('should be ignored')
 """
             violations = self.validate(test_code)
-            assert not any('eval' in v.get('message', '').lower() for v in violations)
+            assert not any("eval" in v.get("message", "").lower() for v in violations)
             results["passed"] += 1
             results["tests"].append({"name": "test_type_checking_skip", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append({"name": "test_type_checking_skip", "status": "failed", "error": str(e)})
+            results["tests"].append(
+                {"name": "test_type_checking_skip", "status": "failed", "error": str(e)}
+            )
 
         return results
 
@@ -347,32 +349,40 @@ def validate_bare_except(file_path: Path, content: str) -> list[dict[str, Any]]:
     """Validate Key 5: No bare except statements."""
     validator = UnifiedASTValidatorAgent()
     violations = validator.validate(content, file_path)
-    return [v for v in violations if 'bare except' in v.get('message', '').lower()]
+    return [v for v in violations if "bare except" in v.get("message", "").lower()]
 
 
 def validate_empty_except(file_path: Path, content: str) -> list[dict[str, Any]]:
     """Validate Key 4: No empty except blocks."""
     validator = UnifiedASTValidatorAgent()
     violations = validator.validate(content, file_path)
-    return [v for v in violations if 'empty except' in v.get('message', '').lower()]
+    return [v for v in violations if "empty except" in v.get("message", "").lower()]
 
 
 def validate_eval_exec(file_path: Path, content: str) -> list[dict[str, Any]]:
     """Validate Key 6: No eval/exec."""
     validator = UnifiedASTValidatorAgent()
     violations = validator.validate(content, file_path)
-    return [v for v in violations if 'eval' in v.get('message', '').lower() or 'exec' in v.get('message', '').lower()]
+    return [
+        v
+        for v in violations
+        if "eval" in v.get("message", "").lower() or "exec" in v.get("message", "").lower()
+    ]
 
 
 def validate_dangerous_builtins(file_path: Path, content: str) -> list[dict[str, Any]]:
     """Validate Key 42: No dangerous builtins."""
     validator = UnifiedASTValidatorAgent()
     violations = validator.validate(content, file_path)
-    return [v for v in violations if 'dangerous builtin' in v.get('message', '').lower()]
+    return [v for v in violations if "dangerous builtin" in v.get("message", "").lower()]
 
 
 def validate_debugger(file_path: Path, content: str) -> list[dict[str, Any]]:
     """Validate Key 3: No debugger statements."""
     validator = UnifiedASTValidatorAgent()
     violations = validator.validate(content, file_path)
-    return [v for v in violations if any(kw in v.get('message', '').lower() for kw in ['breakpoint', 'pdb', 'debugger'])]
+    return [
+        v
+        for v in violations
+        if any(kw in v.get("message", "").lower() for kw in ["breakpoint", "pdb", "debugger"])
+    ]

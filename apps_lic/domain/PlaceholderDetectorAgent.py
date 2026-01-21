@@ -24,19 +24,19 @@ class PlaceholderDetectorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMi
     """
 
     PLACEHOLDER_PATTERNS = [
-        r'\[placeholder\]',
-        r'\[your name\]',
-        r'\[company name\]',
-        r'\[recipient[_ ]?name\]',
-        r'\{[a-z_]+\}',
-        r'\bTBD\b',
-        r'\bTODO\b',
-        r'\bFIXME\b',
-        r'\[INSERT [A-Z]+\]',
-        r'\[ADD [A-Z]+\]',
-        r'_{3,}',
-        r'\[Missing[_ ]?context\]',
-        r'\[unserializable\]',
+        r"\[placeholder\]",
+        r"\[your name\]",
+        r"\[company name\]",
+        r"\[recipient[_ ]?name\]",
+        r"\{[a-z_]+\}",
+        r"\bTBD\b",
+        r"\bTODO\b",
+        r"\bFIXME\b",
+        r"\[INSERT [A-Z]+\]",
+        r"\[ADD [A-Z]+\]",
+        r"_{3,}",
+        r"\[Missing[_ ]?context\]",
+        r"\[unserializable\]",
     ]
 
     def detect_placeholders(self, text: str) -> list[str]:
@@ -55,10 +55,13 @@ class PlaceholderDetectorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMi
         placeholders = self.detect_placeholders(message)
 
         if placeholders:
-            return False, f"CRITICAL: Found {len(placeholders)} placeholders: {', '.join(placeholders[:5])}"
+            return (
+                False,
+                f"CRITICAL: Found {len(placeholders)} placeholders: {', '.join(placeholders[:5])}",
+            )
 
         return True, ""
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()

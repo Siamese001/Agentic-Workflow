@@ -15,6 +15,7 @@ Features:
 - Intelligent routing based on task type via strategy pattern
 - Hardened error handling with fallback strategies
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -41,6 +42,7 @@ T = TypeVar("T")
 
 class TaskType(Enum):
     """Task types for intelligent routing."""
+
     VALIDATION = auto()
     HEALING = auto()
     ORCHESTRATION = auto()
@@ -51,6 +53,7 @@ class TaskType(Enum):
 
 class RecoveryStrategy(Enum):
     """Recovery strategies for failed operations."""
+
     RETRY = "retry"
     SKIP = "skip"
     FALLBACK = "fallback"
@@ -60,6 +63,7 @@ class RecoveryStrategy(Enum):
 @dataclass
 class Task:
     """Represents an orchestration task."""
+
     task_id: str
     task_type: TaskType
     payload: dict[str, Any]
@@ -79,6 +83,7 @@ class Task:
 @dataclass
 class Result:
     """Represents an orchestration result."""
+
     task_id: str
     success: bool
     data: Any = None
@@ -195,7 +200,9 @@ class CoreOrchestrationAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixi
         """Select the appropriate strategy for a task (intelligent routing)."""
         for strategy in self._strategies:
             if strategy.can_handle(task):
-                Logger.debug(f"Selected strategy {strategy.__class__.__name__} for task {task.task_id}")
+                Logger.debug(
+                    f"Selected strategy {strategy.__class__.__name__} for task {task.task_id}"
+                )
                 return strategy
         # Should never reach here due to GenericStrategy fallback
         return self._strategies[-1]
@@ -252,8 +259,10 @@ class CoreOrchestrationAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixi
         for attempt in range(task.max_retries):
             try:
                 if attempt > 0:
-                    backoff = self.retry_backoff_base ** attempt
-                    Logger.info(f"Retry {attempt}/{task.max_retries} for {task.task_id} after {backoff}s")
+                    backoff = self.retry_backoff_base**attempt
+                    Logger.info(
+                        f"Retry {attempt}/{task.max_retries} for {task.task_id} after {backoff}s"
+                    )
                     await asyncio.sleep(backoff)
 
                 start_time = datetime.now()
@@ -272,7 +281,9 @@ class CoreOrchestrationAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixi
                 return result
 
             except asyncio.TimeoutError:
-                last_error = TimeoutError(f"Task {task.task_id} timed out after {task.timeout_seconds}s")
+                last_error = TimeoutError(
+                    f"Task {task.task_id} timed out after {task.timeout_seconds}s"
+                )
                 retries_used += 1
                 Logger.warning(f"Task {task.task_id} attempt {attempt + 1} timed out")
 
@@ -352,15 +363,17 @@ class CoreOrchestrationAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixi
             self._store_cached_result(task, result)
 
         # Record execution
-        self._execution_history.append({
-            "task_id": task.task_id,
-            "task_type": task.task_type.name,
-            "success": result.success,
-            "from_cache": result.from_cache,
-            "retries_used": result.retries_used,
-            "execution_time": result.execution_time,
-            "timestamp": datetime.now().isoformat(),
-        })
+        self._execution_history.append(
+            {
+                "task_id": task.task_id,
+                "task_type": task.task_type.name,
+                "success": result.success,
+                "from_cache": result.from_cache,
+                "retries_used": result.retries_used,
+                "execution_time": result.execution_time,
+                "timestamp": datetime.now().isoformat(),
+            }
+        )
 
         return result
 
@@ -421,6 +434,7 @@ class CoreOrchestrationAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixi
 # =============================================================================
 # BACKWARD COMPATIBILITY FACTORY METHODS
 # =============================================================================
+
 
 def create_legacy_cached_orchestrator(
     project_root: Path | None = None,

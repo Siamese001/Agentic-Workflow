@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, state, validator, workflow
@@ -35,16 +34,23 @@ class GlobalComplianceAggregatorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
 
     def aggregate_results(self, results: list[dict[str, Any]]) -> dict[str, Any]:
         """Aggregate compliance results."""
-        total_violations = sum(r.get('violations', 0) for r in results)
+        total_violations = sum(r.get("violations", 0) for r in results)
         return {
-            'total_checks': len(results),
-            'total_violations': total_violations,
-            'compliance_rate': 1.0 - (total_violations / max(len(results), 1))
+            "total_checks": len(results),
+            "total_violations": total_violations,
+            "compliance_rate": 1.0 - (total_violations / max(len(results), 1)),
         }
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: Optional[set] = None,
+    ) -> dict[str, int]:
         """Utils/core_extensions - operational only."""
         if _call_path is None:
             # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)

@@ -2,13 +2,12 @@ from __future__ import annotations
 
 import asyncio
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
 
 from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-
 
 
 # NOT_AN_AGENT — context utility class, not a true agent — excluded from agent discovery
@@ -24,7 +23,6 @@ class OmniContext(SubAtomicAgent):
         self.index = {}
 
     async def execute(self):
-
         print(f"\n[>>>] {self.name} ACTIVATED: Building Global Context...")
         await asyncio.sleep(0)
 
@@ -33,9 +31,9 @@ class OmniContext(SubAtomicAgent):
 
         # Store in blackboard for other agents to use
         self.ctx.OmniContext = {
-            'buffer': self.context_buffer,
-            'index': self.index,
-            'consult': self.consult
+            "buffer": self.context_buffer,
+            "index": self.index,
+            "consult": self.consult,
         }
 
         print(f"   📚 Built context: {len(self.context_buffer)} chars from {len(self.index)} files")
@@ -49,7 +47,7 @@ class OmniContext(SubAtomicAgent):
                 continue
 
             try:
-                with open(file_path, encoding='utf-8') as f:
+                with open(file_path, encoding="utf-8") as f:
                     content = f.read()
 
                 # Add file header
@@ -57,17 +55,13 @@ class OmniContext(SubAtomicAgent):
                 sections.append(content)
 
                 # Store index for quick lookups
-                start_pos = len(''.join(sections[:-2]))
+                start_pos = len("".join(sections[:-2]))
                 end_pos = start_pos + len(content)
-                self.index[file_path] = {
-                    'start': start_pos,
-                    'end': end_pos,
-                    'content': content
-                }
+                self.index[file_path] = {"start": start_pos, "end": end_pos, "content": content}
             except Exception as e:
                 print(f"   [!]  Failed to read {file_path}: {e}")
 
-        self.context_buffer = '\n'.join(sections)
+        self.context_buffer = "\n".join(sections)
 
     def consult(self, query: str) -> str:
         """Consult the global context for architectural patterns."""
@@ -80,10 +74,10 @@ class OmniContext(SubAtomicAgent):
         query_lower = query.lower()
 
         for file_path, info in self.index.items():
-            content_lower = info['content'].lower()
+            content_lower = info["content"].lower()
             if any(word in content_lower for word in query_lower.split()):
                 # Extract relevant snippet
-                snippet = info['content'][:500]
+                snippet = info["content"][:500]
                 results.append(f"Found in {file_path}:\n{snippet}...\n")
 
-        return '\n'.join(results[:3])  # Return top 3 results
+        return "\n".join(results[:3])  # Return top 3 results

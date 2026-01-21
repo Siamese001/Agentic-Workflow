@@ -17,7 +17,12 @@ from agentic_core.config.blueprint_sovereign.sovereign_config_1 import config
 # Global deterministic embedding cache (LRU in-memory; extend to diskcache if needed)
 _embedding_cache: LRUCache = LRUCache(maxsize=10000)  # ~10k entries × 6KB ≈ 60MB RAM
 
-def get_embedding(text: str, model: str=config.DEFAULT_EMBEDDING_MODEL, dimensions: int=config.DEFAULT_EMBEDDING_DIM) -> list[float]:
+
+def get_embedding(
+    text: str,
+    model: str = config.DEFAULT_EMBEDDING_MODEL,
+    dimensions: int = config.DEFAULT_EMBEDDING_DIM,
+) -> list[float]:
     """
     Cached sovereign embedding function – used by bootstrap, healers, and RAG pipelines.
 
@@ -27,12 +32,10 @@ def get_embedding(text: str, model: str=config.DEFAULT_EMBEDDING_MODEL, dimensio
     :return: Normalized float vector
     """
     # Normalize text (strip whitespace, replace newlines)
-    normalized_text = text.strip().replace('\n', ' ').replace('\r', ' ')
+    normalized_text = text.strip().replace("\n", " ").replace("\r", " ")
 
     # Cache key: hash of text + model + dimensions
-    cache_key = hashlib.sha256(
-        f"{normalized_text}{model}{dimensions}".encode()
-    ).hexdigest()
+    cache_key = hashlib.sha256(f"{normalized_text}{model}{dimensions}".encode()).hexdigest()
 
     # Cache hit
     if cache_key in _embedding_cache:
@@ -40,14 +43,17 @@ def get_embedding(text: str, model: str=config.DEFAULT_EMBEDDING_MODEL, dimensio
 
     # Cache miss → API call
     if not config.OPENAI_API_KEY:
-        raise ValueError('OPENAI_API_KEY environment variable required for core embedder')
+        raise ValueError("OPENAI_API_KEY environment variable required for core embedder")
     client: Any = openai.OpenAI(api_key=config.OPENAI_API_KEY)
-    response: Any = client.embeddings.create(input=normalized_text, model=model, dimensions=dimensions)
+    response: Any = client.embeddings.create(
+        input=normalized_text, model=model, dimensions=dimensions
+    )
     embedding = response.data[0].embedding
 
     # Cache and return
     _embedding_cache[cache_key] = embedding
     return embedding
+
 
 def clear_embedding_cache() -> None:
     """Utility to clear embedding cache (e.g., for tests or model change)."""

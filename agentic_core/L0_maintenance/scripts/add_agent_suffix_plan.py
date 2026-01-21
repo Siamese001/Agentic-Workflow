@@ -24,19 +24,19 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 
 # Patterns that indicate a class is NOT an agent (exclude from renaming)
 EXCLUDE_PATTERNS = [
-    "Test",           # Test classes
-    "Mixin",          # Utility mixins
-    "Context",        # Data contexts
-    "Config",         # Configuration
-    "Protocol",       # Interfaces
-    "Exception",      # Errors
-    "Error",          # Errors
-    "Enum",           # Enums
-    "Model",          # Data models
-    "Schema",         # Schemas
-    "Interface",      # Interfaces
-    "Base",           # Base classes (already utility)
-    "Abstract",       # Abstract classes
+    "Test",  # Test classes
+    "Mixin",  # Utility mixins
+    "Context",  # Data contexts
+    "Config",  # Configuration
+    "Protocol",  # Interfaces
+    "Exception",  # Errors
+    "Error",  # Errors
+    "Enum",  # Enums
+    "Model",  # Data models
+    "Schema",  # Schemas
+    "Interface",  # Interfaces
+    "Base",  # Base classes (already utility)
+    "Abstract",  # Abstract classes
 ]
 
 # Patterns that indicate a class IS an agent (should have Agent suffix)
@@ -142,12 +142,7 @@ def main():
         layer = agent.get("layer", "?")
 
         category, reason = categorize_class(name, path)
-        categories[category].append({
-            "name": name,
-            "layer": layer,
-            "path": path,
-            "reason": reason
-        })
+        categories[category].append({"name": name, "layer": layer, "path": path, "reason": reason})
 
     # Print summary
     print("=" * 60)
@@ -169,7 +164,9 @@ def main():
     print(f"\n### REVIEW ({len(categories['REVIEW'])} classes)")
     print("These need human review:\n")
     for item in sorted(categories["REVIEW"], key=lambda x: x["name"]):
-        filename = item['path'].split('\\')[-1] if '\\' in item['path'] else item['path'].split('/')[-1]
+        filename = (
+            item["path"].split("\\")[-1] if "\\" in item["path"] else item["path"].split("/")[-1]
+        )
         print(f"  [{item['layer']}] {item['name']} ({filename})")
 
     print(f"\n### SKIP ({len(categories['SKIP'])} classes)")

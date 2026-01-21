@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class ProvenanceRule:
     """Provenance rule for bullet generation."""
+
     verbatim: int  # Number of verbatim bullets from master resume
     transformed: int  # Number of transformed bullets
     synthetic: int  # Number of synthetic bullets
@@ -36,6 +37,7 @@ class ProvenanceRule:
 @dataclass
 class K5AOutput:
     """K.5A generation output."""
+
     bullets: list[str]
     provenance: list[str]  # "V", "T", or "S" for each bullet
     word_counts: list[int]
@@ -104,9 +106,7 @@ class K5A_GenerationAgent(Agent):
         if regeneration_feedback:
             prompt = self._build_regeneration_prompt(context, regeneration_feedback)
         else:
-            prompt = self._build_initial_prompt(
-                master_bullets, differentiators, job_description
-            )
+            prompt = self._build_initial_prompt(master_bullets, differentiators, job_description)
 
         # Generate with self-consistency if configured
         if self.config.self_consistency > 1:
@@ -129,7 +129,7 @@ class K5A_GenerationAgent(Agent):
             if len(bullets) < self.provenance_rule.total:
                 bullets.extend(["[PLACEHOLDER]"] * (self.provenance_rule.total - len(bullets)))
             else:
-                bullets = bullets[:self.provenance_rule.total]
+                bullets = bullets[: self.provenance_rule.total]
 
         # Calculate word counts
         word_counts = [len(b.split()) for b in bullets]
@@ -150,10 +150,7 @@ class K5A_GenerationAgent(Agent):
             },
         )
 
-        logger.info(
-            f"K.5A generation complete: {len(bullets)} bullets, "
-            f"word_counts={word_counts}"
-        )
+        logger.info(f"K.5A generation complete: {len(bullets)} bullets, word_counts={word_counts}")
 
         return output
 
@@ -184,10 +181,10 @@ CRITICAL CONSTRAINTS (ZERO TOLERANCE):
    - {self.provenance_rule.synthetic} bullets: Newly synthesized for target role
 
 REQUIRED DIFFERENTIATORS (must include {len(differentiators)} of these):
-{chr(10).join(f'- {d}' for d in differentiators[:5])}
+{chr(10).join(f"- {d}" for d in differentiators[:5])}
 
 MASTER RESUME BULLETS (use for Verbatim and Transformed):
-{chr(10).join(f'{i+1}. {b}' for i, b in enumerate(master_bullets[:10]))}
+{chr(10).join(f"{i + 1}. {b}" for i, b in enumerate(master_bullets[:10]))}
 
 TARGET JOB DESCRIPTION:
 {job_description[:500]}...
@@ -223,7 +220,7 @@ Generate the {self.provenance_rule.total} bullets now:
 {feedback}
 
 PREVIOUS OUTPUT:
-{chr(10).join(f'{i+1}. {b}' for i, b in enumerate(previous_bullets))}
+{chr(10).join(f"{i + 1}. {b}" for i, b in enumerate(previous_bullets))}
 
 CONSTRAINTS (ZERO TOLERANCE):
 - Each bullet: {self.word_count_min}-{self.word_count_max} words
@@ -250,7 +247,7 @@ Generate the corrected bullets:
             List of parsed bullets
         """
         # Split by bullet markers
-        bullets = re.split(r'[\n•\-\*]\s*', response)
+        bullets = re.split(r"[\n•\-\*]\s*", response)
 
         # Clean and filter
         bullets = [
@@ -294,14 +291,11 @@ Generate the corrected bullets:
             all_bullets = master_bullets + bullets
             tfidf_matrix = vectorizer.fit_transform(all_bullets)
 
-            master_vectors = tfidf_matrix[:len(master_bullets)]
-            generated_vectors = tfidf_matrix[len(master_bullets):]
+            master_vectors = tfidf_matrix[: len(master_bullets)]
+            generated_vectors = tfidf_matrix[len(master_bullets) :]
 
             for i in range(len(bullets)):
-                similarities = cosine_similarity(
-                    generated_vectors[i:i+1],
-                    master_vectors
-                )[0]
+                similarities = cosine_similarity(generated_vectors[i : i + 1], master_vectors)[0]
 
                 max_similarity = max(similarities) if len(similarities) > 0 else 0.0
 
@@ -316,9 +310,9 @@ Generate the corrected bullets:
             logger.error(f"Error assigning provenance: {e}")
             # Fallback: assign based on provenance rule
             provenance = (
-                ["V"] * self.provenance_rule.verbatim +
-                ["T"] * self.provenance_rule.transformed +
-                ["S"] * self.provenance_rule.synthetic
+                ["V"] * self.provenance_rule.verbatim
+                + ["T"] * self.provenance_rule.transformed
+                + ["S"] * self.provenance_rule.synthetic
             )
 
-        return provenance[:len(bullets)]
+        return provenance[: len(bullets)]

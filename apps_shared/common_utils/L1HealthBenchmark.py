@@ -12,15 +12,18 @@ import asyncio
 import sys
 from typing import Any
 
-sys.path.insert(0, 'c:/Git/Agentic-Workflow')
+sys.path.insert(0, "c:/Git/Agentic-Workflow")
 
 # from agentic_core.L1_cognition.cognitive_node.CognitiveNode  # Refactored to dynamic import to avoid upward dependency
+
 
 def _get_cognitive_node():
     """Lazy load CognitiveNode to avoid L0 → L1 dependency."""
     import importlib
-    module = importlib.import_module('agentic_core.L1_cognition.cognitive_node.CognitiveNode')
+
+    module = importlib.import_module("agentic_core.L1_cognition.cognitive_node.CognitiveNode")
     return module.CognitiveNode
+
 
 # from CognitiveNode import CognitiveNode  # Commented out - appears to be incomplete/broken import
 
@@ -53,15 +56,12 @@ class L1HealthBenchmark:
             print(f"[{i}/{len(missions)}] {mission['name']:<40}", end=" ", flush=True)
 
             result = await self.node.process_async(
-                {"user_query": mission["query"]},
-                mission.get("context", {})
+                {"user_query": mission["query"]}, mission.get("context", {})
             )
 
-            self.results.append({
-                "mission": mission["name"],
-                "query": mission["query"],
-                "result": result
-            })
+            self.results.append(
+                {"mission": mission["name"], "query": mission["query"], "result": result}
+            )
 
             self.latencies.append(result.latency_ms)
             self.confidences.append(result.plan.get("score", 0.5))
@@ -80,55 +80,43 @@ class L1HealthBenchmark:
     def _create_missions(self) -> list[dict[str, Any]]:
         """Create diverse test missions."""
         return [
-            {
-                "name": "Simple Math",
-                "query": "What is 2+2?",
-                "category": "simple"
-            },
+            {"name": "Simple Math", "query": "What is 2+2?", "category": "simple"},
             {
                 "name": "Simple Question",
                 "query": "What is the capital of France?",
-                "category": "simple"
+                "category": "simple",
             },
-            {
-                "name": "Calculation",
-                "query": "Calculate 15 * 7",
-                "category": "simple"
-            },
-            {
-                "name": "Definition",
-                "query": "Define machine learning",
-                "category": "simple"
-            },
+            {"name": "Calculation", "query": "Calculate 15 * 7", "category": "simple"},
+            {"name": "Definition", "query": "Define machine learning", "category": "simple"},
             {
                 "name": "Planning Task",
                 "query": "Create a plan for learning Python",
-                "category": "complex"
+                "category": "complex",
             },
             {
                 "name": "Strategy Question",
                 "query": "What strategy would you use for team productivity?",
-                "category": "complex"
+                "category": "complex",
             },
             {
                 "name": "Analysis Task",
                 "query": "Analyze the pros and cons of remote work",
-                "category": "complex"
+                "category": "complex",
             },
             {
                 "name": "Complex Problem",
                 "query": "Design a system for managing distributed teams",
-                "category": "complex"
+                "category": "complex",
             },
             {
                 "name": "Multi-step Reasoning",
                 "query": "If A is greater than B and B is greater than C, what can we conclude?",
-                "category": "reasoning"
+                "category": "reasoning",
             },
             {
                 "name": "Adaptive Task",
                 "query": "Improve the previous plan based on new constraints",
-                "category": "adaptive"
+                "category": "adaptive",
             },
         ]
 
@@ -150,14 +138,13 @@ class L1HealthBenchmark:
         meta_stats = self.node.meta_learner.get_statistics() if self.node.meta_learner else {}
 
         # Memory metrics
-        semantic_stats = self.node.semantic_memory.get_statistics() if self.node.semantic_memory else {}
+        semantic_stats = (
+            self.node.semantic_memory.get_statistics() if self.node.semantic_memory else {}
+        )
 
         # Calculate health score
         health_score = self._calculate_health_score(
-            avg_latency,
-            avg_confidence,
-            avg_plan_score,
-            meta_stats
+            avg_latency, avg_confidence, avg_plan_score, meta_stats
         )
 
         return {
@@ -166,16 +153,16 @@ class L1HealthBenchmark:
                 "min_ms": min_latency,
                 "max_ms": max_latency,
                 "target_ms": 500,
-                "meets_target": avg_latency < 500
+                "meets_target": avg_latency < 500,
             },
             "quality": {
                 "average_confidence": avg_confidence,
                 "average_plan_score": avg_plan_score,
-                "success_rate": 1.0  # All missions succeeded
+                "success_rate": 1.0,  # All missions succeeded
             },
             "learning": meta_stats,
             "memory": semantic_stats,
-            "health_score": health_score
+            "health_score": health_score,
         }
 
     def _calculate_health_score(
@@ -183,7 +170,7 @@ class L1HealthBenchmark:
         avg_latency: float,
         avg_confidence: float,
         avg_plan_score: float,
-        meta_stats: dict[str, Any]
+        meta_stats: dict[str, Any],
     ) -> float:
         """
         Calculate L1 health score (0-100).
@@ -209,10 +196,10 @@ class L1HealthBenchmark:
 
         # Weighted average
         health = (
-            speed_score * 0.30 +
-            quality_score * 0.30 +
-            planning_score * 0.20 +
-            learning_score * 0.20
+            speed_score * 0.30
+            + quality_score * 0.30
+            + planning_score * 0.20
+            + learning_score * 0.20
         )
 
         return min(100, max(0, health))

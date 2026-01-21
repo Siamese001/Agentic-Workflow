@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, validator, workflow
@@ -57,9 +56,9 @@ class HOP8QAReportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         Returns:
             Path to generated QA report file
         """
-        print(f"\nimport logging\n\nLogger = logging.getLogger(__name__)\n{'='*80}")
+        print(f"\nimport logging\n\nLogger = logging.getLogger(__name__)\n{'=' * 80}")
         print("HOP-8: QA REPORT GENERATION")
-        print(f"{'='*80}\n")
+        print(f"{'=' * 80}\n")
 
         states: dict[str, Any] = {}
         for hop_id in ["HOP-1", "HOP-2", "HOP-3", "HOP-4", "HOP-5", "HOP-6", "HOP-7"]:
@@ -75,7 +74,7 @@ class HOP8QAReportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
         report_path = output_dir / f"QA_Report_{state_mgr.mission_id}.md"
 
-        with open(report_path, 'w') as f:
+        with open(report_path, "w") as f:
             f.write(report)
 
         print(f"\n✓ QA Report Generated: {report_path}\n")
@@ -132,8 +131,12 @@ class HOP8QAReportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         research = states.get("HOP-2", {})
         lines.append(f"**Total Sources**: {research.get('total_sources', 0)}")
         lines.append(f"**Signal Score**: {research.get('signal_score', 0):.2f}")
-        lines.append(f"**Cache Hit**: {'Yes' if research.get('cache_hit', False) else 'No (Fallback RAG used)'}")
-        lines.append(f"**Fallback Used**: {'Yes' if research.get('fallback_used', False) else 'No'}")
+        lines.append(
+            f"**Cache Hit**: {'Yes' if research.get('cache_hit', False) else 'No (Fallback RAG used)'}"
+        )
+        lines.append(
+            f"**Fallback Used**: {'Yes' if research.get('fallback_used', False) else 'No'}"
+        )
         lines.append("\n")
 
         # 4. Generation Strategy
@@ -153,7 +156,9 @@ class HOP8QAReportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         failed = [r for r in results if not r.get("passed", True)]
         if failed:
             for result in failed:
-                lines.append(f"- **{result['rule_id']}** ({result['Severity']}): {result['message']}")
+                lines.append(
+                    f"- **{result['rule_id']}** ({result['Severity']}): {result['message']}"
+                )
         else:
             lines.append("_No failed checks_")
         lines.append("\n")
@@ -172,7 +177,7 @@ class HOP8QAReportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         lines.append(f"**Word Count**: {draft.get('word_count', 0)}")
         lines.append(f"**Character Count**: {draft.get('char_count', 0)}")
         lines.append("\n```")
-        lines.append(draft.get('text', 'N/A'))
+        lines.append(draft.get("text", "N/A"))
         lines.append("```\n")
 
         # 8. Quality Score
@@ -190,36 +195,51 @@ class HOP8QAReportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         validation = states.get("HOP-6", {})
         gate = states.get("HOP-7", {})
 
-        research_score = min(30, research.get('signal_score', 0.5) * 30)
+        research_score = min(30, research.get("signal_score", 0.5) * 30)
 
-        passed = validation.get('passed', False)
-        critical = validation.get('critical_issues', 0)
+        passed = validation.get("passed", False)
+        critical = validation.get("critical_issues", 0)
         alignment_score = 30 if passed and critical == 0 else 0
 
-        results = validation.get('validation_results', [])
-        passed_count = sum(1 for r in results if r.get('passed', False))
+        results = validation.get("validation_results", [])
+        passed_count = sum(1 for r in results if r.get("passed", False))
         total_count = len(results) if results else 1
         validation_score = (passed_count / total_count) * 20
 
-        factual_loops = gate.get('factual_loop_count', 0)
-        creative_retries = gate.get('creative_retry_count', 0)
+        factual_loops = gate.get("factual_loop_count", 0)
+        creative_retries = gate.get("creative_retry_count", 0)
         loop_penalty = (factual_loops * 3) + (creative_retries * 2)
         loop_score = max(0, 10 - loop_penalty)
 
         generation = states.get("HOP-5", {})
         draft = generation.get("selected_draft", {})
-        word_count = draft.get('word_count', 0)
+        word_count = draft.get("word_count", 0)
         in_range = 150 <= word_count <= 300
         generation_score = 10 if in_range else 5
 
-        total_score = research_score + alignment_score + validation_score + loop_score + generation_score
+        total_score = (
+            research_score + alignment_score + validation_score + loop_score + generation_score
+        )
         return total_score
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set = None,
+    ) -> dict[str, int]:
         """Operational agent - invoke shared healing chain."""
         if _call_path is None:
             _call_path = set()
-        super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+        super().heal_repository(
+            dry_run=dry_run,
+            execute=execute,
+            depth=depth,
+            max_depth=max_depth,
+            _call_path=_call_path,
+        )
         print(f"[{self.__class__.__name__}] Operational agent - healing chain invoked")
         return {"skipped": 1}

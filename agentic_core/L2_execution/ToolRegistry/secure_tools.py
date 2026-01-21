@@ -10,13 +10,15 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
-Logger: Any = logging.getLogger('ActionNode.SecureTools')
+Logger: Any = logging.getLogger("ActionNode.SecureTools")
+
 
 class SecureToolsImpl:
     """
     Secure tool implementations with path validation and command blacklisting.
     """
-    BLACKLIST_COMMANDS: list[str] = ['rm -rf', 'sudo', 'format', '> /dev/sda', 'mkfs']
+
+    BLACKLIST_COMMANDS: list[str] = ["rm -rf", "sudo", "format", "> /dev/sda", "mkfs"]
 
     def __init__(self, work_dir: Path):
         """
@@ -43,7 +45,9 @@ class SecureToolsImpl:
         """
         target: Path = (self.work_dir / filename).resolve()
         if not str(target).startswith(str(self.work_dir)):
-            raise ValueError(f"SECURITY VIOLATION: Path '{filename}' attempts to escape workspace. Resolved path: '{target}' is outside '{self.work_dir}'.")
+            raise ValueError(
+                f"SECURITY VIOLATION: Path '{filename}' attempts to escape workspace. Resolved path: '{target}' is outside '{self.work_dir}'."
+            )
         return target
 
     def tool_write_file(self, filename: str, content: str) -> str:
@@ -59,10 +63,10 @@ class SecureToolsImpl:
         """
         target: Path = self._safe_path(filename)
         target.parent.mkdir(parents=True, exist_ok=True)
-        with open(target, 'w', encoding='utf-8') as f:
+        with open(target, "w", encoding="utf-8") as f:
             f.write(content)
         Logger.info(f"File '{target.name}' written successfully.")
-        return f'File written successfully: {target.name}'
+        return f"File written successfully: {target.name}"
 
     def tool_read_file(self, filename: str) -> str:
         """
@@ -76,17 +80,17 @@ class SecureToolsImpl:
         """
         target: Path = self._safe_path(filename)
         if not target.exists():
-            Logger.warning(f'Attempted to read non-existent file: {filename}')
+            Logger.warning(f"Attempted to read non-existent file: {filename}")
             return f"Error: File '{filename}' does not exist."
         if not target.is_file():
-            Logger.warning(f'Attempted to read a non-file path: {filename}')
+            Logger.warning(f"Attempted to read a non-file path: {filename}")
             return f"Error: Path '{filename}' is not a file."
-        with open(target, encoding='utf-8') as f:
+        with open(target, encoding="utf-8") as f:
             content: Any = f.read()
         Logger.info(f"File '{target.name}' read successfully.")
         return content
 
-    def tool_list_files(self, subdir: str='.') -> str:
+    def tool_list_files(self, subdir: str = ".") -> str:
         """
         Lists files and directories within a specified subdirectory of the workspace.
 
@@ -99,13 +103,13 @@ class SecureToolsImpl:
         """
         target: Path = self._safe_path(subdir)
         if not target.exists():
-            Logger.warning(f'Attempted to list non-existent directory: {subdir}')
+            Logger.warning(f"Attempted to list non-existent directory: {subdir}")
             return f"Error: Directory '{subdir}' not found."
         if not target.is_dir():
-            Logger.warning(f'Attempted to list a non-directory path: {subdir}')
+            Logger.warning(f"Attempted to list a non-directory path: {subdir}")
             return f"Error: Path '{subdir}' is not a directory."
         files: list[str] = [f.name for f in target.iterdir()]
-        output: Any = '\n'.join(files) if files else '(empty directory)'
+        output: Any = "\n".join(files) if files else "(empty directory)"
         Logger.info(f"Listed files in '{subdir}':\n{output}")
         return output
 
@@ -126,19 +130,27 @@ class SecureToolsImpl:
         """
         if any(b in command for b in self.BLACKLIST_COMMANDS):
             Logger.error(f"SECURITY VIOLATION: Command '{command}' contains blacklisted patterns.")
-            raise ValueError('SECURITY VIOLATION: Command contains blacklisted patterns. Refusing to execute.')
+            raise ValueError(
+                "SECURITY VIOLATION: Command contains blacklisted patterns. Refusing to execute."
+            )
         Logger.warning(f"Executing potentially dangerous command: '{command}' in '{self.work_dir}'")
         try:
-            result: Any = subprocess.run(command, shell=True, cwd=self.work_dir, capture_output=True, text=True, timeout=30)
+            result: Any = subprocess.run(
+                command, shell=True, cwd=self.work_dir, capture_output=True, text=True, timeout=30
+            )
             if result.returncode != 0:
-                Logger.error(f'Command failed with return code {result.returncode}: {result.stderr}')
-                return f'Command Error (Exit {result.returncode}): {result.stderr}'
-            Logger.info(f'Command executed successfully: {command}')
+                Logger.error(
+                    f"Command failed with return code {result.returncode}: {result.stderr}"
+                )
+                return f"Command Error (Exit {result.returncode}): {result.stderr}"
+            Logger.info(f"Command executed successfully: {command}")
             return result.stdout
         except subprocess.TimeoutExpired:
-            Logger.error(f'Command timed out: {command}')
-            return 'Command Error: Execution timed out (30s limit).'
+            Logger.error(f"Command timed out: {command}")
+            return "Command Error: Execution timed out (30s limit)."
         except Exception as e:
-            Logger.error(f'Command execution failed: {e}')
-            return f'Command Error: {str(e)}'
-__all__ = ['SecureToolsImpl']
+            Logger.error(f"Command execution failed: {e}")
+            return f"Command Error: {str(e)}"
+
+
+__all__ = ["SecureToolsImpl"]

@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import logging
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
 from typing import Any
 
@@ -15,7 +15,6 @@ _logger = logging.getLogger(__name__)
 
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-
 
 
 # NAMING FIXED: EnforceOrchestrationPolicy → EnforceOrchestrationPolicy

@@ -12,54 +12,49 @@ This config is for OPERATIONAL agents that need to know what to scan/exclude.
 # DIRECTORY EXCLUSIONS - What operational agents should NEVER touch
 # ============================================================================
 
-OPERATIONAL_EXCLUDED_DIRS: frozenset[str] = frozenset({
-    # Version control
-    '.git',
-
-    # Python environments and caches
-    '__pycache__',
-    '.pytest_cache',
-    '.mypy_cache',
-    '.ruff_cache',
-    '.tox',
-    'venv',
-    '.venv',
-    'venv_stable',
-    'env',
-
-    # Build artifacts
-    'dist',
-    'build',
-    '_build',
-    '*.egg-info',
-
-    # IDE and editor
-    '.idea',
-    '.vscode',
-    '.DS_Store',
-    'Thumbs.db',
-
-    # Node/JavaScript
-    'node_modules',
-
-    # Archives and legacy (NEVER TOUCH)
-    'archives',
-    'legacy_code',
-    'legacy_engines',
-    'legacy_resume_gen',
-
-    # Data and logs
-    'data',
-    'logs',
-    'output',
-    'chroma_db',
-
-    # Temporary and backup
-    '.workflow_state',
-    '.sovereign_healing_backup',
-    'temp',
-    'tmp',
-})
+OPERATIONAL_EXCLUDED_DIRS: frozenset[str] = frozenset(
+    {
+        # Version control
+        ".git",
+        # Python environments and caches
+        "__pycache__",
+        ".pytest_cache",
+        ".mypy_cache",
+        ".ruff_cache",
+        ".tox",
+        "venv",
+        ".venv",
+        "venv_stable",
+        "env",
+        # Build artifacts
+        "dist",
+        "build",
+        "_build",
+        "*.egg-info",
+        # IDE and editor
+        ".idea",
+        ".vscode",
+        ".DS_Store",
+        "Thumbs.db",
+        # Node/JavaScript
+        "node_modules",
+        # Archives and legacy (NEVER TOUCH)
+        "archives",
+        "legacy_code",
+        "legacy_engines",
+        "legacy_resume_gen",
+        # Data and logs
+        "data",
+        "logs",
+        "output",
+        "chroma_db",
+        # Temporary and backup
+        ".workflow_state",
+        ".sovereign_healing_backup",
+        "temp",
+        "tmp",
+    }
+)
 
 
 # ============================================================================
@@ -67,11 +62,11 @@ OPERATIONAL_EXCLUDED_DIRS: frozenset[str] = frozenset({
 # ============================================================================
 
 OPERATIONAL_SCAN_TARGETS: list[str] = [
-    'agentic_core',
-    'apps_lic',
-    'apps_rg',
-    'apps_shared',
-    'tests',  # Include tests for deduplication
+    "agentic_core",
+    "apps_lic",
+    "apps_rg",
+    "apps_shared",
+    "tests",  # Include tests for deduplication
 ]
 
 
@@ -79,38 +74,41 @@ OPERATIONAL_SCAN_TARGETS: list[str] = [
 # ALLOWED DUPLICATES - Files legitimately duplicated across directories
 # ============================================================================
 
-OPERATIONAL_ALLOWED_DUPLICATES: frozenset[str] = frozenset({
-    # Python package infrastructure (required in every package)
-    '__init__.py',
-    '__main__.py',
-
-    # Testing infrastructure (pytest requires these)
-    'conftest.py',
-
-    # Configuration files (can exist per-module)
-    'config.py',
-    'settings.py',
-
-    # Common base classes (legitimately duplicated)
-    'base.py',
-    'types.py',
-})
+OPERATIONAL_ALLOWED_DUPLICATES: frozenset[str] = frozenset(
+    {
+        # Python package infrastructure (required in every package)
+        "__init__.py",
+        "__main__.py",
+        # Testing infrastructure (pytest requires these)
+        "conftest.py",
+        # Configuration files (can exist per-module)
+        "config.py",
+        "settings.py",
+        # Common base classes (legitimately duplicated)
+        "base.py",
+        "types.py",
+    }
+)
 
 
 # ============================================================================
 # FILE EXTENSIONS - What file types to scan
 # ============================================================================
 
-OPERATIONAL_PYTHON_EXTENSIONS: frozenset[str] = frozenset({
-    '.py',
-})
+OPERATIONAL_PYTHON_EXTENSIONS: frozenset[str] = frozenset(
+    {
+        ".py",
+    }
+)
 
-OPERATIONAL_CONFIG_EXTENSIONS: frozenset[str] = frozenset({
-    '.json',
-    '.yaml',
-    '.yml',
-    '.toml',
-})
+OPERATIONAL_CONFIG_EXTENSIONS: frozenset[str] = frozenset(
+    {
+        ".json",
+        ".yaml",
+        ".yml",
+        ".toml",
+    }
+)
 
 OPERATIONAL_ALL_EXTENSIONS: frozenset[str] = (
     OPERATIONAL_PYTHON_EXTENSIONS | OPERATIONAL_CONFIG_EXTENSIONS
@@ -120,6 +118,7 @@ OPERATIONAL_ALL_EXTENSIONS: frozenset[str] = (
 # ============================================================================
 # HELPER FUNCTIONS
 # ============================================================================
+
 
 def is_excluded_path(path_str: str) -> bool:
     """
@@ -131,10 +130,10 @@ def is_excluded_path(path_str: str) -> bool:
     Returns:
         True if path should be excluded
     """
-    path_lower = path_str.lower().replace('\\', '/')
+    path_lower = path_str.lower().replace("\\", "/")
 
     for excluded in OPERATIONAL_EXCLUDED_DIRS:
-        if f'/{excluded}/' in path_lower or path_lower.startswith(f'{excluded}/'):
+        if f"/{excluded}/" in path_lower or path_lower.startswith(f"{excluded}/"):
             return True
 
     return False
@@ -171,13 +170,13 @@ def should_scan_directory(dir_name: str) -> bool:
 # ============================================================================
 
 __all__ = [
-    'OPERATIONAL_EXCLUDED_DIRS',
-    'OPERATIONAL_SCAN_TARGETS',
-    'OPERATIONAL_ALLOWED_DUPLICATES',
-    'OPERATIONAL_PYTHON_EXTENSIONS',
-    'OPERATIONAL_CONFIG_EXTENSIONS',
-    'OPERATIONAL_ALL_EXTENSIONS',
-    'is_excluded_path',
-    'is_allowed_duplicate',
-    'should_scan_directory',
+    "OPERATIONAL_EXCLUDED_DIRS",
+    "OPERATIONAL_SCAN_TARGETS",
+    "OPERATIONAL_ALLOWED_DUPLICATES",
+    "OPERATIONAL_PYTHON_EXTENSIONS",
+    "OPERATIONAL_CONFIG_EXTENSIONS",
+    "OPERATIONAL_ALL_EXTENSIONS",
+    "is_excluded_path",
+    "is_allowed_duplicate",
+    "should_scan_directory",
 ]

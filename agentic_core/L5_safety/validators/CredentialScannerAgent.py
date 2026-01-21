@@ -11,6 +11,7 @@ Scans the codebase for potential security leaks including:
 
 Uses FileCache for efficient scanning (Opportunity #3 integration).
 """
+
 from __future__ import annotations
 
 import logging
@@ -28,6 +29,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class CredentialMatch:
     """Represents a detected credential in source code."""
+
     file_path: str
     line_number: int
     line_content: str
@@ -53,132 +55,124 @@ class CredentialScannerAgent(L5SafetyBaseAgent):
     """
 
     # Credential detection patterns
-    PATTERNS: dict[str, tuple[str, str, float]] = field(default_factory=lambda: {
-        # Format: pattern_name: (regex, severity, confidence)
-
-        # Generic API Keys
-        "generic_api_key": (
-            r'(?i)(api[_-]?key|apikey|api[_-]?secret)\s*[:=]\s*["\']([a-zA-Z0-9_\-]{20,})["\']',
-            "high",
-            0.8
-        ),
-
-        # AWS Credentials
-        "aws_access_key": (
-            r'(?i)(AKIA[0-9A-Z]{16})',
-            "high",
-            0.95
-        ),
-        "aws_secret_key": (
-            r'(?i)(aws[_-]?secret[_-]?access[_-]?key)\s*[:=]\s*["\']([a-zA-Z0-9/+=]{40})["\']',
-            "high",
-            0.9
-        ),
-
-        # Azure Credentials
-        "azure_storage_key": (
-            r'(?i)(DefaultEndpointsProtocol=https;AccountName=.*?AccountKey=)([a-zA-Z0-9+/=]{88})',
-            "high",
-            0.95
-        ),
-
-        # GCP Credentials
-        "gcp_api_key": (
-            r'(?i)(AIza[0-9A-Za-z_\-]{35})',
-            "high",
-            0.9
-        ),
-
-        # GitHub Tokens
-        "github_token": (
-            r'(?i)(gh[pousr]_[a-zA-Z0-9]{36,})',
-            "high",
-            0.95
-        ),
-        "github_classic_token": (
-            r'(?i)(github[_-]?token|gh[_-]?token)\s*[:=]\s*["\']([a-f0-9]{40})["\']',
-            "high",
-            0.85
-        ),
-
-        # Stripe Keys
-        "stripe_secret_key": (
-            r'(?i)(sk_live_[a-zA-Z0-9]{24,})',
-            "high",
-            0.95
-        ),
-        "stripe_restricted_key": (
-            r'(?i)(rk_live_[a-zA-Z0-9]{24,})',
-            "high",
-            0.95
-        ),
-
-        # Private Keys
-        "rsa_private_key": (
-            r'-----BEGIN RSA PRIVATE KEY-----',
-            "high",
-            1.0
-        ),
-        "ssh_private_key": (
-            r'-----BEGIN OPENSSH PRIVATE KEY-----',
-            "high",
-            1.0
-        ),
-        "pgp_private_key": (
-            r'-----BEGIN PGP PRIVATE KEY BLOCK-----',
-            "high",
-            1.0
-        ),
-
-        # Generic Secrets
-        "generic_secret": (
-            r'(?i)(secret|password|passwd|pwd)\s*[:=]\s*["\']([^"\']{8,})["\']',
-            "medium",
-            0.6
-        ),
-
-        # Database Connection Strings
-        "db_connection_string": (
-            r'(?i)(mongodb|mysql|postgresql|postgres)://[^:]+:([^@]+)@',
-            "high",
-            0.85
-        ),
-
-        # OAuth Secrets
-        "oauth_client_secret": (
-            r'(?i)(client[_-]?secret|oauth[_-]?secret)\s*[:=]\s*["\']([a-zA-Z0-9_\-]{20,})["\']',
-            "high",
-            0.8
-        ),
-
-        # JWT Tokens
-        "jwt_token": (
-            r'(?i)(eyJ[a-zA-Z0-9_\-]+\.eyJ[a-zA-Z0-9_\-]+\.[a-zA-Z0-9_\-]+)',
-            "medium",
-            0.7
-        ),
-
-        # Slack Tokens
-        "slack_token": (
-            r'(?i)(xox[baprs]-[0-9]{10,13}-[0-9]{10,13}-[a-zA-Z0-9]{24,})',
-            "high",
-            0.9
-        ),
-    })
+    PATTERNS: dict[str, tuple[str, str, float]] = field(
+        default_factory=lambda: {
+            # Format: pattern_name: (regex, severity, confidence)
+            # Generic API Keys
+            "generic_api_key": (
+                r'(?i)(api[_-]?key|apikey|api[_-]?secret)\s*[:=]\s*["\']([a-zA-Z0-9_\-]{20,})["\']',
+                "high",
+                0.8,
+            ),
+            # AWS Credentials
+            "aws_access_key": (r"(?i)(AKIA[0-9A-Z]{16})", "high", 0.95),
+            "aws_secret_key": (
+                r'(?i)(aws[_-]?secret[_-]?access[_-]?key)\s*[:=]\s*["\']([a-zA-Z0-9/+=]{40})["\']',
+                "high",
+                0.9,
+            ),
+            # Azure Credentials
+            "azure_storage_key": (
+                r"(?i)(DefaultEndpointsProtocol=https;AccountName=.*?AccountKey=)([a-zA-Z0-9+/=]{88})",
+                "high",
+                0.95,
+            ),
+            # GCP Credentials
+            "gcp_api_key": (r"(?i)(AIza[0-9A-Za-z_\-]{35})", "high", 0.9),
+            # GitHub Tokens
+            "github_token": (r"(?i)(gh[pousr]_[a-zA-Z0-9]{36,})", "high", 0.95),
+            "github_classic_token": (
+                r'(?i)(github[_-]?token|gh[_-]?token)\s*[:=]\s*["\']([a-f0-9]{40})["\']',
+                "high",
+                0.85,
+            ),
+            # Stripe Keys
+            "stripe_secret_key": (r"(?i)(sk_live_[a-zA-Z0-9]{24,})", "high", 0.95),
+            "stripe_restricted_key": (r"(?i)(rk_live_[a-zA-Z0-9]{24,})", "high", 0.95),
+            # Private Keys
+            "rsa_private_key": (r"-----BEGIN RSA PRIVATE KEY-----", "high", 1.0),
+            "ssh_private_key": (r"-----BEGIN OPENSSH PRIVATE KEY-----", "high", 1.0),
+            "pgp_private_key": (r"-----BEGIN PGP PRIVATE KEY BLOCK-----", "high", 1.0),
+            # Generic Secrets
+            "generic_secret": (
+                r'(?i)(secret|password|passwd|pwd)\s*[:=]\s*["\']([^"\']{8,})["\']',
+                "medium",
+                0.6,
+            ),
+            # Database Connection Strings
+            "db_connection_string": (
+                r"(?i)(mongodb|mysql|postgresql|postgres)://[^:]+:([^@]+)@",
+                "high",
+                0.85,
+            ),
+            # OAuth Secrets
+            "oauth_client_secret": (
+                r'(?i)(client[_-]?secret|oauth[_-]?secret)\s*[:=]\s*["\']([a-zA-Z0-9_\-]{20,})["\']',
+                "high",
+                0.8,
+            ),
+            # JWT Tokens
+            "jwt_token": (
+                r"(?i)(eyJ[a-zA-Z0-9_\-]+\.eyJ[a-zA-Z0-9_\-]+\.[a-zA-Z0-9_\-]+)",
+                "medium",
+                0.7,
+            ),
+            # Slack Tokens
+            "slack_token": (
+                r"(?i)(xox[baprs]-[0-9]{10,13}-[0-9]{10,13}-[a-zA-Z0-9]{24,})",
+                "high",
+                0.9,
+            ),
+        }
+    )
 
     # File extensions to scan
-    SCANNABLE_EXTENSIONS: set[str] = field(default_factory=lambda: {
-        '.py', '.js', '.ts', '.jsx', '.tsx', '.java', '.go', '.rb', '.php',
-        '.cs', '.cpp', '.c', '.h', '.sh', '.bash', '.zsh', '.yaml', '.yml',
-        '.json', '.xml', '.env', '.config', '.ini', '.toml', '.properties'
-    })
+    SCANNABLE_EXTENSIONS: set[str] = field(
+        default_factory=lambda: {
+            ".py",
+            ".js",
+            ".ts",
+            ".jsx",
+            ".tsx",
+            ".java",
+            ".go",
+            ".rb",
+            ".php",
+            ".cs",
+            ".cpp",
+            ".c",
+            ".h",
+            ".sh",
+            ".bash",
+            ".zsh",
+            ".yaml",
+            ".yml",
+            ".json",
+            ".xml",
+            ".env",
+            ".config",
+            ".ini",
+            ".toml",
+            ".properties",
+        }
+    )
 
     # Paths to exclude from scanning
-    EXCLUDED_PATHS: set[str] = field(default_factory=lambda: {
-        '.git', '__pycache__', 'node_modules', '.venv', 'venv',
-        'archives', '.sovereign_healing_backup', 'healing_backups',
-        'coverage_html', '.pytest_cache', '.mypy_cache'
-    })
+    EXCLUDED_PATHS: set[str] = field(
+        default_factory=lambda: {
+            ".git",
+            "__pycache__",
+            "node_modules",
+            ".venv",
+            "venv",
+            "archives",
+            ".sovereign_healing_backup",
+            "healing_backups",
+            "coverage_html",
+            ".pytest_cache",
+            ".mypy_cache",
+        }
+    )
 
     def __post_init__(self):
         """Initialize the credential scanner."""
@@ -187,9 +181,7 @@ class CredentialScannerAgent(L5SafetyBaseAgent):
         self.matches: list[CredentialMatch] = []
 
     def scan_for_credentials(
-        self,
-        target_path: Path | None = None,
-        file_patterns: list[str] | None = None
+        self, target_path: Path | None = None, file_patterns: list[str] | None = None
     ) -> dict[str, Any]:
         """
         Scan for hardcoded credentials in the codebase.
@@ -205,6 +197,7 @@ class CredentialScannerAgent(L5SafetyBaseAgent):
             from agentic_core.L5_safety.validators.structure_blueprint import (
                 get_validated_project_root,
             )
+
             target_path = get_validated_project_root()
 
         logger.info(f"[CREDENTIAL SCAN] Starting scan of {target_path}")
@@ -233,7 +226,7 @@ class CredentialScannerAgent(L5SafetyBaseAgent):
             "total_matches": len(self.matches),
             "matches": [self._match_to_dict(m) for m in self.matches],
             "summary": summary,
-            "recommendations": self._generate_recommendations()
+            "recommendations": self._generate_recommendations(),
         }
 
     def _get_scannable_files(self, root_path: Path) -> list[Path]:
@@ -260,8 +253,8 @@ class CredentialScannerAgent(L5SafetyBaseAgent):
     def _scan_file(self, file_path: Path) -> None:
         """Scan a single file for credentials."""
         try:
-            content = file_path.read_text(encoding='utf-8', errors='ignore')
-            lines = content.split('\n')
+            content = file_path.read_text(encoding="utf-8", errors="ignore")
+            lines = content.split("\n")
 
             for line_num, line in enumerate(lines, start=1):
                 for pattern_name, (regex, severity, confidence) in self.PATTERNS.items():
@@ -271,27 +264,40 @@ class CredentialScannerAgent(L5SafetyBaseAgent):
                         if self._is_false_positive(line, pattern_name):
                             continue
 
-                        self.matches.append(CredentialMatch(
-                            file_path=str(file_path),
-                            line_number=line_num,
-                            line_content=line.strip(),
-                            pattern_type=pattern_name,
-                            severity=severity,
-                            confidence=confidence
-                        ))
+                        self.matches.append(
+                            CredentialMatch(
+                                file_path=str(file_path),
+                                line_number=line_num,
+                                line_content=line.strip(),
+                                pattern_type=pattern_name,
+                                severity=severity,
+                                confidence=confidence,
+                            )
+                        )
         except Exception as e:
             logger.debug(f"[CREDENTIAL SCAN] Error scanning {file_path}: {e}")
 
     def _is_false_positive(self, line: str, pattern_name: str) -> bool:
         """Check if a match is likely a false positive."""
         # Skip comments
-        if line.strip().startswith('#') or line.strip().startswith('//'):
+        if line.strip().startswith("#") or line.strip().startswith("//"):
             return True
 
         # Skip example/placeholder values
         false_positive_markers = [
-            'example', 'placeholder', 'your_', 'your-', 'xxx', 'yyy',
-            'test', 'mock', 'fake', 'dummy', 'sample', '<', '>'
+            "example",
+            "placeholder",
+            "your_",
+            "your-",
+            "xxx",
+            "yyy",
+            "test",
+            "mock",
+            "fake",
+            "dummy",
+            "sample",
+            "<",
+            ">",
         ]
 
         line_lower = line.lower()
@@ -309,7 +315,7 @@ class CredentialScannerAgent(L5SafetyBaseAgent):
         return {
             "by_severity": by_severity,
             "by_type": by_type,
-            "high_confidence_count": sum(1 for m in self.matches if m.confidence >= 0.9)
+            "high_confidence_count": sum(1 for m in self.matches if m.confidence >= 0.9),
         }
 
     def _generate_recommendations(self) -> list[str]:
@@ -317,9 +323,7 @@ class CredentialScannerAgent(L5SafetyBaseAgent):
         recommendations = []
 
         if any(m.severity == "high" for m in self.matches):
-            recommendations.append(
-                "🚨 HIGH PRIORITY: Remove all hardcoded credentials immediately"
-            )
+            recommendations.append("🚨 HIGH PRIORITY: Remove all hardcoded credentials immediately")
             recommendations.append(
                 "Use environment variables or secure secret management (e.g., AWS Secrets Manager, Azure Key Vault)"
             )
@@ -347,14 +351,11 @@ class CredentialScannerAgent(L5SafetyBaseAgent):
             "content": match.line_content[:100],  # Truncate for safety
             "type": match.pattern_type,
             "severity": match.severity,
-            "confidence": match.confidence
+            "confidence": match.confidence,
         }
 
     def heal_repository(
-        self,
-        dry_run: bool = True,
-        execute: bool = False,
-        **kwargs
+        self, dry_run: bool = True, execute: bool = False, **kwargs
     ) -> dict[str, Any]:
         """
         Autonomous healing for credential leaks.
@@ -371,5 +372,5 @@ class CredentialScannerAgent(L5SafetyBaseAgent):
             "fixed": 0,  # Never auto-fix credentials for safety
             "errors": 0,
             "skipped": scan_results["total_matches"],
-            "metadata": scan_results["summary"]
+            "metadata": scan_results["summary"],
         }

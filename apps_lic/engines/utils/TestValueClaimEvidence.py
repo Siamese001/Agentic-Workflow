@@ -1,4 +1,5 @@
 """E2E check that value claims include evidence anchors."""
+
 from __future__ import annotations
 
 from types import SimpleNamespace
@@ -14,7 +15,9 @@ def extract_artifact_markers(draft: str) -> list[str]:
 def test_value_claims_are_anchored():
     toggles = ReasoningToggles()
     architect = MessageArchitect(toggles)
-    sanitized = SimpleNamespace(prompt="Update on strategic wins", company_id="ACME", contact_id="C1")
+    sanitized = SimpleNamespace(
+        prompt="Update on strategic wins", company_id="ACME", contact_id="C1"
+    )
 
     plan = architect._build_plan(
         ["ACME latest milestones", "ACME recent news", "C1 profile highlights"], sanitized

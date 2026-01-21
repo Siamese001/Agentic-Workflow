@@ -32,7 +32,7 @@ def test_meta_learning_agent_1_1():
 
     # Get initial weight
     initial_weights = agent.strategy_weights.copy()
-    initial_cot_weight = initial_weights['cot']
+    initial_cot_weight = initial_weights["cot"]
     print(f"Initial 'cot' weight: {initial_cot_weight}")
 
     # Store multiple high-reward experiences for 'cot'
@@ -41,34 +41,39 @@ def test_meta_learning_agent_1_1():
             state={"task": f"test_{i}"},
             thought_type="cot",
             outcome={"success": True},
-            reward=0.9  # High reward
+            reward=0.9,  # High reward
         )
 
     # Store some low-reward experiences for other strategies
-    for strategy in ['tot', 'react', 'reflection']:
+    for strategy in ["tot", "react", "reflection"]:
         agent.store_experience(
             state={"task": "test"},
             thought_type=strategy,
             outcome={"success": False},
-            reward=0.1  # Low reward
+            reward=0.1,  # Low reward
         )
 
     # Update weights
     updated_weights = agent.update_strategy_weights()
-    updated_cot_weight = updated_weights['cot']
+    updated_cot_weight = updated_weights["cot"]
     print(f"Updated 'cot' weight: {updated_cot_weight}")
 
     # Verify cot weight increased
-    assert updated_cot_weight > initial_cot_weight, \
+    assert updated_cot_weight > initial_cot_weight, (
         f"Expected 'cot' weight to increase, but got {updated_cot_weight} <= {initial_cot_weight}"
+    )
 
     # Verify cot has highest weight
     max_weight_strategy = max(updated_weights, key=updated_weights.get)
-    assert max_weight_strategy == 'cot', \
+    assert max_weight_strategy == "cot", (
         f"Expected 'cot' to have highest weight, but '{max_weight_strategy}' has highest"
+    )
 
-    print(f"✅ Test Case 1.1 PASSED: 'cot' weight increased from {initial_cot_weight:.3f} to {updated_cot_weight:.3f}")
+    print(
+        f"✅ Test Case 1.1 PASSED: 'cot' weight increased from {initial_cot_weight:.3f} to {updated_cot_weight:.3f}"
+    )
     return True
+
 
 def test_meta_learning_agent_1_2():
     """
@@ -84,7 +89,7 @@ def test_meta_learning_agent_1_2():
         "cot": 0.5,
         "tot": 0.9,  # Highest
         "react": 0.3,
-        "reflection": 0.2
+        "reflection": 0.2,
     }
 
     print(f"Strategy weights: {agent.strategy_weights}")
@@ -94,19 +99,22 @@ def test_meta_learning_agent_1_2():
     print(f"Recommended strategy: {recommended}")
 
     # Verify it returns 'tot'
-    assert recommended == 'tot', \
-        f"Expected recommendation 'tot', but got '{recommended}'"
+    assert recommended == "tot", f"Expected recommendation 'tot', but got '{recommended}'"
 
     # Test with different highest weight
-    agent.strategy_weights['reflection'] = 1.0
+    agent.strategy_weights["reflection"] = 1.0
     recommended = agent.get_strategy_recommendation(context={})
     print(f"After changing weights, recommended strategy: {recommended}")
 
-    assert recommended == 'reflection', \
+    assert recommended == "reflection", (
         f"Expected recommendation 'reflection', but got '{recommended}'"
+    )
 
-    print("✅ Test Case 1.2 PASSED: get_strategy_recommendation() returns highest-weighted strategy")
+    print(
+        "✅ Test Case 1.2 PASSED: get_strategy_recommendation() returns highest-weighted strategy"
+    )
     return True
+
 
 def test_orchestrator_interface_2_1():
     """
@@ -125,6 +133,7 @@ def test_orchestrator_interface_2_1():
         print("✅ Test Case 2.1 PASSED: IOrchestratorAgent cannot be instantiated directly")
         return True
 
+
 def test_orchestrator_interface_2_2():
     """
     Test Case 2.2: Confirm MCPHardenedMixin and HealerMixin methods are available
@@ -134,8 +143,9 @@ def test_orchestrator_interface_2_2():
 
     # Create a concrete implementation for testing
     class MockOrchestrator(IOrchestratorAgent):
-
-        def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
+        def heal_repository(
+            self, dry_run: bool = True, execute: bool = False, **kwargs
+        ) -> dict[str, Any]:
             """
             Autonomous healing method (Canon Key 51 compliance).
 
@@ -154,10 +164,14 @@ def test_orchestrator_interface_2_2():
         def think(self, context: ExecutionContext) -> dict[str, Any]:
             return {"thoughts": ["plan_step_1"]}
 
-        def act(self, actions: list[dict[str, Any]], context: ExecutionContext) -> list[dict[str, Any]]:
+        def act(
+            self, actions: list[dict[str, Any]], context: ExecutionContext
+        ) -> list[dict[str, Any]]:
             return [{"action": "completed"}]
 
-        def observe(self, action_results: list[dict[str, Any]], context: ExecutionContext) -> dict[str, Any]:
+        def observe(
+            self, action_results: list[dict[str, Any]], context: ExecutionContext
+        ) -> dict[str, Any]:
             return {"observations": ["result_1"]}
 
         def should_continue(self, context: ExecutionContext) -> bool:
@@ -171,28 +185,28 @@ def test_orchestrator_interface_2_2():
     print(f"Created MockOrchestrator instance: {orchestrator.__class__.__name__}")
 
     # Check for HealerMixin methods
-    assert hasattr(orchestrator, 'heal_repository'), \
-        "Missing HealerMixin method: heal_repository"
+    assert hasattr(orchestrator, "heal_repository"), "Missing HealerMixin method: heal_repository"
     print("✓ HealerMixin method 'heal_repository' available")
 
     # Check for MCPHardenedMixin methods (common methods)
-    mcp_methods = ['validate_mcp_call', 'log_mcp_interaction']
+    mcp_methods = ["validate_mcp_call", "log_mcp_interaction"]
     for method in mcp_methods:
         if hasattr(orchestrator, method):
             print(f"✓ MCPHardenedMixin method '{method}' available")
 
     # Check for SubatomicTestingMixin methods
-    subatomic_methods = ['enable_test_mode', 'disable_test_mode', 'is_test_mode', 'record_test_result']
+    subatomic_methods = [
+        "enable_test_mode",
+        "disable_test_mode",
+        "is_test_mode",
+        "record_test_result",
+    ]
     for method in subatomic_methods:
-        assert hasattr(orchestrator, method), \
-            f"Missing SubatomicTestingMixin method: {method}"
+        assert hasattr(orchestrator, method), f"Missing SubatomicTestingMixin method: {method}"
         print(f"✓ SubatomicTestingMixin method '{method}' available")
 
     # Test ExecutionContext dataclass
-    context = ExecutionContext(
-        task_id="test_task_001",
-        input_data={"query": "test"}
-    )
+    context = ExecutionContext(task_id="test_task_001", input_data={"query": "test"})
     print(f"✓ ExecutionContext created: task_id={context.task_id}")
 
     # Test ExecutionPhase enum
@@ -207,6 +221,7 @@ def test_orchestrator_interface_2_2():
 
     print("✅ Test Case 2.2 PASSED: Mixins integrated successfully into IOrchestratorAgent")
     return True
+
 
 def run_all_tests():
     """Run all Phase 1 validation tests."""
@@ -229,6 +244,7 @@ def run_all_tests():
         except Exception as e:
             print(f"\n❌ Test {test_name} FAILED with exception: {e}")
             import traceback
+
             traceback.print_exc()
             results.append((test_name, False))
 
@@ -252,6 +268,7 @@ def run_all_tests():
     else:
         print(f"\n⚠️  {total_count - passed_count} test(s) failed - review required")
         return 1
+
 
 if __name__ == "__main__":
     exit_code = run_all_tests()

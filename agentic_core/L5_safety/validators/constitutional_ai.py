@@ -18,6 +18,7 @@ Logger = logging.getLogger(__name__)
 
 class RuleType(Enum):
     """Types of constitutional rules."""
+
     SAFETY = "safety"
     ETHICS = "ethics"
     PRIVACY = "privacy"
@@ -28,6 +29,7 @@ class RuleType(Enum):
 
 class RuleSeverity(Enum):
     """Severity levels for rule violations."""
+
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
@@ -36,6 +38,7 @@ class RuleSeverity(Enum):
 
 class ViolationType(Enum):
     """Types of constitutional violations."""
+
     CONTENT = "content"
     STYLE = "style"
     STRUCTURE = "structure"
@@ -45,6 +48,7 @@ class ViolationType(Enum):
 @dataclass
 class ConstitutionalRule:
     """Individual constitutional rule."""
+
     rule_id: str
     RuleType: RuleType
     title: str
@@ -58,6 +62,7 @@ class ConstitutionalRule:
 @dataclass
 class ViolationReport:
     """Report of constitutional Violation."""
+
     rule_id: str
     ViolationType: ViolationType
     Severity: RuleSeverity
@@ -70,6 +75,7 @@ class ViolationReport:
 @dataclass
 class ConstitutionalReviewResult:
     """Result of constitutional review."""
+
     is_compliant: bool
     violations: list[ViolationReport]
     compliance_score: float
@@ -92,9 +98,7 @@ class ConstitutionalAISystem:
         """
         self.enable_logging = enable_logging
         self.rules: dict[str, ConstitutionalRule] = {}
-        self.rule_patterns: dict[RuleType, list[ConstitutionalRule]] = {
-            rt: [] for rt in RuleType
-        }
+        self.rule_patterns: dict[RuleType, list[ConstitutionalRule]] = {rt: [] for rt in RuleType}
         self._load_default_rules()
 
     def add_rule(self, rule: ConstitutionalRule) -> None:
@@ -159,10 +163,9 @@ class ConstitutionalAISystem:
                     "violation_count": len(violations),
                     "compliance_score": compliance_score,
                     "critical_count": sum(
-                        1 for v in violations
-                        if v.Severity == RuleSeverity.CRITICAL
+                        1 for v in violations if v.Severity == RuleSeverity.CRITICAL
                     ),
-                }
+                },
             )
 
         return ConstitutionalReviewResult(
@@ -239,9 +242,7 @@ class ConstitutionalAISystem:
 
         except re.error as e:
             if self.enable_logging:
-                Logger.error(
-                    f"Invalid regex pattern in rule {rule.rule_id}: {e}"
-                )
+                Logger.error(f"Invalid regex pattern in rule {rule.rule_id}: {e}")
 
         return violations
 
@@ -264,9 +265,7 @@ class ConstitutionalAISystem:
             RuleSeverity.LOW: 0.2,
         }
 
-        total_penalty = sum(
-            severity_weights.get(v.Severity, 0.5) for v in violations
-        )
+        total_penalty = sum(severity_weights.get(v.Severity, 0.5) for v in violations)
 
         score = max(0.0, 1.0 - (total_penalty / 10.0))
 
@@ -301,8 +300,7 @@ class ConstitutionalAISystem:
 
         if RuleSeverity.HIGH in violation_by_type:
             recommendations.append(
-                f"HIGH: Review {len(violation_by_type[RuleSeverity.HIGH])} "
-                "high-Severity violations"
+                f"HIGH: Review {len(violation_by_type[RuleSeverity.HIGH])} high-Severity violations"
             )
 
         unique_rules = {v.rule_id for v in violations}
@@ -322,7 +320,7 @@ class ConstitutionalAISystem:
                 RuleType=RuleType.SAFETY,
                 title="No harmful content",
                 description="Prevent harmful or dangerous content",
-                pattern=r'\b(kill|harm|attack|destroy)\b',
+                pattern=r"\b(kill|harm|attack|destroy)\b",
                 Severity=RuleSeverity.CRITICAL,
                 action="block",
             ),
@@ -331,7 +329,7 @@ class ConstitutionalAISystem:
                 RuleType=RuleType.PRIVACY,
                 title="No PII exposure",
                 description="Prevent exposure of personal information",
-                pattern=r'\b\d{3}-\d{2}-\d{4}\b',
+                pattern=r"\b\d{3}-\d{2}-\d{4}\b",
                 Severity=RuleSeverity.HIGH,
                 action="block",
             ),
@@ -340,7 +338,7 @@ class ConstitutionalAISystem:
                 RuleType=RuleType.ETHICS,
                 title="No deceptive content",
                 description="Prevent misleading or deceptive content",
-                pattern=r'\b(fake|fraud|scam|trick)\b',
+                pattern=r"\b(fake|fraud|scam|trick)\b",
                 Severity=RuleSeverity.MEDIUM,
                 action="warn",
             ),
@@ -350,7 +348,9 @@ class ConstitutionalAISystem:
             self.add_rule(rule)
 
 
-def review_content(content: str, context: dict[str, any] | None = None) -> ConstitutionalReviewResult:
+def review_content(
+    content: str, context: dict[str, any] | None = None
+) -> ConstitutionalReviewResult:
     """Convenience function to review content.
 
     Args:

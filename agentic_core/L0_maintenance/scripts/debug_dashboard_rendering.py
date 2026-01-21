@@ -3,6 +3,7 @@
 Debug Dashboard Rendering Issues
 Check why dashboard appears empty in browser
 """
+
 import json
 import re
 
@@ -20,16 +21,16 @@ def debug_dashboard():
     print("=" * 70)
 
     dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
-    html = dashboard_path.read_text(encoding='utf-8')
+    html = dashboard_path.read_text(encoding="utf-8")
 
     # 1. Check dashboardData exists and is valid
     print("\n1. Checking dashboardData...")
-    dashboard_match = re.search(r'const dashboardData = (\[.*?\]);', html, re.DOTALL)
+    dashboard_match = re.search(r"const dashboardData = (\[.*?\]);", html, re.DOTALL)
     if dashboard_match:
         try:
             data = json.loads(dashboard_match.group(1))
             print(f"   ✅ dashboardData: {len(data)} rows")
-            total = next((r for r in data if r.get('Territory') == 'TOTAL'), None)
+            total = next((r for r in data if r.get("Territory") == "TOTAL"), None)
             if total:
                 print(f"   ✅ TOTAL row: {total['Total']} agents, {total['Heal Cap %']}% heal cap")
         except Exception as e:
@@ -39,7 +40,7 @@ def debug_dashboard():
 
     # 2. Check realAgentData exists
     print("\n2. Checking realAgentData...")
-    real_match = re.search(r'const realAgentData = (\{.*?\});', html, re.DOTALL)
+    real_match = re.search(r"const realAgentData = (\{.*?\});", html, re.DOTALL)
     if real_match:
         try:
             real_data = json.loads(real_match.group(1))
@@ -60,12 +61,12 @@ def debug_dashboard():
 
     # 4. Check loadData() is called
     print("\n4. Checking loadData() call...")
-    if 'loadData();' in html:
+    if "loadData();" in html:
         print("   ✅ loadData() is called")
         # Find where it's called
-        lines = html.split('\n')
+        lines = html.split("\n")
         for i, line in enumerate(lines, 1):
-            if 'loadData();' in line and '//' not in line.split('loadData()')[0]:
+            if "loadData();" in line and "//" not in line.split("loadData()")[0]:
                 print(f"   ✅ Called at line {i}")
     else:
         print("   ❌ loadData() not called")
@@ -76,8 +77,8 @@ def debug_dashboard():
     # Check for unclosed braces in realAgentData
     if real_match:
         real_json = real_match.group(1)
-        open_braces = real_json.count('{')
-        close_braces = real_json.count('}')
+        open_braces = real_json.count("{")
+        close_braces = real_json.count("}")
         if open_braces == close_braces:
             print(f"   ✅ Braces balanced in realAgentData ({open_braces} pairs)")
         else:
@@ -86,8 +87,8 @@ def debug_dashboard():
     # Check for unclosed brackets in dashboardData
     if dashboard_match:
         dash_json = dashboard_match.group(1)
-        open_brackets = dash_json.count('[')
-        close_brackets = dash_json.count(']')
+        open_brackets = dash_json.count("[")
+        close_brackets = dash_json.count("]")
         if open_brackets == close_brackets:
             print(f"   ✅ Brackets balanced in dashboardData ({open_brackets} pairs)")
         else:
@@ -96,9 +97,9 @@ def debug_dashboard():
     # 6. Check renderTerritorySummaryTable function
     print("\n6. Checking rendering functions...")
     funcs = [
-        'function renderTerritorySummaryTable',
-        'function renderCodeQualityTable',
-        'function loadData'
+        "function renderTerritorySummaryTable",
+        "function renderCodeQualityTable",
+        "function loadData",
     ]
     for func in funcs:
         if func in html:
@@ -108,7 +109,7 @@ def debug_dashboard():
 
     # 7. Check if globalAgentData is assigned
     print("\n7. Checking globalAgentData assignment...")
-    if 'globalAgentData = realAgentData' in html:
+    if "globalAgentData = realAgentData" in html:
         print("   ✅ globalAgentData = realAgentData")
     else:
         print("   ❌ globalAgentData not assigned")
@@ -138,6 +139,7 @@ def debug_dashboard():
     print("6. Type: realAgentData")
     print("7. Type: document.getElementById('kpiGrid')")
     print("\nIf you see errors, copy them and share for debugging.")
+
 
 if __name__ == "__main__":
     debug_dashboard()

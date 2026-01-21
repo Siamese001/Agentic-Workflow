@@ -10,13 +10,22 @@ from pathlib import Path
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from typing import Any
 
-root: Any = Path('C:/Git/Agentic-Workflow')
-core: Any = ROOT / 'agentic_core'
-moves_back: Any = [(CORE / 'L3_orchestration/P1_core/l5_autonomous_orchestrator.py', ROOT / 'apps_rg/L3_orchestration'), (CORE / 'L3_orchestration/P1_core/l5_orchestrator', ROOT / 'apps_rg/L3_orchestration'), (CORE / 'L2_execution/P3_engines/outreach_engine', ROOT / 'apps_lic/engines'), (CORE / 'L2_execution/P3_engines/resume_engine', ROOT / 'apps_rg/engines')]
+root: Any = Path("C:/Git/Agentic-Workflow")
+core: Any = ROOT / "agentic_core"
+moves_back: Any = [
+    (
+        CORE / "L3_orchestration/P1_core/l5_autonomous_orchestrator.py",
+        ROOT / "apps_rg/L3_orchestration",
+    ),
+    (CORE / "L3_orchestration/P1_core/l5_orchestrator", ROOT / "apps_rg/L3_orchestration"),
+    (CORE / "L2_execution/P3_engines/outreach_engine", ROOT / "apps_lic/engines"),
+    (CORE / "L2_execution/P3_engines/resume_engine", ROOT / "apps_rg/engines"),
+]
+
 
 def fix_gravity() -> Any:
     """Brief description of functionality and purpose."""
-    print('[*] FIXING GRAVITY BREACHES...')
+    print("[*] FIXING GRAVITY BREACHES...")
     fixed: Any = 0
     for src, dest_dir in MOVES_BACK:
         if not src.exists():
@@ -30,8 +39,10 @@ def fix_gravity() -> Any:
             else:
                 dest.unlink()
         shutil.move(str(src), str(dest))
-        print(f'  [✓] Moved: {src.relative_to(CORE)} -> {dest.relative_to(ROOT)}')
+        print(f"  [✓] Moved: {src.relative_to(CORE)} -> {dest.relative_to(ROOT)}")
         fixed += 1
-    print(f'\n[OK] Fixed {fixed} gravity breaches')
-if __name__ == '__main__':
+    print(f"\n[OK] Fixed {fixed} gravity breaches")
+
+
+if __name__ == "__main__":
     fix_gravity()

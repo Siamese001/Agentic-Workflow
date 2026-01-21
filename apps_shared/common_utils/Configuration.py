@@ -761,7 +761,7 @@ class ConfigurationService:
     def reset(self):
         """Reset all configuration to defaults."""
         for attr_name in dir(self):
-            if not attr_name.startswith('_'):
+            if not attr_name.startswith("_"):
                 setattr(self, attr_name, None)
 
 

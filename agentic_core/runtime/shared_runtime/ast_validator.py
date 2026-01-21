@@ -4,6 +4,7 @@ CanonASTValidator - Base class for AST-based code validation.
 Provides the foundation for all AST validators in the L1 cognition layer.
 Handles TYPE_CHECKING block detection, violation reporting, and file parsing.
 """
+
 from __future__ import annotations
 
 import ast
@@ -45,14 +46,16 @@ class CanonASTValidator(ast.NodeVisitor):
         is_type_checking = False
 
         # Check for: if TYPE_CHECKING:
-        if isinstance(node.test, ast.Name) and node.test.id == 'TYPE_CHECKING':
+        if isinstance(node.test, ast.Name) and node.test.id == "TYPE_CHECKING":
             is_type_checking = True
 
         # Check for: if typing.TYPE_CHECKING:
         elif isinstance(node.test, ast.Attribute):
-            if (isinstance(node.test.value, ast.Name) and
-                node.test.value.id == 'typing' and
-                node.test.attr == 'TYPE_CHECKING'):
+            if (
+                isinstance(node.test.value, ast.Name)
+                and node.test.value.id == "typing"
+                and node.test.attr == "TYPE_CHECKING"
+            ):
                 is_type_checking = True
 
         if is_type_checking:
@@ -79,12 +82,12 @@ class CanonASTValidator(ast.NodeVisitor):
             node: AST node where violation occurred
         """
         violation = {
-            'type': 'AST_VIOLATION',
-            'message': message,
-            'lineno': getattr(node, 'lineno', 0),
-            'col_offset': getattr(node, 'col_offset', 0),
-            'agent': self.__class__.__name__,
-            'file': str(self.current_file) if self.current_file else None,
+            "type": "AST_VIOLATION",
+            "message": message,
+            "lineno": getattr(node, "lineno", 0),
+            "col_offset": getattr(node, "col_offset", 0),
+            "agent": self.__class__.__name__,
+            "file": str(self.current_file) if self.current_file else None,
         }
         self.violations.append(violation)
 
@@ -116,14 +119,16 @@ class CanonASTValidator(ast.NodeVisitor):
             tree = ast.parse(source)
             self.visit(tree)
         except SyntaxError as e:
-            self.violations.append({
-                'type': 'SYNTAX_ERROR',
-                'message': f'Syntax error: {e}',
-                'lineno': e.lineno or 0,
-                'col_offset': e.offset or 0,
-                'agent': self.__class__.__name__,
-                'file': str(file_path) if file_path else None,
-            })
+            self.violations.append(
+                {
+                    "type": "SYNTAX_ERROR",
+                    "message": f"Syntax error: {e}",
+                    "lineno": e.lineno or 0,
+                    "col_offset": e.offset or 0,
+                    "agent": self.__class__.__name__,
+                    "file": str(file_path) if file_path else None,
+                }
+            )
 
         return self.violations
 
@@ -138,17 +143,19 @@ class CanonASTValidator(ast.NodeVisitor):
             List of violation dictionaries
         """
         try:
-            source = file_path.read_text(encoding='utf-8')
+            source = file_path.read_text(encoding="utf-8")
             return self.validate(source, file_path)
         except Exception as e:
-            return [{
-                'type': 'FILE_ERROR',
-                'message': f'Could not read file: {e}',
-                'lineno': 0,
-                'col_offset': 0,
-                'agent': self.__class__.__name__,
-                'file': str(file_path),
-            }]
+            return [
+                {
+                    "type": "FILE_ERROR",
+                    "message": f"Could not read file: {e}",
+                    "lineno": 0,
+                    "col_offset": 0,
+                    "agent": self.__class__.__name__,
+                    "file": str(file_path),
+                }
+            ]
 
     def get_violations(self) -> list[dict[str, Any]]:
         """Return all collected violations."""
@@ -160,10 +167,7 @@ class CanonASTValidator(ast.NodeVisitor):
 
 
 def parse_and_validate(
-    file_path: Path,
-    content: str,
-    key_id: int,
-    validator_class: type[CanonASTValidator]
+    file_path: Path, content: str, key_id: int, validator_class: type[CanonASTValidator]
 ) -> list[dict[str, Any]]:
     """
     Parse content and validate using specified validator class.
@@ -182,6 +186,6 @@ def parse_and_validate(
 
     # Add key_id to each violation
     for v in violations:
-        v['key_id'] = key_id
+        v["key_id"] = key_id
 
     return violations

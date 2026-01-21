@@ -68,29 +68,21 @@ class StructureConstraint:
 class HeadlineBrief:
     """Creative brief for headline section."""
 
-    word_count: WordCountConstraint = field(
-        default_factory=lambda: WordCountConstraint(8, 12)
-    )
+    word_count: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(8, 12))
     char_count_max: int = 90
     structure: str = "Domain | Leadership | Value Prop"
     segment_word_limit: int = 3
     exclusions: list[str] = field(
-        default_factory=lambda: [
-            "and", "a", "an", "the", "in", "on", "at", "for", "to", "of"
-        ]
+        default_factory=lambda: ["and", "a", "an", "the", "in", "on", "at", "for", "to", "of"]
     )
-    guidance: str = (
-        "Must incorporate differentiator keywords from the Competitive Analysis."
-    )
+    guidance: str = "Must incorporate differentiator keywords from the Competitive Analysis."
 
 
 @dataclass
 class ExecutiveSummaryBrief:
     """Creative brief for executive summary section."""
 
-    word_count: WordCountConstraint = field(
-        default_factory=lambda: WordCountConstraint(120, 140)
-    )
+    word_count: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(120, 140))
     voice: VoiceType = VoiceType.THIRD_PERSON_IMPLIED
     forbidden_patterns: list[str] = field(
         default_factory=lambda: [
@@ -128,15 +120,10 @@ class ExperienceBulletsBrief:
             "k7": WordCountConstraint(22, 28),
         }
     )
-    k6_word_count: WordCountConstraint = field(
-        default_factory=lambda: WordCountConstraint(28, 33)
-    )
-    k7_word_count: WordCountConstraint = field(
-        default_factory=lambda: WordCountConstraint(24, 30)
-    )
+    k6_word_count: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(28, 33))
+    k7_word_count: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(24, 30))
     guidance: str = (
-        "Must use standard technology terms "
-        "(e.g., 'cloud data platform' instead of 'Snowflake')."
+        "Must use standard technology terms (e.g., 'cloud data platform' instead of 'Snowflake')."
     )
 
 
@@ -188,12 +175,8 @@ class RGCreativeBrief:
     """Complete creative brief for resume generation."""
 
     headline: HeadlineBrief = field(default_factory=HeadlineBrief)
-    executive_summary: ExecutiveSummaryBrief = field(
-        default_factory=ExecutiveSummaryBrief
-    )
-    experience_bullets: ExperienceBulletsBrief = field(
-        default_factory=ExperienceBulletsBrief
-    )
+    executive_summary: ExecutiveSummaryBrief = field(default_factory=ExecutiveSummaryBrief)
+    experience_bullets: ExperienceBulletsBrief = field(default_factory=ExperienceBulletsBrief)
     leadership_competencies: LeadershipCompetenciesBrief = field(
         default_factory=LeadershipCompetenciesBrief
     )
@@ -227,8 +210,7 @@ class CreativeBriefValidator:
         if len(text) > self.brief.headline.char_count_max:
             result["is_valid"] = False
             result["violations"].append(
-                f"Character count {len(text)} exceeds max "
-                f"{self.brief.headline.char_count_max}"
+                f"Character count {len(text)} exceeds max {self.brief.headline.char_count_max}"
             )
         result["metrics"]["char_count"] = len(text)
 
@@ -266,9 +248,7 @@ class CreativeBriefValidator:
             first_person_markers = ["I ", "I'm", "I've", "my ", "me "]
             for marker in first_person_markers:
                 if marker.lower() in text.lower():
-                    result["violations"].append(
-                        f"First person marker found: {marker.strip()}"
-                    )
+                    result["violations"].append(f"First person marker found: {marker.strip()}")
 
         return result
 
@@ -329,9 +309,7 @@ class CreativeBriefValidator:
             "metrics": {},
         }
 
-        is_valid, message = self.brief.leadership_competencies.word_count_per_desc.validate(
-            text
-        )
+        is_valid, message = self.brief.leadership_competencies.word_count_per_desc.validate(text)
         result["metrics"]["word_count"] = len(text.split())
         if not is_valid:
             result["is_valid"] = False

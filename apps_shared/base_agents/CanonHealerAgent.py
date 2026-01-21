@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine
@@ -36,7 +35,7 @@ except ImportError:
 from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
 
 # GRAVITY FIXED (Upward Leak): from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-_mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_mixin')
+_mod = importlib.import_module("agentic_core.L5_safety.guardrails.mcp_hardened_mixin")
 MCPHardenedMixin = _mod.MCPHardenedMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
@@ -46,10 +45,27 @@ depth_map = {root: cfg["depth"] for root, cfg in SOVEREIGN_REGISTRY.items()}
 
 # NAMING FIXED: EXCLUDED_DIRS → excluded_dirs
 excluded_dirs = [
-    '.git', '__pycache__', '.venv', 'venv', 'env', 'node_modules',
-    'dist', 'build', '.vscode', '.idea', '.DS_Store', '.mypy_cache',
-    '.pytest_cache', 'htmlcov', 'site-packages', 'docs', 'tests',
-    'temp', 'tmp', 'log', 'logs'
+    ".git",
+    "__pycache__",
+    ".venv",
+    "venv",
+    "env",
+    "node_modules",
+    "dist",
+    "build",
+    ".vscode",
+    ".idea",
+    ".DS_Store",
+    ".mypy_cache",
+    ".pytest_cache",
+    "htmlcov",
+    "site-packages",
+    "docs",
+    "tests",
+    "temp",
+    "tmp",
+    "log",
+    "logs",
 ]
 
 
@@ -70,6 +86,7 @@ class NestVisitor(ast.NodeVisitor):
     AST visitor to check nesting depth within a file.
     Moved to module level to reduce nesting depth in SystemArchitect.
     """
+
     NESTERS = (ast.If, ast.For, ast.AsyncFor, ast.While, ast.Try, ast.With, ast.AsyncWith)
 
     def __init__(self, fp: str, max_nesting_depth: int):
@@ -109,13 +126,13 @@ class NestVisitor(ast.NodeVisitor):
         Reports violations if depth exceeds MAX_NESTING_DEPTH.
         """
         is_nest = isinstance(node, self.NESTERS)
-        if not is_nest: # Use a guard clause to reduce nesting
+        if not is_nest:  # Use a guard clause to reduce nesting
             super().visit(node)
             return
 
         # If it is a nester:
         self.depth += 1
-        self._check_and_report_nesting(node) # Call helper to reduce nesting for reporting
+        self._check_and_report_nesting(node)  # Call helper to reduce nesting for reporting
         super().visit(node)  # Continue traversal
         self.depth -= 1
 
@@ -125,7 +142,6 @@ class NestVisitor(ast.NodeVisitor):
 # SystemArchitectDeprecatedAgent extracted to SystemArchitectDeprecatedAgent.py (Phase B Task 5)
 
 # HealerAgent extracted to HealerAgent.py (Phase B Task 5)
-
 
 
 # DEPRECATED: Moved to GenerativeGuardAgent.py (Jan 6, 2026)
@@ -152,5 +168,7 @@ class CanonHealerAgent(HealerMixin, MCPHardenedMixin):
             results["tests"].append({"name": "test_instantiation", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
+            results["tests"].append(
+                {"name": "test_instantiation", "status": "failed", "error": str(e)}
+            )
         return results

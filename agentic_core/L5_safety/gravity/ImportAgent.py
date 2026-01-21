@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: guardrail
@@ -72,12 +71,15 @@ except ImportError:
     def registers_prompt(**kwargs):
         def decorator(cls):
             return cls
+
         return decorator
+
 
 # [PHASE 20] DEPRECATION: void_compliance_helpers.py removed - inline implementation
 def get_ast_safe_imports(content: str) -> Any:
     """Extract imports using AST, ignoring comments/docstrings."""
     import ast
+
     imports = set()
     try:
         tree = ast.parse(content)
@@ -90,7 +92,8 @@ def get_ast_safe_imports(content: str) -> Any:
                     imports.add(node.module)
     except SyntaxError:
         import re
-        regex_imports = re.findall(r'^(?:import|from)\s+([a-zA-Z0-9_.]+)', content, re.MULTILINE)
+
+        regex_imports = re.findall(r"^(?:import|from)\s+([a-zA-Z0-9_.]+)", content, re.MULTILINE)
         imports.update(regex_imports)
     return imports
 
@@ -100,6 +103,7 @@ class ImportValidationVisitor(ast.NodeVisitor):
     [SUPREME COURT GATEKEEPER]
     Structural visitor to identify imported vs used modules.
     """
+
     def __init__(self) -> None:
         self.imported_modules = set()
         self.used_names = set()
@@ -126,16 +130,20 @@ class ImportValidationVisitor(ast.NodeVisitor):
     def visit_Call(self, node) -> Any:
         """Execute visit_Call operation."""
         # Detect potential dynamic access (Key 13: Dynamic Safeguard)
-        if isinstance(node.func, ast.Name) and node.func.id in {"getattr", "hasattr", "__import__", "eval"}:
+        if isinstance(node.func, ast.Name) and node.func.id in {
+            "getattr",
+            "hasattr",
+            "__import__",
+            "eval",
+        }:
             self.dynamic_access = True
         self.generic_visit(node)
-
 
 
 @registers_prompt(
     template_name="gravity_repair.jinja",
     purpose="Fixes import violations and gravity conventions",
-    territory="templates"
+    territory="templates",
 )
 class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """
@@ -165,6 +173,7 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     @dataclass
     class Violation:
         """Structured violation output for deterministic healing."""
+
         is_valid: bool
         message: str
         file_path: Path | None = None
@@ -180,8 +189,13 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
         # Side-effect imports whitelist (common false positives)
         self.side_effect_modules = {
-            "django", "celery", "pytest", "dotenv", "opentelemetry",  # framework setup
-            "matplotlib", "seaborn"  # backend registration
+            "django",
+            "celery",
+            "pytest",
+            "dotenv",
+            "opentelemetry",  # framework setup
+            "matplotlib",
+            "seaborn",  # backend registration
         }
 
         # Known dynamic access patterns (reduce false positives)
@@ -201,6 +215,7 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         if self._location_agent is None:
             try:
                 from agentic_core.L5_safety.validators.LocationAgent import get_location_agent
+
                 self._location_agent = get_location_agent(self.project_root)
             except (ImportError, RecursionError):
                 pass
@@ -212,6 +227,7 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         if self._naming_agent is None:
             try:
                 from agentic_core.L5_safety.validators.NamingAgent import get_naming_agent
+
                 self._naming_agent = get_naming_agent(self.project_root)
             except (ImportError, RecursionError):
                 pass
@@ -242,7 +258,9 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
         return categories, imported_roots
 
-    def _detect_unused_imports_advanced(self, file_path: Path, tree: ast.AST, imported: set[str]) -> list[str]:
+    def _detect_unused_imports_advanced(
+        self, file_path: Path, tree: ast.AST, imported: set[str]
+    ) -> list[str]:
         """
         Advanced unused import detection via AST walking.
         """
@@ -255,6 +273,7 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
         class UsageVisitor(ast.NodeVisitor):
             """UsageVisitor agent for autonomous operations."""
+
             def visit_Name(self, node: ast.Name) -> Any:
                 """Execute visit_Name operation."""
                 if isinstance(node.ctx, ast.Load | ast.Store):
@@ -297,12 +316,18 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             new_violations = []
             for v in violations:
                 name = v.split(": ")[-1]
-                new_violations.append(f"POSSIBLE RE-EXPORT [Confidence 80%]: {name} (in __init__.py)")
+                new_violations.append(
+                    f"POSSIBLE RE-EXPORT [Confidence 80%]: {name} (in __init__.py)"
+                )
             violations = new_violations
 
         # TYPE_CHECKING block handling
         for node in ast.walk(tree):
-            if isinstance(node, ast.If) and isinstance(node.test, ast.Name) and node.test.id == "TYPE_CHECKING":
+            if (
+                isinstance(node, ast.If)
+                and isinstance(node.test, ast.Name)
+                and node.test.id == "TYPE_CHECKING"
+            ):
                 # Find imports inside this If block and remove them from violations
                 for inner in ast.walk(node):
                     if isinstance(inner, ast.Import | ast.ImportFrom):
@@ -340,9 +365,13 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         for node in import_nodes:
             if isinstance(node, ast.ImportFrom):
                 if node.level > 0:
-                    violations.append(f"RELATIVE IMPORT FORBIDDEN (Line {node.lineno}): Use absolute paths")
+                    violations.append(
+                        f"RELATIVE IMPORT FORBIDDEN (Line {node.lineno}): Use absolute paths"
+                    )
                 if any(alias.name == "*" for alias in node.names):
-                    violations.append(f"STAR IMPORT FORBIDDEN (Line {node.lineno}): 'from ... import *' detected")
+                    violations.append(
+                        f"STAR IMPORT FORBIDDEN (Line {node.lineno}): 'from ... import *' detected"
+                    )
 
         # === IMPORT ORDER ENFORCEMENT ===
         categories, imported_roots = self._categorize_imports(import_nodes)
@@ -350,17 +379,23 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         for cat in ["stdlib", "thirdparty", "local"]:
             if categories[cat] and prev_cat and categories[prev_cat]:
                 if min(categories[cat]) < max(categories[prev_cat]):
-                    violations.append(f"IMPORT ORDER VIOLATION: {cat.capitalize()} imports appear before {prev_cat.capitalize()}")
+                    violations.append(
+                        f"IMPORT ORDER VIOLATION: {cat.capitalize()} imports appear before {prev_cat.capitalize()}"
+                    )
             if categories[cat]:
                 prev_cat = cat
 
         # === DIRECT CIRCULAR IMPORT RISK ===
         if own_root and own_root in imported_roots:
-            violations.append(f"DIRECT CIRCULAR RISK: File imports its own root module '{own_root}'")
+            violations.append(
+                f"DIRECT CIRCULAR RISK: File imports its own root module '{own_root}'"
+            )
 
         # === ADVANCED UNUSED IMPORT DETECTION ===
         imported_modules = get_ast_safe_imports(content)
-        unused_violations = self._detect_unused_imports_advanced(file_path, tree, set(imported_modules))
+        unused_violations = self._detect_unused_imports_advanced(
+            file_path, tree, set(imported_modules)
+        )
         violations.extend(unused_violations)
 
         return violations
@@ -397,8 +432,7 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         # Regex to catch import/from statements starting with downstream roots
         downstream_regex = "|".join(map(re.escape, sorted(DOWNSTREAM_ROOTS)))
         forbidden_pattern = re.compile(
-            rf"^(?:import|from)\s+({downstream_regex})(?:\.|\s|$)",
-            re.MULTILINE
+            rf"^(?:import|from)\s+({downstream_regex})(?:\.|\s|$)", re.MULTILINE
         )
         matches = forbidden_pattern.findall(content)
 
@@ -444,7 +478,9 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         if self._backup_dir is None:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             # SSOT: Use approved backup location from SOVEREIGN_REGISTRY
-            self._backup_dir = self.project_root / ".sovereign_healing_backup" / "import_fixes" / timestamp
+            self._backup_dir = (
+                self.project_root / ".sovereign_healing_backup" / "import_fixes" / timestamp
+            )
             self._backup_dir.mkdir(parents=True, exist_ok=True)
         return self._backup_dir
 
@@ -460,7 +496,9 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         shutil.copy2(file_path, backup_path)
         return backup_path
 
-    def safe_remove_import(self, file_path: Path, import_name: str, dry_run: bool = True) -> dict[str, Any]:
+    def safe_remove_import(
+        self, file_path: Path, import_name: str, dry_run: bool = True
+    ) -> dict[str, Any]:
         """Safely remove an unused import from a file."""
         result = {"applied": False, "action_taken": "", "error": None}
 
@@ -544,9 +582,7 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             return report
 
         remaining = self.run(valid_files)
-        report["remaining_violations"] = [
-            {"file": str(p), "issues": msgs} for p, msgs in remaining
-        ]
+        report["remaining_violations"] = [{"file": str(p), "issues": msgs} for p, msgs in remaining]
 
         total = len(valid_files)
         resolved = total - len(remaining)
@@ -564,7 +600,9 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
         return report
 
-    def post_location_validation(self, file_paths: list[Path], dry_run: bool = True) -> dict[str, Any]:
+    def post_location_validation(
+        self, file_paths: list[Path], dry_run: bool = True
+    ) -> dict[str, Any]:
         """Run LocationAgent validation after gravity fixes."""
         report = {
             "location_status": "SKIPPED",
@@ -598,7 +636,9 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
         return report
 
-    def cleanup_violations(self, violations: list[tuple[Path, list[str]]], dry_run: bool = True, max_actions: int = 50) -> list[dict[str, Any]]:
+    def cleanup_violations(
+        self, violations: list[tuple[Path, list[str]]], dry_run: bool = True, max_actions: int = 50
+    ) -> list[dict[str, Any]]:
         """
         GOLD STANDARD CLEANUP ENGINE — Multi-stage autonomous healing.
 
@@ -643,7 +683,9 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
                         move_suggestion = self.suggest_gravity_move(file_path, roots)
                         action["move_suggestion"] = move_suggestion
                         if move_suggestion["move_suggested"]:
-                            action["action_taken"] = f"SUGGEST_MOVE: {move_suggestion['suggested_target']} ({move_suggestion['reason']})"
+                            action["action_taken"] = (
+                                f"SUGGEST_MOVE: {move_suggestion['suggested_target']} ({move_suggestion['reason']})"
+                            )
                         else:
                             action["action_taken"] = f"REPORT_ONLY: {move_suggestion['reason']}"
                     else:
@@ -667,10 +709,12 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
             # Import compliance validation
             heal_report = self.post_heal_validation(unique_paths, dry_run=False)
-            batch_report.update({
-                "batch_post_heal_status": heal_report["post_heal_status"],
-                "batch_message": heal_report["message"],
-            })
+            batch_report.update(
+                {
+                    "batch_post_heal_status": heal_report["post_heal_status"],
+                    "batch_message": heal_report["message"],
+                }
+            )
 
             # LocationAgent validation for affected files
             location_report = self.post_location_validation(unique_paths, dry_run=False)
@@ -689,6 +733,7 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         if files is None:
             # Phase 6.7: Use ssot_discovery instead of rglob
             from agentic_core.utils.ssot_discovery import get_python_files
+
             files = list(get_python_files(self.project_root))
 
         violations = self.run(files)
@@ -707,7 +752,14 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         }
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """Import/gravity enforcer - scans and fixes violations."""
         if _call_path is None:
             _call_path = set()
@@ -727,15 +779,18 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             # Collect all Python files in the project
             # Phase 6.7: Use ssot_discovery instead of rglob
             from agentic_core.utils.ssot_discovery import get_python_files
+
             valid_files = list(get_python_files(self.project_root))
             # Filter already handled by ssot_discovery
-            valid_files = [f for f in valid_files if not any(
-                excl in str(f) for excl in ["archives"]
-            )]
+            valid_files = [
+                f for f in valid_files if not any(excl in str(f) for excl in ["archives"])
+            ]
 
             violations = self.run(valid_files)
             total_violations = sum(len(msgs) for _, msgs in violations)
-            print(f"[{agent_name} HEAL @ depth {depth}] Found {total_violations} import violations in {len(violations)} files")
+            print(
+                f"[{agent_name} HEAL @ depth {depth}] Found {total_violations} import violations in {len(violations)} files"
+            )
             if not dry_run and execute:
                 fixed = sum(1 for v in violations if self._fix_violation(v))
                 return {"violations_found": total_violations, "fixed": fixed}
@@ -743,8 +798,10 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         finally:
             _call_path.discard(agent_name)
 
+
 # Singleton getter for canon_validator compatibility
 _import_agent_instance = None
+
 
 def get_import_agent(project_root):
     """Get or create ImportAgent singleton."""

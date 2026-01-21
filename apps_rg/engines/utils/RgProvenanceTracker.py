@@ -135,9 +135,9 @@ class ProvenanceTracker:
 
         # Calculate confidence based on sources
         if provenance.sources:
-            provenance.confidence_score = sum(
-                s.confidence for s in provenance.sources
-            ) / len(provenance.sources)
+            provenance.confidence_score = sum(s.confidence for s in provenance.sources) / len(
+                provenance.sources
+            )
 
         self._bullets[bullet_id] = provenance
         return bullet_id
@@ -155,9 +155,9 @@ class ProvenanceTracker:
 
         # Recalculate confidence
         sources = self._bullets[bullet_id].sources
-        self._bullets[bullet_id].confidence_score = sum(
-            s.confidence for s in sources
-        ) / len(sources)
+        self._bullets[bullet_id].confidence_score = sum(s.confidence for s in sources) / len(
+            sources
+        )
 
         return True
 
@@ -183,17 +183,13 @@ class ProvenanceTracker:
         """Get all tracked bullets."""
         return list(self._bullets.values())
 
-    def get_bullets_by_category(
-        self, category: BulletCategory
-    ) -> list[BulletProvenance]:
+    def get_bullets_by_category(self, category: BulletCategory) -> list[BulletProvenance]:
         """Get bullets by category."""
         return [b for b in self._bullets.values() if b.category == category]
 
     def get_provenance_map(self, company: str) -> str:
         """Get provenance map pattern for a company."""
-        return self._provenance_maps.get(
-            company, self._provenance_maps.get("default", "10V-0A-0S")
-        )
+        return self._provenance_maps.get(company, self._provenance_maps.get("default", "10V-0A-0S"))
 
     def set_provenance_map(self, company: str, pattern: str) -> None:
         """Set provenance map for a company."""
@@ -227,9 +223,7 @@ class ProvenanceTracker:
         for category, required in requirements.items():
             actual = counts.get(category, 0)
             if actual < required:
-                violations.append(
-                    f"Category {category}: need {required}, have {actual}"
-                )
+                violations.append(f"Category {category}: need {required}, have {actual}")
 
         return {
             "is_valid": len(violations) == 0,
@@ -239,13 +233,9 @@ class ProvenanceTracker:
             "violations": violations,
         }
 
-    def get_low_confidence_bullets(
-        self, threshold: float = 0.7
-    ) -> list[BulletProvenance]:
+    def get_low_confidence_bullets(self, threshold: float = 0.7) -> list[BulletProvenance]:
         """Get bullets with confidence below threshold."""
-        return [
-            b for b in self._bullets.values() if b.confidence_score < threshold
-        ]
+        return [b for b in self._bullets.values() if b.confidence_score < threshold]
 
     def get_ungrounded_bullets(self) -> list[BulletProvenance]:
         """Get bullets without any provenance sources."""
@@ -256,15 +246,16 @@ class ProvenanceTracker:
         return {
             "total_bullets": len(self._bullets),
             "by_category": {
-                cat.value: len(self.get_bullets_by_category(cat))
-                for cat in BulletCategory
+                cat.value: len(self.get_bullets_by_category(cat)) for cat in BulletCategory
             },
             "low_confidence_count": len(self.get_low_confidence_bullets()),
             "ungrounded_count": len(self.get_ungrounded_bullets()),
             "bullets": [
                 {
                     "id": b.bullet_id,
-                    "text": b.bullet_text[:100] + "..." if len(b.bullet_text) > 100 else b.bullet_text,
+                    "text": b.bullet_text[:100] + "..."
+                    if len(b.bullet_text) > 100
+                    else b.bullet_text,
                     "category": b.category.value,
                     "confidence": b.confidence_score,
                     "source_count": len(b.sources),

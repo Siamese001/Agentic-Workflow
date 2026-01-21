@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field
 
 class RetryPolicy(BaseModel):
     """Retry policy for agent operations."""
+
     max_retries: int = Field(default=3, ge=0, le=10)
     backoff_base: float = Field(default=0.5, ge=0.1, le=5.0)
     backoff_max: float = Field(default=30.0, ge=1.0, le=300.0)
@@ -19,6 +20,7 @@ class RetryPolicy(BaseModel):
 
 class HopSpec(BaseModel):
     """Specification for a HOP (Handoff Operation Protocol) stage."""
+
     hop_id: str
     name: str
     description: str = ""
@@ -29,6 +31,7 @@ class HopSpec(BaseModel):
 
 class AgentContract(BaseModel):
     """Contract specification for an agent."""
+
     name: str
     layer: str
     capabilities: list[str] = Field(default_factory=list)

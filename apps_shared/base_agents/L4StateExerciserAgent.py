@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, healer, prompt, workflow
@@ -26,38 +25,47 @@ def _get_validation_context() -> Any:
     """Get validation context."""
     try:
         from agentic_core.L4_state.ValidationContext import ValidationContext
+
         return ValidationContext
     except Exception:
         return None
+
 
 def _get_ledger() -> Any:
     """Get ledger."""
     try:
         from agentic_core.L4_state.ledger import Ledger
+
         return Ledger
     except Exception:
         return None
+
 
 def _get_memory_store() -> Any:
     """Get memory store."""
     try:
         from agentic_core.L4_state.memory import MemoryStore
+
         return MemoryStore
     except Exception:
         return None
+
 
 def _get_filesystem_mcp() -> Any:
     """Get filesystem mcp."""
     try:
         from agentic_core.L4_state.filesystem import FilesystemMCP
+
         return FilesystemMCP
     except Exception:
         return None
+
 
 def log_event(event_type: str, payload: dict) -> Any:
     """Log event with fallback to print."""
     try:
         from agentic_core.runtime.shared_runtime import log_event as _log_event
+
         _log_event(event_type, payload)
     except Exception:
         print(f"[L4StateExerciserAgent] Event logged (stub): {event_type} = {payload}")
@@ -128,7 +136,7 @@ class L4StateExerciserAgent(SovereignBaseAgent):
                 "type": "synthetic_exercise",
                 "id": str(uuid.uuid4()),
                 "timestamp": time.time(),
-                "data": "L4 coverage ping"
+                "data": "L4 coverage ping",
             }
             Ledger.append(dummy_entry)
             post_length = len(Ledger.history) if hasattr(Ledger, "history") else 0
@@ -178,9 +186,11 @@ class L4StateExerciserAgent(SovereignBaseAgent):
             results["tests"].append({"name": "test_instantiation", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
+            results["tests"].append(
+                {"name": "test_instantiation", "status": "failed", "error": str(e)}
+            )
         return results
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()

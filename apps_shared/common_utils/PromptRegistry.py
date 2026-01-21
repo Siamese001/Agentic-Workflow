@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 
 class PromptCategory(Enum):
     """Prompt categories."""
+
     SYSTEM_INSTRUCTION = "system_instruction"
     SAFETY_POLICY = "safety_policy"
     REASONING_TEMPLATE = "reasoning_template"
@@ -33,6 +34,7 @@ class PromptCategory(Enum):
 @dataclass
 class PromptTemplate:
     """Prompt template with metadata."""
+
     template_id: str
     name: str
     category: PromptCategory
@@ -125,7 +127,7 @@ class PromptRegistry:
                 extra={
                     "template_count": len(self._templates),
                     "registry_path": str(self.registry_path),
-                }
+                },
             )
 
     def register(self, template: PromptTemplate) -> None:
@@ -144,7 +146,7 @@ class PromptRegistry:
                     "template_id": template.template_id,
                     "category": template.category.value,
                     "version": template.version,
-                }
+                },
             )
 
     def get(self, template_id: str) -> PromptTemplate | None:
@@ -170,10 +172,7 @@ class PromptRegistry:
         Returns:
             List of matching templates
         """
-        return [
-            t for t in self._templates.values()
-            if t.category == category
-        ]
+        return [t for t in self._templates.values() if t.category == category]
 
     def find_by_tag(self, tag: str) -> list[PromptTemplate]:
         """Find templates by tag.
@@ -184,10 +183,7 @@ class PromptRegistry:
         Returns:
             List of matching templates
         """
-        return [
-            t for t in self._templates.values()
-            if tag in t.tags
-        ]
+        return [t for t in self._templates.values() if tag in t.tags]
 
     def search(self, query: str) -> list[PromptTemplate]:
         """Search templates by name or description.
@@ -201,7 +197,8 @@ class PromptRegistry:
         query_lower = query.lower()
 
         return [
-            t for t in self._templates.values()
+            t
+            for t in self._templates.values()
             if query_lower in t.name.lower() or query_lower in t.description.lower()
         ]
 
@@ -227,10 +224,7 @@ class PromptRegistry:
             self._save_registry()
 
             if self.enable_logging:
-                logger.info(
-                    "template_deleted",
-                    extra={"template_id": template_id}
-                )
+                logger.info("template_deleted", extra={"template_id": template_id})
 
             return True
 
@@ -270,7 +264,7 @@ class PromptRegistry:
                 "templates": [t.to_dict() for t in self._templates.values()],
             }
 
-            with open(self.registry_path, 'w') as f:
+            with open(self.registry_path, "w") as f:
                 json.dump(data, f, indent=2)
 
         except Exception as e:

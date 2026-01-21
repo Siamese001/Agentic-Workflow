@@ -15,6 +15,7 @@ from pathlib import Path
 
 LOGGER = logging.getLogger(__name__)
 
+
 class AirlockProtocol:
     """
     Implements human authorization checkpoints for high-risk tool calls.
@@ -23,12 +24,14 @@ class AirlockProtocol:
     waits for explicit human approval before proceeding.
     """
 
-    def __init__(self,
-                 risk_threshold: int = 5,
-                 pending_dir: str = "./airlock/pending",
-                 approved_dir: str = "./airlock/approved",
-                 rejected_dir: str = "./airlock/rejected",
-                 timeout_minutes: int = 30):
+    def __init__(
+        self,
+        risk_threshold: int = 5,
+        pending_dir: str = "./airlock/pending",
+        approved_dir: str = "./airlock/approved",
+        rejected_dir: str = "./airlock/rejected",
+        timeout_minutes: int = 30,
+    ):
         """
         Initialize the airlock protocol.
 
@@ -57,28 +60,23 @@ class AirlockProtocol:
             "delete_file": 6,
             "create_file": 3,
             "move_file": 4,
-
             # Git operations
             "git_push": 8,
             "git_commit": 5,
             "git_reset": 9,
             "git_force_push": 10,
-
             # System operations
             "run_command": 7,
             "execute_script": 8,
             "install_package": 6,
-
             # Network operations
             "send_email": 7,
             "api_call": 5,
             "webhook": 6,
-
             # Financial operations
             "transfer_funds": 10,
             "make_payment": 10,
             "purchase": 9,
-
             # Data operations
             "delete_database": 10,
             "modify_database": 7,
@@ -87,10 +85,9 @@ class AirlockProtocol:
 
         LOGGER.info(f"AirlockProtocol initialized with threshold={risk_threshold}")
 
-    async def acquire_permission(self,
-                                tool_name: str,
-                                args: dict,
-                                risk_score: int | None = None) -> bool:
+    async def acquire_permission(
+        self, tool_name: str, args: dict, risk_score: int | None = None
+    ) -> bool:
         """
         Request Permission to execute a potentially dangerous action.
 
@@ -125,7 +122,7 @@ class AirlockProtocol:
             "status": "PENDING_APPROVAL",
             "created_at": datetime.now().isoformat(),
             "expires_at": (datetime.now() + self.timeout).isoformat(),
-            "requester": "autonomous_agent"
+            "requester": "autonomous_agent",
         }
 
         # Write ticket to pending directory
@@ -205,10 +202,7 @@ class AirlockProtocol:
             # Wait before next check
             await asyncio.sleep(5)
 
-    def _move_ticket(self,
-                    ticket_path: Path,
-                    destination: Path,
-                    reason: str | None = None):
+    def _move_ticket(self, ticket_path: Path, destination: Path, reason: str | None = None):
         """
         Move ticket to destination directory with optional reason.
 
@@ -288,6 +282,7 @@ class AirlockProtocol:
         else:
             raise ValueError(f"Ticket {ticket_id} not found")
 
+
 # Utility functions for CLI/web interface
 def create_airlock_interface():
     """Create a simple CLI interface for managing airlock requests."""
@@ -325,6 +320,7 @@ def create_airlock_interface():
         reason = args.reason or "Rejected via CLI"
         airlock.reject_request(args.ticket_id, reason)
         LOGGER.info(f"Rejected ticket {args.ticket_id}: {reason}")
+
 
 if __name__ == "__main__":
     create_airlock_interface()

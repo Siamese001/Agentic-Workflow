@@ -12,9 +12,6 @@ from shared.result_types import RetrievalResult
 Logger = logging.getLogger(__name__)
 
 
-
-
-
 class RetrieveResumeHistory:
     """Retrieval engine for resume domain."""
 
@@ -38,6 +35,8 @@ class RetrieveResumeHistory:
         return []
 
 
-def retrieve(query: str, config: dict | None = None, **kwargs: dict[str, object]) -> RetrievalResult:
+def retrieve(
+    query: str, config: dict | None = None, **kwargs: dict[str, object]
+) -> RetrievalResult:
     """Retrieve items."""
     return RetrieveResumeHistory(config).retrieve(query, **kwargs)

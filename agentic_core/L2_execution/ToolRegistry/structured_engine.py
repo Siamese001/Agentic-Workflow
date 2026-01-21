@@ -15,10 +15,12 @@ Logger: Any = logging.getLogger(__name__)
 try:
     import instructor
     from openai import AsyncOpenAI
+
     INSTRUCTOR_AVAILABLE: Any = True
 except ImportError:
     INSTRUCTOR_AVAILABLE: Any = False
-    LOGGER.warning('Instructor library not available. Install with: pip install instructor openai')
+    LOGGER.warning("Instructor library not available. Install with: pip install instructor openai")
+
 
 class StructuredEngine:
     """
@@ -36,10 +38,12 @@ class StructuredEngine:
             client: AsyncOpenAI instance
         """
         self.client = instructor.patch(client)
-        self.model = 'gpt-4'
-        LOGGER.info('Structured engine initialized with AsyncOpenAI client')
+        self.model = "gpt-4"
+        LOGGER.info("Structured engine initialized with AsyncOpenAI client")
 
-    async def think_structured(self, system_prompt: str, user_prompt: str, max_retries: int=3) -> AgentThoughtProcess:
+    async def think_structured(
+        self, system_prompt: str, user_prompt: str, max_retries: int = 3
+    ) -> AgentThoughtProcess:
         """
         Executes an inference call that is GUARANTEED to match AgentThoughtProcess.
 
@@ -53,33 +57,47 @@ class StructuredEngine:
         Returns:
             Validated AgentThoughtProcess instance
         """
-        LOGGER.debug(f'Executing structured inference (max_retries={max_retries})')
+        LOGGER.debug(f"Executing structured inference (max_retries={max_retries})")
         try:
-            result: Any = await self.client.chat.completions.create(model=self.model, response_model=AgentThoughtProcess, messages=[{'role': 'system', 'content': system_prompt}, {'role': 'user', 'content': user_prompt}], max_retries=max_retries)
-            LOGGER.info(f'Structured inference successful. Tool choice: {result.tool_choice}, Confidence: {result._confidence_score:.2f}')
+            result: Any = await self.client.chat.completions.create(
+                model=self.model,
+                response_model=AgentThoughtProcess,
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt},
+                ],
+                max_retries=max_retries,
+            )
+            LOGGER.info(
+                f"Structured inference successful. Tool choice: {result.tool_choice}, Confidence: {result._confidence_score:.2f}"
+            )
             return result
         except Exception as e:
-            LOGGER.error(f'Structured inference failed after {max_retries} retries: {e}')
+            LOGGER.error(f"Structured inference failed after {max_retries} retries: {e}")
             raise
+
 
 class StructuredEngineFactory:
     """Factory for creating specialized structured engines."""
 
     @staticmethod
-    def create_code_engine(client: AsyncOpenAI, model: str='gpt-4o') -> StructuredEngine:
+    def create_code_engine(client: AsyncOpenAI, model: str = "gpt-4o") -> StructuredEngine:
         """Create an engine optimized for code generation."""
         engine: Any = StructuredEngine(client)
         engine.model = model
         return engine
 
     @staticmethod
-    def create_research_engine(client: AsyncOpenAI, model: str='gpt-4o') -> StructuredEngine:
+    def create_research_engine(client: AsyncOpenAI, model: str = "gpt-4o") -> StructuredEngine:
         """Create an engine optimized for research tasks."""
         engine: Any = StructuredEngine(client)
         engine.model = model
         return engine
 
-async def create_structured_engine(client: AsyncOpenAI, model: str='gpt-4o', engine_type: str='default') -> StructuredEngine:
+
+async def create_structured_engine(
+    client: AsyncOpenAI, model: str = "gpt-4o", engine_type: str = "default"
+) -> StructuredEngine:
     """
     Factory function to create a structured engine.
 
@@ -91,9 +109,9 @@ async def create_structured_engine(client: AsyncOpenAI, model: str='gpt-4o', eng
     Returns:
         StructuredEngine instance
     """
-    if engine_type == 'code':
+    if engine_type == "code":
         return StructuredEngineFactory.create_code_engine(client, model)
-    elif engine_type == 'research':
+    elif engine_type == "research":
         return StructuredEngineFactory.create_research_engine(client, model)
     else:
         return StructuredEngine(client)

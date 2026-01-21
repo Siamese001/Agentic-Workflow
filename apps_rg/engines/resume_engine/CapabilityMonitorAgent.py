@@ -28,6 +28,7 @@ class TaskPriority(Enum):
     Defines the urgency and importance of tasks identified by the
     proactive scheduler, from critical to background priority.
     """
+
     CRITICAL = "critical"
     HIGH = "high"
     MEDIUM = "medium"
@@ -42,6 +43,7 @@ class HandoffReason(Enum):
     Defines the specific conditions that trigger a handoff request
     when the agent reaches its capability limits or encounters risks.
     """
+
     CAPABILITY_LIMIT = "capability_limit"
     CONFIDENCE_LOW = "confidence_low"
     HIGH_RISK = "high_risk"
@@ -53,6 +55,7 @@ class HandoffReason(Enum):
 @dataclass
 class ProactiveTask:
     """A Task identified proactively."""
+
     task_id: str
     name: str
     description: str
@@ -69,6 +72,7 @@ class ProactiveTask:
 @dataclass
 class HandoffRequest:
     """A request for human handoff."""
+
     request_id: str
     reason: HandoffReason
     context: str
@@ -82,6 +86,7 @@ class HandoffRequest:
 @dataclass
 class CapabilityProfile:
     """Profile of agent capabilities."""
+
     agent_name: str
     supported_tasks: list[str]
     confidence_threshold: float
@@ -129,50 +134,60 @@ class ProactiveScheduler:
 
         # Check for quality issues
         if self.ctx.has_signal("QUALITY_ISSUE"):
-            tasks.append(self._create_task(
-                name="Quality Remediation",
-                description="Address quality issues in resume",
-                priority=TaskPriority.HIGH,
-                auto_execute=True,
-            ))
+            tasks.append(
+                self._create_task(
+                    name="Quality Remediation",
+                    description="Address quality issues in resume",
+                    priority=TaskPriority.HIGH,
+                    auto_execute=True,
+                )
+            )
 
         # Check for balance issues
         if self.ctx.has_signal("BALANCE_ISSUE"):
-            tasks.append(self._create_task(
-                name="Section Rebalancing",
-                description="Rebalance resume sections",
-                priority=TaskPriority.MEDIUM,
-                auto_execute=True,
-            ))
+            tasks.append(
+                self._create_task(
+                    name="Section Rebalancing",
+                    description="Rebalance resume sections",
+                    priority=TaskPriority.MEDIUM,
+                    auto_execute=True,
+                )
+            )
 
         # Check for Missing sections
         resume = self.ctx.current_resume
         if resume:
             if not resume.get("summary"):
-                tasks.append(self._create_task(
-                    name="Generate Summary",
-                    description="Generate Missing summary section",
-                    priority=TaskPriority.HIGH,
-                    auto_execute=True,
-                ))
+                tasks.append(
+                    self._create_task(
+                        name="Generate Summary",
+                        description="Generate Missing summary section",
+                        priority=TaskPriority.HIGH,
+                        auto_execute=True,
+                    )
+                )
 
             if not resume.get("skills"):
-                tasks.append(self._create_task(
-                    name="Extract Skills",
-                    description="Extract and add skills section",
-                    priority=TaskPriority.MEDIUM,
-                    auto_execute=True,
-                ))
+                tasks.append(
+                    self._create_task(
+                        name="Extract Skills",
+                        description="Extract and add skills section",
+                        priority=TaskPriority.MEDIUM,
+                        auto_execute=True,
+                    )
+                )
 
         # Check budget status
         if self.ctx.budget.get_remaining_budget() < 0.1:
-            tasks.append(self._create_task(
-                name="Budget Alert",
-                description="Budget running low, optimize operations",
-                priority=TaskPriority.CRITICAL,
-                auto_execute=False,
-                requires_approval=True,
-            ))
+            tasks.append(
+                self._create_task(
+                    name="Budget Alert",
+                    description="Budget running low, optimize operations",
+                    priority=TaskPriority.CRITICAL,
+                    auto_execute=False,
+                    requires_approval=True,
+                )
+            )
 
         self._tasks.extend(tasks)
         return tasks
@@ -418,14 +433,16 @@ class CapabilityMonitorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixi
             duration_ms: Execution duration in milliseconds
             complexity: Task complexity level (default: 1)
         """
-        self._execution_history.append({
-            "agent_name": agent_name,
-            "TaskType": TaskType,
-            "success": success,
-            "duration_ms": duration_ms,
-            "complexity": complexity,
-            "timestamp": datetime.now().isoformat(),
-        })
+        self._execution_history.append(
+            {
+                "agent_name": agent_name,
+                "TaskType": TaskType,
+                "success": success,
+                "duration_ms": duration_ms,
+                "complexity": complexity,
+                "timestamp": datetime.now().isoformat(),
+            }
+        )
 
         # Update agent stats
         if agent_name not in self._agent_stats:
@@ -505,7 +522,9 @@ class CapabilityMonitorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixi
         """Get stats for all agents."""
         return self._agent_stats.copy()
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, int]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict[str, int]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 

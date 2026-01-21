@@ -156,9 +156,7 @@ class DAGBuilder:
         # Track Artifact producers
         for output in hop.outputs:
             if output.artifact_id in self._artifact_producers:
-                raise WorkflowSpecError(
-                    f"Duplicate Artifact output: {output.artifact_id}"
-                )
+                raise WorkflowSpecError(f"Duplicate Artifact output: {output.artifact_id}")
             self._artifact_producers[output.artifact_id] = hop.id
 
         return self

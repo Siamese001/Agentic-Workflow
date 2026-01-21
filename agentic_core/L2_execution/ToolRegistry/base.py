@@ -3,6 +3,7 @@ Base classes for L2 Execution ToolRegistry.
 
 Provides foundational classes for tool registration and execution.
 """
+
 import logging
 from typing import Any
 
@@ -71,8 +72,10 @@ class ToolRegistry:
 
 class SubAtomicAgent:
     """Base class for subatomic agents."""
+
     def __init__(self, name: str = "SubAtomicAgent"):
         self.name = name
+
     def execute(self, *args, **kwargs):
         raise NotImplementedError()
 
@@ -97,4 +100,4 @@ class BaseAgent:
 Tool = BaseTool
 Registry = ToolRegistry
 
-__all__ = ['BaseTool', 'ToolRegistry', 'BaseAgent', 'SubAtomicAgent', 'Tool', 'Registry']
+__all__ = ["BaseTool", "ToolRegistry", "BaseAgent", "SubAtomicAgent", "Tool", "Registry"]

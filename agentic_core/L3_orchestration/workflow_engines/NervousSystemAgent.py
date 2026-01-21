@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, workflow
@@ -22,7 +21,9 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 
 
 @dataclass
-class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin):
+class NervousSystemAgent(
+    MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin
+):
     """Core orchestrator that coordinates cognitive and action planes.
 
     Implements the 5-step agentic cycle:
@@ -57,30 +58,30 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
         # Initialize L4 State Persistence
         storage_adapter = create_storage_adapter("local", base_path="./agentic_core")
         self.CheckpointManager = VerifiableCheckpointManager(storage_adapter)
-        self.session_id = getattr(config, 'mission_id', f"mission_{int(time.time())}")
+        self.session_id = getattr(config, "mission_id", f"mission_{int(time.time())}")
         self.SignalLedger = SignalLedger(storage_adapter, self.session_id)
 
         # Create sovereign implementations if not provided
         self.brain = cognitive_plane or create_sovereign_cognitive_plane()
         self.hands = action_plane or create_sovereign_action_plane(
-            safety_layer=self.safety_layer,
-            SignalLedger=self.SignalLedger
+            safety_layer=self.safety_layer, SignalLedger=self.SignalLedger
         )
         self.config = config or OrchestratorConfig()
 
         self._state: dict[str, Any] = {}
-        self._iteration_val = [0] # Use a list to pass by reference for iteration
+        self._iteration_val = [0]  # Use a list to pass by reference for iteration
 
         # Execution tracking
         self._results: dict[str, dict[str, Any]] = {}
         self._signals: set = set()
-        self._modified_files: set = set() # This will be passed to context.modified_files
+        self._modified_files: set = set()  # This will be passed to context.modified_files
 
         # L5 Intervention Server
         self.InterventionServer = InterventionServer()
 
         # L6 Architecture Governor
         from agentic_core.L5_safety.validators.GovernanceAgent import GovernanceAgent
+
         self.ArchitectureGovernor = GovernanceAgent()
 
         # GOLD STANDARD: Domain-specific agent integrations for post-phase validation
@@ -88,18 +89,21 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
         # [SSOT DYNAMIC] Runtime-only L5 imports for validation agents
         try:
             from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+
             self.location_agent = LocationAgent(self.project_root)
         except ImportError:
             self.location_agent = None
         # [SSOT DYNAMIC] Runtime-only L5 imports for validation agents
         try:
             from agentic_core.L5_safety.guardrails.HierarchyAgent import HierarchyAgent
+
             self.hierarchy_agent = HierarchyAgent(self.project_root)
         except ImportError:
             self.hierarchy_agent = None
         # [SSOT DYNAMIC] Runtime-only L5 imports for validation agents
         try:
             from agentic_core.L5_safety.gravity.ImportAgent import ImportAgent
+
             self.import_agent = ImportAgent(self.project_root)
         except ImportError:
             self.import_agent = None
@@ -113,7 +117,10 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
         self._state_management = NervousSystemStateManagement(LOGGER)
         self._phase_execution = NervousSystemPhaseExecution(
             self.brain,
-            self.safety_layer, self.SignalLedger, self._modified_files, LOGGER # Pass _modified_files
+            self.safety_layer,
+            self.SignalLedger,
+            self._modified_files,
+            LOGGER,  # Pass _modified_files
         )
         self.phases = self._phase_execution.phases
 
@@ -124,15 +131,15 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
             self.InterventionServer, LOGGER
         )
 
-        self._phase_orchestrator = NervousSystemPhaseOrchestratorAgent( # New orchestrator
+        self._phase_orchestrator = NervousSystemPhaseOrchestratorAgent(  # New orchestrator
             self._phase_execution,
             self._checkpointing,
             self._result_reporting,
             self._signals,
             self._results,
             self._state,
-            self._iteration_val, # Pass reference
-            self._modified_files, # Pass reference
+            self._iteration_val,  # Pass reference
+            self._modified_files,  # Pass reference
             self.config,
             LOGGER,
         )
@@ -145,10 +152,23 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
 
         # PHASE 9: Reinforcement-learned orchestration
         self.rl_orchestrator = RLOrchestratorAgent(
-            layers=["L0_maintenance", "L1_cognition", "L2_execution", "L3_orchestration",
-                   "L4_state", "L5_safety", "config", "schemas", "prompt_governance",
-                   "observability", "utils", APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR],
-            fallback_orchestrator=self
+            layers=[
+                "L0_maintenance",
+                "L1_cognition",
+                "L2_execution",
+                "L3_orchestration",
+                "L4_state",
+                "L5_safety",
+                "config",
+                "schemas",
+                "prompt_governance",
+                "observability",
+                "utils",
+                APPS_RG_DIR,
+                APPS_LIC_DIR,
+                APPS_SHARED_DIR,
+            ],
+            fallback_orchestrator=self,
         )
         self.last_entropy = 0.0
         self.rl_update_interval = 100
@@ -156,13 +176,17 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
         LOGGER.info(
             "nervous_system_initialized",
             extra={
-                "cognitive_capabilities": [c.value if hasattr(c, 'value') else c for c in self.brain.get_capabilities()],
-                "action_capabilities": [c.value if hasattr(c, 'value') else c for c in self.hands.get_capabilities()],
+                "cognitive_capabilities": [
+                    c.value if hasattr(c, "value") else c for c in self.brain.get_capabilities()
+                ],
+                "action_capabilities": [
+                    c.value if hasattr(c, "value") else c for c in self.hands.get_capabilities()
+                ],
                 "config": self.config.to_dict(),
                 "phases_populated": len([p for p in self.phases.values() if p]),
                 "coverage_bias_enabled": True,
-                "rl_orchestration_enabled": True
-            }
+                "rl_orchestration_enabled": True,
+            },
         )
 
     def _handle_bias_update(self, event_data: dict) -> None:
@@ -176,7 +200,9 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
 
         # Enforce max concurrent
         if len(self.coverage_bias_state) >= self.max_concurrent_biases:
-            lowest_layer = min(self.coverage_bias_state, key=lambda k: self.coverage_bias_state[k]["weight"])
+            lowest_layer = min(
+                self.coverage_bias_state, key=lambda k: self.coverage_bias_state[k]["weight"]
+            )
             del self.coverage_bias_state[lowest_layer]
 
         self.coverage_bias_state[layer] = {
@@ -188,7 +214,9 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
 
     def _decay_biases(self) -> None:
         """Decrement and cleanup expired biases with dynamic decay based on health."""
-        expired = [l for l, info in self.coverage_bias_state.items() if info["remaining_cycles"] <= 0]
+        expired = [
+            l for l, info in self.coverage_bias_state.items() if info["remaining_cycles"] <= 0
+        ]
         for l in expired:
             del self.coverage_bias_state[l]
 
@@ -199,6 +227,7 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
             # Dynamic decay: Reduce weight if proportion healthy
             try:
                 from agentic_core.L6_observability.metrics.CoverageAgent import CoverageAgent
+
                 coverage_agent = CoverageAgent()
                 metrics = coverage_agent._fetch_metrics()
                 if metrics:
@@ -225,9 +254,9 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
 
     def _run_self_tests(self) -> bool:
         """Phase 1: Self-testing for L3 compliance."""
-        assert hasattr(self, 'brain'), "Missing brain"
-        assert hasattr(self, 'hands'), "Missing hands"
-        assert hasattr(self, 'safety_layer'), "Missing safety_layer"
+        assert hasattr(self, "brain"), "Missing brain"
+        assert hasattr(self, "hands"), "Missing hands"
+        assert hasattr(self, "safety_layer"), "Missing safety_layer"
         return True
 
     @property
@@ -245,9 +274,14 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
         last_checkpoint = await self._checkpointing.find_last_checkpoint()
         if last_checkpoint:
             LOGGER.info("L4: Checkpoint found. Resuming from Phase 2.")
-            (self._state, self._results, self._signals,
-             self._modified_files, self._iteration, resume_phase) = \
-                self._checkpointing.restore_from_checkpoint(last_checkpoint)
+            (
+                self._state,
+                self._results,
+                self._signals,
+                self._modified_files,
+                self._iteration,
+                resume_phase,
+            ) = self._checkpointing.restore_from_checkpoint(last_checkpoint)
             return resume_phase
         return None
 
@@ -271,9 +305,9 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
             scene={
                 "phases": list(self.phases.keys()),
                 "max_phases": max_phases,
-                "iteration": self._iteration
+                "iteration": self._iteration,
             },
-            state=self._state.copy()
+            state=self._state.copy(),
         )
 
         # Add forced agents support for telepathy
@@ -302,7 +336,7 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
             return ExecutionResult(
                 success=False,
                 report="Mission stopped by telepathic instruction",
-                signals=["TELEPATHY_STOP"]
+                signals=["TELEPATHY_STOP"],
             )
 
         # Handle intervention
@@ -311,23 +345,25 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
             modified_count=modified_count,
             signals_list=signals_list,
             modified_files=list(self._modified_files),
-            timeout=300
+            timeout=300,
         )
 
-        if intervention_status is False: # Vetoed
+        if intervention_status is False:  # Vetoed
             self._signals.add("VETOED")
             return ExecutionResult(
                 success=False,
                 output="",
                 error="Mission vetoed by human intervention",
-                execution_time=time.time() - start_time
+                execution_time=time.time() - start_time,
             )
         # If intervention_status is True (approved) or None (not required), continue
 
         # Execute the mission
         return await self.execute(context, resume_phase=resume_phase)
 
-    async def execute(self, context: ExecutionContext, resume_phase: str | None = None) -> ExecutionResult:
+    async def execute(
+        self, context: ExecutionContext, resume_phase: str | None = None
+    ) -> ExecutionResult:
         """Execute mission through phase-based execution.
 
         Args:
@@ -348,20 +384,23 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
 
         # Only reset cycle state if not resuming from Checkpoint
         if not resume_phase:
-            self._iteration = 0 # Reset NervousSystem's iteration
-            self._state = context.state.copy() # Reset NervousSystem's state
-            self._results = {} # Reset NervousSystem's results
-            self._signals = set() # Reset NervousSystem's signals
-            self._modified_files = set() # Reset NervousSystem's modified files
-        self._state.update(context.state) # Update NervousSystem's state with context's state
+            self._iteration = 0  # Reset NervousSystem's iteration
+            self._state = context.state.copy()  # Reset NervousSystem's state
+            self._results = {}  # Reset NervousSystem's results
+            self._signals = set()  # Reset NervousSystem's signals
+            self._modified_files = set()  # Reset NervousSystem's modified files
+        self._state.update(context.state)  # Update NervousSystem's state with context's state
 
-        LOGGER.info("execution_started",
-            extra={"mission": context.mission,
-            "scene_keys": list(context.scene.keys())})
+        LOGGER.info(
+            "execution_started",
+            extra={"mission": context.mission, "scene_keys": list(context.scene.keys())},
+        )
 
         try:
             # Run the main execution loop via the orchestrator
-            converged, errors = await self._phase_orchestrator.run_execution_loop(context, resume_phase=resume_phase)
+            converged, errors = await self._phase_orchestrator.run_execution_loop(
+                context, resume_phase=resume_phase
+            )
 
             # After the loop, NervousSystem's internal state (_iteration, _state, _results, _signals, _modified_files)
             # is already updated via direct references.
@@ -371,8 +410,15 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
 
             # Create execution result
             result = self._result_reporting.create_execution_result(
-                context, context.execution_trace, errors, start_time,
-                self._results, self._state, self._iteration, self._signals, self._modified_files
+                context,
+                context.execution_trace,
+                errors,
+                start_time,
+                self._results,
+                self._state,
+                self._iteration,
+                self._signals,
+                self._modified_files,
             )
             # Log result to signal ledger
             await self.SignalLedger.append_result(result)
@@ -381,6 +427,7 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
             return self._result_reporting.handle_execution_error(
                 context, context.execution_trace, start_time, e, self._iteration, self._state
             )
+
     async def should_continue(self, context: ExecutionContext) -> bool:
         """Determine if execution should continue.
 
@@ -461,7 +508,9 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
         Returns:
             Dictionary with impact analysis
         """
-        return await self._architecture_governance.get_impact_radius(modified_files, self._modified_files)
+        return await self._architecture_governance.get_impact_radius(
+            modified_files, self._modified_files
+        )
 
     def validate_architecture(self, file_paths: list[str] = None) -> dict[str, Any]:
         """
@@ -475,7 +524,9 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
         """
         return self._architecture_governance.validate_architecture(file_paths)
 
-    def post_phase_validation(self, phase_name: str, affected_paths: list[Path], dry_run: bool = True) -> dict[str, Any]:
+    def post_phase_validation(
+        self, phase_name: str, affected_paths: list[Path], dry_run: bool = True
+    ) -> dict[str, Any]:
         """
         GOLD STANDARD: Post-phase validation using domain-specific agents.
         Validates location, hierarchy, and import compliance after phase completion.
@@ -513,7 +564,7 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
                         location_violations.append({"file": str(path), "issue": msg})
                 report["location_validation"] = {
                     "violations": location_violations,
-                    "status": "FULL_SUCCESS" if not location_violations else "NEEDS_REVIEW"
+                    "status": "FULL_SUCCESS" if not location_violations else "NEEDS_REVIEW",
                 }
 
             # HierarchyAgent validation
@@ -522,10 +573,12 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
                 for path in valid_files:
                     result = self.hierarchy_agent.validate_file_hierarchy(path)
                     if not result.get("is_valid", True):
-                        hierarchy_violations.append({"file": str(path), "issue": result.get("message", "")})
+                        hierarchy_violations.append(
+                            {"file": str(path), "issue": result.get("message", "")}
+                        )
                 report["hierarchy_validation"] = {
                     "violations": hierarchy_violations,
-                    "status": "FULL_SUCCESS" if not hierarchy_violations else "NEEDS_REVIEW"
+                    "status": "FULL_SUCCESS" if not hierarchy_violations else "NEEDS_REVIEW",
                 }
 
             # ImportAgent validation
@@ -533,7 +586,7 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
                 import_violations = self.import_agent.run(valid_files)
                 report["import_validation"] = {
                     "violations": [{"file": str(p), "issues": m} for p, m in import_violations],
-                    "status": "FULL_SUCCESS" if not import_violations else "NEEDS_REVIEW"
+                    "status": "FULL_SUCCESS" if not import_violations else "NEEDS_REVIEW",
                 }
 
             # Determine overall status
@@ -562,10 +615,7 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
         return report
 
     def cleanup_violations(
-        self,
-        violations: list[PhaseViolation],
-        dry_run: bool = True,
-        max_actions: int = 50
+        self, violations: list[PhaseViolation], dry_run: bool = True, max_actions: int = 50
     ) -> list[dict[str, Any]]:
         """
         GOLD STANDARD: Cleanup violations using integrated domain agents.
@@ -599,7 +649,10 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
             try:
                 # Route to appropriate agent based on violation type
                 if violation.file_path and self.location_agent:
-                    if "LOCATION" in violation.message.upper() or "TERRITORY" in violation.message.upper():
+                    if (
+                        "LOCATION" in violation.message.upper()
+                        or "TERRITORY" in violation.message.upper()
+                    ):
                         cleanup_result = self.location_agent.cleanup_violations(
                             [(violation.file_path, violation.message)], dry_run=dry_run
                         )
@@ -617,7 +670,10 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
                             if not dry_run:
                                 affected_paths.append(violation.file_path)
 
-                    elif "IMPORT" in violation.message.upper() or "GRAVITY" in violation.message.upper():
+                    elif (
+                        "IMPORT" in violation.message.upper()
+                        or "GRAVITY" in violation.message.upper()
+                    ):
                         if self.import_agent:
                             cleanup_result = self.import_agent.cleanup_violations(
                                 [(violation.file_path, violation.message)], dry_run=dry_run
@@ -664,36 +720,50 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
 
         # Run post-phase validation for all phases
         for phase_name in self.phases.keys():
-            validation_report = self.post_phase_validation(phase_name, affected_paths, dry_run=dry_run)
+            validation_report = self.post_phase_validation(
+                phase_name, affected_paths, dry_run=dry_run
+            )
 
             # Convert validation issues to PhaseViolation objects
             for loc_viol in validation_report.get("location_validation", {}).get("violations", []):
-                all_violations.append(PhaseViolation(
-                    phase_name=phase_name,
-                    is_valid=False,
-                    message=loc_viol.get("issue", "Location violation"),
-                    file_path=Path(loc_viol.get("file", "")) if loc_viol.get("file") else None,
-                    severity=5
-                ))
-            for hier_viol in validation_report.get("hierarchy_validation", {}).get("violations", []):
-                all_violations.append(PhaseViolation(
-                    phase_name=phase_name,
-                    is_valid=False,
-                    message=hier_viol.get("issue", "Hierarchy violation"),
-                    file_path=Path(hier_viol.get("file", "")) if hier_viol.get("file") else None,
-                    severity=4
-                ))
+                all_violations.append(
+                    PhaseViolation(
+                        phase_name=phase_name,
+                        is_valid=False,
+                        message=loc_viol.get("issue", "Location violation"),
+                        file_path=Path(loc_viol.get("file", "")) if loc_viol.get("file") else None,
+                        severity=5,
+                    )
+                )
+            for hier_viol in validation_report.get("hierarchy_validation", {}).get(
+                "violations", []
+            ):
+                all_violations.append(
+                    PhaseViolation(
+                        phase_name=phase_name,
+                        is_valid=False,
+                        message=hier_viol.get("issue", "Hierarchy violation"),
+                        file_path=Path(hier_viol.get("file", ""))
+                        if hier_viol.get("file")
+                        else None,
+                        severity=4,
+                    )
+                )
             for imp_viol in validation_report.get("import_validation", {}).get("violations", []):
-                all_violations.append(PhaseViolation(
-                    phase_name=phase_name,
-                    is_valid=False,
-                    message=str(imp_viol.get("issues", "Import violation")),
-                    file_path=Path(imp_viol.get("file", "")) if imp_viol.get("file") else None,
-                    severity=3
-                ))
+                all_violations.append(
+                    PhaseViolation(
+                        phase_name=phase_name,
+                        is_valid=False,
+                        message=str(imp_viol.get("issues", "Import violation")),
+                        file_path=Path(imp_viol.get("file", "")) if imp_viol.get("file") else None,
+                        severity=3,
+                    )
+                )
 
         # Cleanup violations
-        cleanup_results = self.cleanup_violations(all_violations, dry_run=dry_run) if all_violations else []
+        cleanup_results = (
+            self.cleanup_violations(all_violations, dry_run=dry_run) if all_violations else []
+        )
         batch_summary = cleanup_results[0].get("batch_post_heal", {}) if cleanup_results else {}
 
         return {
@@ -701,14 +771,33 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin,
             "actions_applied": sum(1 for a in cleanup_results if a.get("applied")),
             "detailed_actions": cleanup_results,
             "batch_post_heal_summary": batch_summary,
-            "location_summary": {"violations": len([v for v in all_violations if "LOCATION" in v.message.upper()])},
-            "hierarchy_summary": {"violations": len([v for v in all_violations if "HIERARCHY" in v.message.upper()])},
-            "import_summary": {"violations": len([v for v in all_violations if "IMPORT" in v.message.upper() or "GRAVITY" in v.message.upper()])},
+            "location_summary": {
+                "violations": len([v for v in all_violations if "LOCATION" in v.message.upper()])
+            },
+            "hierarchy_summary": {
+                "violations": len([v for v in all_violations if "HIERARCHY" in v.message.upper()])
+            },
+            "import_summary": {
+                "violations": len(
+                    [
+                        v
+                        for v in all_violations
+                        if "IMPORT" in v.message.upper() or "GRAVITY" in v.message.upper()
+                    ]
+                )
+            },
             "dry_run": dry_run,
         }
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L3 orchestration agent - operational only."""
         if _call_path is None:
             # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)

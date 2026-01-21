@@ -34,6 +34,7 @@ from .execution_strategy import (
 @dataclass
 class WorkflowMetrics:
     """Metrics for workflow execution."""
+
     total_workflows: int = 0
     completed_workflows: int = 0
     failed_workflows: int = 0
@@ -50,15 +51,12 @@ class ErrorHandler:
             "retry": self._retry_strategy,
             "fallback": self._fallback_strategy,
             "skip": self._skip_strategy,
-            "abort": self._abort_strategy
+            "abort": self._abort_strategy,
         }
         self.max_retries = 3
 
     async def handle_error(
-        self,
-        error: Exception,
-        context: WorkflowContext,
-        recovery_type: str = "retry"
+        self, error: Exception, context: WorkflowContext, recovery_type: str = "retry"
     ) -> WorkflowResult:
         """Handle workflow error with recovery strategy."""
         strategy = self.recovery_strategies.get(recovery_type, self._abort_strategy)
@@ -72,17 +70,19 @@ class ErrorHandler:
             return WorkflowResult(
                 workflow_id=context.workflow_id,
                 status=ExecutionStatus.PENDING,
-                error=f"Retry {retries + 1}/{self.max_retries}: {str(error)}"
+                error=f"Retry {retries + 1}/{self.max_retries}: {str(error)}",
             )
         return await self._abort_strategy(error, context)
 
-    async def _fallback_strategy(self, error: Exception, context: WorkflowContext) -> WorkflowResult:
+    async def _fallback_strategy(
+        self, error: Exception, context: WorkflowContext
+    ) -> WorkflowResult:
         """Use fallback logic."""
         return WorkflowResult(
             workflow_id=context.workflow_id,
             status=ExecutionStatus.COMPLETED,
             output={"fallback": True, "original_error": str(error)},
-            error=f"Fallback used: {str(error)}"
+            error=f"Fallback used: {str(error)}",
         )
 
     async def _skip_strategy(self, error: Exception, context: WorkflowContext) -> WorkflowResult:
@@ -91,15 +91,13 @@ class ErrorHandler:
             workflow_id=context.workflow_id,
             status=ExecutionStatus.COMPLETED,
             output={"skipped": True},
-            error=f"Skipped: {str(error)}"
+            error=f"Skipped: {str(error)}",
         )
 
     async def _abort_strategy(self, error: Exception, context: WorkflowContext) -> WorkflowResult:
         """Abort workflow."""
         return WorkflowResult(
-            workflow_id=context.workflow_id,
-            status=ExecutionStatus.FAILED,
-            error=str(error)
+            workflow_id=context.workflow_id, status=ExecutionStatus.FAILED, error=str(error)
         )
 
 
@@ -127,7 +125,7 @@ class UnifiedWorkflowEngine:
         workflow_type: str,
         input_data: dict[str, Any],
         steps: list[WorkflowStep] | None = None,
-        metadata: dict[str, Any] | None = None
+        metadata: dict[str, Any] | None = None,
     ) -> WorkflowResult:
         """
         Execute workflow using appropriate strategy.
@@ -150,7 +148,7 @@ class UnifiedWorkflowEngine:
             workflow_id=workflow_id,
             workflow_type=workflow_type,
             input_data=input_data,
-            metadata=metadata or {}
+            metadata=metadata or {},
         )
         self.active_workflows[workflow_id] = context
 
@@ -170,7 +168,7 @@ class UnifiedWorkflowEngine:
                     result = WorkflowResult(
                         workflow_id=workflow_id,
                         status=ExecutionStatus.COMPLETED,
-                        output={"message": "No steps provided"}
+                        output={"message": "No steps provided"},
                     )
 
             # Update metrics
@@ -197,7 +195,7 @@ class UnifiedWorkflowEngine:
         self,
         coordinator_name: str,
         input_data: dict[str, Any],
-        metadata: dict[str, Any] | None = None
+        metadata: dict[str, Any] | None = None,
     ) -> WorkflowResult:
         """
         Execute workflow using specific coordinator.
@@ -215,14 +213,14 @@ class UnifiedWorkflowEngine:
             return WorkflowResult(
                 workflow_id=str(uuid.uuid4()),
                 status=ExecutionStatus.FAILED,
-                error=f"Coordinator not found: {coordinator_name}"
+                error=f"Coordinator not found: {coordinator_name}",
             )
 
         context = WorkflowContext(
             workflow_id=str(uuid.uuid4()),
             workflow_type=coordinator_name,
             input_data=input_data,
-            metadata=metadata or {}
+            metadata=metadata or {},
         )
 
         return await coordinator.safe_coordinate(context)
@@ -242,13 +240,17 @@ class UnifiedWorkflowEngine:
                 "total_workflows": self.metrics.total_workflows,
                 "completed_workflows": self.metrics.completed_workflows,
                 "failed_workflows": self.metrics.failed_workflows,
-                "success_rate": (self.metrics.completed_workflows / self.metrics.total_workflows * 100) if self.metrics.total_workflows > 0 else 0,
+                "success_rate": (
+                    self.metrics.completed_workflows / self.metrics.total_workflows * 100
+                )
+                if self.metrics.total_workflows > 0
+                else 0,
                 "total_time": self.metrics.total_time,
-                "avg_latency": self.metrics.avg_latency
+                "avg_latency": self.metrics.avg_latency,
             },
             "active_workflows": len(self.active_workflows),
             "strategies": list(self.strategies.keys()),
-            "coordinators": self.coordinator_registry.get_statistics()
+            "coordinators": self.coordinator_registry.get_statistics(),
         }
 
     def get_active_workflows(self) -> list[str]:

@@ -57,8 +57,8 @@ class RLCoordinator(WorkflowCoordinator):
                 "strategy": strategy,
                 "action": action,
                 "reward": reward,
-                "cumulative_reward": sum(self.reward_history)
-            }
+                "cumulative_reward": sum(self.reward_history),
+            },
         )
 
     async def _select_action(self, strategy: str, state: dict, actions: list) -> Any:
@@ -74,7 +74,7 @@ class RLCoordinator(WorkflowCoordinator):
                 name="rl_routing",
                 description="RL-based workflow routing",
                 workflow_types=["rl", "ppo", "q_learning", "actor_critic"],
-                priority=10
+                priority=10,
             )
         ]
 
@@ -113,9 +113,7 @@ class TerritoryCoordinator(WorkflowCoordinator):
             result = {"error": f"Unknown operation: {operation}"}
 
         return WorkflowResult(
-            workflow_id=context.workflow_id,
-            status=ExecutionStatus.COMPLETED,
-            output=result
+            workflow_id=context.workflow_id, status=ExecutionStatus.COMPLETED, output=result
         )
 
     async def _map_territory(self, territory: str, context: WorkflowContext) -> dict:
@@ -137,12 +135,17 @@ class TerritoryCoordinator(WorkflowCoordinator):
                 name="territory_management",
                 description="Semantic territory mapping and healing",
                 workflow_types=["territory", "semantic_map", "territory_heal"],
-                priority=8
+                priority=8,
             )
         ]
 
     def can_handle(self, workflow_type: str) -> bool:
-        return workflow_type.lower() in ["territory", "semantic_map", "territory_heal", "territory_change"]
+        return workflow_type.lower() in [
+            "territory",
+            "semantic_map",
+            "territory_heal",
+            "territory_change",
+        ]
 
 
 class MCPCoordinator(WorkflowCoordinator):
@@ -176,9 +179,7 @@ class MCPCoordinator(WorkflowCoordinator):
             result = {"error": f"Unknown operation: {operation}"}
 
         return WorkflowResult(
-            workflow_id=context.workflow_id,
-            status=ExecutionStatus.COMPLETED,
-            output=result
+            workflow_id=context.workflow_id, status=ExecutionStatus.COMPLETED, output=result
         )
 
     async def _route_tool(self, tool: str, context: WorkflowContext) -> dict:
@@ -200,7 +201,7 @@ class MCPCoordinator(WorkflowCoordinator):
                 name="mcp_management",
                 description="MCP routing and tool verification",
                 workflow_types=["mcp", "tool", "mcp_route"],
-                priority=9
+                priority=9,
             )
         ]
 
@@ -240,9 +241,7 @@ class MissionCoordinator(WorkflowCoordinator):
             result = {"error": f"Unknown operation: {operation}"}
 
         return WorkflowResult(
-            workflow_id=context.workflow_id,
-            status=ExecutionStatus.COMPLETED,
-            output=result
+            workflow_id=context.workflow_id, status=ExecutionStatus.COMPLETED, output=result
         )
 
     async def _run_mission(self, mission_id: str, context: WorkflowContext) -> dict:
@@ -271,7 +270,7 @@ class MissionCoordinator(WorkflowCoordinator):
                 name="mission_execution",
                 description="Mission lifecycle management",
                 workflow_types=["mission", "test", "resume"],
-                priority=10
+                priority=10,
             )
         ]
 
@@ -309,9 +308,7 @@ class ModelCoordinator(WorkflowCoordinator):
             result = {"error": f"Unknown operation: {operation}"}
 
         return WorkflowResult(
-            workflow_id=context.workflow_id,
-            status=ExecutionStatus.COMPLETED,
-            output=result
+            workflow_id=context.workflow_id, status=ExecutionStatus.COMPLETED, output=result
         )
 
     async def _route_model(self, model: str, context: WorkflowContext) -> dict:
@@ -334,7 +331,7 @@ class ModelCoordinator(WorkflowCoordinator):
                 name="model_management",
                 description="Model routing and RAG orchestration",
                 workflow_types=["model", "rag", "model_route"],
-                priority=8
+                priority=8,
             )
         ]
 
@@ -373,9 +370,7 @@ class HealthCoordinator(WorkflowCoordinator):
             result = {"error": f"Unknown operation: {operation}"}
 
         return WorkflowResult(
-            workflow_id=context.workflow_id,
-            status=ExecutionStatus.COMPLETED,
-            output=result
+            workflow_id=context.workflow_id, status=ExecutionStatus.COMPLETED, output=result
         )
 
     async def _health_check(self, context: WorkflowContext) -> dict:
@@ -402,7 +397,7 @@ class HealthCoordinator(WorkflowCoordinator):
                 name="health_monitoring",
                 description="System health and proactive monitoring",
                 workflow_types=["health", "audit", "deadlock", "memory"],
-                priority=9
+                priority=9,
             )
         ]
 
@@ -439,9 +434,7 @@ class GovernanceCoordinator(WorkflowCoordinator):
             result = {"error": f"Unknown operation: {operation}"}
 
         return WorkflowResult(
-            workflow_id=context.workflow_id,
-            status=ExecutionStatus.COMPLETED,
-            output=result
+            workflow_id=context.workflow_id, status=ExecutionStatus.COMPLETED, output=result
         )
 
     async def _validate_registry(self, context: WorkflowContext) -> dict:
@@ -464,7 +457,7 @@ class GovernanceCoordinator(WorkflowCoordinator):
                 name="governance_enforcement",
                 description="Policy and permission enforcement",
                 workflow_types=["governance", "permission", "registry"],
-                priority=10
+                priority=10,
             )
         ]
 
@@ -503,9 +496,7 @@ class UtilityCoordinator(WorkflowCoordinator):
             result = {"error": f"Unknown operation: {operation}"}
 
         return WorkflowResult(
-            workflow_id=context.workflow_id,
-            status=ExecutionStatus.COMPLETED,
-            output=result
+            workflow_id=context.workflow_id, status=ExecutionStatus.COMPLETED, output=result
         )
 
     async def _conversation_repair(self, context: WorkflowContext) -> dict:
@@ -530,7 +521,7 @@ class UtilityCoordinator(WorkflowCoordinator):
                 name="utility_functions",
                 description="Support and utility operations",
                 workflow_types=["utility", "repair", "curate", "handshake", "tao"],
-                priority=5
+                priority=5,
             )
         ]
 
@@ -565,9 +556,7 @@ class CachingCoordinator(WorkflowCoordinator):
             result = {"error": f"Unknown operation: {operation}"}
 
         return WorkflowResult(
-            workflow_id=context.workflow_id,
-            status=ExecutionStatus.COMPLETED,
-            output=result
+            workflow_id=context.workflow_id, status=ExecutionStatus.COMPLETED, output=result
         )
 
     def get_capabilities(self) -> list[CoordinatorCapability]:
@@ -576,7 +565,7 @@ class CachingCoordinator(WorkflowCoordinator):
                 name="caching",
                 description="Workflow result caching",
                 workflow_types=["cache", "caching"],
-                priority=7
+                priority=7,
             )
         ]
 
@@ -606,9 +595,7 @@ class SecurityCoordinator(WorkflowCoordinator):
             result = {"error": f"Unknown operation: {operation}"}
 
         return WorkflowResult(
-            workflow_id=context.workflow_id,
-            status=ExecutionStatus.COMPLETED,
-            output=result
+            workflow_id=context.workflow_id, status=ExecutionStatus.COMPLETED, output=result
         )
 
     async def _validate_security(self, context: WorkflowContext) -> dict:
@@ -629,7 +616,7 @@ class SecurityCoordinator(WorkflowCoordinator):
                 name="security",
                 description="Security hardening and auditing",
                 workflow_types=["security", "harden", "security_audit"],
-                priority=10
+                priority=10,
             )
         ]
 

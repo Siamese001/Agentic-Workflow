@@ -9,6 +9,7 @@ This script demonstrates that the orchestrator's agents detect:
 4. Duplicate Files (via DuplicateCodeDetectorAgent)
 5. Naming Violations (via NamingAgent)
 """
+
 import sys
 from pathlib import Path
 
@@ -48,36 +49,38 @@ def main():
         "SyntaxValidatorAgent": {
             "report_category": "Syntax Errors",
             "report_count": 60,
-            "description": "Python syntax errors (AST parsing failures)"
+            "description": "Python syntax errors (AST parsing failures)",
         },
         "HygieneGuardianAgent": {
             "report_category": "Hygiene Issues",
             "report_count": "76+",
-            "description": "Empty files, tech debt markers (TODO/FIXME)"
+            "description": "Empty files, tech debt markers (TODO/FIXME)",
         },
         "GravityEnforcerAgent": {
             "report_category": "Gravity Violations",
             "report_count": "69+",
-            "description": "Upward imports (higher layers importing lower layers)"
+            "description": "Upward imports (higher layers importing lower layers)",
         },
         "DuplicateCodeDetectorAgent": {
             "report_category": "Duplicate Files",
             "report_count": "95+",
-            "description": "Same functionality in multiple locations"
+            "description": "Same functionality in multiple locations",
         },
         "NamingAgent": {
             "report_category": "Naming Violations",
             "report_count": "55+",
-            "description": "Non-compliant naming conventions"
-        }
+            "description": "Non-compliant naming conventions",
+        },
     }
 
     print(f"{'Agent':<30} {'Report Category':<25} {'Expected':<12} {'Status'}")
     print("-" * 80)
 
     for agent_name, info in violations_map.items():
-        status = "✅ DETECTED" if result.get('agents_run', 0) > 0 else "❌ NOT RUN"
-        print(f"{agent_name:<30} {info['report_category']:<25} {str(info['report_count']):<12} {status}")
+        status = "✅ DETECTED" if result.get("agents_run", 0) > 0 else "❌ NOT RUN"
+        print(
+            f"{agent_name:<30} {info['report_category']:<25} {str(info['report_count']):<12} {status}"
+        )
 
     print()
     print("=" * 80)
@@ -108,5 +111,6 @@ def main():
 
     return 0
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     sys.exit(main())

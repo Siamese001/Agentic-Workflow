@@ -38,6 +38,7 @@ def get_project_root() -> Path:
     """Get project root directory."""
     # Method 1: Use environment variable if set
     import os
+
     if "PROJECT_ROOT" in os.environ:
         return Path(os.environ["PROJECT_ROOT"])
 
@@ -118,15 +119,10 @@ class TestBackupFolderSSOTCompliance:
             for pattern in FORBIDDEN_BACKUP_PATTERNS:
                 matches = re.findall(pattern, content)
                 if matches:
-                    violations.append({
-                        "file": rel_path,
-                        "pattern": pattern,
-                        "matches": matches
-                    })
+                    violations.append({"file": rel_path, "pattern": pattern, "matches": matches})
 
-        assert not violations, (
-            "Found forbidden backup folder patterns:\n"
-            + "\n".join(f"  - {v['file']}: {v['matches']}" for v in violations)
+        assert not violations, "Found forbidden backup folder patterns:\n" + "\n".join(
+            f"  - {v['file']}: {v['matches']}" for v in violations
         )
 
     def test_all_backup_dirs_use_approved_root(self, project_root: Path):
@@ -149,14 +145,12 @@ class TestBackupFolderSSOTCompliance:
 
             for match in matches:
                 if not match.startswith(".sovereign_healing_backup"):
-                    violations.append({
-                        "file": str(py_file.relative_to(project_root)),
-                        "backup_path": match
-                    })
+                    violations.append(
+                        {"file": str(py_file.relative_to(project_root)), "backup_path": match}
+                    )
 
-        assert not violations, (
-            "Found unapproved backup folder assignments:\n"
-            + "\n".join(f"  - {v['file']}: {v['backup_path']}" for v in violations)
+        assert not violations, "Found unapproved backup folder assignments:\n" + "\n".join(
+            f"  - {v['file']}: {v['backup_path']}" for v in violations
         )
 
 

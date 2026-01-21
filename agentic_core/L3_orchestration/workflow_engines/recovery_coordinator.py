@@ -6,6 +6,7 @@ Original: archives/unmapped_drift/20260107/agentic_core/L3_orchestration/coordin
 
 Provides graceful degradation and error recovery.
 """
+
 from __future__ import annotations
 
 import logging
@@ -30,8 +31,8 @@ class RecoveryCoordinator(WorkflowCoordinator):
         """Execute recovery workflow."""
         self._lazy_init()
 
-        original_task = task.get('original_task', {})
-        error = task.get('error', 'Unknown error')
+        original_task = task.get("original_task", {})
+        error = task.get("error", "Unknown error")
 
         log.error(f"Recovery triggered for task type: {original_task.get('type', 'unknown')}")
         log.error(f"Error: {error}")
@@ -42,5 +43,5 @@ class RecoveryCoordinator(WorkflowCoordinator):
             "status": "recovered",
             "original_task": original_task,
             "error": error,
-            "message": "Workflow recovered with fallback behavior"
+            "message": "Workflow recovered with fallback behavior",
         }

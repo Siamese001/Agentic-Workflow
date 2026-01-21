@@ -19,29 +19,29 @@ class AgentRole(Enum):
     """Functional roles for agents in the system."""
 
     # Core Research & Analysis
-    CONTEXT_GATHERER = "context_gatherer"      # Formerly K.2/HyDE - Deep research
-    FACT_CHECKER = "fact_checker"              # Validation and verification
-    INSIGHT_ANALYZER = "insight_analyzer"      # Pattern recognition
+    CONTEXT_GATHERER = "context_gatherer"  # Formerly K.2/HyDE - Deep research
+    FACT_CHECKER = "fact_checker"  # Validation and verification
+    INSIGHT_ANALYZER = "insight_analyzer"  # Pattern recognition
 
     # Strategy & Planning
-    STRATEGIC_PLANNER = "strategic_planner"    # Formerly Executive Brief
+    STRATEGIC_PLANNER = "strategic_planner"  # Formerly Executive Brief
     WORKFLOW_ARCHITECT = "workflow_architect"  # DAG design
-    GAP_ANALYZER = "gap_analyzer"              # Identify missing elements
+    GAP_ANALYZER = "gap_analyzer"  # Identify missing elements
 
     # Content Creation
-    CONTENT_DRAFTER = "content_drafter"        # Formerly K.3 - Primary writer
-    MESSAGE_CRAFTER = "message_crafter"        # Specialized messaging
-    RESUME_BUILDER = "resume_builder"          # Resume-specific content
+    CONTENT_DRAFTER = "content_drafter"  # Formerly K.3 - Primary writer
+    MESSAGE_CRAFTER = "message_crafter"  # Specialized messaging
+    RESUME_BUILDER = "resume_builder"  # Resume-specific content
 
     # Quality & Governance
-    QUALITY_CRITIC = "quality_critic"          # Formerly K.5/Refiner
-    PROTOCOL_ENFORCER = "protocol_enforcer"    # Governance and rules
-    TUNE_ADJUSTER = "tune_adjuster"            # Tone and style optimization
+    QUALITY_CRITIC = "quality_critic"  # Formerly K.5/Refiner
+    PROTOCOL_ENFORCER = "protocol_enforcer"  # Governance and rules
+    TUNE_ADJUSTER = "tune_adjuster"  # Tone and style optimization
 
     # Specialized Roles
-    PERSONALIZER = "personalizer"              # Customization per user
-    OPTIMIZER = "optimizer"                    # Performance improvement
-    COORDINATOR = "coordinator"                # Orchestration and sync
+    PERSONALIZER = "personalizer"  # Customization per user
+    OPTIMIZER = "optimizer"  # Performance improvement
+    COORDINATOR = "coordinator"  # Orchestration and sync
 
 
 @dataclass
@@ -70,7 +70,7 @@ class AgentSpec:
         role: AgentRole,
         hop_function: Callable,
         config: SubatomicHopConfig | None = None,
-        **kwargs
+        **kwargs,
     ):
         """Initialize agent specification.
 
@@ -101,24 +101,25 @@ class AgentSpec:
         if "context" not in self.parameters:
             self.parameters["context"] = {}
 
-        self.parameters["context"].update({
-            "role": self.role.value,
-            "display_name": capability.display_name,
-            "primary_function": capability.primary_function
-        })
+        self.parameters["context"].update(
+            {
+                "role": self.role.value,
+                "display_name": capability.display_name,
+                "primary_function": capability.primary_function,
+            }
+        )
 
     def create_hop(self) -> SubatomicHop:
         """Create a SubatomicHop instance from this spec."""
         return SubatomicHop(
             hop_function=self.hop_function,
             config=self.config,
-            initial_context=self.parameters.get("context", {})
+            initial_context=self.parameters.get("context", {}),
         )
 
 
 # Registry of agent capabilities
 AGENT_CAPABILITIES: dict[AgentRole, AgentCapability] = {
-
     # Context Gathering
     AgentRole.CONTEXT_GATHERER: AgentCapability(
         role=AgentRole.CONTEXT_GATHERER,
@@ -138,9 +139,8 @@ Your downstream consumer: Strategic Planner and Content Drafter.
 - Use the TitaniumRAGPipeline for deep research
 - Do not hallucinate or invent information
 - Provide confidence scores for findings""",
-        legacy_k_nodes=["K.2", "K2"]
+        legacy_k_nodes=["K.2", "K2"],
     ),
-
     # Strategic Planning
     AgentRole.STRATEGIC_PLANNER: AgentCapability(
         role=AgentRole.STRATEGIC_PLANNER,
@@ -159,9 +159,8 @@ Your downstream consumer: Content Drafter and Quality Critic.
 - Plans must be specific and measurable
 - Consider all constraints and resources
 - Use the CreativeBrief framework for consistency""",
-        legacy_k_nodes=["Executive Brief", "Strategic Planner"]
+        legacy_k_nodes=["Executive Brief", "Strategic Planner"],
     ),
-
     # Content Drafting
     AgentRole.CONTENT_DRAFTER: AgentCapability(
         role=AgentRole.CONTENT_DRAFTER,
@@ -180,9 +179,8 @@ Your downstream consumer: Quality Critic and Protocol Enforcer.
 - Strict adherence to tone settings
 - All claims must be supported by research
 - Use the ToneModel for consistency""",
-        legacy_k_nodes=["K.3", "K3"]
+        legacy_k_nodes=["K.3", "K3"],
     ),
-
     # Quality Criticism
     AgentRole.QUALITY_CRITIC: AgentCapability(
         role=AgentRole.QUALITY_CRITIC,
@@ -201,9 +199,8 @@ Your downstream consumer: Protocol Enforcer and Coordinator.
 - Apply all validation gates rigorously
 - Provide specific, actionable feedback
 - Use the ReflectionEngine for deep analysis""",
-        legacy_k_nodes=["K.5", "K5", "Refiner"]
+        legacy_k_nodes=["K.5", "K5", "Refiner"],
     ),
-
     # Message Crafting
     AgentRole.MESSAGE_CRAFTER: AgentCapability(
         role=AgentRole.MESSAGE_CRAFTER,
@@ -222,9 +219,8 @@ Your downstream consumer: Quality Critic.
 - Personalization must be genuine
 - Follow all anti-spam guidelines
 - Match the recipient's communication style""",
-        legacy_k_nodes=["K.3", "Message Body"]
+        legacy_k_nodes=["K.3", "Message Body"],
     ),
-
     # Protocol Enforcement
     AgentRole.PROTOCOL_ENFORCER: AgentCapability(
         role=AgentRole.PROTOCOL_ENFORCER,
@@ -243,9 +239,8 @@ Your downstream consumer: Coordinator and end users.
 - No exceptions to protocol violations
 - Document all compliance decisions
 - Apply rules consistently""",
-        legacy_k_nodes=["K.5", "Protocol Layer"]
+        legacy_k_nodes=["K.5", "Protocol Layer"],
     ),
-
     # Resume Building
     AgentRole.RESUME_BUILDER: AgentCapability(
         role=AgentRole.RESUME_BUILDER,
@@ -264,8 +259,8 @@ Your downstream consumer: Quality Critic.
 - Optimize for ATS keywords
 - Use strong action verbs
 - Quantify all achievements""",
-        legacy_k_nodes=["K.3", "Resume Specialist"]
-    )
+        legacy_k_nodes=["K.3", "Resume Specialist"],
+    ),
 }
 
 
@@ -278,7 +273,6 @@ LEGACY_MAPPING: dict[str, AgentRole] = {
     "K3": AgentRole.CONTENT_DRAFTER,
     "K.5": AgentRole.QUALITY_CRITIC,
     "K5": AgentRole.QUALITY_CRITIC,
-
     # Functional mappings
     "HyDE": AgentRole.CONTEXT_GATHERER,
     "Researcher": AgentRole.CONTEXT_GATHERER,
@@ -288,7 +282,7 @@ LEGACY_MAPPING: dict[str, AgentRole] = {
     "Refiner": AgentRole.QUALITY_CRITIC,
     "Executive Brief": AgentRole.STRATEGIC_PLANNER,
     "Message Body": AgentRole.MESSAGE_CRAFTER,
-    "Protocol": AgentRole.PROTOCOL_ENFORCER
+    "Protocol": AgentRole.PROTOCOL_ENFORCER,
 }
 
 
@@ -400,8 +394,8 @@ class AgentRegistry:
                 "strategy": 3,
                 "content": 3,
                 "quality": 3,
-                "specialized": 3
-            }
+                "specialized": 3,
+            },
         }
 
 
@@ -466,6 +460,7 @@ def map_legacy_node(legacy_reference: str) -> AgentRole | None:
 # Exception for legacy code detection
 class LegacyCodeError(Exception):
     """Raised when legacy K-node references are detected."""
+
     pass
 
 

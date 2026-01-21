@@ -11,6 +11,7 @@ Tests for the SSOT alignment changes:
 
 All tests must pass 100%.
 """
+
 import json
 import logging
 import sys
@@ -54,7 +55,7 @@ def test_1_backup_loop_prevention():
         result = guardian.heal_repository(dry_run=True)
 
         # Check for forbidden patterns in logs
-        forbidden_patterns = ['.sovereign_healing_backup', 'import_fixes']
+        forbidden_patterns = [".sovereign_healing_backup", "import_fixes"]
         violations = []
 
         for log_msg in captured_logs:
@@ -97,11 +98,11 @@ def test_2_test_agent_discovery():
         return True  # Skip, not fail
 
     try:
-        with open(discovery_path, encoding='utf-8') as f:
+        with open(discovery_path, encoding="utf-8") as f:
             agents = json.load(f)
 
         agent_count = len(agents)
-        agent_names = [a.get('class_name', a.get('name', '')) for a in agents]
+        agent_names = [a.get("class_name", a.get("name", "")) for a in agents]
 
         # Check count is in expected range (200-350) - wider range for flexibility
         min_expected = 200
@@ -115,14 +116,16 @@ def test_2_test_agent_discovery():
             print(f"  WARN: Agent count {agent_count} exceeds expected max {max_expected}")
 
         # Check for TestContentQualityAgent (or similar test agent)
-        test_agents = [n for n in agent_names if 'Test' in n and 'Agent' in n]
+        test_agents = [n for n in agent_names if "Test" in n and "Agent" in n]
 
         if not test_agents:
             print("  INFO: No test agents found in discovery (may be expected)")
         else:
             print(f"  Found {len(test_agents)} test agents: {test_agents[:5]}...")
 
-        print(f"  PASS: Agent count = {agent_count} (expected range: {min_expected}-{max_expected})")
+        print(
+            f"  PASS: Agent count = {agent_count} (expected range: {min_expected}-{max_expected})"
+        )
         return True
 
     except Exception as e:
@@ -149,9 +152,9 @@ def test_3_roster_deduplication():
 
         # Check SKIP_AGENTS contains the expected entries
         tier_0_1_agents = [
-            'SyntaxValidatorAgent',
-            'HygieneGuardianAgent',
-            'TwoPhaseDeduplicationAgent',
+            "SyntaxValidatorAgent",
+            "HygieneGuardianAgent",
+            "TwoPhaseDeduplicationAgent",
         ]
 
         missing_from_skip = []
@@ -160,7 +163,9 @@ def test_3_roster_deduplication():
                 missing_from_skip.append(agent)
 
         if missing_from_skip:
-            print(f"  FAIL: These Tier 0-1 agents are missing from SKIP_AGENTS: {missing_from_skip}")
+            print(
+                f"  FAIL: These Tier 0-1 agents are missing from SKIP_AGENTS: {missing_from_skip}"
+            )
             return False
 
         print("  SKIP_AGENTS contains all Tier 0-1 core agents")
@@ -185,6 +190,7 @@ def test_3_roster_deduplication():
     except Exception as e:
         print(f"  FAIL: Exception during test: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -240,6 +246,7 @@ def test_4_fixture_exclusion():
     except Exception as e:
         print(f"  FAIL: Exception during test: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -256,7 +263,7 @@ def test_5_stability_gate_status():
 
     try:
         # Create a temporary file with syntax error
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
             f.write("def broken_syntax(:\n    pass\n")
             temp_path = Path(f.name)
 
@@ -291,6 +298,7 @@ def test_5_stability_gate_status():
     except Exception as e:
         print(f"  FAIL: Exception during test: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 

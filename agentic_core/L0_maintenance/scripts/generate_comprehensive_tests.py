@@ -16,6 +16,7 @@ Strategy:
 - Test error handling and edge cases
 - Achieve line, branch, and path coverage
 """
+
 import sys
 from pathlib import Path
 
@@ -40,14 +41,16 @@ class TestGenerator:
 
         # Test 2: Public methods
         for method_name in dir(agent_class):
-            if not method_name.startswith('_') and callable(getattr(agent_class, method_name, None)):
+            if not method_name.startswith("_") and callable(
+                getattr(agent_class, method_name, None)
+            ):
                 test_cases.append(self._generate_method_test(agent_class, method_name))
 
         # Test 3: MRO compliance
         test_cases.append(self._generate_mro_test(agent_class))
 
         # Test 4: State management
-        if hasattr(agent_class, 'get_state') and hasattr(agent_class, 'set_state'):
+        if hasattr(agent_class, "get_state") and hasattr(agent_class, "set_state"):
             test_cases.append(self._generate_state_test(agent_class))
 
         return test_cases
@@ -128,11 +131,16 @@ def generate_layer_tests():
         from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import (
             L0MaintenanceBaseAgent,
         )
-        tests = generator.generate_agent_tests(L0MaintenanceBaseAgent, "agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent")
+
+        tests = generator.generate_agent_tests(
+            L0MaintenanceBaseAgent, "agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent"
+        )
         generator.write_test_file(
             "l0_agent",
             tests,
-            ["from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent"]
+            [
+                "from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent"
+            ],
         )
     except Exception as e:
         print(f"⚠️  Could not generate L0MaintenanceBaseAgent tests: {e}")
@@ -140,11 +148,14 @@ def generate_layer_tests():
     # L5SafetyBaseAgent
     try:
         from agentic_core.L5_safety.validators.L5SafetyBaseAgent import L5SafetyBaseAgent
-        tests = generator.generate_agent_tests(L5SafetyBaseAgent, "agentic_core.L5_safety.guardrails.L5SafetyBaseAgent")
+
+        tests = generator.generate_agent_tests(
+            L5SafetyBaseAgent, "agentic_core.L5_safety.guardrails.L5SafetyBaseAgent"
+        )
         generator.write_test_file(
             "safety_base_agent",
             tests,
-            ["from agentic_core.L5_safety.validators.L5SafetyBaseAgent import L5SafetyBaseAgent"]
+            ["from agentic_core.L5_safety.validators.L5SafetyBaseAgent import L5SafetyBaseAgent"],
         )
     except Exception as e:
         print(f"⚠️  Could not generate L5SafetyBaseAgent tests: {e}")

@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, prompt, validator, workflow
@@ -35,7 +34,7 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 @dataclass
 class SovereignRedisOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
-    '''Brief description of functionality and purpose.'''
+    """Brief description of functionality and purpose."""
 
     def __init__(self) -> None:
         """Initialize the instance."""
@@ -54,7 +53,7 @@ class SovereignRedisOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHar
             "port": parsed.port or 6379,
             "password": parsed.password,
             "decode_responses": True,
-            "socket_timeout": 2.0
+            "socket_timeout": 2.0,
         }
         # The Fix: Only inject SSL if specifically requested by scheme
         if parsed.scheme == "rediss":
@@ -67,7 +66,8 @@ class SovereignRedisOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHar
         """Execute get operation."""
         if not self.use_fallback:
             try:
-                if not self.connection: self.connection = self._create_connection()
+                if not self.connection:
+                    self.connection = self._create_connection()
                 return self.connection.get(key)
             except (redis.ConnectionError, redis.TimeoutError):
                 self.use_fallback = True
@@ -79,7 +79,8 @@ class SovereignRedisOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHar
         """Execute set operation."""
         if not self.use_fallback:
             try:
-                if not self.connection: self.connection = self._create_connection()
+                if not self.connection:
+                    self.connection = self._create_connection()
                 self.connection.set(key, value)
                 return
             except (redis.ConnectionError, redis.TimeoutError):
@@ -94,7 +95,8 @@ class SovereignRedisOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHar
         """Delete a key from Redis or fallback cache"""
         if not self.use_fallback:
             try:
-                if not self.connection: self.connection = self._create_connection()
+                if not self.connection:
+                    self.connection = self._create_connection()
                 return self.connection.delete(key) > 0
             except (redis.ConnectionError, redis.TimeoutError):
                 self.use_fallback = True
@@ -109,7 +111,8 @@ class SovereignRedisOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHar
         """Check if key exists in Redis or fallback cache"""
         if not self.use_fallback:
             try:
-                if not self.connection: self.connection = self._create_connection()
+                if not self.connection:
+                    self.connection = self._create_connection()
                 return self.connection.exists(key) > 0
             except (redis.ConnectionError, redis.TimeoutError):
                 self.use_fallback = True
@@ -120,7 +123,8 @@ class SovereignRedisOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHar
         """Clear all data from Redis and fallback cache"""
         if not self.use_fallback:
             try:
-                if not self.connection: self.connection = self._create_connection()
+                if not self.connection:
+                    self.connection = self._create_connection()
                 self.connection.flushdb()
             except (redis.ConnectionError, redis.TimeoutError):
                 self.use_fallback = True
@@ -133,12 +137,19 @@ class SovereignRedisOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHar
             "redis_url": self.redis_url,
             "using_fallback": self.use_fallback,
             "fallback_size": len(self.fallback_cache),
-            "max_fallback_size": self.max_fallback_size
+            "max_fallback_size": self.max_fallback_size,
         }
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> Dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> Dict[str, int]:
         """L2 execution agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -158,6 +169,7 @@ class SovereignRedisOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHar
 
 # Singleton instance for global use
 _orchestrator = None
+
 
 def get_sovereign_redis_orchestrator() -> SovereignRedisOrchestratorAgent:
     """Factory function to get sovereign redis orchestrator instance."""

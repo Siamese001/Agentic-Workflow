@@ -3,6 +3,7 @@
 Add SubatomicTestingMixin to agents that don't have tests.
 This script modifies agent files to add self-testing capability.
 """
+
 import json
 import re
 from pathlib import Path
@@ -10,11 +11,11 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent
 discovery_file = project_root / "agent_discovery_full.json"
 
-with open(discovery_file, encoding='utf-8') as f:
+with open(discovery_file, encoding="utf-8") as f:
     data = json.load(f)
 
 # Find agents without tests
-no_tests = [a for a in data if not a.get('has_tests', False)]
+no_tests = [a for a in data if not a.get("has_tests", False)]
 print(f"Found {len(no_tests)} agents without tests")
 
 # Track changes
@@ -23,29 +24,29 @@ skipped = []
 errors = []
 
 for agent in no_tests:
-    agent_path = project_root / agent['path']
-    class_name = agent['class_name']
+    agent_path = project_root / agent["path"]
+    class_name = agent["class_name"]
 
     if not agent_path.exists():
         errors.append(f"{class_name}: File not found")
         continue
 
     try:
-        content = agent_path.read_text(encoding='utf-8')
+        content = agent_path.read_text(encoding="utf-8")
         original_content = content
 
         # Check if already has SubatomicTestingMixin
-        if 'SubatomicTestingMixin' in content:
+        if "SubatomicTestingMixin" in content:
             skipped.append(f"{class_name}: Already has SubatomicTestingMixin")
             continue
 
         # Check if already has test_self method
-        if 'def test_self' in content or 'def _test_self' in content:
+        if "def test_self" in content or "def _test_self" in content:
             skipped.append(f"{class_name}: Already has test_self method")
             continue
 
         # Find the class definition
-        class_pattern = rf'class\s+{class_name}\s*\((.*?)\):'
+        class_pattern = rf"class\s+{class_name}\s*\((.*?)\):"
         match = re.search(class_pattern, content)
 
         if not match:
@@ -55,11 +56,14 @@ for agent in no_tests:
         inheritance = match.group(1)
 
         # Add SubatomicTestingMixin to inheritance if not present
-        if 'SubatomicTestingMixin' not in inheritance:
+        if "SubatomicTestingMixin" not in inheritance:
             # Add import if not present
-            if 'from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import' not in content:
+            if (
+                "from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import"
+                not in content
+            ):
                 # Find a good place to add the import
-                import_pattern = r'(from agentic_core\.[^\n]+\n)'
+                import_pattern = r"(from agentic_core\.[^\n]+\n)"
                 import_match = re.search(import_pattern, content)
                 if import_match:
                     # Add after existing agentic_core import
@@ -68,33 +72,38 @@ for agent in no_tests:
                     content = content[:insert_pos] + new_import + content[insert_pos:]
                 else:
                     # Add at top after other imports
-                    lines = content.split('\n')
+                    lines = content.split("\n")
                     insert_idx = 0
                     for i, line in enumerate(lines):
-                        if line.startswith('import ') or line.startswith('from '):
+                        if line.startswith("import ") or line.startswith("from "):
                             insert_idx = i + 1
-                    lines.insert(insert_idx, "from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin")
-                    content = '\n'.join(lines)
+                    lines.insert(
+                        insert_idx,
+                        "from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin",
+                    )
+                    content = "\n".join(lines)
 
             # Add SubatomicTestingMixin to class inheritance
             new_inheritance = f"SubatomicTestingMixin, {inheritance}"
-            content = re.sub(class_pattern, f'class {class_name}({new_inheritance}):', content)
+            content = re.sub(class_pattern, f"class {class_name}({new_inheritance}):", content)
 
         # Find the class body to add test_self method
         # Look for the first method definition or class end
-        class_start = content.find(f'class {class_name}')
+        class_start = content.find(f"class {class_name}")
         if class_start == -1:
             errors.append(f"{class_name}: Could not locate class after modification")
             continue
 
         # Find indentation level
-        class_line_start = content.rfind('\n', 0, class_start) + 1
+        class_line_start = content.rfind("\n", 0, class_start) + 1
         class_line = content[class_line_start:class_start]
         base_indent = len(class_line) - len(class_line.lstrip())
-        method_indent = ' ' * (base_indent + 4)
+        method_indent = " " * (base_indent + 4)
 
         # Find where to insert test_self - after __init__ or __post_init__ if exists, otherwise after class docstring
-        init_match = re.search(rf'(class {class_name}.*?:.*?(?:""".*?""")?)(.*?)(def \w+)', content, re.DOTALL)
+        init_match = re.search(
+            rf'(class {class_name}.*?:.*?(?:""".*?""")?)(.*?)(def \w+)', content, re.DOTALL
+        )
 
         if init_match:
             # Insert test_self method
@@ -133,7 +142,7 @@ for agent in no_tests:
             content = content[:insert_pos] + test_method + content[insert_pos:]
 
         if content != original_content:
-            agent_path.write_text(content, encoding='utf-8')
+            agent_path.write_text(content, encoding="utf-8")
             modified.append(class_name)
             print(f"✅ Modified: {class_name}")
         else:

@@ -15,6 +15,7 @@ class ConcreteInfrastructureAgent(InfrastructureMixin):
     """
     Concrete implementation of InfrastructureMixin for testing purposes.
     """
+
     def __init__(self):
         super().__init__()
         self.name = "TestInfrastructureAgent"

@@ -45,8 +45,8 @@ class ResumeAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin, ABC):
         assert self.name, "Agent name must be set"
 
         # Verify signals interface
-        assert hasattr(self.ctx, 'signals'), "Context must have signals"
-        assert hasattr(self.ctx, 'record_result'), "Context must have record_result"
+        assert hasattr(self.ctx, "signals"), "Context must have signals"
+        assert hasattr(self.ctx, "record_result"), "Context must have record_result"
 
         return True
 
@@ -62,7 +62,7 @@ class ResumeAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin, ABC):
 
         if anomaly.type == "budget_exhausted":
             # Reset budget tracking
-            self.ctx.budget.reset() if hasattr(self.ctx, 'budget') else None
+            self.ctx.budget.reset() if hasattr(self.ctx, "budget") else None
             self._mcp_audit("healing_success")
             return True
 
@@ -115,13 +115,14 @@ class ResumeAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin, ABC):
             return None
 
         if not self.ctx.budget.check_budget():
-            self.log(f"💸 Budget exceeded (${self.ctx.budget.current_cost:.4f}/${self.ctx.budget.max_cost})")
+            self.log(
+                f"💸 Budget exceeded (${self.ctx.budget.current_cost:.4f}/${self.ctx.budget.max_cost})"
+            )
             return None
 
         try:
             response = await asyncio.to_thread(
-                self.ctx.client.GenerativeModel(self.ctx.model_id).generate_content,
-                prompt
+                self.ctx.client.GenerativeModel(self.ctx.model_id).generate_content, prompt
             )
 
             # Track tokens (estimate if not available)
@@ -129,9 +130,7 @@ class ResumeAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin, ABC):
             output_tokens = len(response.text.split()) * 1.3 if response.text else 0
 
             cost = self.ctx.budget.track_tokens(
-                self.ctx.model_id,
-                int(input_tokens),
-                int(output_tokens)
+                self.ctx.model_id, int(input_tokens), int(output_tokens)
             )
 
             self.log(f"💰 LLM call cost: ${cost:.6f}")
@@ -143,7 +142,14 @@ class ResumeAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin, ABC):
             return None
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """Apps_rg/resume_engine base agent - fully chained healing."""
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository()

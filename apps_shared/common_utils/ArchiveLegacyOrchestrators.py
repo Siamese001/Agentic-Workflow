@@ -12,6 +12,7 @@ Usage:
     python scripts/archive_legacy_orchestrators.py --dry-run
     python scripts/archive_legacy_orchestrators.py
 """
+
 from __future__ import annotations
 
 import argparse
@@ -30,7 +31,6 @@ LEGACY_L3_ORCHESTRATORS: list[str] = [
     "IntelligentOrchestratorAgent.py",
     "HardenedWorkflowOrchestratorAgent.py",
     "ConsolidatedOrchestratorAgent.py",
-
     # Other legacy orchestrators
     "OrchestratorAgentAndScopeManagerAgent.py",
     "ScriptsPlanningOrchestratorAgent.py",
@@ -93,8 +93,8 @@ def archive_file(source: Path, dry_run: bool = False) -> tuple[bool, str]:
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Archive legacy orchestrators')
-    parser.add_argument('--dry-run', action='store_true', help='Show what would be done')
+    parser = argparse.ArgumentParser(description="Archive legacy orchestrators")
+    parser.add_argument("--dry-run", action="store_true", help="Show what would be done")
     args = parser.parse_args()
 
     print("=" * 70)

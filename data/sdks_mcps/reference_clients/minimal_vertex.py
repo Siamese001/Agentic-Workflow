@@ -19,22 +19,16 @@ def simple_generation(prompt: str, model: str = "gemini-1.5-pro-002") -> str:
         Generated response text
     """
     # Initialize Vertex AI
-    vertex_init(
-        project=os.getenv("GOOGLE_CLOUD_PROJECT"),
-        location="us-central1"
-    )
+    vertex_init(project=os.getenv("GOOGLE_CLOUD_PROJECT"), location="us-central1")
 
     model_client = GenerativeModel(model)
 
     response = model_client.generate_content(
-        prompt,
-        generation_config={
-            "temperature": 0.7,
-            "max_output_tokens": 1000
-        }
+        prompt, generation_config={"temperature": 0.7, "max_output_tokens": 1000}
     )
 
     return response.text
+
 
 def grounded_generation(prompt: str, threshold: float = 0.7) -> dict:
     """Generation with Google Search grounding and citations.
@@ -49,10 +43,7 @@ def grounded_generation(prompt: str, threshold: float = 0.7) -> dict:
     from vertexai.generative_models import Tool
     from vertexai.generative_models import grounding as vertex_grounding
 
-    vertex_init(
-        project=os.getenv("GOOGLE_CLOUD_PROJECT"),
-        location="us-central1"
-    )
+    vertex_init(project=os.getenv("GOOGLE_CLOUD_PROJECT"), location="us-central1")
 
     model_client = GenerativeModel("gemini-1.5-pro-002")
 
@@ -60,8 +51,7 @@ def grounded_generation(prompt: str, threshold: float = 0.7) -> dict:
     grounding_tool = Tool.from_google_search_retrieval(
         vertex_grounding.GoogleSearchRetrieval(
             dynamic_retrieval_config=vertex_grounding.DynamicRetrievalConfig(
-                mode="MODE_DYNAMIC",
-                dynamic_threshold=threshold
+                mode="MODE_DYNAMIC", dynamic_threshold=threshold
             )
         )
     )
@@ -69,26 +59,21 @@ def grounded_generation(prompt: str, threshold: float = 0.7) -> dict:
     response = model_client.generate_content(
         prompt,
         tools=[grounding_tool],
-        generation_config={
-            "temperature": 0.3,
-            "max_output_tokens": 2000
-        }
+        generation_config={"temperature": 0.3, "max_output_tokens": 2000},
     )
 
     # Extract grounding metadata
     grounding_metadata = None
-    if hasattr(response, 'candidates') and response.candidates:
+    if hasattr(response, "candidates") and response.candidates:
         candidate = response.candidates[0]
-        if hasattr(candidate, 'grounding_metadata') and candidate.grounding_metadata:
+        if hasattr(candidate, "grounding_metadata") and candidate.grounding_metadata:
             grounding_metadata = {
                 "grounding_score": candidate.grounding_metadata.grounding_score,
-                "has_grounding": True
+                "has_grounding": True,
             }
 
-    return {
-        "content": response.text,
-        "grounding_metadata": grounding_metadata
-    }
+    return {"content": response.text, "grounding_metadata": grounding_metadata}
+
 
 def safe_generation(prompt: str, safety_threshold: str = "BLOCK_NONE") -> dict:
     """Generation with configurable safety settings.
@@ -106,10 +91,7 @@ def safe_generation(prompt: str, safety_threshold: str = "BLOCK_NONE") -> dict:
         SafetySetting,
     )
 
-    vertex_init(
-        project=os.getenv("GOOGLE_CLOUD_PROJECT"),
-        location="us-central1"
-    )
+    vertex_init(project=os.getenv("GOOGLE_CLOUD_PROJECT"), location="us-central1")
 
     model_client = GenerativeModel("gemini-1.5-pro-002")
 
@@ -117,46 +99,43 @@ def safe_generation(prompt: str, safety_threshold: str = "BLOCK_NONE") -> dict:
     safety_settings = [
         SafetySetting(
             category=HarmCategory.HARM_CATEGORY_HARASSMENT,
-            threshold=HarmBlockThreshold[safety_threshold]
+            threshold=HarmBlockThreshold[safety_threshold],
         ),
         SafetySetting(
             category=HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-            threshold=HarmBlockThreshold[safety_threshold]
+            threshold=HarmBlockThreshold[safety_threshold],
         ),
         SafetySetting(
             category=HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-            threshold=HarmBlockThreshold[safety_threshold]
+            threshold=HarmBlockThreshold[safety_threshold],
         ),
         SafetySetting(
             category=HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-            threshold=HarmBlockThreshold[safety_threshold]
-        )
+            threshold=HarmBlockThreshold[safety_threshold],
+        ),
     ]
 
     response = model_client.generate_content(
         prompt,
         safety_settings=safety_settings,
-        generation_config={
-            "temperature": 0.7,
-            "max_output_tokens": 1000
-        }
+        generation_config={"temperature": 0.7, "max_output_tokens": 1000},
     )
 
     # Extract safety ratings
     safety_ratings = []
-    if hasattr(response, 'candidates') and response.candidates:
+    if hasattr(response, "candidates") and response.candidates:
         candidate = response.candidates[0]
-        if hasattr(candidate, 'safety_ratings'):
+        if hasattr(candidate, "safety_ratings"):
             for rating in candidate.safety_ratings:
-                safety_ratings.append({
-                    "category": rating.category.name,
-                    "probability": rating.probability.name if rating.probability else None
-                })
+                safety_ratings.append(
+                    {
+                        "category": rating.category.name,
+                        "probability": rating.probability.name if rating.probability else None,
+                    }
+                )
 
-    return {
-        "content": response.text,
-        "safety_ratings": safety_ratings
-    }
+    return {"content": response.text, "safety_ratings": safety_ratings}
+
 
 if __name__ == "__main__":
     # Test simple generation

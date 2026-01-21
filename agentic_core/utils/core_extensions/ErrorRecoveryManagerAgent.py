@@ -35,7 +35,9 @@ class ErrorRecoveryManager:
         context: dict[str, Any] | None = None,
     ) -> Any:
         context = context or {}
-        breaker = get_breaker(breaker_name) if (breaker_name and self.enable_circuit_breaker) else None
+        breaker = (
+            get_breaker(breaker_name) if (breaker_name and self.enable_circuit_breaker) else None
+        )
 
         last_exc: BaseException | None = None
         for attempt in range(1, self.max_retries + 1):

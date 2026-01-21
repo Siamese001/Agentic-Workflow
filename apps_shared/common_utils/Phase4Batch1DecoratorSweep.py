@@ -8,6 +8,7 @@ Usage:
     python scripts/phase4_batch1_decorator_sweep.py --dry-run
     python scripts/phase4_batch1_decorator_sweep.py --execute
 """
+
 from __future__ import annotations
 
 import argparse
@@ -54,13 +55,13 @@ def find_python_files(root: Path) -> list[Path]:
 
 def has_heal_repository_method(content: str) -> bool:
     """Check if file contains a heal_repository method definition."""
-    return bool(re.search(r'def heal_repository\s*\(', content))
+    return bool(re.search(r"def heal_repository\s*\(", content))
 
 
 def already_has_decorator(content: str) -> bool:
     """Check if @standard_heal is already applied to heal_repository."""
     # Look for @standard_heal followed by def heal_repository
-    pattern = r'@standard_heal\s*\n\s*def heal_repository\s*\('
+    pattern = r"@standard_heal\s*\n\s*def heal_repository\s*\("
     return bool(re.search(pattern, content))
 
 
@@ -71,7 +72,7 @@ def already_has_import(content: str) -> bool:
 
 def find_import_insertion_point(content: str) -> int:
     """Find the best line to insert the import statement."""
-    lines = content.split('\n')
+    lines = content.split("\n")
     last_import_line = 0
     in_docstring = False
     docstring_char = None
@@ -94,7 +95,7 @@ def find_import_insertion_point(content: str) -> int:
             continue
 
         # Track imports
-        if stripped.startswith('import ') or stripped.startswith('from '):
+        if stripped.startswith("import ") or stripped.startswith("from "):
             last_import_line = i
 
     return last_import_line
@@ -106,7 +107,7 @@ def add_decorator_to_heal_repository(content: str) -> tuple[str, int]:
     Returns:
         Tuple of (modified_content, number_of_decorators_added)
     """
-    lines = content.split('\n')
+    lines = content.split("\n")
     modified_lines = []
     decorators_added = 0
     i = 0
@@ -115,26 +116,26 @@ def add_decorator_to_heal_repository(content: str) -> tuple[str, int]:
         line = lines[i]
 
         # Check if this line defines heal_repository
-        if re.match(r'\s*def heal_repository\s*\(', line):
+        if re.match(r"\s*def heal_repository\s*\(", line):
             # Check if previous line already has @standard_heal
-            if i > 0 and '@standard_heal' in lines[i-1]:
+            if i > 0 and "@standard_heal" in lines[i - 1]:
                 # Already decorated
                 modified_lines.append(line)
                 i += 1
                 continue
 
             # Get the indentation of the def line
-            indent_match = re.match(r'^(\s*)', line)
-            indent = indent_match.group(1) if indent_match else ''
+            indent_match = re.match(r"^(\s*)", line)
+            indent = indent_match.group(1) if indent_match else ""
 
             # Add the decorator with same indentation
-            modified_lines.append(f'{indent}{DECORATOR_NAME}')
+            modified_lines.append(f"{indent}{DECORATOR_NAME}")
             decorators_added += 1
 
         modified_lines.append(line)
         i += 1
 
-    return '\n'.join(modified_lines), decorators_added
+    return "\n".join(modified_lines), decorators_added
 
 
 def process_file(file_path: Path, dry_run: bool = True) -> dict:
@@ -152,7 +153,7 @@ def process_file(file_path: Path, dry_run: bool = True) -> dict:
     }
 
     try:
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
     except Exception as e:
         result["skipped"] = True
         result["reason"] = f"Read error: {e}"
@@ -175,9 +176,9 @@ def process_file(file_path: Path, dry_run: bool = True) -> dict:
     # Add import if missing
     if not already_has_import(content):
         insert_line = find_import_insertion_point(content)
-        lines = modified_content.split('\n')
+        lines = modified_content.split("\n")
         lines.insert(insert_line + 1, DECORATOR_IMPORT)
-        modified_content = '\n'.join(lines)
+        modified_content = "\n".join(lines)
         result["import_added"] = True
 
     # Add decorator
@@ -187,7 +188,7 @@ def process_file(file_path: Path, dry_run: bool = True) -> dict:
     # Write if not dry run and changes were made
     if not dry_run and (result["import_added"] or decorators_added > 0):
         try:
-            file_path.write_text(modified_content, encoding='utf-8')
+            file_path.write_text(modified_content, encoding="utf-8")
         except Exception as e:
             result["skipped"] = True
             result["reason"] = f"Write error: {e}"
@@ -197,7 +198,9 @@ def process_file(file_path: Path, dry_run: bool = True) -> dict:
 
 def main():
     parser = argparse.ArgumentParser(description="Phase 4 Batch 1: Add @standard_heal decorator")
-    parser.add_argument("--dry-run", action="store_true", help="Show what would be changed without modifying files")
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Show what would be changed without modifying files"
+    )
     parser.add_argument("--execute", action="store_true", help="Actually modify files")
     args = parser.parse_args()
 

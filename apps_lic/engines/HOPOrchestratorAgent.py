@@ -125,11 +125,15 @@ class HOPOrchestratorAgent:
                         factual_loop_count += 1
 
                         if factual_loop_count >= self.max_factual_loops:
-                            print(f"\n✗ Max factual loops ({self.max_factual_loops}) reached - HALTING")
+                            print(
+                                f"\n✗ Max factual loops ({self.max_factual_loops}) reached - HALTING"
+                            )
                             raise ValueError(f"Max factual loops exceeded: {e}")
 
                         print(f"\n⚠ Factual gap detected: {e}")
-                        print(f"→ Triggering S6→S2 meta-loop (attempt {factual_loop_count}/{self.max_factual_loops})")
+                        print(
+                            f"→ Triggering S6→S2 meta-loop (attempt {factual_loop_count}/{self.max_factual_loops})"
+                        )
 
                         # Loop back to HOP-2 (research)
                         break
@@ -147,11 +151,15 @@ class HOPOrchestratorAgent:
                         creative_retry_count += 1
 
                         if creative_retry_count >= self.max_creative_retries:
-                            print(f"\n✗ Max creative retries ({self.max_creative_retries}) reached - HALTING")
+                            print(
+                                f"\n✗ Max creative retries ({self.max_creative_retries}) reached - HALTING"
+                            )
                             raise ValueError("Max creative retries exceeded")
 
                         print("\n⚠ Creative failure detected")
-                        print(f"→ Retrying HOP-5 with escalated temperature (attempt {creative_retry_count}/{self.max_creative_retries})")
+                        print(
+                            f"→ Retrying HOP-5 with escalated temperature (attempt {creative_retry_count}/{self.max_creative_retries})"
+                        )
 
                         # Escalate temperature
                         base_temp = 0.50
@@ -220,6 +228,7 @@ class HOPOrchestratorAgent:
 
 class FactualGapError(Exception):
     """Raised when a factual gap is detected during validation."""
+
     pass
 
 

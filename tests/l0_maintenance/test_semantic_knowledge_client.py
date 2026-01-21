@@ -27,9 +27,9 @@ from agentic_core.infrastructure import (
 
 def test_client_initialization():
     """Test that the client initializes correctly."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 1: Client Initialization")
-    print("="*60)
+    print("=" * 60)
 
     client = SemanticKnowledgeClient()
 
@@ -44,9 +44,9 @@ def test_client_initialization():
 
 def test_singleton_pattern():
     """Test that the client is a singleton."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 2: Singleton Pattern")
-    print("="*60)
+    print("=" * 60)
 
     client1 = SemanticKnowledgeClient()
     client2 = SemanticKnowledgeClient()
@@ -61,9 +61,9 @@ def test_singleton_pattern():
 
 def test_get_stats():
     """Test index statistics retrieval."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 3: Index Statistics")
-    print("="*60)
+    print("=" * 60)
 
     client = SemanticKnowledgeClient()
     stats = client.get_stats()
@@ -89,9 +89,9 @@ def test_get_stats():
 
 def test_agent_search():
     """Test searching for agents."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 4: Agent Search")
-    print("="*60)
+    print("=" * 60)
 
     client = SemanticKnowledgeClient()
     results = client.find_agent_for_task("validate security and prevent injection attacks")
@@ -116,9 +116,9 @@ def test_agent_search():
 
 def test_mixin_search():
     """Test searching for mixins."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 5: Mixin Search")
-    print("="*60)
+    print("=" * 60)
 
     client = SemanticKnowledgeClient()
     results = client.find_mixin("add caching capability to agent")
@@ -141,9 +141,9 @@ def test_mixin_search():
 
 def test_api_contract_search():
     """Test searching for API contracts."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 6: API Contract Search")
-    print("="*60)
+    print("=" * 60)
 
     client = SemanticKnowledgeClient()
     results = client.get_api_contract("heal_repository method signature")
@@ -163,9 +163,9 @@ def test_api_contract_search():
 
 def test_healing_pattern_search():
     """Test searching for healing patterns."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 7: Healing Pattern Search")
-    print("="*60)
+    print("=" * 60)
 
     client = SemanticKnowledgeClient()
     results = client.find_healing_pattern("base class inheritance issues")
@@ -183,9 +183,9 @@ def test_healing_pattern_search():
 
 def test_documentation_search():
     """Test searching for documentation."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 8: Documentation Search")
-    print("="*60)
+    print("=" * 60)
 
     client = SemanticKnowledgeClient()
     results = client.find_documentation("dashboard testing and validation")
@@ -205,9 +205,9 @@ def test_documentation_search():
 
 def test_config_search():
     """Test searching for configurations."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 9: Configuration Search")
-    print("="*60)
+    print("=" * 60)
 
     client = SemanticKnowledgeClient()
     results = client.find_config("SSOT directory paths and structure")
@@ -225,9 +225,9 @@ def test_config_search():
 
 def test_search_all():
     """Test searching across all namespaces."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 10: Search All Namespaces")
-    print("="*60)
+    print("=" * 60)
 
     client = SemanticKnowledgeClient()
     results = client.search_all("healing and self-repair", top_k=2)
@@ -250,9 +250,9 @@ def test_search_all():
 
 def test_filter_search():
     """Test searching with metadata filters."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 11: Filtered Search")
-    print("="*60)
+    print("=" * 60)
 
     client = SemanticKnowledgeClient()
 
@@ -261,7 +261,7 @@ def test_filter_search():
         "security validation",
         KnowledgeNamespace.AGENTS,
         top_k=5,
-        filter_dict={"layer": {"$eq": "L5"}}
+        filter_dict={"layer": {"$eq": "L5"}},
     )
 
     if not results:
@@ -278,9 +278,9 @@ def test_filter_search():
 
 def main():
     """Run all tests."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("🧪 SEMANTIC KNOWLEDGE CLIENT VERIFICATION")
-    print("="*60)
+    print("=" * 60)
 
     if not os.getenv("PINECONE_API_KEY"):
         print("❌ Error: PINECONE_API_KEY environment variable not set")
@@ -314,9 +314,9 @@ def main():
             print(f"❌ EXCEPTION in {name}: {e}")
             failed += 1
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("📊 TEST SUMMARY")
-    print("="*60)
+    print("=" * 60)
     print(f"   Passed: {passed}/{len(tests)}")
     print(f"   Failed: {failed}/{len(tests)}")
 

@@ -26,6 +26,7 @@ class OrchestratorConfig:
         parallel_actions: Whether to execute actions in parallel
         metadata: Additional configuration metadata
     """
+
     mission_id: str = "default-mission"
     max_iterations: int = 10
     max_phases: int | None = None
@@ -66,6 +67,7 @@ class CognitiveConfig:
         enable_cot: Enable chain-of-thought reasoning
         enable_self_critique: Enable self-critique loop
     """
+
     model: str = "gpt-4"
     temperature: float = 0.7
     max_tokens: int = 4096
@@ -94,6 +96,7 @@ class ActionConfig:
         max_concurrent: Maximum concurrent actions
         enable_fallback: Enable fallback providers
     """
+
     sandbox_enabled: bool = True
     timeout_per_action: float = 30.0
     max_concurrent: int = 5

@@ -21,6 +21,7 @@ from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMix
 
 Logger: Any = logging.getLogger(__name__)
 
+
 class SovereignRedisMcpClient(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
     """Official Redis MCP client for sovereign caching operations.
 
@@ -31,95 +32,90 @@ class SovereignRedisMcpClient(MCPHardenedMixin, HealerMixin, L4SubatomicTestingM
     - CRITIQUE emission on exhausted retries
     """
 
-    def __init__(self, role: str='state_cache'):
+    def __init__(self, role: str = "state_cache"):
         super().__init__()
         if not config.REDIS_MCP_ENABLED:
-            raise ValueError('Redis MCP disabled in sovereign config')
+            raise ValueError("Redis MCP disabled in sovereign config")
         from agentic_core.L3_orchestration.workflow_engines.SovereignMcpRouter import (
             SovereignMcpRouter,
         )
+
         self.router = SovereignMcpRouter(role=role)
-        self._mcp_audit('init')
-        Logger.info('[L4 REDIS] Sovereign Redis MCP client initialized')
+        self._mcp_audit("init")
+        Logger.info("[L4 REDIS] Sovereign Redis MCP client initialized")
 
     async def get(self, key: str) -> Any | None:
         """Get value from sovereign cache via MCP with hardened retry."""
         if len(key) > config.REDIS_MAX_KEY_LENGTH:
-            raise ValueError(f'Key exceeds sovereign limit: {len(key)}')
-        full_key: Any = f'{config.REDIS_CACHE_PREFIX}{key}'
+            raise ValueError(f"Key exceeds sovereign limit: {len(key)}")
+        full_key: Any = f"{config.REDIS_CACHE_PREFIX}{key}"
         try:
             result: Any = await self._hardened_call(
-                'redis_get',
-                self.router.manager.call_tool,
-                'mcp9_get',
-                {'key': full_key}
+                "redis_get", self.router.manager.call_tool, "mcp9_get", {"key": full_key}
             )
             if not result:
                 return None
             if isinstance(result, dict):
-                return result.get('value')
+                return result.get("value")
             return result
         except Exception as e:
-            Logger.error(f'[L4 REDIS] Cache GET failed for {key}: {e}')
+            Logger.error(f"[L4 REDIS] Cache GET failed for {key}: {e}")
             return None
 
-    async def set(self, key: str, value: Any, ttl: int | None=None) -> bool:
+    async def set(self, key: str, value: Any, ttl: int | None = None) -> bool:
         """Set value in sovereign cache via MCP with hardened retry."""
         if len(key) > config.REDIS_MAX_KEY_LENGTH:
-            raise ValueError(f'Key exceeds sovereign limit: {len(key)}')
-        full_key: Any = f'{config.REDIS_CACHE_PREFIX}{key}'
-        payload: Any = {'key': full_key, 'value': value, 'expireSeconds': ttl or config.REDIS_DEFAULT_TTL_SECONDS}
+            raise ValueError(f"Key exceeds sovereign limit: {len(key)}")
+        full_key: Any = f"{config.REDIS_CACHE_PREFIX}{key}"
+        payload: Any = {
+            "key": full_key,
+            "value": value,
+            "expireSeconds": ttl or config.REDIS_DEFAULT_TTL_SECONDS,
+        }
         try:
             result: Any = await self._hardened_call(
-                'redis_set',
-                self.router.manager.call_tool,
-                'mcp9_set',
-                payload
+                "redis_set", self.router.manager.call_tool, "mcp9_set", payload
             )
             if isinstance(result, dict):
-                return result.get('status') == 'success'
+                return result.get("status") == "success"
             return bool(result)
         except Exception as e:
-            Logger.error(f'[L4 REDIS] Cache SET failed for {key}: {e}')
+            Logger.error(f"[L4 REDIS] Cache SET failed for {key}: {e}")
             return False
 
     async def delete(self, key: str) -> bool:
         """Delete key from sovereign cache via MCP with hardened retry."""
-        full_key: Any = f'{config.REDIS_CACHE_PREFIX}{key}'
+        full_key: Any = f"{config.REDIS_CACHE_PREFIX}{key}"
         try:
             result: Any = await self._hardened_call(
-                'redis_delete',
-                self.router.manager.call_tool,
-                'mcp9_delete',
-                {'key': full_key}
+                "redis_delete", self.router.manager.call_tool, "mcp9_delete", {"key": full_key}
             )
             if isinstance(result, dict):
-                return result.get('deleted', 0) > 0
+                return result.get("deleted", 0) > 0
             return False
         except Exception as e:
-            Logger.error(f'[L4 REDIS] Cache DELETE failed for {key}: {e}')
+            Logger.error(f"[L4 REDIS] Cache DELETE failed for {key}: {e}")
             return False
 
-    async def keys(self, pattern: str='*') -> list[str]:
+    async def keys(self, pattern: str = "*") -> list[str]:
         """List keys matching pattern via MCP with hardened retry."""
-        full_pattern: Any = f'{config.REDIS_CACHE_PREFIX}{pattern}'
+        full_pattern: Any = f"{config.REDIS_CACHE_PREFIX}{pattern}"
         try:
             result: Any = await self._hardened_call(
-                'redis_keys',
-                self.router.manager.call_tool,
-                'mcp9_list',
-                {'pattern': full_pattern}
+                "redis_keys", self.router.manager.call_tool, "mcp9_list", {"pattern": full_pattern}
             )
-            return result.get('keys', []) if isinstance(result, dict) else []
+            return result.get("keys", []) if isinstance(result, dict) else []
         except Exception as e:
-            Logger.error(f'[L4 REDIS] Cache KEYS failed: {e}')
+            Logger.error(f"[L4 REDIS] Cache KEYS failed: {e}")
             return []
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()
+
 
 _redis_client: SovereignRedisMCPClient | None = None
+
 
 def get_redis_client() -> SovereignRedisMCPClient:
     """Get or create the global Redis MCP client."""

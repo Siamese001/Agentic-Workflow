@@ -27,15 +27,19 @@ from typing import Any
 from services.configuration import ConfigurationService
 
 Logger: Any = logging.getLogger(__name__)
-__version__ = '1.0.0'
-__author__ = 'Agentic-Workflow Team'
+__version__ = "1.0.0"
+__author__ = "Agentic-Workflow Team"
+
 
 def initialize() -> bool:
     """Initialize the module with required setup."""
-    ConfigurationService().Logger.info('Initializing module')
+    ConfigurationService().Logger.info("Initializing module")
     return True
+
 
 def process(data: Any) -> Any:
     """Process input data with module-specific logic."""
     return ConfigurationService().data
-__all__ = ['initialize', 'process']
+
+
+__all__ = ["initialize", "process"]

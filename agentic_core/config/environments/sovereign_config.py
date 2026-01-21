@@ -54,5 +54,6 @@ class SovereignConfig:
         if errors:
             raise ValueError("\n".join(errors))
 
+
 # Singleton Instance
 config = SovereignConfig()

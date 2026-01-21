@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, validator, workflow
@@ -168,11 +167,12 @@ class ASTDeadCodeVisitor(ast.NodeVisitor):
         if isinstance(node.value, ast.Name) and node.value.id in {"self", "cls"}:
             # Traverse up to find the enclosing class
             current = node
-            while current := getattr(current, 'parent', None):
+            while current := getattr(current, "parent", None):
                 if isinstance(current, ast.ClassDef):
                     self.used_methods.setdefault(current.name, set()).add(node.attr)
                     break
         self.generic_visit(node)
+
 
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
@@ -196,17 +196,19 @@ class DeadCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
             "unused_functions": [],
             "unused_classes": [],
             "unused_methods": [],
-            "dead_files": []
+            "dead_files": [],
         }
 
     def _find_unused_imports(self, visitor, findings: dict) -> None:
         """Extract unused imports from visitor."""
         for import_name in visitor.imported_names:
             if import_name not in visitor.used_names:
-                findings["unused_imports"].append({
-                    "name": import_name,
-                    "line": visitor.import_line_numbers.get(import_name, "unknown")
-                })
+                findings["unused_imports"].append(
+                    {
+                        "name": import_name,
+                        "line": visitor.import_line_numbers.get(import_name, "unknown"),
+                    }
+                )
 
     def _find_unused_functions(self, visitor, findings: dict) -> None:
         """Extract unused functions from visitor."""
@@ -214,10 +216,12 @@ class DeadCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
             if func_name.startswith("_"):
                 continue
             if func_name not in visitor.used_functions and func_name not in visitor.used_names:
-                findings["unused_functions"].append({
-                    "name": func_name,
-                    "line": visitor.definition_line_numbers.get(func_name, "unknown")
-                })
+                findings["unused_functions"].append(
+                    {
+                        "name": func_name,
+                        "line": visitor.definition_line_numbers.get(func_name, "unknown"),
+                    }
+                )
 
     def _find_unused_classes(self, visitor, findings: dict) -> None:
         """Extract unused classes from visitor."""
@@ -225,10 +229,12 @@ class DeadCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
             if class_name.startswith("_"):
                 continue
             if class_name not in visitor.used_classes and class_name not in visitor.used_names:
-                findings["unused_classes"].append({
-                    "name": class_name,
-                    "line": visitor.definition_line_numbers.get(class_name, "unknown")
-                })
+                findings["unused_classes"].append(
+                    {
+                        "name": class_name,
+                        "line": visitor.definition_line_numbers.get(class_name, "unknown"),
+                    }
+                )
 
     def _find_unused_methods(self, visitor, findings: dict) -> None:
         """Extract unused methods from visitor."""
@@ -238,16 +244,20 @@ class DeadCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
                 if method_name.startswith("_"):
                     continue
                 if method_name not in used_methods and method_name not in visitor.used_names:
-                    findings["unused_methods"].append({
-                        "class": class_name,
-                        "name": method_name,
-                        "line": visitor.definition_line_numbers.get(f"{class_name}.{method_name}", "unknown")
-                    })
+                    findings["unused_methods"].append(
+                        {
+                            "class": class_name,
+                            "name": method_name,
+                            "line": visitor.definition_line_numbers.get(
+                                f"{class_name}.{method_name}", "unknown"
+                            ),
+                        }
+                    )
 
     def analyze_file(self, file_path: Path) -> dict:
         """Analyze a single Python file for dead code."""
         try:
-            content = file_path.read_text(encoding='utf-8')
+            content = file_path.read_text(encoding="utf-8")
         except Exception as e:
             return {"error": f"Could not read {file_path}: {e}"}
 
@@ -267,7 +277,7 @@ class DeadCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
             "unused_imports": [],
             "unused_functions": [],
             "unused_classes": [],
-            "unused_methods": []
+            "unused_methods": [],
         }
 
         self._find_unused_imports(visitor, findings)
@@ -291,7 +301,9 @@ class DeadCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
             py_files = list(directory.glob("*.py"))
 
         # Filter out __pycache__ and other ignored directories
-        py_files = [f for f in py_files if "__pycache__" not in str(f) and ".pytest_cache" not in str(f)]
+        py_files = [
+            f for f in py_files if "__pycache__" not in str(f) and ".pytest_cache" not in str(f)
+        ]
 
         results = {
             "scanned_files": len(py_files),
@@ -300,8 +312,8 @@ class DeadCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
                 "total_unused_imports": 0,
                 "total_unused_functions": 0,
                 "total_unused_classes": 0,
-                "total_unused_methods": 0
-            }
+                "total_unused_methods": 0,
+            },
         }
 
         for file_path in py_files:
@@ -364,20 +376,37 @@ class DeadCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
             if finding["unused_methods"]:
                 report.append("  Unused Methods:")
                 for method in finding["unused_methods"]:
-                    report.append(f"    - {method['class']}.{method['name']}() (line {method['line']})")
+                    report.append(
+                        f"    - {method['class']}.{method['name']}() (line {method['line']})"
+                    )
 
             report.append("")
 
-        return "\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n".join(report)
+        return "\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n".join(
+            report
+        )
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """Utils/core extensions - operational only."""
         if _call_path is None:
             _call_path = set()
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
-        super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+        super().heal_repository(
+            dry_run=dry_run,
+            execute=execute,
+            depth=depth,
+            max_depth=max_depth,
+            _call_path=_call_path,
+        )
 
         agent_name = "DeadCodeDetectorAgent"
         if agent_name in _call_path:

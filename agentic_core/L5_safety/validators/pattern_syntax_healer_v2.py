@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: guardrail
@@ -56,11 +55,11 @@ class PatternSyntaxHealerV2:
         print("=" * 80)
 
         stats = {
-            'files_scanned': 0,
-            'files_modified': 0,
-            'pattern1_fixes': 0,  # Malformed imports
-            'pattern2_fixes': 0,  # Empty try blocks
-            'pattern3_fixes': 0,  # Indentation issues
+            "files_scanned": 0,
+            "files_modified": 0,
+            "pattern1_fixes": 0,  # Malformed imports
+            "pattern2_fixes": 0,  # Empty try blocks
+            "pattern3_fixes": 0,  # Indentation issues
         }
 
         # Scan all Python files
@@ -68,10 +67,10 @@ class PatternSyntaxHealerV2:
             if self._should_skip_file(py_file):
                 continue
 
-            stats['files_scanned'] += 1
+            stats["files_scanned"] += 1
 
             try:
-                with open(py_file, encoding='utf-8') as f:
+                with open(py_file, encoding="utf-8") as f:
                     original_content = f.read()
             except Exception as e:
                 print(f"⚠️  Could not read {py_file}: {e}")
@@ -82,25 +81,25 @@ class PatternSyntaxHealerV2:
 
             # Apply Pattern 1: Malformed imports in structure_blueprint blocks
             modified_content, p1_fixes = self._fix_pattern1_malformed_imports(modified_content)
-            stats['pattern1_fixes'] += p1_fixes
+            stats["pattern1_fixes"] += p1_fixes
             file_fixes += p1_fixes
 
             # Apply Pattern 2: Empty try blocks
             modified_content, p2_fixes = self._fix_pattern2_empty_try_blocks(modified_content)
-            stats['pattern2_fixes'] += p2_fixes
+            stats["pattern2_fixes"] += p2_fixes
             file_fixes += p2_fixes
 
             # Apply Pattern 3: Indentation issues
             modified_content, p3_fixes = self._fix_pattern3_indentation(modified_content)
-            stats['pattern3_fixes'] += p3_fixes
+            stats["pattern3_fixes"] += p3_fixes
             file_fixes += p3_fixes
 
             # Write back if modified
             if modified_content != original_content:
                 try:
-                    with open(py_file, 'w', encoding='utf-8') as f:
+                    with open(py_file, "w", encoding="utf-8") as f:
                         f.write(modified_content)
-                    stats['files_modified'] += 1
+                    stats["files_modified"] += 1
                     self.files_modified.append(str(py_file))
                     print(f"✅ Fixed {file_fixes} issues in: {py_file.relative_to(self.root_dir)}")
                 except Exception as e:
@@ -111,7 +110,7 @@ class PatternSyntaxHealerV2:
 
     def _should_skip_file(self, file_path: Path) -> bool:
         """Skip backup files and certain directories."""
-        skip_patterns = ['.backup', '__pycache__', '.git', 'venv', 'node_modules']
+        skip_patterns = [".backup", "__pycache__", ".git", "venv", "node_modules"]
         return any(pattern in str(file_path) for pattern in skip_patterns)
 
     def _fix_pattern1_malformed_imports(self, content: str) -> tuple[str, int]:
@@ -135,10 +134,10 @@ class PatternSyntaxHealerV2:
 
         # Pattern: Find structure_blueprint import blocks with embedded imports
         pattern = re.compile(
-            r'(from agentic_core\.config\.blueprint_sovereign\.structure_blueprint import \(\n)'
-            r'((?:from [^\n]+\n)+)'  # One or more malformed imports
-            r'(\s+SOVEREIGN_REGISTRY,\n\s+CORE_SUBFOLDER_MAP,\n\))',
-            re.MULTILINE
+            r"(from agentic_core\.config\.blueprint_sovereign\.structure_blueprint import \(\n)"
+            r"((?:from [^\n]+\n)+)"  # One or more malformed imports
+            r"(\s+SOVEREIGN_REGISTRY,\n\s+CORE_SUBFOLDER_MAP,\n\))",
+            re.MULTILINE,
         )
 
         def replace_func(match):
@@ -148,10 +147,10 @@ class PatternSyntaxHealerV2:
             footer = match.group(3)
 
             # Extract the malformed imports
-            import_lines = [line.strip() for line in malformed_imports.strip().split('\n')]
+            import_lines = [line.strip() for line in malformed_imports.strip().split("\n")]
 
             # Reconstruct: proper structure_blueprint block + extracted imports
-            result = header + footer + '\n\n' + '\n'.join(import_lines)
+            result = header + footer + "\n\n" + "\n".join(import_lines)
             fixes += len(import_lines)
             return result
 
@@ -159,10 +158,10 @@ class PatternSyntaxHealerV2:
 
         # Also handle simpler cases where imports are just embedded
         simple_pattern = re.compile(
-            r'(from agentic_core\.config\.blueprint_sovereign\.structure_blueprint import \(\n)'
-            r'(from agentic_core\.[^\n]+\n)'
-            r'(\s+SOVEREIGN_REGISTRY,)',
-            re.MULTILINE
+            r"(from agentic_core\.config\.blueprint_sovereign\.structure_blueprint import \(\n)"
+            r"(from agentic_core\.[^\n]+\n)"
+            r"(\s+SOVEREIGN_REGISTRY,)",
+            re.MULTILINE,
         )
 
         def simple_replace(match):
@@ -196,16 +195,13 @@ class PatternSyntaxHealerV2:
         fixes = 0
 
         # Pattern: try: followed immediately by except (no body)
-        pattern = re.compile(
-            r'(\s+)try:\n\1except\s+',
-            re.MULTILINE
-        )
+        pattern = re.compile(r"(\s+)try:\n\1except\s+", re.MULTILINE)
 
         def replace_func(match):
             nonlocal fixes
             indent = match.group(1)
             fixes += 1
-            return f'{indent}try:\n{indent}    pass\n{indent}except '
+            return f"{indent}try:\n{indent}    pass\n{indent}except "
 
         modified = pattern.sub(replace_func, content)
         return modified, fixes
@@ -226,8 +222,7 @@ class PatternSyntaxHealerV2:
 
         # Pattern: try: or def followed by unindented import
         pattern = re.compile(
-            r'(\s+)(try:|def\s+\w+\([^)]*\):)\n(?!\s+)((?:from|import)\s+)',
-            re.MULTILINE
+            r"(\s+)(try:|def\s+\w+\([^)]*\):)\n(?!\s+)((?:from|import)\s+)", re.MULTILINE
         )
 
         def replace_func(match):
@@ -236,7 +231,7 @@ class PatternSyntaxHealerV2:
             statement = match.group(2)
             import_keyword = match.group(3)
             fixes += 1
-            return f'{indent}{statement}\n{indent}    {import_keyword}'
+            return f"{indent}{statement}\n{indent}    {import_keyword}"
 
         modified = pattern.sub(replace_func, content)
         return modified, fixes
@@ -251,7 +246,9 @@ class PatternSyntaxHealerV2:
         print(f"Pattern 1 Fixes:   {stats['pattern1_fixes']} (malformed imports)")
         print(f"Pattern 2 Fixes:   {stats['pattern2_fixes']} (empty try blocks)")
         print(f"Pattern 3 Fixes:   {stats['pattern3_fixes']} (indentation)")
-        print(f"Total Fixes:       {stats['pattern1_fixes'] + stats['pattern2_fixes'] + stats['pattern3_fixes']}")
+        print(
+            f"Total Fixes:       {stats['pattern1_fixes'] + stats['pattern2_fixes'] + stats['pattern3_fixes']}"
+        )
         print("=" * 80)
 
         if self.files_modified:
@@ -287,8 +284,14 @@ def main():
     test_stats = test_healer.heal_all_patterns()
 
     # Combined summary
-    total_fixes = (stats['pattern1_fixes'] + stats['pattern2_fixes'] + stats['pattern3_fixes'] +
-                   test_stats['pattern1_fixes'] + test_stats['pattern2_fixes'] + test_stats['pattern3_fixes'])
+    total_fixes = (
+        stats["pattern1_fixes"]
+        + stats["pattern2_fixes"]
+        + stats["pattern3_fixes"]
+        + test_stats["pattern1_fixes"]
+        + test_stats["pattern2_fixes"]
+        + test_stats["pattern3_fixes"]
+    )
 
     print("\n" + "=" * 80)
     print("COMPREHENSIVE HEALING SUMMARY")
@@ -301,8 +304,8 @@ def main():
     print("\n✅ Pattern healing complete!")
     print("Run SyntaxValidatorAgent to verify: python scripts/generate_syntax_report.py")
 
-    return {'production': stats, 'tests': test_stats, 'total_fixes': total_fixes}
+    return {"production": stats, "tests": test_stats, "total_fixes": total_fixes}
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

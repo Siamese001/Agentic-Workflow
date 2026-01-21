@@ -27,6 +27,7 @@ from utils_LIC import CircuitBreaker
 # HOP-2: RESEARCH AGENT (Refactored from S2_SupervisorAgent)
 # ============================================================================
 
+
 class HOP2_ResearchAgent:
     """
     v13.0: Research Agent - Vector-store-first with fallback RAG
@@ -46,7 +47,7 @@ class HOP2_ResearchAgent:
         config: dict[str, Any],
         memory_store: VectorMemoryStore,
         search_client: GoogleSearchClient,
-        llm_client: GeminiLLMClient
+        llm_client: GeminiLLMClient,
     ):
         """
         Initialize with externalized config and live API clients
@@ -76,9 +77,9 @@ class HOP2_ResearchAgent:
         Returns:
             Path to output state file
         """
-        print(f"\n{'='*80}")
+        print(f"\n{'=' * 80}")
         print("HOP-2: RESEARCH AGENT (Vector-Store-First)")
-        print(f"{'='*80}\n")
+        print(f"{'=' * 80}\n")
 
         # Read HOP-1 state
         profile_state = state_mgr.read_state("HOP-1")
@@ -118,7 +119,7 @@ class HOP2_ResearchAgent:
             "signal_score": final_context["signal_score"],
             "cache_hit": is_sufficient,
             "fallback_used": not is_sufficient,
-            "total_sources": len(final_context["all_results"])
+            "total_sources": len(final_context["all_results"]),
         }
 
         # Write to state
@@ -132,10 +133,7 @@ class HOP2_ResearchAgent:
         return output_path
 
     async def _query_vector_store(
-        self,
-        company: str,
-        recipient: str,
-        archetype: str
+        self, company: str, recipient: str, archetype: str
     ) -> dict[str, Any]:
         """Query vector store for pre-computed intelligence"""
 
@@ -143,20 +141,19 @@ class HOP2_ResearchAgent:
         company_results = self.memory_store.query_by_company(
             company_name=company,
             query_text="strategic priorities initiatives roadmap platform",
-            n_results=self.vector_params["n_results"]
+            n_results=self.vector_params["n_results"],
         )
 
         # Query by executive
         exec_results = self.memory_store.query_by_executive(
             executive_name=recipient,
             query_text="recent posts presentations LinkedIn about background",
-            n_results=10
+            n_results=10,
         )
 
         # Get strategic briefs (highest priority)
         strategic_briefs = self.memory_store.get_strategic_briefs(
-            company_name=company,
-            max_age_days=90
+            company_name=company, max_age_days=90
         )
 
         # Extract insights
@@ -170,9 +167,7 @@ class HOP2_ResearchAgent:
 
         # Cache confidence
         cache_confidence = self._calculate_cache_confidence(
-            company_results,
-            exec_results,
-            strategic_briefs
+            company_results, exec_results, strategic_briefs
         )
 
         return {
@@ -181,7 +176,7 @@ class HOP2_ResearchAgent:
             "strategic_brief": strategic_brief_text,
             "all_results": all_results,
             "signal_score": signal_score,
-            "cache_confidence": cache_confidence
+            "cache_confidence": cache_confidence,
         }
 
     def _critique_cache(self, cached_context: dict[str, Any]) -> tuple[bool, list[str]]:
@@ -200,7 +195,8 @@ class HOP2_ResearchAgent:
 
         # Check recency
         recent_sources = [
-            r for r in cached_context["all_results"]
+            r
+            for r in cached_context["all_results"]
             if r.get("metadata", {}).get("age_days", 999) < min_recency
         ]
         has_recent = len(recent_sources) >= 3
@@ -222,10 +218,7 @@ class HOP2_ResearchAgent:
         return is_sufficient, gaps
 
     async def _run_fallback_rag(
-        self,
-        company: str,
-        recipient: str,
-        gaps: list[str]
+        self, company: str, recipient: str, gaps: list[str]
     ) -> dict[str, Any]:
         """Run fallback RAG only for identified gaps"""
 
@@ -240,25 +233,23 @@ class HOP2_ResearchAgent:
             elif gap == "recent_news":
                 query = f"{company} recent news announcements"
                 results = self.search_client.search(query, num_results=3)
-                fallback_results.extend(self._format_search_results(results, "NEWS_ARTICLE_COMPANY"))
+                fallback_results.extend(
+                    self._format_search_results(results, "NEWS_ARTICLE_COMPANY")
+                )
 
             elif gap == "recipient_profile":
                 query = f"{recipient} {company} LinkedIn profile"
                 results = self.search_client.search(query, num_results=2)
-                fallback_results.extend(self._format_search_results(results, "RECIPIENT_LINKEDIN_ABOUT"))
+                fallback_results.extend(
+                    self._format_search_results(results, "RECIPIENT_LINKEDIN_ABOUT")
+                )
 
             # Rate limit
             await asyncio.sleep(1)
 
-        return {
-            "rag_results": fallback_results
-        }
+        return {"rag_results": fallback_results}
 
-    def _merge_contexts(
-        self,
-        cached: dict[str, Any],
-        fallback: dict[str, Any]
-    ) -> dict[str, Any]:
+    def _merge_contexts(self, cached: dict[str, Any], fallback: dict[str, Any]) -> dict[str, Any]:
         """Merge cached and fallback contexts"""
 
         merged = cached.copy()
@@ -279,10 +270,7 @@ class HOP2_ResearchAgent:
         return sum(scores) / len(scores) if scores else 0.0
 
     def _calculate_cache_confidence(
-        self,
-        company_results: list[dict],
-        exec_results: list[dict],
-        strategic_briefs: list[dict]
+        self, company_results: list[dict], exec_results: list[dict], strategic_briefs: list[dict]
     ) -> float:
         """Calculate confidence in cached data"""
 
@@ -291,33 +279,27 @@ class HOP2_ResearchAgent:
         has_company = min(1.0, len(company_results) / 10)
         has_exec = min(1.0, len(exec_results) / 5)
 
-        confidence = (
-            has_strategic * 0.5 +
-            has_company * 0.3 +
-            has_exec * 0.2
-        )
+        confidence = has_strategic * 0.5 + has_company * 0.3 + has_exec * 0.2
 
         return confidence
 
-    def _format_search_results(
-        self,
-        results: list[dict],
-        source_type: str
-    ) -> list[dict[str, Any]]:
+    def _format_search_results(self, results: list[dict], source_type: str) -> list[dict[str, Any]]:
         """Format search results for consistency"""
 
         formatted = []
         for result in results:
-            formatted.append({
-                "text": result.get("snippet", ""),
-                "metadata": {
-                    "source_type": source_type,
-                    "source_url": result.get("link", ""),
-                    "title": result.get("title", ""),
-                    "age_days": 0,
-                    "source_weight": 1.0
+            formatted.append(
+                {
+                    "text": result.get("snippet", ""),
+                    "metadata": {
+                        "source_type": source_type,
+                        "source_url": result.get("link", ""),
+                        "title": result.get("title", ""),
+                        "age_days": 0,
+                        "source_weight": 1.0,
+                    },
                 }
-            })
+            )
 
         return formatted
 
@@ -325,6 +307,7 @@ class HOP2_ResearchAgent:
 # ============================================================================
 # HOP-5: GENERATION AGENT (Refactored from GenerationOrchestrator)
 # ============================================================================
+
 
 class HOP5_GenerationAgent:
     """
@@ -343,10 +326,7 @@ class HOP5_GenerationAgent:
     """
 
     def __init__(
-        self,
-        config: dict[str, Any],
-        llm_client: GeminiLLMClient,
-        tool: CodeInterpreterTool
+        self, config: dict[str, Any], llm_client: GeminiLLMClient, tool: CodeInterpreterTool
     ):
         """
         Initialize with externalized config
@@ -364,11 +344,7 @@ class HOP5_GenerationAgent:
         with open("config/prompts_LIC.json") as f:
             self.prompts = json.load(f)
 
-    async def execute(
-        self,
-        state_mgr: StateManager,
-        temperature: float = None
-    ) -> str:
+    async def execute(self, state_mgr: StateManager, temperature: float = None) -> str:
         """
         Execute HOP-5: Generate message candidates
 
@@ -379,9 +355,9 @@ class HOP5_GenerationAgent:
         Returns:
             Path to output state file
         """
-        print(f"\n{'='*80}")
+        print(f"\n{'=' * 80}")
         print("HOP-5: GENERATION AGENT")
-        print(f"{'='*80}\n")
+        print(f"{'=' * 80}\n")
 
         # Read state
         research = state_mgr.read_state("HOP-2")
@@ -404,29 +380,30 @@ class HOP5_GenerationAgent:
         candidates = []
 
         for i in range(n_candidates):
-            print(f"  Generating candidate {i+1}/{n_candidates}...")
+            print(f"  Generating candidate {i + 1}/{n_candidates}...")
 
             draft_text = await self._generate_single_draft(
-                research=research,
-                grounding=grounding,
-                scaffold=scaffold,
-                temperature=temperature
+                research=research, grounding=grounding, scaffold=scaffold, temperature=temperature
             )
 
-            candidates.append({
-                "candidate_id": i + 1,
-                "text": draft_text,
-                "word_count": len(draft_text.split()),
-                "char_count": len(draft_text),
-                "temperature": temperature
-            })
+            candidates.append(
+                {
+                    "candidate_id": i + 1,
+                    "text": draft_text,
+                    "word_count": len(draft_text.split()),
+                    "char_count": len(draft_text),
+                    "temperature": temperature,
+                }
+            )
 
         # If multiple candidates, use tool-augmented scoring (Fast Loop)
         if n_candidates > 1:
             print(f"\nScoring {n_candidates} candidates (Fast Loop)...")
             scored = self._score_candidates_with_tool(candidates, research)
             selected_candidate = scored[0]
-            print(f"  ✓ Selected candidate {selected_candidate['candidate_id']} (score: {selected_candidate['total_score']:.3f})")
+            print(
+                f"  ✓ Selected candidate {selected_candidate['candidate_id']} (score: {selected_candidate['total_score']:.3f})"
+            )
         else:
             selected_candidate = candidates[0]
             scored = [selected_candidate]
@@ -440,7 +417,7 @@ class HOP5_GenerationAgent:
             "generation_temperature": temperature,
             "generation_attempts": 1,  # Incremented by orchestrator on retry
             "archetype": archetype,
-            "route": route
+            "route": route,
         }
 
         # Write to state
@@ -457,7 +434,7 @@ class HOP5_GenerationAgent:
         research: dict[str, Any],
         grounding: dict[str, Any],
         scaffold: dict[str, Any],
-        temperature: float
+        temperature: float,
     ) -> str:
         """Generate a single message draft"""
 
@@ -487,23 +464,17 @@ class HOP5_GenerationAgent:
             forbidden=", ".join(voice.get("forbidden_phrases", [])[:10]),
             route=scaffold["route"],
             archetype=scaffold["archetype"],
-            adversarial_constraints=""  # TODO: Add if needed
+            adversarial_constraints="",  # TODO: Add if needed
         )
 
         # Generate with LLM
         loop = asyncio.get_event_loop()
-        draft_text = await loop.run_in_executor(
-            None,
-            self.llm_client.generate,
-            prompt
-        )
+        draft_text = await loop.run_in_executor(None, self.llm_client.generate, prompt)
 
         return draft_text.strip()
 
     def _score_candidates_with_tool(
-        self,
-        candidates: list[dict[str, Any]],
-        research: dict[str, Any]
+        self, candidates: list[dict[str, Any]], research: dict[str, Any]
     ) -> list[dict[str, Any]]:
         """
         Score candidates using CodeInterpreterTool (Fast Loop)
@@ -519,12 +490,14 @@ class HOP5_GenerationAgent:
         scored = self.tool.execute(
             "run_scoring_competition",
             candidates=[c["text"] for c in candidates],
-            strategic_brief=strategic_brief
+            strategic_brief=strategic_brief,
         )
 
         # Merge scores back with candidates
         for i, score_result in enumerate(scored):
-            score_result["candidate_id"] = candidates[score_result["candidate_index"]]["candidate_id"]
+            score_result["candidate_id"] = candidates[score_result["candidate_index"]][
+                "candidate_id"
+            ]
             score_result["word_count"] = candidates[score_result["candidate_index"]]["word_count"]
             score_result["temperature"] = candidates[score_result["candidate_index"]]["temperature"]
 
@@ -547,7 +520,9 @@ class HOP5_GenerationAgent:
         for product in products[:2]:
             summary_lines.append(f"- Product: {product}")
 
-        return "\n".join(summary_lines) if summary_lines else "- Professional with relevant experience"
+        return (
+            "\n".join(summary_lines) if summary_lines else "- Professional with relevant experience"
+        )
 
     def _extract_recipient_summary(self, research: dict[str, Any], strategic_brief: str) -> str:
         """Extract top 5 recipient priorities"""
@@ -556,7 +531,7 @@ class HOP5_GenerationAgent:
 
         # Strategic brief is highest priority
         if strategic_brief:
-            brief_lines = strategic_brief.split('\n')[:5]
+            brief_lines = strategic_brief.split("\n")[:5]
             summary_lines.extend([f"- {line[:150]}" for line in brief_lines if line.strip()])
 
         # Fallback to insights
@@ -583,6 +558,7 @@ class HOP5_GenerationAgent:
 # HOP-6: VALIDATION AGENT (Refactored from ValidationAgent)
 # ============================================================================
 
+
 class HOP6_ValidationAgent:
     """
     v13.0: Validation Agent - Rule-based validation from config
@@ -598,11 +574,7 @@ class HOP6_ValidationAgent:
     Output: state/6_validation_report.json
     """
 
-    def __init__(
-        self,
-        config: dict[str, Any],
-        toolkit: ValidationToolkit
-    ):
+    def __init__(self, config: dict[str, Any], toolkit: ValidationToolkit):
         """
         Initialize with externalized config
 
@@ -627,9 +599,9 @@ class HOP6_ValidationAgent:
         Returns:
             Path to output state file
         """
-        print(f"\n{'='*80}")
+        print(f"\n{'=' * 80}")
         print("HOP-6: VALIDATION AGENT")
-        print(f"{'='*80}\n")
+        print(f"{'=' * 80}\n")
 
         # Read state
         generation = state_mgr.read_state("HOP-5")
@@ -645,9 +617,15 @@ class HOP6_ValidationAgent:
         validation_results = self._validate_draft(text, draft, research, grounding)
 
         # Aggregate results
-        critical_issues = sum(1 for r in validation_results if r["severity"] == "CRITICAL" and not r["passed"])
-        high_issues = sum(1 for r in validation_results if r["severity"] == "HIGH" and not r["passed"])
-        medium_issues = sum(1 for r in validation_results if r["severity"] == "MEDIUM" and not r["passed"])
+        critical_issues = sum(
+            1 for r in validation_results if r["severity"] == "CRITICAL" and not r["passed"]
+        )
+        high_issues = sum(
+            1 for r in validation_results if r["severity"] == "HIGH" and not r["passed"]
+        )
+        medium_issues = sum(
+            1 for r in validation_results if r["severity"] == "MEDIUM" and not r["passed"]
+        )
 
         passed = critical_issues == 0 and high_issues == 0
 
@@ -658,7 +636,7 @@ class HOP6_ValidationAgent:
             "critical_issues": critical_issues,
             "high_issues": high_issues,
             "medium_issues": medium_issues,
-            "total_rules_checked": len(validation_results)
+            "total_rules_checked": len(validation_results),
         }
 
         # Write to state
@@ -676,11 +654,7 @@ class HOP6_ValidationAgent:
         return output_path
 
     def _validate_draft(
-        self,
-        text: str,
-        draft: dict[str, Any],
-        research: dict[str, Any],
-        grounding: dict[str, Any]
+        self, text: str, draft: dict[str, Any], research: dict[str, Any], grounding: dict[str, Any]
     ) -> list[dict[str, Any]]:
         """Run all validation rules from config"""
 
@@ -690,71 +664,78 @@ class HOP6_ValidationAgent:
         patterns = self.rules["content_cleanliness_rules"]["placeholder_patterns"]["patterns"]
         for pattern in patterns:
             import re
+
             if re.search(pattern, text):
-                results.append({
-                    "passed": False,
-                    "severity": "CRITICAL",
-                    "rule_id": "LIC-QA-PLACEHOLDERS",
-                    "message": f"Placeholder detected: {pattern}"
-                })
+                results.append(
+                    {
+                        "passed": False,
+                        "severity": "CRITICAL",
+                        "rule_id": "LIC-QA-PLACEHOLDERS",
+                        "message": f"Placeholder detected: {pattern}",
+                    }
+                )
                 break
 
         # 2. Forbidden verbs (MEDIUM)
         forbidden_verbs = self.rules["content_cleanliness_rules"]["forbidden_verbs"]["list"]
         is_clean, violations = self.toolkit.check_forbidden_patterns(
-            text=text,
-            forbidden_patterns=[f"(?i)\\b{v}\\b" for v in forbidden_verbs]
+            text=text, forbidden_patterns=[f"(?i)\\b{v}\\b" for v in forbidden_verbs]
         )
 
         if not is_clean:
-            results.append({
-                "passed": False,
-                "severity": "MEDIUM",
-                "rule_id": "LIC-QA-FORBIDDEN-VERBS",
-                "message": f"Forbidden verbs detected: {violations[:3]}"
-            })
+            results.append(
+                {
+                    "passed": False,
+                    "severity": "MEDIUM",
+                    "rule_id": "LIC-QA-FORBIDDEN-VERBS",
+                    "message": f"Forbidden verbs detected: {violations[:3]}",
+                }
+            )
 
         # 3. Filler phrases (MEDIUM)
         filler_patterns = self.rules["content_cleanliness_rules"]["filler_patterns"]["patterns"]
         is_clean, violations = self.toolkit.check_forbidden_patterns(
-            text=text,
-            forbidden_patterns=filler_patterns
+            text=text, forbidden_patterns=filler_patterns
         )
 
         if not is_clean:
-            results.append({
-                "passed": False,
-                "severity": "MEDIUM",
-                "rule_id": "LIC-QA-FILLERS",
-                "message": f"Filler phrases detected: {violations[:3]}"
-            })
+            results.append(
+                {
+                    "passed": False,
+                    "severity": "MEDIUM",
+                    "rule_id": "LIC-QA-FILLERS",
+                    "message": f"Filler phrases detected: {violations[:3]}",
+                }
+            )
 
         # 4. Word count validation (HIGH)
         target = draft.get("word_count_target", 200)
         is_valid, details = self.toolkit.check_word_count_range(
-            text=text,
-            target=target,
-            tolerance=0.15
+            text=text, target=target, tolerance=0.15
         )
 
         if not is_valid:
-            results.append({
-                "passed": False,
-                "severity": "HIGH",
-                "rule_id": "LIC-QA-WORD-COUNT",
-                "message": f"Word count {details['word_count']} outside range {details['min_words']}-{details['max_words']}"
-            })
+            results.append(
+                {
+                    "passed": False,
+                    "severity": "HIGH",
+                    "rule_id": "LIC-QA-WORD-COUNT",
+                    "message": f"Word count {details['word_count']} outside range {details['min_words']}-{details['max_words']}",
+                }
+            )
 
         # 5. ASCII only (HIGH)
         is_ascii, non_ascii = self.toolkit.check_ascii_only(text)
 
         if not is_ascii:
-            results.append({
-                "passed": False,
-                "severity": "HIGH",
-                "rule_id": "LIC-QA-055",
-                "message": f"Non-ASCII characters detected: {non_ascii[:3]}"
-            })
+            results.append(
+                {
+                    "passed": False,
+                    "severity": "HIGH",
+                    "rule_id": "LIC-QA-055",
+                    "message": f"Non-ASCII characters detected: {non_ascii[:3]}",
+                }
+            )
 
         # 6. Strategic alignment (CRITICAL) - v12.0 LIC-QA-201
         strategic_brief = research.get("strategic_brief", "")
@@ -763,21 +744,24 @@ class HOP6_ValidationAgent:
 
             # Extract keywords from brief and message
             import re
-            brief_words = set(w.lower().strip('.,!?;:') for w in strategic_brief.split() if len(w) > 4)
-            message_words = set(w.lower().strip('.,!?;:') for w in text.split() if len(w) > 4)
+
+            brief_words = set(
+                w.lower().strip(".,!?;:") for w in strategic_brief.split() if len(w) > 4
+            )
+            message_words = set(w.lower().strip(".,!?;:") for w in text.split() if len(w) > 4)
 
             overlap = brief_words & message_words
 
             if len(overlap) < min_overlap:
-                results.append({
-                    "passed": False,
-                    "severity": "CRITICAL",
-                    "rule_id": "LIC-QA-201",
-                    "message": f"Strategic alignment failure: Only {len(overlap)} keyword overlap (need {min_overlap}+)",
-                    "details": {
-                        "failure_classifier": "FACTUAL_FAILURE"
+                results.append(
+                    {
+                        "passed": False,
+                        "severity": "CRITICAL",
+                        "rule_id": "LIC-QA-201",
+                        "message": f"Strategic alignment failure: Only {len(overlap)} keyword overlap (need {min_overlap}+)",
+                        "details": {"failure_classifier": "FACTUAL_FAILURE"},
                     }
-                })
+                )
 
         # 7. Sender grounding validation (CRITICAL)
         sender_grounding_data = grounding.get("sender_grounding", {})
@@ -788,30 +772,36 @@ class HOP6_ValidationAgent:
 
         has_team_claim = any(kw in text_lower for kw in team_keywords)
         if has_team_claim and not sender_grounding_data.get("team_members"):
-            results.append({
-                "passed": False,
-                "severity": "CRITICAL",
-                "rule_id": "LIC-QA-105-TEAM",
-                "message": "Team claims without whitelist"
-            })
+            results.append(
+                {
+                    "passed": False,
+                    "severity": "CRITICAL",
+                    "rule_id": "LIC-QA-105-TEAM",
+                    "message": "Team claims without whitelist",
+                }
+            )
 
         has_product_claim = any(kw in text_lower for kw in product_keywords)
         if has_product_claim and not sender_grounding_data.get("products"):
-            results.append({
-                "passed": False,
-                "severity": "CRITICAL",
-                "rule_id": "LIC-QA-105-PRODUCT",
-                "message": "Product claims without whitelist"
-            })
+            results.append(
+                {
+                    "passed": False,
+                    "severity": "CRITICAL",
+                    "rule_id": "LIC-QA-105-PRODUCT",
+                    "message": "Product claims without whitelist",
+                }
+            )
 
         # If all checks passed, add a success result
         if not results:
-            results.append({
-                "passed": True,
-                "severity": "INFO",
-                "rule_id": "ALL-CHECKS",
-                "message": "All validation checks passed"
-            })
+            results.append(
+                {
+                    "passed": True,
+                    "severity": "INFO",
+                    "rule_id": "ALL-CHECKS",
+                    "message": "All validation checks passed",
+                }
+            )
 
         return results
 
@@ -819,6 +809,7 @@ class HOP6_ValidationAgent:
 # ============================================================================
 # HOP-8: QA REPORT AGENT (New - Enhancement 6)
 # ============================================================================
+
 
 class HOP8_QAReportAgent:
     """
@@ -856,9 +847,9 @@ class HOP8_QAReportAgent:
         Returns:
             Path to QA report file
         """
-        print(f"\n{'='*80}")
+        print(f"\n{'=' * 80}")
         print("HOP-8: QA REPORT GENERATION")
-        print(f"{'='*80}\n")
+        print(f"{'=' * 80}\n")
 
         # Read all state files
         states = {}
@@ -877,7 +868,7 @@ class HOP8_QAReportAgent:
 
         report_path = output_dir / f"QA_Report_{state_mgr.mission_id}.md"
 
-        with open(report_path, 'w') as f:
+        with open(report_path, "w") as f:
             f.write(report)
 
         print(f"\n✓ QA Report Generated: {report_path}\n")
@@ -931,8 +922,12 @@ class HOP8_QAReportAgent:
 
         lines.append(f"**Total Sources**: {research.get('total_sources', 0)}")
         lines.append(f"**Signal Score**: {research.get('signal_score', 0):.2f}")
-        lines.append(f"**Cache Hit**: {'Yes' if research.get('cache_hit', False) else 'No (Fallback RAG used)'}")
-        lines.append(f"**Fallback Used**: {'Yes' if research.get('fallback_used', False) else 'No'}")
+        lines.append(
+            f"**Cache Hit**: {'Yes' if research.get('cache_hit', False) else 'No (Fallback RAG used)'}"
+        )
+        lines.append(
+            f"**Fallback Used**: {'Yes' if research.get('fallback_used', False) else 'No'}"
+        )
         lines.append("\n")
 
         # 4. Generation Strategy
@@ -956,7 +951,9 @@ class HOP8_QAReportAgent:
         failed = [r for r in results if not r.get("passed", True)]
         if failed:
             for result in failed:
-                lines.append(f"- **{result['rule_id']}** ({result['severity']}): {result['message']}")
+                lines.append(
+                    f"- **{result['rule_id']}** ({result['severity']}): {result['message']}"
+                )
         else:
             lines.append("_No failed checks_")
 
@@ -980,7 +977,7 @@ class HOP8_QAReportAgent:
         lines.append(f"**Word Count**: {draft.get('word_count', 0)}")
         lines.append(f"**Character Count**: {draft.get('char_count', 0)}")
         lines.append("\n```")
-        lines.append(draft.get('text', 'N/A'))
+        lines.append(draft.get("text", "N/A"))
         lines.append("```\n")
 
         # 8. Quality Score
@@ -1002,33 +999,35 @@ class HOP8_QAReportAgent:
         gate = states.get("HOP-7", {})
 
         # Research quality (0-30 points)
-        research_score = min(30, research.get('signal_score', 0.5) * 30)
+        research_score = min(30, research.get("signal_score", 0.5) * 30)
 
         # Strategic alignment (0-30 points)
-        passed = validation.get('passed', False)
-        critical = validation.get('critical_issues', 0)
+        passed = validation.get("passed", False)
+        critical = validation.get("critical_issues", 0)
         alignment_score = 30 if passed and critical == 0 else 0
 
         # Validation pass rate (0-20 points)
-        results = validation.get('validation_results', [])
-        passed_count = sum(1 for r in results if r.get('passed', False))
+        results = validation.get("validation_results", [])
+        passed_count = sum(1 for r in results if r.get("passed", False))
         total_count = len(results) if results else 1
         validation_score = (passed_count / total_count) * 20
 
         # Loop efficiency (0-10 points)
-        factual_loops = gate.get('factual_loop_count', 0)
-        creative_retries = gate.get('creative_retry_count', 0)
+        factual_loops = gate.get("factual_loop_count", 0)
+        creative_retries = gate.get("creative_retry_count", 0)
         loop_penalty = (factual_loops * 3) + (creative_retries * 2)
         loop_score = max(0, 10 - loop_penalty)
 
         # Generation quality (0-10 points)
         generation = states.get("HOP-5", {})
         draft = generation.get("selected_draft", {})
-        word_count = draft.get('word_count', 0)
+        word_count = draft.get("word_count", 0)
         in_range = 150 <= word_count <= 300
         generation_score = 10 if in_range else 5
 
-        total_score = research_score + alignment_score + validation_score + loop_score + generation_score
+        total_score = (
+            research_score + alignment_score + validation_score + loop_score + generation_score
+        )
 
         return total_score
 
@@ -1036,6 +1035,7 @@ class HOP8_QAReportAgent:
 # ============================================================================
 # HOP ORCHESTRATOR (Refactored from WorkflowOrchestrator)
 # ============================================================================
+
 
 class HOPOrchestrator:
     """
@@ -1060,7 +1060,7 @@ class HOPOrchestrator:
         # Initialize circuit breaker
         self.circuit_breaker = CircuitBreaker(
             failure_threshold=self.config["circuit_breaker"]["failure_threshold"],
-            timeout_seconds=self.config["circuit_breaker"]["timeout_seconds"]
+            timeout_seconds=self.config["circuit_breaker"]["timeout_seconds"],
         )
 
         # Initialize API clients
@@ -1077,21 +1077,11 @@ class HOPOrchestrator:
         # Initialize HOP agents
         self.agents = {
             "HOP-2": HOP2_ResearchAgent(
-                self.config,
-                self.memory_store,
-                self.search_client,
-                self.llm_client
+                self.config, self.memory_store, self.search_client, self.llm_client
             ),
-            "HOP-5": HOP5_GenerationAgent(
-                self.config,
-                self.llm_client,
-                self.code_tool
-            ),
-            "HOP-6": HOP6_ValidationAgent(
-                self.config,
-                self.validation_toolkit
-            ),
-            "HOP-8": HOP8_QAReportAgent(self.config)
+            "HOP-5": HOP5_GenerationAgent(self.config, self.llm_client, self.code_tool),
+            "HOP-6": HOP6_ValidationAgent(self.config, self.validation_toolkit),
+            "HOP-8": HOP8_QAReportAgent(self.config),
         }
 
         # Get HOP execution order from config
@@ -1109,10 +1099,10 @@ class HOPOrchestrator:
         Returns:
             Workflow result dictionary
         """
-        print(f"\n{'='*80}")
+        print(f"\n{'=' * 80}")
         print("HOP WORKFLOW ORCHESTRATOR v13.0")
         print(f"Mission ID: {mission.mission_id}")
-        print(f"{'='*80}")
+        print(f"{'=' * 80}")
 
         start_time = datetime.now()
 
@@ -1152,7 +1142,9 @@ class HOPOrchestrator:
                             raise ValueError(f"Max factual loops exceeded: {e}")
 
                         print(f"\n⚠ Factual gap detected: {e}")
-                        print(f"→ Triggering S6→S2 meta-loop (attempt {factual_loop_count}/{max_factual_loops})")
+                        print(
+                            f"→ Triggering S6→S2 meta-loop (attempt {factual_loop_count}/{max_factual_loops})"
+                        )
 
                         # Loop back to HOP-2 (research)
                         break
@@ -1170,11 +1162,15 @@ class HOPOrchestrator:
                         creative_retry_count += 1
 
                         if creative_retry_count >= max_creative_retries:
-                            print(f"\n✗ Max creative retries ({max_creative_retries}) reached - HALTING")
+                            print(
+                                f"\n✗ Max creative retries ({max_creative_retries}) reached - HALTING"
+                            )
                             raise ValueError("Max creative retries exceeded")
 
                         print("\n⚠ Creative failure detected")
-                        print(f"→ Retrying HOP-5 with escalated temperature (attempt {creative_retry_count}/{max_creative_retries})")
+                        print(
+                            f"→ Retrying HOP-5 with escalated temperature (attempt {creative_retry_count}/{max_creative_retries})"
+                        )
 
                         # Escalate temperature
                         base_temp = 0.50
@@ -1202,7 +1198,7 @@ class HOPOrchestrator:
                 "mission_id": mission.mission_id,
                 "status": "failed",
                 "error": str(e),
-                "workflow_time": (datetime.now() - start_time).total_seconds()
+                "workflow_time": (datetime.now() - start_time).total_seconds(),
             }
 
         # Get workflow results
@@ -1214,13 +1210,13 @@ class HOPOrchestrator:
         passed = validation.get("passed", False)
         draft = generation.get("selected_draft", {})
 
-        print(f"\n{'='*80}")
+        print(f"\n{'=' * 80}")
         print("WORKFLOW COMPLETE")
         print(f"Status: {'PASS' if passed else 'FAIL'}")
         print(f"Time: {workflow_time:.1f}s")
         print(f"Factual loops: {factual_loop_count}")
         print(f"Creative retries: {creative_retry_count}")
-        print(f"{'='*80}\n")
+        print(f"{'=' * 80}\n")
 
         return {
             "mission_id": mission.mission_id,
@@ -1234,14 +1230,15 @@ class HOPOrchestrator:
             "validation_summary": {
                 "passed": passed,
                 "critical_issues": validation.get("critical_issues", 0),
-                "high_issues": validation.get("high_issues", 0)
-            }
+                "high_issues": validation.get("high_issues", 0),
+            },
         }
 
 
 # ============================================================================
 # MAIN ENTRY POINT
 # ============================================================================
+
 
 async def main():
     """Main execution entry point"""
@@ -1252,29 +1249,29 @@ async def main():
         sender_profile={
             "name": "Amit Ayer",
             "title": "Chief AI Officer",
-            "company": "Unify Consulting"
+            "company": "Unify Consulting",
         },
         recipient_profile={
             "name": "Sarah Johnson",
             "title": "VP of Engineering",
-            "company": "Tech Giants Corp"
+            "company": "Tech Giants Corp",
         },
         job_description={
             "title": "Head of AI Platform",
             "company": "Tech Giants Corp",
-            "location": "San Francisco, CA"
+            "location": "San Francisco, CA",
         },
         connection_status="not_connected",
-        prior_message_count=0
+        prior_message_count=0,
     )
 
     # Execute workflow
     orchestrator = HOPOrchestrator()
     result = await orchestrator.execute_workflow(mission)
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("WORKFLOW RESULT")
-    print("="*80)
+    print("=" * 80)
     print(json.dumps(result, indent=2, default=str))
 
 

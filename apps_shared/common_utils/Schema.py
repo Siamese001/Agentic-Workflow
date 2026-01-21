@@ -13,6 +13,7 @@ from runtime.shared.multi_provider_clients import Provider
 
 class RoutingTier(str, Enum):
     """Predefined routing tiers for different use cases."""
+
     REASONING = "reasoning_tier"
     SPEED = "speed_tier"
     COST_OPTIMIZED = "cost_optimized_tier"

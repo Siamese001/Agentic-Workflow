@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 
 class RetryStrategy(str, Enum):
     """Retry strategy types."""
+
     EXPONENTIAL_BACKOFF = "exponential_backoff"
     LINEAR_BACKOFF = "linear_backoff"
     FIXED_DELAY = "fixed_delay"
@@ -27,36 +28,37 @@ class RetryStrategy(str, Enum):
 
 class RetryableError(Exception):
     """Base class for retryable errors."""
+
     pass
 
 
 class NonRetryableError(Exception):
     """Base class for non-retryable errors."""
+
     pass
 
 
 @dataclass
 class RetryConfig:
     """Configuration for retry policy."""
+
     max_attempts: int = 3
     strategy: RetryStrategy = RetryStrategy.EXPONENTIAL_BACKOFF
     base_delay: float = 1.0  # seconds
     max_delay: float = 60.0  # seconds
     multiplier: float = 2.0  # for exponential backoff
     jitter: bool = True  # Add randomness to prevent thundering herd
-    retryable_exceptions: list[type[Exception]] = field(default_factory=lambda: [
-        ConnectionError,
-        TimeoutError,
-        asyncio.TimeoutError,
-        RetryableError
-    ])
-    non_retryable_exceptions: list[type[Exception]] = field(default_factory=lambda: [
-        ValueError,
-        TypeError,
-        KeyError,
-        AttributeError,
-        NonRetryableError
-    ])
+    retryable_exceptions: list[type[Exception]] = field(
+        default_factory=lambda: [
+            ConnectionError,
+            TimeoutError,
+            asyncio.TimeoutError,
+            RetryableError,
+        ]
+    )
+    non_retryable_exceptions: list[type[Exception]] = field(
+        default_factory=lambda: [ValueError, TypeError, KeyError, AttributeError, NonRetryableError]
+    )
 
     def should_retry(self, exception: Exception, attempt: int) -> bool:
         """Check if exception should be retried.
@@ -89,6 +91,7 @@ class RetryConfig:
 @dataclass
 class RetryAttempt:
     """Information about a retry attempt."""
+
     attempt: int
     delay: float
     exception: Exception | None
@@ -99,6 +102,7 @@ class RetryAttempt:
 @dataclass
 class RetryResult:
     """Result of retry execution."""
+
     success: bool
     result: Any = None
     attempts: int = 0
@@ -112,9 +116,7 @@ class DelayCalculator:
 
     @staticmethod
     def calculate_delay(
-        config: RetryConfig,
-        attempt: int,
-        base_delay: float | None = None
+        config: RetryConfig, attempt: int, base_delay: float | None = None
     ) -> float:
         """Calculate delay for next attempt.
 
@@ -135,7 +137,7 @@ class DelayCalculator:
         elif config.strategy == RetryStrategy.LINEAR_BACKOFF:
             delay = base * (attempt + 1)
         elif config.strategy == RetryStrategy.EXPONENTIAL_BACKOFF:
-            delay = base * (config.multiplier ** attempt)
+            delay = base * (config.multiplier**attempt)
         else:
             delay = base
 
@@ -166,7 +168,7 @@ class RetryPolicy:
             "total_retries": 0,
             "successful_retries": 0,
             "failed_retries": 0,
-            "average_attempts": 0.0
+            "average_attempts": 0.0,
         }
 
         logger.debug(f"Initialized RetryPolicy with strategy: {self.config.strategy}")
@@ -177,7 +179,7 @@ class RetryPolicy:
         *args,
         config: RetryConfig | None = None,
         on_retry: Callable[[RetryAttempt], None] | None = None,
-        **kwargs
+        **kwargs,
     ) -> RetryResult:
         """Execute function with retry policy.
 
@@ -212,7 +214,7 @@ class RetryPolicy:
                     delay=0.0,
                     exception=None,
                     timestamp=datetime.utcnow(),
-                    success=True
+                    success=True,
                 )
                 attempts_history.append(attempt_info)
 
@@ -226,7 +228,7 @@ class RetryPolicy:
                     result=result,
                     attempts=attempt + 1,
                     total_delay=total_delay,
-                    attempts_history=attempts_history
+                    attempts_history=attempts_history,
                 )
 
             except Exception as e:
@@ -239,7 +241,7 @@ class RetryPolicy:
                     delay=delay,
                     exception=e,
                     timestamp=datetime.utcnow(),
-                    success=False
+                    success=False,
                 )
                 attempts_history.append(attempt_info)
 
@@ -254,7 +256,9 @@ class RetryPolicy:
                     break
 
                 # Wait before retry
-                logger.warning(f"Function failed on attempt {attempt + 1}, retrying in {delay:.2f}s: {e}")
+                logger.warning(
+                    f"Function failed on attempt {attempt + 1}, retrying in {delay:.2f}s: {e}"
+                )
 
                 if delay > 0:
                     await asyncio.sleep(delay)
@@ -275,7 +279,7 @@ class RetryPolicy:
             attempts=len(attempts_history),
             total_delay=total_delay,
             attempts_history=attempts_history,
-            final_exception=last_exception
+            final_exception=last_exception,
         )
 
     def _update_stats(self, attempts: int, success: bool) -> None:
@@ -296,9 +300,7 @@ class RetryPolicy:
         total = self._stats["total_retries"]
         if total > 0:
             current_avg = self._stats["average_attempts"]
-            self._stats["average_attempts"] = (
-                (current_avg * (total - 1) + attempts) / total
-            )
+            self._stats["average_attempts"] = (current_avg * (total - 1) + attempts) / total
 
     def get_stats(self) -> dict[str, Any]:
         """Get retry statistics.
@@ -342,7 +344,7 @@ class RetryableExecutor:
         *args,
         policy: str | None = None,
         config: RetryConfig | None = None,
-        **kwargs
+        **kwargs,
     ) -> Any:
         """Execute function with retry policy.
 
@@ -398,7 +400,7 @@ def retry(
     strategy: RetryStrategy = RetryStrategy.EXPONENTIAL_BACKOFF,
     base_delay: float = 1.0,
     max_delay: float = 60.0,
-    retryable_exceptions: list[type[Exception]] | None = None
+    retryable_exceptions: list[type[Exception]] | None = None,
 ):
     """Decorator to add retry to functions.
 
@@ -412,6 +414,7 @@ def retry(
     Returns:
         Decorated function
     """
+
     def decorator(func):
         async def async_wrapper(*args, **kwargs):
             config = RetryConfig(
@@ -419,7 +422,7 @@ def retry(
                 strategy=strategy,
                 base_delay=base_delay,
                 max_delay=max_delay,
-                retryable_exceptions=retryable_exceptions or []
+                retryable_exceptions=retryable_exceptions or [],
             )
 
             retry_policy = RetryPolicy(config)
@@ -454,40 +457,31 @@ def retry_with_policy(policy_name: str):
     Returns:
         Decorated function
     """
+
     def decorator(func):
         async def wrapper(*args, **kwargs):
             executor = await get_retry_executor()
             return await executor.execute(func, *args, policy=policy_name, **kwargs)
+
         return wrapper
+
     return decorator
 
 
 # Predefined configurations
 RETRY_CONFIGS = {
     "aggressive": RetryConfig(
-        max_attempts=5,
-        strategy=RetryStrategy.EXPONENTIAL_BACKOFF,
-        base_delay=0.5,
-        max_delay=30.0
+        max_attempts=5, strategy=RetryStrategy.EXPONENTIAL_BACKOFF, base_delay=0.5, max_delay=30.0
     ),
     "conservative": RetryConfig(
-        max_attempts=3,
-        strategy=RetryStrategy.LINEAR_BACKOFF,
-        base_delay=2.0,
-        max_delay=60.0
+        max_attempts=3, strategy=RetryStrategy.LINEAR_BACKOFF, base_delay=2.0, max_delay=60.0
     ),
     "fast": RetryConfig(
-        max_attempts=3,
-        strategy=RetryStrategy.EXPONENTIAL_BACKOFF,
-        base_delay=0.1,
-        max_delay=5.0
+        max_attempts=3, strategy=RetryStrategy.EXPONENTIAL_BACKOFF, base_delay=0.1, max_delay=5.0
     ),
     "slow": RetryConfig(
-        max_attempts=5,
-        strategy=RetryStrategy.EXPONENTIAL_BACKOFF,
-        base_delay=5.0,
-        max_delay=300.0
-    )
+        max_attempts=5, strategy=RetryStrategy.EXPONENTIAL_BACKOFF, base_delay=5.0, max_delay=300.0
+    ),
 }
 
 

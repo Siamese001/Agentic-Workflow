@@ -12,8 +12,9 @@ import sys
 from pathlib import Path
 from typing import Any
 
-reasoning_signals: Any = {'think', 'plan', 'reason', 'decide', 'analyze', 'generate', 'synthesize'}
-observability_signals: Any = {'Logger.', 'logging.', 'self.Logger.', 'trace(', 'Metric('}
+reasoning_signals: Any = {"think", "plan", "reason", "decide", "analyze", "generate", "synthesize"}
+observability_signals: Any = {"Logger.", "logging.", "self.Logger.", "trace(", "Metric("}
+
 
 class DarkReasoningVisitor(ast.NodeVisitor):
     """AST visitor to detect reasoning functions without observability."""
@@ -23,7 +24,7 @@ class DarkReasoningVisitor(ast.NodeVisitor):
         self.issues = []
         self.in_reasoning_function = False
         self.has_observability = False
-        self.current_function = '<anonymous>'
+        self.current_function = "<anonymous>"
 
     def visit_FunctionDef(self, node: Any) -> Any:
         """Visit function definitions and check for dark reasoning."""
@@ -36,7 +37,14 @@ class DarkReasoningVisitor(ast.NodeVisitor):
         self.generic_visit(node)
         if self.in_reasoning_function and (not was_reasoning):
             if not self.has_observability:
-                self.issues.append({'line': node.lineno, 'function': self.current_function, 'reason': 'Reasoning function lacks L6 observability footprint', 'suggestion': f"Add Logger.info('[REASONING START] {self.current_function}')"})
+                self.issues.append(
+                    {
+                        "line": node.lineno,
+                        "function": self.current_function,
+                        "reason": "Reasoning function lacks L6 observability footprint",
+                        "suggestion": f"Add Logger.info('[REASONING START] {self.current_function}')",
+                    }
+                )
             self.in_reasoning_function = False
             self.has_observability = False
 
@@ -51,7 +59,7 @@ class DarkReasoningVisitor(ast.NodeVisitor):
 
     def visit_Call(self, node: Any) -> Any:
         """Visit function calls to detect observability signals."""
-        call_str: Any = ''
+        call_str: Any = ""
         try:
             call_str: Any = ast.unparse(node)
         except Exception:
@@ -62,13 +70,14 @@ class DarkReasoningVisitor(ast.NodeVisitor):
     def visit_Expr(self, node: Any) -> Any:
         """Visit expression statements to catch standalone logging calls."""
         if self.in_reasoning_function:
-            expr_str: Any = ''
+            expr_str: Any = ""
             try:
                 expr_str: Any = ast.unparse(node)
             except Exception:
                 expr_str: Any = ast.dump(node)
             self._check_observability(expr_str.lower())
         self.generic_visit(node)
+
 
 def check_dark_reasoning(filepath: Path) -> list[dict]:
     """
@@ -81,14 +90,15 @@ def check_dark_reasoning(filepath: Path) -> list[dict]:
         List of issue dictionaries with line, function, and reason
     """
     try:
-        if 'L6_observability' in str(filepath) or 'tests/' in str(filepath):
+        if "L6_observability" in str(filepath) or "tests/" in str(filepath):
             return []
-        tree: Any = ast.parse(filepath.read_text(encoding='utf-8'))
+        tree: Any = ast.parse(filepath.read_text(encoding="utf-8"))
         visitor: Any = DarkReasoningVisitor(filepath)
         visitor.visit(tree)
         return visitor.issues
     except Exception:
         return []
+
 
 def main() -> Any:
     """Main entry point for pre-commit hook."""
@@ -98,11 +108,15 @@ def main() -> Any:
             path: Any = Path(arg)
             issues: Any = check_dark_reasoning(path)
             for issue in issues:
-                all_issues.append(f"{path}:{issue['line']} | {issue['reason']} in {issue['function']}")
+                all_issues.append(
+                    f"{path}:{issue['line']} | {issue['reason']} in {issue['function']}"
+                )
         except Exception:
             pass
     for issue in all_issues:
-        print(f'[✗] Dark Reasoning: {issue}')
+        print(f"[✗] Dark Reasoning: {issue}")
     sys.exit(1 if all_issues else 0)
-if __name__ == '__main__':
+
+
+if __name__ == "__main__":
     main()

@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: memory, prompt, validator
@@ -48,7 +47,12 @@ class HardenedWorkflowOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3Subatom
     Legacy API preserved for backward compatibility.
     """
 
-    def __init__(self, workflow_spec: Any | None=None, run_base_dir: str='./pipeline_runs', storage_path: str | None=None) -> None:
+    def __init__(
+        self,
+        workflow_spec: Any | None = None,
+        run_base_dir: str = "./pipeline_runs",
+        storage_path: str | None = None,
+    ) -> None:
         """Initialize the hardened orchestrator wrapper.
 
         Args:
@@ -60,22 +64,37 @@ class HardenedWorkflowOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3Subatom
         self.orchestrator = create_orchestrator(config=config)
         self.workflow_spec = workflow_spec
         self.run_base_dir = run_base_dir
-        Logger.info('🔗 HardenedWorkflowOrchestratorAgent wrapper initialized (delegates to orchestrator_main)')
+        Logger.info(
+            "🔗 HardenedWorkflowOrchestratorAgent wrapper initialized (delegates to orchestrator_main)"
+        )
 
-    async def initialize_or_resume_workflow(self, workflow_id: str, total_k_nodes: int, context: dict[str, Any]) -> dict[str, Any]:
+    async def initialize_or_resume_workflow(
+        self, workflow_id: str, total_k_nodes: int, context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Initialize new workflow or resume from Checkpoint (legacy wrapper)."""
-        Logger.info('🔗 Delegating workflow initialization to orchestrator_main')
+        Logger.info("🔗 Delegating workflow initialization to orchestrator_main")
         return context
 
-    async def execute_workflow_with_resilience(self, workflow_id: str, context: dict[str, Any]) -> dict[str, Any]:
+    async def execute_workflow_with_resilience(
+        self, workflow_id: str, context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Execute workflow with resilience (delegates to orchestrator_main)."""
-        Logger.info('🚀 Delegating workflow execution to orchestrator_main')
-        results: Any = await self.orchestrator.run_mission(target_path=context.get('target_path'), workflow_id=workflow_id)
+        Logger.info("🚀 Delegating workflow execution to orchestrator_main")
+        results: Any = await self.orchestrator.run_mission(
+            target_path=context.get("target_path"), workflow_id=workflow_id
+        )
         return results
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L3 orchestration agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -100,7 +119,12 @@ def get_hardened_workflow_orchestrator() -> HardenedWorkflowOrchestratorAgent:
 
     return HardenedWorkflowOrchestratorAgent()
 
-def create_hardened_orchestrator(workflow_spec: Any | None=None, run_base_dir: str='./pipeline_runs', storage_path: str | None=None) -> HardenedWorkflowOrchestratorAgent:
+
+def create_hardened_orchestrator(
+    workflow_spec: Any | None = None,
+    run_base_dir: str = "./pipeline_runs",
+    storage_path: str | None = None,
+) -> HardenedWorkflowOrchestratorAgent:
     """Create a hardened orchestrator (thin wrapper to consolidated orchestrator).
 
     Args:
@@ -111,4 +135,6 @@ def create_hardened_orchestrator(workflow_spec: Any | None=None, run_base_dir: s
     Returns:
         HardenedWorkflowOrchestratorAgent instance
     """
-    return HardenedWorkflowOrchestratorAgent(workflow_spec=workflow_spec, run_base_dir=run_base_dir, storage_path=storage_path)
+    return HardenedWorkflowOrchestratorAgent(
+        workflow_spec=workflow_spec, run_base_dir=run_base_dir, storage_path=storage_path
+    )

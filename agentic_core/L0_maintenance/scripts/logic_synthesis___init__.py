@@ -25,15 +25,19 @@ import logging
 from typing import Any
 
 Logger: Any = logging.getLogger(__name__)
-__version__ = '1.0.0'
-__author__ = 'Agentic-Workflow Team'
+__version__ = "1.0.0"
+__author__ = "Agentic-Workflow Team"
+
 
 def initialize() -> bool:
     """Initialize the module with required setup."""
-    LOGGER.info('Initializing module')
+    LOGGER.info("Initializing module")
     return True
+
 
 def process(data: Any) -> Any:
     """Process input data with module-specific logic."""
     return data
-__all__ = ['initialize', 'process']
+
+
+__all__ = ["initialize", "process"]

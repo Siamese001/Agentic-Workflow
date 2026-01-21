@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 class WritingStyle(str, Enum):
     """Company writing styles."""
+
     NARRATIVE = "Narrative"
     BULLET_HEAVY = "Bullet-heavy"
     ACADEMIC = "Academic"
@@ -29,12 +30,16 @@ class CompanyDNA(BaseModel):
 
     company_name: str = Field(..., description="Company identifier")
     core_values: list[str] = Field(default_factory=list, description="Core company values")
-    writing_style: WritingStyle = Field(default=WritingStyle.NARRATIVE, description="Preferred writing style")
+    writing_style: WritingStyle = Field(
+        default=WritingStyle.NARRATIVE, description="Preferred writing style"
+    )
     buzzwords: list[str] = Field(default_factory=list, description="Company-specific terminology")
-    value_phrases: dict[str, str] = Field(default_factory=dict, description="Value to phrase mapping")
+    value_phrases: dict[str, str] = Field(
+        default_factory=dict, description="Value to phrase mapping"
+    )
     forbidden_words: list[str] = Field(default_factory=list, description="Words to avoid")
 
-    @validator('core_values')
+    @validator("core_values")
     def validate_values(cls, v):
         """Ensure values are properly formatted."""
         return [val.strip().title() for val in v if val.strip()]
@@ -46,7 +51,9 @@ class CulturallyAlignedContent(BaseModel):
     original_text: str = Field(..., description="Original content")
     aligned_text: str = Field(..., description="Culturally aligned content")
     alignment_rationale: str = Field(..., description="Explanation of changes")
-    alignment_score: float = Field(default=0.0, ge=0.0, le=1.0, description="Cultural alignment score")
+    alignment_score: float = Field(
+        default=0.0, ge=0.0, le=1.0, description="Cultural alignment score"
+    )
     key_changes: list[str] = Field(default_factory=list, description="Key changes made")
 
 
@@ -80,81 +87,174 @@ class CulturalDecoderAgent(SimpleAgentBase):
         self.dna_profiles = {
             "Amazon": CompanyDNA(
                 company_name="Amazon",
-                core_values=["Customer Obsession", "Ownership", "Invent and Simplify",
-                           "Are Right, A Lot", "Learn and Be Curious", "Hire and Develop the Best",
-                           "Insist on the Highest Standards", "Think Big", "Bias for Action",
-                           "Frugality", "Earn Trust", "Deliver Results"],
+                core_values=[
+                    "Customer Obsession",
+                    "Ownership",
+                    "Invent and Simplify",
+                    "Are Right, A Lot",
+                    "Learn and Be Curious",
+                    "Hire and Develop the Best",
+                    "Insist on the Highest Standards",
+                    "Think Big",
+                    "Bias for Action",
+                    "Frugality",
+                    "Earn Trust",
+                    "Deliver Results",
+                ],
                 writing_style=WritingStyle.NARRATIVE,
-                buzzwords=["Bar Raiser", "6-Pager", "Two-Pizza Team", "Single Threaded Owner", "Disagree and Commit"],
+                buzzwords=[
+                    "Bar Raiser",
+                    "6-Pager",
+                    "Two-Pizza Team",
+                    "Single Threaded Owner",
+                    "Disagree and Commit",
+                ],
                 value_phrases={
-                    "Customer Obsession": ["customer-obsessed", "working backwards from the customer"],
+                    "Customer Obsession": [
+                        "customer-obsessed",
+                        "working backwards from the customer",
+                    ],
                     "Ownership": ["took ownership", "end-to-end ownership", "driver"],
                     "Deliver Results": ["delivered results", "measured impact", "metrics-driven"],
-                    "Bias for Action": ["bias for action", "calculated risks", "moved quickly"]
+                    "Bias for Action": ["bias for action", "calculated risks", "moved quickly"],
                 },
-                forbidden_words=["synergy", "paradigm", "leverage", "optimize"]
+                forbidden_words=["synergy", "paradigm", "leverage", "optimize"],
             ),
-
             "Google": CompanyDNA(
                 company_name="Google",
-                core_values=["Focus on the user", "Technical excellence", "Scale", "Innovation",
-                           "Collaboration", "10x thinking"],
+                core_values=[
+                    "Focus on the user",
+                    "Technical excellence",
+                    "Scale",
+                    "Innovation",
+                    "Collaboration",
+                    "10x thinking",
+                ],
                 writing_style=WritingStyle.TECHNICAL,
                 buzzwords=["20% Time", "TGIF", "OKR", "Design Doc", "Launch", "Scale", "Moonshot"],
                 value_phrases={
                     "Focus on the user": ["user-centric", "user-focused", "user experience first"],
-                    "Technical excellence": ["technically rigorous", "elegant solutions", "robust architecture"],
+                    "Technical excellence": [
+                        "technically rigorous",
+                        "elegant solutions",
+                        "robust architecture",
+                    ],
                     "Scale": ["at scale", "global scale", "billions of users"],
-                    "Innovation": ["breakthrough", "novel approach", "cutting-edge"]
+                    "Innovation": ["breakthrough", "novel approach", "cutting-edge"],
                 },
-                forbidden_words=["quick win", "low-hanging fruit", "synergy"]
+                forbidden_words=["quick win", "low-hanging fruit", "synergy"],
             ),
-
             "Meta": CompanyDNA(
                 company_name="Meta",
-                core_values=["Move Fast", "Build Awesome Things", "Focus on Impact", "Be Open",
-                           "Social Value", "Bold Action"],
+                core_values=[
+                    "Move Fast",
+                    "Build Awesome Things",
+                    "Focus on Impact",
+                    "Be Open",
+                    "Social Value",
+                    "Bold Action",
+                ],
                 writing_style=WritingStyle.BULLET_HEAVY,
                 buzzwords=["Move Fast", "Hackathon", "Zuck", "Meta", "Horizon", "Quest"],
                 value_phrases={
                     "Move Fast": ["moved fast", "rapid iteration", "ship early"],
-                    "Build Awesome Things": ["built impactful products", "game-changing", "revolutionary"],
-                    "Focus on Impact": ["measurable impact", "billion-user impact", "moved the needle"],
-                    "Bold Action": ["bold bets", "audacious goals", "challenged the status quo"]
+                    "Build Awesome Things": [
+                        "built impactful products",
+                        "game-changing",
+                        "revolutionary",
+                    ],
+                    "Focus on Impact": [
+                        "measurable impact",
+                        "billion-user impact",
+                        "moved the needle",
+                    ],
+                    "Bold Action": ["bold bets", "audacious goals", "challenged the status quo"],
                 },
-                forbidden_words=["enterprise", "corporate", "bureaucracy"]
+                forbidden_words=["enterprise", "corporate", "bureaucracy"],
             ),
-
             "Netflix": CompanyDNA(
                 company_name="Netflix",
-                core_values=["Judgment", "Communication", "Curiosity", "Courage", "Passion",
-                           "Selflessness", "Innovation", "Inclusion", "Integrity", "Impact"],
+                core_values=[
+                    "Judgment",
+                    "Communication",
+                    "Curiosity",
+                    "Courage",
+                    "Passion",
+                    "Selflessness",
+                    "Innovation",
+                    "Inclusion",
+                    "Integrity",
+                    "Impact",
+                ],
                 writing_style=WritingStyle.STORYTELLING,
-                buzzwords=["Context not Control", "High Performance", "No Rules Rules", "Keeper Test",
-                          "Radical Candor", "Freedom and Responsibility"],
+                buzzwords=[
+                    "Context not Control",
+                    "High Performance",
+                    "No Rules Rules",
+                    "Keeper Test",
+                    "Radical Candor",
+                    "Freedom and Responsibility",
+                ],
                 value_phrases={
-                    "Context not Control": ["provided context", "empowered teams", "delegated effectively"],
-                    "High Performance": ["high-performing team", "stunning colleagues", "top talent"],
-                    "Freedom and Responsibility": ["took ownership", "acted with freedom", "responsible freedom"],
-                    "Judgment": ["sound judgment", "good instincts", "wise decisions"]
+                    "Context not Control": [
+                        "provided context",
+                        "empowered teams",
+                        "delegated effectively",
+                    ],
+                    "High Performance": [
+                        "high-performing team",
+                        "stunning colleagues",
+                        "top talent",
+                    ],
+                    "Freedom and Responsibility": [
+                        "took ownership",
+                        "acted with freedom",
+                        "responsible freedom",
+                    ],
+                    "Judgment": ["sound judgment", "good instincts", "wise decisions"],
                 },
-                forbidden_words=["process", "procedure", "protocol", "approval chain"]
+                forbidden_words=["process", "procedure", "protocol", "approval chain"],
             ),
-
             "Stripe": CompanyDNA(
                 company_name="Stripe",
-                core_values=["Users First", "Rigorous Thinking", "Optimism", "Trust", "Macro-optimism",
-                           "Micro-pessimism", "Move with Urgency"],
+                core_values=[
+                    "Users First",
+                    "Rigorous Thinking",
+                    "Optimism",
+                    "Trust",
+                    "Macro-optimism",
+                    "Micro-pessimism",
+                    "Move with Urgency",
+                ],
                 writing_style=WritingStyle.TECHNICAL,
-                buzzwords=["API", "Infrastructure", "Payments", "Developers", "Elegance", "Simplicity"],
+                buzzwords=[
+                    "API",
+                    "Infrastructure",
+                    "Payments",
+                    "Developers",
+                    "Elegance",
+                    "Simplicity",
+                ],
                 value_phrases={
-                    "Users First": ["developer-first", "user-obsessed", "solved real user problems"],
-                    "Rigorous Thinking": ["thoughtful approach", "deep analysis", "first principles"],
+                    "Users First": [
+                        "developer-first",
+                        "user-obsessed",
+                        "solved real user problems",
+                    ],
+                    "Rigorous Thinking": [
+                        "thoughtful approach",
+                        "deep analysis",
+                        "first principles",
+                    ],
                     "Elegance": ["elegant solution", "beautiful API", "thoughtful design"],
-                    "Move with Urgency": ["moved with urgency", "rapid execution", "focused delivery"]
+                    "Move with Urgency": [
+                        "moved with urgency",
+                        "rapid execution",
+                        "focused delivery",
+                    ],
                 },
-                forbidden_words=["enterprise software", "B2B", "sales-driven"]
-            )
+                forbidden_words=["enterprise software", "B2B", "sales-driven"],
+            ),
         }
 
         # Default profile for unknown companies
@@ -165,11 +265,15 @@ class CulturalDecoderAgent(SimpleAgentBase):
             buzzwords=["Agile", "Scrum", "Sprint", "MVP", "Iterate", "Pivot"],
             value_phrases={
                 "Collaboration": ["cross-functional", "team player", "collaborative approach"],
-                "Innovation": ["innovative solutions", "creative problem-solving", "breakthrough thinking"],
+                "Innovation": [
+                    "innovative solutions",
+                    "creative problem-solving",
+                    "breakthrough thinking",
+                ],
                 "Excellence": ["high-quality", "best practices", "continuous improvement"],
-                "Agility": ["agile mindset", "quick adaptation", "flexible approach"]
+                "Agility": ["agile mindset", "quick adaptation", "flexible approach"],
             },
-            forbidden_words=[]
+            forbidden_words=[],
         )
 
     def _load_dna(self, company_name: str, about_text: str | None = None) -> CompanyDNA:
@@ -226,6 +330,7 @@ class CulturalDecoderAgent(SimpleAgentBase):
         try:
             response = await self._call_llm(prompt, temperature=0.1)
             import json
+
             extracted = json.loads(response.content.strip())
 
             return CompanyDNA(
@@ -233,17 +338,14 @@ class CulturalDecoderAgent(SimpleAgentBase):
                 core_values=extracted.get("core_values", []),
                 writing_style=WritingStyle(extracted.get("writing_style", "Narrative")),
                 buzzwords=extracted.get("buzzwords", []),
-                value_phrases={}
+                value_phrases={},
             )
         except Exception as e:
             logger.error(f"Failed to infer DNA: {e}")
             return self.default_dna
 
     async def rewrite_for_culture(
-        self,
-        original_text: str,
-        company_dna: CompanyDNA,
-        text_type: str = "resume"
+        self, original_text: str, company_dna: CompanyDNA, text_type: str = "resume"
     ) -> CulturallyAlignedContent:
         """Rewrite text to align with company culture.
 
@@ -287,20 +389,18 @@ class CulturalDecoderAgent(SimpleAgentBase):
         try:
             response = await self._call_llm(prompt, temperature=0.3)
             import json
+
             result = json.loads(response.content.strip())
 
             # Calculate alignment score
-            alignment_score = self._calculate_alignment_score(
-                result["rewritten_text"],
-                company_dna
-            )
+            alignment_score = self._calculate_alignment_score(result["rewritten_text"], company_dna)
 
             return CulturallyAlignedContent(
                 original_text=original_text,
                 aligned_text=result["rewritten_text"],
                 alignment_rationale=result["rationale"],
                 alignment_score=alignment_score,
-                key_changes=result.get("key_changes", [])
+                key_changes=result.get("key_changes", []),
             )
 
         except Exception as e:
@@ -310,7 +410,7 @@ class CulturalDecoderAgent(SimpleAgentBase):
                 aligned_text=original_text,
                 alignment_rationale="Failed to adapt - using original",
                 alignment_score=0.0,
-                key_changes=[]
+                key_changes=[],
             )
 
     def audit_fit(self, text: str, company_name: str) -> dict[str, Any]:
@@ -337,7 +437,9 @@ class CulturalDecoderAgent(SimpleAgentBase):
         # Check forbidden words
         forbidden_matches = [fw for fw in dna.forbidden_words if fw.lower() in text.lower()]
         if forbidden_matches:
-            misalignment_indicators.append(f"Uses discouraged words: {', '.join(forbidden_matches)}")
+            misalignment_indicators.append(
+                f"Uses discouraged words: {', '.join(forbidden_matches)}"
+            )
 
         # Check value alignment
         value_mentions = []
@@ -374,7 +476,7 @@ class CulturalDecoderAgent(SimpleAgentBase):
             "alignment_indicators": alignment_indicators,
             "misalignment_indicators": misalignment_indicators,
             "suggestions": suggestions,
-            "grade": self._get_grade(score)
+            "grade": self._get_grade(score),
         }
 
     def _calculate_alignment_score(self, text: str, dna: CompanyDNA) -> float:
@@ -397,7 +499,8 @@ class CulturalDecoderAgent(SimpleAgentBase):
 
         # Check value phrase alignment
         value_phrase_count = sum(
-            1 for phrases in dna.value_phrases.values()
+            1
+            for phrases in dna.value_phrases.values()
             for phrase in phrases
             if phrase in text_lower
         )
@@ -451,7 +554,7 @@ class CulturalDecoderAgent(SimpleAgentBase):
                 model="claude-3-5-sonnet-20241022",
                 max_tokens=2000,
                 temperature=temperature,
-                messages=[{"role": "user", "content": prompt}]
+                messages=[{"role": "user", "content": prompt}],
             )
 
             class LLMResponseImpl:
@@ -462,9 +565,12 @@ class CulturalDecoderAgent(SimpleAgentBase):
 
         except Exception as e:
             logger.error(f"LLM call failed: {e}")
+
             # Return fallback response
             class LLMResponseImpl:
                 def __init__(self, content: str):
                     self.content = content
 
-            return LLMResponseImpl('{"rewritten_text": "sample", "rationale": "sample", "key_changes": []}')
+            return LLMResponseImpl(
+                '{"rewritten_text": "sample", "rationale": "sample", "key_changes": []}'
+            )

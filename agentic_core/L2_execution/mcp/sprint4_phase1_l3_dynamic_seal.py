@@ -80,38 +80,38 @@ TARGET_FILES = {
     },
 }
 
+
 def remove_static_import(content: str, import_statement: str) -> str:
     """Remove a static import statement from file content."""
     # Match the full line including newline
-    pattern = re.escape(import_statement) + r'\s*\n'
-    content = re.sub(pattern, '', content)
+    pattern = re.escape(import_statement) + r"\s*\n"
+    content = re.sub(pattern, "", content)
 
     # Also try without newline for last line
-    content = content.replace(import_statement, '')
+    content = content.replace(import_statement, "")
 
     return content
+
 
 def refactor_mission_orchestrator(file_path: Path) -> bool:
     """Refactor mission_orchestrator.py to use dynamic imports."""
     try:
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
         original = content
 
         # Remove static imports
         content = remove_static_import(
-            content,
-            "from agentic_core.L5_safety.validators.LocationAgent import LocationAgent"
+            content, "from agentic_core.L5_safety.validators.LocationAgent import LocationAgent"
         )
         content = remove_static_import(
-            content,
-            "from agentic_core.L5_safety.gravity.ImportAgent import ImportAgent"
+            content, "from agentic_core.L5_safety.gravity.ImportAgent import ImportAgent"
         )
 
         # The functions already use dynamic imports inside, so we're done
         # Just need to remove the top-level static imports
 
         if content != original:
-            file_path.write_text(content, encoding='utf-8')
+            file_path.write_text(content, encoding="utf-8")
             return True
         return False
 
@@ -119,35 +119,35 @@ def refactor_mission_orchestrator(file_path: Path) -> bool:
         print(f"❌ Error refactoring {file_path.name}: {e}")
         return False
 
+
 def refactor_mission_controller(file_path: Path) -> bool:
     """Refactor mission_controller*.py to use dynamic imports."""
     try:
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
         original = content
 
         # Remove static import at top
         content = remove_static_import(
             content,
-            "from agentic_core.L5_safety.validators.mission_preflight_1 import MissionPreflight"
+            "from agentic_core.L5_safety.validators.mission_preflight_1 import MissionPreflight",
         )
 
         # The other imports (compliance_orchestrator, SubAtomicEngine, SafetyGuardrail)
         # are already dynamic (inside try blocks in methods), so just remove if they exist at top
         content = remove_static_import(
             content,
-            "from agentic_core.L5_safety.validators.compliance_orchestrator import compliance_orchestrator"
+            "from agentic_core.L5_safety.validators.compliance_orchestrator import compliance_orchestrator",
         )
         content = remove_static_import(
             content,
-            "from agentic_core.L5_safety.guardrails.subatomic_engine import SubAtomicEngine"
+            "from agentic_core.L5_safety.guardrails.subatomic_engine import SubAtomicEngine",
         )
         content = remove_static_import(
-            content,
-            "from agentic_core.L5_safety.guardrails.safety_layer import SafetyGuardrail"
+            content, "from agentic_core.L5_safety.guardrails.safety_layer import SafetyGuardrail"
         )
 
         if content != original:
-            file_path.write_text(content, encoding='utf-8')
+            file_path.write_text(content, encoding="utf-8")
             return True
         return False
 
@@ -155,54 +155,54 @@ def refactor_mission_controller(file_path: Path) -> bool:
         print(f"❌ Error refactoring {file_path.name}: {e}")
         return False
 
+
 def refactor_mcp_router(file_path: Path) -> bool:
     """Refactor mcp_router_sovereign.py to use dynamic imports."""
     try:
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
         original = content
 
         # Remove static imports
         content = remove_static_import(
-            content,
-            "from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority"
+            content, "from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority"
         )
         content = remove_static_import(
-            content,
-            "from agentic_core.L5_safety.shield.redis_sovereign_shield import redis_shield"
+            content, "from agentic_core.L5_safety.shield.redis_sovereign_shield import redis_shield"
         )
 
         # Add lazy loader helper at class level if mcp_authority is used
         # The redis_shield is already imported dynamically inside a method
 
         if content != original:
-            file_path.write_text(content, encoding='utf-8')
+            file_path.write_text(content, encoding="utf-8")
             return True
         return False
 
     except Exception as e:
         print(f"❌ Error refactoring {file_path.name}: {e}")
         return False
+
 
 def refactor_mcp_marketplace(file_path: Path) -> bool:
     """Refactor mcp_marketplace_sovereign.py to use dynamic imports."""
     try:
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
         original = content
 
         # Remove static import
         content = remove_static_import(
-            content,
-            "from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority"
+            content, "from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority"
         )
 
         if content != original:
-            file_path.write_text(content, encoding='utf-8')
+            file_path.write_text(content, encoding="utf-8")
             return True
         return False
 
     except Exception as e:
         print(f"❌ Error refactoring {file_path.name}: {e}")
         return False
+
 
 def main():
     """Apply Dynamic Seal pattern to L3 orchestration files."""
@@ -282,6 +282,7 @@ def main():
         print("ℹ️  No files needed refactoring")
 
     return 0
+
 
 if __name__ == "__main__":
     exit(main())

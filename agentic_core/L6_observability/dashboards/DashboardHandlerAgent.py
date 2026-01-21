@@ -3,12 +3,14 @@
 Simple HTTP Server for Dashboard
 Serves autonomy_dashboard.html on http://localhost:8080/autonomy_dashboard.html
 """
+
 import http.server
 import os
 import socketserver
 from pathlib import Path
 
 PORT = 8080
+
 
 class DashboardHandler(http.server.SimpleHTTPRequestHandler):
     """Custom handler to serve from dashboard directory with strong no-cache headers."""
@@ -21,14 +23,15 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
 
     def end_headers(self):
         # Add CORS headers for local development
-        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header("Access-Control-Allow-Origin", "*")
 
         # Strong no-cache headers to prevent browser caching issues
-        self.send_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
-        self.send_header('Pragma', 'no-cache')
-        self.send_header('Expires', '0')
+        self.send_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+        self.send_header("Pragma", "no-cache")
+        self.send_header("Expires", "0")
 
         super().end_headers()
+
 
 def main():
     """Start HTTP server."""
@@ -48,6 +51,7 @@ def main():
             httpd.serve_forever()
         except KeyboardInterrupt:
             print("\n\nServer stopped.")
+
 
 if __name__ == "__main__":
     main()

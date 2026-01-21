@@ -10,7 +10,9 @@ from typing import Any
 
 class StateValidationError(Exception):
     """Raised when a pre-condition or post-condition fails."""
+
     pass
+
 
 class StateValidationMixin:
     """
@@ -36,7 +38,9 @@ class StateValidationMixin:
             else:
                 ok = condition(self, result)
             if not ok:
-                raise StateValidationError(f"Condition failed: {getattr(condition, '__name__', 'condition')}")
+                raise StateValidationError(
+                    f"Condition failed: {getattr(condition, '__name__', 'condition')}"
+                )
 
     def _generate_op_hash(self, func_name: str, args: tuple, kwargs: dict) -> str:
         """Generates a unique deterministic hash for an operation call."""
@@ -46,8 +50,8 @@ class StateValidationMixin:
         try:
             payload = {
                 "func": func_name,
-                "args": [str(a) for a in args], # Simplification for non-serializable objects
-                "kwargs": {k: str(v) for k, v in kwargs.items()}
+                "args": [str(a) for a in args],  # Simplification for non-serializable objects
+                "kwargs": {k: str(v) for k, v in kwargs.items()},
             }
             s = json.dumps(payload, sort_keys=True)
             return hashlib.sha256(s.encode()).hexdigest()
@@ -56,9 +60,11 @@ class StateValidationMixin:
             return None
 
     @staticmethod
-    def validate_state(pre: Callable[[Any], bool] | None = None,
-                       post: Callable[[Any, Any], bool] | None = None,
-                       idempotent: bool = False):
+    def validate_state(
+        pre: Callable[[Any], bool] | None = None,
+        post: Callable[[Any, Any], bool] | None = None,
+        idempotent: bool = False,
+    ):
         """
         Decorator to enforce state validity.
 
@@ -67,6 +73,7 @@ class StateValidationMixin:
             post: Callable(self, result) -> bool. Runs AFTER method. Raises if False.
             idempotent: If True, returns cached result for identical inputs.
         """
+
         def decorator(func):
             @wraps(func)
             async def wrapper(self, *args, **kwargs):
@@ -91,7 +98,9 @@ class StateValidationMixin:
                             timeout=3.5,
                         )
                     except asyncio.TimeoutError:
-                        raise StateValidationError(f"Pre-condition check timeout for {func.__name__}")
+                        raise StateValidationError(
+                            f"Pre-condition check timeout for {func.__name__}"
+                        )
                     except Exception as e:
                         raise StateValidationError(f"Pre-condition failed: {e}")
 
@@ -105,7 +114,9 @@ class StateValidationMixin:
                         post_conditions = post if isinstance(post, list) else [post]
                         for condition in post_conditions:
                             if not condition(self, result):
-                                raise StateValidationError(f"Post-condition failed for {func.__name__}")
+                                raise StateValidationError(
+                                    f"Post-condition failed for {func.__name__}"
+                                )
                     except Exception as e:
                         raise StateValidationError(f"Post-condition error in {func.__name__}: {e}")
 
@@ -113,13 +124,17 @@ class StateValidationMixin:
                 if idempotent and op_hash:
                     self._operation_ledger[op_hash] = result
 
-                if hasattr(self, 'emit_event'):
+                if hasattr(self, "emit_event"):
                     self.emit_event(
-                        "state_validation.success" if result is not None else "state_validation.failed",
+                        "state_validation.success"
+                        if result is not None
+                        else "state_validation.failed",
                         {"method": func.__name__},
                         severity="INFO" if result is not None else "WARNING",
                     )
 
                 return result
+
             return wrapper
+
         return decorator

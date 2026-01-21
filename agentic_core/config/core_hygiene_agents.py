@@ -38,8 +38,8 @@ CORE_HYGIENE_AGENTS: dict[str, list[str]] = {
 # Agents that MUST pass before any healing proceeds
 MANDATORY_PREFLIGHT: list[str] = [
     "UnifiedCodeValidatorAgent",  # Syntax must be valid
-    "ImportAgent",                # Imports must be valid
-    "LocationAgent",              # Files must be in valid locations
+    "ImportAgent",  # Imports must be valid
+    "LocationAgent",  # Files must be in valid locations
 ]
 
 # Agent descriptions for documentation
@@ -61,12 +61,14 @@ AGENT_DESCRIPTIONS: dict[str, str] = {
     # "CodeJanitorAgent": "ARCHIVED - Redundant with UnifiedCodeValidatorAgent (2026-01-21)",
 }
 
+
 def get_all_hygiene_agents() -> list[str]:
     """Get flat list of all hygiene agents."""
     all_agents = []
     for tier_agents in CORE_HYGIENE_AGENTS.values():
         all_agents.extend(tier_agents)
     return all_agents
+
 
 def get_tier_agents(tier: int) -> list[str]:
     """
@@ -89,6 +91,7 @@ def get_tier_agents(tier: int) -> list[str]:
     if tier_key:
         return CORE_HYGIENE_AGENTS.get(tier_key, [])
     return []
+
 
 def is_mandatory_agent(agent_name: str) -> bool:
     """Check if agent is in mandatory preflight list."""

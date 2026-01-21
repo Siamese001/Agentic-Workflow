@@ -19,6 +19,7 @@ Enforces:
 Territory: agentic_core/L5_safety/validators/
 Canon Alignment: L5 safety validation and code standards enforcement
 """
+
 from __future__ import annotations
 
 import ast
@@ -41,6 +42,7 @@ Logger = logging.getLogger(__name__)
 @dataclass
 class CodeViolation:
     """Standardized code violation report."""
+
     file_path: str
     line_number: int
     violation_type: str  # INHERITANCE_ERR, PATTERN_VIOLATION, TYPE_HINT_ERR
@@ -73,36 +75,78 @@ class CodeStandardsEnforcerAgent(L5Agent, CanonASTValidator):
     project_root: Path = field(default_factory=Path.cwd)
 
     # Canonical layer bases for inheritance validation
-    LAYER_BASES: dict[str, str] = field(default_factory=lambda: {
-        'L0': 'L0MaintenanceBaseAgent',
-        'L1': 'L1CognitionBaseAgent',
-        'L2': 'L2ExecutionBaseAgent',
-        'L3': 'L3OrchestrationBaseAgent',
-        'L4': 'L4StateBaseAgent',
-        'L5': 'L5Agent',
-        'L6': 'L6ObservabilityBaseAgent',
-    })
+    LAYER_BASES: dict[str, str] = field(
+        default_factory=lambda: {
+            "L0": "L0MaintenanceBaseAgent",
+            "L1": "L1CognitionBaseAgent",
+            "L2": "L2ExecutionBaseAgent",
+            "L3": "L3OrchestrationBaseAgent",
+            "L4": "L4StateBaseAgent",
+            "L5": "L5Agent",
+            "L6": "L6ObservabilityBaseAgent",
+        }
+    )
 
     # Layer directory patterns for matching
-    LAYER_PATTERNS: dict[str, str] = field(default_factory=lambda: {
-        'L0_maintenance': 'L0',
-        'L1_cognition': 'L1',
-        'L2_execution': 'L2',
-        'L3_orchestration': 'L3',
-        'L4_state': 'L4',
-        'L5_safety': 'L5',
-        'L6_observability': 'L6',
-    })
+    LAYER_PATTERNS: dict[str, str] = field(
+        default_factory=lambda: {
+            "L0_maintenance": "L0",
+            "L1_cognition": "L1",
+            "L2_execution": "L2",
+            "L3_orchestration": "L3",
+            "L4_state": "L4",
+            "L5_safety": "L5",
+            "L6_observability": "L6",
+        }
+    )
 
     # Python builtins that should not be shadowed
-    BUILTINS: set[str] = field(default_factory=lambda: {
-        'list', 'dict', 'set', 'tuple', 'str', 'int', 'float', 'bool',
-        'type', 'object', 'len', 'range', 'print', 'input', 'open',
-        'file', 'id', 'hash', 'sum', 'min', 'max', 'abs', 'all', 'any',
-        'map', 'filter', 'zip', 'enumerate', 'sorted', 'reversed',
-        'format', 'iter', 'next', 'slice', 'super', 'property',
-        'classmethod', 'staticmethod', 'vars', 'dir', 'globals', 'locals',
-    })
+    BUILTINS: set[str] = field(
+        default_factory=lambda: {
+            "list",
+            "dict",
+            "set",
+            "tuple",
+            "str",
+            "int",
+            "float",
+            "bool",
+            "type",
+            "object",
+            "len",
+            "range",
+            "print",
+            "input",
+            "open",
+            "file",
+            "id",
+            "hash",
+            "sum",
+            "min",
+            "max",
+            "abs",
+            "all",
+            "any",
+            "map",
+            "filter",
+            "zip",
+            "enumerate",
+            "sorted",
+            "reversed",
+            "format",
+            "iter",
+            "next",
+            "slice",
+            "super",
+            "property",
+            "classmethod",
+            "staticmethod",
+            "vars",
+            "dir",
+            "globals",
+            "locals",
+        }
+    )
 
     # Directories to skip
     SKIP_DIRS: set[str] = field(default_factory=lambda: set(GLOBAL_EXCLUDED_DIRS))
@@ -156,7 +200,7 @@ class CodeStandardsEnforcerAgent(L5Agent, CanonASTValidator):
             self._current_class_name = ""
 
             try:
-                with open(file_path, encoding='utf-8') as f:
+                with open(file_path, encoding="utf-8") as f:
                     source = f.read()
 
                 tree = ast.parse(source)
@@ -238,7 +282,7 @@ class CodeStandardsEnforcerAgent(L5Agent, CanonASTValidator):
         - Shadowed builtins in function name
         """
         # Skip private/dunder methods for type hint enforcement
-        is_public = not node.name.startswith('_')
+        is_public = not node.name.startswith("_")
 
         # Check for shadowed builtin names
         if node.name in self.BUILTINS:
@@ -272,7 +316,7 @@ class CodeStandardsEnforcerAgent(L5Agent, CanonASTValidator):
         """
         # Check for dict.keys() usage
         if isinstance(node.func, ast.Attribute):
-            if node.func.attr == 'keys' and not node.args:
+            if node.func.attr == "keys" and not node.args:
                 self._add_violation(
                     node,
                     "Unnecessary dict.keys() - use 'in dict' directly",
@@ -321,7 +365,7 @@ class CodeStandardsEnforcerAgent(L5Agent, CanonASTValidator):
         Note: Only flags if file appears to be production code.
         """
         # Skip test files
-        if 'test' in self.current_file.lower():
+        if "test" in self.current_file.lower():
             self.generic_visit(node)
             return
 
@@ -358,11 +402,11 @@ class CodeStandardsEnforcerAgent(L5Agent, CanonASTValidator):
             node: AST ClassDef node
         """
         # Skip base classes themselves
-        if 'base' in self.current_file.lower() or 'Base' in node.name:
+        if "base" in self.current_file.lower() or "Base" in node.name:
             return
 
         # Skip mixin classes
-        if 'Mixin' in node.name:
+        if "Mixin" in node.name:
             return
 
         # Determine which layer this file belongs to
@@ -392,8 +436,8 @@ class CodeStandardsEnforcerAgent(L5Agent, CanonASTValidator):
         if expected_base not in base_classes:
             # Check for alternative valid bases (e.g., L5Agent for L5)
             alt_bases = [expected_base]
-            if layer == 'L5':
-                alt_bases.extend(['L5Agent', 'L5SafetyBaseAgent'])
+            if layer == "L5":
+                alt_bases.extend(["L5Agent", "L5SafetyBaseAgent"])
 
             if not any(alt in base_classes for alt in alt_bases):
                 self._add_violation(
@@ -423,7 +467,7 @@ class CodeStandardsEnforcerAgent(L5Agent, CanonASTValidator):
 
         # Check parameter type hints
         for arg in node.args.args:
-            if arg.annotation is None and arg.arg != 'self' and arg.arg != 'cls':
+            if arg.annotation is None and arg.arg != "self" and arg.arg != "cls":
                 self._add_violation(
                     arg,
                     f"Parameter '{arg.arg}' in function '{node.name}' is missing type hint",
@@ -482,15 +526,17 @@ class CodeStandardsEnforcerAgent(L5Agent, CanonASTValidator):
             canon_key: Optional canon key number
             suggested_fix: Optional fix suggestion
         """
-        self.violations.append(CodeViolation(
-            file_path=self.current_file,
-            line_number=getattr(node, 'lineno', 0),
-            violation_type=violation_type,
-            message=message,
-            severity=severity,
-            canon_key=canon_key,
-            suggested_fix=suggested_fix,
-        ))
+        self.violations.append(
+            CodeViolation(
+                file_path=self.current_file,
+                line_number=getattr(node, "lineno", 0),
+                violation_type=violation_type,
+                message=message,
+                severity=severity,
+                canon_key=canon_key,
+                suggested_fix=suggested_fix,
+            )
+        )
 
     def _get_repo_files(self) -> list[Path]:
         """
@@ -525,7 +571,7 @@ class CodeStandardsEnforcerAgent(L5Agent, CanonASTValidator):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: set[str] | None = None
+        _call_path: set[str] | None = None,
     ) -> dict[str, Any]:
         """
         Audit and report code standards violations.
@@ -546,7 +592,7 @@ class CodeStandardsEnforcerAgent(L5Agent, CanonASTValidator):
             execute=execute,
             depth=depth,
             max_depth=max_depth,
-            _call_path=_call_path
+            _call_path=_call_path,
         )
 
         if _call_path is None:
@@ -592,7 +638,9 @@ class CodeStandardsEnforcerAgent(L5Agent, CanonASTValidator):
             results["tests"].append({"name": "test_instantiation", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
+            results["tests"].append(
+                {"name": "test_instantiation", "status": "failed", "error": str(e)}
+            )
 
         # Test 2: Mutable default detection
         try:
@@ -609,7 +657,9 @@ class CodeStandardsEnforcerAgent(L5Agent, CanonASTValidator):
             results["tests"].append({"name": "test_mutable_default_detection", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append({"name": "test_mutable_default_detection", "status": "failed", "error": str(e)})
+            results["tests"].append(
+                {"name": "test_mutable_default_detection", "status": "failed", "error": str(e)}
+            )
 
         # Test 3: Type hint detection
         try:
@@ -626,7 +676,9 @@ class CodeStandardsEnforcerAgent(L5Agent, CanonASTValidator):
             results["tests"].append({"name": "test_type_hint_detection", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append({"name": "test_type_hint_detection", "status": "failed", "error": str(e)})
+            results["tests"].append(
+                {"name": "test_type_hint_detection", "status": "failed", "error": str(e)}
+            )
 
         # Test 4: None comparison detection
         try:
@@ -643,7 +695,9 @@ class CodeStandardsEnforcerAgent(L5Agent, CanonASTValidator):
             results["tests"].append({"name": "test_none_comparison_detection", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append({"name": "test_none_comparison_detection", "status": "failed", "error": str(e)})
+            results["tests"].append(
+                {"name": "test_none_comparison_detection", "status": "failed", "error": str(e)}
+            )
 
         return results
 
@@ -651,6 +705,7 @@ class CodeStandardsEnforcerAgent(L5Agent, CanonASTValidator):
 # =========================================================================
 # FACTORY FUNCTIONS
 # =========================================================================
+
 
 def get_code_standards_enforcer(project_root: Path | None = None) -> CodeStandardsEnforcerAgent:
     """
@@ -707,8 +762,8 @@ if __name__ == "__main__":
     if args.self_test:
         results = enforcer._run_self_tests()
         print(f"Self-tests: {results['passed']} passed, {results['failed']} failed")
-        for test in results['tests']:
-            status = "✓" if test['status'] == 'passed' else "✗"
+        for test in results["tests"]:
+            status = "✓" if test["status"] == "passed" else "✗"
             print(f"  {status} {test['name']}")
     else:
         results = enforcer.validate_repository()
@@ -723,9 +778,9 @@ if __name__ == "__main__":
         if args.json:
             print(json.dumps(results, indent=2, default=str))
         else:
-            print(f"\n{'='*60}")
+            print(f"\n{'=' * 60}")
             print("Code Standards Enforcer Report")
-            print(f"{'='*60}")
+            print(f"{'=' * 60}")
             print(f"Files scanned: {results['summary']['files_scanned']}")
             print(f"Total violations: {results['summary']['total_violations']}")
             print(f"  - Inheritance errors: {results['summary']['inheritance_errors']}")
@@ -733,7 +788,7 @@ if __name__ == "__main__":
             print(f"  - Type hint errors: {results['summary']['type_hint_errors']}")
             print(f"\nStatus: {results['status']}")
 
-            if results['details']:
+            if results["details"]:
                 print("\nTop violations:")
-                for v in results['details'][:10]:
+                for v in results["details"][:10]:
                     print(f"  [{v['type']}] {v['file']}:{v['line']} - {v['message']}")

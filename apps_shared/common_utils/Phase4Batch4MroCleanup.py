@@ -16,6 +16,7 @@ Usage:
     python scripts/phase4_batch4_mro_cleanup.py --dry-run
     python scripts/phase4_batch4_mro_cleanup.py --execute
 """
+
 from __future__ import annotations
 
 import argparse
@@ -68,9 +69,9 @@ def has_redundant_inheritance(content: str) -> bool:
     # Look for class definitions with SovereignBaseAgent and any redundant mixin
     for mixin in REDUNDANT_MIXINS:
         # Pattern: class Name(...SovereignBaseAgent...mixin...) or class Name(...mixin...SovereignBaseAgent...)
-        if re.search(rf'class\s+\w+\([^)]*SovereignBaseAgent[^)]*{mixin}', content):
+        if re.search(rf"class\s+\w+\([^)]*SovereignBaseAgent[^)]*{mixin}", content):
             return True
-        if re.search(rf'class\s+\w+\([^)]*{mixin}[^)]*SovereignBaseAgent', content):
+        if re.search(rf"class\s+\w+\([^)]*{mixin}[^)]*SovereignBaseAgent", content):
             return True
     return False
 
@@ -82,7 +83,7 @@ def clean_class_inheritance(content: str) -> tuple[str, int]:
         Tuple of (modified_content, number_of_cleanups)
     """
     cleanups = 0
-    lines = content.split('\n')
+    lines = content.split("\n")
     modified_lines = []
 
     i = 0
@@ -90,19 +91,19 @@ def clean_class_inheritance(content: str) -> tuple[str, int]:
         line = lines[i]
 
         # Check if this is a class definition with inheritance
-        class_match = re.match(r'^(\s*)(class\s+\w+)\(([^)]+)\)(\s*:.*)?$', line)
+        class_match = re.match(r"^(\s*)(class\s+\w+)\(([^)]+)\)(\s*:.*)?$", line)
 
         if class_match:
             indent = class_match.group(1)
             class_name = class_match.group(2)
             bases_str = class_match.group(3)
-            suffix = class_match.group(4) or ':'
+            suffix = class_match.group(4) or ":"
 
             # Parse the bases
-            bases = [b.strip() for b in bases_str.split(',')]
+            bases = [b.strip() for b in bases_str.split(",")]
 
             # Check if SovereignBaseAgent is in the bases
-            has_sovereign = any('SovereignBaseAgent' in b for b in bases)
+            has_sovereign = any("SovereignBaseAgent" in b for b in bases)
 
             if has_sovereign:
                 # Remove redundant mixins
@@ -112,13 +113,13 @@ def clean_class_inheritance(content: str) -> tuple[str, int]:
                 if len(bases) < original_count:
                     cleanups += original_count - len(bases)
                     # Reconstruct the class definition
-                    new_bases_str = ', '.join(bases)
+                    new_bases_str = ", ".join(bases)
                     line = f"{indent}{class_name}({new_bases_str}){suffix}"
 
         modified_lines.append(line)
         i += 1
 
-    return '\n'.join(modified_lines), cleanups
+    return "\n".join(modified_lines), cleanups
 
 
 def remove_unused_imports(content: str, removed_mixins: set[str]) -> tuple[str, int]:
@@ -128,7 +129,7 @@ def remove_unused_imports(content: str, removed_mixins: set[str]) -> tuple[str, 
         Tuple of (modified_content, number_of_imports_removed)
     """
     imports_removed = 0
-    lines = content.split('\n')
+    lines = content.split("\n")
     modified_lines = []
 
     for line in lines:
@@ -136,9 +137,9 @@ def remove_unused_imports(content: str, removed_mixins: set[str]) -> tuple[str, 
 
         for mixin in removed_mixins:
             # Check if this line imports the mixin and mixin is not used elsewhere
-            if f'import {mixin}' in line or 'from' in line and mixin in line:
+            if f"import {mixin}" in line or "from" in line and mixin in line:
                 # Check if mixin is still used in the content (excluding import lines)
-                content_without_imports = '\n'.join([l for l in lines if 'import' not in l])
+                content_without_imports = "\n".join([l for l in lines if "import" not in l])
                 if mixin not in content_without_imports:
                     skip_line = True
                     imports_removed += 1
@@ -147,7 +148,7 @@ def remove_unused_imports(content: str, removed_mixins: set[str]) -> tuple[str, 
         if not skip_line:
             modified_lines.append(line)
 
-    return '\n'.join(modified_lines), imports_removed
+    return "\n".join(modified_lines), imports_removed
 
 
 def process_file(file_path: Path, dry_run: bool = True) -> dict:
@@ -165,7 +166,7 @@ def process_file(file_path: Path, dry_run: bool = True) -> dict:
     }
 
     try:
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
     except Exception as e:
         result["skipped"] = True
         result["reason"] = f"Read error: {e}"
@@ -191,7 +192,7 @@ def process_file(file_path: Path, dry_run: bool = True) -> dict:
 
     if not dry_run:
         try:
-            file_path.write_text(modified_content, encoding='utf-8')
+            file_path.write_text(modified_content, encoding="utf-8")
         except Exception as e:
             result["skipped"] = True
             result["reason"] = f"Write error: {e}"

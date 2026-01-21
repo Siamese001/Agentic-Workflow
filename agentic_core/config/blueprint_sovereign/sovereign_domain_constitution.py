@@ -25,43 +25,39 @@ BOUNDED_CONTEXTS: dict[str, dict[str, Any]] = {
     "L0_Governance": {
         "path": L0_MAINTENANCE_DIR,
         "rank": 0,
-        "role": "Metacognition: The Law, Auditors, and Healers"
+        "role": "Metacognition: The Law, Auditors, and Healers",
     },
     "L1_Cognition": {
         "path": L1_COGNITION_DIR,
         "rank": 1,
-        "role": "Strategic Reasoning: Planning and Consensus"
+        "role": "Strategic Reasoning: Planning and Consensus",
     },
     "L2_Execution": {
         "path": L2_EXECUTION_DIR,
         "rank": 2,
-        "role": "Action: Tool Implementation and Agent Realization"
+        "role": "Action: Tool Implementation and Agent Realization",
     },
     "L3_Orchestration": {
         "path": L3_ORCHESTRATION_DIR,
         "rank": 3,
-        "role": "Workflow: Task Fission and Fusion"
+        "role": "Workflow: Task Fission and Fusion",
     },
     "L4_State": {
         "path": L4_STATE_DIR,
         "rank": 4,
-        "role": "Memory: Persistence and Semantic Caching"
+        "role": "Memory: Persistence and Semantic Caching",
     },
-    "L5_Safety": {
-        "path": L5_SAFETY_DIR,
-        "rank": 5,
-        "role": "Membrane: Input/Output Sanitization"
-    },
+    "L5_Safety": {"path": L5_SAFETY_DIR, "rank": 5, "role": "Membrane: Input/Output Sanitization"},
     "L6_Observability": {
         "path": L6_OBSERVABILITY_DIR,
         "rank": 6,
-        "role": "Truth: Telemetry, Logging, and Audit Trails"
+        "role": "Truth: Telemetry, Logging, and Audit Trails",
     },
     "SharedContracts": {
         "path": "apps_shared/base_agents",
         "rank": -1,  # Neutral layer, no rank in hierarchy
-        "role": "Neutral Interfaces: Cross-context contracts"
-    }
+        "role": "Neutral Interfaces: Cross-context contracts",
+    },
 }
 
 # 2. Domain Aggregates (Root Entity Protection)
@@ -69,13 +65,13 @@ DOMAIN_AGGREGATES: dict[str, dict] = {
     "Mission": {
         "root": "MissionPlan",
         "entities": ["MissionPhase", "ThoughtChain"],
-        "invariants": ["Phases must be unique", "No cycles in dependency graph"]
+        "invariants": ["Phases must be unique", "No cycles in dependency graph"],
     },
     "Thought": {
         "root": "ThoughtChain",
         "entities": ["ThinkingStep", "Hypothesis", "Revision"],
-        "invariants": ["Steps must be sequential", "Conclusion is mandatory"]
-    }
+        "invariants": ["Steps must be sequential", "Conclusion is mandatory"],
+    },
 }
 
 # 3. Ubiquitous Language (Required Terminology)

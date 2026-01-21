@@ -11,12 +11,13 @@ Migration:
         validate_empty_except,
     )
 """
+
 import warnings
 
 warnings.warn(
     "EmptyExceptValidatorAgent is deprecated. Use UnifiedASTValidatorAgent instead.",
     DeprecationWarning,
-    stacklevel=2
+    stacklevel=2,
 )
 
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
@@ -43,7 +44,7 @@ from typing import Any
 from agentic_core.runtime.shared_runtime.ast_validator import CanonASTValidator
 
 # GRAVITY FIXED (Upward Leak): from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-_mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_mixin')
+_mod = importlib.import_module("agentic_core.L5_safety.guardrails.mcp_hardened_mixin")
 MCPHardenedMixin = _mod.MCPHardenedMixin
 from agentic_core.L5_safety.validators.decorators import standard_heal
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
@@ -58,12 +59,14 @@ class EmptyExceptValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTVali
 
     def visit_ExceptHandler(self, node: ast.ExceptHandler) -> Any:
         """Check for empty except blocks."""
-        is_empty: Any = not node.body or (len(node.body) == 1 and isinstance(node.body[0], ast.Pass))
+        is_empty: Any = not node.body or (
+            len(node.body) == 1 and isinstance(node.body[0], ast.Pass)
+        )
         if is_empty and (not self.in_type_checking):
-            self.report('Empty except block detected (except: pass)', node)
+            self.report("Empty except block detected (except: pass)", node)
         self.generic_visit(node)
 
     @standard_heal
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()

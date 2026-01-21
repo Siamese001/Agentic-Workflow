@@ -51,28 +51,28 @@ class StackModernizationAgent:
                 "data center": "Established data center operations",
                 "hybrid cloud": "Hybrid cloud environment",
                 "vmware": "VMware virtualization platform",
-                "physical servers": "Physical server infrastructure"
+                "physical servers": "Physical server infrastructure",
             },
             "data": {
                 "oracle": "Oracle database systems",
                 "stored procedures": "Stored procedure architecture",
                 "hadoop": "Hadoop data processing",
                 "data warehouse": "Traditional data warehouse",
-                "etl": "ETL pipeline architecture"
+                "etl": "ETL pipeline architecture",
             },
             "application": {
                 "monolith": "Monolithic application architecture",
                 "java 8": "Java 8 application stack",
                 "soap": "SOAP web services",
                 "xml": "XML-based data exchange",
-                "jsp": "JSP presentation layer"
+                "jsp": "JSP presentation layer",
             },
             "search": {
                 "elasticsearch": "Elasticsearch (keyword-only)",
                 "solr": "Apache Solr search",
                 "keyword search": "Keyword-based search",
-                "full-text search": "Traditional full-text search"
-            }
+                "full-text search": "Traditional full-text search",
+            },
         }
 
         # Pain point mappings
@@ -81,26 +81,26 @@ class StackModernizationAgent:
                 "Slow deployment cycles",
                 "Limited scalability",
                 "High operational overhead",
-                "Difficulty in disaster recovery"
+                "Difficulty in disaster recovery",
             ],
             "data": [
                 "Data silos and duplication",
                 "Slow query performance",
                 "Complex data transformations",
-                "Limited real-time capabilities"
+                "Limited real-time capabilities",
             ],
             "application": [
                 "Tight coupling between components",
                 "Difficult to scale individual features",
                 "Slow innovation cycles",
-                "High risk deployments"
+                "High risk deployments",
             ],
             "search": [
                 "Limited semantic understanding",
                 "Poor relevance for complex queries",
                 "Difficulty handling unstructured data",
-                "Limited multilingual support"
-            ]
+                "Limited multilingual support",
+            ],
         }
 
         # Transformation playbooks
@@ -109,26 +109,26 @@ class StackModernizationAgent:
                 "legacy": ["elasticsearch", "solr", "keyword search"],
                 "modern": "Vector-based Semantic RAG",
                 "thesis": "Moving from keyword matching to Semantic RAG to improve retrieval accuracy by 40%",
-                "strategy": "Implement Strangler Fig Pattern: gradually replace keyword endpoints with vector search while maintaining 100% uptime"
+                "strategy": "Implement Strangler Fig Pattern: gradually replace keyword endpoints with vector search while maintaining 100% uptime",
             },
             "monolith_decomposition": {
                 "legacy": ["monolith", "java 8", "soap"],
                 "modern": "Event-Driven Agentic Architecture",
                 "thesis": "Decoupling complex workflows into an Event-Driven Agentic Architecture for scalability",
-                "strategy": "Apply Parallel Run pattern: run new agent system alongside monolith, gradually migrating workflows"
+                "strategy": "Apply Parallel Run pattern: run new agent system alongside monolith, gradually migrating workflows",
             },
             "data_modernization": {
                 "legacy": ["oracle", "data warehouse", "etl"],
                 "modern": "Knowledge Graph + Lakehouse",
                 "thesis": "Unlocking siloed data by overlaying a Knowledge Graph for AI context",
-                "strategy": "Implement CDC (Change Data Capture) for real-time sync while maintaining warehouse for reporting"
+                "strategy": "Implement CDC (Change Data Capture) for real-time sync while maintaining warehouse for reporting",
             },
             "cloud_migration": {
                 "legacy": ["on-prem", "data center", "physical servers"],
                 "modern": "Cloud-Native Microservices",
                 "thesis": "Transitioning to cloud-native architecture for elastic scalability and reduced TCO",
-                "strategy": "Use Lift-and-Shift followed by modernization, with parallel environments to ensure zero downtime"
-            }
+                "strategy": "Use Lift-and-Shift followed by modernization, with parallel environments to ensure zero downtime",
+            },
         }
 
         logger.info("Initialized StackModernizationAgent")
@@ -164,7 +164,7 @@ class StackModernizationAgent:
             diagnostic = LegacyDiagnostic(
                 detected_legacy_tech=unique_tech,
                 implied_pain_points=unique_pain[:5],  # Limit to top 5
-                modernization_score=score
+                modernization_score=score,
             )
 
             logger.info(f"Diagnosed legacy stack with score {score:.2f}")
@@ -174,9 +174,7 @@ class StackModernizationAgent:
         except Exception as e:
             logger.error(f"Error diagnosing stack: {str(e)}")
             return LegacyDiagnostic(
-                detected_legacy_tech=[],
-                implied_pain_points=[],
-                modernization_score=0.0
+                detected_legacy_tech=[], implied_pain_points=[], modernization_score=0.0
             )
 
     def generate_thesis(self, diagnostic: LegacyDiagnostic) -> MigrationThesis:
@@ -194,7 +192,7 @@ class StackModernizationAgent:
                 return MigrationThesis(
                     current_state_diagnosis="Modern technology stack with opportunities for optimization",
                     target_state_vision="Enhanced AI capabilities with advanced architectures",
-                    bridge_strategy="Incremental improvements and strategic AI integration"
+                    bridge_strategy="Incremental improvements and strategic AI integration",
                 )
 
             # Find matching transformation playbook
@@ -208,7 +206,7 @@ class StackModernizationAgent:
             return MigrationThesis(
                 current_state_diagnosis=f"Mature infrastructure with {', '.join(diagnostic.detected_legacy_tech[:2])}",
                 target_state_vision="Modern, cloud-native AI architecture",
-                bridge_strategy="Gradual migration using Strangler Fig Pattern to ensure business continuity"
+                bridge_strategy="Gradual migration using Strangler Fig Pattern to ensure business continuity",
             )
 
         except Exception as e:
@@ -216,7 +214,7 @@ class StackModernizationAgent:
             return MigrationThesis(
                 current_state_diagnosis="Legacy technology stack",
                 target_state_vision="Modern architecture",
-                bridge_strategy="Safe, incremental migration approach"
+                bridge_strategy="Safe, incremental migration approach",
             )
 
     def generate_migration_hook(self, thesis: MigrationThesis, legacy_tech: str) -> str:
@@ -231,7 +229,11 @@ class StackModernizationAgent:
         """
         try:
             # Extract modern tech from thesis
-            modern_tech = thesis.target_state_vision.split(",")[0] if thesis.target_state_vision else "modern architecture"
+            modern_tech = (
+                thesis.target_state_vision.split(",")[0]
+                if thesis.target_state_vision
+                else "modern architecture"
+            )
 
             hook = (
                 f"I noticed you are transitioning from {legacy_tech}. "
@@ -276,9 +278,7 @@ class StackModernizationAgent:
             return "Senior AI Engineer with modernization experience"
 
     def _create_thesis_from_playbook(
-        self,
-        playbook: dict[str, str],
-        diagnostic: LegacyDiagnostic
+        self, playbook: dict[str, str], diagnostic: LegacyDiagnostic
     ) -> MigrationThesis:
         """Create thesis from transformation playbook.
 
@@ -305,7 +305,7 @@ class StackModernizationAgent:
             return MigrationThesis(
                 current_state_diagnosis=current,
                 target_state_vision=target,
-                bridge_strategy=strategy
+                bridge_strategy=strategy,
             )
 
         except Exception as e:
@@ -341,5 +341,5 @@ def analyze_modernization_opportunity(job_description: str) -> dict[str, Any]:
         "legacy_score": diagnostic.modernization_score,
         "detected_tech": diagnostic.detected_legacy_tech,
         "thesis": thesis.dict(),
-        "has_opportunity": diagnostic.is_highly_legacy
+        "has_opportunity": diagnostic.is_highly_legacy,
     }

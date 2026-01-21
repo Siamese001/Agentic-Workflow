@@ -12,11 +12,12 @@ from typing import Any, TypeVar
 
 logger = logging.getLogger(__name__)
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 class ServiceNotFoundError(Exception):
     """Raised when a requested service is not registered."""
+
     pass
 
 
@@ -47,7 +48,7 @@ class ServiceContainer:
         interface: type[T],
         implementation: T | None = None,
         factory: Callable[[], T] | None = None,
-        lifecycle: str = "singleton"
+        lifecycle: str = "singleton",
     ) -> None:
         """Register a service in the container.
 
@@ -123,7 +124,9 @@ class ServiceContainer:
                     return type(implementation)()
                 except Exception:
                     # If we can't create a new instance, return the original
-                    logger.warning(f"Could not create transient instance of {interface.__name__}, returning singleton")
+                    logger.warning(
+                        f"Could not create transient instance of {interface.__name__}, returning singleton"
+                    )
                     return implementation
 
         raise ServiceNotFoundError(f"Could not resolve {interface.__name__}")
@@ -176,7 +179,7 @@ def register_default(
     interface: type[T],
     implementation: T | None = None,
     factory: Callable[[], T] | None = None,
-    lifecycle: str = "singleton"
+    lifecycle: str = "singleton",
 ) -> None:
     """Register a service in the default container.
 
@@ -208,4 +211,5 @@ def resolve_default(interface: type[T]) -> T:
 # Service marker interface for better type safety
 class Service(ABC):
     """Base class for services that can be dependency injected."""
+
     pass

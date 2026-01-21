@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: guardrail
@@ -19,7 +18,7 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
 import hashlib
 import logging
@@ -39,13 +38,14 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 # Semantic deduplication imports
 try:
     from agentic_core.semantic_memory.embeddings.core_embedder import get_embedding
+
     EMBEDDINGS_AVAILABLE = True
 except ImportError:
     EMBEDDINGS_AVAILABLE = False
     get_embedding = None
 
 SIMILARITY_THRESHOLD = 0.9
-EMBEDDING_MODEL = 'text-embedding-3-small'
+EMBEDDING_MODEL = "text-embedding-3-small"
 
 
 # [PHASE 20] DEPRECATION: void_compliance.py removed - using LocationAgent
@@ -53,9 +53,11 @@ def validate_file_location(path: Path, root: Path) -> tuple[bool, str]:
     """Bridge to LocationAgent."""
     try:
         from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+
         return LocationAgent(root).validate_file_location(path)
     except ImportError:
         return True, "Bootstrap"
+
 
 # NAMING FIXED: PromptRegistry → PromptRegistryAgent
 @dataclass
@@ -72,8 +74,9 @@ class PromptRegistryAgent(MCPHardenedMixin, HealerMixin):
 
     REGISTRY_FILE = Path(__file__).parent / "registry.json"
 
-
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -96,8 +99,8 @@ class PromptRegistryAgent(MCPHardenedMixin, HealerMixin):
         # [L6 SOVEREIGNTY] Validate our own placement at initialization
         is_valid, reason = validate_file_location(Path(__file__), Path.cwd())
         if not is_valid:
-             # Non-breaking warning for deployment; critical in validation missions
-             print(f"[!] PromptRegistry placement Violation: {reason}")
+            # Non-breaking warning for deployment; critical in validation missions
+            print(f"[!] PromptRegistry placement Violation: {reason}")
 
         self._load_registry()
 
@@ -123,18 +126,18 @@ class PromptRegistryAgent(MCPHardenedMixin, HealerMixin):
         data = {
             "sovereign_version": "1.0",
             "generated_date": datetime.now().strftime("%Y-%m-%d"),
-            "prompts": self.registry
+            "prompts": self.registry,
         }
         try:
             self.REGISTRY_FILE.parent.mkdir(parents=True, exist_ok=True)
 
             # Atomic write: temp file + rename for crash safety
             with tempfile.NamedTemporaryFile(
-                mode='w',
-                encoding='utf-8',
+                mode="w",
+                encoding="utf-8",
                 dir=self.REGISTRY_FILE.parent,
                 delete=False,
-                suffix='.tmp'
+                suffix=".tmp",
             ) as tmp:
                 json.dump(data, tmp, indent=2)
                 tmp_path = tmp.name
@@ -150,7 +153,7 @@ class PromptRegistryAgent(MCPHardenedMixin, HealerMixin):
         """Generate content hash for deduplication. Returns None if no content."""
         if content is None:
             return None
-        return hashlib.sha256(content.encode('utf-8')).hexdigest()[:16]
+        return hashlib.sha256(content.encode("utf-8")).hexdigest()[:16]
 
     def _compute_embedding(self, content: str | None) -> np.ndarray | None:
         """Compute normalized embedding for semantic similarity."""
@@ -172,17 +175,19 @@ class PromptRegistryAgent(MCPHardenedMixin, HealerMixin):
             if name == template_name:
                 continue  # Skip same template family
             for e in entries:
-                if 'embedding' in e and e['embedding'] is not None:
-                    stored_emb = np.array(e['embedding'])
+                if "embedding" in e and e["embedding"] is not None:
+                    stored_emb = np.array(e["embedding"])
                     score = float(np.dot(new_emb, stored_emb))
                     if score >= self.similarity_threshold:
-                        similar.append({
-                            'name': name,
-                            'version': e.get('version', 'unknown'),
-                            'similarity': score,
-                            'prompt_snippet': e.get('content_hash', '')[:20]
-                        })
-        return sorted(similar, key=lambda x: x['similarity'], reverse=True)
+                        similar.append(
+                            {
+                                "name": name,
+                                "version": e.get("version", "unknown"),
+                                "similarity": score,
+                                "prompt_snippet": e.get("content_hash", "")[:20],
+                            }
+                        )
+        return sorted(similar, key=lambda x: x["similarity"], reverse=True)
 
     def register_prompt(
         self,
@@ -192,7 +197,7 @@ class PromptRegistryAgent(MCPHardenedMixin, HealerMixin):
         territory: str = "templates",
         active: bool = True,
         author: str = "SovereignOrchestrator",
-        content: str | None = None
+        content: str | None = None,
     ) -> None:
         """
         Register or update a prompt version. Enforces single-active-version law.
@@ -216,7 +221,7 @@ class PromptRegistryAgent(MCPHardenedMixin, HealerMixin):
                     f"Semantic duplicate detected (threshold {self.similarity_threshold}). "
                     f"Found {len(similar)} similar prompt(s): {similar[0]['name']} "
                     f"(similarity: {similar[0]['similarity']:.3f})",
-                    similar
+                    similar,
                 )
 
         if template_name not in self.registry:
@@ -232,13 +237,15 @@ class PromptRegistryAgent(MCPHardenedMixin, HealerMixin):
         for existing_entry in self.registry[template_name]:
             # Compare only the key fields that matter for uniqueness
             if all(
-                existing_entry.get(k) == v for k, v in {
+                existing_entry.get(k) == v
+                for k, v in {
                     "version": version,
                     "purpose": purpose,
                     "author": author,
                     "content_hash": content_hash,
                     "territory": territory,
-                }.items() if k in DUPLICATE_KEY_FIELDS
+                }.items()
+                if k in DUPLICATE_KEY_FIELDS
             ):
                 # Identical entry found
                 if existing_entry["active"] == active:
@@ -256,13 +263,14 @@ class PromptRegistryAgent(MCPHardenedMixin, HealerMixin):
 
         # Build new entry
         from datetime import datetime
+
         entry = {
             "version": version,
             "purpose": purpose,
             "territory": territory,
             "active": active,
             "author": author,
-            "registered_date": datetime.now().strftime("%Y-%m-%d")
+            "registered_date": datetime.now().strftime("%Y-%m-%d"),
         }
         if content_hash:
             entry["content_hash"] = content_hash
@@ -277,7 +285,9 @@ class PromptRegistryAgent(MCPHardenedMixin, HealerMixin):
         # Append new entry and persist
         self.registry[template_name].append(entry)
         self._save_registry()
-        Logger.info(f"Registered: {template_name} {version} (Territory: {territory}, Author: {author})")
+        Logger.info(
+            f"Registered: {template_name} {version} (Territory: {territory}, Author: {author})"
+        )
         print(f"    [REGISTERED] {template_name} {version} (Territory: {territory})")
 
     def get_active_version(self, template_name: str) -> dict[str, Any] | None:
@@ -288,10 +298,16 @@ class PromptRegistryAgent(MCPHardenedMixin, HealerMixin):
 
     def list_active_prompts(self) -> list[str]:
         """List all currently active template names for mission planning."""
-        return [name for name, versions in self.registry.items() if any(v.get("active") for v in versions)]
+        return [
+            name
+            for name, versions in self.registry.items()
+            if any(v.get("active") for v in versions)
+        ]
+
 
 class DuplicatePromptError(Exception):
     """Raised when a semantically duplicate prompt is detected."""
+
     def __init__(self, message, similar_entries) -> None:
         """Initialize the instance."""
         super().__init__(message)
@@ -300,6 +316,7 @@ class DuplicatePromptError(Exception):
 
 # Singleton Management
 _global_registry: PromptRegistryAgent | None = None
+
 
 def get_prompt_registry() -> PromptRegistryAgent:
     """Factory for singleton access. Bootstraps known templates on first call."""
@@ -346,6 +363,7 @@ def get_prompt_registry() -> PromptRegistryAgent:
 # DECORATOR: Agent-Driven Prompt Registration
 # ===================================================================
 
+
 def registers_prompt(
     template_name: str,
     purpose: str = "",
@@ -370,6 +388,7 @@ def registers_prompt(
     - Agent-driven prompt discovery (no hardcoded lists)
     - Optional content hashing for version control
     """
+
     def decorator(cls) -> Any:
         """Execute decorator operation."""
         # Register at import time (safe due to deduplication)

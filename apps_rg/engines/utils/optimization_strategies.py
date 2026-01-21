@@ -14,6 +14,7 @@ from typing import Any
 @dataclass
 class ConfidenceMetrics:
     """Confidence metrics for reasoning steps."""
+
     confidence: float  # 0.0 to 1.0
     convergence_score: float  # 0.0 to 1.0
     step_quality: float  # 0.0 to 1.0
@@ -30,7 +31,7 @@ class EarlyStoppingStrategy:
         convergence_threshold: float = 0.90,
         min_confidence_for_pruning: float = 0.80,
         min_steps: int = 2,
-        max_steps: int = 8
+        max_steps: int = 8,
     ):
         """Initialize early stopping strategy."""
         self.confidence_threshold = confidence_threshold
@@ -40,10 +41,7 @@ class EarlyStoppingStrategy:
         self.max_steps = max_steps
 
     def should_stop_early(
-        self,
-        steps: list[dict[str, Any]],
-        current_confidence: float,
-        current_step: int
+        self, steps: list[dict[str, Any]], current_confidence: float, current_step: int
     ) -> tuple:
         """
         Determine if reasoning should stop early.
@@ -96,7 +94,7 @@ class EarlyStoppingStrategy:
             return False
 
         # Check if thoughts are repeating
-        thoughts = [str(s.get('thought', '')) for s in recent_steps]
+        thoughts = [str(s.get("thought", "")) for s in recent_steps]
         unique_thoughts = len(set(thoughts))
 
         # If all recent thoughts are identical, converged
@@ -116,8 +114,8 @@ class EarlyStoppingStrategy:
             return 0.0
 
         # Check for repeating patterns
-        recent_steps = steps[-min(5, len(steps)):]
-        thoughts = [str(s.get('thought', '')) for s in recent_steps]
+        recent_steps = steps[-min(5, len(steps)) :]
+        thoughts = [str(s.get("thought", "")) for s in recent_steps]
         unique_thoughts = len(set(thoughts))
 
         # Convergence = 1 - (unique_thoughts / total_thoughts)
@@ -134,7 +132,7 @@ class ConfidenceEstimator:
             "has_reasoning": 0.3,
             "has_evidence": 0.3,
             "is_coherent": 0.2,
-            "is_actionable": 0.2
+            "is_actionable": 0.2,
         }
 
     def estimate_step_confidence(self, step: dict[str, Any]) -> float:
@@ -150,11 +148,11 @@ class ConfidenceEstimator:
         score = 0.0
 
         # Check for reasoning content
-        if step.get('thought') and len(str(step.get('thought', ''))) > 10:
+        if step.get("thought") and len(str(step.get("thought", ""))) > 10:
             score += self.step_quality_weights["has_reasoning"]
 
         # Check for evidence
-        if step.get('evidence') or step.get('facts'):
+        if step.get("evidence") or step.get("facts"):
             score += self.step_quality_weights["has_evidence"]
 
         # Check for coherence (simple heuristic)
@@ -162,7 +160,7 @@ class ConfidenceEstimator:
             score += self.step_quality_weights["is_coherent"]
 
         # Check for actionability
-        if step.get('action') or step.get('next_step'):
+        if step.get("action") or step.get("next_step"):
             score += self.step_quality_weights["is_actionable"]
 
         return min(1.0, max(0.0, score))
@@ -195,11 +193,13 @@ class ConfidenceEstimator:
 
     def _is_coherent(self, step: dict[str, Any]) -> bool:
         """Check if step is coherent."""
-        thought = str(step.get('thought', ''))
+        thought = str(step.get("thought", ""))
 
         # Simple heuristics for coherence
-        has_subject = any(word in thought.lower() for word in ['the', 'this', 'that', 'a', 'an'])
-        has_verb = any(word in thought.lower() for word in ['is', 'are', 'was', 'were', 'be', 'have', 'has'])
+        has_subject = any(word in thought.lower() for word in ["the", "this", "that", "a", "an"])
+        has_verb = any(
+            word in thought.lower() for word in ["is", "are", "was", "were", "be", "have", "has"]
+        )
 
         return has_subject and has_verb and len(thought) > 5
 
@@ -236,7 +236,9 @@ class PathPruningStrategy:
         return {
             "total_paths": self.total_paths,
             "pruned_paths": self.pruned_count,
-            "prune_rate": (self.pruned_count / self.total_paths * 100) if self.total_paths > 0 else 0
+            "prune_rate": (self.pruned_count / self.total_paths * 100)
+            if self.total_paths > 0
+            else 0,
         }
 
 
@@ -249,11 +251,7 @@ class OptimizedReasoningEngine:
         self.confidence_estimator = ConfidenceEstimator()
         self.path_pruning = PathPruningStrategy()
 
-    def reason_with_optimization(
-        self,
-        problem: str,
-        context: dict[str, Any]
-    ) -> dict[str, Any]:
+    def reason_with_optimization(self, problem: str, context: dict[str, Any]) -> dict[str, Any]:
         """
         Execute reasoning with optimization strategies.
 
@@ -280,38 +278,34 @@ class OptimizedReasoningEngine:
 
             # Check for early stopping
             should_stop, reason = self.early_stopping.should_stop_early(
-                steps,
-                chain_confidence,
-                step_count
+                steps, chain_confidence, step_count
             )
 
             if should_stop:
-                steps.append({
-                    "type": "early_stop",
-                    "reason": reason,
-                    "confidence": chain_confidence
-                })
+                steps.append(
+                    {"type": "early_stop", "reason": reason, "confidence": chain_confidence}
+                )
                 break
 
             # Check for path pruning
             if self.path_pruning.should_prune(step_confidence):
-                steps.append({
-                    "type": "pruned",
-                    "reason": "low_confidence",
-                    "confidence": step_confidence
-                })
+                steps.append(
+                    {"type": "pruned", "reason": "low_confidence", "confidence": step_confidence}
+                )
                 break
 
-            current = step.get('next', problem)
+            current = step.get("next", problem)
 
         return {
             "steps": steps,
             "final_confidence": self.confidence_estimator.estimate_chain_confidence(steps),
             "step_count": step_count,
             "optimization_stats": {
-                "early_stopping": reason if step_count < self.early_stopping.max_steps else "max_steps",
-                "path_pruning": self.path_pruning.get_statistics()
-            }
+                "early_stopping": reason
+                if step_count < self.early_stopping.max_steps
+                else "max_steps",
+                "path_pruning": self.path_pruning.get_statistics(),
+            },
         }
 
     def _generate_step(self, current: str, context: dict[str, Any]) -> dict[str, Any]:
@@ -330,5 +324,5 @@ class OptimizedReasoningEngine:
             "thought": f"Analyzing: {current[:50]}...",
             "evidence": "reasoning evidence",
             "next": "next_state",
-            "confidence": 0.85
+            "confidence": 0.85,
         }

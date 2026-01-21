@@ -23,6 +23,7 @@ from typing import Any
 
 class ErrorCategory(Enum):
     """Error categories for classification."""
+
     VALIDATION = "validation"
     NETWORK = "network"
     TIMEOUT = "timeout"
@@ -35,6 +36,7 @@ class ErrorCategory(Enum):
 
 class RecoveryStrategy(Enum):
     """Recovery strategies."""
+
     RETRY = "retry"
     FALLBACK = "fallback"
     SKIP = "skip"
@@ -46,6 +48,7 @@ class RecoveryStrategy(Enum):
 @dataclass
 class ErrorContext:
     """Context for error recovery."""
+
     error: Exception
     error_type: str
     message: str
@@ -60,6 +63,7 @@ class ErrorContext:
 @dataclass
 class RecoveryResult:
     """Result of recovery attempt."""
+
     success: bool
     strategy_used: RecoveryStrategy
     attempts: int
@@ -117,10 +121,7 @@ class ErrorRecoveryGuardrail:
         self.error_log: list[ErrorContext] = []
 
     async def handle_error(
-        self,
-        error: Exception,
-        context: dict[str, Any] | None = None,
-        max_retries: int = 3
+        self, error: Exception, context: dict[str, Any] | None = None, max_retries: int = 3
     ) -> RecoveryResult:
         """
         Handle error with classification and recovery.
@@ -189,7 +190,7 @@ class ErrorRecoveryGuardrail:
             category=category,
             severity=severity,
             recoverable=recoverable,
-            metadata=context
+            metadata=context,
         )
 
     def _select_strategy(self, error_ctx: ErrorContext) -> RecoveryStrategy:
@@ -200,10 +201,7 @@ class ErrorRecoveryGuardrail:
         return self.recovery_map.get(error_ctx.category, RecoveryStrategy.ESCALATE)
 
     async def _execute_recovery(
-        self,
-        error_ctx: ErrorContext,
-        strategy: RecoveryStrategy,
-        max_retries: int
+        self, error_ctx: ErrorContext, strategy: RecoveryStrategy, max_retries: int
     ) -> RecoveryResult:
         """Execute recovery strategy."""
         if strategy == RecoveryStrategy.RETRY:
@@ -214,24 +212,21 @@ class ErrorRecoveryGuardrail:
             return await self._heal_recovery(error_ctx)
         elif strategy == RecoveryStrategy.SKIP:
             return RecoveryResult(
-                success=True,
-                strategy_used=strategy,
-                attempts=0,
-                recovered_value=None
+                success=True, strategy_used=strategy, attempts=0, recovered_value=None
             )
         elif strategy == RecoveryStrategy.ESCALATE:
             return RecoveryResult(
                 success=False,
                 strategy_used=strategy,
                 attempts=0,
-                error_message="Escalated to higher level"
+                error_message="Escalated to higher level",
             )
         else:  # ABORT
             return RecoveryResult(
                 success=False,
                 strategy_used=strategy,
                 attempts=0,
-                error_message="Aborted - unrecoverable error"
+                error_message="Aborted - unrecoverable error",
             )
 
     async def _retry_recovery(self, error_ctx: ErrorContext, max_retries: int) -> RecoveryResult:
@@ -241,7 +236,7 @@ class ErrorRecoveryGuardrail:
             success=True,
             strategy_used=RecoveryStrategy.RETRY,
             attempts=1,
-            recovered_value={"recovered": True, "method": "retry"}
+            recovered_value={"recovered": True, "method": "retry"},
         )
 
     def _fallback_recovery(self, error_ctx: ErrorContext) -> RecoveryResult:
@@ -250,7 +245,7 @@ class ErrorRecoveryGuardrail:
             success=True,
             strategy_used=RecoveryStrategy.FALLBACK,
             attempts=1,
-            recovered_value={"recovered": True, "method": "fallback"}
+            recovered_value={"recovered": True, "method": "fallback"},
         )
 
     async def _heal_recovery(self, error_ctx: ErrorContext) -> RecoveryResult:
@@ -259,7 +254,7 @@ class ErrorRecoveryGuardrail:
             success=True,
             strategy_used=RecoveryStrategy.HEAL,
             attempts=1,
-            recovered_value={"recovered": True, "method": "heal"}
+            recovered_value={"recovered": True, "method": "heal"},
         )
 
     def get_statistics(self) -> dict[str, Any]:
@@ -268,8 +263,10 @@ class ErrorRecoveryGuardrail:
             "errors_handled": self.errors_handled,
             "recoveries_successful": self.recoveries_successful,
             "recoveries_failed": self.recoveries_failed,
-            "success_rate": (self.recoveries_successful / self.errors_handled * 100) if self.errors_handled > 0 else 0,
-            "error_log_size": len(self.error_log)
+            "success_rate": (self.recoveries_successful / self.errors_handled * 100)
+            if self.errors_handled > 0
+            else 0,
+            "error_log_size": len(self.error_log),
         }
 
     def get_error_log(self, limit: int = 100) -> list[dict[str, Any]]:
@@ -281,7 +278,7 @@ class ErrorRecoveryGuardrail:
                 "category": e.category.value,
                 "severity": e.severity,
                 "recoverable": e.recoverable,
-                "timestamp": e.timestamp
+                "timestamp": e.timestamp,
             }
             for e in self.error_log[-limit:]
         ]

@@ -13,6 +13,7 @@ Usage:
     python scripts/phase4_batch1_decorator_sweep_v2.py --dry-run
     python scripts/phase4_batch1_decorator_sweep_v2.py --execute
 """
+
 from __future__ import annotations
 
 import argparse
@@ -56,7 +57,7 @@ def find_python_files(root: Path) -> list[Path]:
 
 def has_heal_repository(content: str) -> bool:
     """Check if file contains a heal_repository method definition."""
-    return bool(re.search(r'\n\s+def heal_repository\s*\(', content))
+    return bool(re.search(r"\n\s+def heal_repository\s*\(", content))
 
 
 def already_has_standard_heal_import(content: str) -> bool:
@@ -66,7 +67,7 @@ def already_has_standard_heal_import(content: str) -> bool:
 
 def already_has_decorator(content: str) -> bool:
     """Check if heal_repository already has @standard_heal decorator."""
-    return bool(re.search(r'@standard_heal\s*\n\s+def heal_repository', content))
+    return bool(re.search(r"@standard_heal\s*\n\s+def heal_repository", content))
 
 
 def find_safe_import_insertion_line(content: str) -> int:
@@ -75,7 +76,7 @@ def find_safe_import_insertion_line(content: str) -> int:
     This function properly handles multi-line imports by tracking parentheses depth.
     Returns the 0-indexed line number AFTER which to insert the new import.
     """
-    lines = content.split('\n')
+    lines = content.split("\n")
     last_safe_import_line = -1
     in_docstring = False
     docstring_char = None
@@ -99,22 +100,22 @@ def find_safe_import_insertion_line(content: str) -> int:
             continue
 
         # Track parentheses depth for multi-line imports
-        paren_depth += line.count('(') - line.count(')')
+        paren_depth += line.count("(") - line.count(")")
 
         # Only consider this a valid import line if we're at paren_depth 0 AFTER processing
-        if stripped.startswith('import ') or stripped.startswith('from '):
+        if stripped.startswith("import ") or stripped.startswith("from "):
             if paren_depth == 0:
                 # This is a complete import statement (single line or end of multi-line)
                 last_safe_import_line = i
         elif paren_depth == 0 and last_safe_import_line >= 0:
             # We've moved past imports, check if this closes a multi-line import
-            if stripped == ')':
+            if stripped == ")":
                 last_safe_import_line = i
 
     # If we're still inside a multi-line import at the end, find the closing paren
     if paren_depth > 0:
         for i, line in enumerate(lines):
-            if ')' in line:
+            if ")" in line:
                 last_safe_import_line = i
 
     return last_safe_import_line
@@ -122,15 +123,20 @@ def find_safe_import_insertion_line(content: str) -> int:
 
 def insert_import_safely(content: str, import_line: str) -> str:
     """Insert an import statement at a safe location."""
-    lines = content.split('\n')
+    lines = content.split("\n")
     insert_after = find_safe_import_insertion_line(content)
 
     if insert_after < 0:
         # No imports found, insert after module docstring or at top
         for i, line in enumerate(lines):
             stripped = line.strip()
-            if stripped and not stripped.startswith('#') and not stripped.startswith('"""') and not stripped.startswith("'''"):
-                if stripped.startswith('from __future__'):
+            if (
+                stripped
+                and not stripped.startswith("#")
+                and not stripped.startswith('"""')
+                and not stripped.startswith("'''")
+            ):
+                if stripped.startswith("from __future__"):
                     insert_after = i
                 else:
                     insert_after = max(0, i - 1)
@@ -138,7 +144,7 @@ def insert_import_safely(content: str, import_line: str) -> str:
 
     # Insert the import
     lines.insert(insert_after + 1, import_line)
-    return '\n'.join(lines)
+    return "\n".join(lines)
 
 
 def add_decorator_to_heal_repository(content: str) -> tuple[str, int]:
@@ -148,10 +154,7 @@ def add_decorator_to_heal_repository(content: str) -> tuple[str, int]:
         Tuple of (modified_content, number_of_decorators_added)
     """
     # Pattern to find heal_repository method definitions without @standard_heal
-    pattern = re.compile(
-        r'(\n)([ \t]+)(def heal_repository\s*\()',
-        re.MULTILINE
-    )
+    pattern = re.compile(r"(\n)([ \t]+)(def heal_repository\s*\()", re.MULTILINE)
 
     decorators_added = 0
 
@@ -164,8 +167,8 @@ def add_decorator_to_heal_repository(content: str) -> tuple[str, int]:
         # Check if there's already a @standard_heal decorator before this
         # by looking at the content before the match
         start = match.start()
-        preceding = content[max(0, start-100):start]
-        if '@standard_heal' in preceding.split('\n')[-1] if preceding else False:
+        preceding = content[max(0, start - 100) : start]
+        if "@standard_heal" in preceding.split("\n")[-1] if preceding else False:
             return match.group(0)
 
         decorators_added += 1
@@ -190,7 +193,7 @@ def process_file(file_path: Path, dry_run: bool = True) -> dict:
     }
 
     try:
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
     except Exception as e:
         result["skipped"] = True
         result["reason"] = f"Read error: {e}"
@@ -222,7 +225,7 @@ def process_file(file_path: Path, dry_run: bool = True) -> dict:
     # Write if not dry run and changes were made
     if not dry_run and (result["import_added"] or decorators_added > 0):
         try:
-            file_path.write_text(modified_content, encoding='utf-8')
+            file_path.write_text(modified_content, encoding="utf-8")
         except Exception as e:
             result["skipped"] = True
             result["reason"] = f"Write error: {e}"

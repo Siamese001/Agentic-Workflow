@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 
 class SchemaType(Enum):
     """Types of schemas."""
+
     JSON_SCHEMA = "json_schema"
     AVRO_SCHEMA = "avro_schema"
     PROTOBUF_SCHEMA = "protobuf_schema"
@@ -27,6 +28,7 @@ class SchemaType(Enum):
 
 class SchemaStatus(Enum):
     """Status of schemas."""
+
     DRAFT = "draft"
     ACTIVE = "active"
     DEPRECATED = "deprecated"
@@ -36,6 +38,7 @@ class SchemaStatus(Enum):
 @dataclass
 class SchemaMetadata:
     """Metadata for a schema."""
+
     id: str
     name: str
     version: str
@@ -53,6 +56,7 @@ class SchemaMetadata:
 @dataclass
 class SchemaEntry:
     """Complete schema entry with metadata and content."""
+
     metadata: SchemaMetadata
     content: dict[str, Any]
     validation_rules: dict[str, Any] | None = None
@@ -62,6 +66,7 @@ class SchemaEntry:
 @dataclass
 class SchemaQuery:
     """Query configuration for schema retrieval."""
+
     name_pattern: str | None = None
     schema_type: SchemaType | None = None
     status: SchemaStatus | None = None
@@ -80,6 +85,7 @@ class SchemaQuery:
 @dataclass
 class SchemaQueryResult:
     """Result of schema query."""
+
     entries: list[SchemaEntry]
     total_count: int
     query: SchemaQuery
@@ -89,6 +95,7 @@ class SchemaQueryResult:
 @dataclass
 class SchemaStoreConfig:
     """Configuration for schema store."""
+
     storage_path: str = "data/schema_store"
     max_entries_per_query: int = 1000
     enable_versioning: bool = True
@@ -118,7 +125,9 @@ class SchemaStoreQuerier:
         Returns:
             SchemaQueryResult: Query results with schemas and metadata
         """
-        self.logger.info(f"Querying schemas with criteria: type={query.schema_type}, status={query.status}")
+        self.logger.info(
+            f"Querying schemas with criteria: type={query.schema_type}, status={query.status}"
+        )
 
         try:
             # Apply filters
@@ -129,7 +138,7 @@ class SchemaStoreQuerier:
 
             # Apply pagination
             total_count = len(filtered_ids)
-            paginated_ids = filtered_ids[query.offset:query.offset + query.limit]
+            paginated_ids = filtered_ids[query.offset : query.offset + query.limit]
 
             # Build result entries
             entries = []
@@ -141,7 +150,7 @@ class SchemaStoreQuerier:
                     metadata=entry.metadata,
                     content=entry.content if query.include_content else {},
                     validation_rules=entry.validation_rules if query.include_validation else None,
-                    examples=entry.examples if query.include_examples else None
+                    examples=entry.examples if query.include_examples else None,
                 )
                 entries.append(filtered_entry)
 
@@ -153,8 +162,8 @@ class SchemaStoreQuerier:
                     "queried_at": datetime.utcnow().isoformat(),
                     "storage_path": self.config.storage_path,
                     "total_schemas": len(self._schema_cache),
-                    "querier": "SchemaStoreQuerier"
-                }
+                    "querier": "SchemaStoreQuerier",
+                },
             )
 
             self.logger.info(
@@ -166,10 +175,7 @@ class SchemaStoreQuerier:
         except Exception as e:
             self.logger.error(f"Schema query failed: {str(e)}")
             return SchemaQueryResult(
-                entries=[],
-                total_count=0,
-                query=query,
-                metadata={"error": str(e)}
+                entries=[], total_count=0, query=query, metadata={"error": str(e)}
             )
 
     def get_schema(self, schema_id: str) -> SchemaEntry | None:
@@ -314,16 +320,12 @@ class SchemaStoreQuerier:
 
         # Find largest schemas
         sorted_by_size = sorted(
-            self._schema_cache.values(),
-            key=lambda x: x.metadata.size_bytes,
-            reverse=True
+            self._schema_cache.values(), key=lambda x: x.metadata.size_bytes, reverse=True
         )[:5]
 
         # Most recently updated
         recent_schemas = sorted(
-            self._schema_cache.values(),
-            key=lambda x: x.metadata.updated_at,
-            reverse=True
+            self._schema_cache.values(), key=lambda x: x.metadata.updated_at, reverse=True
         )[:5]
 
         return {
@@ -335,14 +337,18 @@ class SchemaStoreQuerier:
                 for e in sorted_by_size
             ],
             "recently_updated": [
-                {"id": e.metadata.id, "name": e.metadata.name, "updated_at": e.metadata.updated_at.isoformat()}
+                {
+                    "id": e.metadata.id,
+                    "name": e.metadata.name,
+                    "updated_at": e.metadata.updated_at.isoformat(),
+                }
                 for e in recent_schemas
             ],
             "index_sizes": {
                 "name_index": len(self._name_index),
                 "type_index": len(self._type_index),
-                "tag_index": len(self._tag_index)
-            }
+                "tag_index": len(self._tag_index),
+            },
         }
 
     def _load_schemas(self) -> None:
@@ -356,7 +362,7 @@ class SchemaStoreQuerier:
             # Load each schema file
             for schema_file in storage_path.glob("*.json"):
                 try:
-                    with open(schema_file, encoding='utf-8') as f:
+                    with open(schema_file, encoding="utf-8") as f:
                         data = json.load(f)
 
                     # Convert to SchemaEntry
@@ -380,10 +386,10 @@ class SchemaStoreQuerier:
         # Filter by name pattern
         if query.name_pattern:
             import re
+
             pattern = re.compile(query.name_pattern, re.IGNORECASE)
             filtered_ids = [
-                id for id in filtered_ids
-                if pattern.search(self._schema_cache[id].metadata.name)
+                id for id in filtered_ids if pattern.search(self._schema_cache[id].metadata.name)
             ]
 
         # Filter by type
@@ -396,7 +402,8 @@ class SchemaStoreQuerier:
 
         # Filter by status
         filtered_ids = [
-            id for id in filtered_ids
+            id
+            for id in filtered_ids
             if not query.status or self._schema_cache[id].metadata.status == query.status
         ]
 
@@ -411,20 +418,23 @@ class SchemaStoreQuerier:
         # Filter by creator
         if query.created_by:
             filtered_ids = [
-                id for id in filtered_ids
+                id
+                for id in filtered_ids
                 if self._schema_cache[id].metadata.created_by == query.created_by
             ]
 
         # Filter by date range
         if query.date_from:
             filtered_ids = [
-                id for id in filtered_ids
+                id
+                for id in filtered_ids
                 if self._schema_cache[id].metadata.created_at >= query.date_from
             ]
 
         if query.date_to:
             filtered_ids = [
-                id for id in filtered_ids
+                id
+                for id in filtered_ids
                 if self._schema_cache[id].metadata.created_at <= query.date_to
             ]
 
@@ -487,7 +497,7 @@ class SchemaStoreQuerier:
             # Convert to JSON
             data = self._schema_entry_to_json(entry)
 
-            with open(schema_file, 'w', encoding='utf-8') as f:
+            with open(schema_file, "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=2, ensure_ascii=False)
 
         except Exception as e:
@@ -520,11 +530,11 @@ class SchemaStoreQuerier:
                 "description": entry.metadata.description,
                 "tags": entry.metadata.tags,
                 "dependencies": entry.metadata.dependencies,
-                "size_bytes": entry.metadata.size_bytes
+                "size_bytes": entry.metadata.size_bytes,
             },
             "content": entry.content,
             "validation_rules": entry.validation_rules,
-            "examples": entry.examples
+            "examples": entry.examples,
         }
 
     def _json_to_schema_entry(self, data: dict[str, Any]) -> SchemaEntry | None:
@@ -542,14 +552,14 @@ class SchemaStoreQuerier:
                 description=data["metadata"].get("description"),
                 tags=data["metadata"].get("tags", []),
                 dependencies=data["metadata"].get("dependencies", []),
-                size_bytes=data["metadata"].get("size_bytes", 0)
+                size_bytes=data["metadata"].get("size_bytes", 0),
             )
 
             return SchemaEntry(
                 metadata=metadata,
                 content=data.get("content", {}),
                 validation_rules=data.get("validation_rules"),
-                examples=data.get("examples")
+                examples=data.get("examples"),
             )
 
         except Exception as e:
@@ -562,14 +572,14 @@ def create_schema_store_querier(
     storage_path: str = "data/schema_store",
     max_entries_per_query: int = 1000,
     enable_versioning: bool = True,
-    **kwargs: object
+    **kwargs: object,
 ) -> SchemaStoreQuerier:
     """Create a configured schema store querier."""
     config = SchemaStoreConfig(
         storage_path=storage_path,
         max_entries_per_query=max_entries_per_query,
         enable_versioning=enable_versioning,
-        **kwargs
+        **kwargs,
     )
     return SchemaStoreQuerier(config)
 
@@ -583,7 +593,7 @@ def query_schema_store(
     include_content: bool = True,
     limit: int = 100,
     offset: int = 0,
-    config: dict[str, Any] | None = None
+    config: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Query schema store.
 
@@ -611,7 +621,7 @@ def query_schema_store(
         tags=tags or [],
         include_content=include_content,
         limit=limit,
-        offset=offset
+        offset=offset,
     )
 
     result = querier.query_schemas(query)
@@ -632,11 +642,11 @@ def query_schema_store(
                     "description": e.metadata.description,
                     "tags": e.metadata.tags,
                     "dependencies": e.metadata.dependencies,
-                    "size_bytes": e.metadata.size_bytes
+                    "size_bytes": e.metadata.size_bytes,
                 },
                 "content": e.content,
                 "validation_rules": e.validation_rules,
-                "examples": e.examples
+                "examples": e.examples,
             }
             for e in result.entries
         ],
@@ -648,7 +658,7 @@ def query_schema_store(
             "tags": result.query.tags,
             "include_content": result.query.include_content,
             "limit": result.query.limit,
-            "offset": result.query.offset
+            "offset": result.query.offset,
         },
-        "metadata": result.metadata
+        "metadata": result.metadata,
     }

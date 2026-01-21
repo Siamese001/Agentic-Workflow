@@ -19,31 +19,34 @@ This audit verifies:
 - Territory names are canonical
 - Sort order is enforced
 """
+
 import json
 import sys
 from pathlib import Path
 
 project_root = Path(__file__).parent.parent
 
-print("\n" + "="*70)
+print("\n" + "=" * 70)
 print("DASHBOARD SSOT AUDIT")
-print("="*70)
+print("=" * 70)
 
 # ============================================================================
 # AUDIT 1: Data Source Verification
 # ============================================================================
-print("\n" + "="*70)
+print("\n" + "=" * 70)
 print("AUDIT 1: Data Source Verification")
-print("="*70)
+print("=" * 70)
 
 discovery_file = project_root / "agent_discovery_full.json"
-dashboard_data_file = project_root / "agentic_core" / "L6_observability" / "dashboards" / "data" / "dashboard_data.js"
+dashboard_data_file = (
+    project_root / "agentic_core" / "L6_observability" / "dashboards" / "data" / "dashboard_data.js"
+)
 ssot_file = project_root / "scripts" / "dashboard_ssot_definitions.py"
 
 files_exist = {
     "agent_discovery_full.json": discovery_file.exists(),
     "dashboard_data.js": dashboard_data_file.exists(),
-    "dashboard_ssot_definitions.py": ssot_file.exists()
+    "dashboard_ssot_definitions.py": ssot_file.exists(),
 }
 
 for file, exists in files_exist.items():
@@ -57,9 +60,9 @@ if not all(files_exist.values()):
 # ============================================================================
 # AUDIT 2: SSOT Definitions Consistency
 # ============================================================================
-print("\n" + "="*70)
+print("\n" + "=" * 70)
 print("AUDIT 2: SSOT Definitions Consistency")
-print("="*70)
+print("=" * 70)
 
 # Import SSOT definitions
 sys.path.insert(0, str(project_root / "scripts"))
@@ -88,9 +91,17 @@ from dashboard_ssot_definitions import (
 
 # Verify all column names are defined
 required_columns = [
-    COL_HEAL_CAP, COL_INVOCATION, COL_TEST,
-    COL_HARDENED, COL_COMPLEXITY_HEALTH, COL_TYPED, COL_DOCUMENTED,
-    COL_SCHEMA, COL_CANONICAL_INHERITANCE, COL_CODE_QUALITY, COL_HEALTH
+    COL_HEAL_CAP,
+    COL_INVOCATION,
+    COL_TEST,
+    COL_HARDENED,
+    COL_COMPLEXITY_HEALTH,
+    COL_TYPED,
+    COL_DOCUMENTED,
+    COL_SCHEMA,
+    COL_CANONICAL_INHERITANCE,
+    COL_CODE_QUALITY,
+    COL_HEALTH,
 ]
 
 print("\n✅ SSOT Column Definitions:")
@@ -99,9 +110,14 @@ for col in required_columns:
 
 # Verify all field names are defined
 required_fields = [
-    FIELD_HAS_HEALING, FIELD_INVOCATION, FIELD_HAS_TESTS,
-    FIELD_MCP_HARDENED, FIELD_TYPED_PCT, FIELD_DOCUMENTED_PCT,
-    FIELD_SCHEMA_STRICTNESS, FIELD_PROPER_BASE_CLASS
+    FIELD_HAS_HEALING,
+    FIELD_INVOCATION,
+    FIELD_HAS_TESTS,
+    FIELD_MCP_HARDENED,
+    FIELD_TYPED_PCT,
+    FIELD_DOCUMENTED_PCT,
+    FIELD_SCHEMA_STRICTNESS,
+    FIELD_PROPER_BASE_CLASS,
 ]
 
 print("\n✅ SSOT Field Definitions:")
@@ -110,9 +126,13 @@ for field in required_fields:
 
 # Verify all calculation functions are defined
 calculation_functions = [
-    'calc_heal_cap', 'calc_invocation_pct', 'calc_test_pct',
-    'calc_avg_cc', 'calc_complexity_health', 'calc_code_quality_score',
-    'calc_health_score'
+    "calc_heal_cap",
+    "calc_invocation_pct",
+    "calc_test_pct",
+    "calc_avg_cc",
+    "calc_complexity_health",
+    "calc_code_quality_score",
+    "calc_health_score",
 ]
 
 print("\n✅ SSOT Calculation Functions:")
@@ -122,31 +142,35 @@ for func_name in calculation_functions:
 # ============================================================================
 # AUDIT 3: Territory Name Consistency
 # ============================================================================
-print("\n" + "="*70)
+print("\n" + "=" * 70)
 print("AUDIT 3: Territory Name Consistency")
-print("="*70)
+print("=" * 70)
 
 # Load discovery data
-with open(discovery_file, encoding='utf-8') as f:
+with open(discovery_file, encoding="utf-8") as f:
     discovery_data = json.load(f)
 
 # Load dashboard data
-content = dashboard_data_file.read_text(encoding='utf-8')
-lines = [l for l in content.split('\n') if not l.strip().startswith('//')]
-content = '\n'.join(lines).replace('window.dashboardData = ', '').strip().rstrip(';')
+content = dashboard_data_file.read_text(encoding="utf-8")
+lines = [l for l in content.split("\n") if not l.strip().startswith("//")]
+content = "\n".join(lines).replace("window.dashboardData = ", "").strip().rstrip(";")
 dashboard_data = json.loads(content)
 
 # Check for "Base Class" in discovery data (should be "Base Agent")
-base_class_count = sum(1 for a in discovery_data if 'Base Class' in a.get('territory', ''))
+base_class_count = sum(1 for a in discovery_data if "Base Class" in a.get("territory", ""))
 if base_class_count > 0:
-    print(f"❌ SSOT VIOLATION: {base_class_count} agents with 'Base Class' in territory (should be 'Base Agent')")
+    print(
+        f"❌ SSOT VIOLATION: {base_class_count} agents with 'Base Class' in territory (should be 'Base Agent')"
+    )
 else:
     print("✅ No 'Base Class' territories in discovery data")
 
 # Check for "Base Class" in dashboard data
-dashboard_base_class = [r for r in dashboard_data if 'Base Class' in r.get('Territory', '')]
+dashboard_base_class = [r for r in dashboard_data if "Base Class" in r.get("Territory", "")]
 if dashboard_base_class:
-    print(f"❌ SSOT VIOLATION: {len(dashboard_base_class)} rows with 'Base Class' in dashboard data")
+    print(
+        f"❌ SSOT VIOLATION: {len(dashboard_base_class)} rows with 'Base Class' in dashboard data"
+    )
     for row in dashboard_base_class[:5]:
         print(f"  - {row['Territory']}")
 else:
@@ -154,17 +178,17 @@ else:
 
 # Verify canonical territory names
 canonical_territories = [
-    'Sovereign Base Agent',
-    'L6_Observability/Base Agent',
-    'L5 Safety/Base Agent',
-    'L4 State/Base Agent',
-    'L3 Orchestration/Base Agent',
-    'L2 Execution/Base Agent',
-    'L1 Cognition/Base Agent',
-    'L0 Maintenance/Base Agent'
+    "Sovereign Base Agent",
+    "L6_Observability/Base Agent",
+    "L5 Safety/Base Agent",
+    "L4 State/Base Agent",
+    "L3 Orchestration/Base Agent",
+    "L2 Execution/Base Agent",
+    "L1 Cognition/Base Agent",
+    "L0 Maintenance/Base Agent",
 ]
 
-dashboard_territories = [r['Territory'] for r in dashboard_data if r['Territory'] != 'TOTAL']
+dashboard_territories = [r["Territory"] for r in dashboard_data if r["Territory"] != "TOTAL"]
 missing_canonical = [t for t in canonical_territories if t not in dashboard_territories]
 
 if missing_canonical:
@@ -177,27 +201,27 @@ else:
 # ============================================================================
 # AUDIT 4: Calculation Consistency
 # ============================================================================
-print("\n" + "="*70)
+print("\n" + "=" * 70)
 print("AUDIT 4: Calculation Consistency")
-print("="*70)
+print("=" * 70)
 
 # Verify dashboard data uses SSOT calculations
 # Sample a few rows and recalculate to verify
-sample_rows = [r for r in dashboard_data if r['Territory'] != 'TOTAL'][:3]
+sample_rows = [r for r in dashboard_data if r["Territory"] != "TOTAL"][:3]
 
 calculation_mismatches = []
 for row in sample_rows:
-    territory = row['Territory']
+    territory = row["Territory"]
 
     # Find agents for this territory
-    territory_agents = [a for a in discovery_data if a.get('territory') == territory]
+    territory_agents = [a for a in discovery_data if a.get("territory") == territory]
 
     if not territory_agents:
         continue
 
     # Recalculate using SSOT functions
     heal_cap_expected = calc_heal_cap_pct(territory_agents)
-    heal_cap_actual = row.get('Heal Cap %', 0)
+    heal_cap_actual = row.get("Heal Cap %", 0)
 
     if abs(heal_cap_expected - heal_cap_actual) > 0.1:
         calculation_mismatches.append(
@@ -214,24 +238,34 @@ else:
 # ============================================================================
 # AUDIT 5: Sort Order Consistency
 # ============================================================================
-print("\n" + "="*70)
+print("\n" + "=" * 70)
 print("AUDIT 5: Sort Order Consistency")
-print("="*70)
+print("=" * 70)
 
 # Verify TOTAL is first
-if dashboard_data[0]['Territory'] != 'TOTAL':
+if dashboard_data[0]["Territory"] != "TOTAL":
     print(f"❌ SSOT VIOLATION: TOTAL row not first (found: {dashboard_data[0]['Territory']})")
 else:
     print("✅ TOTAL row is first")
 
 # Verify Base Agents come first for each layer
-layer_prefixes = ['L6_Observability', 'L5 Safety', 'L4 State', 'L3 Orchestration',
-                  'L2 Execution', 'L1 Cognition', 'L0 Maintenance']
+layer_prefixes = [
+    "L6_Observability",
+    "L5 Safety",
+    "L4 State",
+    "L3 Orchestration",
+    "L2 Execution",
+    "L1 Cognition",
+    "L0 Maintenance",
+]
 
 sort_violations = []
 for prefix in layer_prefixes:
-    layer_rows = [(i, r['Territory']) for i, r in enumerate(dashboard_data)
-                  if r['Territory'].startswith(prefix)]
+    layer_rows = [
+        (i, r["Territory"])
+        for i, r in enumerate(dashboard_data)
+        if r["Territory"].startswith(prefix)
+    ]
 
     if layer_rows:
         base_agent_name = f"{prefix}/Base Agent"
@@ -254,16 +288,16 @@ else:
 # ============================================================================
 # AUDIT 6: Data Flow Integrity
 # ============================================================================
-print("\n" + "="*70)
+print("\n" + "=" * 70)
 print("AUDIT 6: Data Flow Integrity")
-print("="*70)
+print("=" * 70)
 
 # Verify data flow: discovery → dashboard
 discovery_agent_count = len(discovery_data)
-dashboard_total_row = next((r for r in dashboard_data if r['Territory'] == 'TOTAL'), None)
+dashboard_total_row = next((r for r in dashboard_data if r["Territory"] == "TOTAL"), None)
 
 if dashboard_total_row:
-    dashboard_agent_count = dashboard_total_row.get('Total', 0)
+    dashboard_agent_count = dashboard_total_row.get("Total", 0)
 
     if discovery_agent_count == dashboard_agent_count:
         print(f"✅ Agent count matches: {discovery_agent_count} agents")
@@ -277,18 +311,18 @@ else:
 # ============================================================================
 # FINAL RESULT
 # ============================================================================
-print("\n" + "="*70)
+print("\n" + "=" * 70)
 print("SSOT AUDIT SUMMARY")
-print("="*70)
+print("=" * 70)
 
 all_checks_passed = (
-    all(files_exist.values()) and
-    base_class_count == 0 and
-    len(dashboard_base_class) == 0 and
-    len(missing_canonical) == 0 and
-    len(calculation_mismatches) == 0 and
-    len(sort_violations) == 0 and
-    dashboard_data[0]['Territory'] == 'TOTAL'
+    all(files_exist.values())
+    and base_class_count == 0
+    and len(dashboard_base_class) == 0
+    and len(missing_canonical) == 0
+    and len(calculation_mismatches) == 0
+    and len(sort_violations) == 0
+    and dashboard_data[0]["Territory"] == "TOTAL"
 )
 
 if all_checks_passed:

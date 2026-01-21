@@ -14,6 +14,7 @@ Usage:
     python run_dashboard_pipeline.py --watch      # Run with auto-reload
     python run_dashboard_pipeline.py --skip-tests # Skip tests (dev mode)
 """
+
 import argparse
 import importlib.util
 import subprocess
@@ -31,7 +32,13 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 class DashboardPipeline:
     """Orchestrates the complete dashboard generation and deployment pipeline."""
 
-    def __init__(self, project_root: Path, skip_tests: bool = False, watch: bool = False, keep_server: bool = False):
+    def __init__(
+        self,
+        project_root: Path,
+        skip_tests: bool = False,
+        watch: bool = False,
+        keep_server: bool = False,
+    ):
         self.project_root = project_root
         self.dashboard_dir = project_root / AGENTIC_CORE_DIR / "L6_observability" / "dashboards"
         self.skip_tests = skip_tests
@@ -63,7 +70,7 @@ class DashboardPipeline:
                 cwd=str(self.project_root),
                 capture_output=True,
                 text=True,
-                timeout=60
+                timeout=60,
             )
 
             print(result.stdout)
@@ -99,7 +106,7 @@ class DashboardPipeline:
                 cwd=str(self.project_root),
                 capture_output=True,
                 text=True,
-                timeout=120
+                timeout=120,
             )
 
             print(result.stdout)
@@ -137,7 +144,7 @@ class DashboardPipeline:
                 cwd=str(self.project_root),
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                text=True
+                text=True,
             )
 
             # Wait for server to start (check for output)
@@ -174,10 +181,7 @@ class DashboardPipeline:
 
         try:
             # Dynamic import to avoid hard dependency
-            spec = importlib.util.spec_from_file_location(
-                "verify_playwright",
-                str(verify_path)
-            )
+            spec = importlib.util.spec_from_file_location("verify_playwright", str(verify_path))
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
 
@@ -334,6 +338,7 @@ class DashboardPipeline:
         finally:
             self.cleanup()
 
+
 def main():
     """Main entry point."""
     parser = argparse.ArgumentParser(
@@ -344,25 +349,19 @@ Examples:
   python run_dashboard_pipeline.py              # Run full pipeline
   python run_dashboard_pipeline.py --watch      # Run with auto-reload
   python run_dashboard_pipeline.py --skip-tests # Skip tests (dev mode)
-        """
+        """,
     )
 
     parser.add_argument(
-        '--skip-tests',
-        action='store_true',
-        help='Skip test execution (development mode)'
+        "--skip-tests", action="store_true", help="Skip test execution (development mode)"
     )
 
-    parser.add_argument(
-        '--watch',
-        action='store_true',
-        help='Watch for changes and auto-reload'
-    )
+    parser.add_argument("--watch", action="store_true", help="Watch for changes and auto-reload")
 
     parser.add_argument(
-        '--keep-server',
-        action='store_true',
-        help='Keep server running after verification (blocks terminal)'
+        "--keep-server",
+        action="store_true",
+        help="Keep server running after verification (blocks terminal)",
     )
 
     args = parser.parse_args()
@@ -376,11 +375,12 @@ Examples:
         project_root=project_root,
         skip_tests=args.skip_tests,
         watch=args.watch,
-        keep_server=args.keep_server
+        keep_server=args.keep_server,
     )
 
     success = pipeline.run()
     sys.exit(0 if success else 1)
+
 
 if __name__ == "__main__":
     main()

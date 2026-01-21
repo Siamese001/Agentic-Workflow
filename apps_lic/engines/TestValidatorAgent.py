@@ -1,4 +1,5 @@
 """ValidatorAgent behavior tests."""
+
 from src.lic_agentic.agents.k7_validator_agent import ValidationResult, ValidatorAgent
 from src.lic_agentic.qa import QAResult
 
@@ -13,7 +14,9 @@ class StubQAValidator:
 
 def test_validator_passes_with_subject_and_artifact():
     draft = """Subject: Hello\n\nHello there,\nBody with [artifact_id:123] token\nCTA: Let me know if next week works.\nBest regards,\nLIC Outreach Bot"""
-    verdict = ValidatorAgent().check(draft, route_decision=None, pii_map={}, artifacts={"123": "token"})
+    verdict = ValidatorAgent().check(
+        draft, route_decision=None, pii_map={}, artifacts={"123": "token"}
+    )
     assert isinstance(verdict, ValidationResult)
     assert verdict.passed
     assert verdict.reasons == ()

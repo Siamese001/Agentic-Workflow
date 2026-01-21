@@ -11,12 +11,13 @@ Migration:
         validate_bare_except,
     )
 """
+
 import warnings
 
 warnings.warn(
     "BareExceptValidatorAgent is deprecated. Use UnifiedASTValidatorAgent instead.",
     DeprecationWarning,
-    stacklevel=2
+    stacklevel=2,
 )
 
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
@@ -43,7 +44,7 @@ from typing import Any
 from agentic_core.runtime.shared_runtime.ast_validator import CanonASTValidator
 
 # GRAVITY FIXED (Upward Leak): from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-_mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_mixin')
+_mod = importlib.import_module("agentic_core.L5_safety.guardrails.mcp_hardened_mixin")
 MCPHardenedMixin = _mod.MCPHardenedMixin
 from agentic_core.L5_safety.validators.decorators import standard_heal
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
@@ -59,10 +60,10 @@ class BareExceptValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValid
     def visit_ExceptHandler(self, node: ast.ExceptHandler) -> Any:
         """Check for bare except statements."""
         if node.type is None and (not self.in_type_checking):
-            self.report('Bare except: statement detected (should specify exception type)', node)
+            self.report("Bare except: statement detected (should specify exception type)", node)
         self.generic_visit(node)
 
     @standard_heal
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()

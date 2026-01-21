@@ -24,11 +24,13 @@ class ConfigurationSecurityGuardrail(HealerMixin):
     """
 
     debug_mode: bool = False
-    enabled_rules: list[str] = field(default_factory=lambda: [
-        "secret_detection",
-        "config_validation",
-        "policy_enforcement",
-    ])
+    enabled_rules: list[str] = field(
+        default_factory=lambda: [
+            "secret_detection",
+            "config_validation",
+            "policy_enforcement",
+        ]
+    )
 
     def __post_init__(self):
         self.name = "ConfigurationSecurityGuardrail"
@@ -92,11 +94,13 @@ class ConfigurationSecurityGuardrail(HealerMixin):
         config_str = str(config).lower()
         for pattern, secret_type in secret_patterns.items():
             if re.search(pattern, config_str, re.IGNORECASE):
-                violations.append({
-                    "type": f"exposed_{secret_type}",
-                    "severity": "critical",
-                    "message": f"Potential {secret_type} exposed in configuration",
-                })
+                violations.append(
+                    {
+                        "type": f"exposed_{secret_type}",
+                        "severity": "critical",
+                        "message": f"Potential {secret_type} exposed in configuration",
+                    }
+                )
 
         return {
             "valid": len(violations) == 0,
@@ -108,20 +112,24 @@ class ConfigurationSecurityGuardrail(HealerMixin):
         violations = []
 
         if not isinstance(config, dict):
-            violations.append({
-                "type": "invalid_structure",
-                "severity": "high",
-                "message": "Configuration must be a dictionary",
-            })
+            violations.append(
+                {
+                    "type": "invalid_structure",
+                    "severity": "high",
+                    "message": "Configuration must be a dictionary",
+                }
+            )
 
         required_fields = ["version", "environment"]
         for field in required_fields:
             if field not in config:
-                violations.append({
-                    "type": "missing_field",
-                    "severity": "medium",
-                    "message": f"Missing required field: {field}",
-                })
+                violations.append(
+                    {
+                        "type": "missing_field",
+                        "severity": "medium",
+                        "message": f"Missing required field: {field}",
+                    }
+                )
 
         return {
             "valid": len(violations) == 0,
@@ -134,19 +142,23 @@ class ConfigurationSecurityGuardrail(HealerMixin):
 
         # Check for debug mode in production
         if config.get("environment") == "production" and config.get("debug_mode"):
-            violations.append({
-                "type": "debug_in_production",
-                "severity": "critical",
-                "message": "Debug mode enabled in production environment",
-            })
+            violations.append(
+                {
+                    "type": "debug_in_production",
+                    "severity": "critical",
+                    "message": "Debug mode enabled in production environment",
+                }
+            )
 
         # Check for insecure protocols
         if config.get("protocol") == "http" and config.get("environment") == "production":
-            violations.append({
-                "type": "insecure_protocol",
-                "severity": "high",
-                "message": "HTTP protocol used in production (should be HTTPS)",
-            })
+            violations.append(
+                {
+                    "type": "insecure_protocol",
+                    "severity": "high",
+                    "message": "HTTP protocol used in production (should be HTTPS)",
+                }
+            )
 
         return {
             "valid": len(violations) == 0,

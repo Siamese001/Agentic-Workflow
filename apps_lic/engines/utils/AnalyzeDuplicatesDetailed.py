@@ -18,7 +18,6 @@ project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 
-
 async def analyze_functional_differences(duplicate_sets: dict[str, list[Path]]) -> list[dict]:
     """
     Analyze duplicate sets to determine if files with same name have different functions.
@@ -49,7 +48,7 @@ async def analyze_functional_differences(duplicate_sets: dict[str, list[Path]]) 
             contents = []
             for fpath in file_paths:
                 try:
-                    with open(fpath, encoding='utf-8') as f:
+                    with open(fpath, encoding="utf-8") as f:
                         content = f.read()
                         contents.append(content)
                 except Exception as e:
@@ -62,13 +61,13 @@ async def analyze_functional_differences(duplicate_sets: dict[str, list[Path]]) 
             file_size = file_paths[0].stat().st_size if file_paths[0].exists() else 0
 
             result = {
-                'filename': filename,
-                'paths': [str(p) for p in file_paths],
-                'count': len(file_paths),
-                'size': file_size,
-                'identical': all_identical,
-                'hash': hash_key[:8],
-                'action': 'DELETE_DUPLICATES' if all_identical else 'REVIEW_RENAME'
+                "filename": filename,
+                "paths": [str(p) for p in file_paths],
+                "count": len(file_paths),
+                "size": file_size,
+                "identical": all_identical,
+                "hash": hash_key[:8],
+                "action": "DELETE_DUPLICATES" if all_identical else "REVIEW_RENAME",
             }
             results.append(result)
 
@@ -100,7 +99,7 @@ async def main():
     analysis_results = await analyze_functional_differences(duplicates)
 
     # Filter to only show files with same filename (potential rename candidates)
-    same_filename_results = [r for r in analysis_results if r['count'] >= 2]
+    same_filename_results = [r for r in analysis_results if r["count"] >= 2]
 
     print(f"   Found {len(same_filename_results)} duplicate filename groups")
     print()
@@ -119,11 +118,11 @@ async def main():
         return
 
     # Sort by action (REVIEW_RENAME first, then DELETE_DUPLICATES)
-    same_filename_results.sort(key=lambda x: (x['action'], x['filename']))
+    same_filename_results.sort(key=lambda x: (x["action"], x["filename"]))
 
     # Print summary
-    review_count = sum(1 for r in same_filename_results if r['action'] == 'REVIEW_RENAME')
-    delete_count = sum(1 for r in same_filename_results if r['action'] == 'DELETE_DUPLICATES')
+    review_count = sum(1 for r in same_filename_results if r["action"] == "REVIEW_RENAME")
+    delete_count = sum(1 for r in same_filename_results if r["action"] == "DELETE_DUPLICATES")
 
     print("SUMMARY:")
     print(f"  - Files requiring REVIEW/RENAME: {review_count}")
@@ -134,7 +133,7 @@ async def main():
 
     # Print detailed table
     for idx, result in enumerate(same_filename_results, 1):
-        action_color = "REVIEW" if result['action'] == 'REVIEW_RENAME' else "DELETE"
+        action_color = "REVIEW" if result["action"] == "REVIEW_RENAME" else "DELETE"
 
         print(f"[{idx}] {result['filename']}")
         print(f"    Action: {result['action']}")
@@ -144,13 +143,13 @@ async def main():
         print(f"    Hash: {result['hash']}")
         print()
         print("    Locations:")
-        for path in result['paths']:
+        for path in result["paths"]:
             # Determine if canonical or stale
-            if 'config/blueprint_sovereign' in path or 'config/validators' in path:
+            if "config/blueprint_sovereign" in path or "config/validators" in path:
                 status = "[STALE - Blueprint]"
-            elif 'observability/dashboard' in path:
+            elif "observability/dashboard" in path:
                 status = "[STALE - Old Location]"
-            elif 'L5_safety/validators' in path or 'L2_execution/ToolRegistry' in path:
+            elif "L5_safety/validators" in path or "L2_execution/ToolRegistry" in path:
                 status = "[CANONICAL]"
             else:
                 status = "[REVIEW]"
@@ -159,7 +158,7 @@ async def main():
 
         print()
 
-        if not result['identical']:
+        if not result["identical"]:
             print("    RECOMMENDATION:")
             print("      These files have DIFFERENT content despite same filename.")
             print("      Options:")

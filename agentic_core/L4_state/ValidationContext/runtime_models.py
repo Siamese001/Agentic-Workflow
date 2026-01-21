@@ -21,17 +21,20 @@ Logger = logging.getLogger(__name__)
 # SubatomicHop Models
 # ============================================================================
 
+
 class MicroStage(Enum):
     """The 5 atomic micro-stages of a Subatomic Hop."""
-    PRE_CHECK = "PRE_CHECK"     # Validate inputs and context
-    THINK = "THINK"             # Plan the execution (CoT)
-    ACT = "ACT"                 # Execute the tool/LLM call
-    CRITIQUE = "CRITIQUE"       # Review and validate output
-    COMMIT = "COMMIT"           # Write to state/memory
+
+    PRE_CHECK = "PRE_CHECK"  # Validate inputs and context
+    THINK = "THINK"  # Plan the execution (CoT)
+    ACT = "ACT"  # Execute the tool/LLM call
+    CRITIQUE = "CRITIQUE"  # Review and validate output
+    COMMIT = "COMMIT"  # Write to state/memory
 
 
 class HopState(Enum):
     """Overall state of a Subatomic Hop."""
+
     PENDING = "PENDING"
     RUNNING = "RUNNING"
     PAUSED = "PAUSED"
@@ -42,6 +45,7 @@ class HopState(Enum):
 
 class RetryPolicy(BaseModel):
     """Retry policy for micro-stages."""
+
     max_retries: int = Field(default=3, ge=0, le=10)
     retry_delay: float = Field(default=1.0, ge=0.0)
     exponential_backoff: bool = Field(default=True)
@@ -52,6 +56,7 @@ class RetryPolicy(BaseModel):
 
 class MicroCheckpoint(BaseModel):
     """Checkpoint data for a micro-stage."""
+
     hop_id: str
     stage: MicroStage
     timestamp: float
@@ -62,6 +67,7 @@ class MicroCheckpoint(BaseModel):
 
 class StageTransition(BaseModel):
     """Record of a stage transition."""
+
     from_stage: MicroStage | None = None
     to_stage: MicroStage
     timestamp: float
@@ -72,8 +78,10 @@ class StageTransition(BaseModel):
 # Prompt Injection Models
 # ============================================================================
 
+
 class InjectionType(Enum):
     """Types of prompt injections."""
+
     # Original built-in types
     TONE_ENHANCEMENT = "tone_enhancement"
     ROLE_SPECIFICATION = "role_specification"
@@ -129,6 +137,7 @@ class InjectionType(Enum):
 
 class InjectionScope(BaseModel):
     """Scope where injection should be applied."""
+
     hop_types: list[str] = Field(default_factory=list)
     stages: list[str] = Field(default_factory=list)
     contexts: dict[str, Any] = Field(default_factory=dict)
@@ -136,6 +145,7 @@ class InjectionScope(BaseModel):
 
 class InjectionPattern(BaseModel):
     """A single prompt injection pattern."""
+
     id: str
     name: str
     type: InjectionType
@@ -152,6 +162,7 @@ class InjectionPattern(BaseModel):
 
 class InjectionMatch(BaseModel):
     """Result of matching injections to context."""
+
     injection: InjectionPattern
     relevance_score: float = Field(ge=0.0, le=1.0)
     variable_values: dict[str, Any] = Field(default_factory=dict)
@@ -159,6 +170,7 @@ class InjectionMatch(BaseModel):
 
 class InjectionConfig(BaseModel):
     """Configuration for injection loader."""
+
     injection_dir: Path = Field(default=Path("./injections"))
     max_injections_per_hop: int = Field(default=5, ge=1, le=10)
     relevance_threshold: float = Field(default=0.5, ge=0.0, le=1.0)
@@ -170,8 +182,10 @@ class InjectionConfig(BaseModel):
 # Additional Shared Types
 # ============================================================================
 
+
 class ValidationResult(BaseModel):
     """Result of a validation operation."""
+
     is_valid: bool
     confidence: float = Field(ge=0.0, le=1.0)
     errors: list[str] = Field(default_factory=list)
@@ -181,6 +195,7 @@ class ValidationResult(BaseModel):
 
 class ExecutionResult(BaseModel):
     """Result of an execution operation."""
+
     success: bool
     output: Any | None = None
     error: str | None = None

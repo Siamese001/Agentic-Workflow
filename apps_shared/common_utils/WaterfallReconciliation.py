@@ -3,6 +3,7 @@
 waterfall_reconciliation.py - Three-way comparison of agent snapshots
 Compares 272 agents (Jan 13) -> 209 agents (Jan 4) -> 120 agents (current)
 """
+
 import json
 import subprocess
 import sys
@@ -16,18 +17,19 @@ def get_agents_at_commit(commit_hash):
         ["git", "show", f"{commit_hash}:agent_discovery_full.json"],
         capture_output=True,
         text=True,
-        cwd="C:/Git/Agentic-Workflow"
+        cwd="C:/Git/Agentic-Workflow",
     )
     if result.returncode == 0:
         data = json.loads(result.stdout)
         agents = {}
         for a in data:
-            agents[a['class_name']] = {
-                'path': a.get('path', ''),
-                'layer': a.get('layer', 'Unknown'),
+            agents[a["class_name"]] = {
+                "path": a.get("path", ""),
+                "layer": a.get("layer", "Unknown"),
             }
         return agents
     return {}
+
 
 def get_current_agents():
     """Get current agent dict."""
@@ -35,11 +37,12 @@ def get_current_agents():
         data = json.load(f)
     agents = {}
     for a in data:
-        agents[a['class_name']] = {
-            'path': a.get('path', ''),
-            'layer': a.get('layer', 'Unknown'),
+        agents[a["class_name"]] = {
+            "path": a.get("path", ""),
+            "layer": a.get("layer", "Unknown"),
         }
     return agents
+
 
 def find_agent_in_archives(agent_name):
     """Search for agent in archives directory."""
@@ -51,6 +54,7 @@ def find_agent_in_archives(agent_name):
             folder = str(rel).split("\\")[0].split("/")[0]
             results.append(folder)
     return results[0] if results else None
+
 
 def main():
     # Three snapshots
@@ -104,7 +108,7 @@ def main():
     if added_jan4_to_jan13:
         print("\n  Agents ADDED (Jan 4 → Jan 13):")
         for agent in sorted(added_jan4_to_jan13)[:20]:
-            layer = agents_272.get(agent, {}).get('layer', '?')
+            layer = agents_272.get(agent, {}).get("layer", "?")
             print(f"    + {agent} ({layer})")
         if len(added_jan4_to_jan13) > 20:
             print(f"    ... and {len(added_jan4_to_jan13) - 20} more")
@@ -154,7 +158,7 @@ def main():
 
     print("\n  Agents ADDED (Jan 13 → Current):")
     for agent in sorted(added_since_272)[:15]:
-        layer = agents_120.get(agent, {}).get('layer', '?')
+        layer = agents_120.get(agent, {}).get("layer", "?")
         print(f"    + {agent} ({layer})")
     if len(added_since_272) > 15:
         print(f"    ... and {len(added_since_272) - 15} more")
@@ -202,13 +206,13 @@ Phase 1: 209 → 272 (+63 agents, Jan 4-13)
   - Some previously excluded agents included
 
 Phase 2: 272 → 120 (-152 agents, Jan 13-19)
-  - hierarchy_violations: {len(archive_categories.get('hierarchy_violations', []))} agents (wrong layer)
-  - identity_duplicates:  {len(archive_categories.get('identity_duplicates', []))} agents (duplicates merged)
-  - backups:              {len(archive_categories.get('backups', []))} agents (temp copies)
-  - void_violations:      {len(archive_categories.get('void_violations', []))} agents (dead code)
-  - deprecated_agents:    {len(archive_categories.get('deprecated_agents', []))} agents (obsolete)
-  - consolidated_agents:  {len(archive_categories.get('consolidated_agents', []))} agents (Phase 1-5 consolidation)
-  - location_violations:  {len(archive_categories.get('location_violations', []))} agents (wrong directory)
+  - hierarchy_violations: {len(archive_categories.get("hierarchy_violations", []))} agents (wrong layer)
+  - identity_duplicates:  {len(archive_categories.get("identity_duplicates", []))} agents (duplicates merged)
+  - backups:              {len(archive_categories.get("backups", []))} agents (temp copies)
+  - void_violations:      {len(archive_categories.get("void_violations", []))} agents (dead code)
+  - deprecated_agents:    {len(archive_categories.get("deprecated_agents", []))} agents (obsolete)
+  - consolidated_agents:  {len(archive_categories.get("consolidated_agents", []))} agents (Phase 1-5 consolidation)
+  - location_violations:  {len(archive_categories.get("location_violations", []))} agents (wrong directory)
   - Not in archives:      {len(not_in_archives)} agents (mocks, tests, renamed)
 
   Total archived: {total_archived}
@@ -222,6 +226,7 @@ NET RESULT: Healthy consolidation from 272 → 120 agents
 """)
 
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

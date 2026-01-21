@@ -12,6 +12,7 @@ Usage:
     python scripts/restore_app_agents.py --dry-run
     python scripts/restore_app_agents.py
 """
+
 from __future__ import annotations
 
 import argparse
@@ -33,19 +34,19 @@ def extract_original_path(file_path: Path) -> str:
     # apps_lic\\domain\validators\\ASCIIEnforcerAgent.py was depth 4, MUST be 3.
     """
     try:
-        with open(file_path, encoding='utf-8') as f:
+        with open(file_path, encoding="utf-8") as f:
             content = f.read(500)  # Read first 500 chars
 
         # Look for the path pattern
-        match = re.search(r'# (apps_(?:lic|rg)[^\s]+\.py) was depth', content)
+        match = re.search(r"# (apps_(?:lic|rg)[^\s]+\.py) was depth", content)
         if match:
-            return match.group(1).replace('\\', '/')
+            return match.group(1).replace("\\", "/")
     except Exception:
         pass
 
     # Fallback: reconstruct from archive path
     rel_path = file_path.relative_to(ARCHIVE_DIR)
-    return str(rel_path).replace('\\', '/')
+    return str(rel_path).replace("\\", "/")
 
 
 def get_agents_to_restore() -> list[tuple[Path, Path]]:
@@ -72,29 +73,31 @@ def get_agents_to_restore() -> list[tuple[Path, Path]]:
 
 def remove_violation_header(file_path: Path) -> None:
     """Remove the APPS DEPTH VIOLATION header from the file."""
-    with open(file_path, encoding='utf-8') as f:
+    with open(file_path, encoding="utf-8") as f:
         content = f.read()
 
     # Remove the violation header (first 2-3 lines if they contain APPS DEPTH VIOLATION)
-    lines = content.split('\n')
+    lines = content.split("\n")
     clean_lines = []
     skip_header = True
 
     for line in lines:
-        if skip_header and ('APPS DEPTH VIOLATION' in line or 'was depth' in line):
+        if skip_header and ("APPS DEPTH VIOLATION" in line or "was depth" in line):
             continue
-        if skip_header and line.strip() == '':
+        if skip_header and line.strip() == "":
             continue
         skip_header = False
         clean_lines.append(line)
 
-    with open(file_path, 'w', encoding='utf-8') as f:
-        f.write('\n'.join(clean_lines))
+    with open(file_path, "w", encoding="utf-8") as f:
+        f.write("\n".join(clean_lines))
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Restore incorrectly archived app agents')
-    parser.add_argument('--dry-run', action='store_true', help='Show what would be done without moving files')
+    parser = argparse.ArgumentParser(description="Restore incorrectly archived app agents")
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Show what would be done without moving files"
+    )
     args = parser.parse_args()
 
     print("=" * 70)

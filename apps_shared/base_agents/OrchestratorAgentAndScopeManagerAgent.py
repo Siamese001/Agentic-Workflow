@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: memory
@@ -11,9 +10,9 @@ import importlib  # AUTO-INJECTED BY GRAVITY HEALER
 
 from agentic_core.utils.core_extensions.SovereignBaseAgent import SovereignBaseAgent
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
-'Brief description of functionality and purpose.'
+"Brief description of functionality and purpose."
 import asyncio
 import json
 import logging
@@ -42,7 +41,7 @@ from agentic_core.L2_execution.tool_registry import (
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 # GRAVITY FIXED (Upward Leak): from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
-_mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_mixin')
+_mod = importlib.import_module("agentic_core.L5_safety.guardrails.mcp_hardened_mixin")
 MCPHardenedMixin = _mod.MCPHardenedMixin
 
 try:
@@ -56,6 +55,7 @@ try:
         vertex_ai_client,
     )
     from google.cloud.aiplatform.gapic.schema import trainingjob
+
     GENAI_AVAILABLE: Any = True
 except ImportError:
     GENAI_AVAILABLE: Any = False
@@ -64,24 +64,31 @@ except ImportError:
 Logger: Any = logging.getLogger(__name__)
 _orchestrator_instance: ConsolidatedOrchestratorAgent | None = None
 
+
 def _signal_handler(signum, frame):
     """Handle CTRL+C and graceful shutdown."""
-    Logger.info('\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\n🛑 Shutdown signal received. Releasing all leases...')
+    Logger.info(
+        "\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\n🛑 Shutdown signal received. Releasing all leases..."
+    )
     if _orchestrator_instance:
         _orchestrator_instance.release_all_leases()
     sys.exit(0)
+
+
 signal.signal(signal.SIGINT, _signal_handler)
 signal.signal(signal.SIGTERM, _signal_handler)
+
 
 @dataclass
 class OrchestratorConfig:
     """Configuration for the consolidated orchestrator."""
+
     max_cycles: int = 5
     quality_threshold: float = 0.75
     enable_intervention: bool = True
     enable_checkpointing: bool = True
-    checkpoint_dir: str = './checkpoints'
-    gemini_model: str = 'gemini-2.5-flash'
+    checkpoint_dir: str = "./checkpoints"
+    gemini_model: str = "gemini-2.5-flash"
     temperature: float = 0.2
     thinking_budget: int = 16000
     enable_healing: bool = True
@@ -94,9 +101,11 @@ class OrchestratorConfig:
     smart_scope: bool = False
     smart_scope_depth: int = 2
 
+
 @dataclass
 class OrchestratorState:
     """State tracking for orchestrator execution."""
+
     workflow_id: str
     current_cycle: int = 0
     signals: set[str] = field(default_factory=set)
@@ -106,7 +115,8 @@ class OrchestratorState:
     checkpoints: list[dict[str, Any]] = field(default_factory=list)
     start_time: datetime | None = None
     end_time: datetime | None = None
-    status: str = 'INITIALIZED'
+    status: str = "INITIALIZED"
+
 
 class OrchestratorHealingService:
     """
@@ -114,7 +124,14 @@ class OrchestratorHealingService:
     Handles LLM interaction, fix validation, and file writing.
     """
 
-    def __init__(self, config: OrchestratorConfig, ctx: ValidationContext, client: Any, state: OrchestratorState, Logger: logging.Logger) -> None:
+    def __init__(
+        self,
+        config: OrchestratorConfig,
+        ctx: ValidationContext,
+        client: Any,
+        state: OrchestratorState,
+        Logger: logging.Logger,
+    ) -> None:
         """Initialize the instance."""
         self.config = config
         self.ctx = ctx
@@ -137,28 +154,41 @@ class OrchestratorHealingService:
         if not self.config.enable_healing:
             return False
         if not self._can_attempt_healing(file_path):
-            self.Logger.warning(f'Healing budget exhausted for {file_path}')
+            self.Logger.warning(f"Healing budget exhausted for {file_path}")
             return False
         if not self.client:
-            self.Logger.error('Gemini client not available for healing')
+            self.Logger.error("Gemini client not available for healing")
             return False
         try:
-            with open(file_path, encoding='utf-8') as f:
+            with open(file_path, encoding="utf-8") as f:
                 original_code: Any = f.read()
-            config: Any = types.GenerateContentConfig(temperature=self.config.temperature, thinking_config=types.ThinkingConfig(thinking_budget=self.config.thinking_budget), tools=[])
-            response: Any = await asyncio.to_thread(self.client.models.generate_content, model=self.config.gemini_model, contents=f'{fix_prompt}\n\n{original_code}', config=config)
+            config: Any = types.GenerateContentConfig(
+                temperature=self.config.temperature,
+                thinking_config=types.ThinkingConfig(thinking_budget=self.config.thinking_budget),
+                tools=[],
+            )
+            response: Any = await asyncio.to_thread(
+                self.client.models.generate_content,
+                model=self.config.gemini_model,
+                contents=f"{fix_prompt}\n\n{original_code}",
+                config=config,
+            )
             fixed_code: Any = response.text.strip() if response.text else original_code
             if self._validate_fix(original_code, fixed_code):
-                write_file(WriteFileArgs(path=file_path, content=fixed_code), blackboard=getattr(self.ctx, 'blackboard', None), agent_id='ConsolidatedOrchestratorAgent')
+                write_file(
+                    WriteFileArgs(path=file_path, content=fixed_code),
+                    blackboard=getattr(self.ctx, "blackboard", None),
+                    agent_id="ConsolidatedOrchestratorAgent",
+                )
                 self._record_healing_attempt(file_path, success=True)
-                self.Logger.info(f'[OK] Healed {file_path} for Violation {violation_key}')
+                self.Logger.info(f"[OK] Healed {file_path} for Violation {violation_key}")
                 return True
             else:
                 self._record_healing_attempt(file_path, success=False)
-                self.Logger.warning(f'[X] Healing validation failed for {file_path}')
+                self.Logger.warning(f"[X] Healing validation failed for {file_path}")
                 return False
         except Exception as e:
-            self.Logger.error(f'Healing failed for {file_path}: {e}')
+            self.Logger.error(f"Healing failed for {file_path}: {e}")
             self._record_healing_attempt(file_path, success=False)
             return False
 
@@ -178,9 +208,13 @@ class OrchestratorHealingService:
         self.state.healing_budget_used += 1
         if success:
             self.state.modified_files.add(file_path)
-        status = '[OK] SUCCESS' if success else '[X] FAILED'
-        self.Logger.info(f'   Healing attempt {self.state.healing_attempts[file_path]} for {file_path}: {status}')
-        self.Logger.info(f'   Healing budget: {self.state.healing_budget_used}/{self.config.global_healing_budget}')
+        status = "[OK] SUCCESS" if success else "[X] FAILED"
+        self.Logger.info(
+            f"   Healing attempt {self.state.healing_attempts[file_path]} for {file_path}: {status}"
+        )
+        self.Logger.info(
+            f"   Healing budget: {self.state.healing_budget_used}/{self.config.global_healing_budget}"
+        )
 
     def _validate_fix(self, original: str, fixed: str) -> bool:
         """Validate that a fix is acceptable."""
@@ -192,12 +226,13 @@ class OrchestratorHealingService:
         fixed_lines = len(fixed.splitlines())
         max_deletion = int(original_lines * 0.1)
         if original_lines - fixed_lines > max_deletion:
-            self.Logger.warning(f'Fix deleted too many lines: {original_lines} -> {fixed_lines}')
+            self.Logger.warning(f"Fix deleted too many lines: {original_lines} -> {fixed_lines}")
             return False
         if fixed_lines > original_lines * 4:
-            self.Logger.warning(f'Fix added too many lines: {original_lines} -> {fixed_lines}')
+            self.Logger.warning(f"Fix added too many lines: {original_lines} -> {fixed_lines}")
             return False
         return True
+
 
 class OrchestratorStateManager:
     """
@@ -205,7 +240,13 @@ class OrchestratorStateManager:
     and result building.
     """
 
-    def __init__(self, config: OrchestratorConfig, ctx: ValidationContext, state: OrchestratorState, Logger: logging.Logger) -> None:
+    def __init__(
+        self,
+        config: OrchestratorConfig,
+        ctx: ValidationContext,
+        state: OrchestratorState,
+        Logger: logging.Logger,
+    ) -> None:
         """Initialize the instance."""
         self.config = config
         self.ctx = ctx
@@ -214,36 +255,46 @@ class OrchestratorStateManager:
 
     def should_run_agent(self, agent: Any) -> bool:
         """Determine if an agent should run based on signals."""
-        if 'CRITICAL_FAIL' in self.state.signals:
+        if "CRITICAL_FAIL" in self.state.signals:
             return False
-        if hasattr(agent, 'can_run'):
+        if hasattr(agent, "can_run"):
             return agent.can_run()
         return True
 
     def should_terminate(self) -> bool:
         """Determine if workflow should terminate early."""
-        if 'CONVERGENCE' in self.state.signals:
+        if "CONVERGENCE" in self.state.signals:
             return True
-        if 'CRITICAL_FAIL' in self.state.signals:
+        if "CRITICAL_FAIL" in self.state.signals:
             return True
         return False
 
     async def checkpoint_state(self, agent_name: str) -> Any:
         """Create a Checkpoint of current state."""
-        Checkpoint: Any = {'timestamp': datetime.now().isoformat(), 'cycle': self.state.current_cycle, 'agent': agent_name, 'signals': list(self.state.signals), 'modified_files': list(self.state.modified_files), 'healing_budget_used': self.state.healing_budget_used}
+        Checkpoint: Any = {
+            "timestamp": datetime.now().isoformat(),
+            "cycle": self.state.current_cycle,
+            "agent": agent_name,
+            "signals": list(self.state.signals),
+            "modified_files": list(self.state.modified_files),
+            "healing_budget_used": self.state.healing_budget_used,
+        }
         self.state.checkpoints.append(Checkpoint)
         if self.config.checkpoint_dir:
             os.makedirs(self.config.checkpoint_dir, exist_ok=True)
-            checkpoint_file: Any = os.path.join(self.config.checkpoint_dir, f'{self.state.workflow_id}_cycle{self.state.current_cycle}_{agent_name}.json')
+            checkpoint_file: Any = os.path.join(
+                self.config.checkpoint_dir,
+                f"{self.state.workflow_id}_cycle{self.state.current_cycle}_{agent_name}.json",
+            )
             try:
-                with open(checkpoint_file, 'w') as f:
+                with open(checkpoint_file, "w") as f:
                     json.dump(Checkpoint, f, indent=2)
             except Exception as e:
-                self.Logger.warning(f'Failed to write Checkpoint: {e}')
+                self.Logger.warning(f"Failed to write Checkpoint: {e}")
 
     async def handle_intervention(self) -> bool:
         """Handle human-in-the-loop intervention."""
-        self.Logger.info('⏸️  Waiting for human approval...')
+        self.Logger.info("⏸️  Waiting for human approval...")
         if not self.config.enable_intervention:
             return True
         return True
@@ -253,7 +304,20 @@ class OrchestratorStateManager:
         duration: Any = None
         if self.state.start_time and self.state.end_time:
             duration: Any = (self.state.end_time - self.state.start_time).total_seconds()
-        return {'workflow_id': self.state.workflow_id, 'status': self.state.status, 'cycles_executed': self.state.current_cycle, 'signals': list(self.state.signals), 'modified_files': list(self.state.modified_files), 'healing_attempts': self.state.healing_attempts, 'healing_budget_used': self.state.healing_budget_used, 'checkpoints_created': len(self.state.checkpoints), 'duration_seconds': duration, 'start_time': self.state.start_time.isoformat() if self.state.start_time else None, 'end_time': self.state.end_time.isoformat() if self.state.end_time else None}
+        return {
+            "workflow_id": self.state.workflow_id,
+            "status": self.state.status,
+            "cycles_executed": self.state.current_cycle,
+            "signals": list(self.state.signals),
+            "modified_files": list(self.state.modified_files),
+            "healing_attempts": self.state.healing_attempts,
+            "healing_budget_used": self.state.healing_budget_used,
+            "checkpoints_created": len(self.state.checkpoints),
+            "duration_seconds": duration,
+            "start_time": self.state.start_time.isoformat() if self.state.start_time else None,
+            "end_time": self.state.end_time.isoformat() if self.state.end_time else None,
+        }
+
 
 class OrchestratorAgentAndScopeManagerAgent(SovereignBaseAgent):
     """
@@ -261,7 +325,9 @@ class OrchestratorAgentAndScopeManagerAgent(SovereignBaseAgent):
     the smart scope for targeted execution.
     """
 
-    def __init__(self, config: OrchestratorConfig, ctx: ValidationContext, Logger: logging.Logger) -> None:
+    def __init__(
+        self, config: OrchestratorConfig, ctx: ValidationContext, Logger: logging.Logger
+    ) -> None:
         """Initialize the instance."""
         self.config = config
         self.ctx = ctx
@@ -283,10 +349,10 @@ class OrchestratorAgentAndScopeManagerAgent(SovereignBaseAgent):
         agents.append(SafetyInspectorAgent(self.ctx))
         agents.append(SecurityEnforcer(self.ctx))
         agents.append(PerformanceEnforcer(self.ctx))
-        self.Logger.info(f'   🤖 Agent Swarm Created: {len(agents)} agents')
+        self.Logger.info(f"   🤖 Agent Swarm Created: {len(agents)} agents")
         return agents
 
-    async def calculate_smart_scope(self, target_path: str | None=None) -> list[str]:
+    async def calculate_smart_scope(self, target_path: str | None = None) -> list[str]:
         """
         Calculate smart scope using Dependency Diplomat.
 
@@ -304,26 +370,37 @@ class OrchestratorAgentAndScopeManagerAgent(SovereignBaseAgent):
             modified_files: Any = [target_path]
         else:
             try:
-                result: Any = subprocess.run(['git', 'diff', '--name-only', 'HEAD'], capture_output=True, text=True, timeout=10)
-                modified_files: Any = [f for f in result.stdout.strip().split('\n') if f and f.endswith('.py')]
+                result: Any = subprocess.run(
+                    ["git", "diff", "--name-only", "HEAD"],
+                    capture_output=True,
+                    text=True,
+                    timeout=10,
+                )
+                modified_files: Any = [
+                    f for f in result.stdout.strip().split("\n") if f and f.endswith(".py")
+                ]
                 if not modified_files:
-                    self.Logger.warning('   No modified Python files found in git diff')
+                    self.Logger.warning("   No modified Python files found in git diff")
                     modified_files: Any = []
             except Exception as e:
-                self.Logger.warning(f'   Could not get git diff: {e}')
+                self.Logger.warning(f"   Could not get git diff: {e}")
                 modified_files: Any = []
         if not modified_files:
-            self.Logger.info('   No modified files detected, using full repository scope')
+            self.Logger.info("   No modified files detected, using full repository scope")
             return []
-        impact_scope: Any = diplomat.calculate_impact_scope(modified_files, max_depth=self.config.smart_scope_depth)
+        impact_scope: Any = diplomat.calculate_impact_scope(
+            modified_files, max_depth=self.config.smart_scope_depth
+        )
         return impact_scope
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()
 
 
-def create_orchestrator(config: OrchestratorConfig | None=None, context: ValidationContext | None=None) -> ConsolidatedOrchestratorAgent:
+def create_orchestrator(
+    config: OrchestratorConfig | None = None, context: ValidationContext | None = None
+) -> ConsolidatedOrchestratorAgent:
     """
     Factory function to create a consolidated orchestrator.
 
@@ -335,6 +412,7 @@ def create_orchestrator(config: OrchestratorConfig | None=None, context: Validat
         ConsolidatedOrchestratorAgent instance
     """
     return ConsolidatedOrchestratorAgent(config=config, context=context)
+
 
 async def main() -> Any:
     """
@@ -348,35 +426,75 @@ async def main() -> Any:
     - --max-cycles: Maximum convergence cycles
     """
     import argparse
-    parser: Any = argparse.ArgumentParser(description='[START] Phase 5: Consolidated Orchestrator - Command & Control Center', formatter_class=argparse.RawDescriptionHelpFormatter, epilog='\nExamples:\n  # Full repository scan with healing\n  python orchestrator_main.py --heal\n  \n  # Clean slate and target specific directory\n  python orchestrator_main.py --clean-slate --target apps_rg/\n  \n  # Override preservation for SystemArchitect\n  python orchestrator_main.py --override-preservation --target agentic_core/\n        ')
-    parser.add_argument('--workflow-id', default=None, help='Workflow ID (auto-generated if not provided)')
-    parser.add_argument('--max-cycles', type=int, default=5, help='Maximum convergence cycles (default: 5)')
-    parser.add_argument('--target', help='Target file or directory for surgical scope')
-    parser.add_argument('--heal', action='store_true', help='Enable healing mode (auto-fix violations)')
-    parser.add_argument('--clean-slate', action='store_true', help='Execute Clean Slate Protocol (flush Redis, clear leases)')
-    parser.add_argument('--override-preservation', action='store_true', help='Allow SystemArchitect to override preservation rules (use with caution)')
-    parser.add_argument('--smart-scope', action='store_true', help='Use dependency graph for surgical targeting (reduces CI time by 95%%)')
-    parser.add_argument('--smart-scope-depth', type=int, default=2, help='BFS depth limit for smart scope (default: 2)')
+
+    parser: Any = argparse.ArgumentParser(
+        description="[START] Phase 5: Consolidated Orchestrator - Command & Control Center",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="\nExamples:\n  # Full repository scan with healing\n  python orchestrator_main.py --heal\n  \n  # Clean slate and target specific directory\n  python orchestrator_main.py --clean-slate --target apps_rg/\n  \n  # Override preservation for SystemArchitect\n  python orchestrator_main.py --override-preservation --target agentic_core/\n        ",
+    )
+    parser.add_argument(
+        "--workflow-id", default=None, help="Workflow ID (auto-generated if not provided)"
+    )
+    parser.add_argument(
+        "--max-cycles", type=int, default=5, help="Maximum convergence cycles (default: 5)"
+    )
+    parser.add_argument("--target", help="Target file or directory for surgical scope")
+    parser.add_argument(
+        "--heal", action="store_true", help="Enable healing mode (auto-fix violations)"
+    )
+    parser.add_argument(
+        "--clean-slate",
+        action="store_true",
+        help="Execute Clean Slate Protocol (flush Redis, clear leases)",
+    )
+    parser.add_argument(
+        "--override-preservation",
+        action="store_true",
+        help="Allow SystemArchitect to override preservation rules (use with caution)",
+    )
+    parser.add_argument(
+        "--smart-scope",
+        action="store_true",
+        help="Use dependency graph for surgical targeting (reduces CI time by 95%%)",
+    )
+    parser.add_argument(
+        "--smart-scope-depth",
+        type=int,
+        default=2,
+        help="BFS depth limit for smart scope (default: 2)",
+    )
     args: Any = parser.parse_args()
-    config: Any = OrchestratorConfig(max_cycles=args.max_cycles, enable_healing=args.heal, clean_slate=args.clean_slate, override_preservation=args.override_preservation, target_path=args.target, smart_scope=args.smart_scope, smart_scope_depth=args.smart_scope_depth)
+    config: Any = OrchestratorConfig(
+        max_cycles=args.max_cycles,
+        enable_healing=args.heal,
+        clean_slate=args.clean_slate,
+        override_preservation=args.override_preservation,
+        target_path=args.target,
+        smart_scope=args.smart_scope,
+        smart_scope_depth=args.smart_scope_depth,
+    )
     orchestrator: Any = create_orchestrator(config=config)
-    results: Any = await orchestrator.run_mission(target_path=args.target, workflow_id=args.workflow_id)
+    results: Any = await orchestrator.run_mission(
+        target_path=args.target, workflow_id=args.workflow_id
+    )
     print(f"\n{'=' * 60}")
-    print('[STATS] MISSION RESULTS')
+    print("[STATS] MISSION RESULTS")
     print(f"{'=' * 60}")
     print(f"  Status: {results['status']}")
     print(f"  Cycles: {results['cycles_executed']}/{config.max_cycles}")
     print(f"  Modified Files: {len(results['modified_files'])}")
     print(f"  Healing Budget Used: {results['healing_budget_used']}/{config.global_healing_budget}")
     print(f"  Checkpoints: {results['checkpoints_created']}")
-    if results.get('duration_seconds'):
+    if results.get("duration_seconds"):
         print(f"  Duration: {results['duration_seconds']:.2f}s")
     print(f"{'=' * 60}")
-    if results['status'] == 'COMPLETED':
+    if results["status"] == "COMPLETED":
         sys.exit(0)
-    elif results['status'] == 'VETOED':
+    elif results["status"] == "VETOED":
         sys.exit(2)
     else:
         sys.exit(1)
-if __name__ == '__main__':
+
+
+if __name__ == "__main__":
     asyncio.run(main())

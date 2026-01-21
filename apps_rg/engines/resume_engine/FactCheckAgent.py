@@ -56,7 +56,9 @@ class FactCheckAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
 
         # Check skills against profile (case-insensitive)
         resume_skills: set = self._extract_skills(resume)
-        profile_skills: set = {self._normalize(s) for s in profile.get("skills", []) if isinstance(s, str)}
+        profile_skills: set = {
+            self._normalize(s) for s in profile.get("skills", []) if isinstance(s, str)
+        }
 
         if profile_skills and resume_skills:
             unverified_skills: set = resume_skills - profile_skills
@@ -70,8 +72,14 @@ class FactCheckAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
             profile_exp = profile.get("work_history", [])
 
             if isinstance(resume_exp, list) and isinstance(profile_exp, list):
-                resume_companies: set = {self._normalize(e.get("company", "")) for e in resume_exp if isinstance(e, dict)}
-                profile_companies: set = {self._normalize(e.get("company", "")) for e in profile_exp if isinstance(e, dict)}
+                resume_companies: set = {
+                    self._normalize(e.get("company", "")) for e in resume_exp if isinstance(e, dict)
+                }
+                profile_companies: set = {
+                    self._normalize(e.get("company", ""))
+                    for e in profile_exp
+                    if isinstance(e, dict)
+                }
 
                 if profile_companies:
                     unverified = resume_companies - profile_companies
@@ -106,7 +114,9 @@ class FactCheckAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
             elif isinstance(skill_data, dict):
                 for category_skills in skill_data.values():
                     if isinstance(category_skills, list):
-                        skills.update(self._normalize(s) for s in category_skills if isinstance(s, str))
+                        skills.update(
+                            self._normalize(s) for s in category_skills if isinstance(s, str)
+                        )
 
         return skills
 
@@ -115,5 +125,5 @@ class FactCheckAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
         return text.lower().strip()
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()

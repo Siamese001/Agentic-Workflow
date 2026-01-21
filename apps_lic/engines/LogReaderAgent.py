@@ -44,6 +44,7 @@ logger = logging.getLogger("meta_learner_v10_7")
 # ROW 7: HOT-RELOAD RULE MANAGER (Preserved)
 # ============================================================================
 
+
 class HotReloadRuleManager:
     """ROW 7: Manages hot-reload of proposed rules"""
 
@@ -55,26 +56,31 @@ class HotReloadRuleManager:
         try:
             status = "APPROVED" if confidence >= self.auto_approve_threshold else "PROPOSED"
             log_entry = {
-                "timestamp": datetime.now().isoformat(), "status": status,
-                "confidence": confidence, "pattern": rule,
+                "timestamp": datetime.now().isoformat(),
+                "status": status,
+                "confidence": confidence,
+                "pattern": rule,
             }
             os.makedirs(os.path.dirname(self.rules_path), exist_ok=True)
-            with open(self.rules_path, 'a') as f:
+            with open(self.rules_path, "a") as f:
                 json.dump(log_entry, f)
-                f.write('\n')
+                f.write("\n")
             logger.info(f"Rule written: {rule.get('type', 'unknown')} - Status: {status}")
             return True
         except Exception as e:
             logger.error(f"Failed to write rule: {e}")
             return False
 
+
 # ============================================================================
 # META-LEARNING AGENTS (v10.7: Refactored)
 # ============================================================================
 
+
 class LogReaderAgent(BaseAgent):
     """Reads raw logs from disk"""
-    @track_metrics('meta_read_logs')
+
+    @track_metrics("meta_read_logs")
     def run(self) -> dict[str, str]:
         self.log_info("Reading feedback and preference logs...")
         logs = {"feedback_log": "", "preference_log": ""}
@@ -85,18 +91,22 @@ class LogReaderAgent(BaseAgent):
             if os.path.exists(feedback_log_path):
                 with open(feedback_log_path) as f:
                     logs["feedback_log"] = "\n".join(f.readlines()[-50:])
-        except Exception: pass
+        except Exception:
+            pass
         try:
             if os.path.exists(preference_log_path):
                 with open(preference_log_path) as f:
                     logs["preference_log"] = "\n".join(f.readlines()[-50:])
-        except Exception: pass
+        except Exception:
+            pass
 
         return logs
 
+
 class AsyncLogSummarizerAgent(BaseAgent):
     """Async LLM-based log summarizer"""
-    @track_metrics('meta_summarize_logs')
+
+    @track_metrics("meta_summarize_logs")
     async def run_async(self, raw_logs: dict[str, str], workflow_id: str) -> dict[str, Any]:
         self.log_info("Summarizing logs with LLM (v10.7)...")
         client = self.get_model_client("qa_model")
@@ -107,17 +117,18 @@ class AsyncLogSummarizerAgent(BaseAgent):
         prompt = await _format_prompt_with_defaults(
             prompt_template,
             {
-                "feedback_log": raw_logs.get('feedback_log', 'No feedback log'),
-                "preference_log": raw_logs.get('preference_log', 'No preference log')
+                "feedback_log": raw_logs.get("feedback_log", "No feedback log"),
+                "preference_log": raw_logs.get("preference_log", "No preference log"),
             },
             self.budget_manager,
             client.goal_state,
-            client.top_failures
+            client.top_failures,
         )
 
         response = await client.chat_completion_async(
             messages=[{"role": "user", "content": prompt}],
-            temperature=0.2, response_format="json_object"
+            temperature=0.2,
+            response_format="json_object",
         )
 
         validated_output, error = self.validator.validate(response["content"], dict)
@@ -127,9 +138,11 @@ class AsyncLogSummarizerAgent(BaseAgent):
         self.log_feedback(workflow_id, "log_summarization", "success", {})
         return validated_output
 
+
 class AsyncPatternFinderAgent(BaseAgent):
     """Async pattern detection"""
-    @track_metrics('meta_find_patterns')
+
+    @track_metrics("meta_find_patterns")
     async def run_async(self, log_summary: dict[str, Any], workflow_id: str) -> list[dict]:
         self.log_info("Finding patterns in logs (v10.7)...")
         client = self.get_model_client("strategy_model")
@@ -142,12 +155,13 @@ class AsyncPatternFinderAgent(BaseAgent):
             {"log_data": json.dumps(log_summary)},
             self.budget_manager,
             client.goal_state,
-            client.top_failures
+            client.top_failures,
         )
 
         response = await client.chat_completion_async(
             messages=[{"role": "user", "content": prompt}],
-            temperature=0.3, response_format="json_object"
+            temperature=0.3,
+            response_format="json_object",
         )
 
         validated_output, error = self.validator.validate(response["content"], dict)
@@ -155,13 +169,19 @@ class AsyncPatternFinderAgent(BaseAgent):
             raise PydanticSchemaError(f"PatternFinder failed validation: {error}")
 
         patterns = validated_output.get("patterns", [])
-        self.log_feedback(workflow_id, "pattern_finding", "success", {"patterns_found": len(patterns)})
+        self.log_feedback(
+            workflow_id, "pattern_finding", "success", {"patterns_found": len(patterns)}
+        )
         return patterns
+
 
 class AsyncHypothesisGeneratorAgent(BaseAgent):
     """Async hypothesis generation"""
-    @track_metrics('meta_gen_hypotheses')
-    async def run_async(self, patterns: list[dict], previous_critique: dict[str, Any], workflow_id: str) -> list[dict]:
+
+    @track_metrics("meta_gen_hypotheses")
+    async def run_async(
+        self, patterns: list[dict], previous_critique: dict[str, Any], workflow_id: str
+    ) -> list[dict]:
         self.log_info("Generating hypotheses (v10.7)...")
         client = self.get_model_client("strategy_model")
 
@@ -170,18 +190,16 @@ class AsyncHypothesisGeneratorAgent(BaseAgent):
         # v10.7 REFACTOR: Use centralized async formatter
         prompt = await _format_prompt_with_defaults(
             prompt_template,
-            {
-                "patterns": json.dumps(patterns),
-                "critique": json.dumps(previous_critique)
-            },
+            {"patterns": json.dumps(patterns), "critique": json.dumps(previous_critique)},
             self.budget_manager,
             client.goal_state,
-            client.top_failures
+            client.top_failures,
         )
 
         response = await client.chat_completion_async(
             messages=[{"role": "user", "content": prompt}],
-            temperature=0.5, response_format="json_object"
+            temperature=0.5,
+            response_format="json_object",
         )
 
         validated_output, error = self.validator.validate(response["content"], dict)
@@ -189,12 +207,19 @@ class AsyncHypothesisGeneratorAgent(BaseAgent):
             raise PydanticSchemaError(f"HypothesisGenerator failed validation: {error}")
 
         hypotheses = validated_output.get("hypotheses", [])
-        self.log_feedback(workflow_id, "hypothesis_generation", "success", {"hypotheses_generated": len(hypotheses)})
+        self.log_feedback(
+            workflow_id,
+            "hypothesis_generation",
+            "success",
+            {"hypotheses_generated": len(hypotheses)},
+        )
         return hypotheses
+
 
 class AsyncProposalDrafterAgent(BaseAgent):
     """Async proposal drafting"""
-    @track_metrics('meta_draft_proposal')
+
+    @track_metrics("meta_draft_proposal")
     async def run_async(self, hypothesis: dict[str, Any], workflow_id: str) -> dict[str, Any]:
         self.log_info("Drafting proposal for hypothesis (v10.7)...")
         client = self.get_model_client("prompt_engineer_model")
@@ -207,12 +232,13 @@ class AsyncProposalDrafterAgent(BaseAgent):
             {"hypothesis": json.dumps(hypothesis)},
             self.budget_manager,
             client.goal_state,
-            client.top_failures
+            client.top_failures,
         )
 
         response = await client.chat_completion_async(
             messages=[{"role": "user", "content": prompt}],
-            temperature=0.4, response_format="json_object"
+            temperature=0.4,
+            response_format="json_object",
         )
 
         validated_output, error = self.validator.validate(response["content"], dict)
@@ -225,10 +251,14 @@ class AsyncProposalDrafterAgent(BaseAgent):
         self.log_feedback(workflow_id, "proposal_drafting", "success", {})
         return validated_output
 
+
 class AsyncProposalCritiqueAgent(BaseAgent):
     """Async proposal critique"""
-    @track_metrics('meta_critique_proposal')
-    async def run_async(self, proposal: dict[str, Any], patterns: list[dict], workflow_id: str) -> dict[str, Any]:
+
+    @track_metrics("meta_critique_proposal")
+    async def run_async(
+        self, proposal: dict[str, Any], patterns: list[dict], workflow_id: str
+    ) -> dict[str, Any]:
         self.log_info("Critiquing proposal (v10.7)...")
         client = self.get_model_client("critique_model")
 
@@ -237,30 +267,35 @@ class AsyncProposalCritiqueAgent(BaseAgent):
         # v10.7 REFACTOR: Use centralized async formatter
         prompt = await _format_prompt_with_defaults(
             prompt_template,
-            {
-                "patterns": json.dumps(patterns),
-                "proposal": json.dumps(proposal)
-            },
+            {"patterns": json.dumps(patterns), "proposal": json.dumps(proposal)},
             self.budget_manager,
             client.goal_state,
-            client.top_failures
+            client.top_failures,
         )
 
         response = await client.chat_completion_async(
             messages=[{"role": "user", "content": prompt}],
-            temperature=0.2, response_format="json_object"
+            temperature=0.2,
+            response_format="json_object",
         )
 
         validated_output, error = self.validator.validate(response["content"], dict)
         if error:
             raise PydanticSchemaError(f"ProposalCritique failed validation: {error}")
 
-        self.log_feedback(workflow_id, "proposal_critique", "success" if validated_output.get("critique_passed") else "failure", {})
+        self.log_feedback(
+            workflow_id,
+            "proposal_critique",
+            "success" if validated_output.get("critique_passed") else "failure",
+            {},
+        )
         return validated_output
+
 
 class AsyncToolGeneratorAgent(BaseAgent):
     """Async LLM-based tool code generator."""
-    @track_metrics('meta_generate_tool')
+
+    @track_metrics("meta_generate_tool")
     async def run_async(self, hypothesis: dict[str, Any], workflow_id: str) -> dict[str, Any]:
         self.log_info("Generating new tool code from hypothesis (v10.7)...")
         client = self.get_model_client("meta_tool_generator_model")
@@ -273,12 +308,13 @@ class AsyncToolGeneratorAgent(BaseAgent):
             {"hypothesis": json.dumps(hypothesis)},
             self.budget_manager,
             client.goal_state,
-            client.top_failures
+            client.top_failures,
         )
 
         response = await client.chat_completion_async(
             messages=[{"role": "user", "content": prompt}],
-            temperature=0.4, response_format="json_object"
+            temperature=0.4,
+            response_format="json_object",
         )
 
         validated_output, error = self.validator.validate(response["content"], dict)
@@ -291,9 +327,11 @@ class AsyncToolGeneratorAgent(BaseAgent):
         self.log_feedback(workflow_id, "tool_generation", "success", {"tool_name": tool_name})
         return {"generated_tool_code": tool_code, "generated_tool_name": tool_name}
 
+
 class AsyncToolCritiqueAgent(BaseAgent):
     """Async LLM-based tool code critique."""
-    @track_metrics('meta_critique_tool')
+
+    @track_metrics("meta_critique_tool")
     async def run_async(self, tool_code: str, workflow_id: str) -> dict[str, Any]:
         self.log_info("Critiquing generated tool code (v10.7)...")
         client = self.get_model_client("meta_tool_critique_model")
@@ -306,24 +344,32 @@ class AsyncToolCritiqueAgent(BaseAgent):
             {"generated_tool_code": tool_code},
             self.budget_manager,
             client.goal_state,
-            client.top_failures
+            client.top_failures,
         )
 
         response = await client.chat_completion_async(
             messages=[{"role": "user", "content": prompt}],
-            temperature=0.2, response_format="json_object"
+            temperature=0.2,
+            response_format="json_object",
         )
 
         validated_output, error = self.validator.validate(response["content"], dict)
         if error:
             raise PydanticSchemaError(f"ToolCritique failed validation: {error}")
 
-        self.log_feedback(workflow_id, "tool_critique", "success" if validated_output.get("critique_passed") else "failure", {})
+        self.log_feedback(
+            workflow_id,
+            "tool_critique",
+            "success" if validated_output.get("critique_passed") else "failure",
+            {},
+        )
         return validated_output
+
 
 class GeneratedToolWriterAgent(BaseAgent):
     """Local agent to write generated tool code to disk."""
-    @track_metrics('meta_write_tool')
+
+    @track_metrics("meta_write_tool")
     def run(self, tool_name: str, tool_code: str, workflow_id: str) -> dict[str, Any]:
         self.log_info(f"Writing generated tool '{tool_name}' to disk...")
 
@@ -334,7 +380,7 @@ class GeneratedToolWriterAgent(BaseAgent):
             safe_filename = f"{tool_name.lower().replace(' ', '_')}.py"
             file_path = os.path.join(tools_dir, safe_filename)
 
-            with open(file_path, 'w') as f:
+            with open(file_path, "w") as f:
                 f.write(f"# Generated by Meta-Learning Workflow ID: {workflow_id}\n")
                 f.write(f"# Timestamp: {datetime.now().isoformat()}\n\n")
                 f.write(tool_code)
@@ -345,9 +391,11 @@ class GeneratedToolWriterAgent(BaseAgent):
             self.log_error(f"Failed to write generated tool: {e}")
             return {"status": "error", "reason": str(e)}
 
+
 # ============================================================================
 # META-LEARNING CONDITIONAL EDGE FUNCTIONS (v10.7: Preserved)
 # ============================================================================
+
 
 def check_proposal_type(state: MetaGraphState) -> str:
     """v10.7: Routes to tool gen or rule gen branch."""
@@ -363,6 +411,7 @@ def check_proposal_type(state: MetaGraphState) -> str:
         logger.info("Proposal critique passed. Routing to RULE generation.")
         return "write_rules"
 
+
 def check_tool_critique(state: MetaGraphState) -> str:
     """v10.7: Checks if generated tool code passed critique."""
     critique_passed = state.critique.get("critique_passed", False)
@@ -373,9 +422,11 @@ def check_tool_critique(state: MetaGraphState) -> str:
         logger.info("Tool critique FAILED. Looping back to generate_tool.")
         return "replan"
 
+
 # ============================================================================
 # META-LEARNING GRAPH BUILDER (v10.7: Refactored Nodes)
 # ============================================================================
+
 
 def build_meta_learning_graph(context: WorkflowContext, checkpointer: Any):
     """Build complete async meta-learning graph"""
@@ -402,7 +453,9 @@ def build_meta_learning_graph(context: WorkflowContext, checkpointer: Any):
     async def generate_hypotheses_node(state: MetaGraphState) -> MetaGraphState:
         hypothesis_gen = AsyncHypothesisGeneratorAgent(context)
         previous_critique = state.critique or {}
-        state.hypotheses = await hypothesis_gen.run_async(state.patterns, previous_critique, state.workflow_id)
+        state.hypotheses = await hypothesis_gen.run_async(
+            state.patterns, previous_critique, state.workflow_id
+        )
         return state
 
     async def draft_proposals_node(state: MetaGraphState) -> MetaGraphState:
@@ -420,7 +473,9 @@ def build_meta_learning_graph(context: WorkflowContext, checkpointer: Any):
 
     async def critique_proposal_node(state: MetaGraphState) -> MetaGraphState:
         critique_agent = AsyncProposalCritiqueAgent(context)
-        state.critique = await critique_agent.run_async(state.proposal, state.patterns, state.workflow_id)
+        state.critique = await critique_agent.run_async(
+            state.proposal, state.patterns, state.workflow_id
+        )
         return state
 
     async def write_rules_node(state: MetaGraphState) -> MetaGraphState:
@@ -446,7 +501,9 @@ def build_meta_learning_graph(context: WorkflowContext, checkpointer: Any):
 
     async def critique_tool_node(state: MetaGraphState) -> MetaGraphState:
         tool_critique = AsyncToolCritiqueAgent(context)
-        critique_output = await tool_critique.run_async(state.generated_tool_code, state.workflow_id)
+        critique_output = await tool_critique.run_async(
+            state.generated_tool_code, state.workflow_id
+        )
         state.critique = critique_output
         return state
 
@@ -456,7 +513,7 @@ def build_meta_learning_graph(context: WorkflowContext, checkpointer: Any):
             tool_writer.run,
             tool_name=state.proposal.get("generated_tool_name", "unknown_tool"),
             tool_code=state.generated_tool_code,
-            workflow_id=state.workflow_id
+            workflow_id=state.workflow_id,
         )
         return state
 
@@ -504,18 +561,15 @@ def build_meta_learning_graph(context: WorkflowContext, checkpointer: Any):
         {
             "replan": "generate_hypotheses",
             "generate_tool": "generate_tool",
-            "write_rules": "write_rules"
-        }
+            "write_rules": "write_rules",
+        },
     )
 
     workflow.add_edge("generate_tool", "critique_tool")
     workflow.add_conditional_edges(
         "critique_tool",
         conditional_check_tool_critique,
-        {
-            "write_tool": "write_tool",
-            "replan": "generate_tool"
-        }
+        {"write_tool": "write_tool", "replan": "generate_tool"},
     )
 
     workflow.add_edge("write_rules", END)
@@ -523,9 +577,11 @@ def build_meta_learning_graph(context: WorkflowContext, checkpointer: Any):
 
     return workflow.compile(checkpointer=checkpointer)
 
+
 # ============================================================================
 # MAIN META-LEARNING RUNNER (v10.7: Refactored)
 # ============================================================================
+
 
 async def run_meta_learning(config: ConfigV10_7):
     """
@@ -544,11 +600,7 @@ async def run_meta_learning(config: ConfigV10_7):
         context = create_workflow_context(config, db=meta_db)
         logger.info("Initialized WorkflowContext for meta-learning (v10.7)")
 
-        checkpointer = get_checkpointer(
-            config,
-            db=meta_db,
-            allow_memory_fallback=True
-        )
+        checkpointer = get_checkpointer(config, db=meta_db, allow_memory_fallback=True)
         # --- v10.7: REFACTOR END ---
 
         app = build_meta_learning_graph(context, checkpointer)
@@ -567,7 +619,7 @@ async def run_meta_learning(config: ConfigV10_7):
             final_state = s[node_name]
 
         if final_state is None:
-             raise WorkflowError("Meta-learning graph did not return a final state.")
+            raise WorkflowError("Meta-learning graph did not return a final state.")
 
         patterns_found = len(final_state.patterns)
         critique_passed = final_state.critique.get("critique_passed", False)
@@ -583,6 +635,7 @@ async def run_meta_learning(config: ConfigV10_7):
     except Exception as e:
         logger.error(f"Meta-Learning failed: {e}", exc_info=True)
         raise
+
 
 # v10.7: This file is not a main entry point.
 # ============================================================================

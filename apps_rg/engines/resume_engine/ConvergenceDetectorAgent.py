@@ -73,7 +73,7 @@ class ConvergenceDetectorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTesting
             return False
 
         recent: list[set[str]] = self.history[-window:]
-        earlier: list[set[str]] = self.history[-window * 2:-window]
+        earlier: list[set[str]] = self.history[-window * 2 : -window]
 
         # Check if recent states match earlier states
         for i, state in enumerate(recent):
@@ -94,7 +94,9 @@ class ConvergenceDetectorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTesting
 
         return self.history[-1] & self.history[-2]
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs: Any) -> dict[str, Any]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs: Any
+    ) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 

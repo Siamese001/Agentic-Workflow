@@ -4,9 +4,12 @@
 # Any import from archives/ should be replaced with this shim to prevent Python
 # from loading archived files during validation.
 
+
 class ARCHIVE_FILE_ACCESS_DEPRECATED:
     """Fallback class for deprecated archive imports."""
+
     pass
+
 
 # Common fallback objects that might be imported
 ContextBudget = ARCHIVE_FILE_ACCESS_DEPRECATED

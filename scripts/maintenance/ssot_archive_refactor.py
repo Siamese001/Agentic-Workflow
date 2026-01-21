@@ -19,12 +19,12 @@ def find_hardcoded_archives(file_path: Path) -> list[tuple[int, str]]:
     """Find lines with hardcoded 'archives' strings."""
     matches = []
     try:
-        content = file_path.read_text(encoding='utf-8')
-        lines = content.split('\n')
+        content = file_path.read_text(encoding="utf-8")
+        lines = content.split("\n")
 
         for i, line in enumerate(lines, 1):
             # Skip comments and docstrings
-            if line.strip().startswith('#'):
+            if line.strip().startswith("#"):
                 continue
             if '"""' in line or "'''" in line:
                 continue
@@ -32,10 +32,10 @@ def find_hardcoded_archives(file_path: Path) -> list[tuple[int, str]]:
             # Look for hardcoded "archives" or 'archives'
             if '"archives"' in line or "'archives'" in line:
                 # Skip if it's already using ARCHIVES_DIR
-                if 'ARCHIVES_DIR' in line:
+                if "ARCHIVES_DIR" in line:
                     continue
                 # Skip if it's in a comment
-                if '#' in line and line.index('#') < line.find('archives'):
+                if "#" in line and line.index("#") < line.find("archives"):
                     continue
                 matches.append((i, line))
 
@@ -48,11 +48,14 @@ def find_hardcoded_archives(file_path: Path) -> list[tuple[int, str]]:
 def needs_import(file_path: Path) -> bool:
     """Check if file needs ARCHIVES_DIR import."""
     try:
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
         # Check if already imports ARCHIVES_DIR
-        if 'from agentic_core.L5_safety.validators.structure_blueprint import ARCHIVES_DIR' in content:
+        if (
+            "from agentic_core.L5_safety.validators.structure_blueprint import ARCHIVES_DIR"
+            in content
+        ):
             return False
-        if 'ARCHIVES_DIR' in content and 'import' in content:
+        if "ARCHIVES_DIR" in content and "import" in content:
             return False
         return True
     except:
@@ -62,13 +65,13 @@ def needs_import(file_path: Path) -> bool:
 def add_import(file_path: Path, dry_run: bool = True) -> bool:
     """Add ARCHIVES_DIR import to file."""
     try:
-        content = file_path.read_text(encoding='utf-8')
-        lines = content.split('\n')
+        content = file_path.read_text(encoding="utf-8")
+        lines = content.split("\n")
 
         # Find the best place to insert import (after other imports)
         import_line = -1
         for i, line in enumerate(lines):
-            if line.startswith('from ') or line.startswith('import '):
+            if line.startswith("from ") or line.startswith("import "):
                 import_line = i
 
         if import_line == -1:
@@ -82,11 +85,13 @@ def add_import(file_path: Path, dry_run: bool = True) -> bool:
             import_line = 0
 
         # Insert import
-        new_import = 'from agentic_core.L5_safety.validators.structure_blueprint import ARCHIVES_DIR'
+        new_import = (
+            "from agentic_core.L5_safety.validators.structure_blueprint import ARCHIVES_DIR"
+        )
         lines.insert(import_line + 1, new_import)
 
         if not dry_run:
-            file_path.write_text('\n'.join(lines), encoding='utf-8')
+            file_path.write_text("\n".join(lines), encoding="utf-8")
 
         return True
     except Exception as e:
@@ -97,21 +102,17 @@ def add_import(file_path: Path, dry_run: bool = True) -> bool:
 def replace_hardcoded_archives(file_path: Path, dry_run: bool = True) -> int:
     """Replace hardcoded 'archives' with ARCHIVES_DIR."""
     try:
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
         original_content = content
 
         # Replace "archives" with ARCHIVES_DIR (but not in comments)
         # Pattern: project_root / "archives" -> project_root / ARCHIVES_DIR
-        content = re.sub(
-            r'(["\'])archives\1',
-            'ARCHIVES_DIR',
-            content
-        )
+        content = re.sub(r'(["\'])archives\1', "ARCHIVES_DIR", content)
 
-        replacements = content.count('ARCHIVES_DIR') - original_content.count('ARCHIVES_DIR')
+        replacements = content.count("ARCHIVES_DIR") - original_content.count("ARCHIVES_DIR")
 
         if content != original_content and not dry_run:
-            file_path.write_text(content, encoding='utf-8')
+            file_path.write_text(content, encoding="utf-8")
 
         return replacements
     except Exception as e:
@@ -120,27 +121,29 @@ def replace_hardcoded_archives(file_path: Path, dry_run: bool = True) -> int:
 
 
 def main():
-    parser = argparse.ArgumentParser(description='SSOT Archive Path Refactor')
-    parser.add_argument('--execute', action='store_true', help='Execute changes (default is dry-run)')
+    parser = argparse.ArgumentParser(description="SSOT Archive Path Refactor")
+    parser.add_argument(
+        "--execute", action="store_true", help="Execute changes (default is dry-run)"
+    )
     args = parser.parse_args()
 
     dry_run = not args.execute
 
-    print(f"\n{'='*70}")
+    print(f"\n{'=' * 70}")
     print("SSOT Archive Path Refactor")
-    print(f"{'='*70}")
+    print(f"{'=' * 70}")
     print(f"Mode: {'DRY RUN' if dry_run else 'EXECUTE'}")
-    print(f"{'='*70}\n")
+    print(f"{'=' * 70}\n")
 
     # Scan agentic_core for hardcoded archives
-    agentic_core = Path('agentic_core')
+    agentic_core = Path("agentic_core")
     files_to_fix = []
 
-    for py_file in agentic_core.rglob('*.py'):
+    for py_file in agentic_core.rglob("*.py"):
         # Skip archives directory itself
-        if 'archives' in py_file.parts:
+        if "archives" in py_file.parts:
             continue
-        if '__pycache__' in py_file.parts:
+        if "__pycache__" in py_file.parts:
             continue
 
         matches = find_hardcoded_archives(py_file)
@@ -176,7 +179,7 @@ def main():
                 print(f"   ✅ Replaced {replacements} occurrences")
                 total_replacements += replacements
 
-    print(f"\n{'='*70}")
+    print(f"\n{'=' * 70}")
     if dry_run:
         print("DRY RUN COMPLETE")
         print(f"Would modify {len(files_to_fix)} files")
@@ -188,10 +191,10 @@ def main():
         print("  1. Run: pytest tests/L5_safety/test_hygiene_consolidation.py")
         print("  2. Run: pytest tests/unit/test_archival_gatekeeper.py")
         print("  3. Verify: python scripts/maintenance/verify_ssot_compliance.py")
-    print(f"{'='*70}\n")
+    print(f"{'=' * 70}\n")
 
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     exit(main())

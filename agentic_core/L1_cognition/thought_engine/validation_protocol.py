@@ -51,4 +51,5 @@ class ValidationProtocol(Protocol):
         """Set metadata value."""
         ...
 
+
 # [NAMING ALIAS] PascalCase alias for backward compatibility

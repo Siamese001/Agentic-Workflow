@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, prompt, state, workflow
@@ -40,13 +39,18 @@ from agentic_core.utils.ssot_discovery import get_python_files
 
 # Additional reporting-specific exclusions (stubs, backups)
 SCOPE_SUMMARY_EXCLUSIONS = {
-    "stubs", "backups", ".sovereign_healing_backup",
-    "node_modules", ".pytest_cache", ".ruff_cache"
+    "stubs",
+    "backups",
+    ".sovereign_healing_backup",
+    "node_modules",
+    ".pytest_cache",
+    ".ruff_cache",
 }
 
 # Optional import: MetricsAgent from sibling territory
 try:
     from agentic_core.L6_observability.metrics.MetricsAgent import metrics_agent as MetricsAgent
+
     METRICS_AGENT_AVAILABLE = True
 except ImportError:  # MetricsAgent not implemented yet or optional
     METRICS_AGENT_AVAILABLE = False
@@ -107,7 +111,7 @@ class ReportingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                 continue
             if folder_path.name in self.exclude_dirs:
                 continue
-            if folder_path.name.startswith('.'):
+            if folder_path.name.startswith("."):
                 continue
 
             # Count all .py files recursively within this root using SSOT
@@ -143,9 +147,9 @@ class ReportingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
             # Get and sort meaningful children
             children = [
-                item for item in current_path.iterdir()
-                if item.name not in self.exclude_dirs
-                and not item.name.startswith('.')
+                item
+                for item in current_path.iterdir()
+                if item.name not in self.exclude_dirs and not item.name.startswith(".")
             ]
             children.sort(key=lambda x: (x.is_file(), x.name.lower()))
 
@@ -159,7 +163,9 @@ class ReportingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                     _walk_directory(item, prefix + extension, depth + 1)
 
         _walk_directory(start_path, depth=1)
-        return "\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n".join(tree_lines)
+        return "\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n".join(
+            tree_lines
+        )
 
     def _get_compliance_metrics(self) -> dict[str, Any]:
         """
@@ -179,7 +185,9 @@ class ReportingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         try:
             return {
                 "total_violations": self.metrics_agent.get_counter("compliance.total_violations"),
-                "violations_by_type": self.metrics_agent.get_labeled_counter("compliance.violations_by_type"),
+                "violations_by_type": self.metrics_agent.get_labeled_counter(
+                    "compliance.violations_by_type"
+                ),
                 "compliance_rate": self.metrics_agent.get_gauge("compliance.compliance_rate"),
                 "last_scan_timestamp": self.metrics_agent.get_metadata("compliance.last_scan"),
             }
@@ -215,12 +223,25 @@ class ReportingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """Observability agent - invoke shared healing chain."""
         if _call_path is None:
             _call_path = set()
         # Invoke shared HealerMixin chain for diagnostics, rollback, MCP hardening
-        super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+        super().heal_repository(
+            dry_run=dry_run,
+            execute=execute,
+            depth=depth,
+            max_depth=max_depth,
+            _call_path=_call_path,
+        )
         print(f"[{self.__class__.__name__}] Observability agent - healing chain invoked")
         return {"skipped": 1}
 

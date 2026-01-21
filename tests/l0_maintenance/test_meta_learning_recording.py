@@ -5,6 +5,7 @@ Test Meta-Learning Recording in AutonomyGuardianAgent
 This script manually adds a heal_repository() stub to CanonHealerAgent.py
 and then runs the AutonomyGuardian to trigger Meta-Learning recording.
 """
+
 import sys
 from pathlib import Path
 
@@ -18,24 +19,30 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 
 def manually_heal_canon_healer():
     """Manually add heal_repository() to CanonHealerAgent.py to test Meta-Learning."""
-    target_file = Path(__file__).parent.parent / AGENTIC_CORE_DIR / "L1_cognition" / "thought_engine" / "CanonHealerAgent.py"
+    target_file = (
+        Path(__file__).parent.parent
+        / AGENTIC_CORE_DIR
+        / "L1_cognition"
+        / "thought_engine"
+        / "CanonHealerAgent.py"
+    )
 
     print(f"\n[MANUAL HEAL] Adding heal_repository() to {target_file.name}")
 
-    with open(target_file, encoding='utf-8') as f:
+    with open(target_file, encoding="utf-8") as f:
         content = f.read()
 
     # Check if already has the method
-    if 'def heal_repository' in content:
+    if "def heal_repository" in content:
         print("[SKIP] heal_repository() already exists")
         return False
 
     # Find a good insertion point (after imports, before first function)
-    lines = content.split('\n')
+    lines = content.split("\n")
     insert_line = None
 
     for i, line in enumerate(lines):
-        if line.strip().startswith('def ') or line.strip().startswith('class '):
+        if line.strip().startswith("def ") or line.strip().startswith("class "):
             insert_line = i
             break
 
@@ -44,24 +51,25 @@ def manually_heal_canon_healer():
 
     # Add the stub
     stub = [
-        '',
-        'def heal_repository(dry_run: bool = True, execute: bool = False, **kwargs):',
+        "",
+        "def heal_repository(dry_run: bool = True, execute: bool = False, **kwargs):",
         '    """',
-        '    Autonomous healing method (Canon Key 51 compliance).',
-        '    Added by AutonomyGuardianAgent for Meta-Learning test.',
+        "    Autonomous healing method (Canon Key 51 compliance).",
+        "    Added by AutonomyGuardianAgent for Meta-Learning test.",
         '    """',
         '    return {"violations": 0, "fixed": 0, "errors": 0}',
-        '',
-        ''
+        "",
+        "",
     ]
 
     lines = lines[:insert_line] + stub + lines[insert_line:]
 
-    with open(target_file, 'w', encoding='utf-8') as f:
-        f.write('\n'.join(lines))
+    with open(target_file, "w", encoding="utf-8") as f:
+        f.write("\n".join(lines))
 
     print(f"[SUCCESS] Added heal_repository() stub at line {insert_line}")
     return True
+
 
 def main():
     project_root = Path(__file__).parent.parent
@@ -95,7 +103,7 @@ def main():
     print("META-LEARNING VERIFICATION")
     print("=" * 80)
 
-    if result.get('fixed', 0) > 0:
+    if result.get("fixed", 0) > 0:
         print("✅ Healing executed - Meta-Learning should have recorded to:")
         print("   - Redis: Short-term cache for pattern reuse")
         print("   - Pinecone: Long-term vector memory for structural evolution")
@@ -107,5 +115,6 @@ def main():
 
     return 0
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     sys.exit(main())

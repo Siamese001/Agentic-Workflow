@@ -23,7 +23,7 @@ UNIFIED_AGENTS = [
     "UnifiedSecurityManagerAgent",
     "UnifiedStructureEnforcerAgent",
     "UnifiedStructureHealerAgent",
-    "UnifiedStructureValidatorAgent"
+    "UnifiedStructureValidatorAgent",
 ]
 
 # Canonical Paths (The "Source of Truth")
@@ -35,8 +35,9 @@ CANONICAL_HYGIENE_PATH = "agentic_core.L5_safety.validators"
 DEPRECATED_PATHS = {
     "agentic_core.L5_safety.guardrails": UNIFIED_AGENTS,
     "agentic_core.L2_execution.ToolRegistry": ["UnifiedModelRouterAgent"],
-    "apps_shared.base_agents": ["HygieneGuardianAgent"]
+    "apps_shared.base_agents": ["HygieneGuardianAgent"],
 }
+
 
 class TestConsolidationRuntimeIntegrity:
     """
@@ -62,6 +63,7 @@ class TestConsolidationRuntimeIntegrity:
         """Verify HygieneGuardianAgent loads from validators"""
         # Direct import to avoid circular import issues with __init__.py
         from agentic_core.L5_safety.validators.HygieneGuardianAgent import HygieneGuardianAgent
+
         assert HygieneGuardianAgent is not None
         assert inspect.isclass(HygieneGuardianAgent)
 
@@ -152,7 +154,9 @@ class TestConsolidationStaticAnalysis:
                 for err in errors:
                     report.append(f"  - {err}")
 
-            report.append("\nACTION REQUIRED: Update imports in these files to use canonical paths.")
+            report.append(
+                "\nACTION REQUIRED: Update imports in these files to use canonical paths."
+            )
 
             # Fail the test if violations exist
             pytest.fail("\n".join(report))
@@ -216,9 +220,14 @@ class TestNamingConventionCompliance:
 
         # Known non-agent files that are allowed
         allowed_non_agent_files = {
-            "decorators.py", "filesystem.py", "healing_strategies.py",
-            "healing_healing_strategies.py", "location_constants.py",
-            "ssot_relocator.py", "structure_blueprint.py", "intervention_server.py"
+            "decorators.py",
+            "filesystem.py",
+            "healing_strategies.py",
+            "healing_healing_strategies.py",
+            "location_constants.py",
+            "ssot_relocator.py",
+            "structure_blueprint.py",
+            "intervention_server.py",
         }
 
         violations = []
@@ -242,6 +251,7 @@ class TestPotentialOverlapsVerification:
     def test_location_agents_are_distinct(self):
         """Verify Location* agents have different implementations (not duplicates)."""
         import hashlib
+
         validators_dir = PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators"
 
         location_files = {
@@ -264,6 +274,7 @@ class TestPotentialOverlapsVerification:
     def test_import_agents_are_distinct(self):
         """Verify Import* agents have different implementations."""
         import hashlib
+
         gravity_dir = PROJECT_ROOT / "agentic_core" / "L5_safety" / "gravity"
 
         import_files = {
@@ -286,8 +297,16 @@ class TestPotentialOverlapsVerification:
         import hashlib
 
         strategic_files = {
-            "StrategicRecommendationAgent.py": PROJECT_ROOT / "agentic_core" / "L1_cognition" / "thought_engine" / "StrategicRecommendationAgent.py",
-            "StrategicPlannerAgent.py": PROJECT_ROOT / "agentic_core" / "L2_execution" / "ToolRegistry" / "StrategicPlannerAgent.py",
+            "StrategicRecommendationAgent.py": PROJECT_ROOT
+            / "agentic_core"
+            / "L1_cognition"
+            / "thought_engine"
+            / "StrategicRecommendationAgent.py",
+            "StrategicPlannerAgent.py": PROJECT_ROOT
+            / "agentic_core"
+            / "L2_execution"
+            / "ToolRegistry"
+            / "StrategicPlannerAgent.py",
         }
 
         hashes = {}

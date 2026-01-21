@@ -4,6 +4,7 @@ Shared utility functions for location-based operations.
 Extracted from LocationAgent.py during SRP fission.
 All location-related agents should import from this module.
 """
+
 from __future__ import annotations
 
 import os
@@ -20,7 +21,7 @@ def normalize_location_path(path: str) -> str:
     Returns:
         Normalized path with forward slashes
     """
-    return os.path.normpath(path).replace('\\', '/')
+    return os.path.normpath(path).replace("\\", "/")
 
 
 def get_agent_files(root_dir: str) -> list[str]:
@@ -54,21 +55,19 @@ def compute_module_path(file_path: Path, project_root: Path | None = None) -> st
     """
     if project_root is None:
         from agentic_core.L5_safety.validators.structure_blueprint import get_validated_project_root
+
         project_root = get_validated_project_root()
 
     try:
         rel_path = file_path.relative_to(project_root)
         module_parts = list(rel_path.parts[:-1]) + [rel_path.stem]
-        return '.'.join(module_parts)
+        return ".".join(module_parts)
     except ValueError:
         # File not within project root
         return file_path.stem
 
 
-def is_path_compliant(
-    file_path: str | Path,
-    project_root: Path | None = None
-) -> bool:
+def is_path_compliant(file_path: str | Path, project_root: Path | None = None) -> bool:
     r"""
     L5 Sovereign Structural SSOT - Hard-enforcement of path validity.
 
@@ -138,7 +137,7 @@ def is_path_compliant(
     for part in parts:
         if part in FORBIDDEN_ROOT_FOLDERS:
             return False
-        if hasattr(FORBIDDEN_FOLDER_PATTERN, 'match'):
+        if hasattr(FORBIDDEN_FOLDER_PATTERN, "match"):
             if FORBIDDEN_FOLDER_PATTERN.match(part):
                 return False
 
@@ -155,6 +154,7 @@ def is_path_compliant(
             from agentic_core.L5_safety.validators.structure_blueprint import (
                 VARIABLE_DEPTH_SUBFOLDERS,
             )
+
             if root_folder == "agentic_core" and len(parts) > 1:
                 subfolder = parts[1]
                 if subfolder in VARIABLE_DEPTH_SUBFOLDERS and actual_depth >= 2:
@@ -164,7 +164,7 @@ def is_path_compliant(
     return True
 
 
-def is_excepted_from_key(key_id: int, file_path: str | Path, line_content: str = '') -> bool:
+def is_excepted_from_key(key_id: int, file_path: str | Path, line_content: str = "") -> bool:
     """
     Check if file/line is excepted from key validation.
 

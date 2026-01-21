@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import hashlib
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
 import json
 import logging
@@ -13,7 +13,7 @@ from typing import Protocol
 
 # NAMING FIXED: IValidationContext → IValidationContext
 class IValidationContext(Protocol):
-    '''Brief description of functionality and purpose.'''
+    """Brief description of functionality and purpose."""
 
     cycle_id: int | None
     status: str
@@ -31,7 +31,7 @@ class IValidationContext(Protocol):
 
 # NAMING FIXED: IValidationContextManager → IValidationContextManager
 class IValidationContextManager(Protocol):
-    '''Brief description of functionality and purpose.'''
+    """Brief description of functionality and purpose."""
 
     current_context: IValidationContext | None
 
@@ -105,7 +105,7 @@ class Historian:
         """Save historical data to memory files."""
         # Save file history
         try:
-            with open(self.file_history_file, 'w') as f:
+            with open(self.file_history_file, "w") as f:
                 json.dump(self.file_history, f, indent=2)
         except Exception as e:
             LOGGER.error(f"Failed to save file history: {e}")
@@ -121,7 +121,7 @@ class Historian:
             MD5 hash as hex string
         """
         try:
-            with open(file_path, 'rb') as f:
+            with open(file_path, "rb") as f:
                 # Read file in chunks for large files
                 hash_md5 = hashlib.md5()
                 for chunk in iter(lambda: f.read(4096), b""):
@@ -210,7 +210,7 @@ class Historian:
             "timestamp": datetime.utcnow().isoformat(),
             "hash": current_hash,
             "status": status,
-            "violations_count": len(violations) if violations else 0
+            "violations_count": len(violations) if violations else 0,
         }
 
         self.file_history[rel_path].append(record)
@@ -300,10 +300,12 @@ class Historian:
         return {
             "validations": total_validations,
             "failures": failures,
-            "success_rate": ((total_validations - failures) / total_validations * 100) if total_validations > 0 else 0,
+            "success_rate": ((total_validations - failures) / total_validations * 100)
+            if total_validations > 0
+            else 0,
             "last_status": last_validation.get("status") if last_validation else None,
             "last_validated": last_validation.get("timestamp") if last_validation else None,
-            "is_flapping": self._is_flapping(rel_path)
+            "is_flapping": self._is_flapping(rel_path),
         }
 
     def get_cycle_summary(self) -> dict:
@@ -330,7 +332,7 @@ class Historian:
             "files_scanned": context.files_scanned,
             "files_skipped": context.files_skipped,
             "violations_found": context.violations_found,
-            "flapping_files": len(context.flapping_files)
+            "flapping_files": len(context.flapping_files),
         }
 
 

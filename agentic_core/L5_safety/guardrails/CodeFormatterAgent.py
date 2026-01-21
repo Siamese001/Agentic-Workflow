@@ -75,19 +75,14 @@ class CodeFormatterAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         try:
             # Black formatting
             black_result = safe_execute(
-                ["black", "--quiet", str(file)],
-                capture_output=True,
-                text=True,
-                check=False
+                ["black", "--quiet", str(file)], capture_output=True, text=True, check=False
             )
             if black_result.returncode == 0 and "reformatted" in black_result.stderr:
                 changed = True
 
             # Ruff lint auto-fix
             ruff_result = safe_execute(
-                ["ruff", "check", "--fix", "--quiet", str(file)],
-                capture_output=True,
-                check=False
+                ["ruff", "check", "--fix", "--quiet", str(file)], capture_output=True, check=False
             )
             if ruff_result.returncode == 0:
                 pass  # Ruff ran successfully
@@ -98,9 +93,7 @@ class CodeFormatterAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
         except FileNotFoundError as e:
             if hasattr(self.ctx, "report"):
-                self.ctx.report(
-                    "CodeFormatterAgent", 0, False, f"Tool Missing: {e.filename}"
-                )
+                self.ctx.report("CodeFormatterAgent", 0, False, f"Tool Missing: {e.filename}")
         except Exception as e:
             if hasattr(self.ctx, "report"):
                 self.ctx.report("CodeFormatterAgent", 0, False, f"Format error: {e}")
@@ -115,7 +108,7 @@ class CodeFormatterAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: set[str] | None = None
+        _call_path: set[str] | None = None,
     ) -> dict[str, int]:
         """Execute L5 safety healing operations.
 

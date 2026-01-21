@@ -2,6 +2,7 @@
 """
 Run NamingAgent to scan for duplicate filenames and class names.
 """
+
 import sys
 from pathlib import Path
 
@@ -43,11 +44,11 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 
 discovery_path = project_root / AGENT_DISCOVERY_JSON
 if discovery_path.exists():
-    agents = json.loads(discovery_path.read_text(encoding='utf-8'))
+    agents = json.loads(discovery_path.read_text(encoding="utf-8"))
 
     by_name = defaultdict(list)
     for a in agents:
-        by_name[a['class_name']].append(a['path'])
+        by_name[a["class_name"]].append(a["path"])
 
     dup_classes = {k: v for k, v in by_name.items() if len(v) > 1}
 

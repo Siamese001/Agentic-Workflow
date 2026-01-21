@@ -67,7 +67,7 @@ class InfrastructureOrchestrator:
             bulkhead_manager=self.bulkhead_manager,
             circuit_breaker_registry=await get_circuit_breaker_registry(),
             dead_letter_queue=await get_dead_letter_queue(),
-            checkpoint_manager=None  # Add if needed
+            checkpoint_manager=None,  # Add if needed
         )
 
         # Register component health checks
@@ -90,7 +90,11 @@ class InfrastructureOrchestrator:
 
             async def check_health(self) -> HealthCheckResult:
                 health = await self.event_bus.health_check()
-                status = HealthStatus.HEALTHY if health["event_bus"]["status"] == "healthy" else HealthStatus.UNHEALTHY
+                status = (
+                    HealthStatus.HEALTHY
+                    if health["event_bus"]["status"] == "healthy"
+                    else HealthStatus.UNHEALTHY
+                )
 
                 return HealthCheckResult(
                     component_name="event_bus",
@@ -98,7 +102,7 @@ class InfrastructureOrchestrator:
                     status=status,
                     message=f"Event bus is {health['event_bus']['status']}",
                     timestamp=None,
-                    metrics=health
+                    metrics=health,
                 )
 
             @property
@@ -124,7 +128,7 @@ class InfrastructureOrchestrator:
                     status=status,
                     message=f"Provenance tracker is {health['status']}",
                     timestamp=None,
-                    metrics=health
+                    metrics=health,
                 )
 
             @property
@@ -161,7 +165,7 @@ class InfrastructureOrchestrator:
                     status=status,
                     message=message,
                     timestamp=None,
-                    metrics=stats
+                    metrics=stats,
                 )
 
             @property
@@ -174,7 +178,9 @@ class InfrastructureOrchestrator:
 
         # Register all health checkers
         await self.health_registry.register_checker(EventBusHealthChecker(self.event_bus))
-        await self.health_registry.register_checker(ProvenanceHealthChecker(self.provenance_tracker))
+        await self.health_registry.register_checker(
+            ProvenanceHealthChecker(self.provenance_tracker)
+        )
         await self.health_registry.register_checker(ModelRouterHealthChecker(self.model_router))
 
         logger.info("Registered component health checks")
@@ -182,22 +188,13 @@ class InfrastructureOrchestrator:
     async def _setup_event_subscriptions(self) -> None:
         """Setup event subscriptions for cross-component communication."""
         # Subscribe to workflow events for provenance
-        await self.event_bus.subscribe(
-            "events.artifact_generated",
-            self._handle_artifact_generated
-        )
+        await self.event_bus.subscribe("events.artifact_generated", self._handle_artifact_generated)
 
         # Subscribe to error events for dead letter queue
-        await self.event_bus.subscribe(
-            "events.error_occurred",
-            self._handle_error_occurred
-        )
+        await self.event_bus.subscribe("events.error_occurred", self._handle_error_occurred)
 
         # Subscribe to model events for router optimization
-        await self.event_bus.subscribe(
-            "events.agent_completed",
-            self._handle_agent_completed
-        )
+        await self.event_bus.subscribe("events.agent_completed", self._handle_agent_completed)
 
         logger.info("Setup event subscriptions")
 
@@ -219,11 +216,7 @@ class InfrastructureOrchestrator:
                 sources = payload.get("sources", [])
                 if sources:
                     await self.provenance_tracker.record_generation(
-                        event.trace_id,
-                        artifact_id,
-                        output,
-                        model_version,
-                        payload.get("prompt")
+                        event.trace_id, artifact_id, output, model_version, payload.get("prompt")
                     )
 
         except Exception as e:
@@ -242,7 +235,7 @@ class InfrastructureOrchestrator:
                 event,  # Using event as envelope-like object
                 FailureReason.PROCESSING_ERROR,
                 event.source_component,
-                event.payload.get("error", "Unknown error")
+                event.payload.get("error", "Unknown error"),
             )
 
         except Exception as e:
@@ -266,7 +259,7 @@ class InfrastructureOrchestrator:
                     model_name,
                     usage.get("input_tokens", 0),
                     usage.get("output_tokens", 0),
-                    usage.get("cost", 0.0)
+                    usage.get("cost", 0.0),
                 )
 
         except Exception as e:
@@ -279,7 +272,7 @@ class InfrastructureOrchestrator:
         sources: list[tuple] | None = None,
         complexity_score: int = 1,
         trace_id: str | None = None,
-        priority: TaskPriority = TaskPriority.MEDIUM
+        priority: TaskPriority = TaskPriority.MEDIUM,
     ) -> dict[str, Any]:
         """Execute a task with full infrastructure support.
 
@@ -300,10 +293,12 @@ class InfrastructureOrchestrator:
         # Generate trace ID if not provided
         if not trace_id:
             import uuid
+
             trace_id = str(uuid.uuid4())
 
         # Start timing
         import time
+
         start_time = time.time()
 
         # Publish start event
@@ -313,11 +308,8 @@ class InfrastructureOrchestrator:
                 type=EventType.WORKFLOW_STARTED,
                 trace_id=trace_id,
                 source_component="InfrastructureOrchestrator",
-                payload={
-                    "task_type": task_type.value,
-                    "complexity_score": complexity_score
-                }
-            )
+                payload={"task_type": task_type.value, "complexity_score": complexity_score},
+            ),
         )
 
         try:
@@ -326,37 +318,26 @@ class InfrastructureOrchestrator:
                 await self.provenance_tracker.capture_context(trace_id, sources)
 
             # Route to appropriate model
-            model_config = self.model_router.get_model_config(
-                task_type,
-                complexity_score
-            )
+            model_config = self.model_router.get_model_config(task_type, complexity_score)
 
             # Get client and generate
             tier = self.model_router._select_model_for_tier(
                 self.model_router._determine_tier(
-                    self.model_router._task_profiles[task_type],
-                    complexity_score
+                    self.model_router._task_profiles[task_type], complexity_score
                 )
             )
             client = await self.model_router.get_client(tier)
 
             # Generate response through bulkhead
             result = await self.bulkhead_manager.execute(
-                client.generate,
-                prompt,
-                bulkhead_name="model_generation",
-                priority=priority
+                client.generate, prompt, bulkhead_name="model_generation", priority=priority
             )
 
             # Record provenance
             if sources:
                 artifact_id = f"artifact_{int(time.time())}"
                 lineage = await self.provenance_tracker.record_generation(
-                    trace_id,
-                    artifact_id,
-                    result,
-                    model_config["model"],
-                    prompt
+                    trace_id, artifact_id, result, model_config["model"], prompt
                 )
 
             # Publish completion event
@@ -371,10 +352,10 @@ class InfrastructureOrchestrator:
                         "output": result,
                         "model_version": model_config["model"],
                         "prompt": prompt,
-                        "sources": sources or []
+                        "sources": sources or [],
                     },
-                    causation_id=trace_id
-                )
+                    causation_id=trace_id,
+                ),
             )
 
             # Return result with metadata
@@ -386,7 +367,7 @@ class InfrastructureOrchestrator:
                 "model_used": model_config["model"],
                 "tier": model_config["tier"],
                 "execution_time": execution_time,
-                "lineage": lineage.to_dict() if sources else None
+                "lineage": lineage.to_dict() if sources else None,
             }
 
         except Exception as e:
@@ -398,8 +379,8 @@ class InfrastructureOrchestrator:
                     trace_id=trace_id,
                     source_component="InfrastructureOrchestrator",
                     payload={"error": str(e)},
-                    causation_id=trace_id
-                )
+                    causation_id=trace_id,
+                ),
             )
 
             # Send to dead letter queue
@@ -409,11 +390,11 @@ class InfrastructureOrchestrator:
                     type=EventType.WORKFLOW_FAILED,
                     trace_id=trace_id,
                     source_component="InfrastructureOrchestrator",
-                    payload={"error": str(e)}
+                    payload={"error": str(e)},
                 ),
                 FailureReason.PROCESSING_ERROR,
                 "InfrastructureOrchestrator.execute_with_infrastructure",
-                str(e)
+                str(e),
             )
 
             raise
@@ -435,7 +416,7 @@ class InfrastructureOrchestrator:
             "event_bus": await self.event_bus.health_check(),
             "provenance_tracker": self.provenance_tracker.get_stats(),
             "model_router": self.model_router.get_stats(),
-            "bulkheads": self.bulkhead_manager.get_all_metrics()
+            "bulkheads": self.bulkhead_manager.get_all_metrics(),
         }
 
         return health
@@ -481,7 +462,7 @@ async def execute_task(
     sources: list[tuple] | None = None,
     complexity_score: int = 1,
     trace_id: str | None = None,
-    priority: TaskPriority = TaskPriority.MEDIUM
+    priority: TaskPriority = TaskPriority.MEDIUM,
 ) -> dict[str, Any]:
     """Execute a task with full infrastructure support.
 
@@ -498,12 +479,7 @@ async def execute_task(
     """
     orchestrator = await get_infrastructure_orchestrator()
     return await orchestrator.execute_with_infrastructure(
-        task_type,
-        prompt,
-        sources,
-        complexity_score,
-        trace_id,
-        priority
+        task_type, prompt, sources, complexity_score, trace_id, priority
     )
 
 
@@ -519,9 +495,7 @@ async def get_system_status() -> dict[str, Any]:
 
 # Decorator for automatic infrastructure integration
 def with_infrastructure(
-    task_type: TaskType,
-    complexity_score: int = 1,
-    priority: TaskPriority = TaskPriority.MEDIUM
+    task_type: TaskType, complexity_score: int = 1, priority: TaskPriority = TaskPriority.MEDIUM
 ):
     """Decorator to add infrastructure support to functions.
 
@@ -533,6 +507,7 @@ def with_infrastructure(
     Returns:
         Decorated function
     """
+
     def decorator(func):
         async def async_wrapper(*args, **kwargs):
             # Extract prompt and sources
@@ -541,20 +516,16 @@ def with_infrastructure(
 
             # Extract trace_id from first argument if available
             trace_id = None
-            if args and hasattr(args[0], 'trace_id'):
+            if args and hasattr(args[0], "trace_id"):
                 trace_id = args[0].trace_id
 
             # Execute with infrastructure
             result = await execute_task(
-                task_type,
-                prompt,
-                sources,
-                complexity_score,
-                trace_id,
-                priority
+                task_type, prompt, sources, complexity_score, trace_id, priority
             )
 
             return result["result"]
 
         return async_wrapper
+
     return decorator

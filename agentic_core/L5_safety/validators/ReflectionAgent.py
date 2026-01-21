@@ -22,6 +22,7 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger = logging.getLogger(__name__)
 
+
 class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Reflection agent for learning from successful execution traces.
@@ -52,7 +53,7 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         self,
         ctx: Any | None = None,
         pinecone_client: Any | None = None,
-        embedding_model: str | None = None
+        embedding_model: str | None = None,
     ) -> None:
         """
         Initialize the ReflectionAgent.
@@ -64,14 +65,14 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         """
         self.ctx = ctx
         self.pinecone_client = pinecone_client
-        self.embedding_model = embedding_model or os.getenv('EMBEDDING_MODEL', 'text-embedding-004')
+        self.embedding_model = embedding_model or os.getenv("EMBEDDING_MODEL", "text-embedding-004")
         self._local_fallback: dict[str, Any] = {}
-        self._index_name = os.getenv('PINECONE_INDEX_NAME', 'successful-traces')
+        self._index_name = os.getenv("PINECONE_INDEX_NAME", "successful-traces")
         self.index: Any | None = None
         if self.pinecone_client:
             self._initialize_pinecone()
         else:
-            Logger.warning('Pinecone not available - using local fallback only')
+            Logger.warning("Pinecone not available - using local fallback only")
 
     def _initialize_pinecone(self) -> None:
         """
@@ -81,18 +82,22 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         Sets pinecone_client to None on failure.
         """
         try:
-            if not hasattr(self.pinecone_client, 'list_indexes'):
-                Logger.error('Invalid Pinecone client provided.')
+            if not hasattr(self.pinecone_client, "list_indexes"):
+                Logger.error("Invalid Pinecone client provided.")
                 self.pinecone_client = None
                 return
             existing_indexes = self.pinecone_client.list_indexes().names()
             if self._index_name not in existing_indexes:
-                self.pinecone_client.create_index(name=self._index_name, dimension=int(os.getenv('PINECONE_DIMENSION', '768')), Metric='cosine')
-                Logger.info(f'Created Pinecone index: {self._index_name}')
+                self.pinecone_client.create_index(
+                    name=self._index_name,
+                    dimension=int(os.getenv("PINECONE_DIMENSION", "768")),
+                    Metric="cosine",
+                )
+                Logger.info(f"Created Pinecone index: {self._index_name}")
             self.index = self.pinecone_client.Index(self._index_name)
-            Logger.info(f'Pinecone index ready: {self._index_name}')
+            Logger.info(f"Pinecone index ready: {self._index_name}")
         except Exception as e:
-            Logger.error(f'Failed to initialize Pinecone: {str(e)}')
+            Logger.error(f"Failed to initialize Pinecone: {str(e)}")
             self.pinecone_client = None
 
     def _get_successful_traces(self) -> list[dict[str, Any]]:
@@ -101,7 +106,7 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         Returns:
             List of trace dictionaries, or empty list if unavailable.
         """
-        if self.ctx and hasattr(self.ctx, 'successful_traces'):
+        if self.ctx and hasattr(self.ctx, "successful_traces"):
             traces = self.ctx.successful_traces
             if isinstance(traces, list):
                 return traces
@@ -118,8 +123,8 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         """
         if not isinstance(trace, dict):
             return False
-        task = trace.get('Task', '')
-        code_before = trace.get('code_before', '')
+        task = trace.get("Task", "")
+        code_before = trace.get("code_before", "")
         if not task or not code_before:
             Logger.warning("Skipping trace with missing mandatory fields 'Task' or 'code_before'")
             return False
@@ -134,11 +139,11 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         """
         analysis = await self._analyze_success_pattern(trace)
         if await self._internalize_trace(trace, analysis):
-            results['internalized'] += 1
-        results['processed'] += 1
+            results["internalized"] += 1
+        results["processed"] += 1
         recommendations = await self._generate_recommendations(trace, analysis)
         if isinstance(recommendations, list):
-            results['recommendations'].extend(recommendations)
+            results["recommendations"].extend(recommendations)
 
     async def execute(self, file_path: str | None = None) -> dict[str, Any]:
         """Process successful traces and internalize them to memory.
@@ -154,11 +159,16 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         successful_traces = self._get_successful_traces()
 
         if not successful_traces:
-            Logger.debug('No successful traces to process')
-            return {'processed': 0, 'internalized': 0, 'errors': [], 'recommendations': []}
+            Logger.debug("No successful traces to process")
+            return {"processed": 0, "internalized": 0, "errors": [], "recommendations": []}
 
-        Logger.info(f'RgReflectionAgent processing {len(successful_traces)} successful traces')
-        results: dict[str, Any] = {'processed': 0, 'internalized': 0, 'errors': [], 'recommendations': []}
+        Logger.info(f"RgReflectionAgent processing {len(successful_traces)} successful traces")
+        results: dict[str, Any] = {
+            "processed": 0,
+            "internalized": 0,
+            "errors": [],
+            "recommendations": [],
+        }
 
         for trace in successful_traces:
             if not self._is_valid_trace(trace):
@@ -166,15 +176,15 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             try:
                 await self._process_single_trace(trace, results)
             except Exception as e:
-                error_msg = f'Error processing trace: {str(e)}'
+                error_msg = f"Error processing trace: {str(e)}"
                 Logger.error(error_msg)
-                results['errors'].append(error_msg)
+                results["errors"].append(error_msg)
 
         try:
-            results['critique'] = await self._self_critique(results)
+            results["critique"] = await self._self_critique(results)
         except Exception as e:
-            Logger.error(f'Self-critique failed: {e}')
-            results['critique'] = 'Internal critique unavailable'
+            Logger.error(f"Self-critique failed: {e}")
+            results["critique"] = "Internal critique unavailable"
 
         return results
 
@@ -188,7 +198,7 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         Returns:
             Dict with pattern analysis results.
         """
-        return {'pattern_id': 'success_analysis_01'}
+        return {"pattern_id": "success_analysis_01"}
 
     async def _internalize_trace(self, trace: dict[str, Any], analysis: dict[str, Any]) -> bool:
         """
@@ -203,7 +213,9 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         """
         return True
 
-    async def _generate_recommendations(self, trace: dict[str, Any], analysis: dict[str, Any]) -> list[str]:
+    async def _generate_recommendations(
+        self, trace: dict[str, Any], analysis: dict[str, Any]
+    ) -> list[str]:
         """
         Generate recommendations for future executions.
 
@@ -226,12 +238,10 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         Returns:
             Critique string describing learning cycle quality.
         """
-        return 'Learning cycle consolidated successfully.'
+        return "Learning cycle consolidated successfully."
 
     async def execute_structured_research(
-        self,
-        topic: str,
-        llm_client: Any | None = None
+        self, topic: str, llm_client: Any | None = None
     ) -> dict[str, Any]:
         """
         Execute multi-hop structured research.
@@ -249,15 +259,21 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             Dict with multi-hop analysis, synthesis, and completion count.
         """
         hops = [
-            ("Financial/Strategic",
-             f"Research {topic}: Analyze market positioning, financial metrics, risks, and strategic alignment. "
-             "Include: revenue trends, EBITDA, strategic thesis, cost drivers."),
-            ("Technical/Product",
-             f"Research {topic}: Deep dive into architecture, tools, frameworks, and implementation. "
-             "Include: specific technologies, infrastructure stack, performance gains."),
-            ("Organizational/Leadership",
-             f"Research {topic}: Evaluate team structure, key executives, and vision. "
-             "Include: C-suite roles, domain ownership, organizational changes."),
+            (
+                "Financial/Strategic",
+                f"Research {topic}: Analyze market positioning, financial metrics, risks, and strategic alignment. "
+                "Include: revenue trends, EBITDA, strategic thesis, cost drivers.",
+            ),
+            (
+                "Technical/Product",
+                f"Research {topic}: Deep dive into architecture, tools, frameworks, and implementation. "
+                "Include: specific technologies, infrastructure stack, performance gains.",
+            ),
+            (
+                "Organizational/Leadership",
+                f"Research {topic}: Evaluate team structure, key executives, and vision. "
+                "Include: C-suite roles, domain ownership, organizational changes.",
+            ),
         ]
 
         research_output = {}
@@ -267,14 +283,18 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                 if llm_client:
                     # Use LLM for actual research
                     response = await llm_client.chat.completions.create(
-                        model='gpt-4',
+                        model="gpt-4",
                         messages=[
-                            {'role': 'system', 'content': 'You are a research analyst. Output structured JSON.'},
-                            {'role': 'user', 'content': prompt_focus}
+                            {
+                                "role": "system",
+                                "content": "You are a research analyst. Output structured JSON.",
+                            },
+                            {"role": "user", "content": prompt_focus},
                         ],
-                        temperature=0.3
+                        temperature=0.3,
                     )
                     import json
+
                     try:
                         result = json.loads(response.choices[0].message.content)
                     except json.JSONDecodeError:
@@ -284,7 +304,7 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                     result = {
                         "status": "pending",
                         "query": prompt_focus,
-                        "note": "LLM client required for actual research"
+                        "note": "LLM client required for actual research",
                     }
 
                 research_output[hop_name] = result
@@ -301,7 +321,7 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             "topic": topic,
             "multi_hop_analysis": research_output,
             "synthesis": synthesis,
-            "hops_completed": len([h for h in research_output.values() if "error" not in h])
+            "hops_completed": len([h for h in research_output.values() if "error" not in h]),
         }
 
     async def _synthesize_research(self, research_output: dict[str, Any], topic: str = "") -> str:
@@ -323,7 +343,10 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         if not findings:
             return f"Research synthesis for {topic}: Insufficient data collected across hops."
 
-        return f"Research synthesis for {topic}: {len(findings)} hops completed successfully. " + " ".join(findings)
+        return (
+            f"Research synthesis for {topic}: {len(findings)} hops completed successfully. "
+            + " ".join(findings)
+        )
 
     @timeout(300)
     def heal_repository(
@@ -332,7 +355,7 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: set[str] | None = None
+        _call_path: set[str] | None = None,
     ) -> dict[str, int]:
         """
         Execute L1 cognition healing operations.

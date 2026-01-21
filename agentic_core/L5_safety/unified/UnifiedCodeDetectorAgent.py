@@ -16,6 +16,7 @@ Features:
 - Deadlock/circular wait detection
 - Memory leak pattern detection
 """
+
 from __future__ import annotations
 
 import ast
@@ -33,6 +34,7 @@ Logger = logging.getLogger(__name__)
 
 class DetectionType(Enum):
     """Types of code detection."""
+
     DEAD_CODE = auto()
     DRIFT = auto()
     METHOD_CHANGE = auto()
@@ -42,6 +44,7 @@ class DetectionType(Enum):
 
 class Severity(Enum):
     """Severity levels for detections."""
+
     INFO = 0
     WARNING = 1
     ERROR = 2
@@ -51,6 +54,7 @@ class Severity(Enum):
 @dataclass
 class Detection:
     """Represents a code detection finding."""
+
     detection_type: DetectionType
     file_path: Path
     line_number: int
@@ -63,6 +67,7 @@ class Detection:
 @dataclass
 class DetectorConfig:
     """Configuration for code detection."""
+
     enable_dead_code: bool = True
     enable_drift: bool = True
     enable_method_change: bool = True
@@ -189,14 +194,16 @@ class UnifiedCodeDetectorAgent:
             # Find line number
             for node in ast.walk(tree):
                 if isinstance(node, ast.FunctionDef | ast.ClassDef) and node.name == name:
-                    detections.append(Detection(
-                        detection_type=DetectionType.DEAD_CODE,
-                        file_path=file_path,
-                        line_number=node.lineno,
-                        severity=Severity.WARNING,
-                        message=f"Potentially unused: {name}",
-                        details={"name": name, "type": type(node).__name__},
-                    ))
+                    detections.append(
+                        Detection(
+                            detection_type=DetectionType.DEAD_CODE,
+                            file_path=file_path,
+                            line_number=node.lineno,
+                            severity=Severity.WARNING,
+                            message=f"Potentially unused: {name}",
+                            details={"name": name, "type": type(node).__name__},
+                        )
+                    )
                     break
 
         return detections
@@ -228,17 +235,19 @@ class UnifiedCodeDetectorAgent:
                 line2, _ = lock_acquisitions[j + 1]
 
                 if abs(line2 - line1) < 10:  # Within 10 lines
-                    detections.append(Detection(
-                        detection_type=DetectionType.DEADLOCK,
-                        file_path=file_path,
-                        line_number=line1,
-                        severity=Severity.ERROR,
-                        message="Potential deadlock: nested lock acquisitions detected",
-                        details={
-                            "first_lock_line": line1,
-                            "second_lock_line": line2,
-                        },
-                    ))
+                    detections.append(
+                        Detection(
+                            detection_type=DetectionType.DEADLOCK,
+                            file_path=file_path,
+                            line_number=line1,
+                            severity=Severity.ERROR,
+                            message="Potential deadlock: nested lock acquisitions detected",
+                            details={
+                                "first_lock_line": line1,
+                                "second_lock_line": line2,
+                            },
+                        )
+                    )
 
         # Check for circular wait patterns
         try:
@@ -269,14 +278,16 @@ class UnifiedCodeDetectorAgent:
         seen_locks = set()
         for lineno, lock_name in with_statements:
             if lock_name in seen_locks:
-                detections.append(Detection(
-                    detection_type=DetectionType.DEADLOCK,
-                    file_path=file_path,
-                    line_number=lineno,
-                    severity=Severity.CRITICAL,
-                    message=f"Circular wait detected: lock '{lock_name}' acquired multiple times",
-                    details={"lock_name": lock_name},
-                ))
+                detections.append(
+                    Detection(
+                        detection_type=DetectionType.DEADLOCK,
+                        file_path=file_path,
+                        line_number=lineno,
+                        severity=Severity.CRITICAL,
+                        message=f"Circular wait detected: lock '{lock_name}' acquired multiple times",
+                        details={"lock_name": lock_name},
+                    )
+                )
             seen_locks.add(lock_name)
 
     def detect_memory_leaks(
@@ -295,14 +306,16 @@ class UnifiedCodeDetectorAgent:
         for i, line in enumerate(lines, 1):
             for pattern in self.MEMORY_LEAK_PATTERNS:
                 if re.search(pattern, line):
-                    detections.append(Detection(
-                        detection_type=DetectionType.MEMORY_LEAK,
-                        file_path=file_path,
-                        line_number=i,
-                        severity=Severity.WARNING,
-                        message="Potential memory leak pattern detected",
-                        details={"line": line.strip(), "pattern": pattern},
-                    ))
+                    detections.append(
+                        Detection(
+                            detection_type=DetectionType.MEMORY_LEAK,
+                            file_path=file_path,
+                            line_number=i,
+                            severity=Severity.WARNING,
+                            message="Potential memory leak pattern detected",
+                            details={"line": line.strip(), "pattern": pattern},
+                        )
+                    )
 
         return detections
 
@@ -344,17 +357,19 @@ class UnifiedCodeDetectorAgent:
                 if name in baseline_methods:
                     baseline = baseline_methods[name]
                     if current["args"] != baseline["args"]:
-                        detections.append(Detection(
-                            detection_type=DetectionType.METHOD_CHANGE,
-                            file_path=file_path,
-                            line_number=current["lineno"],
-                            severity=Severity.WARNING,
-                            message=f"Method signature changed: {name}",
-                            details={
-                                "old_args": baseline["args"],
-                                "new_args": current["args"],
-                            },
-                        ))
+                        detections.append(
+                            Detection(
+                                detection_type=DetectionType.METHOD_CHANGE,
+                                file_path=file_path,
+                                line_number=current["lineno"],
+                                severity=Severity.WARNING,
+                                message=f"Method signature changed: {name}",
+                                details={
+                                    "old_args": baseline["args"],
+                                    "new_args": current["args"],
+                                },
+                            )
+                        )
 
         return detections
 

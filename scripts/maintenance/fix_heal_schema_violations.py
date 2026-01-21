@@ -29,7 +29,7 @@ def fix_file(filepath: Path, replacements: dict[str, str]) -> tuple[bool, int]:
         Tuple of (modified, count_of_replacements)
     """
     try:
-        content = filepath.read_text(encoding='utf-8')
+        content = filepath.read_text(encoding="utf-8")
         original_content = content
         replacement_count = 0
 
@@ -45,7 +45,7 @@ def fix_file(filepath: Path, replacements: dict[str, str]) -> tuple[bool, int]:
                 print(f"    Replaced '{old_key}' → '{new_key}' ({count} occurrences)")
 
         if content != original_content:
-            filepath.write_text(content, encoding='utf-8')
+            filepath.write_text(content, encoding="utf-8")
             return True, replacement_count
 
         return False, 0
@@ -56,12 +56,14 @@ def fix_file(filepath: Path, replacements: dict[str, str]) -> tuple[bool, int]:
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Fix @standard_heal schema violations')
-    parser.add_argument('--dry-run', action='store_true', help='Show what would be fixed without modifying files')
+    parser = argparse.ArgumentParser(description="Fix @standard_heal schema violations")
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Show what would be fixed without modifying files"
+    )
     args = parser.parse_args()
 
     # Load tracking file
-    tracking_file = Path('.schema_violations_tracking.yaml')
+    tracking_file = Path(".schema_violations_tracking.yaml")
     if not tracking_file.exists():
         print("❌ Tracking file not found: .schema_violations_tracking.yaml")
         return 1
@@ -69,20 +71,20 @@ def main():
     with open(tracking_file) as f:
         tracking = yaml.safe_load(f)
 
-    violations = tracking.get('violations', [])
+    violations = tracking.get("violations", [])
 
-    print(f"\n{'='*70}")
+    print(f"\n{'=' * 70}")
     print("Schema Violation Auto-Fix")
-    print(f"{'='*70}")
+    print(f"{'=' * 70}")
     print(f"Mode: {'DRY RUN' if args.dry_run else 'EXECUTE'}")
     print(f"Total files to process: {len(violations)}")
-    print(f"{'='*70}\n")
+    print(f"{'=' * 70}\n")
 
     total_files_modified = 0
     total_replacements = 0
 
     for violation in violations:
-        filepath = Path(violation['file'])
+        filepath = Path(violation["file"])
 
         if not filepath.exists():
             print(f"⚠️  File not found: {filepath}")
@@ -90,9 +92,9 @@ def main():
 
         # Build replacements dict
         replacements = {}
-        for v in violation['violations']:
-            if v['status'] == 'pending':
-                replacements[v['key']] = v['canonical']
+        for v in violation["violations"]:
+            if v["status"] == "pending":
+                replacements[v["key"]] = v["canonical"]
 
         if not replacements:
             continue
@@ -112,7 +114,7 @@ def main():
             else:
                 print("  ⚠️  No changes made (patterns not found)")
 
-    print(f"\n{'='*70}")
+    print(f"\n{'=' * 70}")
     if args.dry_run:
         print("DRY RUN COMPLETE")
         print(f"Would modify {len([v for v in violations if v['violations']])} files")
@@ -124,10 +126,10 @@ def main():
         print("  1. Run: python scripts/maintenance/check_heal_schema_compliance.py")
         print("  2. Run tests: pytest tests/L5_safety/test_hygiene_consolidation.py")
         print("  3. Update .schema_violations_tracking.yaml status to 'fixed'")
-    print(f"{'='*70}\n")
+    print(f"{'=' * 70}\n")
 
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     exit(main())

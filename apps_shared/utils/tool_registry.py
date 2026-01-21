@@ -4,6 +4,7 @@ Tool Registry - Centralized SSOT for all tools.
 Ensures tools reside in Sovereign Territory before registration.
 Integrates with SovereignIndex for safety validation.
 """
+
 import logging
 from collections.abc import Callable
 from pathlib import Path
@@ -28,17 +29,18 @@ class ToolRegistry:
     - Integration with SovereignIndex for tool discovery
     - Logging of registration attempts
     """
-    _instance: Optional['ToolRegistry'] = None
+
+    _instance: Optional["ToolRegistry"] = None
     _tools: dict[str, dict[str, Any]] = {}
 
-    def __new__(cls) -> 'ToolRegistry':
+    def __new__(cls) -> "ToolRegistry":
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._instance._tools = {}
         return cls._instance
 
     @classmethod
-    def get_instance(cls) -> 'ToolRegistry':
+    def get_instance(cls) -> "ToolRegistry":
         """Get the singleton instance of ToolRegistry."""
         if cls._instance is None:
             cls._instance = cls()
@@ -51,11 +53,7 @@ class ToolRegistry:
         cls._tools = {}
 
     def register_tool(
-        self,
-        tool_name: str,
-        tool_path: str,
-        tool_func: Callable[..., Any],
-        description: str = ""
+        self, tool_name: str, tool_path: str, tool_func: Callable[..., Any], description: str = ""
     ) -> bool:
         """
         Registers a tool only after verifying its location is sovereign.
@@ -107,7 +105,7 @@ class ToolRegistry:
                 "path": str(tool_path),
                 "func": tool_func,
                 "verified": True,
-                "description": description
+                "description": description,
             }
             Logger.info(f"[REGISTRY] SUCCESS: Tool '{tool_name}' registered and verified.")
             return True
@@ -165,7 +163,9 @@ class ToolRegistry:
         """Returns the complete tool registry."""
         return self._tools.copy()
 
-    def discover_tools(self, pattern: str = "*_tool.py", project_root: Path | None = None) -> list[Path]:
+    def discover_tools(
+        self, pattern: str = "*_tool.py", project_root: Path | None = None
+    ) -> list[Path]:
         """
         Uses SovereignIndex to discover tool files matching a pattern.
 
@@ -182,9 +182,7 @@ class ToolRegistry:
         return idx.get_files(pattern)
 
     def auto_register_from_pattern(
-        self,
-        pattern: str = "*_tool.py",
-        tool_loader: Callable[[Path], tuple] | None = None
+        self, pattern: str = "*_tool.py", tool_loader: Callable[[Path], tuple] | None = None
     ) -> int:
         """
         Auto-discovers and registers tools matching a pattern.
@@ -211,10 +209,14 @@ class ToolRegistry:
             else:
                 # Default: use filename as tool name, placeholder func
                 tool_name = tool_path.stem
-                if self.register_tool(tool_name, str(tool_path), lambda: None, f"Tool from {tool_path.name}"):
+                if self.register_tool(
+                    tool_name, str(tool_path), lambda: None, f"Tool from {tool_path.name}"
+                ):
                     registered += 1
 
-        Logger.info(f"[REGISTRY] Auto-registered {registered}/{len(discovered)} tools from pattern '{pattern}'")
+        Logger.info(
+            f"[REGISTRY] Auto-registered {registered}/{len(discovered)} tools from pattern '{pattern}'"
+        )
         return registered
 
     def __len__(self) -> int:

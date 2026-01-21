@@ -26,7 +26,7 @@ from typing import Any
 
 def extract_dashboard_data(html: str) -> list[dict[str, Any]]:
     """Extract dashboardData JSON from HTML safely."""
-    match = re.search(r'const dashboardData = (\[.*?\]);', html, re.DOTALL)
+    match = re.search(r"const dashboardData = (\[.*?\]);", html, re.DOTALL)
     if match:
         try:
             return json.loads(match.group(1))
@@ -38,21 +38,21 @@ def extract_dashboard_data(html: str) -> list[dict[str, Any]]:
 def validate_drilldown_infrastructure(html: str) -> dict[str, bool]:
     """Validate that drill-down infrastructure exists."""
     return {
-        'openDrillModal_function': 'function openDrillModal(' in html,
-        'drillModal_element': "id='drillModal'" in html or 'id="drillModal"' in html,
-        'template_has_onclick': 'openDrillModal(' in html and 'onclick=' in html,
+        "openDrillModal_function": "function openDrillModal(" in html,
+        "drillModal_element": "id='drillModal'" in html or 'id="drillModal"' in html,
+        "template_has_onclick": "openDrillModal(" in html and "onclick=" in html,
     }
 
 
 def main():
-    dashboard_path = Path('reports/autonomy_dashboard.html')
+    dashboard_path = Path("reports/autonomy_dashboard.html")
 
     if not dashboard_path.exists():
         print(f"❌ Dashboard not found: {dashboard_path}")
         print("   Run: python canon_validator_agentic_v2_thin.py --report")
         return 1
 
-    html = dashboard_path.read_text(encoding='utf-8')
+    html = dashboard_path.read_text(encoding="utf-8")
 
     # Validate infrastructure
     print("=" * 90)
@@ -60,11 +60,17 @@ def main():
     print("=" * 90)
 
     infra = validate_drilldown_infrastructure(html)
-    print(f"openDrillModal() function:     {'✅ Found' if infra['openDrillModal_function'] else '❌ Missing'}")
-    print(f"drillModal DOM element:        {'✅ Found' if infra['drillModal_element'] else '❌ Missing'}")
-    print(f"onclick template reference:    {'✅ Found' if infra['template_has_onclick'] else '❌ Missing'}")
+    print(
+        f"openDrillModal() function:     {'✅ Found' if infra['openDrillModal_function'] else '❌ Missing'}"
+    )
+    print(
+        f"drillModal DOM element:        {'✅ Found' if infra['drillModal_element'] else '❌ Missing'}"
+    )
+    print(
+        f"onclick template reference:    {'✅ Found' if infra['template_has_onclick'] else '❌ Missing'}"
+    )
 
-    if not infra['openDrillModal_function'] or not infra['drillModal_element']:
+    if not infra["openDrillModal_function"] or not infra["drillModal_element"]:
         print("\n❌ CRITICAL: Drill-down infrastructure is missing!")
         return 1
 
@@ -87,18 +93,18 @@ def main():
     total_agents = 0
     territories_with_data = 0
 
-    for row in sorted(data, key=lambda r: r.get('Territory', '')):
-        territory = row.get('Territory', 'Unknown')
-        agents = row.get('Total', 0)
-        health = row.get('Health', 0)
+    for row in sorted(data, key=lambda r: r.get("Territory", "")):
+        territory = row.get("Territory", "Unknown")
+        agents = row.get("Total", 0)
+        health = row.get("Health", 0)
 
-        if territory != 'TOTAL':
+        if territory != "TOTAL":
             total_agents += agents
             if agents > 0:
                 territories_with_data += 1
 
         status = "✅ Has agent data" if agents > 0 else "⚠️  No agents"
-        if territory == 'TOTAL':
+        if territory == "TOTAL":
             status = "📊 Summary row"
 
         print(f"{territory:<50} {agents:<10} {health:<10.1f} {status}")
@@ -106,11 +112,13 @@ def main():
     print("-" * 90)
 
     # Summary
-    print(f"\n{'='*90}")
+    print(f"\n{'=' * 90}")
     print("VALIDATION SUMMARY")
-    print(f"{'='*90}")
+    print(f"{'=' * 90}")
     print("✅ Infrastructure:        openDrillModal() + drillModal element present")
-    print(f"✅ Data:                  {territories_with_data} territories with {total_agents} total agents")
+    print(
+        f"✅ Data:                  {territories_with_data} territories with {total_agents} total agents"
+    )
     print("✅ Template:              onclick handlers reference openDrillModal()")
     print()
     print("NOTE: Table rows are rendered DYNAMICALLY by client-side JavaScript.")
@@ -156,7 +164,9 @@ def main():
         status = "✅ PASS" if has_onclick and has_cursor else "❌ FAIL"
         if not (has_onclick and has_cursor):
             all_pass = False
-        print(f"{territory:<35} {sub:<20} {'✅' if has_onclick else '❌':<10} {'✅' if has_cursor else '❌':<10} {status}")
+        print(
+            f"{territory:<35} {sub:<20} {'✅' if has_onclick else '❌':<10} {'✅' if has_cursor else '❌':<10} {status}"
+        )
 
     print("-" * 90)
     print(f"\n✅ ALL {len(validated_rows)} TERRITORY ROWS HAVE WORKING DRILL-DOWN CAPABILITY")
@@ -165,5 +175,5 @@ def main():
     return 0 if all_pass else 1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     exit(main())

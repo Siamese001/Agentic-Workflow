@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class K5Output:
     """K.5 CTA output."""
+
     cta: str
     route: str
     archetype: str
@@ -95,8 +96,7 @@ class K5_CTAAgent(Agent):
         self.template = CTA_TEMPLATES.get(route, CTA_TEMPLATES["INMAIL"])
 
         logger.info(
-            f"K.5 CTA Agent initialized: route={route}, "
-            f"word_limit={self.template['word_limit']}"
+            f"K.5 CTA Agent initialized: route={route}, word_limit={self.template['word_limit']}"
         )
 
     async def execute(self, context: dict[str, Any]) -> K5Output:
@@ -151,9 +151,7 @@ class K5_CTAAgent(Agent):
             },
         )
 
-        logger.info(
-            f"K.5 CTA generation complete: {word_count} words, {char_count} chars"
-        )
+        logger.info(f"K.5 CTA generation complete: {word_count} words, {char_count} chars")
 
         return output
 
@@ -213,7 +211,7 @@ FOLLOW_UP CTAs must:
 
 CRITICAL CONSTRAINTS:
 - Word limit: {word_limit} words (STRICT)
-{f'- Character limit: {char_limit} chars (STRICT)' if char_limit else ''}
+{f"- Character limit: {char_limit} chars (STRICT)" if char_limit else ""}
 - Single sentence
 - Explicit ask
 - Time-bound (where applicable)
@@ -221,7 +219,7 @@ CRITICAL CONSTRAINTS:
 {route_instructions}
 
 EXAMPLES:
-{chr(10).join(f'- {ex}' for ex in self.template['examples'])}
+{chr(10).join(f"- {ex}" for ex in self.template["examples"])}
 
 Generate the CTA now (single sentence, {word_limit} words max):
 """
@@ -252,8 +250,8 @@ PREVIOUS CTA:
 {previous_cta}
 
 CONSTRAINTS:
-- Word limit: {self.template['word_limit']} words
-{f"- Character limit: {self.template['char_limit']} chars" if self.template['char_limit'] else ''}
+- Word limit: {self.template["word_limit"]} words
+{f"- Character limit: {self.template['char_limit']} chars" if self.template["char_limit"] else ""}
 - Single sentence
 - Explicit ask
 

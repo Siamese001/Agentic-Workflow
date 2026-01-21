@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt, state, workflow
@@ -8,7 +7,7 @@ from __future__ import annotations
 
 from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
 import datetime
 import os
@@ -18,7 +17,7 @@ from typing import Any
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
 # NAMING FIXED: EXCLUDED_DIRS → excluded_dirs
-excluded_dirs = {'.git', '__pycache__', '.venv', 'venv', 'data', 'archives'}
+excluded_dirs = {".git", "__pycache__", ".venv", "venv", "data", "archives"}
 
 # Optional dependencies
 # [HARDENING] Lazy import to prevent subprocess hangs during canon validation
@@ -26,20 +25,24 @@ excluded_dirs = {'.git', '__pycache__', '.venv', 'venv', 'data', 'archives'}
 gitpython_available = False
 Repo = None
 
+
 def _lazy_load_git():
     """Lazy load GitPython only when actually needed"""
     global GITPYTHON_AVAILABLE, Repo
     if Repo is None:
         try:
             from git import Repo as _Repo
+
             Repo = _Repo
             GITPYTHON_AVAILABLE = True
         except (ImportError, Exception):
             GITPYTHON_AVAILABLE = False
     return GITPYTHON_AVAILABLE
 
+
 try:
     from watchdog.events import FileSystemEventHandler
+
     WATCHDOG_AVAILABLE = True
 except ImportError:
     WATCHDOG_AVAILABLE = False
@@ -50,10 +53,14 @@ class HistorianAgent(SovereignBaseAgent):
     """
     ROLE: Records all validation events to a Markdown log file.
     """
+
     def __init__(self, ctx) -> None:
         super().__init__(ctx)
         # Use env var for log path for better environment isolation
-        self.log_file = os.getenv("HISTORIAN_LOG_PATH", f"validation_log_{datetime.date.today()}.md")
+        self.log_file = os.getenv(
+            "HISTORIAN_LOG_PATH", f"validation_log_{datetime.date.today()}.md"
+        )
+
     async def execute(self) -> None:
         """Execute execute operation."""
         # The Historian is usually called directly via record_event,
@@ -75,8 +82,8 @@ class HistorianAgent(SovereignBaseAgent):
             print(f"   [!] Historian failed to write: {e}")
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()
 
 
 # Legacy class removed 2026-01-06 - use standalone GitAgent.py
@@ -87,10 +94,12 @@ class HistorianAgent(SovereignBaseAgent):
 
 
 if WATCHDOG_AVAILABLE:
+
     class WatchmanHandler(FileSystemEventHandler):
         """
         L5 Component: Reacts to file system changes in real-time.
         """
+
         def __init__(self, context, loop) -> None:
             self.ctx = context
             self.loop = loop
@@ -98,13 +107,17 @@ if WATCHDOG_AVAILABLE:
 
         def on_modified(self, event) -> Any:
             """Execute on_modified operation."""
-            if event.is_directory: return
-            if any(x in event.src_path for x in EXCLUDED_DIRS): return
-            if not event.src_path.endswith('.py'): return
+            if event.is_directory:
+                return
+            if any(x in event.src_path for x in EXCLUDED_DIRS):
+                return
+            if not event.src_path.endswith(".py"):
+                return
 
             # Non-blocking debounce using wall-clock time
             now = time.time()
-            if now - self.cooldown < 2.0: return
+            if now - self.cooldown < 2.0:
+                return
             self.cooldown = now
 
             print(f"\n   👀 WATCHMAN: Detected change in {event.src_path}")
@@ -112,8 +125,10 @@ if WATCHDOG_AVAILABLE:
             # Thread-safe signaling for the async context
             self.loop.call_soon_threadsafe(self.ctx.modified_files.add, event.src_path)
 else:
+
     class WatchmanHandler:
         """Stub WatchmanHandler when watchdog is not installed."""
+
         def __init__(self, context, loop) -> None:
             self.ctx = context
             self.loop = loop

@@ -1,4 +1,5 @@
 """Prompt injection detection tests."""
+
 from src.lic_agentic.safety import prompt_injection
 from src.lic_agentic.safety.prompt_injection import detect_injection
 

@@ -8,7 +8,6 @@ Restored: 2026-01-13 | Version: 2.1.0 (With Telemetry)
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-
 import logging
 from collections.abc import Callable
 from dataclasses import dataclass, field
@@ -23,14 +22,17 @@ from agentic_core.utils.sovereign_index import SovereignIndex
 # Type alias for telemetry callback
 TelemetryCallback = Callable[[str, dict[str, Any]], None]
 
+
 @dataclass
 class Experience:
     """Represents a single state-action-outcome unit for learning."""
+
     state: dict[str, Any]
     thought_type: str  # e.g., 'cot', 'tot', 'react', 'reflection'
     outcome: dict[str, Any]
     reward: float
     timestamp: datetime = field(default_factory=datetime.utcnow)
+
 
 class MetaLearningAgent(SubatomicTestingMixin, HealerMixin):
     """
@@ -40,7 +42,9 @@ class MetaLearningAgent(SubatomicTestingMixin, HealerMixin):
     Supports telemetry callbacks for dashboard observability.
     """
 
-    def __init__(self, replay_capacity: int = 1000, telemetry_callback: TelemetryCallback | None = None) -> None:
+    def __init__(
+        self, replay_capacity: int = 1000, telemetry_callback: TelemetryCallback | None = None
+    ) -> None:
         """Initialize the instance.
 
         Args:
@@ -55,7 +59,7 @@ class MetaLearningAgent(SubatomicTestingMixin, HealerMixin):
             "cot": 1.0,
             "tot": 1.0,
             "react": 1.0,
-            "reflection": 1.0
+            "reflection": 1.0,
         }
         self.total_experiences = 0
         self.total_replays = 0
@@ -67,8 +71,9 @@ class MetaLearningAgent(SubatomicTestingMixin, HealerMixin):
         # Initialize Mixins
         super().__init__()
 
-    def store_experience(self, state: dict[str, Any], thought_type: str,
-                         outcome: dict[str, Any], reward: float) -> str:
+    def store_experience(
+        self, state: dict[str, Any], thought_type: str, outcome: dict[str, Any], reward: float
+    ) -> str:
         """Stores a new experience in the replay buffer with reward signal."""
         exp = Experience(state=state, thought_type=thought_type, outcome=outcome, reward=reward)
 
@@ -81,18 +86,21 @@ class MetaLearningAgent(SubatomicTestingMixin, HealerMixin):
 
         # Telemetry hook for dashboard observability
         if self.telemetry_callback:
-            self.telemetry_callback('experience_stored', {
-                'experience_id': exp_id,
-                'thought_type': thought_type,
-                'reward': reward,
-                'buffer_size': len(self.replay_buffer),
-                'total_experiences': self.total_experiences,
-                'experience': {
-                    'thought_type': thought_type,
-                    'reward': reward,
-                    'timestamp': exp.timestamp.isoformat()
-                }
-            })
+            self.telemetry_callback(
+                "experience_stored",
+                {
+                    "experience_id": exp_id,
+                    "thought_type": thought_type,
+                    "reward": reward,
+                    "buffer_size": len(self.replay_buffer),
+                    "total_experiences": self.total_experiences,
+                    "experience": {
+                        "thought_type": thought_type,
+                        "reward": reward,
+                        "timestamp": exp.timestamp.isoformat(),
+                    },
+                },
+            )
 
         return exp_id
 
@@ -125,7 +133,9 @@ class MetaLearningAgent(SubatomicTestingMixin, HealerMixin):
         total = sum(self.strategy_weights.values())
         if total > 0:
             for k in self.strategy_weights:
-                self.strategy_weights[k] = self.strategy_weights[k] / total * len(self.strategy_weights)
+                self.strategy_weights[k] = (
+                    self.strategy_weights[k] / total * len(self.strategy_weights)
+                )
 
         return self.strategy_weights
 
@@ -136,10 +146,10 @@ class MetaLearningAgent(SubatomicTestingMixin, HealerMixin):
 
         # Telemetry hook for dashboard observability
         if self.telemetry_callback:
-            self.telemetry_callback('patterns_extracted', {
-                'patterns': patterns,
-                'total_patterns': self.patterns_extracted
-            })
+            self.telemetry_callback(
+                "patterns_extracted",
+                {"patterns": patterns, "total_patterns": self.patterns_extracted},
+            )
 
         return patterns
 
@@ -150,26 +160,28 @@ class MetaLearningAgent(SubatomicTestingMixin, HealerMixin):
     def get_live_statistics(self) -> dict[str, Any]:
         """Get current meta-learning statistics for dashboard observability."""
         return {
-            'total_experiences': self.total_experiences,
-            'buffer_size': len(self.replay_buffer),
-            'buffer_capacity': self.replay_capacity,
-            'patterns_extracted': self.patterns_extracted,
-            'strategy_weights': self.strategy_weights.copy(),
-            'recent_experiences': [
+            "total_experiences": self.total_experiences,
+            "buffer_size": len(self.replay_buffer),
+            "buffer_capacity": self.replay_capacity,
+            "patterns_extracted": self.patterns_extracted,
+            "strategy_weights": self.strategy_weights.copy(),
+            "recent_experiences": [
                 {
-                    'thought_type': exp.thought_type,
-                    'reward': exp.reward,
-                    'timestamp': exp.timestamp.isoformat()
+                    "thought_type": exp.thought_type,
+                    "reward": exp.reward,
+                    "timestamp": exp.timestamp.isoformat(),
                 }
                 for exp in self.replay_buffer[-10:]
-            ]
+            ],
         }
 
     def get_statistics(self) -> dict[str, Any]:
         """Legacy method for backward compatibility."""
         return self.get_live_statistics()
 
-    def _discover_patterns(self, pattern_str: str = "*.py", project_root: Path | None = None) -> list[Path]:
+    def _discover_patterns(
+        self, pattern_str: str = "*.py", project_root: Path | None = None
+    ) -> list[Path]:
         """
         Discover files matching a pattern using SovereignIndex for high-performance cached lookup.
 
@@ -187,7 +199,9 @@ class MetaLearningAgent(SubatomicTestingMixin, HealerMixin):
         idx = SovereignIndex.get_instance(project_root)
         return idx.get_files(pattern_str)
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict[str, Any]:
         """Autonomous healing with proper invocation chain."""
         super().heal_repository(dry_run=dry_run, execute=execute, **kwargs)
         return {"violations": 0, "fixed": 0, "errors": 0}

@@ -48,6 +48,7 @@ class SovereignBaseAgent(InfrastructureMixin):
     - Concrete agents inherit from layer bases (+ more specialized mixins)
     - MRO: Specialized -> Layer -> SovereignBaseAgent -> InfrastructureMixin -> object
     """
+
     name: str = "SovereignAgent"
 
     def __post_init__(self) -> None:
@@ -71,7 +72,7 @@ class SovereignBaseAgent(InfrastructureMixin):
         """Initialize sovereign-specific state."""
         self._config: dict[str, Any] = {}
         self._state: dict[str, Any] = {}
-        self._authority_level = 'standard'
+        self._authority_level = "standard"
 
     def execute(self, *args, **kwargs) -> Any:
         """Execute the agent's main function."""
@@ -106,11 +107,20 @@ class SovereignBaseAgent(InfrastructureMixin):
         """Log an error message."""
         logger.error(f"[{self.name}] {message}")
 
-    def log_feedback(self, workflow_id: str, action: str, status: str, details: dict[str, Any] = None) -> None:
+    def log_feedback(
+        self, workflow_id: str, action: str, status: str, details: dict[str, Any] = None
+    ) -> None:
         """Log feedback for a workflow action."""
         logger.info(f"[{self.name}] Workflow {workflow_id}: {action} - {status} - {details or {}}")
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """
         Base heal_repository implementation - ROOT termination point.
 
@@ -123,4 +133,4 @@ class SovereignBaseAgent(InfrastructureMixin):
         return {"violations": 0, "fixed": 0, "errors": 0, "skipped": 1}
 
 
-__all__ = ['SovereignBaseAgent']
+__all__ = ["SovereignBaseAgent"]

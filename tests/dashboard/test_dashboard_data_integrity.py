@@ -4,6 +4,7 @@ MANDATORY: Dashboard Data Integrity Validation
 Comprehensive validation to prevent data sourcing issues.
 Run this BEFORE test_mcp_hardening_all_territories.py
 """
+
 import json
 import re
 import subprocess
@@ -15,11 +16,12 @@ from agentic_core.utils.security import safe_execute
 
 project_root = Path(__file__).parent.parent
 
+
 def validate_ssot_compliance():
     """TEST 1: Ensure all SSOT-defined metrics are present in dashboard data."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST 1: SSOT Compliance Validation")
-    print("="*70)
+    print("=" * 70)
 
     # Import SSOT column names
     sys.path.insert(0, str(project_root / "scripts"))
@@ -38,20 +40,35 @@ def validate_ssot_compliance():
     )
 
     required_columns = [
-        'Territory', 'Total', 'Compliant',
-        COL_HEAL_CAP, COL_INVOCATION, COL_TEST,
-        COL_HARDENED, COL_COMPLEXITY_HEALTH, COL_TYPED,
-        COL_DOCUMENTED, COL_SCHEMA,
-        COL_CANONICAL_INHERITANCE, COL_CODE_QUALITY,
-        COL_HEALTH  # CRITICAL: Overall health score
+        "Territory",
+        "Total",
+        "Compliant",
+        COL_HEAL_CAP,
+        COL_INVOCATION,
+        COL_TEST,
+        COL_HARDENED,
+        COL_COMPLEXITY_HEALTH,
+        COL_TYPED,
+        COL_DOCUMENTED,
+        COL_SCHEMA,
+        COL_CANONICAL_INHERITANCE,
+        COL_CODE_QUALITY,
+        COL_HEALTH,  # CRITICAL: Overall health score
     ]
 
     # Load dashboard data
-    data_file = project_root / "agentic_core" / "L6_observability" / "dashboards" / "data" / "dashboard_data.js"
-    raw_content = data_file.read_text(encoding='utf-8')
+    data_file = (
+        project_root
+        / "agentic_core"
+        / "L6_observability"
+        / "dashboards"
+        / "data"
+        / "dashboard_data.js"
+    )
+    raw_content = data_file.read_text(encoding="utf-8")
 
     # Hardening: Use regex to safely extract JSON payload
-    match = re.search(r'window\.dashboardData\s*=\s*(\[.*?\]);', raw_content, re.DOTALL)
+    match = re.search(r"window\.dashboardData\s*=\s*(\[.*?\]);", raw_content, re.DOTALL)
     if not match:
         print("❌ FAILED: Could not extract JSON from dashboard_data.js")
         return False
@@ -73,15 +90,18 @@ def validate_ssot_compliance():
             print(f"   ... and {len(failures) - 10} more")
         return False
     else:
-        print(f"\n✅ PASSED: All {len(required_columns)} required columns present in {len(data)} rows")
+        print(
+            f"\n✅ PASSED: All {len(required_columns)} required columns present in {len(data)} rows"
+        )
         print(f"   Columns: {', '.join(required_columns[:5])}...")
         return True
 
+
 def validate_field_name_consistency():
     """TEST 2: Validate field names match between source data and SSOT."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST 2: Field Name Consistency Validation")
-    print("="*70)
+    print("=" * 70)
 
     # Import SSOT field names
     sys.path.insert(0, str(project_root / "scripts"))
@@ -96,9 +116,13 @@ def validate_field_name_consistency():
     )
 
     ssot_fields = [
-        FIELD_HAS_HEALING, FIELD_INVOCATION, FIELD_HAS_TESTS,
-        FIELD_TYPED_PCT, FIELD_DOCUMENTED_PCT, FIELD_SCHEMA_STRICTNESS,
-        FIELD_CYCLOMATIC_COMPLEXITY
+        FIELD_HAS_HEALING,
+        FIELD_INVOCATION,
+        FIELD_HAS_TESTS,
+        FIELD_TYPED_PCT,
+        FIELD_DOCUMENTED_PCT,
+        FIELD_SCHEMA_STRICTNESS,
+        FIELD_CYCLOMATIC_COMPLEXITY,
     ]
 
     # Load source data
@@ -125,11 +149,12 @@ def validate_field_name_consistency():
         print(f"   Fields: {', '.join(ssot_fields[:5])}...")
         return True
 
+
 def validate_calculation_integrity():
     """TEST 3: Verify dashboard values match SSOT calculations from source."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST 3: Calculation Integrity Validation")
-    print("="*70)
+    print("=" * 70)
 
     # Import SSOT calculation functions and column names
     sys.path.insert(0, str(project_root / "scripts"))
@@ -161,18 +186,25 @@ def validate_calculation_integrity():
     # Group by territory
     territories = defaultdict(list)
     for agent in agents:
-        territory = agent.get('territory', 'Unknown')
+        territory = agent.get("territory", "Unknown")
         territories[territory].append(agent)
 
     # Load dashboard data
-    data_file = project_root / "agentic_core" / "L6_observability" / "dashboards" / "data" / "dashboard_data.js"
-    content = data_file.read_text(encoding='utf-8')
-    lines = [l for l in content.split('\n') if not l.strip().startswith('//')]
-    content = '\n'.join(lines).replace('window.dashboardData = ', '').strip().rstrip(';')
+    data_file = (
+        project_root
+        / "agentic_core"
+        / "L6_observability"
+        / "dashboards"
+        / "data"
+        / "dashboard_data.js"
+    )
+    content = data_file.read_text(encoding="utf-8")
+    lines = [l for l in content.split("\n") if not l.strip().startswith("//")]
+    content = "\n".join(lines).replace("window.dashboardData = ", "").strip().rstrip(";")
     dashboard_data = json.loads(content)
 
     # Hardening: Absolute Validation (Full dataset check instead of random sampling)
-    full_territories = [r for r in dashboard_data if r['Territory'] != 'TOTAL']
+    full_territories = [r for r in dashboard_data if r["Territory"] != "TOTAL"]
 
     tolerance = 0.1  # Allow 0.1% difference for floating point
     failures = []
@@ -180,7 +212,7 @@ def validate_calculation_integrity():
     print(f"\n   Running exhaustive check on all {len(full_territories)} territories...")
 
     for row in full_territories:
-        territory_name = row['Territory']
+        territory_name = row["Territory"]
         territory_agents = territories.get(territory_name, [])
 
         if not territory_agents:
@@ -207,14 +239,16 @@ def validate_calculation_integrity():
             (COL_COMPLEXITY_HEALTH, expected_complexity, row.get(COL_COMPLEXITY_HEALTH)),
             (COL_TYPED, expected_typed, row.get(COL_TYPED)),
             (COL_DOCUMENTED, expected_documented, row.get(COL_DOCUMENTED)),
-            (COL_CANONICAL_INHERITANCE, expected_inheritance, row.get(COL_CANONICAL_INHERITANCE))
+            (COL_CANONICAL_INHERITANCE, expected_inheritance, row.get(COL_CANONICAL_INHERITANCE)),
         ]
 
         for field_name, expected, actual in checks:
             if actual is None:
                 failures.append(f"{territory_name}: {field_name} is None")
             elif abs(expected - actual) > tolerance:
-                failures.append(f"{territory_name}: {field_name} mismatch (expected {expected:.1f}, got {actual:.1f})")
+                failures.append(
+                    f"{territory_name}: {field_name} mismatch (expected {expected:.1f}, got {actual:.1f})"
+                )
 
     if failures:
         print(f"\n❌ CALCULATION INTEGRITY FAILED: {len(failures)} mismatches")
@@ -225,27 +259,35 @@ def validate_calculation_integrity():
         print(f"\n✅ PASSED: All calculations match source data (tolerance: ±{tolerance}%)")
         return True
 
+
 def validate_territory_count():
     """TEST 4: Ensure no territories are accidentally dropped."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST 4: Territory Count Validation")
-    print("="*70)
+    print("=" * 70)
 
     # Load source data
     source_file = project_root / "agent_discovery_full.json"
     with open(source_file) as f:
         agents = json.load(f)
 
-    source_territories = set(a.get('territory') for a in agents if a.get('territory'))
+    source_territories = set(a.get("territory") for a in agents if a.get("territory"))
 
     # Load dashboard data
-    data_file = project_root / "agentic_core" / "L6_observability" / "dashboards" / "data" / "dashboard_data.js"
-    content = data_file.read_text(encoding='utf-8')
-    lines = [l for l in content.split('\n') if not l.strip().startswith('//')]
-    content = '\n'.join(lines).replace('window.dashboardData = ', '').strip().rstrip(';')
+    data_file = (
+        project_root
+        / "agentic_core"
+        / "L6_observability"
+        / "dashboards"
+        / "data"
+        / "dashboard_data.js"
+    )
+    content = data_file.read_text(encoding="utf-8")
+    lines = [l for l in content.split("\n") if not l.strip().startswith("//")]
+    content = "\n".join(lines).replace("window.dashboardData = ", "").strip().rstrip(";")
     dashboard_data = json.loads(content)
 
-    dashboard_territories = set(r['Territory'] for r in dashboard_data if r['Territory'] != 'TOTAL')
+    dashboard_territories = set(r["Territory"] for r in dashboard_data if r["Territory"] != "TOTAL")
 
     missing = source_territories - dashboard_territories
     extra = dashboard_territories - source_territories
@@ -267,41 +309,58 @@ def validate_territory_count():
         print(f"   Dashboard: {len(dashboard_territories)} territories (+ TOTAL)")
         return True
 
+
 def validate_data_types():
     """TEST 5: Ensure all fields have correct data types."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST 5: Data Type Validation")
-    print("="*70)
+    print("=" * 70)
 
     # Load dashboard data
-    data_file = project_root / "agentic_core" / "L6_observability" / "dashboards" / "data" / "dashboard_data.js"
-    content = data_file.read_text(encoding='utf-8')
-    lines = [l for l in content.split('\n') if not l.strip().startswith('//')]
-    content = '\n'.join(lines).replace('window.dashboardData = ', '').strip().rstrip(';')
+    data_file = (
+        project_root
+        / "agentic_core"
+        / "L6_observability"
+        / "dashboards"
+        / "data"
+        / "dashboard_data.js"
+    )
+    content = data_file.read_text(encoding="utf-8")
+    lines = [l for l in content.split("\n") if not l.strip().startswith("//")]
+    content = "\n".join(lines).replace("window.dashboardData = ", "").strip().rstrip(";")
     data = json.loads(content)
 
     failures = []
 
     percentage_fields = [
-        'Heal Cap %', 'Invocation %', 'Test %', 'MCP Hardened %',
-        'Complexity Health %', 'Typed %', 'Documented %',
-        'Schema Strictness %', 'Canonical Inheritance %', 'Code Quality Score'
+        "Heal Cap %",
+        "Invocation %",
+        "Test %",
+        "MCP Hardened %",
+        "Complexity Health %",
+        "Typed %",
+        "Documented %",
+        "Schema Strictness %",
+        "Canonical Inheritance %",
+        "Code Quality Score",
     ]
 
     for row in data:
         # Territory should be string
-        if not isinstance(row.get('Territory'), str):
+        if not isinstance(row.get("Territory"), str):
             failures.append(f"Territory is not string: {row.get('Territory')}")
 
         # Total should be int
-        if not isinstance(row.get('Total'), int):
+        if not isinstance(row.get("Total"), int):
             failures.append(f"{row['Territory']}: Total is not int: {row.get('Total')}")
 
         # Percentages should be numeric
         for field in percentage_fields:
             value = row.get(field)
             if value is not None and not isinstance(value, (int, float)):
-                failures.append(f"{row['Territory']}: {field} is not numeric: {value} (type: {type(value).__name__})")
+                failures.append(
+                    f"{row['Territory']}: {field} is not numeric: {value} (type: {type(value).__name__})"
+                )
 
     if failures:
         print(f"\n❌ DATA TYPE VALIDATION FAILED: {len(failures)} type errors")
@@ -312,47 +371,61 @@ def validate_data_types():
         return False
     else:
         print("\n✅ PASSED: All fields have correct data types")
-        print(f"   Validated: Territory (str), Total (int), {len(percentage_fields)} percentage fields (numeric)")
+        print(
+            f"   Validated: Territory (str), Total (int), {len(percentage_fields)} percentage fields (numeric)"
+        )
         return True
+
 
 def validate_expected_ranges():
     """TEST 6 (Phase 2): Warn if values are outside expected ranges."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST 6: Expected Range Validation (Phase 2)")
-    print("="*70)
+    print("=" * 70)
 
     # Load dashboard data
-    data_file = project_root / "agentic_core" / "L6_observability" / "dashboards" / "data" / "dashboard_data.js"
-    content = data_file.read_text(encoding='utf-8')
-    lines = [l for l in content.split('\n') if not l.strip().startswith('//')]
-    content = '\n'.join(lines).replace('window.dashboardData = ', '').strip().rstrip(';')
+    data_file = (
+        project_root
+        / "agentic_core"
+        / "L6_observability"
+        / "dashboards"
+        / "data"
+        / "dashboard_data.js"
+    )
+    content = data_file.read_text(encoding="utf-8")
+    lines = [l for l in content.split("\n") if not l.strip().startswith("//")]
+    content = "\n".join(lines).replace("window.dashboardData = ", "").strip().rstrip(";")
     data = json.loads(content)
 
     # Define expected ranges (min, max) for each metric
     EXPECTED_RANGES = {
-        'Complexity Health %': (0, 60),      # Typically 0-60%, higher is unusual
-        'MCP Hardened %': (95, 100),         # Should be near 100%
-        'Test %': (60, 100),                 # Should be >60%
-        'Typed %': (80, 100),                # Should be >80%
-        'Documented %': (70, 100),           # Should be >70%
-        'Schema Strictness %': (80, 100),    # Should be >80%
-        'Canonical Inheritance %': (90, 100), # Should be >90%
-        'Code Quality Score': (85, 100)      # Should be >85%
+        "Complexity Health %": (0, 60),  # Typically 0-60%, higher is unusual
+        "MCP Hardened %": (95, 100),  # Should be near 100%
+        "Test %": (60, 100),  # Should be >60%
+        "Typed %": (80, 100),  # Should be >80%
+        "Documented %": (70, 100),  # Should be >70%
+        "Schema Strictness %": (80, 100),  # Should be >80%
+        "Canonical Inheritance %": (90, 100),  # Should be >90%
+        "Code Quality Score": (85, 100),  # Should be >85%
     }
 
     warnings = []
 
     for row in data:
-        if row['Territory'] == 'TOTAL':
+        if row["Territory"] == "TOTAL":
             continue  # Skip TOTAL row for range checks
 
         for field, (min_expected, max_expected) in EXPECTED_RANGES.items():
             value = row.get(field)
             if value is not None:
                 if value < min_expected:
-                    warnings.append(f"⚠️  {row['Territory']}: {field}={value:.1f}% (below expected minimum {min_expected}%)")
+                    warnings.append(
+                        f"⚠️  {row['Territory']}: {field}={value:.1f}% (below expected minimum {min_expected}%)"
+                    )
                 elif value > max_expected:
-                    warnings.append(f"⚠️  {row['Territory']}: {field}={value:.1f}% (above expected maximum {max_expected}%)")
+                    warnings.append(
+                        f"⚠️  {row['Territory']}: {field}={value:.1f}% (above expected maximum {max_expected}%)"
+                    )
 
     if warnings:
         print(f"\n⚠️  RANGE WARNINGS: {len(warnings)} values outside expected ranges")
@@ -367,17 +440,25 @@ def validate_expected_ranges():
     # Always return True - these are warnings, not failures
     return True
 
+
 def validate_snapshot():
     """TEST 7 (Phase 3): Compare against baseline to detect unintended changes."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST 7: Snapshot Regression Testing (Phase 3)")
-    print("="*70)
+    print("=" * 70)
 
     import hashlib
 
     # Load current data
-    data_file = project_root / "agentic_core" / "L6_observability" / "dashboards" / "data" / "dashboard_data.js"
-    current_content = data_file.read_text(encoding='utf-8')
+    data_file = (
+        project_root
+        / "agentic_core"
+        / "L6_observability"
+        / "dashboards"
+        / "data"
+        / "dashboard_data.js"
+    )
+    current_content = data_file.read_text(encoding="utf-8")
 
     # Calculate hash
     current_hash = hashlib.sha256(current_content.encode()).hexdigest()
@@ -401,7 +482,7 @@ def validate_snapshot():
             print("   Review changes and update baseline if correct.")
 
             # Show what changed
-            lines_current = current_content.split('\n')
+            lines_current = current_content.split("\n")
             print(f"\n   Current data: {len(lines_current)} lines")
         else:
             print("\n✅ PASSED: Dashboard data matches baseline")
@@ -411,17 +492,18 @@ def validate_snapshot():
         print(f"   Hash: {current_hash[:16]}...")
 
     # Update baseline
-    with open(baseline_file, 'w') as f:
+    with open(baseline_file, "w") as f:
         f.write(current_hash)
 
     # Always return True - this is informational
     return True
 
+
 def validate_performance():
     """TEST 8 (Phase 3): Benchmark data generation performance."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST 8: Performance Benchmarking (Phase 3)")
-    print("="*70)
+    print("=" * 70)
 
     import time
 
@@ -432,19 +514,19 @@ def validate_performance():
     try:
         # Use UTF-8 encoding for subprocess to handle Unicode characters
         result = safe_execute(
-            ['python', 'scripts/regenerate_dashboard_data.py'],
+            ["python", "scripts/regenerate_dashboard_data.py"],
             cwd=str(project_root),
             capture_output=True,
             text=True,
             timeout=30,
-            check=False
+            check=False,
         )
 
         elapsed = time.time() - start_time
 
         # Performance thresholds
-        THRESHOLD_WARNING = 5.0   # Warn if >5 seconds
-        THRESHOLD_ERROR = 15.0    # Error if >15 seconds (more lenient)
+        THRESHOLD_WARNING = 5.0  # Warn if >5 seconds
+        THRESHOLD_ERROR = 15.0  # Error if >15 seconds (more lenient)
 
         if result.returncode == 0:
             if elapsed < THRESHOLD_WARNING:
@@ -480,10 +562,11 @@ def validate_performance():
         print(f"\n⚠️  BENCHMARK SKIPPED: {e}")
         return True  # Don't fail on benchmark errors
 
+
 if __name__ == "__main__":
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("COMPREHENSIVE DASHBOARD DATA VALIDATION")
-    print("="*70)
+    print("=" * 70)
     print("\nPhase 1: Critical validations (deployment blockers)")
     print("Phase 2: Enhanced validations (warnings)")
     print("Phase 3: Regression & performance testing")
@@ -493,9 +576,9 @@ if __name__ == "__main__":
     all_passed = True
 
     # Phase 1: Critical Validations (deployment blockers)
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("PHASE 1: CRITICAL VALIDATIONS")
-    print("="*70)
+    print("=" * 70)
     all_passed &= validate_ssot_compliance()  # Now includes Health field
     all_passed &= validate_field_name_consistency()
     all_passed &= validate_calculation_integrity()
@@ -503,21 +586,21 @@ if __name__ == "__main__":
     all_passed &= validate_data_types()
 
     # Phase 2: Enhanced Validations (warnings, not blockers)
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("PHASE 2: ENHANCED VALIDATIONS")
-    print("="*70)
+    print("=" * 70)
     validate_expected_ranges()  # Always returns True (warnings only)
 
     # Phase 3: Regression & Performance Testing
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("PHASE 3: REGRESSION & PERFORMANCE")
-    print("="*70)
+    print("=" * 70)
     validate_snapshot()  # Always returns True (informational)
     all_passed &= validate_performance()  # Can fail if too slow
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("FINAL RESULT")
-    print("="*70)
+    print("=" * 70)
 
     if all_passed:
         print("\n✅ ALL VALIDATION TESTS PASSED")
@@ -533,7 +616,9 @@ if __name__ == "__main__":
         print("   - Snapshot testing ✅")
         print("   - Performance benchmarking ✅")
         print("\n✅ READY FOR DEPLOYMENT VALIDATION")
-        print("\n💡 TIP: Run 'python scripts/test_health_score_validation.py' for detailed Health score checks")
+        print(
+            "\n💡 TIP: Run 'python scripts/test_health_score_validation.py' for detailed Health score checks"
+        )
         sys.exit(0)
     else:
         print("\n❌ VALIDATION TESTS FAILED")

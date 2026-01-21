@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 
 class FactStatus(str, Enum):
     """Status of fact verification."""
+
     VERIFIED = "VERIFIED"
     CONFLICT = "CONFLICT"
     UNVERIFIED = "UNVERIFIED"
@@ -26,9 +27,10 @@ class FactStatus(str, Enum):
 
 class Fact(BaseModel):
     """Verified fact from master profile."""
+
     id: str
     entity: str  # e.g., "Revenue Growth 2023"
-    value: str   # e.g., "20%"
+    value: str  # e.g., "20%"
     numeric_value: float  # e.g., 0.20 (for comparison)
     unit: str | None = None  # e.g., "%", "$", "x"
     source_doc: str  # e.g., "Performance_Review_2023.pdf"
@@ -51,12 +53,13 @@ class Fact(BaseModel):
             "source_doc": self.source_doc,
             "confidence": self.confidence,
             "last_verified": self.last_verified.isoformat(),
-            "metadata": self.metadata
+            "metadata": self.metadata,
         }
 
 
 class VerificationResult(BaseModel):
     """Result of fact verification."""
+
     status: FactStatus
     original_claim: str
     extracted_entity: str | None = None
@@ -74,12 +77,21 @@ class ClaimExtractor:
         """Initialize claim extractor with patterns."""
         # Patterns for extracting different types of claims
         self.patterns = {
-            "percentage": re.compile(r"(\d+(?:\.\d+)?)%|\b(\d+(?:\.\d+)?\s*percent)\b", re.IGNORECASE),
-            "currency": re.compile(r"\$(\d+(?:,\d{3})*(?:\.\d+)?)|(\d+(?:,\d{3})*(?:\.\d+)?)\s*(dollars?|usd)", re.IGNORECASE),
-            "multiplier": re.compile(r"(\d+(?:\.\d+)?)x|(\d+(?:\.\d+)?)\s*(times|fold)", re.IGNORECASE),
+            "percentage": re.compile(
+                r"(\d+(?:\.\d+)?)%|\b(\d+(?:\.\d+)?\s*percent)\b", re.IGNORECASE
+            ),
+            "currency": re.compile(
+                r"\$(\d+(?:,\d{3})*(?:\.\d+)?)|(\d+(?:,\d{3})*(?:\.\d+)?)\s*(dollars?|usd)",
+                re.IGNORECASE,
+            ),
+            "multiplier": re.compile(
+                r"(\d+(?:\.\d+)?)x|(\d+(?:\.\d+)?)\s*(times|fold)", re.IGNORECASE
+            ),
             "number": re.compile(r"\b(\d+(?:,\d{3})*(?:\.\d+)?)\b"),
             "year": re.compile(r"\b(20\d{2})\b"),
-            "duration": re.compile(r"(\d+(?:\.\d+)?)\s*(years?|months?|weeks?|days?)", re.IGNORECASE)
+            "duration": re.compile(
+                r"(\d+(?:\.\d+)?)\s*(years?|months?|weeks?|days?)", re.IGNORECASE
+            ),
         }
 
         # Entity keywords
@@ -90,7 +102,7 @@ class ClaimExtractor:
             "users": ["users", "customers", "clients", "accounts"],
             "performance": ["performance", "productivity", "efficiency", "throughput"],
             "latency": ["latency", "response time", "delay"],
-            "cost": ["cost", "expense", "budget", "spend"]
+            "cost": ["cost", "expense", "budget", "spend"],
         }
 
     def extract_claim(self, text: str) -> tuple[str | None, str | None, float | None, str | None]:
@@ -207,7 +219,7 @@ class FactLedger:
             "facts_loaded": 0,
             "verifications_performed": 0,
             "conflicts_detected": 0,
-            "unverified_claims": 0
+            "unverified_claims": 0,
         }
 
         logger.info(f"Initialized FactLedger with {tolerance_percent}% tolerance")
@@ -268,7 +280,7 @@ class FactLedger:
                         unit=unit,
                         source_doc=f"Experience: {title} at {company}",
                         confidence=0.9,
-                        metadata={"company": company, "title": title}
+                        metadata={"company": company, "title": title},
                     )
                     self._add_fact(fact)
                     count += 1
@@ -299,7 +311,7 @@ class FactLedger:
                     unit=unit,
                     source_doc=f"Achievement: {achievement.get('title', 'Untitled')}",
                     confidence=0.95,
-                    metadata=achievement
+                    metadata=achievement,
                 )
                 self._add_fact(fact)
                 count += 1
@@ -330,7 +342,7 @@ class FactLedger:
                     unit=unit,
                     source_doc="Metrics Section",
                     confidence=1.0,
-                    metadata={"metric_key": key}
+                    metadata={"metric_key": key},
                 )
                 self._add_fact(fact)
                 count += 1
@@ -404,7 +416,7 @@ class FactLedger:
                 status=FactStatus.UNVERIFIED,
                 original_claim=claim_text,
                 confidence=0.0,
-                explanation="No verifiable numeric claim found"
+                explanation="No verifiable numeric claim found",
             )
 
         # Search for matching facts
@@ -419,7 +431,7 @@ class FactLedger:
                 extracted_entity=entity,
                 extracted_value=value_str,
                 confidence=0.0,
-                explanation=f"No verified fact found for entity: {entity}"
+                explanation=f"No verified fact found for entity: {entity}",
             )
 
         # Check for conflicts
@@ -446,7 +458,7 @@ class FactLedger:
                 extracted_entity=entity,
                 extracted_value=value_str,
                 confidence=0.0,
-                explanation="No matching facts with compatible units"
+                explanation="No matching facts with compatible units",
             )
 
         # Determine verification status
@@ -475,7 +487,7 @@ class FactLedger:
             verified_fact=best_match,
             correction_suggestion=correction,
             confidence=best_score,
-            explanation=explanation
+            explanation=explanation,
         )
 
     def _search_facts(self, entity: str) -> list[Fact]:
@@ -578,9 +590,10 @@ class FactLedger:
         # Calculate verification rate
         if stats["verifications_performed"] > 0:
             stats["verification_rate"] = (
-                (stats["verifications_performed"] - stats["conflicts_detected"] - stats["unverified_claims"]) /
                 stats["verifications_performed"]
-            )
+                - stats["conflicts_detected"]
+                - stats["unverified_claims"]
+            ) / stats["verifications_performed"]
         else:
             stats["verification_rate"] = 0.0
 

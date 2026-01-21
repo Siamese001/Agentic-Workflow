@@ -4,6 +4,7 @@ Robust data reconciliation tests for dashboard territory table.
 
 Validates that all calculated fields match their source data and formulas.
 """
+
 import json
 from pathlib import Path
 
@@ -23,17 +24,23 @@ def load_dashboard_data():
     test_file = Path(__file__).resolve()
     project_root = test_file.parent.parent  # tests/ -> project_root
 
-    l6_path = project_root / AGENTIC_CORE_DIR / "L6_observability" / "dashboards" / "autonomy_dashboard.html"
+    l6_path = (
+        project_root
+        / AGENTIC_CORE_DIR
+        / "L6_observability"
+        / "dashboards"
+        / "autonomy_dashboard.html"
+    )
     legacy_path = project_root / REPORTS_DIR / "autonomy_dashboard.html"
 
     dashboard_path = l6_path if l6_path.exists() else legacy_path
     if not dashboard_path.exists():
         pytest.skip(f"Dashboard HTML not found at {l6_path} or {legacy_path}")
 
-    html = dashboard_path.read_text(encoding='utf-8')
+    html = dashboard_path.read_text(encoding="utf-8")
 
     # Extract dashboardData from HTML
-    match = re.search(r'const dashboardData = (\[.*?\]);', html, re.DOTALL)
+    match = re.search(r"const dashboardData = (\[.*?\]);", html, re.DOTALL)
     if not match:
         pytest.skip("dashboardData not found in HTML")
 
@@ -52,16 +59,16 @@ def test_health_score_calculation():
     data = load_dashboard_data()
 
     # Find TOTAL row
-    total_row = next((row for row in data if row.get('Territory') == 'TOTAL'), None)
+    total_row = next((row for row in data if row.get("Territory") == "TOTAL"), None)
     assert total_row is not None, "TOTAL row not found in dashboard data"
 
     # Extract components
-    heal_cap = float(total_row.get('Heal Cap %', 0))
-    invocation = float(total_row.get('Invocation %', 0))
-    tests = float(total_row.get('Test %', 0))
-    observable = float(total_row.get('Observable %', 0))
-    cc_health = float(total_row.get('Complexity Health', 0))
-    actual_health = float(total_row.get('Health', 0))
+    heal_cap = float(total_row.get("Heal Cap %", 0))
+    invocation = float(total_row.get("Invocation %", 0))
+    tests = float(total_row.get("Test %", 0))
+    observable = float(total_row.get("Observable %", 0))
+    cc_health = float(total_row.get("Complexity Health", 0))
+    actual_health = float(total_row.get("Health", 0))
 
     # Calculate expected health
     expected_health = round((heal_cap + invocation + tests + observable + cc_health) / 5, 1)
@@ -94,17 +101,17 @@ def test_territory_health_scores():
 
     failures = []
     for row in data:
-        territory = row.get('Territory', 'Unknown')
-        if territory == 'TOTAL':
+        territory = row.get("Territory", "Unknown")
+        if territory == "TOTAL":
             continue
 
         # Extract components
-        heal_cap = float(row.get('Heal Cap %', 0))
-        invocation = float(row.get('Invocation %', 0))
-        tests = float(row.get('Test %', 0))
-        observable = float(row.get('Observable %', 0))
-        cc_health = float(row.get('Complexity Health', 0))
-        actual_health = float(row.get('Health', 0))
+        heal_cap = float(row.get("Heal Cap %", 0))
+        invocation = float(row.get("Invocation %", 0))
+        tests = float(row.get("Test %", 0))
+        observable = float(row.get("Observable %", 0))
+        cc_health = float(row.get("Complexity Health", 0))
+        actual_health = float(row.get("Health", 0))
 
         # Calculate expected
         expected_health = round((heal_cap + invocation + tests + observable + cc_health) / 5, 1)
@@ -124,9 +131,9 @@ def test_invocation_percentage_accuracy():
     data = load_dashboard_data()
 
     for row in data:
-        territory = row.get('Territory', 'Unknown')
-        total_agents = int(row.get('Total', 0))
-        invocation_pct = float(row.get('Invocation %', 0))
+        territory = row.get("Territory", "Unknown")
+        total_agents = int(row.get("Total", 0))
+        invocation_pct = float(row.get("Invocation %", 0))
 
         if total_agents == 0:
             continue
@@ -147,9 +154,9 @@ def test_complexity_health_inversion():
     data = load_dashboard_data()
 
     for row in data:
-        territory = row.get('Territory', 'Unknown')
-        avg_cc = float(row.get('Avg CC', 0))
-        cc_health = float(row.get('Complexity Health', 0))
+        territory = row.get("Territory", "Unknown")
+        avg_cc = float(row.get("Avg CC", 0))
+        cc_health = float(row.get("Complexity Health", 0))
 
         # Complexity Health should be inverted: lower CC = higher health
         # Formula: max(0, min(100, 100 - (CC * 2)))
@@ -169,14 +176,14 @@ def test_total_row_aggregation():
     """Test that TOTAL row correctly aggregates territory data."""
     data = load_dashboard_data()
 
-    total_row = next((row for row in data if row.get('Territory') == 'TOTAL'), None)
+    total_row = next((row for row in data if row.get("Territory") == "TOTAL"), None)
     assert total_row is not None, "TOTAL row not found"
 
     # Sum up territory totals (excluding TOTAL row itself)
-    territory_rows = [row for row in data if row.get('Territory') != 'TOTAL']
+    territory_rows = [row for row in data if row.get("Territory") != "TOTAL"]
 
-    total_agents_sum = sum(int(row.get('Total', 0)) for row in territory_rows)
-    total_agents_actual = int(total_row.get('Total', 0))
+    total_agents_sum = sum(int(row.get("Total", 0)) for row in territory_rows)
+    total_agents_actual = int(total_row.get("Total", 0))
 
     assert total_agents_sum == total_agents_actual, (
         f"TOTAL agent count mismatch!\n"
@@ -190,15 +197,26 @@ def test_percentage_ranges():
     data = load_dashboard_data()
 
     percentage_fields = [
-        'Heal Cap %', 'Invocation %', 'Hardened %', 'MCP Capable %',
-        'Test %', 'Observable %', 'Typed %', 'Documented %', 'Metadata %',
-        'Proper Base %', 'Compliance %', 'Used %', 'Health',
-        'Complexity Health', 'Code Quality Score'
+        "Heal Cap %",
+        "Invocation %",
+        "Hardened %",
+        "MCP Capable %",
+        "Test %",
+        "Observable %",
+        "Typed %",
+        "Documented %",
+        "Metadata %",
+        "Proper Base %",
+        "Compliance %",
+        "Used %",
+        "Health",
+        "Complexity Health",
+        "Code Quality Score",
     ]
 
     failures = []
     for row in data:
-        territory = row.get('Territory', 'Unknown')
+        territory = row.get("Territory", "Unknown")
         for field in percentage_fields:
             value = row.get(field)
             if value is not None:

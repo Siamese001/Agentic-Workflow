@@ -6,6 +6,7 @@ This script tests the corrected Meta-Learning recording with proper method names
 - cache_set (Redis)
 - vector_upsert (Pinecone)
 """
+
 import sys
 from pathlib import Path
 
@@ -28,12 +29,9 @@ def test_corrected_methods():
     print("-" * 60)
     try:
         import json
+
         test_data = {"fixed": 3, "violations": 3, "test": True}
-        guardian.cache_set(
-            key="test_autonomy_fix_2026",
-            value=json.dumps(test_data),
-            ttl=86400
-        )
+        guardian.cache_set(key="test_autonomy_fix_2026", value=json.dumps(test_data), ttl=86400)
         print("✅ cache_set executed successfully")
 
         # Try to retrieve it
@@ -52,19 +50,12 @@ def test_corrected_methods():
         guardian.vector_upsert(
             vector_id="test_autonomy_healing_2026",
             text="Test healing signature for Meta-Learning verification",
-            metadata={
-                "action": "test",
-                "target": "verification",
-                "fixed": 3
-            }
+            metadata={"action": "test", "target": "verification", "fixed": 3},
         )
         print("✅ vector_upsert executed successfully")
 
         # Try to search for it
-        results = guardian.vector_search(
-            query="healing signature verification",
-            top_k=1
-        )
+        results = guardian.vector_search(query="healing signature verification", top_k=1)
         if results:
             print(f"✅ vector_search found {len(results)} results")
         else:
@@ -82,9 +73,11 @@ def test_corrected_methods():
     print("  - Pinecone API configured (for vector_upsert)")
     print("=" * 80)
 
+
 def main():
     test_corrected_methods()
     return 0
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     sys.exit(main())

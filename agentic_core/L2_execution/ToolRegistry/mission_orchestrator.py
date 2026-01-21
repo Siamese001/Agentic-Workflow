@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, healer, memory, workflow
@@ -30,25 +29,31 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 
 ALLOWED_ROOT_FOLDERS = set(ROOT_WHITELIST)
 
+
 def enforce_void_compliance(files, project_root):
     """Bridge to LocationAgent."""
     return LocationAgent(project_root).enforce_void_compliance(files)
 
+
 def get_folder_scope_summary(project_root):
     """Returns py file counts per folder."""
     from pathlib import Path
+
     summary = {}
-    skip = SOVEREIGN_EXCLUDED_FOLDERS | {'tests'}
+    skip = SOVEREIGN_EXCLUDED_FOLDERS | {"tests"}
     # Phase 6.8: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_python_files
+
     for f in Path(project_root).iterdir():
         if f.is_dir() and f.name not in skip:
             summary[f.name] = len(list(get_python_files(f)))
     return summary
 
+
 def check_import_waterfall_violations(file_path, project_root):
     """Bridge to ImportAgent."""
     return ImportAgent(project_root).check_waterfall_violations(file_path)
+
 
 # [L2 KNOWLEDGE]
 from agentic_core.knowledge.rag_manager import get_rag_manager
@@ -68,7 +73,7 @@ async def run_sovereign_mission(
     project_root: Path,
     target_scope: str = "agentic_core",
     RUN_HIERARCHY_HEALING: bool = False,
-    MAX_HEALING_ROUNDS: int = 10
+    MAX_HEALING_ROUNDS: int = 10,
 ):
     """
     Sovereign Mission Orchestrator with Ultra-Hardened RAG Integration.
@@ -80,9 +85,9 @@ async def run_sovereign_mission(
     - Context enrichment for each file validation
     """
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("[L3 MISSION ORCHESTRATOR] Initializing Sovereign Validation Mission")
-    print("="*70)
+    print("=" * 70)
 
     # === PRE-FLIGHT CHECKS ===
     print("\n[PHASE 0] Pre-flight Structural Validation")
@@ -97,7 +102,9 @@ async def run_sovereign_mission(
 
     # === INITIALIZE CONTEXT ===
     # Dynamic load of ValidationContext to avoid circular deps
-    ValidationContext = dynamic_import('agentic_core.L4_state.validation_context.ValidationContext', 'ValidationContext')
+    ValidationContext = dynamic_import(
+        "agentic_core.L4_state.validation_context.ValidationContext", "ValidationContext"
+    )
     if ValidationContext:
         ctx = ValidationContext()
         ctx.project_root = project_root
@@ -114,11 +121,13 @@ async def run_sovereign_mission(
                 self.report = []
                 self.python_files = []
                 self.rag = None
+
         ctx = FallbackContext()
 
     # Smart Report Hardening
     class CallableReport(list):
         """Hybrid report: Acts as list for append() AND callable for ctx.report()"""
+
         def __call__(self, agent_name: str, key_num: int, passed: bool, details: str = ""):
             status = "PASS" if passed else "FAIL"
             entry = {
@@ -126,11 +135,11 @@ async def run_sovereign_mission(
                 "key": key_num,
                 "status": status,
                 "msg": str(details),
-                "timestamp": time.time()
+                "timestamp": time.time(),
             }
             self.append(entry)
 
-    ctx.report = CallableReport(getattr(ctx, 'report', []))
+    ctx.report = CallableReport(getattr(ctx, "report", []))
 
     # === DISCOVER FILES ===
     print(f"\n[PHASE 1] Discovering Python files in {target_scope}")
@@ -140,7 +149,7 @@ async def run_sovereign_mission(
     for root, dirs, files in os.walk(target_path):
         dirs[:] = [d for d in dirs if d not in PROTECTED_FOLDERS and d != ".git"]
         for file in files:
-            if file.endswith('.py'):
+            if file.endswith(".py"):
                 discovered_files.append(Path(root) / file)
 
     # Void compliance enforcement
@@ -172,8 +181,12 @@ async def run_sovereign_mission(
         knowledge_context = ""
         if ctx.rag:
             try:
-                retrievals = await ctx.rag.retrieve(query=f"validation rules for {file_name}", top_k=3)
-                knowledge_context = ctx.rag.get_context_for_task(f"validation rules for {file_name}")
+                retrievals = await ctx.rag.retrieve(
+                    query=f"validation rules for {file_name}", top_k=3
+                )
+                knowledge_context = ctx.rag.get_context_for_task(
+                    f"validation rules for {file_name}"
+                )
                 # Attach to ctx for agent access during this file's round
                 ctx.current_knowledge = knowledge_context
                 if knowledge_context and "No relevant" not in knowledge_context:
@@ -192,11 +205,11 @@ async def run_sovereign_mission(
                 break
 
     # === FINAL REPORT ===
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("[MISSION COMPLETE]")
-    print("="*70)
+    print("=" * 70)
 
-    total_violations = len([r for r in ctx.report if r.get('status') == 'FAIL'])
+    total_violations = len([r for r in ctx.report if r.get("status") == "FAIL"])
     print(f"\nTotal Violations: {total_violations}")
 
     if total_violations == 0:

@@ -13,6 +13,7 @@ SSOT Consolidation (Jan 20, 2026):
 For backward compatibility, this module also re-exports from
 L5_safety/validators/structure_blueprint.py
 """
+
 from __future__ import annotations
 
 # SSOT Exports - Import from structure_blueprint (actual SSOT location)
@@ -22,13 +23,21 @@ except ImportError:
     CANON_SIGNALS = set()
 
 # Define constants
-DEFAULT_EXCLUDE_DIRS = {'.git', '.venv', 'venv', '__pycache__', 'node_modules', 'archives', '.sovereign_healing_backup'}
+DEFAULT_EXCLUDE_DIRS = {
+    ".git",
+    ".venv",
+    "venv",
+    "__pycache__",
+    "node_modules",
+    "archives",
+    ".sovereign_healing_backup",
+}
 FORBIDDEN_PATTERNS_RAW = []
 NAMING_EXEMPT_FILES = set()
 NAMING_EXEMPT_DIRS = set()
 ALLOWED_DUPLICATE_FILENAMES = set()
 PYTHON_STDLIB_MODULES = set()
-VALIDATED_FILE_EXTENSIONS = {'.py', '.pyi'}
+VALIDATED_FILE_EXTENSIONS = {".py", ".pyi"}
 
 # Backward compatibility: Re-export from structure_blueprint
 from agentic_core.L5_safety.validators.structure_blueprint import (

@@ -9,6 +9,7 @@ Comprehensive Test Suite: LocationAgent Smart Depth Re-alignment
 
 Standard Sovereign Depth: 3 (e.g., agentic_core/L2_execution/runner.py)
 """
+
 import atexit
 import shutil
 import sys
@@ -36,6 +37,7 @@ def cleanup():
         except Exception:
             pass
 
+
 atexit.register(cleanup)
 
 
@@ -54,13 +56,14 @@ def test_fail(test_id: str, msg: str):
 def create_test_file(path: Path, content: str = "# Test file\nclass TestAgent:\n    pass\n"):
     """Create a test file with directories."""
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(content, encoding='utf-8')
+    path.write_text(content, encoding="utf-8")
     return path
 
 
 # =============================================================================
 # PHASE 1: CORE DEPTH LOGIC
 # =============================================================================
+
 
 def test_case_1_shallow_nesting_fix():
     """
@@ -78,7 +81,9 @@ def test_case_1_shallow_nesting_fix():
 
     # Setup: Depth 2 file
     shallow_file = test_root / "agentic_core" / "L2_execution" / "_TestOrphanedRunner.py"
-    expected_target = test_root / "agentic_core" / "L2_execution" / "depth_aligned" / "_TestOrphanedRunner.py"
+    expected_target = (
+        test_root / "agentic_core" / "L2_execution" / "depth_aligned" / "_TestOrphanedRunner.py"
+    )
 
     CLEANUP_PATHS.append(shallow_file)
     CLEANUP_PATHS.append(test_root / "agentic_core" / "L2_execution" / "depth_aligned")
@@ -110,8 +115,11 @@ def test_case_1_shallow_nesting_fix():
         msg = f"SHALLOW VIOLATION (agentic_core): depth {current_depth} != {expected_depth}"
 
         result = agent._heal_depth_violation(
-            shallow_file, msg, dry_run=False,
-            affected_paths=affected_paths, import_touched_paths=import_touched_paths
+            shallow_file,
+            msg,
+            dry_run=False,
+            affected_paths=affected_paths,
+            import_touched_paths=import_touched_paths,
         )
 
         # Verify detection and action
@@ -128,7 +136,12 @@ def test_case_1_shallow_nesting_fix():
             # Check alternative location
             # Phase 6.8: Use ssot_discovery instead of rglob
             from agentic_core.utils.ssot_discovery import get_python_files
-            nested_files = [f for f in get_python_files(test_root / "agentic_core" / "L2_execution") if f.name == "_TestOrphanedRunner.py"]
+
+            nested_files = [
+                f
+                for f in get_python_files(test_root / "agentic_core" / "L2_execution")
+                if f.name == "_TestOrphanedRunner.py"
+            ]
             if nested_files and "depth_aligned" in str(nested_files[0]):
                 test_pass("ACTION", f"Moved to {nested_files[0].relative_to(test_root)}")
             else:
@@ -144,8 +157,13 @@ def test_case_1_shallow_nesting_fix():
         # Verify NOT in archives
         # Phase 6.8: Use ssot_discovery instead of rglob
         from agentic_core.utils.ssot_discovery import get_python_files
+
         archives_dir = test_root / "archives"
-        archives = [f for f in get_python_files(archives_dir) if f.name == "_TestOrphanedRunner.py"] if archives_dir.exists() else []
+        archives = (
+            [f for f in get_python_files(archives_dir) if f.name == "_TestOrphanedRunner.py"]
+            if archives_dir.exists()
+            else []
+        )
         if not archives:
             test_pass("NO_ARCHIVE", "File NOT in archives")
         else:
@@ -154,6 +172,7 @@ def test_case_1_shallow_nesting_fix():
     except Exception as e:
         test_fail("EXCEPTION", f"Test failed: {e}")
         import traceback
+
         traceback.print_exc()
 
 
@@ -172,9 +191,13 @@ def test_case_2_deep_flattening_fix():
     test_root = PROJECT_ROOT
 
     # Setup: Depth 5 file
-    deep_dir = test_root / "agentic_core" / "L2_execution" / "_test_sub" / "_test_nested" / "_test_deep"
+    deep_dir = (
+        test_root / "agentic_core" / "L2_execution" / "_test_sub" / "_test_nested" / "_test_deep"
+    )
     deep_file = deep_dir / "_TestBuriedAgent.py"
-    expected_target = test_root / "agentic_core" / "L2_execution" / "_test_sub" / "_TestBuriedAgent.py"
+    expected_target = (
+        test_root / "agentic_core" / "L2_execution" / "_test_sub" / "_TestBuriedAgent.py"
+    )
 
     CLEANUP_PATHS.append(test_root / "agentic_core" / "L2_execution" / "_test_sub")
     CLEANUP_PATHS.append(expected_target)
@@ -205,8 +228,11 @@ def test_case_2_deep_flattening_fix():
         msg = f"DEEP VIOLATION (agentic_core): depth {current_depth} != {expected_depth}"
 
         result = agent._heal_depth_violation(
-            deep_file, msg, dry_run=False,
-            affected_paths=affected_paths, import_touched_paths=import_touched_paths
+            deep_file,
+            msg,
+            dry_run=False,
+            affected_paths=affected_paths,
+            import_touched_paths=import_touched_paths,
         )
 
         # Verify detection and action
@@ -221,11 +247,16 @@ def test_case_2_deep_flattening_fix():
             test_pass("ACTION", f"Flattened to {expected_target.relative_to(test_root)}")
         else:
             # Check for file at any depth 3 location
-            flattened_files = list((test_root / "agentic_core" / "L2_execution").rglob("_TestBuriedAgent.py"))
+            flattened_files = list(
+                (test_root / "agentic_core" / "L2_execution").rglob("_TestBuriedAgent.py")
+            )
             if flattened_files:
                 new_depth = len(flattened_files[0].relative_to(test_root).parts) - 1
                 if new_depth == 3:
-                    test_pass("ACTION", f"Flattened to depth 3: {flattened_files[0].relative_to(test_root)}")
+                    test_pass(
+                        "ACTION",
+                        f"Flattened to depth 3: {flattened_files[0].relative_to(test_root)}",
+                    )
                 else:
                     test_fail("ACTION", f"File at depth {new_depth}, expected 3")
             else:
@@ -241,6 +272,7 @@ def test_case_2_deep_flattening_fix():
     except Exception as e:
         test_fail("EXCEPTION", f"Test failed: {e}")
         import traceback
+
         traceback.print_exc()
 
 
@@ -279,7 +311,7 @@ def test_case_3_variable_depth_exemption():
         test_pass("SETUP", f"File at depth {current_depth} in utils/core_extensions")
 
         # Check if utils is in VARIABLE_DEPTH_SUBFOLDERS (now imported from SSOT)
-        if 'utils' in VARIABLE_DEPTH_SUBFOLDERS:
+        if "utils" in VARIABLE_DEPTH_SUBFOLDERS:
             test_pass("EXEMPTION", "utils in VARIABLE_DEPTH_SUBFOLDERS")
         else:
             test_fail("EXEMPTION", "utils NOT in VARIABLE_DEPTH_SUBFOLDERS")
@@ -303,12 +335,14 @@ def test_case_3_variable_depth_exemption():
     except Exception as e:
         test_fail("EXCEPTION", f"Test failed: {e}")
         import traceback
+
         traceback.print_exc()
 
 
 # =============================================================================
 # PHASE 2: RELIABILITY & SAFETY
 # =============================================================================
+
 
 def test_case_4_idempotency():
     """
@@ -352,8 +386,11 @@ def test_case_4_idempotency():
         msg = f"SHALLOW VIOLATION (agentic_core): depth {current_depth} != {expected_depth}"
 
         result1 = agent._heal_depth_violation(
-            correct_file, msg, dry_run=False,
-            affected_paths=affected_paths, import_touched_paths=import_touched_paths
+            correct_file,
+            msg,
+            dry_run=False,
+            affected_paths=affected_paths,
+            import_touched_paths=import_touched_paths,
         )
 
         if "SKIPPED" in result1.get("action_taken", "") or current_depth == expected_depth:
@@ -376,8 +413,11 @@ def test_case_4_idempotency():
         # Second run
         affected_paths = []
         result2 = agent._heal_depth_violation(
-            current_file, msg, dry_run=False,
-            affected_paths=affected_paths, import_touched_paths=import_touched_paths
+            current_file,
+            msg,
+            dry_run=False,
+            affected_paths=affected_paths,
+            import_touched_paths=import_touched_paths,
         )
 
         if "SKIPPED" in result2.get("action_taken", ""):
@@ -400,6 +440,7 @@ def test_case_4_idempotency():
     except Exception as e:
         test_fail("EXCEPTION", f"Test failed: {e}")
         import traceback
+
         traceback.print_exc()
 
 
@@ -448,8 +489,11 @@ def test_case_5_collision_handling():
         msg = "DEEP VIOLATION (agentic_core): depth 4 != 3"
 
         result = agent._heal_depth_violation(
-            deep_file, msg, dry_run=False,
-            affected_paths=affected_paths, import_touched_paths=import_touched_paths
+            deep_file,
+            msg,
+            dry_run=False,
+            affected_paths=affected_paths,
+            import_touched_paths=import_touched_paths,
         )
 
         # Check result - either collision handled or file moved with rename
@@ -464,7 +508,11 @@ def test_case_5_collision_handling():
                 return
 
             # Check for renamed file or collision handling
-            runner_files = list((test_root / "agentic_core" / "L2_execution" / "ToolRegistry").glob("_TestRunner*.py"))
+            runner_files = list(
+                (test_root / "agentic_core" / "L2_execution" / "ToolRegistry").glob(
+                    "_TestRunner*.py"
+                )
+            )
             if len(runner_files) >= 2:
                 test_pass("COLLISION", f"Collision handled: {[f.name for f in runner_files]}")
             elif not deep_file.exists():
@@ -481,6 +529,7 @@ def test_case_5_collision_handling():
     except Exception as e:
         test_fail("EXCEPTION", f"Test failed: {e}")
         import traceback
+
         traceback.print_exc()
 
 
@@ -499,7 +548,13 @@ def test_case_6_broken_backup_archiving():
     test_root = PROJECT_ROOT
 
     # Setup: Broken backup file
-    backup_file = test_root / "agentic_core" / "L3_orchestration" / "workflow_engines" / "_test_junk.py.bak.001"
+    backup_file = (
+        test_root
+        / "agentic_core"
+        / "L3_orchestration"
+        / "workflow_engines"
+        / "_test_junk.py.bak.001"
+    )
 
     CLEANUP_PATHS.append(backup_file)
     CLEANUP_PATHS.append(test_root / "archives" / "naming_violations" / "_test_junk.py.bak.001")
@@ -540,12 +595,14 @@ def test_case_6_broken_backup_archiving():
     except Exception as e:
         test_fail("EXCEPTION", f"Test failed: {e}")
         import traceback
+
         traceback.print_exc()
 
 
 # =============================================================================
 # PHASE 3: INTEGRATION & MULTI-STAGE HEALING
 # =============================================================================
+
 
 def test_case_7_app_leaking_two_step():
     """
@@ -589,8 +646,11 @@ def test_case_7_app_leaking_two_step():
         msg = f"SHALLOW VIOLATION (agentic_core): depth {current_depth} != {expected_depth}"
 
         result1 = agent._heal_depth_violation(
-            app_file, msg, dry_run=False,
-            affected_paths=affected_paths, import_touched_paths=import_touched_paths
+            app_file,
+            msg,
+            dry_run=False,
+            affected_paths=affected_paths,
+            import_touched_paths=import_touched_paths,
         )
 
         if "NESTED" in result1.get("action_taken", ""):
@@ -605,7 +665,10 @@ def test_case_7_app_leaking_two_step():
             new_file = nested_files[0]
             new_depth = len(new_file.relative_to(test_root).parts) - 1
             CLEANUP_PATHS.append(new_file)
-            test_pass("CYCLE_1_RESULT", f"File now at depth {new_depth}: {new_file.relative_to(test_root)}")
+            test_pass(
+                "CYCLE_1_RESULT",
+                f"File now at depth {new_depth}: {new_file.relative_to(test_root)}",
+            )
         else:
             test_fail("CYCLE_1_RESULT", "File not found after nesting")
             return
@@ -616,6 +679,7 @@ def test_case_7_app_leaking_two_step():
     except Exception as e:
         test_fail("EXCEPTION", f"Test failed: {e}")
         import traceback
+
         traceback.print_exc()
 
 
@@ -638,7 +702,7 @@ def test_case_8_import_fix_integration():
         agent = LocationAgent(project_root=test_root)
 
         # Check if safe_move has import update capability
-        if hasattr(agent, 'safe_move'):
+        if hasattr(agent, "safe_move"):
             test_pass("MECHANISM", "safe_move method exists for import updates")
         else:
             test_fail("MECHANISM", "safe_move method not found")
@@ -649,10 +713,11 @@ def test_case_8_import_fix_integration():
 
         # Verify the method signature accepts import tracking
         import inspect
+
         sig = inspect.signature(agent._heal_depth_violation)
         params = list(sig.parameters.keys())
 
-        if 'import_touched_paths' in params:
+        if "import_touched_paths" in params:
             test_pass("SIGNATURE", "import_touched_paths in method signature")
         else:
             test_fail("SIGNATURE", "import_touched_paths not in signature")
@@ -660,6 +725,7 @@ def test_case_8_import_fix_integration():
     except Exception as e:
         test_fail("EXCEPTION", f"Test failed: {e}")
         import traceback
+
         traceback.print_exc()
 
 
@@ -699,7 +765,7 @@ def test_case_9_protected_root_files():
         test_pass("DEPTH", f"File at depth {current_depth}")
 
         # Check if utils is in VARIABLE_DEPTH_SUBFOLDERS (exemption - now imported from SSOT)
-        if 'utils' in VARIABLE_DEPTH_SUBFOLDERS:
+        if "utils" in VARIABLE_DEPTH_SUBFOLDERS:
             test_pass("EXEMPTION", "utils in VARIABLE_DEPTH_SUBFOLDERS (protected)")
         else:
             test_fail("EXEMPTION", "utils not in exemption list")
@@ -722,6 +788,7 @@ def test_case_9_protected_root_files():
     except Exception as e:
         test_fail("EXCEPTION", f"Test failed: {e}")
         import traceback
+
         traceback.print_exc()
 
 
@@ -744,7 +811,9 @@ def test_case_10_batch_big_bang():
 
     # Setup multiple files
     shallow_file = test_root / "agentic_core" / "_test_shallow.py"
-    deep_dir = test_root / "agentic_core" / "L2_execution" / "_test_deep1" / "_test_deep2" / "_test_deep3"
+    deep_dir = (
+        test_root / "agentic_core" / "L2_execution" / "_test_deep1" / "_test_deep2" / "_test_deep3"
+    )
     deep_file = deep_dir / "_test_deep.py"
     valid_file = test_root / "agentic_core" / "L5_safety" / "validators" / "_test_valid.py"
 
@@ -777,8 +846,11 @@ def test_case_10_batch_big_bang():
         msg = f"SHALLOW VIOLATION: depth {current_depth} != {expected_depth}"
 
         result = agent._heal_depth_violation(
-            shallow_file, msg, dry_run=False,
-            affected_paths=affected_paths, import_touched_paths=import_touched_paths
+            shallow_file,
+            msg,
+            dry_run=False,
+            affected_paths=affected_paths,
+            import_touched_paths=import_touched_paths,
         )
 
         if result.get("applied"):
@@ -796,8 +868,11 @@ def test_case_10_batch_big_bang():
         msg = f"DEEP VIOLATION: depth {current_depth} != {expected_depth}"
 
         result = agent._heal_depth_violation(
-            deep_file, msg, dry_run=False,
-            affected_paths=affected_paths, import_touched_paths=import_touched_paths
+            deep_file,
+            msg,
+            dry_run=False,
+            affected_paths=affected_paths,
+            import_touched_paths=import_touched_paths,
         )
 
         if result.get("applied"):
@@ -815,8 +890,11 @@ def test_case_10_batch_big_bang():
         msg = f"SHALLOW VIOLATION: depth {current_depth} != {expected_depth}"
 
         result = agent._heal_depth_violation(
-            valid_file, msg, dry_run=False,
-            affected_paths=affected_paths, import_touched_paths=import_touched_paths
+            valid_file,
+            msg,
+            dry_run=False,
+            affected_paths=affected_paths,
+            import_touched_paths=import_touched_paths,
         )
 
         if "SKIPPED" in result.get("action_taken", "") or current_depth == expected_depth:
@@ -831,6 +909,7 @@ def test_case_10_batch_big_bang():
     except Exception as e:
         test_fail("EXCEPTION", f"Test failed: {e}")
         import traceback
+
         traceback.print_exc()
 
 
@@ -876,5 +955,5 @@ def main():
         return 1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

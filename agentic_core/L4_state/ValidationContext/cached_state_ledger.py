@@ -27,11 +27,12 @@ class CachedStateLedger(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
     Sovereign L4 state base — Redis cache for context, audit, Historian.
     All L4 components inherit from this.
     """
+
     def __init__(self, project_root: Path, session_id: str):
         super().__init__()
         self.root = project_root
         self.session_id = session_id
-        self._mcp_audit('init', payload={'session_id': session_id})
+        self._mcp_audit("init", payload={"session_id": session_id})
 
         # [L6 HARDENING] Sovereign Redis connection with full URL parsing + fallback
         # Rationale: ValidationContext.py falls back to Fallback ValidationContext when ledger init fails
@@ -40,6 +41,7 @@ class CachedStateLedger(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
         redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
         try:
             import urllib.parse
+
             parsed = urllib.parse.urlparse(redis_url)
             connection_kwargs = {
                 "host": parsed.hostname or "localhost",
@@ -82,41 +84,44 @@ class CachedStateLedger(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
                 self.redis.set(full_key, json.dumps(context), ex=86400)  # 24h
             else:
                 self._memory_cache[full_key] = context
-        except Exception: pass
+        except Exception:
+            pass
 
         # [L4 TELEMETRY] Record successful cache operation for GeminiSpy
-        self._record_successful_trace({
-            "operation": "cache_validation_context",
-            "key": key,
-            "timestamp": time.time()
-        })
+        self._record_successful_trace(
+            {"operation": "cache_validation_context", "key": key, "timestamp": time.time()}
+        )
 
     def get_cached_validation_context(self, key: str) -> dict | None:
-
         full_key = f"{self.prefix_context}:{key}"
         try:
             if self.redis:
                 data = self.redis.get(full_key)
                 if data:
                     # [L4 TELEMETRY] Record successful retrieval
-                    self._record_successful_trace({
-                        "operation": "get_cached_validation_context",
-                        "key": key,
-                        "hit": True,
-                        "timestamp": time.time()
-                    })
+                    self._record_successful_trace(
+                        {
+                            "operation": "get_cached_validation_context",
+                            "key": key,
+                            "hit": True,
+                            "timestamp": time.time(),
+                        }
+                    )
                     return json.loads(data)
             else:
                 result = self._memory_cache.get(full_key)
                 if result:
-                     self._record_successful_trace({
-                        "operation": "get_cached_validation_context",
-                        "key": key,
-                        "hit": True,
-                        "timestamp": time.time()
-                    })
+                    self._record_successful_trace(
+                        {
+                            "operation": "get_cached_validation_context",
+                            "key": key,
+                            "hit": True,
+                            "timestamp": time.time(),
+                        }
+                    )
                 return result
-        except Exception: pass
+        except Exception:
+            pass
         return None
 
     def _record_successful_trace(self, trace: dict):
@@ -124,7 +129,8 @@ class CachedStateLedger(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
         if self.redis:
             try:
                 self.redis.rpush(f"{self.prefix_historian}:successful_traces", json.dumps(trace))
-            except: pass
+            except:
+                pass
         else:
             self._successful_traces.append(trace)
 
@@ -148,7 +154,8 @@ class CachedStateLedger(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
                 self.redis.expire(trail_key, 31536000)  # 1 year TTL
             else:
                 self._audit_trail.append(event)
-        except Exception: pass
+        except Exception:
+            pass
 
     def _run_self_tests(self) -> bool:
         """Run self-tests for CachedStateLedger."""
@@ -163,7 +170,7 @@ class CachedStateLedger(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
         assert retrieved.get("test") == 42, "Cache data corruption"
 
         # Test audit trail
-        assert hasattr(self, '_successful_traces'), "Missing successful_traces"
+        assert hasattr(self, "_successful_traces"), "Missing successful_traces"
 
         return True
 
@@ -178,7 +185,8 @@ class CachedStateLedger(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
                     keys = self.redis.keys(f"{self.prefix_context}:*")
                     for key in keys:
                         self.redis.delete(key)
-                except: pass
+                except:
+                    pass
             else:
                 self._memory_cache.clear()
             self._mcp_audit("healing_success", payload={"action": "cache_flush"})
@@ -192,6 +200,7 @@ class CachedStateLedger(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
             return True
 
         return False
+
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()

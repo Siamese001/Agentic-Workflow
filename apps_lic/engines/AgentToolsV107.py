@@ -26,12 +26,12 @@ from pydantic import BaseModel, Field
 
 try:
     from rank_bm25 import BM25Okapi
+
     BM25_AVAILABLE = True
 except ImportError:
     BM25_AVAILABLE = False
     logging.getLogger("agent_tools_v10_7").warning(
-        "rank_bm25 not installed. BM25SearchTool will be unavailable. "
-        "Run 'pip install rank-bm25'"
+        "rank_bm25 not installed. BM25SearchTool will be unavailable. Run 'pip install rank-bm25'"
     )
 
 # v10.7: Import from new core
@@ -83,13 +83,12 @@ def resolve_mcp_client(
         return tool.get_mcp_client(name)
     except KeyError as exc:
         if optional:
-            tool.log_warning(
-                f"MCP client '{name}' unavailable: {exc}. Using stub fallback."
-            )
+            tool.log_warning(f"MCP client '{name}' unavailable: {exc}. Using stub fallback.")
             stub = MCPClientStub(name, fallback_parameters)
             tool.context.get_mcp_client(name, default=stub)
             return stub
         raise
+
 
 class DraftingLLMTool(BaseTool):
     """Shared async flow for drafting LLM tools."""
@@ -98,8 +97,10 @@ class DraftingLLMTool(BaseTool):
     output_model: type[BaseToolOutput] = BaseToolOutput
     log_action: str = ""
 
-    @track_metrics('tool_drafting_llm')
-    async def _run_async_internal(self, tool_input: dict[str, Any], workflow_id: str) -> dict[str, Any]:
+    @track_metrics("tool_drafting_llm")
+    async def _run_async_internal(
+        self, tool_input: dict[str, Any], workflow_id: str
+    ) -> dict[str, Any]:
         action = self.log_action or f"Running {self.tool_name}"
         self.log_info(f"Tool: {action} (v10.7)...")
 
@@ -107,18 +108,14 @@ class DraftingLLMTool(BaseTool):
         prompt_template = self.prompt_manager.get_template(self.tool_name)
 
         prompt = await _format_prompt_with_defaults(
-            prompt_template,
-            tool_input,
-            self.budget_manager,
-            client.goal_state,
-            client.top_failures
+            prompt_template, tool_input, self.budget_manager, client.goal_state, client.top_failures
         )
 
         temperature = self._get_model_temperature()
         response = await client.chat_completion_async(
             messages=[{"role": "user", "content": prompt}],
             temperature=temperature,
-            response_format="json_object"
+            response_format="json_object",
         )
 
         validated_output, error = self.validator.validate(response["content"], self.output_model)
@@ -135,7 +132,7 @@ class DraftingLLMTool(BaseTool):
                 f"Model config '{self.model_client_key}' not found for {self.__class__.__name__}"
             ) from exc
 
-        temperature = getattr(model_config, 'temperature', None)
+        temperature = getattr(model_config, "temperature", None)
         if temperature is None:
             raise AttributeError(
                 f"Model config '{self.model_client_key}' for {self.__class__.__name__} lacks a 'temperature' value"
@@ -186,15 +183,21 @@ class EvidenceClarificationTool(BaseTool):
 
     class ClarificationRequestOutput(BaseToolOutput):
         request_id: str = Field(..., description="Unique id for the clarification request")
-        recipient: str = Field(..., description="Who should receive the request (e.g., 'bullet_team', 'rag_team')")
+        recipient: str = Field(
+            ..., description="Who should receive the request (e.g., 'bullet_team', 'rag_team')"
+        )
         questions: list[str] = Field(..., description="Questions that need clarification")
         priority: str = Field("normal", description="Request priority level")
-        context_summary: str = Field("", description="Short summary of the ambiguity driving the request")
+        context_summary: str = Field(
+            "", description="Short summary of the ambiguity driving the request"
+        )
 
     output_model = ClarificationRequestOutput
 
-    @track_metrics('tool_request_evidence_clarification')
-    async def _run_async_internal(self, tool_input: dict[str, Any], workflow_id: str) -> dict[str, Any]:
+    @track_metrics("tool_request_evidence_clarification")
+    async def _run_async_internal(
+        self, tool_input: dict[str, Any], workflow_id: str
+    ) -> dict[str, Any]:
         self.log_info("Tool: Logging clarification request (v10.7 Guild)...")
 
         recipient = tool_input.get("recipient", "bullet_team")
@@ -226,14 +229,22 @@ class EvidenceBriefAssemblerTool(BaseTool):
     class EvidenceBriefOutput(BaseToolOutput):
         section: str = Field(..., description="Name of the section the brief supports")
         brief: str = Field(..., description="Short narrative of the supporting evidence")
-        key_points: list[str] = Field(default_factory=list, description="Bullet-ready evidence points")
-        citations: list[str] = Field(default_factory=list, description="Reference identifiers or source hints")
-        outstanding_questions: list[str] = Field(default_factory=list, description="Clarifications still pending")
+        key_points: list[str] = Field(
+            default_factory=list, description="Bullet-ready evidence points"
+        )
+        citations: list[str] = Field(
+            default_factory=list, description="Reference identifiers or source hints"
+        )
+        outstanding_questions: list[str] = Field(
+            default_factory=list, description="Clarifications still pending"
+        )
 
     output_model = EvidenceBriefOutput
 
-    @track_metrics('tool_assemble_evidence_brief')
-    async def _run_async_internal(self, tool_input: dict[str, Any], workflow_id: str) -> dict[str, Any]:
+    @track_metrics("tool_assemble_evidence_brief")
+    async def _run_async_internal(
+        self, tool_input: dict[str, Any], workflow_id: str
+    ) -> dict[str, Any]:
         self.log_info("Tool: Assembling evidence brief (v10.7 Guild)...")
 
         section_name = tool_input.get("section", "general")
@@ -269,19 +280,26 @@ class EvidenceBriefAssemblerTool(BaseTool):
 
         return validated_output.model_dump()
 
+
 # ============================================================================
 # ROW 7: RAG STACK TOOLS (v10.7: Refactored)
 # ============================================================================
 
+
 class HyDETool(BaseTool):
     """(HyDE) Generates hypothetical documents for query expansion."""
+
     tool_name = "generate_hypothetical_documents"
 
     class HyDEOutput(BaseModel):
-        hypothetical_document: str = Field(..., description="A hypothetical document that answers the query.")
+        hypothetical_document: str = Field(
+            ..., description="A hypothetical document that answers the query."
+        )
 
-    @track_metrics('run_hyde_tool')
-    async def _run_async_internal(self, tool_input: dict[str, Any], workflow_id: str) -> dict[str, Any]:
+    @track_metrics("run_hyde_tool")
+    async def _run_async_internal(
+        self, tool_input: dict[str, Any], workflow_id: str
+    ) -> dict[str, Any]:
         self.log_info("Tool: Running HyDE (v10.7)...")
         client = self.get_model_client("hyde_model")
 
@@ -293,80 +311,90 @@ class HyDETool(BaseTool):
 
         # v10.7 REFACTOR: Use centralized async formatter
         prompt = await _format_prompt_with_defaults(
-            prompt_template, tool_input, self.budget_manager,
-            client.goal_state, client.top_failures
+            prompt_template, tool_input, self.budget_manager, client.goal_state, client.top_failures
         )
 
         response = await client.chat_completion_async(
             messages=[{"role": "user", "content": prompt}],
             temperature=self.config.model_config.hyde_model.temperature,
-            response_format="json_object"
+            response_format="json_object",
         )
 
         validated_output, error = self.validator.validate(response["content"], self.HyDEOutput)
         if error:
             self.log_warning(f"HyDE validation failed: {error}. Using raw query.")
-            return {"status": "error", "hypothetical_document": query} # Fallback
+            return {"status": "error", "hypothetical_document": query}  # Fallback
 
-        return {"status": "success", "hypothetical_document": validated_output.hypothetical_document}
+        return {
+            "status": "success",
+            "hypothetical_document": validated_output.hypothetical_document,
+        }
 
 
 class ChromaDBSearchTool(BaseTool):
     """v10.7: Searches the resume database using ChromaDB (Vector Search)."""
+
     tool_name = "search_resume_database"
 
-    def __init__(self, context: 'WorkflowContext', debug_mode: bool = False):
+    def __init__(self, context: "WorkflowContext", debug_mode: bool = False):
         super().__init__(context, debug_mode)
         # v10.7: Use injected embedding function
         self.embedding_function = self.context.embedding_function
         self.collection_name = self.config.chromadb_config.default_collection_name
         self.chroma_client = self.context.chromadb_client
 
-    @track_metrics('run_chroma_tool')
-    async def _run_async_internal(self, tool_input: dict[str, Any], workflow_id: str) -> dict[str, Any]:
+    @track_metrics("run_chroma_tool")
+    async def _run_async_internal(
+        self, tool_input: dict[str, Any], workflow_id: str
+    ) -> dict[str, Any]:
         query = tool_input.get("query", "")
         self.log_info(f"Searching ChromaDB (Vector) for: {query}")
 
         try:
             collection = self.chroma_client.get_collection(
-                name=self.collection_name,
-                embedding_function=self.embedding_function
+                name=self.collection_name, embedding_function=self.embedding_function
             )
 
             results = await asyncio.to_thread(
                 collection.query,
                 query_texts=[query],
                 n_results=5,
-                where={"workflow_id": workflow_id}
+                where={"workflow_id": workflow_id},
             )
 
             search_results = []
-            documents = results.get('documents', [[]])[0]
-            metadatas = results.get('metadatas', [[]])[0]
+            documents = results.get("documents", [[]])[0]
+            metadatas = results.get("metadatas", [[]])[0]
 
             for doc, meta in zip(documents, metadatas):
                 experience_obj_str = meta.get("experience_object")
                 if experience_obj_str:
                     search_results.append(json.loads(experience_obj_str))
 
-            self.log_feedback(workflow_id, "chroma_search", "success", {"results_found": len(search_results)})
+            self.log_feedback(
+                workflow_id, "chroma_search", "success", {"results_found": len(search_results)}
+            )
             return {"search_results": search_results}
 
         except Exception as e:
             self.log_error(f"Failed to run ChromaDB search: {e}")
             return {"search_results": []}
 
+
 class BM25SearchTool(BaseTool):
     """v10.7: Searches the resume using BM25 (Keyword Search)."""
+
     tool_name = "search_resume_bm25"
 
-    def __init__(self, context: 'WorkflowContext', debug_mode: bool = False):
+    def __init__(self, context: "WorkflowContext", debug_mode: bool = False):
         super().__init__(context, debug_mode)
         if not BM25_AVAILABLE:
             self.log_error("BM25SearchTool disabled: 'rank_bm25' not installed.")
 
-    @track_metrics('run_bm25_tool')
-    async def _run_async_internal(self, tool_input: dict[str, Any], workflow_id: str) -> dict[str, Any]:
+    @track_metrics("run_bm25_tool")
+    async def _run_async_internal(
+        self, tool_input: dict[str, Any], workflow_id: str
+    ) -> dict[str, Any]:
         if not BM25_AVAILABLE:
             return {"search_results": []}
 
@@ -380,6 +408,7 @@ class BM25SearchTool(BaseTool):
             return {"search_results": []}
 
         try:
+
             def do_bm25_search():
                 tokenized_corpus = [doc.split(" ") for doc in corpus_text]
                 bm25 = BM25Okapi(tokenized_corpus)
@@ -387,30 +416,38 @@ class BM25SearchTool(BaseTool):
                 doc_scores = bm25.get_scores(tokenized_query)
                 indexed_scores = [(i, score) for i, score in enumerate(doc_scores)]
                 indexed_scores.sort(key=lambda x: x[1], reverse=True)
-                search_results = [corpus_metadata[i] for i, score in indexed_scores[:5] if score > 0]
+                search_results = [
+                    corpus_metadata[i] for i, score in indexed_scores[:5] if score > 0
+                ]
                 return search_results
 
             search_results = await asyncio.to_thread(do_bm25_search)
 
-            self.log_feedback(workflow_id, "bm25_search", "success", {"results_found": len(search_results)})
+            self.log_feedback(
+                workflow_id, "bm25_search", "success", {"results_found": len(search_results)}
+            )
             return {"search_results": search_results}
 
         except Exception as e:
             self.log_error(f"Failed to run BM25 search: {e}")
             return {"search_results": []}
 
+
 # ============================================================================
 # ROW 7: QA STACK (ReAct Conductor with 11+ REAL Tools)
 # ============================================================================
 
+
 class QABaseValidatorTool(BaseTool):
     """Base class for the 10 T2 validator tools"""
 
-    model_config_name = "qa_validator_model" # Gemini 2.5 Flash
+    model_config_name = "qa_validator_model"  # Gemini 2.5 Flash
     output_model: Any = BaseToolOutput
 
-    @track_metrics('tool_qa_validator')
-    async def _run_async_internal(self, tool_input: dict[str, Any], workflow_id: str) -> dict[str, Any]:
+    @track_metrics("tool_qa_validator")
+    async def _run_async_internal(
+        self, tool_input: dict[str, Any], workflow_id: str
+    ) -> dict[str, Any]:
         self.log_info(f"Tool: Running {self.tool_name} (v10.7)...")
         client = self.get_model_client(self.model_config_name)
 
@@ -418,14 +455,13 @@ class QABaseValidatorTool(BaseTool):
 
         # v10.7 REFACTOR: Use centralized async formatter
         prompt = await _format_prompt_with_defaults(
-            prompt_template, tool_input, self.budget_manager,
-            client.goal_state, client.top_failures
+            prompt_template, tool_input, self.budget_manager, client.goal_state, client.top_failures
         )
 
         response = await client.chat_completion_async(
             messages=[{"role": "user", "content": prompt}],
             temperature=self.config.model_config.qa_validator_model.temperature,
-            response_format="json_object"
+            response_format="json_object",
         )
 
         validated_output, error = self.validator.validate(response["content"], self.output_model)
@@ -433,6 +469,7 @@ class QABaseValidatorTool(BaseTool):
             raise PydanticSchemaError(f"Tool {self.tool_name} failed validation: {error}")
 
         return validated_output.model_dump()
+
 
 class QAClaimValidatorTool(QABaseValidatorTool):
     """(NLI) Checks if claims in the draft are supported by the master resume."""
@@ -496,27 +533,30 @@ class QAMissedOpportunityTool(QABaseValidatorTool):
     tool_name = "find_missed_opportunities"
     output_model = QAMissedOpportunitiesOutput
 
+
 class QAAdversarialReviewerTool(BaseTool):
     """(Claude 4.1 Opus) Acts as a skeptical hiring manager to find flaws."""
+
     tool_name = "adversarial_review"
     output_model = QAAdversarialOutput
 
-    @track_metrics('tool_qa_adversarial')
-    async def _run_async_internal(self, tool_input: dict[str, Any], workflow_id: str) -> dict[str, Any]:
+    @track_metrics("tool_qa_adversarial")
+    async def _run_async_internal(
+        self, tool_input: dict[str, Any], workflow_id: str
+    ) -> dict[str, Any]:
         self.log_info("Tool: Running Adversarial Review (v10.7)...")
         client = self.get_model_client("qa_adversarial_model")
         prompt_template = self.prompt_manager.get_template(self.tool_name)
 
         # v10.7 REFACTOR: Use centralized async formatter
         prompt = await _format_prompt_with_defaults(
-            prompt_template, tool_input, self.budget_manager,
-            client.goal_state, client.top_failures
+            prompt_template, tool_input, self.budget_manager, client.goal_state, client.top_failures
         )
 
         response = await client.chat_completion_async(
             messages=[{"role": "user", "content": prompt}],
             temperature=self.config.model_config.qa_adversarial_model.temperature,
-            response_format="json_object"
+            response_format="json_object",
         )
 
         validated_output, error = self.validator.validate(response["content"], self.output_model)
@@ -525,13 +565,17 @@ class QAAdversarialReviewerTool(BaseTool):
 
         return validated_output.model_dump()
 
+
 class QABiasDetectorTool(BaseTool):
     """(Local) Runs the local bias detector tool on the final draft."""
+
     tool_name = "validate_bias"
     output_model = QABiasOutput
 
-    @track_metrics('tool_qa_bias_detector')
-    async def _run_async_internal(self, tool_input: dict[str, Any], workflow_id: str) -> dict[str, Any]:
+    @track_metrics("tool_qa_bias_detector")
+    async def _run_async_internal(
+        self, tool_input: dict[str, Any], workflow_id: str
+    ) -> dict[str, Any]:
         self.log_info("Tool: Running local bias detector (v10.7)...")
         draft_text = json.dumps(tool_input.get("draft_text", ""))
 
@@ -544,8 +588,10 @@ class QABiasDetectorTool(BaseTool):
 
         return validated_output.model_dump()
 
+
 class QAWordCountValidatorTool(BaseTool):
     """(Local) Runs deterministic word count check."""
+
     tool_name = "validate_word_count"
 
     class WordCountOutput(BaseToolOutput):
@@ -555,8 +601,10 @@ class QAWordCountValidatorTool(BaseTool):
 
     output_model = WordCountOutput
 
-    @track_metrics('tool_qa_word_count')
-    async def _run_async_internal(self, tool_input: dict[str, Any], workflow_id: str) -> dict[str, Any]:
+    @track_metrics("tool_qa_word_count")
+    async def _run_async_internal(
+        self, tool_input: dict[str, Any], workflow_id: str
+    ) -> dict[str, Any]:
         self.log_info("Tool: Running Word Count Validator (v10.7)...")
 
         text_to_check = tool_input.get("text_to_check", "")
@@ -571,56 +619,70 @@ class QAWordCountValidatorTool(BaseTool):
             min_words=min_words,
             max_words=max_words,
             llm_reported_count=llm_reported_count,
-            workflow_id=workflow_id
+            workflow_id=workflow_id,
         )
 
         result_dict = {
             "status": "success",
             "validation_passed": validation_passed,
             "message": message,
-            "deterministic_count": len(text_to_check.split())
+            "deterministic_count": len(text_to_check.split()),
         }
 
         validated_output, error = self.validator.validate(result_dict, self.output_model)
         if error:
-            raise PydanticSchemaError(f"Tool {self.tool_name} failed its own output validation: {error}")
+            raise PydanticSchemaError(
+                f"Tool {self.tool_name} failed its own output validation: {error}"
+            )
 
         return validated_output.model_dump()
+
 
 # ============================================================================
 # v10.7 (Fix #8): UI CONTROL TOOLS (STUBS)
 # ============================================================================
 
+
 class UIUpdateElementTool(BaseTool):
     """(Stub) Simulates updating a UI element."""
+
     tool_name = "ui_update_element"
     output_model = BaseToolOutput
 
-    @track_metrics('tool_ui_update_element')
-    async def _run_async_internal(self, tool_input: dict[str, Any], workflow_id: str) -> dict[str, Any]:
+    @track_metrics("tool_ui_update_element")
+    async def _run_async_internal(
+        self, tool_input: dict[str, Any], workflow_id: str
+    ) -> dict[str, Any]:
         element_id = tool_input.get("element_id", "unknown")
         content = tool_input.get("content", "")
 
-        self.log_info(f"Tool: UI STUB >> Updating element '{element_id}' with content: '{content[:30]}...'")
+        self.log_info(
+            f"Tool: UI STUB >> Updating element '{element_id}' with content: '{content[:30]}...'"
+        )
 
         # In a real system, this would dispatch an event.
         # For v10.7, we just log and return success.
 
         return {"status": "success"}
 
+
 class UIFireEventTool(BaseTool):
     """(Stub) Simulates firing a UI event."""
+
     tool_name = "ui_fire_event"
     output_model = BaseToolOutput
 
-    @track_metrics('tool_ui_fire_event')
-    async def _run_async_internal(self, tool_input: dict[str, Any], workflow_id: str) -> dict[str, Any]:
+    @track_metrics("tool_ui_fire_event")
+    async def _run_async_internal(
+        self, tool_input: dict[str, Any], workflow_id: str
+    ) -> dict[str, Any]:
         event_name = tool_input.get("event_name", "unknown_event")
         payload = tool_input.get("payload", {})
 
         self.log_info(f"Tool: UI STUB >> Firing event '{event_name}' with payload: {payload}")
 
         return {"status": "success"}
+
 
 # ============================================================================
 # END OF agent_tools_v10_7.py

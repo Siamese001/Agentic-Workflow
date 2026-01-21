@@ -1,4 +1,5 @@
 """Validator agent for outreach drafts."""
+
 from __future__ import annotations
 
 from collections.abc import Mapping
@@ -24,12 +25,25 @@ ArtifactMap = Mapping[str, str]
 class ValidatorAgent:
     """Apply QA rules and perform limited retries to reach a pass state."""
 
-    def __init__(self, *, qa_validator: QAValidator | None = None, metrics: MetricsTracker | None = None, max_retries: int = 0) -> None:
+    def __init__(
+        self,
+        *,
+        qa_validator: QAValidator | None = None,
+        metrics: MetricsTracker | None = None,
+        max_retries: int = 0,
+    ) -> None:
         self.qa_validator = qa_validator or QAValidator()
         self.metrics = metrics or MetricsTracker()
         self.max_retries = max(0, int(max_retries))
 
-    def check(self, draft: str, route_decision, pii_map: dict[str, str], *, artifacts: ArtifactMap | None = None) -> ValidationResult:
+    def check(
+        self,
+        draft: str,
+        route_decision,
+        pii_map: dict[str, str],
+        *,
+        artifacts: ArtifactMap | None = None,
+    ) -> ValidationResult:
         artifacts = artifacts or {}
         current_draft = draft
         attempts = 1
@@ -64,7 +78,9 @@ class ValidatorAgent:
         )
 
     # ------------------------------------------------------------------
-    def _run_validator(self, draft: str, artifacts: ArtifactMap, pii_map: Mapping[str, str]) -> QAResult:
+    def _run_validator(
+        self, draft: str, artifacts: ArtifactMap, pii_map: Mapping[str, str]
+    ) -> QAResult:
         return self.qa_validator.validate(
             draft,
             dict(artifacts),

@@ -22,10 +22,7 @@ def generate_llm_cache_key(model: str, messages: list[dict[str, Any]]) -> str:
         Cache key string
     """
     # Create a normalized representation
-    key_data = {
-        "model": model,
-        "messages": messages
-    }
+    key_data = {"model": model, "messages": messages}
 
     # Serialize to JSON with sorted keys for consistency
     serialized = json.dumps(key_data, sort_keys=True, separators=(",", ":"))
@@ -35,9 +32,7 @@ def generate_llm_cache_key(model: str, messages: list[dict[str, Any]]) -> str:
 
 
 def generate_llm_cache_key_with_fingerprint(
-    model: str,
-    messages: list[dict[str, Any]],
-    fingerprint: str
+    model: str, messages: list[dict[str, Any]], fingerprint: str
 ) -> str:
     """Generate a cache key with additional fingerprint.
 
@@ -50,11 +45,7 @@ def generate_llm_cache_key_with_fingerprint(
         Cache key string with fingerprint
     """
     # Include fingerprint in the key data
-    key_data = {
-        "model": model,
-        "messages": messages,
-        "fingerprint": fingerprint
-    }
+    key_data = {"model": model, "messages": messages, "fingerprint": fingerprint}
 
     # Serialize to JSON with sorted keys
     serialized = json.dumps(key_data, sort_keys=True, separators=(",", ":"))
@@ -68,7 +59,7 @@ def should_invalidate_cache(
     current_version: str | None = None,
     model: str | None = None,
     messages: list[dict[str, Any]] | None = None,
-    ttl_seconds: int = 3600
+    ttl_seconds: int = 3600,
 ) -> bool:
     """Check if a cache entry should be invalidated.
 

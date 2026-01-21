@@ -10,6 +10,7 @@ Test Cases T3-P1-01 through T3-P1-04:
 
 These tests verify the LocationAgent SRP fission is properly integrated.
 """
+
 import sys
 from pathlib import Path
 from unittest.mock import patch
@@ -30,11 +31,13 @@ class TestT3P101ValidatorPathIntegrity:
     def test_import_location_validator_agent(self):
         """Verify LocationValidatorAgent can be imported without errors."""
         from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
+
         assert LocationValidatorAgent is not None
 
     def test_instantiate_validator(self):
         """Verify LocationValidatorAgent can be instantiated."""
         from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
+
         validator = LocationValidatorAgent(project_root=PROJECT_ROOT)
         assert validator is not None
         assert validator.project_root == PROJECT_ROOT.resolve()
@@ -42,8 +45,9 @@ class TestT3P101ValidatorPathIntegrity:
     def test_validate_sovereign_roots_method_exists(self):
         """Verify validate_sovereign_roots method exists on LocationValidatorAgent."""
         from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
+
         validator = LocationValidatorAgent(project_root=PROJECT_ROOT)
-        assert hasattr(validator, 'validate_sovereign_roots')
+        assert hasattr(validator, "validate_sovereign_roots")
         assert callable(validator.validate_sovereign_roots)
 
 
@@ -57,11 +61,13 @@ class TestT3P102HealerSafeMoveMocking:
     def test_import_location_healer_agent(self):
         """Verify LocationHealerAgent can be imported without errors."""
         from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
+
         assert LocationHealerAgent is not None
 
     def test_instantiate_healer(self):
         """Verify LocationHealerAgent can be instantiated."""
         from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
+
         healer = LocationHealerAgent(project_root=PROJECT_ROOT)
         assert healer is not None
         assert healer.project_root == PROJECT_ROOT.resolve()
@@ -69,16 +75,20 @@ class TestT3P102HealerSafeMoveMocking:
     def test_heal_repository_method_exists(self):
         """Verify heal_repository method exists on LocationHealerAgent."""
         from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
+
         healer = LocationHealerAgent(project_root=PROJECT_ROOT)
-        assert hasattr(healer, 'heal_repository')
+        assert hasattr(healer, "heal_repository")
         assert callable(healer.heal_repository)
 
-    @patch('agentic_core.L5_safety.validators.LocationHealerAgent.LocationHealerAgent.heal_repository')
+    @patch(
+        "agentic_core.L5_safety.validators.LocationHealerAgent.LocationHealerAgent.heal_repository"
+    )
     def test_mock_healer_intercepts_call(self, mock_heal):
         """Verify mocking LocationHealerAgent.heal_repository intercepts correctly."""
         mock_heal.return_value = {"violations_fixed": 5, "files_moved": 3}
 
         from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
+
         healer = LocationHealerAgent(project_root=PROJECT_ROOT)
 
         result = healer.heal_repository(dry_run=True)
@@ -101,6 +111,7 @@ class TestT3P103SecurityWrapperDiscovery:
         # since pytest may change working directories
         try:
             import tests.security.test_safe_execute
+
             assert True, "Security test file discovered and importable"
         except ImportError as e:
             pytest.fail(f"Security test file not discoverable: {e}")
@@ -108,11 +119,13 @@ class TestT3P103SecurityWrapperDiscovery:
     def test_security_tests_importable(self):
         """Verify security test module can be imported."""
         import tests.security.test_safe_execute as security_tests
+
         assert security_tests is not None
 
     def test_safe_execute_importable(self):
         """Verify safe_execute can be imported from security module."""
         from agentic_core.utils.security import safe_execute, safe_git_execute, safe_popen
+
         assert safe_execute is not None
         assert safe_popen is not None
         assert safe_git_execute is not None
@@ -131,6 +144,7 @@ class TestT3P104SSOTConstantAccess:
             DEFAULT_ARCHIVE_SUBFOLDER,
             HEALING_STRATEGY_MAP,
         )
+
         assert ARCHIVE_SUBFOLDERS is not None
         assert DEFAULT_ARCHIVE_SUBFOLDER is not None
         assert HEALING_STRATEGY_MAP is not None
@@ -178,12 +192,16 @@ class TestLocationAgentBackwardsCompatibility:
     def test_location_agent_still_importable(self):
         """Verify original LocationAgent can still be imported."""
         from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+
         assert LocationAgent is not None
 
-    @pytest.mark.skip(reason="LocationAgent requires specific environment validation - tested separately")
+    @pytest.mark.skip(
+        reason="LocationAgent requires specific environment validation - tested separately"
+    )
     def test_location_agent_instantiates(self):
         """Verify original LocationAgent can be instantiated."""
         from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+
         agent = LocationAgent(project_root=PROJECT_ROOT)
         assert agent is not None
         assert agent.project_root == PROJECT_ROOT.resolve()

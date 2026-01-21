@@ -20,6 +20,7 @@ from data.sdks_mcps.reference_clients.minimal_anthropic import (
 @dataclass
 class AnthropicConfig:
     """Configuration for Anthropic client."""
+
     api_key: str | None = None
     base_url: str | None = None
     timeout: int = 60
@@ -28,6 +29,7 @@ class AnthropicConfig:
     default_temperature: float = 0.7
     default_max_tokens: int = 4096
     enable_caching: bool = True
+
 
 class AnthropicClient:
     """Production-ready Anthropic client with caching and tool use support."""
@@ -38,7 +40,7 @@ class AnthropicClient:
             api_key=self.config.api_key or os.getenv("ANTHROPIC_API_KEY"),
             base_url=self.config.base_url,
             timeout=self.config.timeout,
-            max_retries=self.config.max_retries
+            max_retries=self.config.max_retries,
         )
 
         # Cache control header for prompt caching
@@ -52,7 +54,7 @@ class AnthropicClient:
             "cache_creation_tokens": 0,
             "cache_read_tokens": 0,
             "total_cost": 0.0,
-            "errors": 0
+            "errors": 0,
         }
 
     @backoff.on_exception(
@@ -60,7 +62,7 @@ class AnthropicClient:
         (RateLimitError, APIError, APITimeoutError),
         max_tries=7,
         foundation=1,
-        max_value=60
+        max_value=60,
     )
     def message(
         self,
@@ -72,7 +74,8 @@ class AnthropicClient:
         tools: list[dict[str, object]] | None = None,
         tool_choice: str | dict[str, object] | None = None,
         stream: bool = False,
-        **kwargs: dict[str, object]) -> Message | object:
+        **kwargs: dict[str, object],
+    ) -> Message | object:
         """Execute message with retry logic and caching optimization.
 
         Args:
@@ -102,7 +105,7 @@ class AnthropicClient:
                 "model": model or self.config.default_model,
                 "messages": processed_messages,
                 "max_tokens": max_tokens or self.config.default_max_tokens,
-                **kwargs
+                **kwargs,
             }
 
             if processed_system:
@@ -135,7 +138,8 @@ class AnthropicClient:
         system: list[dict[str, object]] | None = None,
         cache_system: bool = True,
         cache_templates: list[int] = None,
-        **kwargs: dict[str, object]) -> Message:
+        **kwargs: dict[str, object],
+    ) -> Message:
         """Execute message with strategic prompt caching.
 
         Args:
@@ -149,20 +153,19 @@ class AnthropicClient:
             Message object with cache metadata
         """
         # Apply strategic caching
-        processed_system = self._apply_caching_to_system(system) if cache_system and system else system
+        processed_system = (
+            self._apply_caching_to_system(system) if cache_system and system else system
+        )
         processed_messages = self._apply_caching_to_messages(messages, cache_templates)
 
-        return self.message(
-            messages=processed_messages,
-            system=processed_system,
-            **kwargs
-        )
+        return self.message(messages=processed_messages, system=processed_system, **kwargs)
 
     def stream_message(
         self,
         messages: list[dict[str, object]],
         callback: callable = None,
-        **kwargs: dict[str, object]) -> list[str]:
+        **kwargs: dict[str, object],
+    ) -> list[str]:
         """Stream message with optional callback.
 
         Args:
@@ -191,7 +194,8 @@ class AnthropicClient:
         messages: list[dict[str, object]],
         tools: list[dict[str, object]],
         tool_choice: str = "auto",
-        **kwargs: dict[str, object]) -> dict[str, object]:
+        **kwargs: dict[str, object],
+    ) -> dict[str, object]:
         """Execute message with tool use and parse tool calls.
 
         Args:
@@ -203,12 +207,7 @@ class AnthropicClient:
         Returns:
             Dictionary with content and tool calls
         """
-        response = self.message(
-            messages=messages,
-            tools=tools,
-            tool_choice=tool_choice,
-            **kwargs
-        )
+        response = self.message(messages=messages, tools=tools, tool_choice=tool_choice, **kwargs)
 
         content = ""
         tool_calls = []
@@ -217,11 +216,13 @@ class AnthropicClient:
             if content_block.type == "text":
                 content += content_block.text
             elif content_block.type == "tool_use":
-                tool_calls.append({
-                    "id": content_block.id,
-                    "name": content_block.name,
-                    "input": content_block.input
-                })
+                tool_calls.append(
+                    {
+                        "id": content_block.id,
+                        "name": content_block.name,
+                        "input": content_block.input,
+                    }
+                )
 
         return {
             "content": content,
@@ -229,17 +230,15 @@ class AnthropicClient:
             "usage": {
                 "input_tokens": response.usage.input_tokens,
                 "output_tokens": response.usage.output_tokens,
-                "cache_creation_tokens": getattr(response.usage, 'cache_creation_input_tokens', 0),
-                "cache_read_tokens": getattr(response.usage, 'cache_read_input_tokens', 0)
+                "cache_creation_tokens": getattr(response.usage, "cache_creation_input_tokens", 0),
+                "cache_read_tokens": getattr(response.usage, "cache_read_input_tokens", 0),
             },
             "model": response.model,
-            "id": response.id
+            "id": response.id,
         }
 
     def batch_message(
-        self,
-        batch_requests: list[dict[str, object]],
-        concurrent_limit: int = 10
+        self, batch_requests: list[dict[str, object]], concurrent_limit: int = 10
     ) -> list[dict[str, object]]:
         """Execute multiple messages with controlled concurrency.
 
@@ -258,13 +257,13 @@ class AnthropicClient:
                 return {
                     "success": True,
                     "response": response,
-                    "request_id": request_data.get("id", "unknown")
+                    "request_id": request_data.get("id", "unknown"),
                 }
             except Exception as e:
                 return {
                     "success": False,
                     "error": str(e),
-                    "request_id": request_data.get("id", "unknown")
+                    "request_id": request_data.get("id", "unknown"),
                 }
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=concurrent_limit) as executor:
@@ -290,9 +289,7 @@ class AnthropicClient:
         return processed_system
 
     def _apply_caching_to_messages(
-        self,
-        messages: list[dict[str, object]],
-        cache_indices: list[int] = None
+        self, messages: list[dict[str, object]], cache_indices: list[int] = None
     ) -> list[dict[str, object]]:
         """Apply cache control to specific message indices."""
         if not self.cache_control:
@@ -303,7 +300,9 @@ class AnthropicClient:
             processed_message = message.copy()
 
             # Apply caching to specified indices or first user message
-            should_cache = (cache_indices and i in cache_indices) or (i == 0 and message.get("role") == "user")
+            should_cache = (cache_indices and i in cache_indices) or (
+                i == 0 and message.get("role") == "user"
+            )
 
             if should_cache and "content" in processed_message:
                 processed_content = []
@@ -327,8 +326,8 @@ class AnthropicClient:
             self.usage_stats["output_tokens"] += usage.output_tokens
 
             # Cache tokens (Claude 3.5+)
-            cache_creation = getattr(usage, 'cache_creation_input_tokens', 0)
-            cache_read = getattr(usage, 'cache_read_input_tokens', 0)
+            cache_creation = getattr(usage, "cache_creation_input_tokens", 0)
+            cache_read = getattr(usage, "cache_read_input_tokens", 0)
 
             self.usage_stats["cache_creation_tokens"] += cache_creation
             self.usage_stats["cache_read_tokens"] += cache_read
@@ -339,10 +338,9 @@ class AnthropicClient:
             cache_write_cost = (cache_creation * 0.00375) / 1000
             cache_read_cost = (cache_read * 0.0003) / 1000
 
-            self.usage_stats["total_cost"] += (input_cost
-                + output_cost
-                + cache_write_cost
-                + cache_read_cost)
+            self.usage_stats["total_cost"] += (
+                input_cost + output_cost + cache_write_cost + cache_read_cost
+            )
 
     def _handle_error(self, error: Exception) -> Exception:
         """Enhance error messages with context."""
@@ -381,15 +379,17 @@ class AnthropicClient:
             "cache_creation_tokens": 0,
             "cache_read_tokens": 0,
             "total_cost": 0.0,
-            "errors": 0
+            "errors": 0,
         }
+
 
 # builder function for easy instantiation
 def create_anthropic_client(
     api_key: str | None = None,
     model: str = "claude-3-5-sonnet-20241022",
     enable_caching: bool = True,
-    **kwargs: dict[str, object]) -> AnthropicClient:
+    **kwargs: dict[str, object],
+) -> AnthropicClient:
     """Create configured Anthropic client.
 
     Args:
@@ -402,12 +402,10 @@ def create_anthropic_client(
         Configured Anthropic client
     """
     config = AnthropicConfig(
-        api_key=api_key,
-        default_model=model,
-        enable_caching=enable_caching,
-        **kwargs
+        api_key=api_key, default_model=model, enable_caching=enable_caching, **kwargs
     )
     return AnthropicClient(config)
+
 
 # Example usage
 if __name__ == "__main__":
@@ -418,9 +416,7 @@ if __name__ == "__main__":
     messages = [
         {
             "role": "user",
-            "content": [
-                {"type": "text", "text": "Explain quantum computing in 100 words."}
-            ]
+            "content": [{"type": "text", "text": "Explain quantum computing in 100 words."}],
         }
     ]
 
@@ -428,18 +424,12 @@ if __name__ == "__main__":
         response = client.message(messages)
 
         # Cached message with system prompt
-        system = [
-            {"type": "text", "text": "You are an expert physics educator."}
-        ]
+        system = [{"type": "text", "text": "You are an expert physics educator."}]
 
-        cached_response = client.cached_message(
-            messages=messages,
-            system=system,
-            cache_system=True
-        )
+        cached_response = client.cached_message(messages=messages, system=system, cache_system=True)
 
         # Usage stats with cache metrics
         stats = client.get_usage_stats()
 
     except Exception:
-        pass # Added pass to avoid syntax error if the try block is empty
+        pass  # Added pass to avoid syntax error if the try block is empty

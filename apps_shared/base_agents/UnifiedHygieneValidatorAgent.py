@@ -17,6 +17,7 @@ Capabilities:
 Territory: agentic_core/L5_safety/validators/
 Canon Alignment: Code hygiene and repository health validation
 """
+
 from __future__ import annotations
 
 import ast
@@ -39,6 +40,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 @dataclass
 class HygieneViolation:
     """Structured hygiene issue report."""
+
     file_path: Path
     violation_type: str  # 'duplicate', 'empty_file', 'dead_code', 'tech_debt', 'orphan'
     severity: str  # 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL'
@@ -72,15 +74,23 @@ class UnifiedHygieneValidatorAgent(L5Agent):
     project_root: Path = field(default_factory=Path.cwd)
 
     # Configuration
-    DEBT_MARKERS: list[str] = field(default_factory=lambda: ['TODO', 'FIXME', 'HACK', 'XXX', 'BUG'])
+    DEBT_MARKERS: list[str] = field(default_factory=lambda: ["TODO", "FIXME", "HACK", "XXX", "BUG"])
     MIN_FILE_SIZE: int = 10  # Bytes - files smaller are considered empty
-    ALLOWED_EMPTY: set[str] = field(default_factory=lambda: {'__init__.py'})
+    ALLOWED_EMPTY: set[str] = field(default_factory=lambda: {"__init__.py"})
     SKIP_DIRS: set[str] = field(default_factory=lambda: set(GLOBAL_EXCLUDED_DIRS))
 
     # Entry points that shouldn't be flagged as orphans
-    ENTRY_POINTS: set[str] = field(default_factory=lambda: {
-        'main', 'setup', 'manage', 'run', 'conftest', '__main__', '__init__'
-    })
+    ENTRY_POINTS: set[str] = field(
+        default_factory=lambda: {
+            "main",
+            "setup",
+            "manage",
+            "run",
+            "conftest",
+            "__main__",
+            "__init__",
+        }
+    )
 
     # Internal state
     file_hashes: dict[str, list[Path]] = field(default_factory=lambda: defaultdict(list))
@@ -136,7 +146,7 @@ class UnifiedHygieneValidatorAgent(L5Agent):
                 "empty_file_count": len(empty_files),
                 "tech_debt_count": len(tech_debt),
                 "orphan_count": len(orphans),
-            }
+            },
         }
 
     def _scan_repository(self) -> None:
@@ -199,7 +209,7 @@ class UnifiedHygieneValidatorAgent(L5Agent):
             file_path: Path to Python file
         """
         try:
-            content = file_path.read_text(encoding='utf-8')
+            content = file_path.read_text(encoding="utf-8")
             tree = ast.parse(content)
 
             rel_path = str(file_path.relative_to(self.project_root))
@@ -208,13 +218,13 @@ class UnifiedHygieneValidatorAgent(L5Agent):
                 if isinstance(node, ast.Import):
                     for alias in node.names:
                         # Extract module name
-                        module = alias.name.split('.')[0]
+                        module = alias.name.split(".")[0]
                         self.import_graph[module].add(rel_path)
 
                 elif isinstance(node, ast.ImportFrom):
                     if node.module:
                         # Extract module name
-                        module = node.module.split('.')[0]
+                        module = node.module.split(".")[0]
                         self.import_graph[module].add(rel_path)
 
                     # Also track imported names
@@ -236,15 +246,19 @@ class UnifiedHygieneValidatorAgent(L5Agent):
         for file_hash, paths in self.file_hashes.items():
             if len(paths) > 1:
                 # Filter out __init__.py files (often legitimately similar)
-                non_init_paths = [p for p in paths if p.name != '__init__.py']
+                non_init_paths = [p for p in paths if p.name != "__init__.py"]
 
                 if len(non_init_paths) > 1:
-                    duplicates.append({
-                        "hash": file_hash,
-                        "files": [str(p.relative_to(self.project_root)) for p in non_init_paths],
-                        "count": len(non_init_paths),
-                        "severity": "HIGH",
-                    })
+                    duplicates.append(
+                        {
+                            "hash": file_hash,
+                            "files": [
+                                str(p.relative_to(self.project_root)) for p in non_init_paths
+                            ],
+                            "count": len(non_init_paths),
+                            "severity": "HIGH",
+                        }
+                    )
 
         return duplicates
 
@@ -266,12 +280,14 @@ class UnifiedHygieneValidatorAgent(L5Agent):
                 file_size = py_file.stat().st_size
 
                 if file_size < self.MIN_FILE_SIZE:
-                    empty_files.append({
-                        "file": str(py_file.relative_to(self.project_root)),
-                        "size": file_size,
-                        "severity": "HIGH",
-                        "description": f"File is only {file_size} bytes (likely stub or incomplete)"
-                    })
+                    empty_files.append(
+                        {
+                            "file": str(py_file.relative_to(self.project_root)),
+                            "size": file_size,
+                            "severity": "HIGH",
+                            "description": f"File is only {file_size} bytes (likely stub or incomplete)",
+                        }
+                    )
             except Exception:
                 pass
 
@@ -288,24 +304,26 @@ class UnifiedHygieneValidatorAgent(L5Agent):
 
         for py_file in self.all_py_files:
             try:
-                content = py_file.read_text(encoding='utf-8')
-                lines = content.split('\n')
+                content = py_file.read_text(encoding="utf-8")
+                lines = content.split("\n")
 
                 for line_num, line in enumerate(lines, 1):
                     # Only check comment lines
-                    if '#' not in line:
+                    if "#" not in line:
                         continue
 
                     line_upper = line.upper()
                     for marker in self.DEBT_MARKERS:
                         if marker in line_upper:
-                            markers_found.append({
-                                "file": str(py_file.relative_to(self.project_root)),
-                                "line": line_num,
-                                "type": marker,
-                                "content": line.strip()[:100],  # Truncate long lines
-                                "severity": "LOW",
-                            })
+                            markers_found.append(
+                                {
+                                    "file": str(py_file.relative_to(self.project_root)),
+                                    "line": line_num,
+                                    "type": marker,
+                                    "content": line.strip()[:100],  # Truncate long lines
+                                    "severity": "LOW",
+                                }
+                            )
                             break  # Only report once per line
 
             except Exception:
@@ -331,7 +349,7 @@ class UnifiedHygieneValidatorAgent(L5Agent):
                 continue
 
             # Skip test files
-            if 'test_' in py_file.name or py_file.name.endswith('_test.py'):
+            if "test_" in py_file.name or py_file.name.endswith("_test.py"):
                 continue
 
             # Skip files in tests/ or scripts/ directories
@@ -342,14 +360,16 @@ class UnifiedHygieneValidatorAgent(L5Agent):
             # Check if file is imported anywhere
             if file_stem not in imported_modules:
                 # Double-check: also check if the full module path is imported
-                module_path = rel_path.replace(os.sep, '.').replace('/', '.')[:-3]
+                module_path = rel_path.replace(os.sep, ".").replace("/", ".")[:-3]
                 if module_path not in imported_modules:
-                    orphans.append({
-                        "file": rel_path,
-                        "module": file_stem,
-                        "severity": "MEDIUM",
-                        "description": f"File '{file_stem}.py' is never imported (potential dead code)"
-                    })
+                    orphans.append(
+                        {
+                            "file": rel_path,
+                            "module": file_stem,
+                            "severity": "MEDIUM",
+                            "description": f"File '{file_stem}.py' is never imported (potential dead code)",
+                        }
+                    )
 
         return orphans
 
@@ -360,7 +380,7 @@ class UnifiedHygieneValidatorAgent(L5Agent):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: set[str] | None = None
+        _call_path: set[str] | None = None,
     ) -> dict[str, Any]:
         """
         Audit and optionally heal hygiene violations.
@@ -381,7 +401,7 @@ class UnifiedHygieneValidatorAgent(L5Agent):
             execute=execute,
             depth=depth,
             max_depth=max_depth,
-            _call_path=_call_path
+            _call_path=_call_path,
         )
 
         if _call_path is None:
@@ -399,15 +419,15 @@ class UnifiedHygieneValidatorAgent(L5Agent):
             # Run validation
             results = self.validate_repository()
 
-            violations_found = results.get('total_violations', 0)
+            violations_found = results.get("total_violations", 0)
             violations_fixed = 0
 
             # Healing logic (if execute=True)
             if execute and not dry_run:
                 # Remove empty stub files (except __init__.py)
-                for empty_file in results.get('empty_files', []):
+                for empty_file in results.get("empty_files", []):
                     try:
-                        file_path = self.project_root / empty_file['file']
+                        file_path = self.project_root / empty_file["file"]
                         if file_path.exists() and file_path.name not in self.ALLOWED_EMPTY:
                             file_path.unlink()
                             violations_fixed += 1
@@ -418,8 +438,8 @@ class UnifiedHygieneValidatorAgent(L5Agent):
                 "agent": agent_name,
                 "violations_found": violations_found,
                 "violations_fixed": violations_fixed,
-                "summary": results.get('summary', {}),
-                "status": results.get('status', 'UNKNOWN'),
+                "summary": results.get("summary", {}),
+                "status": results.get("status", "UNKNOWN"),
                 "dry_run": dry_run,
                 "execute": execute,
             }
@@ -466,12 +486,15 @@ class UnifiedHygieneValidatorAgent(L5Agent):
             results["tests"].append({"name": "test_instantiation", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
+            results["tests"].append(
+                {"name": "test_instantiation", "status": "failed", "error": str(e)}
+            )
 
         # Test 2: Hash calculation
         try:
             import tempfile
-            with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+
+            with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
                 f.write("# Test file\nprint('hello')")
                 temp_path = Path(f.name)
 
@@ -484,7 +507,9 @@ class UnifiedHygieneValidatorAgent(L5Agent):
             results["tests"].append({"name": "test_hash_calculation", "status": "passed"})
         except Exception as e:
             results["failed"] += 1
-            results["tests"].append({"name": "test_hash_calculation", "status": "failed", "error": str(e)})
+            results["tests"].append(
+                {"name": "test_hash_calculation", "status": "failed", "error": str(e)}
+            )
 
         # Test 3: Marker detection
         try:
@@ -493,14 +518,16 @@ class UnifiedHygieneValidatorAgent(L5Agent):
             for marker in self.DEBT_MARKERS:
                 if marker in test_content.upper():
                     markers.append(marker)
-            assert 'TODO' in markers
-            assert 'FIXME' in markers
+            assert "TODO" in markers
+            assert "FIXME" in markers
 
             results["passed"] += 1
             results["tests"].append({"name": "test_marker_detection", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append({"name": "test_marker_detection", "status": "failed", "error": str(e)})
+            results["tests"].append(
+                {"name": "test_marker_detection", "status": "failed", "error": str(e)}
+            )
 
         # Test 4: Duplicate detection logic
         try:
@@ -517,7 +544,9 @@ class UnifiedHygieneValidatorAgent(L5Agent):
             results["tests"].append({"name": "test_duplicate_detection", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append({"name": "test_duplicate_detection", "status": "failed", "error": str(e)})
+            results["tests"].append(
+                {"name": "test_duplicate_detection", "status": "failed", "error": str(e)}
+            )
 
         return results
 
@@ -581,31 +610,31 @@ if __name__ == "__main__":
     if args.json:
         print(json.dumps(results, indent=2, default=str))
     else:
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print("Unified Hygiene Validator Report")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
 
         if "duplicates" in results:
             print(f"\n📋 Duplicates: {len(results['duplicates'])}")
-            for dup in results['duplicates'][:5]:
+            for dup in results["duplicates"][:5]:
                 print(f"   - {dup['files']}")
 
         if "empty_files" in results:
             print(f"\n📄 Empty Files: {len(results['empty_files'])}")
-            for ef in results['empty_files'][:5]:
+            for ef in results["empty_files"][:5]:
                 print(f"   - {ef['file']} ({ef['size']} bytes)")
 
         if "tech_debt" in results:
             print(f"\n🔧 Tech Debt Markers: {len(results['tech_debt'])}")
-            for td in results['tech_debt'][:5]:
+            for td in results["tech_debt"][:5]:
                 print(f"   - {td['file']}:{td['line']} [{td['type']}]")
 
         if "orphans" in results:
             print(f"\n👻 Orphan Files: {len(results['orphans'])}")
-            for orph in results['orphans'][:5]:
+            for orph in results["orphans"][:5]:
                 print(f"   - {orph['file']}")
 
         if "summary" in results:
-            print(f"\n{'='*60}")
+            print(f"\n{'=' * 60}")
             print(f"Status: {results.get('status', 'UNKNOWN')}")
             print(f"Total Violations: {results.get('total_violations', 0)}")

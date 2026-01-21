@@ -31,7 +31,7 @@ def compute_semantic_hash(file_path: Path) -> str:
     This catches near-duplicates with minor formatting differences.
     """
     try:
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
         tree = ast.parse(content)
 
         # Extract class names, method names, and base classes
@@ -53,13 +53,13 @@ def compute_semantic_hash(file_path: Path) -> str:
 def extract_agent_class_name(file_path: Path) -> str:
     """Extract the main agent class name from file."""
     try:
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
         tree = ast.parse(content)
 
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
                 # Look for classes ending in Agent
-                if node.name.endswith('Agent'):
+                if node.name.endswith("Agent"):
                     return node.name
         return "NoAgentClass"
     except Exception:
@@ -93,7 +93,7 @@ def get_file_location_priority(file_path: Path, project_root: Path) -> int:
 def analyze_duplicate_quality(file_path: Path) -> dict[str, any]:
     """Analyze file quality to determine which duplicate to keep."""
     try:
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
         tree = ast.parse(content)
 
         # Quality metrics
@@ -126,16 +126,19 @@ def analyze_duplicate_quality(file_path: Path) -> dict[str, any]:
                             has_type_hints = True
 
         # Check for common issues
-        if "SubatomicTestingMixin" in content and "from" not in content.split("SubatomicTestingMixin")[0][-100:]:
+        if (
+            "SubatomicTestingMixin" in content
+            and "from" not in content.split("SubatomicTestingMixin")[0][-100:]
+        ):
             syntax_errors.append("Missing SubatomicTestingMixin import")
 
         if "super().heal_repository()" in content:
             # Check if it's in a factory function (bad) or class method (potentially bad)
-            lines = content.split('\n')
+            lines = content.split("\n")
             for i, line in enumerate(lines):
                 if "super().heal_repository()" in line:
                     # Check context
-                    context = '\n'.join(lines[max(0, i-5):i])
+                    context = "\n".join(lines[max(0, i - 5) : i])
                     if "def create_" in context and "class " not in context:
                         syntax_errors.append("super() call outside class scope")
 
@@ -146,7 +149,8 @@ def analyze_duplicate_quality(file_path: Path) -> dict[str, any]:
             "has_healing": has_healing,
             "has_mcp_hardening": has_mcp_hardening,
             "syntax_errors": syntax_errors,
-            "quality_score": sum([has_docstrings, has_type_hints, has_healing, has_mcp_hardening]) - len(syntax_errors)
+            "quality_score": sum([has_docstrings, has_type_hints, has_healing, has_mcp_hardening])
+            - len(syntax_errors),
         }
     except SyntaxError as e:
         return {
@@ -156,7 +160,7 @@ def analyze_duplicate_quality(file_path: Path) -> dict[str, any]:
             "has_healing": False,
             "has_mcp_hardening": False,
             "syntax_errors": [f"SyntaxError: {e}"],
-            "quality_score": -10
+            "quality_score": -10,
         }
     except Exception as e:
         return {
@@ -166,7 +170,7 @@ def analyze_duplicate_quality(file_path: Path) -> dict[str, any]:
             "has_healing": False,
             "has_mcp_hardening": False,
             "syntax_errors": [f"ParseError: {e}"],
-            "quality_score": -5
+            "quality_score": -5,
         }
 
 
@@ -182,8 +186,7 @@ def find_duplicate_agents(project_root: Path) -> dict[str, list[Path]]:
     # Exclude certain directories
     excluded_dirs = {".venv", "venv", "__pycache__", ".git", "node_modules", "coverage_html"}
     agent_files = [
-        f for f in agent_files
-        if not any(excluded in f.parts for excluded in excluded_dirs)
+        f for f in agent_files if not any(excluded in f.parts for excluded in excluded_dirs)
     ]
 
     print(f"[SCAN] Found {len(agent_files)} agent files")
@@ -212,7 +215,9 @@ def find_duplicate_agents(project_root: Path) -> dict[str, list[Path]]:
     return exact_dups, semantic_dups
 
 
-def generate_recommendations(duplicate_groups: dict[str, list[Path]], project_root: Path, duplicate_type: str = "exact") -> list[dict]:
+def generate_recommendations(
+    duplicate_groups: dict[str, list[Path]], project_root: Path, duplicate_type: str = "exact"
+) -> list[dict]:
     """Generate remediation recommendations for each duplicate group."""
     recommendations = []
 
@@ -247,15 +252,13 @@ def generate_recommendations(duplicate_groups: dict[str, list[Path]], project_ro
             "canonical_file": str(canonical_file.relative_to(project_root)),
             "canonical_quality": canonical_quality,
             "duplicates": [
-                {
-                    "path": str(f[0].relative_to(project_root)),
-                    "priority": f[1],
-                    "quality": f[2]
-                }
+                {"path": str(f[0].relative_to(project_root)), "priority": f[1], "quality": f[2]}
                 for f in files_with_quality[1:]
             ],
             "action": "DELETE" if canonical_quality["quality_score"] > 0 else "REVIEW",
-            "rationale": generate_rationale(canonical_file, duplicates_to_remove, canonical_quality, files_with_quality[1:])
+            "rationale": generate_rationale(
+                canonical_file, duplicates_to_remove, canonical_quality, files_with_quality[1:]
+            ),
         }
 
         recommendations.append(rec)
@@ -263,7 +266,9 @@ def generate_recommendations(duplicate_groups: dict[str, list[Path]], project_ro
     return recommendations
 
 
-def generate_rationale(canonical: Path, duplicates: list[Path], canonical_quality: dict, duplicate_info: list[tuple]) -> str:
+def generate_rationale(
+    canonical: Path, duplicates: list[Path], canonical_quality: dict, duplicate_info: list[tuple]
+) -> str:
     """Generate human-readable rationale for the recommendation."""
     rationale_parts = []
 
@@ -291,7 +296,9 @@ def generate_rationale(canonical: Path, duplicates: list[Path], canonical_qualit
         if not quality["has_mcp_hardening"] and canonical_quality["has_mcp_hardening"]:
             issues.append("missing MCPHardenedMixin")
         if quality["quality_score"] < canonical_quality["quality_score"]:
-            issues.append(f"lower quality score ({quality['quality_score']} vs {canonical_quality['quality_score']})")
+            issues.append(
+                f"lower quality score ({quality['quality_score']} vs {canonical_quality['quality_score']})"
+            )
 
         if issues:
             rationale_parts.append(f"Remove {dup_path.name}: {', '.join(issues)}")
@@ -305,37 +312,39 @@ def print_recommendations(recommendations: list[dict], output_format: str = "tex
         print(json.dumps(recommendations, indent=2))
         return
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("DUPLICATE AGENT ANALYSIS & RECOMMENDATIONS")
-    print("="*80 + "\n")
+    print("=" * 80 + "\n")
 
     for i, rec in enumerate(recommendations, 1):
-        print(f"\n{'─'*80}")
+        print(f"\n{'─' * 80}")
         print(f"[{i}] {rec['agent_class']} ({rec['duplicate_type']} duplicates)")
-        print(f"{'─'*80}")
+        print(f"{'─' * 80}")
 
         print("\n✅ CANONICAL (KEEP):")
         print(f"   📁 {rec['canonical_file']}")
         print(f"   Quality: {rec['canonical_quality']['quality_score']}/4")
-        if rec['canonical_quality']['syntax_errors']:
+        if rec["canonical_quality"]["syntax_errors"]:
             print(f"   ⚠️  Issues: {', '.join(rec['canonical_quality']['syntax_errors'])}")
 
         print(f"\n❌ DUPLICATES ({rec['action']}):")
-        for dup in rec['duplicates']:
+        for dup in rec["duplicates"]:
             print(f"   📁 {dup['path']}")
-            print(f"      Priority: {dup['priority']} | Quality: {dup['quality']['quality_score']}/4")
-            if dup['quality']['syntax_errors']:
+            print(
+                f"      Priority: {dup['priority']} | Quality: {dup['quality']['quality_score']}/4"
+            )
+            if dup["quality"]["syntax_errors"]:
                 print(f"      ⚠️  Issues: {', '.join(dup['quality']['syntax_errors'])}")
 
         print("\n💡 RATIONALE:")
         print(f"   {rec['rationale']}")
 
         print("\n🔧 RECOMMENDED ACTION:")
-        if rec['action'] == "DELETE":
+        if rec["action"] == "DELETE":
             print("   1. Verify canonical file works correctly")
             print("   2. Delete duplicate files:")
-            for dup in rec['duplicates']:
-                print(f"      rm \"{dup['path']}\"")
+            for dup in rec["duplicates"]:
+                print(f'      rm "{dup["path"]}"')
             print("   3. Update any imports referencing deleted files")
             print("   4. Run discovery: python scripts/full_agent_discovery.py --incremental")
         else:
@@ -348,8 +357,16 @@ def main():
 
     parser = argparse.ArgumentParser(description="Find duplicate agents in repository")
     parser.add_argument("--project-root", type=str, default=".", help="Project root directory")
-    parser.add_argument("--output", type=str, choices=["text", "json"], default="text", help="Output format")
-    parser.add_argument("--type", type=str, choices=["exact", "semantic", "both"], default="both", help="Duplicate detection type")
+    parser.add_argument(
+        "--output", type=str, choices=["text", "json"], default="text", help="Output format"
+    )
+    parser.add_argument(
+        "--type",
+        type=str,
+        choices=["exact", "semantic", "both"],
+        default="both",
+        help="Duplicate detection type",
+    )
 
     args = parser.parse_args()
 
@@ -372,20 +389,22 @@ def main():
     if args.type in ["semantic", "both"]:
         semantic_recs = generate_recommendations(semantic_dups, project_root, "semantic")
         # Filter out exact duplicates already covered
-        exact_files = {rec['canonical_file'] for rec in all_recommendations}
-        semantic_recs = [r for r in semantic_recs if r['canonical_file'] not in exact_files]
+        exact_files = {rec["canonical_file"] for rec in all_recommendations}
+        semantic_recs = [r for r in semantic_recs if r["canonical_file"] not in exact_files]
         all_recommendations.extend(semantic_recs)
 
     # Print results
     print_recommendations(all_recommendations, args.output)
 
     # Summary
-    print(f"\n{'='*80}")
+    print(f"\n{'=' * 80}")
     print("SUMMARY")
-    print(f"{'='*80}")
+    print(f"{'=' * 80}")
     print(f"Total duplicate groups found: {len(all_recommendations)}")
     print(f"Files to delete: {sum(len(r['duplicates']) for r in all_recommendations)}")
-    print(f"Action required: {sum(1 for r in all_recommendations if r['action'] == 'DELETE')} auto-delete, {sum(1 for r in all_recommendations if r['action'] == 'REVIEW')} manual review")
+    print(
+        f"Action required: {sum(1 for r in all_recommendations if r['action'] == 'DELETE')} auto-delete, {sum(1 for r in all_recommendations if r['action'] == 'REVIEW')} manual review"
+    )
 
     return 0
 

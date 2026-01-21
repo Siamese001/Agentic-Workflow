@@ -35,8 +35,10 @@ def track_metrics(name: str):
     Returns:
         Decorator function that passes through the wrapped function.
     """
+
     def decorator(func):
         return func
+
     return decorator
 
 
@@ -106,7 +108,7 @@ class PIISanitizerAgent(L5SafetyBaseAgent):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: set[str] | None = None
+        _call_path: set[str] | None = None,
     ) -> dict[str, int]:
         """Execute L5 safety healing operations.
 
@@ -142,5 +144,7 @@ class PIISanitizerAgent(L5SafetyBaseAgent):
             results["tests"].append({"name": "test_instantiation", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
+            results["tests"].append(
+                {"name": "test_instantiation", "status": "failed", "error": str(e)}
+            )
         return results

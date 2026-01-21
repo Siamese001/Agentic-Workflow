@@ -38,12 +38,8 @@ class BudgetAgent(SubatomicTestingMixin, SubAtomicAgent):
         name: Agent name for logging and reporting.
     """
 
-
     def heal_repository(
-        self,
-        dry_run: bool = True,
-        execute: bool = False,
-        **kwargs: Any
+        self, dry_run: bool = True, execute: bool = False, **kwargs: Any
     ) -> dict[str, int]:
         """
         Execute autonomous healing for Canon Key 51 compliance.
@@ -88,7 +84,7 @@ class BudgetAgent(SubatomicTestingMixin, SubAtomicAgent):
 
     def _get_function_line_count(self, node: ast.FunctionDef) -> int:
         """Get line count for a function node."""
-        return node.end_lineno - node.lineno + 1 if hasattr(node, 'end_lineno') else 0
+        return node.end_lineno - node.lineno + 1 if hasattr(node, "end_lineno") else 0
 
     def _check_functions_in_file(
         self, fp: str, tree: ast.AST, checker: callable, formatter: callable
@@ -121,7 +117,7 @@ class BudgetAgent(SubatomicTestingMixin, SubAtomicAgent):
             Tuple of (passed: bool, violations: List[str]).
         """
         violations = []
-        max_lines = int(os.getenv('MAX_FUNCTION_LINES', '50'))
+        max_lines = int(os.getenv("MAX_FUNCTION_LINES", "50"))
 
         def check(node: ast.FunctionDef):
             lines = self._get_function_line_count(node)
@@ -147,7 +143,7 @@ class BudgetAgent(SubatomicTestingMixin, SubAtomicAgent):
             Tuple of (passed: bool, violations: List[str]).
         """
         violations = []
-        max_complexity = int(os.getenv('MAX_CYCLOMATIC_COMPLEXITY', '10'))
+        max_complexity = int(os.getenv("MAX_CYCLOMATIC_COMPLEXITY", "10"))
 
         def check(node: ast.FunctionDef):
             complexity = self._calculate_complexity(node)
@@ -178,7 +174,10 @@ class BudgetAgent(SubatomicTestingMixin, SubAtomicAgent):
         """
         complexity = 1  # Start with 1 for the function itself
         for child in ast.walk(node):
-            if isinstance(child, ast.If | ast.For | ast.While | ast.ExceptHandler | ast.AsyncFor | ast.AsyncWith):
+            if isinstance(
+                child,
+                ast.If | ast.For | ast.While | ast.ExceptHandler | ast.AsyncFor | ast.AsyncWith,
+            ):
                 complexity += 1
             elif isinstance(child, ast.BoolOp):
                 # Each 'and' or 'or' adds to complexity

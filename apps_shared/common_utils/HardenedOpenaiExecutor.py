@@ -104,7 +104,9 @@ class HardenedOpenAIExecutor(HardeningMixin):
         try:
             import openai
         except ImportError as exc:
-            raise ImportError("OpenAI package not installed. Install with: pip install openai") from exc
+            raise ImportError(
+                "OpenAI package not installed. Install with: pip install openai"
+            ) from exc
 
         api_key = os.getenv("OPENAI_API_KEY")
         if not api_key:
@@ -149,17 +151,11 @@ class HardenedOpenAIExecutor(HardeningMixin):
 
         # Add system prompt if provided
         if system_prompt:
-            openai_messages.append({
-                "role": "system",
-                "content": system_prompt
-            })
+            openai_messages.append({"role": "system", "content": system_prompt})
 
         # Add user/assistant messages
         for msg in messages:
-            openai_messages.append({
-                "role": msg.role,
-                "content": msg.content
-            })
+            openai_messages.append({"role": msg.role, "content": msg.content})
 
         return openai_messages
 
@@ -283,7 +279,7 @@ class HardenedOpenAIExecutor(HardeningMixin):
             choice = raw_response.choices[0]
             content = choice.message.content or ""
 
-        if hasattr(raw_response, 'usage'):
+        if hasattr(raw_response, "usage"):
             usage = {
                 "prompt_tokens": raw_response.usage.prompt_tokens,
                 "completion_tokens": raw_response.usage.completion_tokens,
@@ -329,22 +325,30 @@ class HardenedOpenAIExecutor(HardeningMixin):
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 future = executor.submit(
                     asyncio.run,
-                    self.run_llm(prompt, temperature=temperature, max_tokens=max_tokens,
-                                system_prompt=system_prompt, messages=messages)
+                    self.run_llm(
+                        prompt,
+                        temperature=temperature,
+                        max_tokens=max_tokens,
+                        system_prompt=system_prompt,
+                        messages=messages,
+                    ),
                 )
                 return future.result()
         else:
             return asyncio.run(
-                self.run_llm(prompt, temperature=temperature, max_tokens=max_tokens,
-                           system_prompt=system_prompt, messages=messages)
+                self.run_llm(
+                    prompt,
+                    temperature=temperature,
+                    max_tokens=max_tokens,
+                    system_prompt=system_prompt,
+                    messages=messages,
+                )
             )
 
 
 # Factory function for backward compatibility
 def create_hardened_openai_executor(
-    model: str = "gpt-4o-2024-08-06",
-    temperature: float = 0.7,
-    **kwargs
+    model: str = "gpt-4o-2024-08-06", temperature: float = 0.7, **kwargs
 ) -> HardenedOpenAIExecutor:
     """Create a hardened OpenAI executor.
 

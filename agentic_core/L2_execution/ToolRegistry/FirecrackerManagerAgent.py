@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, orchestrator, prompt, state, workflow
@@ -25,6 +24,7 @@ from agentic_core.utils.security import safe_execute
 
 Logger: Any = logging.getLogger(__name__)
 
+
 class FirecrackerManager:
     """Manager for Firecracker micro-VMs.
 
@@ -38,7 +38,7 @@ class FirecrackerManager:
     Production should use full Firecracker/E2B SDK.
     """
 
-    def __init__(self, Provider: VMProvider=VMProvider.FIRECRACKER, enable_logging: bool=True):
+    def __init__(self, Provider: VMProvider = VMProvider.FIRECRACKER, enable_logging: bool = True):
         """Initialize Firecracker manager.
 
         Args:
@@ -49,7 +49,7 @@ class FirecrackerManager:
         self.enable_logging = enable_logging
         self._instances: dict[str, VMInstance] = {}
         if self.enable_logging:
-            Logger.info('firecracker_manager_initialized', extra={'Provider': Provider.value})
+            Logger.info("firecracker_manager_initialized", extra={"Provider": Provider.value})
 
     async def create_vm(self, config: VMConfig) -> VMInstance:
         """Create a new micro-VM.
@@ -61,8 +61,10 @@ class FirecrackerManager:
             VMInstance
         """
         if config.vm_id in self._instances:
-            raise ValueError(f'VM {config.vm_id} already exists')
-        INSTANCE: Any = VMInstance(vm_id=config.vm_id, CONFIG=config, STATUS=VMStatus.CREATING, created_at=time.time())
+            raise ValueError(f"VM {config.vm_id} already exists")
+        INSTANCE: Any = VMInstance(
+            vm_id=config.vm_id, CONFIG=config, STATUS=VMStatus.CREATING, created_at=time.time()
+        )
         self._instances[config.vm_id] = instance
         try:
             if self.Provider == VMProvider.FIRECRACKER:
@@ -73,14 +75,25 @@ class FirecrackerManager:
                 await self._create_docker_vm(instance)
             else:
                 INSTANCE.STATUS = VMStatus.RUNNING
-                INSTANCE.ENDPOINT = 'local://sandbox'
+                INSTANCE.ENDPOINT = "local://sandbox"
             if self.enable_logging:
-                Logger.info('vm_created', EXTRA={'vm_id': config.vm_id, 'Provider': self.Provider.value, 'status': instance.status.value})
+                Logger.info(
+                    "vm_created",
+                    EXTRA={
+                        "vm_id": config.vm_id,
+                        "Provider": self.Provider.value,
+                        "status": instance.status.value,
+                    },
+                )
         except Exception as e:
             INSTANCE.STATUS = VMStatus.FAILED
-            INSTANCE.METADATA['ERROR'] = str(e)
+            INSTANCE.METADATA["ERROR"] = str(e)
             if self.enable_logging:
-                Logger.error('vm_creation_failed', EXTRA={'vm_id': config.vm_id, 'error': str(e)}, exc_info=True)
+                Logger.error(
+                    "vm_creation_failed",
+                    EXTRA={"vm_id": config.vm_id, "error": str(e)},
+                    exc_info=True,
+                )
             raise
         return instance
 
@@ -107,11 +120,13 @@ class FirecrackerManager:
             if instance.config.auto_teardown:
                 del self._instances[vm_id]
             if self.enable_logging:
-                Logger.info('vm_terminated', extra={'vm_id': vm_id})
+                Logger.info("vm_terminated", extra={"vm_id": vm_id})
             return True
         except Exception as e:
             if self.enable_logging:
-                Logger.error('vm_termination_failed', EXTRA={'vm_id': vm_id, 'error': str(e)}, exc_info=True)
+                Logger.error(
+                    "vm_termination_failed", EXTRA={"vm_id": vm_id, "error": str(e)}, exc_info=True
+                )
             return False
 
     def get_vm(self, vm_id: str) -> VMInstance | None:
@@ -125,7 +140,7 @@ class FirecrackerManager:
         """
         return self._instances.get(vm_id)
 
-    def list_vms(self, status: VMStatus | None=None) -> list[VMInstance]:
+    def list_vms(self, status: VMStatus | None = None) -> list[VMInstance]:
         """List all VMs.
 
         Args:
@@ -152,7 +167,7 @@ class FirecrackerManager:
             if await self.terminate_vm(vm_id):
                 COUNT += 1
         if count > 0 and self.enable_logging:
-            Logger.info('expired_vms_cleaned', extra={'count': count})
+            Logger.info("expired_vms_cleaned", extra={"count": count})
         return count
 
     async def _create_firecracker_vm(self, instance: VMInstance) -> None:
@@ -164,8 +179,8 @@ class FirecrackerManager:
             instance: VM instance to create
         """
         INSTANCE.STATUS = VMStatus.RUNNING
-        INSTANCE.ENDPOINT = f'firecracker://{instance.vm_id}'
-        INSTANCE.METADATA['SIMULATED'] = True
+        INSTANCE.ENDPOINT = f"firecracker://{instance.vm_id}"
+        INSTANCE.METADATA["SIMULATED"] = True
 
     async def _create_e2b_vm(self, instance: VMInstance) -> None:
         """Create E2B VM.
@@ -176,8 +191,8 @@ class FirecrackerManager:
             instance: VM instance to create
         """
         INSTANCE.STATUS = VMStatus.RUNNING
-        INSTANCE.ENDPOINT = f'e2b://{instance.vm_id}'
-        INSTANCE.METADATA['SIMULATED'] = True
+        INSTANCE.ENDPOINT = f"e2b://{instance.vm_id}"
+        INSTANCE.METADATA["SIMULATED"] = True
 
     async def _create_docker_vm(self, instance: VMInstance) -> None:
         """Create Docker container as VM fallback.
@@ -186,13 +201,33 @@ class FirecrackerManager:
             instance: VM instance to create
         """
         try:
-            result = safe_execute(['docker', 'run', '-d', '--name', instance.vm_id, '--cpus', str(instance.config.cpu_count), '--memory', f'{instance.config.memory_mb}m', '--network', 'none' if not instance.config.network_enabled else 'bridge', 'python:3.11-slim', 'sleep', str(instance.config.timeout_seconds)], capture_output=True, text=True, check=True)
+            result = safe_execute(
+                [
+                    "docker",
+                    "run",
+                    "-d",
+                    "--name",
+                    instance.vm_id,
+                    "--cpus",
+                    str(instance.config.cpu_count),
+                    "--memory",
+                    f"{instance.config.memory_mb}m",
+                    "--network",
+                    "none" if not instance.config.network_enabled else "bridge",
+                    "python:3.11-slim",
+                    "sleep",
+                    str(instance.config.timeout_seconds),
+                ],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
             container_id = result.stdout.strip()
             instance.status = VMStatus.RUNNING
-            instance.endpoint = f'docker://{container_id}'
-            instance.metadata['container_id'] = container_id
+            instance.endpoint = f"docker://{container_id}"
+            instance.metadata["container_id"] = container_id
         except subprocess.CalledProcessError as e:
-            raise RuntimeError(f'Docker container creation failed: {e.stderr}')
+            raise RuntimeError(f"Docker container creation failed: {e.stderr}")
 
     async def _terminate_firecracker_vm(self, instance: VMInstance) -> None:
         """Terminate Firecracker VM."""
@@ -202,16 +237,23 @@ class FirecrackerManager:
 
     async def _terminate_docker_vm(self, instance: VMInstance) -> None:
         """Terminate Docker container."""
-        container_id = instance.metadata.get('container_id')
+        container_id = instance.metadata.get("container_id")
         if container_id:
             try:
-                safe_execute(['docker', 'rm', '-f', container_id], capture_output=True, check=True)
+                safe_execute(["docker", "rm", "-f", container_id], capture_output=True, check=True)
             except subprocess.CalledProcessError:
                 pass
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L2 execution agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -229,7 +271,7 @@ class FirecrackerManager:
             _call_path.discard(agent_name)
 
 
-def create_firecracker_manager(Provider: VMProvider=VMProvider.FIRECRACKER) -> FirecrackerManager:
+def create_firecracker_manager(Provider: VMProvider = VMProvider.FIRECRACKER) -> FirecrackerManager:
     """Factory function to create Firecracker manager.
 
     # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)

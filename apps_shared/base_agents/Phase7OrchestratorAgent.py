@@ -121,8 +121,8 @@ class Phase7OrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingM
 
         # Determine overall pass/fail
         results["passed"] = (
-            len(self.dependency.get_issues_by_status(DependencyStatus.CONFLICT)) == 0 and
-            len(self.prompt_gov.get_issues_by_risk(PromptRisk.CRITICAL)) == 0
+            len(self.dependency.get_issues_by_status(DependencyStatus.CONFLICT)) == 0
+            and len(self.prompt_gov.get_issues_by_risk(PromptRisk.CRITICAL)) == 0
         )
 
         return results
@@ -136,6 +136,7 @@ class Phase7OrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingM
             "prompts": self.prompt_gov.get_stats(),
             "budget": self.budget.get_stats(),
         }
+
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()

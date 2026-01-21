@@ -5,6 +5,7 @@ Verify Meta-Learning Integration in AutonomyGuardianAgent
 This script directly tests the Meta-Learning recording methods to ensure
 they're properly integrated and functional.
 """
+
 import sys
 from pathlib import Path
 
@@ -21,7 +22,7 @@ def test_redis_cache_method():
     print("\n[TEST 1] Redis Cache Method")
     print("-" * 60)
 
-    if hasattr(guardian, '_cache_result'):
+    if hasattr(guardian, "_cache_result"):
         print("✅ _cache_result method exists")
         try:
             # Test with dummy data
@@ -38,6 +39,7 @@ def test_redis_cache_method():
         print(f"   Available methods: {[m for m in dir(guardian) if not m.startswith('_')]}")
         return False
 
+
 def test_pinecone_vector_method():
     """Test if _store_vector method exists and is callable."""
     project_root = Path(__file__).parent.parent
@@ -46,13 +48,13 @@ def test_pinecone_vector_method():
     print("\n[TEST 2] Pinecone Vector Method")
     print("-" * 60)
 
-    if hasattr(guardian, '_store_vector'):
+    if hasattr(guardian, "_store_vector"):
         print("✅ _store_vector method exists")
         try:
             # Test with dummy data
             guardian._store_vector(
                 content="Test healing signature for Meta-Learning verification",
-                metadata={"action": "test", "target": "verification"}
+                metadata={"action": "test", "target": "verification"},
             )
             print("✅ _store_vector callable with content and metadata")
             return True
@@ -63,6 +65,7 @@ def test_pinecone_vector_method():
         print("❌ _store_vector method NOT found")
         return False
 
+
 def test_meta_learning_trigger():
     """Test the Meta-Learning trigger logic by simulating a healing result."""
     project_root = Path(__file__).parent.parent
@@ -72,13 +75,7 @@ def test_meta_learning_trigger():
     print("-" * 60)
 
     # Simulate a successful healing result
-    simulated_summary = {
-        "violations": 5,
-        "fixed": 5,
-        "errors": 0,
-        "healed": 5,
-        "renamed": 0
-    }
+    simulated_summary = {"violations": 5, "fixed": 5, "errors": 0, "healed": 5, "renamed": 0}
 
     print(f"Simulated healing result: {simulated_summary}")
 
@@ -102,6 +99,7 @@ def test_meta_learning_trigger():
         print(f"   - fixed={fixed_count}")
         return False
 
+
 def verify_mixin_inheritance():
     """Verify that AutonomyGuardianAgent inherits from Redis and Pinecone mixins."""
     project_root = Path(__file__).parent.parent
@@ -121,6 +119,7 @@ def verify_mixin_inheritance():
 
     return is_redis and is_pinecone
 
+
 def main():
     print("\n" + "=" * 80)
     print("META-LEARNING INTEGRATION VERIFICATION")
@@ -130,7 +129,7 @@ def main():
         "redis_cache": test_redis_cache_method(),
         "pinecone_vector": test_pinecone_vector_method(),
         "trigger_logic": test_meta_learning_trigger(),
-        "mixin_inheritance": verify_mixin_inheritance()
+        "mixin_inheritance": verify_mixin_inheritance(),
     }
 
     print("\n" + "=" * 80)
@@ -152,5 +151,6 @@ def main():
 
     return 0 if all_passed else 1
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     sys.exit(main())

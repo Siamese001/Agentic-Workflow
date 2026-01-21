@@ -1,4 +1,5 @@
 """Find agents missing super().heal_repository() invocation."""
+
 import json
 import re
 from pathlib import Path
@@ -11,7 +12,7 @@ content = dashboard_path.read_text(encoding="utf-8")
 
 # Find the embedded agent data - look for agentDataByTerritory
 # Extract the JSON from: const agentDataByTerritory = {...}
-match = re.search(r'const agentDataByTerritory\s*=\s*(\{.*?\});', content, re.DOTALL)
+match = re.search(r"const agentDataByTerritory\s*=\s*(\{.*?\});", content, re.DOTALL)
 if match:
     try:
         agent_data = json.loads(match.group(1))
@@ -28,21 +29,19 @@ if match:
         for territory, agents in agent_data.items():
             for agent in agents:
                 total_agents += 1
-                inv = agent.get('invocation', '')
-                name = agent.get('name', 'Unknown')
-                path = agent.get('path', '')
+                inv = agent.get("invocation", "")
+                name = agent.get("name", "Unknown")
+                path = agent.get("path", "")
 
-                if inv == 'Yes':
+                if inv == "Yes":
                     invocation_yes += 1
-                elif inv == 'Inherited':
+                elif inv == "Inherited":
                     invocation_inherited += 1
                 else:
                     invocation_no += 1
-                    missing_invocation_agents.append({
-                        'name': name,
-                        'path': path,
-                        'territory': territory
-                    })
+                    missing_invocation_agents.append(
+                        {"name": name, "path": path, "territory": territory}
+                    )
 
         print(f"\nTotal agents: {total_agents}")
         print(f"Invocation Yes: {invocation_yes}")
@@ -51,7 +50,7 @@ if match:
         print(f"Invocation %: {(invocation_yes + invocation_inherited) / total_agents * 100:.1f}%")
 
         print(f"\n=== Agents MISSING invocation ({len(missing_invocation_agents)}) ===")
-        for agent in sorted(missing_invocation_agents, key=lambda x: x['path']):
+        for agent in sorted(missing_invocation_agents, key=lambda x: x["path"]):
             print(f"  {agent['path']}")
 
     except json.JSONDecodeError as e:
@@ -63,20 +62,23 @@ else:
     all_invocations = re.findall(r'"invocation":\s*"([^"]*)"', content)
     print(f"\nFound {len(all_invocations)} invocation values via regex")
     from collections import Counter
+
     print(Counter(all_invocations))
 
     # Extract all agent objects - they appear as {...} blocks with "name", "path", "invocation"
     # Find the line with all agent data
-    for line in content.split('\n'):
+    for line in content.split("\n"):
         if '"invocation": "No (missing super)"' in line and len(line) > 10000:
             # This line contains the embedded agent data
             # Extract individual agent objects
-            agent_pattern = r'\{"name":\s*"([^"]+)"[^}]*"path":\s*"([^"]+)"[^}]*"invocation":\s*"([^"]+)"'
+            agent_pattern = (
+                r'\{"name":\s*"([^"]+)"[^}]*"path":\s*"([^"]+)"[^}]*"invocation":\s*"([^"]+)"'
+            )
             matches = re.findall(agent_pattern, line)
 
             missing_paths = []
             for name, path, inv in matches:
-                if 'No' in inv or 'missing' in inv:
+                if "No" in inv or "missing" in inv:
                     missing_paths.append(path)
 
             print(f"\n=== Files needing super().heal_repository() ({len(missing_paths)}) ===")

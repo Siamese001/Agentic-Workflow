@@ -24,24 +24,17 @@ async def test_titanium_search_tool():
     print("\n=== Testing Titanium Search Tool ===")
 
     # Test basic search
-    result = await get_titanium_search_tool(
-        query="machine learning optimization",
-        max_results=3
-    )
+    result = await get_titanium_search_tool(query="machine learning optimization", max_results=3)
     print(f"Basic search result: {result[:100]}...")
 
     # Test search with context
     result_with_context = await get_titanium_search_tool(
-        query="deep learning",
-        context="production deployment",
-        include_metadata=True
+        query="deep learning", context="production deployment", include_metadata=True
     )
     print(f"Search with context: {result_with_context[:100]}...")
 
     # Test search with sources
-    sources_result = await get_titanium_search_with_sources(
-        query="neural network architectures"
-    )
+    sources_result = await get_titanium_search_with_sources(query="neural network architectures")
     print(f"Sources result keys: {list(sources_result.keys())}")
 
     # Test pipeline stats
@@ -72,6 +65,7 @@ async def test_titanium_integration():
 
     # Test tool registry
     from titanium_search_tool import TOOL_REGISTRY
+
     print(f"Available tools: {list(TOOL_REGISTRY.keys())}")
 
     # Test tool descriptions
@@ -92,8 +86,7 @@ async def test_executive_brief_agent():
 
         # Initialize agent
         agent = ExecutiveBriefAgent(
-            candidate_name="Test Candidate",
-            candidate_background={"experience": "AI/ML Engineer"}
+            candidate_name="Test Candidate", candidate_background={"experience": "AI/ML Engineer"}
         )
 
         # Check if Titanium is enabled
@@ -102,8 +95,7 @@ async def test_executive_brief_agent():
         # Test Titanium research
         if agent.titanium_enabled:
             research = await agent._research_company_with_titanium(
-                company_name="TechCorp",
-                industry="technology"
+                company_name="TechCorp", industry="technology"
             )
             print(f"Research keys: {list(research.keys())}")
             print(f"Company name: {research['name']}")
@@ -112,7 +104,7 @@ async def test_executive_brief_agent():
             brief = await agent.generate_brief_with_titanium(
                 company_name="TechCorp",
                 industry="technology",
-                job_description="Senior AI Engineer position"
+                job_description="Senior AI Engineer position",
             )
             print(f"Generated brief for: {brief.company_name}")
             print(f"Observation: {brief.observation.heading}")
@@ -170,19 +162,16 @@ async def test_dispatch_tools():
         print(f"Titanium enabled: {tools.titanium_enabled}")
 
         # Test search action
-        result = tools.execute("search", {
-            "query": "machine learning",
-            "max_results": 3
-        })
+        result = tools.execute("search", {"query": "machine learning", "max_results": 3})
         print(f"Search action result: {result.success}")
         if result.success:
             output = result.output
-            print(f"Output keys: {list(output.keys()) if isinstance(output, dict) else 'string output'}")
+            print(
+                f"Output keys: {list(output.keys()) if isinstance(output, dict) else 'string output'}"
+            )
 
         # Test search with sources
-        result2 = tools.execute("search_with_sources", {
-            "query": "deep learning"
-        })
+        result2 = tools.execute("search_with_sources", {"query": "deep learning"})
         print(f"Search with sources result: {result2.success}")
 
         # Test stats action
@@ -224,6 +213,7 @@ async def run_all_integration_tests():
     except Exception as e:
         print(f"\n❌ Integration test failed: {e}")
         import traceback
+
         traceback.print_exc()
 
 

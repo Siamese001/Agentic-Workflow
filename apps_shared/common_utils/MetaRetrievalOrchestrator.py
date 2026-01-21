@@ -18,7 +18,7 @@ def _make_ev(text: str, score: float, source: str) -> Evidence:
 def test_orchestrate_retrieval_combines_bm25_and_dense_hits(monkeypatch: object) -> None:
     """Test that orchestrate_retrieval combines BM25 and dense hits correctly."""
     # Arrange
-#     import archives.legacy_resume_gen.Agentic-Workflow-10_8_core.tests.test_retrieval  # INVALID: Cannot import from path with hyphens
+    #     import archives.legacy_resume_gen.Agentic-Workflow-10_8_core.tests.test_retrieval  # INVALID: Cannot import from path with hyphens
 
     bm25_hits = [_make_ev("bm25-doc", 1.0, "bm25")]
     dense_hits = [_make_ev("dense-doc", 0.5, "dense")]
@@ -63,7 +63,7 @@ def test_orchestrate_retrieval_combines_bm25_and_dense_hits(monkeypatch: object)
 
 def test_orchestrate_retrieval_sets_used_hyde_flag(monkeypatch: object) -> None:
     """Test that orchestrate_retrieval sets the used_hyde flag correctly."""
-#     import archives.legacy_resume_gen.Agentic-Workflow-10_8_core.tests.test_retrieval  # INVALID: Cannot import from path with hyphens
+    #     import archives.legacy_resume_gen.Agentic-Workflow-10_8_core.tests.test_retrieval  # INVALID: Cannot import from path with hyphens
 
     def _fake_bm25(query: str, cfg: RetrievalConfig, max_hits: int) -> list[Evidence]:  # noqa: ARG001
         return [_make_ev(f"bm25-{query}", 1.0, "bm25")]
@@ -96,7 +96,7 @@ def test_orchestrate_retrieval_sets_used_hyde_flag(monkeypatch: object) -> None:
             selected_id="hyde_test",
             scores={"hyde_test": 1.0},
             ties=[],
-            reason="Testing HYDE flag"
+            reason="Testing HYDE flag",
         ),
     )
 
@@ -105,7 +105,7 @@ def test_orchestrate_retrieval_sets_used_hyde_flag(monkeypatch: object) -> None:
 
 def test_orchestrate_retrieval_includes_chroma_hits(monkeypatch: object) -> None:
     """Test that orchestrate_retrieval includes Chroma hits correctly."""
-#     import archives.legacy_resume_gen.Agentic-Workflow-10_8_core.tests.test_retrieval  # INVALID: Cannot import from path with hyphens
+    #     import archives.legacy_resume_gen.Agentic-Workflow-10_8_core.tests.test_retrieval  # INVALID: Cannot import from path with hyphens
 
     def _fake_bm25(query: str, cfg: RetrievalConfig, max_hits: int) -> list[Evidence]:  # noqa: ARG001
         return []
@@ -149,7 +149,7 @@ def test_orchestrate_retrieval_includes_chroma_hits(monkeypatch: object) -> None
 
 def test_orchestrate_retrieval_passes_council_vote_to_fuse(monkeypatch: object) -> None:
     """Test that orchestrate_retrieval passes council vote to fuse correctly."""
-#     import archives.legacy_resume_gen.Agentic-Workflow-10_8_core.tests.test_retrieval  # INVALID: Cannot import from path with hyphens
+    #     import archives.legacy_resume_gen.Agentic-Workflow-10_8_core.tests.test_retrieval  # INVALID: Cannot import from path with hyphens
 
     def _fake_bm25(query: str, cfg: RetrievalConfig, max_hits: int) -> list[Evidence]:  # noqa: ARG001
         return [_make_ev("doc", 1.0, "bm25")]
@@ -162,7 +162,13 @@ def test_orchestrate_retrieval_passes_council_vote_to_fuse(monkeypatch: object) 
 
     captured = {}
 
-    def _fake_fuse(lex_results: list[Evidence], dense_results: list[Evidence], cfg: RetrievalConfig, council_vote: Optional[object], used_hyde: bool) -> RAGResult:  # noqa: ARG001
+    def _fake_fuse(
+        lex_results: list[Evidence],
+        dense_results: list[Evidence],
+        cfg: RetrievalConfig,
+        council_vote: Optional[object],
+        used_hyde: bool,
+    ) -> RAGResult:  # noqa: ARG001
         captured["council"] = council_vote
         return RAGResult(evidence=list(lex_results) + list(dense_results), used_hyde=used_hyde)
 
@@ -179,11 +185,7 @@ def test_orchestrate_retrieval_passes_council_vote_to_fuse(monkeypatch: object) 
     cfg = RetrievalConfig(max_hits=5)
     ctx = _DummyCtx()
     council = CouncilVote(
-        members=3,
-        selected_id="id-1",
-        scores={"id-1": 1.0},
-        ties=[],
-        reason="Test vote for id-1"
+        members=3, selected_id="id-1", scores={"id-1": 1.0}, ties=[], reason="Test vote for id-1"
     )
 
     rag = orchestrate_retrieval(
@@ -201,7 +203,7 @@ def test_orchestrate_retrieval_passes_council_vote_to_fuse(monkeypatch: object) 
 def test_orchestrate_retrieval_isolates_bm25_failure(monkeypatch: object) -> None:
     """If BM25 fails, dense results should still be used."""
 
-#     import archives.legacy_resume_gen.Agentic-Workflow-10_8_core.tests.test_retrieval  # INVALID: Cannot import from path with hyphens
+    #     import archives.legacy_resume_gen.Agentic-Workflow-10_8_core.tests.test_retrieval  # INVALID: Cannot import from path with hyphens
 
     def _failing_bm25(query: str, cfg: RetrievalConfig, max_hits: int) -> list[Evidence]:  # noqa: ARG001
         raise RuntimeError("bm25 failure")
@@ -239,7 +241,7 @@ def test_orchestrate_retrieval_isolates_bm25_failure(monkeypatch: object) -> Non
 def test_orchestrate_retrieval_handles_no_hits(monkeypatch: object) -> None:
     """If all retrievers return no hits, orchestrator returns empty evidence."""
 
-#     import archives.legacy_resume_gen.Agentic-Workflow-10_8_core.tests.test_retrieval  # INVALID: Cannot import from path with hyphens
+    #     import archives.legacy_resume_gen.Agentic-Workflow-10_8_core.tests.test_retrieval  # INVALID: Cannot import from path with hyphens
 
     def _empty(*args: object, **kwargs: object) -> list[Evidence]:  # type: ignore[override]
         return []

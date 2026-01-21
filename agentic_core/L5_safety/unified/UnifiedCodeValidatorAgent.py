@@ -15,6 +15,7 @@ Features:
 - Aggregated ValidationReport with heterogeneous violations
 - Backward compatible factory methods
 """
+
 from __future__ import annotations
 
 import ast
@@ -36,6 +37,7 @@ Logger = logging.getLogger(__name__)
 
 class ViolationType(Enum):
     """Types of code violations."""
+
     SYNTAX = auto()
     CANON = auto()
     ASYNC_BLOCKING = auto()
@@ -49,6 +51,7 @@ class ViolationType(Enum):
 @dataclass
 class Violation:
     """Represents a single code violation."""
+
     violation_type: ViolationType
     message: str
     file_path: Path | None = None
@@ -59,13 +62,18 @@ class Violation:
     suggestion: str | None = None
 
     def __str__(self) -> str:
-        loc = f"{self.file_path}:{self.line_number}:{self.column}" if self.file_path else f"line {self.line_number}"
+        loc = (
+            f"{self.file_path}:{self.line_number}:{self.column}"
+            if self.file_path
+            else f"line {self.line_number}"
+        )
         return f"[{self.violation_type.name}] {loc}: {self.message}"
 
 
 @dataclass
 class ValidationReport:
     """Aggregated report of all violations found."""
+
     file_path: Path | None = None
     violations: list[Violation] = field(default_factory=list)
     execution_time: float = 0.0
@@ -101,6 +109,7 @@ class ValidationReport:
 @dataclass
 class RuleSet:
     """Configuration for which validation rules to apply."""
+
     check_syntax: bool = True
     check_canon: bool = True
     check_async: bool = True
@@ -189,16 +198,18 @@ class UnifiedASTVisitor(ast.NodeVisitor):
         line = getattr(node, "lineno", 0) if node else 0
         col = getattr(node, "col_offset", 0) if node else 0
 
-        self.violations.append(Violation(
-            violation_type=violation_type,
-            message=message,
-            file_path=self.file_path,
-            line_number=line,
-            column=col,
-            severity=severity,
-            rule_id=rule_id,
-            suggestion=suggestion,
-        ))
+        self.violations.append(
+            Violation(
+                violation_type=violation_type,
+                message=message,
+                file_path=self.file_path,
+                line_number=line,
+                column=col,
+                severity=severity,
+                rule_id=rule_id,
+                suggestion=suggestion,
+            )
+        )
 
     def visit_Import(self, node: ast.Import) -> None:
         """Track imports."""
@@ -470,15 +481,17 @@ class UnifiedCodeValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
         try:
             tree = ast.parse(source_code)
         except SyntaxError as e:
-            report.violations.append(Violation(
-                violation_type=ViolationType.SYNTAX,
-                message=f"Syntax error: {e.msg}",
-                file_path=file_path,
-                line_number=e.lineno or 0,
-                column=e.offset or 0,
-                severity="error",
-                rule_id="SYNTAX-001",
-            ))
+            report.violations.append(
+                Violation(
+                    violation_type=ViolationType.SYNTAX,
+                    message=f"Syntax error: {e.msg}",
+                    file_path=file_path,
+                    line_number=e.lineno or 0,
+                    column=e.offset or 0,
+                    severity="error",
+                    rule_id="SYNTAX-001",
+                )
+            )
             report.execution_time = (datetime.now() - start_time).total_seconds()
             return report
 
@@ -509,12 +522,14 @@ class UnifiedCodeValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
             source_code = file_path.read_text(encoding="utf-8")
         except Exception as e:
             report = ValidationReport(file_path=file_path)
-            report.violations.append(Violation(
-                violation_type=ViolationType.SYNTAX,
-                message=f"Could not read file: {e}",
-                file_path=file_path,
-                severity="error",
-            ))
+            report.violations.append(
+                Violation(
+                    violation_type=ViolationType.SYNTAX,
+                    message=f"Could not read file: {e}",
+                    file_path=file_path,
+                    severity="error",
+                )
+            )
             return report
 
         return self.validate_source(source_code, file_path, rules)
@@ -603,6 +618,7 @@ class UnifiedCodeValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
 # =============================================================================
 # BACKWARD COMPATIBILITY FACTORY METHODS (Migration Complete)
 # =============================================================================
+
 
 def create_legacy_syntax_validator(**kwargs: Any) -> UnifiedCodeValidatorAgent:
     """Factory for backward compatibility with SyntaxValidatorAgent."""

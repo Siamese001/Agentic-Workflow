@@ -10,8 +10,6 @@ Extracted: 2026-01-06 (Surgical Extraction)
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-
-
 from __future__ import annotations
 
 import ast
@@ -21,7 +19,7 @@ from typing import Any
 from agentic_core.runtime.shared_runtime.ast_validator import CanonASTValidator
 
 # GRAVITY FIXED (Upward Leak): from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-_mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_mixin')
+_mod = importlib.import_module("agentic_core.L5_safety.guardrails.mcp_hardened_mixin")
 MCPHardenedMixin = _mod.MCPHardenedMixin
 from agentic_core.L5_safety.validators.decorators import standard_heal
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
@@ -33,26 +31,33 @@ class ExternalHttpValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTVal
     Key 23: Detects forbidden HTTP library imports (requests, urllib, httpx).
     Automatically handles TYPE_CHECKING blocks and exception ledger.
     """
-    FORBIDDEN_MODULES: Any = {'requests', 'urllib', 'urllib3', 'httpx', 'aiohttp'}
+
+    FORBIDDEN_MODULES: Any = {"requests", "urllib", "urllib3", "httpx", "aiohttp"}
 
     def visit_Import(self, node: ast.Import) -> Any:
         """Check for forbidden HTTP library imports."""
         if not self.in_type_checking:
             for alias in node.names:
-                module_root: Any = alias.name.split('.')[0]
+                module_root: Any = alias.name.split(".")[0]
                 if module_root in self.FORBIDDEN_MODULES:
-                    self.report(f'Forbidden HTTP library import: {alias.name} (use MCP fetch_client_sovereign instead)', node)
+                    self.report(
+                        f"Forbidden HTTP library import: {alias.name} (use MCP fetch_client_sovereign instead)",
+                        node,
+                    )
         self.generic_visit(node)
 
     def visit_ImportFrom(self, node: ast.ImportFrom) -> Any:
         """Check for forbidden HTTP library imports in 'from X import Y'."""
         if not self.in_type_checking and node.module:
-            module_root: Any = node.module.split('.')[0]
+            module_root: Any = node.module.split(".")[0]
             if module_root in self.FORBIDDEN_MODULES:
-                self.report(f'Forbidden HTTP library import: from {node.module} (use MCP fetch_client_sovereign instead)', node)
+                self.report(
+                    f"Forbidden HTTP library import: from {node.module} (use MCP fetch_client_sovereign instead)",
+                    node,
+                )
         self.generic_visit(node)
 
     @standard_heal
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()

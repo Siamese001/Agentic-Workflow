@@ -4,6 +4,7 @@ Test Suite for UnifiedOrchestratorAgent Modes
 Verifies mode-based execution (HEALING, COMPLIANCE, SSOT, FULL)
 as implemented in Opportunity #1.
 """
+
 from unittest.mock import patch
 
 import pytest
@@ -58,12 +59,14 @@ class TestUnifiedOrchestratorModes:
         """Test that COMPLIANCE mode triggers compliance flow with credential scan."""
         orch = UnifiedOrchestratorAgent(mode="compliance")
 
-        with patch('agentic_core.L5_safety.validators.CredentialScannerAgent.CredentialScannerAgent') as MockScanner:
+        with patch(
+            "agentic_core.L5_safety.validators.CredentialScannerAgent.CredentialScannerAgent"
+        ) as MockScanner:
             mock_scanner = MockScanner.return_value
             mock_scanner.scan_for_credentials.return_value = {
                 "total_matches": 0,
                 "summary": {"by_severity": {"high": 0}},
-                "recommendations": []
+                "recommendations": [],
             }
 
             result = orch.run_agent("TestAgent", dry_run=True)
@@ -91,10 +94,7 @@ class TestUnifiedOrchestratorModes:
         """Test run_mission coordinates multiple agents."""
         orch = UnifiedOrchestratorAgent(mode="unified")
 
-        result = orch.run_mission(
-            agents=["Agent1", "Agent2", "Agent3"],
-            dry_run=True
-        )
+        result = orch.run_mission(agents=["Agent1", "Agent2", "Agent3"], dry_run=True)
 
         assert result.total_agents == 3
         assert len(result.agent_results) == 3

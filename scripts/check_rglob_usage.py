@@ -15,6 +15,7 @@ Author: Cascade
 Date: January 19, 2026
 Phase: 4.1 - Scaled Refactoring & CI Enforcement
 """
+
 from __future__ import annotations
 
 import re
@@ -52,13 +53,13 @@ def count_rglob_in_file(file_path: Path) -> int:
         Number of rglob/glob calls found
     """
     try:
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
     except (OSError, UnicodeDecodeError):
         return 0
 
     # Pattern to match .rglob( and .glob( calls
-    rglob_pattern = r'\.rglob\s*\('
-    glob_pattern = r'\.glob\s*\('
+    rglob_pattern = r"\.rglob\s*\("
+    glob_pattern = r"\.glob\s*\("
 
     rglob_count = len(re.findall(rglob_pattern, content))
     glob_count = len(re.findall(glob_pattern, content))
@@ -100,10 +101,7 @@ def scan_for_rglob_usage(root_dir: Path) -> tuple[int, list[dict]]:
 
         count = count_rglob_in_file(py_file)
         if count > 0:
-            offenders.append({
-                "file": str(py_file.relative_to(root_dir)),
-                "count": count
-            })
+            offenders.append({"file": str(py_file.relative_to(root_dir)), "count": count})
             total_count += count
 
     # Sort by count descending

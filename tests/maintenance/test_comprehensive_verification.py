@@ -4,6 +4,7 @@ Advanced verification for Phase 6 (Tests 4-10).
 Comprehensive testing for deep functional validation, data integrity,
 and system stability after the global SSOT migration.
 """
+
 import sys
 from pathlib import Path
 
@@ -45,9 +46,16 @@ def test_registry_agentic_core_subfolders():
     subfolders = SOVEREIGN_REGISTRY["agentic_core"]["subfolders"]
 
     expected_subfolders = [
-        "L0_maintenance", "L1_cognition", "L2_execution",
-        "L3_orchestration", "L4_state", "L5_safety", "L6_observability",
-        "config", "schemas", "utils"
+        "L0_maintenance",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability",
+        "config",
+        "schemas",
+        "utils",
     ]
 
     for folder in expected_subfolders:
@@ -64,6 +72,7 @@ def test_unified_agent_importable():
 
     # Should be a class
     import inspect
+
     assert inspect.isclass(UnifiedCodeValidatorAgent)
 
 
@@ -72,22 +81,25 @@ def test_unified_agent_has_expected_attributes():
     from agentic_core.unified import UnifiedCodeValidatorAgent
 
     # Check for expected methods/attributes
-    assert hasattr(UnifiedCodeValidatorAgent, '__init__')
+    assert hasattr(UnifiedCodeValidatorAgent, "__init__")
 
 
 # --- Test Case 6: Mixin Logic ---
 def test_healer_mixin_has_methods():
     """Verify the consolidated mixin has expected methods."""
     # Check that HealerMixin has the expected core methods
-    assert hasattr(HealerMixin, 'heal'), "HealerMixin missing 'heal' method"
-    assert hasattr(HealerMixin, 'heal_repository'), "HealerMixin missing 'heal_repository' method"
-    assert hasattr(HealerMixin, 'get_healing_metrics'), "HealerMixin missing 'get_healing_metrics' method"
-    assert hasattr(HealerMixin, 'apply_fix'), "HealerMixin missing 'apply_fix' method"
+    assert hasattr(HealerMixin, "heal"), "HealerMixin missing 'heal' method"
+    assert hasattr(HealerMixin, "heal_repository"), "HealerMixin missing 'heal_repository' method"
+    assert hasattr(HealerMixin, "get_healing_metrics"), (
+        "HealerMixin missing 'get_healing_metrics' method"
+    )
+    assert hasattr(HealerMixin, "apply_fix"), "HealerMixin missing 'apply_fix' method"
 
 
 def test_healer_mixin_is_class():
     """Verify HealerMixin is a proper class."""
     import inspect
+
     assert inspect.isclass(HealerMixin)
 
 
@@ -173,7 +185,9 @@ def test_migration_detects_legacy_imports(tmp_path):
 
     # Setup file with legacy import
     f = tmp_path / "test_legacy.py"
-    legacy_content = "from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY\n"
+    legacy_content = (
+        "from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY\n"
+    )
     f.write_text(legacy_content)
 
     # Run migration logic on the file (dry run)

@@ -23,6 +23,7 @@ logger = logging.getLogger(__name__)
 
 class ResourceType(Enum):
     """Types of resources managed."""
+
     FILE_HANDLE = "file_handle"
     NETWORK_CONNECTION = "network_connection"
     TEMP_FILE = "temp_file"
@@ -33,6 +34,7 @@ class ResourceType(Enum):
 @dataclass
 class ResourceInfo:
     """Information about a managed resource."""
+
     resource_id: str
     resource_type: ResourceType
     created_at: float
@@ -110,7 +112,7 @@ class ResourceManager:
         self,
         resource_type: ResourceType,
         cleanup_callback: Callable | None = None,
-        metadata: dict[str, Any] | None = None
+        metadata: dict[str, Any] | None = None,
     ) -> str:
         """Register a resource for tracking.
 
@@ -135,7 +137,7 @@ class ResourceManager:
                 created_at=time.time(),
                 last_used=time.time(),
                 cleanup_callback=cleanup_callback,
-                metadata=metadata or {}
+                metadata=metadata or {},
             )
 
             self._resources[resource_id] = resource_info
@@ -237,7 +239,7 @@ class ResourceManager:
                 logger.error(f"Error in cleanup loop: {e}")
 
     @contextmanager
-    def managed_file(self, file_path: str | Path, mode: str = 'r'):
+    def managed_file(self, file_path: str | Path, mode: str = "r"):
         """Context manager for managed file operations.
 
         Args:
@@ -248,8 +250,7 @@ class ResourceManager:
             File handle
         """
         resource_id = self.register_resource(
-            ResourceType.FILE_HANDLE,
-            metadata={"path": str(file_path), "mode": mode}
+            ResourceType.FILE_HANDLE, metadata={"path": str(file_path), "mode": mode}
         )
 
         try:
@@ -260,7 +261,7 @@ class ResourceManager:
             self.unregister_resource(resource_id)
 
     @asynccontextmanager
-    async def managed_async_file(self, file_path: str | Path, mode: str = 'r'):
+    async def managed_async_file(self, file_path: str | Path, mode: str = "r"):
         """Context manager for managed async file operations.
 
         Args:
@@ -271,8 +272,7 @@ class ResourceManager:
             Async file handle
         """
         resource_id = self.register_resource(
-            ResourceType.FILE_HANDLE,
-            metadata={"path": str(file_path), "mode": mode}
+            ResourceType.FILE_HANDLE, metadata={"path": str(file_path), "mode": mode}
         )
 
         try:
@@ -299,7 +299,7 @@ class ResourceManager:
         resource_id = self.register_resource(
             ResourceType.TEMP_FILE,
             cleanup_callback=lambda: temp_path.unlink(missing_ok=True),
-            metadata={"temp_path": str(temp_path), "target_path": str(file_path)}
+            metadata={"temp_path": str(temp_path), "target_path": str(file_path)},
         )
 
         try:
@@ -338,7 +338,7 @@ class ResourceManager:
                 "name": self.name,
                 "total_resources": len(self._resources),
                 "max_resources": self.max_resources,
-                "resources_by_type": {}
+                "resources_by_type": {},
             }
 
             for resource_info in self._resources.values():
@@ -434,7 +434,7 @@ class ConnectionPool:
         while not self._available.empty():
             try:
                 connection = self._available.get_nowait()
-                if hasattr(connection, 'close'):
+                if hasattr(connection, "close"):
                     if asyncio.iscoroutinefunction(connection.close):
                         await connection.close()
                     else:

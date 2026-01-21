@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class ExecutiveSummaryOutput:
     """Strategist BioWriter output."""
+
     summary: str
     word_count: int
     sentence_count: int
@@ -30,9 +31,20 @@ class ExecutiveSummaryOutput:
 
 # First-person patterns that MUST be blocked
 FIRST_PERSON_PATTERNS = [
-    r'\bI\b', r'\bI\'m\b', r'\bI\'ve\b', r'\bI\'ll\b', r'\bI\'d\b',
-    r'\bmy\b', r'\bmine\b', r'\bme\b', r'\bmyself\b',
-    r'\bwe\b', r'\bwe\'re\b', r'\bwe\'ve\b', r'\bour\b', r'\bours\b',
+    r"\bI\b",
+    r"\bI\'m\b",
+    r"\bI\'ve\b",
+    r"\bI\'ll\b",
+    r"\bI\'d\b",
+    r"\bmy\b",
+    r"\bmine\b",
+    r"\bme\b",
+    r"\bmyself\b",
+    r"\bwe\b",
+    r"\bwe\'re\b",
+    r"\bwe\'ve\b",
+    r"\bour\b",
+    r"\bours\b",
 ]
 
 
@@ -68,11 +80,7 @@ class Strategist_BioWriter(Agent):
             sentence_count_min: Minimum sentence count (default 3)
             sentence_count_max: Maximum sentence count (default 5)
         """
-        super().__init__(
-            config,
-            k_node_id="K.1",
-            element="Executive Summary (3rd-Person)"
-        )
+        super().__init__(config, k_node_id="K.1", element="Executive Summary (3rd-Person)")
 
         self.word_count_min = word_count_min
         self.word_count_max = word_count_max
@@ -189,13 +197,13 @@ CRITICAL CONSTRAINTS (ZERO TOLERANCE):
 TARGET ROLE: {target_role}
 
 CAREER HIGHLIGHTS:
-{chr(10).join(f'- {h}' for h in career_highlights[:5])}
+{chr(10).join(f"- {h}" for h in career_highlights[:5])}
 
 EXPERTISE AREAS:
-{chr(10).join(f'- {e}' for e in expertise_areas[:5])}
+{chr(10).join(f"- {e}" for e in expertise_areas[:5])}
 
 VALUE PROPOSITIONS:
-{chr(10).join(f'- {v}' for v in value_propositions[:3])}
+{chr(10).join(f"- {v}" for v in value_propositions[:3])}
 
 STRUCTURE:
 Sentence 1-2: Career arc and leadership scope
@@ -280,7 +288,7 @@ Generate the corrected executive summary:
             Number of sentences
         """
         # Split by sentence terminators
-        sentences = re.split(r'[.!?]+', text)
+        sentences = re.split(r"[.!?]+", text)
         # Filter empty strings
         sentences = [s.strip() for s in sentences if s.strip()]
         return len(sentences)

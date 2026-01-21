@@ -18,6 +18,7 @@ Features:
 - ASCII compliance validation
 - Auto-rename for non-compliant classes
 """
+
 from __future__ import annotations
 
 import ast
@@ -35,6 +36,7 @@ Logger = logging.getLogger(__name__)
 
 class StructureViolationType:
     """Types of structure violations."""
+
     GRAVITY = "GRAVITY"
     HIERARCHY = "HIERARCHY"
     NAMING = "NAMING"
@@ -45,6 +47,7 @@ class StructureViolationType:
 @dataclass
 class StructureViolation:
     """Represents a structure violation."""
+
     file_path: Path
     line_number: int
     violation_type: str
@@ -57,6 +60,7 @@ class StructureViolation:
 @dataclass
 class NamingRule:
     """Naming convention rule."""
+
     pattern: str
     suffix: str
     description: str
@@ -66,6 +70,7 @@ class NamingRule:
 @dataclass
 class StructureConfig:
     """Configuration for structure enforcement."""
+
     enable_gravity: bool = True
     enable_hierarchy: bool = True
     enable_naming: bool = True
@@ -191,13 +196,15 @@ class UnifiedStructureEnforcerAgent:
             if isinstance(node, ast.ImportFrom) and node.module:
                 target_layer = self._extract_layer_from_module(node.module)
                 if target_layer and target_layer not in allowed_layers:
-                    violations.append(StructureViolation(
-                        file_path=file_path,
-                        line_number=node.lineno,
-                        violation_type=StructureViolationType.GRAVITY,
-                        message=f"Gravity violation: {source_layer} cannot import from {target_layer}",
-                        severity="CRITICAL",
-                    ))
+                    violations.append(
+                        StructureViolation(
+                            file_path=file_path,
+                            line_number=node.lineno,
+                            violation_type=StructureViolationType.GRAVITY,
+                            message=f"Gravity violation: {source_layer} cannot import from {target_layer}",
+                            severity="CRITICAL",
+                        )
+                    )
 
         return violations
 
@@ -217,14 +224,16 @@ class UnifiedStructureEnforcerAgent:
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
                 if not node.name.endswith(self.config.agent_suffix):
-                    violations.append(StructureViolation(
-                        file_path=file_path,
-                        line_number=node.lineno,
-                        violation_type=StructureViolationType.NAMING,
-                        message=f"Class '{node.name}' must end with '{self.config.agent_suffix}' suffix",
-                        suggested_fix=f"{node.name}{self.config.agent_suffix}",
-                        auto_fixable=True,
-                    ))
+                    violations.append(
+                        StructureViolation(
+                            file_path=file_path,
+                            line_number=node.lineno,
+                            violation_type=StructureViolationType.NAMING,
+                            message=f"Class '{node.name}' must end with '{self.config.agent_suffix}' suffix",
+                            suggested_fix=f"{node.name}{self.config.agent_suffix}",
+                            auto_fixable=True,
+                        )
+                    )
 
         return violations
 
@@ -242,21 +251,25 @@ class UnifiedStructureEnforcerAgent:
                 docstring = ast.get_docstring(node)
 
                 if self.config.required_docstring and not docstring:
-                    violations.append(StructureViolation(
-                        file_path=file_path,
-                        line_number=node.lineno,
-                        violation_type=StructureViolationType.DOCUMENTATION,
-                        message=f"Missing docstring for {type(node).__name__} '{node.name}'",
-                        severity="WARNING",
-                    ))
+                    violations.append(
+                        StructureViolation(
+                            file_path=file_path,
+                            line_number=node.lineno,
+                            violation_type=StructureViolationType.DOCUMENTATION,
+                            message=f"Missing docstring for {type(node).__name__} '{node.name}'",
+                            severity="WARNING",
+                        )
+                    )
                 elif docstring and len(docstring) < self.config.min_docstring_length:
-                    violations.append(StructureViolation(
-                        file_path=file_path,
-                        line_number=node.lineno,
-                        violation_type=StructureViolationType.DOCUMENTATION,
-                        message=f"Docstring too short for '{node.name}' (min {self.config.min_docstring_length} chars)",
-                        severity="INFO",
-                    ))
+                    violations.append(
+                        StructureViolation(
+                            file_path=file_path,
+                            line_number=node.lineno,
+                            violation_type=StructureViolationType.DOCUMENTATION,
+                            message=f"Docstring too short for '{node.name}' (min {self.config.min_docstring_length} chars)",
+                            severity="INFO",
+                        )
+                    )
 
         return violations
 
@@ -271,13 +284,15 @@ class UnifiedStructureEnforcerAgent:
             except UnicodeEncodeError:
                 # Find non-ASCII characters
                 non_ascii = [c for c in line if ord(c) > 127]
-                violations.append(StructureViolation(
-                    file_path=file_path,
-                    line_number=i,
-                    violation_type=StructureViolationType.ASCII,
-                    message=f"Non-ASCII characters found: {non_ascii[:5]}",
-                    severity="WARNING",
-                ))
+                violations.append(
+                    StructureViolation(
+                        file_path=file_path,
+                        line_number=i,
+                        violation_type=StructureViolationType.ASCII,
+                        message=f"Non-ASCII characters found: {non_ascii[:5]}",
+                        severity="WARNING",
+                    )
+                )
 
         return violations
 
@@ -354,7 +369,9 @@ class UnifiedStructureEnforcerAgent:
             # Backup first
             backup_dir = self.project_root / "archives" / "healing_backups" / "naming"
             backup_dir.mkdir(parents=True, exist_ok=True)
-            backup_path = backup_dir / f"{file_path.name}.{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+            backup_path = (
+                backup_dir / f"{file_path.name}.{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+            )
             shutil.copy2(file_path, backup_path)
 
             # Write new content
@@ -387,12 +404,14 @@ class UnifiedStructureEnforcerAgent:
                 break
 
         if not layer_found:
-            violations.append(StructureViolation(
-                file_path=file_path,
-                line_number=0,
-                violation_type=StructureViolationType.HIERARCHY,
-                message=f"File not in expected layer directory: {layer}",
-            ))
+            violations.append(
+                StructureViolation(
+                    file_path=file_path,
+                    line_number=0,
+                    violation_type=StructureViolationType.HIERARCHY,
+                    message=f"File not in expected layer directory: {layer}",
+                )
+            )
 
         return violations
 

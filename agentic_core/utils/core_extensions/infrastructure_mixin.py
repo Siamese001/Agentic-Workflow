@@ -22,6 +22,7 @@ HARDENING:
     The verify_state() method will raise RuntimeError if initialization failed,
     preventing silent failures that lead to hard-to-debug issues.
 """
+
 from __future__ import annotations
 
 import logging
@@ -93,14 +94,14 @@ class InfrastructureMixin(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin):
         errors = []
 
         # Check 1: Infrastructure initialization flag
-        if not getattr(self, '_infra_initialized', False):
+        if not getattr(self, "_infra_initialized", False):
             errors.append(
                 f"{self.__class__.__name__}: _infra_initialized is False. "
                 "Did you forget to call super().__init__()?"
             )
 
         # Check 2: HealerMixin initialization
-        if not hasattr(self, '_healer_metrics'):
+        if not hasattr(self, "_healer_metrics"):
             errors.append(
                 f"{self.__class__.__name__}: _healer_metrics is missing. "
                 "HealerMixin was not properly initialized."
@@ -111,7 +112,9 @@ class InfrastructureMixin(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin):
         # since some agents may not use MCP features
 
         if errors:
-            error_msg = "Infrastructure initialization failed:\n" + "\n".join(f"  - {e}" for e in errors)
+            error_msg = "Infrastructure initialization failed:\n" + "\n".join(
+                f"  - {e}" for e in errors
+            )
             Logger.error(f"[INFRA] {error_msg}")
             raise RuntimeError(error_msg)
 
@@ -130,10 +133,10 @@ class InfrastructureMixin(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin):
                 - testing_ready (bool): Whether SubatomicTestingMixin is ready
         """
         return {
-            "infra_initialized": getattr(self, '_infra_initialized', False),
-            "healer_ready": hasattr(self, '_healer_metrics'),
-            "mcp_ready": hasattr(self, '_mcp_initialized'),
-            "testing_ready": hasattr(self, '_subatomic_initialized'),
+            "infra_initialized": getattr(self, "_infra_initialized", False),
+            "healer_ready": hasattr(self, "_healer_metrics"),
+            "mcp_ready": hasattr(self, "_mcp_initialized"),
+            "testing_ready": hasattr(self, "_subatomic_initialized"),
             "class_name": self.__class__.__name__,
         }
 
@@ -149,7 +152,7 @@ class InfrastructureMixin(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin):
         self._infra_initialized = False
 
         # Reset healer metrics if present
-        if hasattr(self, '_healer_metrics'):
+        if hasattr(self, "_healer_metrics"):
             self._healer_metrics = {
                 "violations_found": 0,
                 "violations_fixed": 0,

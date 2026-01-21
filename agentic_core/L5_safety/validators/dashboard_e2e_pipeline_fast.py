@@ -13,6 +13,7 @@ Steps:
 4. Validate all data integrity
 5. Provide visual confirmation
 """
+
 import json
 import re
 import sys
@@ -30,14 +31,14 @@ class FastDashboardE2EPipeline:
 
     def __init__(self):
         self.project_root = get_validated_project_root()
-        self.discovery_path = self.project_root / 'agent_discovery_full.json'
-        self.dashboard_path = self.project_root / DASHBOARD_DIR / 'autonomy_dashboard.html'
+        self.discovery_path = self.project_root / "agent_discovery_full.json"
+        self.dashboard_path = self.project_root / DASHBOARD_DIR / "autonomy_dashboard.html"
         self.stats = {
-            'heal_fixes': 0,
-            'agents_discovered': 0,
-            'dashboard_rows': 0,
-            'heal_invocation_before': 0,
-            'heal_invocation_after': 0
+            "heal_fixes": 0,
+            "agents_discovered": 0,
+            "dashboard_rows": 0,
+            "heal_invocation_before": 0,
+            "heal_invocation_after": 0,
         }
 
     def print_header(self, title: str):
@@ -59,7 +60,7 @@ class FastDashboardE2EPipeline:
             return 0
 
         data = json.load(open(self.discovery_path))
-        needs_fix = [a for a in data if a.get('has_healing') and a.get('invocation') != 'Yes']
+        needs_fix = [a for a in data if a.get("has_healing") and a.get("invocation") != "Yes"]
 
         if not needs_fix:
             print("   ✅ No fixes needed")
@@ -67,12 +68,12 @@ class FastDashboardE2EPipeline:
 
         fixed_count = 0
         for agent in needs_fix:
-            path = Path(agent['path'])
+            path = Path(agent["path"])
             if not path.exists():
                 continue
 
             try:
-                content = path.read_text(encoding='utf-8')
+                content = path.read_text(encoding="utf-8")
                 pattern = r'(    def heal_repository\([^)]*\)[^:]*:.*?)(\n        (?:""".*?"""|\'\'\'.*?\'\'\')\s*\n)?(.*?)(\n    def |\n\nclass |\Z)'
                 matches = list(re.finditer(pattern, content, re.DOTALL))
 
@@ -82,7 +83,7 @@ class FastDashboardE2EPipeline:
                 match = matches[0]
                 method_body = match.group(3)
 
-                if 'super().heal_repository' in method_body:
+                if "super().heal_repository" in method_body:
                     continue
 
                 # Insert super() call
@@ -90,26 +91,31 @@ class FastDashboardE2EPipeline:
                 docstring = match.group(2) or ""
                 next_section = match.group(4)
 
-                lines = method_body.split('\n')
+                lines = method_body.split("\n")
                 insert_index = 0
                 for i, line in enumerate(lines):
                     stripped = line.strip()
-                    if stripped and not stripped.startswith('#') and not stripped.startswith('"""') and not stripped.startswith("'''"):
+                    if (
+                        stripped
+                        and not stripped.startswith("#")
+                        and not stripped.startswith('"""')
+                        and not stripped.startswith("'''")
+                    ):
                         insert_index = i
                         break
 
                 lines.insert(insert_index, "        super().heal_repository()\n")
-                new_method_body = '\n'.join(lines)
+                new_method_body = "\n".join(lines)
                 new_method = method_sig + docstring + new_method_body + next_section
-                new_content = content[:match.start()] + new_method + content[match.end():]
-                path.write_text(new_content, encoding='utf-8')
+                new_content = content[: match.start()] + new_method + content[match.end() :]
+                path.write_text(new_content, encoding="utf-8")
 
                 fixed_count += 1
 
             except Exception:
                 pass
 
-        self.stats['heal_fixes'] = fixed_count
+        self.stats["heal_fixes"] = fixed_count
         print(f"   ✅ Fixed {fixed_count} agents")
         return fixed_count
 
@@ -122,7 +128,7 @@ class FastDashboardE2EPipeline:
             return 0
 
         data = json.load(open(self.discovery_path))
-        needs_hardening = [a for a in data if not a.get('mcp_hardened')]
+        needs_hardening = [a for a in data if not a.get("mcp_hardened")]
 
         if not needs_hardening:
             print("   ✅ All agents already MCP hardened")
@@ -130,24 +136,28 @@ class FastDashboardE2EPipeline:
 
         fixed_count = 0
         for agent in needs_hardening:
-            path = Path(agent['path'])
+            path = Path(agent["path"])
             if not path.exists():
                 continue
 
             try:
-                content = path.read_text(encoding='utf-8')
+                content = path.read_text(encoding="utf-8")
 
                 # Skip if already has MCPHardenedMixin
-                if 'MCPHardenedMixin' in content:
+                if "MCPHardenedMixin" in content:
                     continue
 
                 # Skip stub/re-export files
-                if 'from agentic_core' in content and 'import' in content and agent['class_name'] in content:
+                if (
+                    "from agentic_core" in content
+                    and "import" in content
+                    and agent["class_name"] in content
+                ):
                     if content.count(f"class {agent['class_name']}") == 0:
                         continue
 
                 # Find class definition
-                class_pattern = rf'class\s+{re.escape(agent["class_name"])}\s*\((.*?)\)\s*:'
+                class_pattern = rf"class\s+{re.escape(agent['class_name'])}\s*\((.*?)\)\s*:"
                 match = re.search(class_pattern, content, re.DOTALL)
 
                 if not match:
@@ -167,22 +177,28 @@ class FastDashboardE2EPipeline:
                 content = content.replace(old_class_def, new_class_def)
 
                 # Add import if needed
-                if 'from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin' not in content:
-                    lines = content.split('\n')
+                if (
+                    "from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin"
+                    not in content
+                ):
+                    lines = content.split("\n")
                     insert_idx = 0
                     for i, line in enumerate(lines):
-                        if line.strip().startswith('import ') or line.strip().startswith('from '):
+                        if line.strip().startswith("import ") or line.strip().startswith("from "):
                             insert_idx = i + 1
-                    lines.insert(insert_idx, 'from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin')
-                    content = '\n'.join(lines)
+                    lines.insert(
+                        insert_idx,
+                        "from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin",
+                    )
+                    content = "\n".join(lines)
 
-                path.write_text(content, encoding='utf-8')
+                path.write_text(content, encoding="utf-8")
                 fixed_count += 1
 
             except Exception:
                 pass
 
-        self.stats['mcp_fixes'] = fixed_count
+        self.stats["mcp_fixes"] = fixed_count
         print(f"   ✅ Fixed {fixed_count} agents")
         return fixed_count
 
@@ -199,32 +215,36 @@ class FastDashboardE2EPipeline:
 
             # Calculate before stats
             total = len(data)
-            before_invocation = sum(1 for a in data if a.get('invocation') == 'Yes')
-            self.stats['heal_invocation_before'] = before_invocation / total * 100 if total > 0 else 0
+            before_invocation = sum(1 for a in data if a.get("invocation") == "Yes")
+            self.stats["heal_invocation_before"] = (
+                before_invocation / total * 100 if total > 0 else 0
+            )
 
             # Update invocation status for fixed agents
             updated = 0
             for agent in data:
-                if agent.get('has_healing') and agent.get('invocation') != 'Yes':
+                if agent.get("has_healing") and agent.get("invocation") != "Yes":
                     # Check if file now has super() call
-                    path = Path(agent['path'])
+                    path = Path(agent["path"])
                     if path.exists():
-                        content = path.read_text(encoding='utf-8')
-                        if 'super().heal_repository()' in content:
-                            agent['invocation'] = 'Yes'
+                        content = path.read_text(encoding="utf-8")
+                        if "super().heal_repository()" in content:
+                            agent["invocation"] = "Yes"
                             updated += 1
 
             # Save updated discovery
-            with open(self.discovery_path, 'w', encoding='utf-8') as f:
+            with open(self.discovery_path, "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=2)
 
             # Calculate after stats
-            after_invocation = sum(1 for a in data if a.get('invocation') == 'Yes')
-            self.stats['heal_invocation_after'] = after_invocation / total * 100 if total > 0 else 0
-            self.stats['agents_discovered'] = total
+            after_invocation = sum(1 for a in data if a.get("invocation") == "Yes")
+            self.stats["heal_invocation_after"] = after_invocation / total * 100 if total > 0 else 0
+            self.stats["agents_discovered"] = total
 
             print(f"   ✅ Updated {updated} agent records")
-            print(f"   ✅ Heal invocation: {after_invocation}/{total} ({self.stats['heal_invocation_after']:.1f}%)")
+            print(
+                f"   ✅ Heal invocation: {after_invocation}/{total} ({self.stats['heal_invocation_after']:.1f}%)"
+            )
 
             return True
 
@@ -236,7 +256,13 @@ class FastDashboardE2EPipeline:
         """Step 3: Regenerate dashboard HTML."""
         self.print_step("STEP 3: Regenerating dashboard HTML...")
 
-        dashboard_script = self.project_root / 'agentic_core' / 'L6_observability' / 'dashboards' / 'generate_dashboard.py'
+        dashboard_script = (
+            self.project_root
+            / "agentic_core"
+            / "L6_observability"
+            / "dashboards"
+            / "generate_dashboard.py"
+        )
 
         try:
             result = safe_execute(
@@ -245,7 +271,7 @@ class FastDashboardE2EPipeline:
                 capture_output=True,
                 check=False,
                 text=True,
-                timeout=60
+                timeout=60,
             )
 
             if result.returncode != 0:
@@ -253,14 +279,14 @@ class FastDashboardE2EPipeline:
                 return False
 
             # Extract row count
-            html = self.dashboard_path.read_text(encoding='utf-8')
-            start_idx = html.find('const dashboardData = [')
-            end_idx = html.find('];', start_idx)
+            html = self.dashboard_path.read_text(encoding="utf-8")
+            start_idx = html.find("const dashboardData = [")
+            end_idx = html.find("];", start_idx)
 
             if start_idx != -1 and end_idx != -1:
-                json_str = html[start_idx+22:end_idx+1]
+                json_str = html[start_idx + 22 : end_idx + 1]
                 territories = json.loads(json_str)
-                self.stats['dashboard_rows'] = len(territories)
+                self.stats["dashboard_rows"] = len(territories)
                 print(f"   ✅ Generated {len(territories)} rows")
 
             return True
@@ -273,7 +299,7 @@ class FastDashboardE2EPipeline:
         """Step 4: Run validation tests."""
         self.print_step("STEP 4: Running validation tests...")
 
-        test_script = self.project_root / 'scripts' / 'test_dashboard_end_to_end.py'
+        test_script = self.project_root / "scripts" / "test_dashboard_end_to_end.py"
 
         try:
             result = safe_execute(
@@ -283,7 +309,7 @@ class FastDashboardE2EPipeline:
                 check=False,
                 text=True,
                 timeout=30,
-                env={'PYTHONPATH': str(self.project_root)}
+                env={"PYTHONPATH": str(self.project_root)},
             )
 
             if result.returncode != 0:
@@ -302,8 +328,8 @@ class FastDashboardE2EPipeline:
         """Step 5: Visual confirmation."""
         self.print_step("STEP 5: Visual confirmation...")
 
-        before = self.stats['heal_invocation_before']
-        after = self.stats['heal_invocation_after']
+        before = self.stats["heal_invocation_before"]
+        after = self.stats["heal_invocation_after"]
         improvement = after - before
 
         print()
@@ -311,17 +337,27 @@ class FastDashboardE2EPipeline:
         print("┃" + " " * 25 + "DASHBOARD UPDATE SUMMARY" + " " * 29 + "┃")
         print("┣" + "━" * 78 + "┫")
         print("┃  Heal Invocation Coverage:                                              ┃")
-        print(f"┃    Before: {before:5.1f}%  →  After: {after:5.1f}%  (Δ +{improvement:4.1f}%)                    ┃")
+        print(
+            f"┃    Before: {before:5.1f}%  →  After: {after:5.1f}%  (Δ +{improvement:4.1f}%)                    ┃"
+        )
 
         if after >= 100.0:
             print("┃    🎯 TARGET ACHIEVED: 100% heal invocation coverage!                   ┃")
         elif after >= 99.0:
-            print(f"┃    ⚠️  Nearly complete: {100-after:.1f}% gap remaining                             ┃")
+            print(
+                f"┃    ⚠️  Nearly complete: {100 - after:.1f}% gap remaining                             ┃"
+            )
 
         print("┃                                                                              ┃")
-        print(f"┃  Code Fixes: {self.stats['heal_fixes']:3d} agents                                              ┃")
-        print(f"┃  Total Agents: {self.stats['agents_discovered']:3d}                                              ┃")
-        print(f"┃  Dashboard Rows: {self.stats['dashboard_rows']:2d}                                                   ┃")
+        print(
+            f"┃  Code Fixes: {self.stats['heal_fixes']:3d} agents                                              ┃"
+        )
+        print(
+            f"┃  Total Agents: {self.stats['agents_discovered']:3d}                                              ┃"
+        )
+        print(
+            f"┃  Dashboard Rows: {self.stats['dashboard_rows']:2d}                                                   ┃"
+        )
         print("┃                                                                              ┃")
         print(f"┃  📊 Dashboard: {str(self.dashboard_path.relative_to(self.project_root)):<58}┃")
         print("┗" + "━" * 78 + "┛")
@@ -332,8 +368,8 @@ class FastDashboardE2EPipeline:
         self.print_step("STEP 0: Validating dashboard data quality...")
 
         # Run comprehensive data validation
-        validation_script = self.project_root / 'scripts' / 'validate_dashboard_data.py'
-        base_agent_script = self.project_root / 'scripts' / 'validate_base_agents.py'
+        validation_script = self.project_root / "scripts" / "validate_dashboard_data.py"
+        base_agent_script = self.project_root / "scripts" / "validate_base_agents.py"
 
         if not validation_script.exists() or not base_agent_script.exists():
             print("   ⚠️  Validation scripts not found - skipping validation")
@@ -347,7 +383,7 @@ class FastDashboardE2EPipeline:
                 capture_output=True,
                 check=False,
                 text=True,
-                timeout=30
+                timeout=30,
             )
 
             if result.returncode != 0:
@@ -364,7 +400,7 @@ class FastDashboardE2EPipeline:
                 capture_output=True,
                 check=False,
                 text=True,
-                timeout=30
+                timeout=30,
             )
 
             if result.returncode != 0:

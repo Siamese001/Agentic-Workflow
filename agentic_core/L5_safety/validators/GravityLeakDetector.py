@@ -10,6 +10,7 @@ Responsibility: Detect and mark gravity leaks (core → apps dependencies)
 
 Migrated from LocationAgent.py during Phase 4 of the fission process.
 """
+
 from __future__ import annotations
 
 import ast
@@ -67,7 +68,7 @@ class GravityLeakDetector:
         initial_scores = {
             "app_rg": 0.0,
             "app_lic": 0.0,
-            "territories": dict.fromkeys(CORE_TERRITORY_KEYWORDS, 0.0)
+            "territories": dict.fromkeys(CORE_TERRITORY_KEYWORDS, 0.0),
         }
 
         # Phase 1: Walk and collect raw increments
@@ -80,7 +81,11 @@ class GravityLeakDetector:
 
     def _collect_ast_increments(self, tree: ast.AST) -> dict:
         """Phase 1: Pure AST walk — collect raw risk increments."""
-        increments = {"app_rg": 0.0, "app_lic": 0.0, "territories": dict.fromkeys(CORE_TERRITORY_KEYWORDS, 0.0)}
+        increments = {
+            "app_rg": 0.0,
+            "app_lic": 0.0,
+            "territories": dict.fromkeys(CORE_TERRITORY_KEYWORDS, 0.0),
+        }
 
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef | ast.FunctionDef):
@@ -89,7 +94,11 @@ class GravityLeakDetector:
                 self._score_arguments(node, increments)
             elif isinstance(node, ast.Assign):
                 self._score_assignments(node, increments)
-            elif isinstance(node, ast.Constant) and isinstance(node.value, str) and len(node.value) > 8:
+            elif (
+                isinstance(node, ast.Constant)
+                and isinstance(node.value, str)
+                and len(node.value) > 8
+            ):
                 self._score_string(node.value.lower(), increments)
         return increments
 
@@ -129,9 +138,13 @@ class GravityLeakDetector:
     def _score_string(self, text: str, increments: dict) -> None:
         """Score a string literal."""
         increments["app_rg"] += sum(1 for t in APP_RG_STRING_TERMS if t in text) * STRING_HIT_WEIGHT
-        increments["app_lic"] += sum(1 for t in APP_LIC_STRING_TERMS if t in text) * STRING_HIT_WEIGHT
+        increments["app_lic"] += (
+            sum(1 for t in APP_LIC_STRING_TERMS if t in text) * STRING_HIT_WEIGHT
+        )
         for terr, cats in CORE_TERRITORY_KEYWORDS.items():
-            increments["territories"][terr] += sum(1 for terms in cats.values() for t in terms if t in text) * STRING_HIT_WEIGHT
+            increments["territories"][terr] += (
+                sum(1 for terms in cats.values() for t in terms if t in text) * STRING_HIT_WEIGHT
+            )
 
     def _aggregate_ast_increments(self, initial_scores: dict, increments: dict) -> dict:
         """Phase 2: Simple aggregation."""
@@ -146,7 +159,9 @@ class GravityLeakDetector:
     # GRAVITY VIOLATION HEALING (Phase 4)
     # ========================================================================
 
-    def _heal_gravity_violations(self, gravity_issues: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    def _heal_gravity_violations(
+        self, gravity_issues: list[dict[str, Any]]
+    ) -> list[dict[str, Any]]:
         """Helper method to heal gravity violations by removing offending imports."""
         gravity_heal_actions = []
         for grav in gravity_issues:
@@ -165,25 +180,32 @@ class GravityLeakDetector:
                 from agentic_core.L5_safety.validators.LocationHealerAgent import (
                     LocationHealerAgent,
                 )
+
                 healer = LocationHealerAgent(project_root=self.project_root)
-                new_lines, removed_modules = healer._remove_offending_imports(lines, downstream_roots)
+                new_lines, removed_modules = healer._remove_offending_imports(
+                    lines, downstream_roots
+                )
 
                 if removed_modules:
                     new_content = self._insert_gravity_heal_todo(new_lines, msg, removed_modules)
                     self._backup_and_write_file(path, new_content)
 
-                    gravity_heal_actions.append({
-                        "type": "GRAVITY_AUTO_HEAL",
-                        "file": grav["file"],
-                        "removed_imports": removed_modules,
-                    })
+                    gravity_heal_actions.append(
+                        {
+                            "type": "GRAVITY_AUTO_HEAL",
+                            "file": grav["file"],
+                            "removed_imports": removed_modules,
+                        }
+                    )
 
             except Exception as e:
-                gravity_heal_actions.append({
-                    "type": "GRAVITY_HEAL_ERROR",
-                    "file": grav["file"],
-                    "error": str(e),
-                })
+                gravity_heal_actions.append(
+                    {
+                        "type": "GRAVITY_HEAL_ERROR",
+                        "file": grav["file"],
+                        "error": str(e),
+                    }
+                )
 
         return gravity_heal_actions
 
@@ -199,7 +221,9 @@ class GravityLeakDetector:
 
         return []
 
-    def _insert_gravity_heal_todo(self, lines: list[str], msg: str, removed_modules: list[str]) -> str:
+    def _insert_gravity_heal_todo(
+        self, lines: list[str], msg: str, removed_modules: list[str]
+    ) -> str:
         """Insert TODO block after shebang/docstring."""
         todo_block = [
             "",
@@ -233,6 +257,7 @@ class GravityLeakDetector:
         """Backup file and write new content."""
         # Import from LocationHealerAgent for backup directory initialization
         from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
+
         healer = LocationHealerAgent(project_root=self.project_root)
         backup_dir = healer._init_backup_dir() / "gravity_auto_heal"
         backup_dir.mkdir(parents=True, exist_ok=True)

@@ -20,11 +20,11 @@ class KNodeScanner:
 
     # Patterns to find K-node references
     PATTERNS = [
-        r'\bK\.?\d+\b',  # K.2, K2, K.3, etc.
-        r'\bk_node_\w+',  # k_node_researcher, etc.
-        r'\bK\d+[A-Za-z]*\b',  # K3_agent, K5_validator, etc.
+        r"\bK\.?\d+\b",  # K.2, K2, K.3, etc.
+        r"\bk_node_\w+",  # k_node_researcher, etc.
+        r"\bK\d+[A-Za-z]*\b",  # K3_agent, K5_validator, etc.
         r'"[^"]*K\.?\d+[^"]*"',  # Strings containing K-nodes
-        r'\'[^\']*K\.?\d+[^\']*\'',  # Single quotes
+        r"\'[^\']*K\.?\d+[^\']*\'",  # Single quotes
     ]
 
     def __init__(self, root_path: Path):
@@ -46,19 +46,14 @@ class KNodeScanner:
             Scan results
         """
         if extensions is None:
-            extensions = ['.py', '.md', '.json', '.yaml', '.yml']
+            extensions = [".py", ".md", ".json", ".yaml", ".yml"]
 
-        results = {
-            "total_files": 0,
-            "files_with_references": 0,
-            "total_references": 0,
-            "files": []
-        }
+        results = {"total_files": 0, "files_with_references": 0, "total_references": 0, "files": []}
 
         for ext in extensions:
             for file_path in self.root_path.rglob(f"*{ext}"):
                 # Skip certain directories
-                if any(skip in str(file_path) for skip in ['.git', '__pycache__', '.venv']):
+                if any(skip in str(file_path) for skip in [".git", "__pycache__", ".venv"]):
                     continue
 
                 file_results = self.scan_file(file_path)
@@ -81,7 +76,7 @@ class KNodeScanner:
             Scan results for the file
         """
         try:
-            with open(file_path, encoding='utf-8') as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
         except Exception as e:
             logger.error(f"Failed to read {file_path}: {e}")
@@ -90,25 +85,24 @@ class KNodeScanner:
         references = []
         line_number = 1
 
-        for line in content.split('\n'):
+        for line in content.split("\n"):
             for pattern in self.PATTERNS:
                 matches = re.finditer(pattern, line, re.IGNORECASE)
                 for match in matches:
                     # Check if it's actually a K-node reference
                     text = match.group()
                     if self._is_knode_reference(text):
-                        references.append({
-                            "line": line_number,
-                            "column": match.start() + 1,
-                            "text": text,
-                            "context": line.strip()
-                        })
+                        references.append(
+                            {
+                                "line": line_number,
+                                "column": match.start() + 1,
+                                "text": text,
+                                "context": line.strip(),
+                            }
+                        )
             line_number += 1
 
-        return {
-            "path": str(file_path),
-            "references": references
-        }
+        return {"path": str(file_path), "references": references}
 
     def _is_knode_reference(self, text: str) -> bool:
         """Check if text is actually a K-node reference.
@@ -120,16 +114,16 @@ class KNodeScanner:
             True if K-node reference
         """
         # Remove quotes
-        text = text.strip('"\'')
+        text = text.strip("\"'")
 
         # Check patterns
-        if re.match(r'^K\.?\d+$', text):
+        if re.match(r"^K\.?\d+$", text):
             return True
 
-        if re.match(r'^k_node_', text, re.IGNORECASE):
+        if re.match(r"^k_node_", text, re.IGNORECASE):
             return True
 
-        if re.match(r'^K\d+[A-Za-z]*$', text):
+        if re.match(r"^K\d+[A-Za-z]*$", text):
             return True
 
         return False
@@ -157,19 +151,21 @@ class KNodeMigrator:
             replacements[legacy.upper()] = role.value
 
         # Common variations
-        replacements.update({
-            "K.2": "context_gatherer",
-            "K2": "context_gatherer",
-            "K.3": "content_drafter",
-            "K3": "content_drafter",
-            "K.5": "quality_critic",
-            "K5": "quality_critic",
-            "k_node_researcher": "context_gatherer",
-            "k_node_writer": "content_drafter",
-            "k_node_critic": "quality_critic",
-            "K3_agent": "content_drafter",
-            "K5_validator": "quality_critic"
-        })
+        replacements.update(
+            {
+                "K.2": "context_gatherer",
+                "K2": "context_gatherer",
+                "K.3": "content_drafter",
+                "K3": "content_drafter",
+                "K.5": "quality_critic",
+                "K5": "quality_critic",
+                "k_node_researcher": "context_gatherer",
+                "k_node_writer": "content_drafter",
+                "k_node_critic": "quality_critic",
+                "K3_agent": "content_drafter",
+                "K5_validator": "quality_critic",
+            }
+        )
 
         return replacements
 
@@ -185,13 +181,13 @@ class KNodeMigrator:
         """
         try:
             # Read file
-            with open(file_path, encoding='utf-8') as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
 
             # Create backup
             if backup:
                 backup_path = file_path.with_suffix(f"{file_path.suffix}.backup")
-                with open(backup_path, 'w', encoding='utf-8') as f:
+                with open(backup_path, "w", encoding="utf-8") as f:
                     f.write(content)
 
             # Apply replacements
@@ -206,7 +202,7 @@ class KNodeMigrator:
 
             # Write migrated content
             if changes_made:
-                with open(file_path, 'w', encoding='utf-8') as f:
+                with open(file_path, "w", encoding="utf-8") as f:
                     f.write(migrated_content)
                 return True
             else:
@@ -257,13 +253,15 @@ class KNodeMigrator:
                                     if legacy in item:
                                         value[i] = item.replace(legacy, functional)
                                         changes_made = True
-                                        logger.info(f"Migrated config list item at {current_path}[{i}]")
+                                        logger.info(
+                                            f"Migrated config list item at {current_path}[{i}]"
+                                        )
 
             migrate_dict(config)
 
             # Write back if changed
             if changes_made:
-                with open(config_path, 'w') as f:
+                with open(config_path, "w") as f:
                     json.dump(config, f, indent=2)
                 return True
 
@@ -300,7 +298,7 @@ class MigrationValidator:
             "is_valid": results["total_references"] == 0,
             "remaining_references": results["total_references"],
             "files_with_issues": results["files_with_references"],
-            "problem_files": []
+            "problem_files": [],
         }
 
         # Categorize issues
@@ -313,10 +311,7 @@ class MigrationValidator:
                     issues.append(ref)
 
             if issues:
-                validation["problem_files"].append({
-                    "path": file_result["path"],
-                    "issues": issues
-                })
+                validation["problem_files"].append({"path": file_result["path"], "issues": issues})
 
         return validation
 
@@ -360,19 +355,16 @@ def run_full_migration(root_path: Path, dry_run: bool = False) -> dict[str, Any]
     """
     logger.info(f"Starting {'dry run ' if dry_run else ''}migration from {root_path}")
 
-    results = {
-        "scan": None,
-        "migration": None,
-        "validation": None,
-        "success": False
-    }
+    results = {"scan": None, "migration": None, "validation": None, "success": False}
 
     # Step 1: Scan for references
     scanner = KNodeScanner(root_path)
     results["scan"] = scanner.scan_directory()
 
-    logger.info(f"Found {results['scan']['total_references']} K-node references "
-                f"in {results['scan']['files_with_references']} files")
+    logger.info(
+        f"Found {results['scan']['total_references']} K-node references "
+        f"in {results['scan']['files_with_references']} files"
+    )
 
     if dry_run:
         logger.info("Dry run complete - no changes made")
@@ -390,7 +382,7 @@ def run_full_migration(root_path: Path, dry_run: bool = False) -> dict[str, Any]
 
     results["migration"] = {
         "files_migrated": migrated_files,
-        "total_files_with_refs": results["scan"]["files_with_references"]
+        "total_files_with_refs": results["scan"]["files_with_references"],
     }
 
     logger.info(f"Migrated {migrated_files} files")
@@ -403,7 +395,9 @@ def run_full_migration(root_path: Path, dry_run: bool = False) -> dict[str, Any]
         logger.info("Migration completed successfully!")
         results["success"] = True
     else:
-        logger.warning(f"Migration incomplete: {results['validation']['remaining_references']} references remain")
+        logger.warning(
+            f"Migration incomplete: {results['validation']['remaining_references']} references remain"
+        )
 
     return results
 

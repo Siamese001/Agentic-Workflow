@@ -21,11 +21,10 @@ def get_resume_injection_patterns() -> list[InjectionPattern]:
             variables=["info"],
             scope=InjectionScope(
                 hop_types=["resume_writer", "summary_generator"],
-                contexts={"section": "summary", "professional_level": True}
+                contexts={"section": "summary", "professional_level": True},
             ),
-            priority=9
+            priority=9,
         ),
-
         # Experience section injections
         InjectionPattern(
             id="resume_impact_statement",
@@ -36,11 +35,10 @@ def get_resume_injection_patterns() -> list[InjectionPattern]:
             variables=["responsibility"],
             scope=InjectionScope(
                 hop_types=["resume_writer", "experience_formatter"],
-                contexts={"section": "experience", "type": "bullet"}
+                contexts={"section": "experience", "type": "bullet"},
             ),
-            priority=8
+            priority=8,
         ),
-
         InjectionPattern(
             id="resume_tech_stack_optimization",
             name="Tech Stack Optimization",
@@ -50,11 +48,10 @@ def get_resume_injection_patterns() -> list[InjectionPattern]:
             variables=["skills", "role"],
             scope=InjectionScope(
                 hop_types=["resume_writer", "skills_formatter"],
-                contexts={"section": "skills", "technical_role": True}
+                contexts={"section": "skills", "technical_role": True},
             ),
-            priority=7
+            priority=7,
         ),
-
         # Project section injections
         InjectionPattern(
             id="resume_project STAR_method",
@@ -65,11 +62,10 @@ def get_resume_injection_patterns() -> list[InjectionPattern]:
             variables=["project"],
             scope=InjectionScope(
                 hop_types=["resume_writer", "project_formatter"],
-                contexts={"section": "projects", "needs_structure": True}
+                contexts={"section": "projects", "needs_structure": True},
             ),
-            priority=6
+            priority=6,
         ),
-
         # Education section injections
         InjectionPattern(
             id="resume_education_enhancement",
@@ -80,11 +76,10 @@ def get_resume_injection_patterns() -> list[InjectionPattern]:
             variables=["education", "target_role"],
             scope=InjectionScope(
                 hop_types=["resume_writer", "education_formatter"],
-                contexts={"section": "education", "recent_grad": True}
+                contexts={"section": "education", "recent_grad": True},
             ),
-            priority=5
+            priority=5,
         ),
-
         # Certification injections
         InjectionPattern(
             id="resume_certification_value",
@@ -95,10 +90,10 @@ def get_resume_injection_patterns() -> list[InjectionPattern]:
             variables=["cert", "industry"],
             scope=InjectionScope(
                 hop_types=["resume_writer", "certification_formatter"],
-                contexts={"section": "certifications", "professional": True}
+                contexts={"section": "certifications", "professional": True},
             ),
-            priority=4
-        )
+            priority=4,
+        ),
     ]
 
 
@@ -115,11 +110,10 @@ def get_message_injection_patterns() -> list[InjectionPattern]:
             variables=["name", "company", "recent_activity", "interest"],
             scope=InjectionScope(
                 hop_types=["message_generator", "linkedin_writer"],
-                contexts={"platform": "linkedin", "connection_request": True}
+                contexts={"platform": "linkedin", "connection_request": True},
             ),
-            priority=9
+            priority=9,
         ),
-
         # Cold email injections
         InjectionPattern(
             id="message_cold_email_opener",
@@ -130,11 +124,10 @@ def get_message_injection_patterns() -> list[InjectionPattern]:
             variables=["name", "company_challenge", "solution_value"],
             scope=InjectionScope(
                 hop_types=["message_generator", "email_writer"],
-                contexts={"email_type": "cold", "prospect_aware": True}
+                contexts={"email_type": "cold", "prospect_aware": True},
             ),
-            priority=8
+            priority=8,
         ),
-
         # Follow-up message injections
         InjectionPattern(
             id="message_follow_up_value",
@@ -145,11 +138,10 @@ def get_message_injection_patterns() -> list[InjectionPattern]:
             variables=["name", "days_since_contact", "topic", "value_add"],
             scope=InjectionScope(
                 hop_types=["message_generator", "followup_writer"],
-                contexts={"message_type": "followup", "has_context": True}
+                contexts={"message_type": "followup", "has_context": True},
             ),
-            priority=7
+            priority=7,
         ),
-
         # Thank you message injections
         InjectionPattern(
             id="message_interview_thankyou",
@@ -157,14 +149,20 @@ def get_message_injection_patterns() -> list[InjectionPattern]:
             type=InjectionType.TONE_ADJUSTMENT,
             description="Creates professional interview thank you notes",
             template="Write a thank you note to {interviewer} after {interview_type} interview at {company}. Reference specific {discussion_point}, reiterate {interest_area}, and address any {concerns_raised}. Keep it genuine and concise.",
-            variables=["interviewer", "interview_type", "company", "discussion_point", "interest_area", "concerns_raised"],
+            variables=[
+                "interviewer",
+                "interview_type",
+                "company",
+                "discussion_point",
+                "interest_area",
+                "concerns_raised",
+            ],
             scope=InjectionScope(
                 hop_types=["message_generator", "interview_writer"],
-                contexts={"message_type": "thankyou", "post_interview": True}
+                contexts={"message_type": "thankyou", "post_interview": True},
             ),
-            priority=8
+            priority=8,
         ),
-
         # Networking message injections
         InjectionPattern(
             id="message_networking_approach",
@@ -175,11 +173,10 @@ def get_message_injection_patterns() -> list[InjectionPattern]:
             variables=["contact", "channel", "mutual_connection", "background", "networking_goal"],
             scope=InjectionScope(
                 hop_types=["message_generator", "networking_writer"],
-                contexts={"message_type": "networking", "warm_intro": True}
+                contexts={"message_type": "networking", "warm_intro": True},
             ),
-            priority=6
+            priority=6,
         ),
-
         # Referral request injections
         InjectionPattern(
             id="message_referral_request",
@@ -190,10 +187,10 @@ def get_message_injection_patterns() -> list[InjectionPattern]:
             variables=["contact", "opportunity", "relationship", "qualification_match"],
             scope=InjectionScope(
                 hop_types=["message_generator", "referral_writer"],
-                contexts={"message_type": "referral", "existing_relationship": True}
+                contexts={"message_type": "referral", "existing_relationship": True},
             ),
-            priority=7
-        )
+            priority=7,
+        ),
     ]
 
 
@@ -208,12 +205,10 @@ def get_quality_boost_injections() -> list[InjectionPattern]:
             template="Make this content more concise and impactful: '{content}'. Remove fluff, use strong verbs, eliminate redundant phrases, and ensure every word adds value. Target {word_count} words maximum.",
             variables=["content", "word_count"],
             scope=InjectionScope(
-                hop_types=["content_generator", "editor"],
-                contexts={"needs_conciseness": True}
+                hop_types=["content_generator", "editor"], contexts={"needs_conciseness": True}
             ),
-            priority=6
+            priority=6,
         ),
-
         InjectionPattern(
             id="quality_clarity",
             name="Clarity Improver",
@@ -222,12 +217,10 @@ def get_quality_boost_injections() -> list[InjectionPattern]:
             template="Improve clarity of this content: '{content}'. Simplify complex sentences, define jargon, use active voice, and ensure logical flow. Target {reading_level} reading level.",
             variables=["content", "reading_level"],
             scope=InjectionScope(
-                hop_types=["content_generator", "editor"],
-                contexts={"needs_clarity": True}
+                hop_types=["content_generator", "editor"], contexts={"needs_clarity": True}
             ),
-            priority=5
+            priority=5,
         ),
-
         InjectionPattern(
             id="quality_engagement",
             name="Engagement Booster",
@@ -236,11 +229,10 @@ def get_quality_boost_injections() -> list[InjectionPattern]:
             template="Make this content more engaging: '{content}'. Add storytelling elements, use emotional language, include compelling examples, and end with clear call to action for {audience}.",
             variables=["content", "audience"],
             scope=InjectionScope(
-                hop_types=["content_generator", "copywriter"],
-                contexts={"needs_engagement": True}
+                hop_types=["content_generator", "copywriter"], contexts={"needs_engagement": True}
             ),
-            priority=7
-        )
+            priority=7,
+        ),
     ]
 
 
@@ -252,7 +244,7 @@ def load_all_extended_patterns() -> dict[str, InjectionPattern]:
     for pattern_list in [
         get_resume_injection_patterns(),
         get_message_injection_patterns(),
-        get_quality_boost_injections()
+        get_quality_boost_injections(),
     ]:
         for pattern in pattern_list:
             patterns[pattern.id] = pattern
@@ -273,7 +265,8 @@ def extend_injection_loader(loader):
     for pattern in extended_patterns.values():
         file_path = loader.config.injection_dir / f"{pattern.id}.json"
         import json
-        with open(file_path, 'w', encoding='utf-8') as f:
+
+        with open(file_path, "w", encoding="utf-8") as f:
             json.dump(pattern.dict(), f, indent=2)
 
     print(f"Added {len(extended_patterns)} extended injection patterns")

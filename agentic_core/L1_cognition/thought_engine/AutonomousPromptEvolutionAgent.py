@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: guardrail
@@ -68,6 +67,7 @@ class AutonomousPromptEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, He
         if self._meta_learning is None:
             try:
                 from agentic_core.L1_cognition.learning.MetaLearningAgent import MetaLearningAgent
+
                 self._meta_learning = MetaLearningAgent()
             except ImportError as e:
                 log.warning(f"MetaLearningAgent unavailable: {e}")
@@ -80,7 +80,7 @@ class AutonomousPromptEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, He
 
         try:
             # Query meta-learning for experiences related to this template
-            experiences = getattr(self.meta_learning, 'get_experiences_by_context', lambda x: [])(
+            experiences = getattr(self.meta_learning, "get_experiences_by_context", lambda x: [])(
                 {"template_id": template_id}
             )
             if not experiences:
@@ -259,12 +259,14 @@ class AutonomousPromptEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, He
         return super().heal_repository(dry_run=dry_run, **kwargs)
 
         # === ZOMBIE VACCINATION: Wired orphaned methods ===
-        if hasattr(self, '_validate_template'):
+        if hasattr(self, "_validate_template"):
             try:
                 validation_result = self._validate_template()
                 if validation_result:
-                    metrics['violations'] += len(validation_result) if isinstance(validation_result, list) else 1
+                    metrics["violations"] += (
+                        len(validation_result) if isinstance(validation_result, list) else 1
+                    )
             except Exception as e:
-                Logger.error(f'Error in _validate_template: {e}')
-                metrics['errors'] += 1
+                Logger.error(f"Error in _validate_template: {e}")
+                metrics["errors"] += 1
         # === END VACCINATION ===

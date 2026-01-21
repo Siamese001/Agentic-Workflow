@@ -2,14 +2,15 @@
 """
 Smart MCP hardening fix - handles edge cases like stub files, multiple classes, etc.
 """
+
 import ast
 import json
 import re
 from pathlib import Path
 
 # Load agent discovery data
-data = json.load(open('agent_discovery_full.json'))
-needs_hardening = [a for a in data if not a.get('mcp_hardened')]
+data = json.load(open("agent_discovery_full.json"))
+needs_hardening = [a for a in data if not a.get("mcp_hardened")]
 
 print(f"Found {len(needs_hardening)} agents needing MCP hardening")
 print()
@@ -18,13 +19,14 @@ fixed_count = 0
 skipped_count = 0
 errors = []
 
+
 def find_agent_class_in_file(content: str, class_name: str) -> tuple[int, int, str] | None:
     """
     Find the actual agent class definition in the file.
     Returns (start_pos, end_pos, current_inheritance) or None.
     """
     # Try direct class match first
-    pattern = rf'class\s+{re.escape(class_name)}\s*\((.*?)\)\s*:'
+    pattern = rf"class\s+{re.escape(class_name)}\s*\((.*?)\)\s*:"
     match = re.search(pattern, content, re.DOTALL)
     if match:
         return (match.start(), match.end(), match.group(1).strip())
@@ -36,7 +38,7 @@ def find_agent_class_in_file(content: str, class_name: str) -> tuple[int, int, s
             if isinstance(node, ast.ClassDef):
                 if node.name == class_name:
                     # Found it via AST
-                    pattern = rf'class\s+{re.escape(node.name)}\s*\((.*?)\)\s*:'
+                    pattern = rf"class\s+{re.escape(node.name)}\s*\((.*?)\)\s*:"
                     match = re.search(pattern, content)
                     if match:
                         return (match.start(), match.end(), match.group(1).strip())
@@ -45,19 +47,22 @@ def find_agent_class_in_file(content: str, class_name: str) -> tuple[int, int, s
 
     return None
 
+
 def add_mcp_import(content: str) -> str:
     """Add MCPHardenedMixin import if not present."""
-    if 'MCPHardenedMixin' in content:
+    if "MCPHardenedMixin" in content:
         return content
 
-    import_line = 'from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\n'
+    import_line = (
+        "from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\n"
+    )
 
-    lines = content.split('\n')
+    lines = content.split("\n")
     insert_idx = 0
 
     # Find last import line
     for i, line in enumerate(lines):
-        if line.strip().startswith('import ') or line.strip().startswith('from '):
+        if line.strip().startswith("import ") or line.strip().startswith("from "):
             insert_idx = i + 1
 
     # If no imports, add after module docstring
@@ -71,11 +76,12 @@ def add_mcp_import(content: str) -> str:
                     break
 
     lines.insert(insert_idx, import_line.rstrip())
-    return '\n'.join(lines)
+    return "\n".join(lines)
+
 
 for agent in needs_hardening:
-    path = Path(agent['path'])
-    name = agent['class_name']
+    path = Path(agent["path"])
+    name = agent["class_name"]
 
     if not path.exists():
         print(f"⚠️  SKIP: {name} - file not found: {path}")
@@ -83,10 +89,10 @@ for agent in needs_hardening:
         continue
 
     try:
-        content = path.read_text(encoding='utf-8')
+        content = path.read_text(encoding="utf-8")
 
         # Check if already has MCPHardenedMixin
-        if 'MCPHardenedMixin' in content:
+        if "MCPHardenedMixin" in content:
             print(f"✓ SKIP: {name} - already has MCPHardenedMixin")
             skipped_count += 1
             continue
@@ -96,7 +102,7 @@ for agent in needs_hardening:
 
         if not result:
             # Try to find if this is a stub/re-export file
-            if 'from agentic_core' in content and 'import' in content and name in content:
+            if "from agentic_core" in content and "import" in content and name in content:
                 print(f"✓ SKIP: {name} - stub/re-export file")
                 skipped_count += 1
                 continue
@@ -110,7 +116,7 @@ for agent in needs_hardening:
         # Build new inheritance
         if current_inheritance:
             # Check if it already has MCPHardenedMixin somehow
-            if 'MCPHardenedMixin' in current_inheritance:
+            if "MCPHardenedMixin" in current_inheritance:
                 print(f"✓ SKIP: {name} - already has MCPHardenedMixin in inheritance")
                 skipped_count += 1
                 continue
@@ -127,7 +133,7 @@ for agent in needs_hardening:
         content = add_mcp_import(content)
 
         # Write back
-        path.write_text(content, encoding='utf-8')
+        path.write_text(content, encoding="utf-8")
 
         print(f"✅ FIXED: {name}")
         fixed_count += 1
@@ -156,14 +162,16 @@ if errors:
 
 # Calculate new coverage
 total_agents = len(data)
-originally_hardened = sum(1 for a in data if a.get('mcp_hardened'))
+originally_hardened = sum(1 for a in data if a.get("mcp_hardened"))
 new_hardened = originally_hardened + fixed_count
 new_coverage = new_hardened / total_agents * 100
 
 print("MCP Hardening Coverage:")
-print(f"  Before: {originally_hardened}/{total_agents} ({originally_hardened/total_agents*100:.1f}%)")
+print(
+    f"  Before: {originally_hardened}/{total_agents} ({originally_hardened / total_agents * 100:.1f}%)"
+)
 print(f"  After:  {new_hardened}/{total_agents} ({new_coverage:.1f}%)")
-print(f"  Improvement: +{fixed_count} agents (+{fixed_count/total_agents*100:.1f}%)")
+print(f"  Improvement: +{fixed_count} agents (+{fixed_count / total_agents * 100:.1f}%)")
 print()
 print("Next step: Update discovery and regenerate dashboard")
 print("Command: python scripts/dashboard_e2e_pipeline_fast.py")

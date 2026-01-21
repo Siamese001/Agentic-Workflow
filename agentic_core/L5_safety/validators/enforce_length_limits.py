@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import logging
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
 
 _logger = logging.getLogger(__name__)
@@ -14,7 +14,6 @@ _logger = logging.getLogger(__name__)
 
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-
 
 
 def enforce_length_limits(data: dict[str, object]) -> dict[str, object]:

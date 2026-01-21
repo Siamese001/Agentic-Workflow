@@ -44,20 +44,13 @@ def validate_json_schema(schema: dict[str, object]) -> list[str]:
 
     return errors
 
+
 def validate_mcp_catalogs() -> dict[str, object]:
     """Validate all MCP catalog files."""
-    results = {
-        "valid": True,
-        "errors": [],
-        "catalogs": {}
-    }
+    results = {"valid": True, "errors": [], "catalogs": {}}
 
     catalog_dir = Path("mcp_catalog")
-    catalog_files = [
-        "openai_mcp_v3.json",
-        "anthropic_mcp_v2.json",
-        "google_mcp_v1.json"
-    ]
+    catalog_files = ["openai_mcp_v3.json", "anthropic_mcp_v2.json", "google_mcp_v1.json"]
 
     for catalog_file in catalog_files:
         catalog_path = catalog_dir / catalog_file
@@ -97,7 +90,9 @@ def validate_mcp_catalogs() -> dict[str, object]:
                         # Check if referenced file exists
                         ref_path = Path(schema_ref["file"])
                         if not ref_path.exists():
-                            catalog_errors.append(f"Referenced file not found: {schema_ref['file']}")
+                            catalog_errors.append(
+                                f"Referenced file not found: {schema_ref['file']}"
+                            )
 
             if "tool_specifications" in catalog:
                 for tool_name, tool_ref in catalog["tool_specifications"].items():
@@ -110,7 +105,7 @@ def validate_mcp_catalogs() -> dict[str, object]:
 
             results["catalogs"][catalog_file] = {
                 "valid": len(catalog_errors) == 0,
-                "errors": catalog_errors
+                "errors": catalog_errors,
             }
 
             if catalog_errors:
@@ -126,20 +121,17 @@ def validate_mcp_catalogs() -> dict[str, object]:
 
     return results
 
+
 def validate_python_files() -> dict[str, object]:
     """Validate all Python files for syntax and imports."""
-    results = {
-        "valid": True,
-        "errors": [],
-        "files": {}
-    }
+    results = {"valid": True, "errors": [], "files": {}}
 
     python_dirs = [
         "openai_sdk",
         "anthropic_sdk",
         "google_vertex_sdk",
         "client_wrappers",
-        "reference_clients"
+        "reference_clients",
     ]
 
     for python_dir in python_dirs:
@@ -149,7 +141,7 @@ def validate_python_files() -> dict[str, object]:
                 with open(py_file) as f:
                     code = f.read()
 
-                compile(code, str(py_file), 'exec')
+                compile(code, str(py_file), "exec")
 
                 # Check imports
                 # NOTE: importlib.tool is not a standard module. This line will likely cause an AttributeError.
@@ -160,19 +152,19 @@ def validate_python_files() -> dict[str, object]:
 
                     # Check for environment variable references
                     env_vars = []
-                    for line in code.split('\n'):
-                        if 'os.getenv(' in line:
+                    for line in code.split("\n"):
+                        if "os.getenv(" in line:
                             # Extract env var name
-                            start = line.find('os.getenv(') + 9
-                            end = line.find(')', start)
+                            start = line.find("os.getenv(") + 9
+                            end = line.find(")", start)
                             if start > 8 and end > start:
-                                env_var = line[start:end].strip('"\'')
+                                env_var = line[start:end].strip("\"'")
                                 env_vars.append(env_var)
 
                     results["files"][str(py_file)] = {
                         "valid": True,
                         "syntax_valid": True,
-                        "env_vars": env_vars
+                        "env_vars": env_vars,
                     }
 
             except SyntaxError as e:
@@ -186,20 +178,17 @@ def validate_python_files() -> dict[str, object]:
 
     return results
 
+
 def validate_schemas() -> dict[str, object]:
     """Validate all JSON schema files."""
-    results = {
-        "valid": True,
-        "errors": [],
-        "schemas": {}
-    }
+    results = {"valid": True, "errors": [], "schemas": {}}
 
     schema_files = [
         "openai_sdk/v1.53.0/structured_output_schemas/resume_extract_v4.json",
         "openai_sdk/v1.53.0/structured_output_schemas/lic_message_v3.json",
         "openai_sdk/v1.53.0/tool_calling_spec/full_tool_set_v2025.json",
         "anthropic_sdk/v0.34.2/tool_use_v2/exact_tool_format_we_send.json",
-        "google_vertex_sdk/v1.68.0/code_execution_tool_spec/gemini_code_interpreter_v2.json"
+        "google_vertex_sdk/v1.68.0/code_execution_tool_spec/gemini_code_interpreter_v2.json",
     ]
 
     for schema_file in schema_files:
@@ -219,7 +208,7 @@ def validate_schemas() -> dict[str, object]:
 
             results["schemas"][schema_file] = {
                 "valid": len(schema_errors) == 0,
-                "errors": schema_errors
+                "errors": schema_errors,
             }
 
             if schema_errors:
@@ -235,25 +224,22 @@ def validate_schemas() -> dict[str, object]:
 
     return results
 
+
 def check_environment_variables() -> dict[str, object]:
     """Check for required environment variables."""
-    results = {
-        "valid": True,
-        "errors": [],
-        "env_vars": {}
-    }
+    results = {"valid": True, "errors": [], "env_vars": {}}
 
     required_vars = {
         "OPENAI_API_KEY": "OpenAI client",
         "ANTHROPIC_API_KEY": "Anthropic client",
-        "GOOGLE_CLOUD_PROJECT": "Google Vertex AI"
+        "GOOGLE_CLOUD_PROJECT": "Google Vertex AI",
     }
 
     for var_name, description in required_vars.items():
         var_value = os.getenv(var_name)
         results["env_vars"][var_name] = {
             "present": var_value is not None,
-            "description": description
+            "description": description,
         }
 
         if var_value is None:
@@ -261,6 +247,7 @@ def check_environment_variables() -> dict[str, object]:
             # Don't fail validation for missing env vars, just warn
 
     return results
+
 
 def main():
     """Run all validation checks."""
@@ -278,37 +265,38 @@ def main():
 
     if mcp_results["errors"]:
         for error in mcp_results["errors"]:
-            pass # Placeholder for printing errors
+            pass  # Placeholder for printing errors
 
     if python_results["errors"]:
         for error in python_results["errors"]:
-            pass # Placeholder for printing errors
+            pass  # Placeholder for printing errors
 
     if schema_results["errors"]:
         for error in schema_results["errors"]:
-            pass # Placeholder for printing errors
+            pass  # Placeholder for printing errors
 
     missing_vars = [var for var, info in env_results["env_vars"].items() if not info["present"]]
     if missing_vars:
-        pass # Placeholder for printing missing env vars
+        pass  # Placeholder for printing missing env vars
 
     # Overall result
-    overall_valid = mcp_results['valid'] and python_results['valid'] and schema_results['valid']
+    overall_valid = mcp_results["valid"] and python_results["valid"] and schema_results["valid"]
 
     if overall_valid:
-        pass # Placeholder for success message
+        pass  # Placeholder for success message
     else:
-        pass # Placeholder for failure message
+        pass  # Placeholder for failure message
 
     # Summary statistics
-    total_files = len(python_results["files"]) \
-        + len(mcp_results["catalogs"]) \
-        + len(schema_results["schemas"])
+    total_files = (
+        len(python_results["files"]) + len(mcp_results["catalogs"]) + len(schema_results["schemas"])
+    )
     valid_files = sum(1 for f in python_results["files"].values() if f.get("valid", False))
     valid_catalogs = sum(1 for c in mcp_results["catalogs"].values() if c.get("valid", False))
     valid_schemas = sum(1 for s in schema_results["schemas"].values() if s.get("valid", False))
 
     return 0 if overall_valid else 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

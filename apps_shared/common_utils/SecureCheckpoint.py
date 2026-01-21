@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 
 class CheckpointIntegrityError(Exception):
     """Raised when checkpoint integrity validation fails."""
+
     pass
 
 
@@ -32,7 +33,7 @@ class SecureCheckpointManager:
         hop_id: str,
         checkpoint_dir: Path,
         encryption_key: bytes | None = None,
-        integrity_key: bytes | None = None
+        integrity_key: bytes | None = None,
     ):
         """Initialize the secure checkpoint manager.
 
@@ -90,11 +91,7 @@ class SecureCheckpointManager:
         Returns:
             Hexadecimal HMAC digest
         """
-        return hmac.new(
-            self.integrity_key,
-            data,
-            hashlib.sha256
-        ).hexdigest()
+        return hmac.new(self.integrity_key, data, hashlib.sha256).hexdigest()
 
     def _verify_hmac(self, data: bytes, expected_hmac: str) -> bool:
         """Verify HMAC-SHA256 for data integrity.
@@ -134,14 +131,14 @@ class SecureCheckpointManager:
                 "hop_id": self.hop_id,
                 "timestamp": time.time(),
                 "encrypted_data": base64.b64encode(encrypted_data).decode(),
-                "integrity_hmac": integrity_hmac
+                "integrity_hmac": integrity_hmac,
             }
 
             # Write to file with atomic operation
             checkpoint_file = self.checkpoint_dir / f"{self.hop_id}_{checkpoint.stage.value}.secure"
             temp_file = checkpoint_file.with_suffix(".tmp")
 
-            with open(temp_file, 'w') as f:
+            with open(temp_file, "w") as f:
                 json.dump(secure_checkpoint, f, indent=2)
 
             # Atomic rename
@@ -222,7 +219,9 @@ class SecureCheckpointManager:
 
         # Validate hop ID matches
         if "hop_id" in checkpoint_dict and checkpoint_dict["hop_id"] != self.hop_id:
-            raise CheckpointIntegrityError(f"Checkpoint hop ID mismatch: {checkpoint_dict['hop_id']}")
+            raise CheckpointIntegrityError(
+                f"Checkpoint hop ID mismatch: {checkpoint_dict['hop_id']}"
+            )
 
         return MicroCheckpoint(**checkpoint_dict)
 
@@ -271,10 +270,7 @@ class CheckpointManagerFactory:
 
     @classmethod
     def get_manager(
-        cls,
-        hop_id: str,
-        checkpoint_dir: Path,
-        use_global_key: bool = True
+        cls, hop_id: str, checkpoint_dir: Path, use_global_key: bool = True
     ) -> SecureCheckpointManager:
         """Get or create a checkpoint manager.
 
@@ -293,9 +289,7 @@ class CheckpointManagerFactory:
                     logger.info("Generated global checkpoint encryption key")
 
                 manager = SecureCheckpointManager(
-                    hop_id,
-                    checkpoint_dir,
-                    encryption_key=cls._global_key
+                    hop_id, checkpoint_dir, encryption_key=cls._global_key
                 )
             else:
                 manager = SecureCheckpointManager(hop_id, checkpoint_dir)

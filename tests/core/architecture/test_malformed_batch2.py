@@ -5,6 +5,7 @@ Test Suite: Batch 2 Complex Divergent Merges
 Verifies that Batch 2 agents have merged multiple orphans correctly
 and no top-level functions remain.
 """
+
 import ast
 import sys
 from pathlib import Path
@@ -15,10 +16,12 @@ sys.path.insert(0, str(PROJECT_ROOT))
 PASSED = 0
 FAILED = 0
 
+
 def test_pass(test_id: str, msg: str):
     global PASSED
     PASSED += 1
     print(f"  ✅ {test_id}: {msg}")
+
 
 def test_fail(test_id: str, msg: str):
     global FAILED
@@ -33,12 +36,18 @@ def test_batch2_complex_merges():
     print("=" * 70)
 
     targets = [
-        ("agentic_core/L3_orchestration/workflow_engines/ResumeOrchestratorAgent.py",
-         ['run', '_record_hop', 'heal_repository']),
-        ("agentic_core/L3_orchestration/workflow_engines/SignatureVerifierAgent.py",
-         ['execute', 'heal_repository']),
-        ("agentic_core/L3_orchestration/workflow_engines/TrackObservabilityCostAgent.py",
-         ['execute', 'heal_repository'])
+        (
+            "agentic_core/L3_orchestration/workflow_engines/ResumeOrchestratorAgent.py",
+            ["run", "_record_hop", "heal_repository"],
+        ),
+        (
+            "agentic_core/L3_orchestration/workflow_engines/SignatureVerifierAgent.py",
+            ["execute", "heal_repository"],
+        ),
+        (
+            "agentic_core/L3_orchestration/workflow_engines/TrackObservabilityCostAgent.py",
+            ["execute", "heal_repository"],
+        ),
     ]
 
     for rel_path, required_methods in targets:
@@ -51,15 +60,18 @@ def test_batch2_complex_merges():
             test_fail(f"{agent_name}", f"File not found: {rel_path}")
             continue
 
-        content = full_path.read_text(encoding='utf-8')
+        content = full_path.read_text(encoding="utf-8")
         lines = content.splitlines()
 
         # 1. Check for orphans (top-level functions)
         for method in required_methods:
             # Match exact method name (with opening paren to avoid partial matches)
-            orphans = [i+1 for i, l in enumerate(lines) if l.startswith(f"def {method}(")]
+            orphans = [i + 1 for i, l in enumerate(lines) if l.startswith(f"def {method}(")]
             if len(orphans) > 0:
-                test_fail(f"{agent_name}-{method}-ORPHAN", f"Top-level '{method}' still exists at lines: {orphans}")
+                test_fail(
+                    f"{agent_name}-{method}-ORPHAN",
+                    f"Top-level '{method}' still exists at lines: {orphans}",
+                )
             else:
                 test_pass(f"{agent_name}-{method}-ORPHAN", f"No top-level '{method}' found")
 
@@ -114,5 +126,6 @@ def main():
         print(f"\n  ❌ {FAILED} TESTS FAILED")
         return 1
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     sys.exit(main())

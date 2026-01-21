@@ -30,6 +30,7 @@ Date: January 19, 2026
 Phase: 1 - Foundation & Zero-Loss Protocols
 Phase 4 Enhancement: FileCache for persistent caching
 """
+
 from __future__ import annotations
 
 import json
@@ -46,6 +47,7 @@ Logger = logging.getLogger(__name__)
 # =============================================================================
 # Phase 4: FileCache - Persistent File Discovery Cache
 # =============================================================================
+
 
 class FileCache:
     """
@@ -83,9 +85,11 @@ class FileCache:
         """Load cache from disk if it exists."""
         if self.cache_path.exists():
             try:
-                with open(self.cache_path, encoding='utf-8') as f:
+                with open(self.cache_path, encoding="utf-8") as f:
                     data = json.load(f)
-                    Logger.debug(f"[FILE_CACHE] Loaded {len(data.get('files', []))} files from cache")
+                    Logger.debug(
+                        f"[FILE_CACHE] Loaded {len(data.get('files', []))} files from cache"
+                    )
                     return data
             except (OSError, json.JSONDecodeError) as e:
                 Logger.warning(f"[FILE_CACHE] Failed to load cache: {e}")
@@ -118,17 +122,13 @@ class FileCache:
         Args:
             files: List of file paths as strings
         """
-        self._data = {
-            "timestamp": time.time(),
-            "files": files,
-            "count": len(files)
-        }
+        self._data = {"timestamp": time.time(), "files": files, "count": len(files)}
 
         try:
             # Ensure parent directory exists
             self.cache_path.parent.mkdir(parents=True, exist_ok=True)
 
-            with open(self.cache_path, 'w', encoding='utf-8') as f:
+            with open(self.cache_path, "w", encoding="utf-8") as f:
                 json.dump(self._data, f, indent=2)
 
             Logger.debug(f"[FILE_CACHE] Updated cache with {len(files)} files")
@@ -177,7 +177,7 @@ class FileCache:
             "age_seconds": age,
             "file_count": len(self._data.get("files", [])),
             "cache_path": str(self.cache_path),
-            "expiry_seconds": self.expiry_seconds
+            "expiry_seconds": self.expiry_seconds,
         }
 
     def get_timestamp(self) -> float:
@@ -241,9 +241,7 @@ def get_global_cache(project_root: Path | None = None) -> FileCache:
 
 
 def get_python_files_cached(
-    project_root: Path,
-    include_tests: bool = False,
-    force_refresh: bool = False
+    project_root: Path, include_tests: bool = False, force_refresh: bool = False
 ) -> list[Path]:
     """
     Get Python files with automatic caching and auto-invalidation.
@@ -291,6 +289,7 @@ try:
     from agentic_core.config.blueprint_sovereign.constants import (
         DEFAULT_EXCLUDE_DIRS as SSOT_EXCLUDE_DIRS,
     )
+
     # Convert frozenset to set for compatibility
     DEFAULT_EXCLUDE_DIRS: set[str] = set(SSOT_EXCLUDE_DIRS)
 except ImportError:
@@ -328,7 +327,7 @@ def get_python_files(
     project_root: Path,
     include_tests: bool = False,
     exclude_dirs: set[str] | None = None,
-    include_dirs: set[str] | None = None
+    include_dirs: set[str] | None = None,
 ) -> list[Path]:
     """
     High-performance SSOT for Python file discovery.
@@ -362,13 +361,16 @@ def get_python_files(
         root_path = Path(root)
 
         # Filter out excluded directories (modifies dirs in-place to prevent traversal)
-        dirs[:] = [d for d in dirs if d not in all_excludes and not d.startswith('.')]
+        dirs[:] = [d for d in dirs if d not in all_excludes and not d.startswith(".")]
 
         # If include_dirs specified, filter to only those
         if include_dirs:
-            dirs[:] = [d for d in dirs if d in include_dirs or any(
-                str(root_path / d).endswith(inc) for inc in include_dirs
-            )]
+            dirs[:] = [
+                d
+                for d in dirs
+                if d in include_dirs
+                or any(str(root_path / d).endswith(inc) for inc in include_dirs)
+            ]
 
         for file in files:
             if not file.endswith(".py"):
@@ -390,11 +392,7 @@ def get_python_files(
     return active_files
 
 
-def get_files_by_layer(
-    project_root: Path,
-    layer: str,
-    include_tests: bool = False
-) -> list[Path]:
+def get_files_by_layer(project_root: Path, layer: str, include_tests: bool = False) -> list[Path]:
     """
     Get Python files for a specific L0-L6 layer.
 
@@ -412,7 +410,9 @@ def get_files_by_layer(
         45
     """
     if layer not in LAYER_DIRS:
-        Logger.warning(f"[SSOT_DISCOVERY] Unknown layer: {layer}. Valid layers: {list(LAYER_DIRS.keys())}")
+        Logger.warning(
+            f"[SSOT_DISCOVERY] Unknown layer: {layer}. Valid layers: {list(LAYER_DIRS.keys())}"
+        )
         return []
 
     layer_dir = project_root / "agentic_core" / LAYER_DIRS[layer]
@@ -424,10 +424,7 @@ def get_files_by_layer(
     return get_python_files(layer_dir, include_tests=include_tests)
 
 
-def get_agent_files(
-    project_root: Path,
-    include_tests: bool = False
-) -> list[Path]:
+def get_agent_files(project_root: Path, include_tests: bool = False) -> list[Path]:
     """
     Get all Python files that are likely agent implementations.
 
@@ -444,10 +441,7 @@ def get_agent_files(
     return [f for f in all_files if f.name.endswith("Agent.py")]
 
 
-def get_mixin_files(
-    project_root: Path,
-    include_tests: bool = False
-) -> list[Path]:
+def get_mixin_files(project_root: Path, include_tests: bool = False) -> list[Path]:
     """
     Get all Python files that are likely mixin implementations.
 
@@ -529,7 +523,7 @@ def compare_with_rglob(project_root: Path) -> dict[str, int]:
         path_parts = py_file.parts
         skip = False
         for part in path_parts:
-            if part in DEFAULT_EXCLUDE_DIRS or part.startswith('.'):
+            if part in DEFAULT_EXCLUDE_DIRS or part.startswith("."):
                 skip = True
                 break
         if skip:
@@ -559,7 +553,7 @@ def compare_with_rglob(project_root: Path) -> dict[str, int]:
         "rglob_count": rglob_count,
         "delta": abs(ssot_count - rglob_count),
         "only_in_ssot": list(only_in_ssot)[:5],  # Sample for debugging
-        "only_in_rglob": list(only_in_rglob)[:5]
+        "only_in_rglob": list(only_in_rglob)[:5],
     }
 
 
@@ -567,11 +561,12 @@ def compare_with_rglob(project_root: Path) -> dict[str, int]:
 # Phase 6: Extended Data File Discovery
 # =============================================================================
 
+
 def get_data_files(
     project_root: Path,
     extensions: list[str] | None = None,
     include_tests: bool = False,
-    exclude_dirs: set[str] | None = None
+    exclude_dirs: set[str] | None = None,
 ) -> list[Path]:
     """
     Phase 6: Extended SSOT discovery for non-Python data files.
@@ -597,7 +592,7 @@ def get_data_files(
         extensions = [".json", ".md", ".yaml", ".yml"]
 
     # Normalize extensions to include leading dot
-    extensions = [ext if ext.startswith('.') else f'.{ext}' for ext in extensions]
+    extensions = [ext if ext.startswith(".") else f".{ext}" for ext in extensions]
 
     # Merge default excludes with any additional excludes
     all_excludes = DEFAULT_EXCLUDE_DIRS.copy()
@@ -613,7 +608,7 @@ def get_data_files(
         root_path = Path(root)
 
         # Filter out excluded directories (modifies dirs in-place to prevent traversal)
-        dirs[:] = [d for d in dirs if d not in all_excludes and not d.startswith('.')]
+        dirs[:] = [d for d in dirs if d not in all_excludes and not d.startswith(".")]
 
         for file in files:
             file_path = root_path / file
@@ -629,14 +624,13 @@ def get_data_files(
 
             data_files.append(file_path)
 
-    Logger.debug(f"[SSOT_DISCOVERY] Found {len(data_files)} data files with extensions {extensions}")
+    Logger.debug(
+        f"[SSOT_DISCOVERY] Found {len(data_files)} data files with extensions {extensions}"
+    )
     return data_files
 
 
-def get_json_files(
-    project_root: Path,
-    include_tests: bool = False
-) -> list[Path]:
+def get_json_files(project_root: Path, include_tests: bool = False) -> list[Path]:
     """
     Convenience function to get all JSON files.
 
@@ -650,10 +644,7 @@ def get_json_files(
     return get_data_files(project_root, extensions=[".json"], include_tests=include_tests)
 
 
-def get_markdown_files(
-    project_root: Path,
-    include_tests: bool = False
-) -> list[Path]:
+def get_markdown_files(project_root: Path, include_tests: bool = False) -> list[Path]:
     """
     Convenience function to get all Markdown files.
 
@@ -667,10 +658,7 @@ def get_markdown_files(
     return get_data_files(project_root, extensions=[".md"], include_tests=include_tests)
 
 
-def compare_data_files_with_rglob(
-    project_root: Path,
-    extension: str = ".json"
-) -> dict[str, Any]:
+def compare_data_files_with_rglob(project_root: Path, extension: str = ".json") -> dict[str, Any]:
     """
     Compare get_data_files() with raw rglob for verification.
 
@@ -695,7 +683,7 @@ def compare_data_files_with_rglob(
         path_parts = data_file.parts
         skip = False
         for part in path_parts:
-            if part in DEFAULT_EXCLUDE_DIRS or part.startswith('.'):
+            if part in DEFAULT_EXCLUDE_DIRS or part.startswith("."):
                 skip = True
                 break
         if skip:
@@ -713,7 +701,7 @@ def compare_data_files_with_rglob(
         "rglob_count": rglob_count,
         "delta": abs(ssot_count - rglob_count),
         "only_in_ssot": list(only_in_ssot)[:5],
-        "only_in_rglob": list(only_in_rglob)[:5]
+        "only_in_rglob": list(only_in_rglob)[:5],
     }
 
 

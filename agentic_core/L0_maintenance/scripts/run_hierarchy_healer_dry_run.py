@@ -38,14 +38,15 @@ def main():
     print(f"Folders that would be removed: {result['folders_removed']}")
     print(f"Errors encountered: {len(result['errors'])}")
 
-    if result['errors']:
+    if result["errors"]:
         print("\nErrors:")
-        for error in result['errors']:
+        for error in result["errors"]:
             print(f"  - {error}")
 
     print("\n" + "=" * 80)
     print("DRY RUN COMPLETE - No changes were made")
     print("=" * 80)
+
 
 if __name__ == "__main__":
     main()

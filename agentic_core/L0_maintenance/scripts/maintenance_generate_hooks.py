@@ -19,7 +19,7 @@ sys.path.insert(0, str(project_root))
 from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
 
 
-def sync_pre_commit(dry_run: bool=False) -> Any:
+def sync_pre_commit(dry_run: bool = False) -> Any:
     """
     Synchronize .pre-commit-config.yaml with SSOT from structure_blueprint.py
 
@@ -27,63 +27,78 @@ def sync_pre_commit(dry_run: bool=False) -> Any:
         dry_run: If True, only print changes without modifying files
     """
     sovereign_roots: Any = list(SOVEREIGN_REGISTRY.keys())
-    system_folders: Any = ['data', 'archives']
+    system_folders: Any = ["data", "archives"]
     all_roots: Any = sovereign_roots + system_folders
-    roots_pattern: Any = '|'.join(sovereign_roots)
-    all_roots_pattern: Any = '|'.join(all_roots)
-    exclude_pattern: Any = f'^({all_roots_pattern})/'
-    files_pattern: Any = f'^({roots_pattern})/.*\\.py$'
-    print('[*] Syncing Pre-commit Config with SSOT...')
+    roots_pattern: Any = "|".join(sovereign_roots)
+    all_roots_pattern: Any = "|".join(all_roots)
+    exclude_pattern: Any = f"^({all_roots_pattern})/"
+    files_pattern: Any = f"^({roots_pattern})/.*\\.py$"
+    print("[*] Syncing Pre-commit Config with SSOT...")
     print(f"   [SSOT] Sovereign Roots: {', '.join(sovereign_roots)}")
-    print(f'   [PATTERN] Exclude: {exclude_pattern}')
-    print(f'   [PATTERN] Files: {files_pattern}')
-    config_path: Any = project_root / 'agentic_core' / 'L0_maintenance' / 'scripts' / '.pre-commit-config.yaml'
+    print(f"   [PATTERN] Exclude: {exclude_pattern}")
+    print(f"   [PATTERN] Files: {files_pattern}")
+    config_path: Any = (
+        project_root / "agentic_core" / "L0_maintenance" / "scripts" / ".pre-commit-config.yaml"
+    )
     if not config_path.exists():
-        print(f'   [!] Config not found at: {config_path}')
-        print('   [!] Checking alternate location...')
-        config_path: Any = project_root / '.pre-commit-config.yaml'
+        print(f"   [!] Config not found at: {config_path}")
+        print("   [!] Checking alternate location...")
+        config_path: Any = project_root / ".pre-commit-config.yaml"
         if not config_path.exists():
-            print('   [X] No .pre-commit-config.yaml found!')
+            print("   [X] No .pre-commit-config.yaml found!")
             return False
-    print(f'   [OK] Found config at: {config_path}')
-    with open(config_path, encoding='utf-8') as f:
+    print(f"   [OK] Found config at: {config_path}")
+    with open(config_path, encoding="utf-8") as f:
         content: Any = f.read()
-    replacements: Any = [('exclude: \\^[(]agentic_core\\|apps_lic\\|apps_rg\\|apps_shared\\|schemas\\|prompt_governance\\|observability\\|config\\|data\\|archives[)]/', f'exclude: ^({all_roots_pattern})/'), ('files: \\^[(]agentic_core\\|apps_lic\\|apps_rg\\|apps_shared\\|schemas\\|prompt_governance\\|observability\\|config[)]/\\.\\*\\\\\\.py\\$', f'files: ^({roots_pattern})/.*\\.py$')]
+    replacements: Any = [
+        (
+            "exclude: \\^[(]agentic_core\\|apps_lic\\|apps_rg\\|apps_shared\\|schemas\\|prompt_governance\\|observability\\|config\\|data\\|archives[)]/",
+            f"exclude: ^({all_roots_pattern})/",
+        ),
+        (
+            "files: \\^[(]agentic_core\\|apps_lic\\|apps_rg\\|apps_shared\\|schemas\\|prompt_governance\\|observability\\|config[)]/\\.\\*\\\\\\.py\\$",
+            f"files: ^({roots_pattern})/.*\\.py$",
+        ),
+    ]
     changes_made: Any = 0
     for pattern, replacement in replacements:
         matches: Any = re.findall(pattern, content)
         if matches:
             content: Any = re.sub(pattern, replacement, content)
             changes_made += len(matches)
-            print(f'   [✓] Updated {len(matches)} pattern(s)')
+            print(f"   [✓] Updated {len(matches)} pattern(s)")
     if changes_made == 0:
-        print('   [OK] No changes needed - config already synchronized')
+        print("   [OK] No changes needed - config already synchronized")
         return True
     if dry_run:
-        print(f'\n   [DRY-RUN] Would update {changes_made} pattern(s)')
-        print('\n--- DIFF ---')
-        print('Original patterns found, would be replaced with SSOT-derived patterns')
+        print(f"\n   [DRY-RUN] Would update {changes_made} pattern(s)")
+        print("\n--- DIFF ---")
+        print("Original patterns found, would be replaced with SSOT-derived patterns")
         return True
-    with open(config_path, 'w', encoding='utf-8') as f:
+    with open(config_path, "w", encoding="utf-8") as f:
         f.write(content)
-    print(f'   [✓] Updated {changes_made} pattern(s) in {config_path.name}')
-    print('   [SUCCESS] Pre-commit config synchronized with SSOT')
+    print(f"   [✓] Updated {changes_made} pattern(s) in {config_path.name}")
+    print("   [SUCCESS] Pre-commit config synchronized with SSOT")
     return True
+
 
 def generate_sovereign_list() -> Any:
     """Generate a formatted list of sovereign roots for documentation"""
     sovereign_roots: Any = list(SOVEREIGN_REGISTRY.keys())
-    print('\n[SSOT] Current Sovereign Registry:')
+    print("\n[SSOT] Current Sovereign Registry:")
     for i, root in enumerate(sovereign_roots, 1):
-        depth: Any = SOVEREIGN_REGISTRY[root]['depth']
-        subfolders: Any = len(SOVEREIGN_REGISTRY[root]['subfolders'])
-        print(f'  {i:2d}. {root:<25} (Depth: {depth}, Subfolders: {subfolders})')
-    print(f'\nTotal: {len(sovereign_roots)} sovereign roots')
-if __name__ == '__main__':
+        depth: Any = SOVEREIGN_REGISTRY[root]["depth"]
+        subfolders: Any = len(SOVEREIGN_REGISTRY[root]["subfolders"])
+        print(f"  {i:2d}. {root:<25} (Depth: {depth}, Subfolders: {subfolders})")
+    print(f"\nTotal: {len(sovereign_roots)} sovereign roots")
+
+
+if __name__ == "__main__":
     import argparse
-    parser: Any = argparse.ArgumentParser(description='Sync pre-commit config with SSOT')
-    parser.add_argument('--dry-run', action='store_true', help='Show changes without applying')
-    parser.add_argument('--list', action='store_true', help='List current sovereign roots')
+
+    parser: Any = argparse.ArgumentParser(description="Sync pre-commit config with SSOT")
+    parser.add_argument("--dry-run", action="store_true", help="Show changes without applying")
+    parser.add_argument("--list", action="store_true", help="List current sovereign roots")
     args: Any = parser.parse_args()
     if args.list:
         generate_sovereign_list()

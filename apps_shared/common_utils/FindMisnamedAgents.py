@@ -16,7 +16,7 @@ import warnings
 warnings.warn(
     "find_misnamed_agents.py is DEPRECATED. Use full_agent_discovery.py instead.",
     DeprecationWarning,
-    stacklevel=2
+    stacklevel=2,
 )
 import ast
 from pathlib import Path
@@ -27,15 +27,27 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 
 PROJECT_ROOT = Path(__file__).parent.parent
 
-AGENT_SUFFIXES = {'Agent', 'Handler', 'Manager', 'Controller', 'Executor', 'Validator',
-                  'Orchestrator', 'Governor', 'Enforcer', 'Analyzer', 'Sentinel'}
+AGENT_SUFFIXES = {
+    "Agent",
+    "Handler",
+    "Manager",
+    "Controller",
+    "Executor",
+    "Validator",
+    "Orchestrator",
+    "Governor",
+    "Enforcer",
+    "Analyzer",
+    "Sentinel",
+}
 
-EXCLUDE = {'Mixin', 'Base', 'Abstract', 'Protocol'}
+EXCLUDE = {"Mixin", "Base", "Abstract", "Protocol"}
+
 
 def has_agent_class(path: Path) -> list:
     """Return agent class names in file."""
     try:
-        tree = ast.parse(path.read_text(encoding='utf-8', errors='ignore'))
+        tree = ast.parse(path.read_text(encoding="utf-8", errors="ignore"))
     except:
         return []
 
@@ -48,6 +60,7 @@ def has_agent_class(path: Path) -> list:
                 agents.append(node.name)
     return agents
 
+
 # Scan directories
 scan_dirs = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR]
 misnamed = []
@@ -58,21 +71,21 @@ for d in scan_dirs:
     if not dir_path.exists():
         continue
     for py_file in get_python_files(dir_path):
-        if '__pycache__' in str(py_file):
+        if "__pycache__" in str(py_file):
             continue
 
         agents = has_agent_class(py_file)
         if agents:
-            if 'Agent' in py_file.name:
+            if "Agent" in py_file.name:
                 properly_named += 1
             else:
                 misnamed.append((py_file.relative_to(PROJECT_ROOT), agents))
 
 print(f"Properly named (*Agent.py with agent classes): {properly_named}")
 print(f"Misnamed (contains agents but no 'Agent' in filename): {len(misnamed)}")
-print(f"\n{'='*60}")
+print(f"\n{'=' * 60}")
 print("FILES NEEDING RENAME:")
-print(f"{'='*60}\n")
+print(f"{'=' * 60}\n")
 
 for path, classes in sorted(misnamed)[:50]:  # Show first 50
     print(f"{path}")

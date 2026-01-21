@@ -70,8 +70,10 @@ class CircuitBreaker:
             else:
                 return False
 
-        if (self.state == CircuitBreakerState.HALF_OPEN and
-            self.success_count >= self.half_open_max_calls):
+        if (
+            self.state == CircuitBreakerState.HALF_OPEN
+            and self.success_count >= self.half_open_max_calls
+        ):
             self.state = CircuitBreakerState.CLOSED
             self.failure_count = 0
             self.success_count = 0
@@ -82,8 +84,10 @@ class CircuitBreaker:
         """Record a successful execution."""
         self.success_count += 1
 
-        if (self.state in {CircuitBreakerState.OPEN, CircuitBreakerState.HALF_OPEN} and
-            self.success_count >= self.half_open_max_calls):
+        if (
+            self.state in {CircuitBreakerState.OPEN, CircuitBreakerState.HALF_OPEN}
+            and self.success_count >= self.half_open_max_calls
+        ):
             self.state = CircuitBreakerState.CLOSED
             self.failure_count = 0
             self.success_count = 0

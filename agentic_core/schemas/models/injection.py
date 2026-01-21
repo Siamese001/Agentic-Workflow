@@ -14,6 +14,7 @@ from pydantic import BaseModel, Field
 
 class InjectionType(str, Enum):
     """Types of prompt injections."""
+
     SYSTEM = "system"
     USER = "user"
     CONTEXT = "context"
@@ -22,14 +23,18 @@ class InjectionType(str, Enum):
     SAFETY = "safety"
     OUTPUT = "output"
 
+
 class InjectionScope(BaseModel):
     """Scope defining where an injection should be applied."""
+
     hop_types: list[str] = Field(default_factory=list)
     stages: list[str] = Field(default_factory=list)
     contexts: dict[str, Any] = Field(default_factory=dict)
 
+
 class InjectionPattern(BaseModel):
     """A single prompt injection pattern template."""
+
     id: str
     name: str
     type: InjectionType

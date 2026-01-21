@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: memory, orchestrator, state, workflow
@@ -6,9 +5,9 @@
 
 import ast
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
-'Brief description of functionality and purpose.'
+"Brief description of functionality and purpose."
 from pathlib import Path
 from typing import Any
 
@@ -32,7 +31,8 @@ class InferenceTypeHintAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
     - Prompt SubAtomicEngine for precise annotations
     - Apply via AST + unparse (preserves formatting)
     """
-    PROMPT_TEMPLATE: str = '\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\nAdd precise Python type hints to the following function/method.\n\nRules:\n- Use concrete types when possible (List[str], Dict[str, int], etc.)\n- Use from __future__ import annotations if needed\n- Preserve all existing code, comments, and formatting\n- Only modify type annotations (parameters and return)\n- If uncertain, use Any from typing\n\nOutput ONLY the fully annotated function (no explanations, no markdown).\n\nFUNCTION:\n{code}\n'
+
+    PROMPT_TEMPLATE: str = "\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\nAdd precise Python type hints to the following function/method.\n\nRules:\n- Use concrete types when possible (List[str], Dict[str, int], etc.)\n- Use from __future__ import annotations if needed\n- Preserve all existing code, comments, and formatting\n- Only modify type annotations (parameters and return)\n- If uncertain, use Any from typing\n\nOutput ONLY the fully annotated function (no explanations, no markdown).\n\nFUNCTION:\n{code}\n"
 
     def __init__(self, ctx: Any, project_root: str | None = None) -> None:
         """
@@ -74,63 +74,93 @@ class InferenceTypeHintAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
             Dict with healed status and functions annotated count
         """
         ctx = ctx or self.ctx
-        if not getattr(ctx, 'RUN_HIERARCHY_HEALING', False):
-            return {'healed': False}
-        if not hasattr(ctx, 'engine') or ctx.engine is None:
-            print('   [!] InferenceTypeHintAgent: SubAtomicEngine not available')
-            return {'healed': False}
+        if not getattr(ctx, "RUN_HIERARCHY_HEALING", False):
+            return {"healed": False}
+        if not hasattr(ctx, "engine") or ctx.engine is None:
+            print("   [!] InferenceTypeHintAgent: SubAtomicEngine not available")
+            return {"healed": False}
         try:
-            source: str = file_path.read_text(encoding='utf-8')
+            source: str = file_path.read_text(encoding="utf-8")
             tree: ast.Module = ast.parse(source)
             targets: list[dict] = []
             for node in ast.walk(tree):
                 if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
-                    if node.name.startswith('_'):
+                    if node.name.startswith("_"):
                         continue
-                    missing_param: bool = any(arg.annotation is None for arg in node.args.args if arg.arg not in ('self', 'cls'))
+                    missing_param: bool = any(
+                        arg.annotation is None
+                        for arg in node.args.args
+                        if arg.arg not in ("self", "cls")
+                    )
                     missing_return: bool = node.returns is None
                     if missing_param or missing_return:
                         code_segment: str | None = ast.get_source_segment(source, node)
                         if code_segment:
-                            targets.append({'node': node, 'code': code_segment, 'lineno': node.lineno})
+                            targets.append(
+                                {"node": node, "code": code_segment, "lineno": node.lineno}
+                            )
             if not targets:
-                return {'healed': False}
+                return {"healed": False}
             healed_count: Any = 0
             lines: Any = source.splitlines(keepends=True)
             for target in reversed(targets):
-                prompt: Any = self.PROMPT_TEMPLATE.format(code=target['code'])
+                prompt: Any = self.PROMPT_TEMPLATE.format(code=target["code"])
                 try:
-                    inferred_code: Any = await ctx.engine.resilient_mutation(file_path=str(file_path), code=target['code'], Task=prompt, round_num=1, fission_active=False)
+                    inferred_code: Any = await ctx.engine.resilient_mutation(
+                        file_path=str(file_path),
+                        code=target["code"],
+                        Task=prompt,
+                        round_num=1,
+                        fission_active=False,
+                    )
                     if isinstance(inferred_code, str):
                         inferred_code: Any = inferred_code.strip()
-                        if inferred_code.startswith('```'):
-                            inferred_code: Any = '\n'.join(inferred_code.splitlines()[1:-1])
-                    start_idx: Any = target['lineno'] - 1
-                    end_idx: Any = start_idx + target['code'].count('\n') + 1
-                    original_block: Any = ''.join(lines[start_idx:end_idx])
+                        if inferred_code.startswith("```"):
+                            inferred_code: Any = "\n".join(inferred_code.splitlines()[1:-1])
+                    start_idx: Any = target["lineno"] - 1
+                    end_idx: Any = start_idx + target["code"].count("\n") + 1
+                    original_block: Any = "".join(lines[start_idx:end_idx])
                     if inferred_code and inferred_code != original_block.strip():
-                        indent: Any = lines[start_idx][:len(lines[start_idx]) - len(lines[start_idx].lstrip())]
-                        indented_inferred: Any = '\n'.join((indent + l if i > 0 else l for i, l in enumerate(inferred_code.splitlines())))
-                        lines[start_idx:end_idx] = [indented_inferred + '\n']
+                        indent: Any = lines[start_idx][
+                            : len(lines[start_idx]) - len(lines[start_idx].lstrip())
+                        ]
+                        indented_inferred: Any = "\n".join(
+                            (
+                                indent + l if i > 0 else l
+                                for i, l in enumerate(inferred_code.splitlines())
+                            )
+                        )
+                        lines[start_idx:end_idx] = [indented_inferred + "\n"]
                         healed_count += 1
                 except Exception as e:
-                    print(f"      [!] LLM inference failed for {file_path.name}:{target['lineno']}: {e}")
+                    print(
+                        f"      [!] LLM inference failed for {file_path.name}:{target['lineno']}: {e}"
+                    )
                     continue
             if healed_count > 0:
-                new_content: Any = ''.join(lines)
-                file_path.write_text(new_content, encoding='utf-8')
-                message: Any = f'Inferred {healed_count} precise type hint(s) via LLM'
-                print(f'      [HEALED] {file_path.name}: {message}')
+                new_content: Any = "".join(lines)
+                file_path.write_text(new_content, encoding="utf-8")
+                message: Any = f"Inferred {healed_count} precise type hint(s) via LLM"
+                print(f"      [HEALED] {file_path.name}: {message}")
                 ctx.report(self.__class__.__name__, 18, True, message)
-                return {'status': 'complete', 'added_hints': len(targets)}
-            return {'healed': False}
+                return {"status": "complete", "added_hints": len(targets)}
+            return {"healed": False}
         except Exception as e:
-            ctx.report(self.__class__.__name__, 18, False, f'Inference healing failed: {str(e)[:100]}')
-            return {'healed': False}
+            ctx.report(
+                self.__class__.__name__, 18, False, f"Inference healing failed: {str(e)[:100]}"
+            )
+            return {"healed": False}
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """Operational validator - requires LLM context."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -146,6 +176,7 @@ class InferenceTypeHintAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
             return {"skipped": 1, "requires_llm": True}
         finally:
             _call_path.discard(agent_name)
+
 
 def get_inference_type_hint_agent() -> Any:
     """Brief description of functionality and purpose."""

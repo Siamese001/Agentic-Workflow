@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, state, workflow
@@ -25,7 +24,8 @@ from agentic_core.utils.core_extensions.subatomic_testing_mixin import Subatomic
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger: Any = logging.getLogger(__name__)
-layer_dirs: Any = set(SOVEREIGN_REGISTRY['agentic_core']['subfolders'])
+layer_dirs: Any = set(SOVEREIGN_REGISTRY["agentic_core"]["subfolders"])
+
 
 @dataclass
 class ArchitectureGovernorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
@@ -34,7 +34,7 @@ class ArchitectureGovernorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerM
     Ensures code follows canonical architectural patterns and layer boundaries.
     """
 
-    def __init__(self, project_root: Path=None) -> None:
+    def __init__(self, project_root: Path = None) -> None:
         """
         Initialize the ArchitectureGovernorAgent.
 
@@ -46,7 +46,14 @@ class ArchitectureGovernorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerM
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L3 orchestration agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -79,12 +86,12 @@ class ArchitectureGovernorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerM
         try:
             rel_path: Any = file_path.relative_to(self.project_root)
             parts: Any = rel_path.parts
-            if len(parts) > 1 and parts[0] == 'agentic_core':
+            if len(parts) > 1 and parts[0] == "agentic_core":
                 if len(parts) > 2 and parts[1] in LAYER_DIRS:
-                    return (True, f'Valid layer structure: {parts[1]}')
-            return (False, 'File outside layer structure')
+                    return (True, f"Valid layer structure: {parts[1]}")
+            return (False, "File outside layer structure")
         except ValueError:
-            return (False, 'File outside project root')
+            return (False, "File outside project root")
 
     def validate_architectural_patterns(self, file_path: Path) -> dict[str, Any]:
         """
@@ -97,7 +104,12 @@ class ArchitectureGovernorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerM
             Dictionary with validation results
         """
         is_valid, reason = self.validate_layer_boundaries(file_path)
-        return {'file': str(file_path), 'valid': is_valid, 'reason': reason, 'violations': self.violations}
+        return {
+            "file": str(file_path),
+            "valid": is_valid,
+            "reason": reason,
+            "violations": self.violations,
+        }
 
     def run_validation(self, files: list[Path]) -> dict[str, Any]:
         """
@@ -114,6 +126,6 @@ class ArchitectureGovernorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerM
         for file_path in files:
             result: Any = self.validate_architectural_patterns(file_path)
             results.append(result)
-            if not result['valid']:
+            if not result["valid"]:
                 total_violations += 1
-        return {'total_files': len(files), 'total_violations': total_violations, 'results': results}
+        return {"total_files": len(files), "total_violations": total_violations, "results": results}

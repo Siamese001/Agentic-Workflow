@@ -7,6 +7,7 @@ via MD5 hash comparison.
 
 DO NOT MODIFY - Used for testing duplicate detection.
 """
+
 from __future__ import annotations
 
 

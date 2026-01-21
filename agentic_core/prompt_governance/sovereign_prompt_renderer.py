@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import os
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
-'Brief description of functionality and purpose.'
+"Brief description of functionality and purpose."
 from pathlib import Path
 from typing import Any
 
@@ -14,11 +14,14 @@ from jinja2 import Environment, FileSystemLoader, StrictUndefined, select_autoes
 
 # Import for semantic deduplication awareness
 
+
 # [PHASE 20] DEPRECATION: void_compliance.py removed - using LocationAgent
 def validate_file_location(file_path, project_root):
     """Bridge to LocationAgent."""
     from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+
     return LocationAgent(project_root).validate_file_location(file_path)
+
 
 class SovereignPromptRenderer:
     """
@@ -30,53 +33,83 @@ class SovereignPromptRenderer:
     - Enforce sovereignty: no inline prompt strings > 50 lines outside this layer
     - Provide typed context injection for downstream agents
     """
-    TEMPLATE_ROOT: Any = Path('C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates')
+
+    TEMPLATE_ROOT: Any = Path(
+        "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates"
+    )
 
     def __init__(self):
         if not self.TEMPLATE_ROOT.exists():
             os.makedirs(self.TEMPLATE_ROOT, exist_ok=True)
-        self.env = Environment(loader=FileSystemLoader(str(self.TEMPLATE_ROOT)), autoescape=select_autoescape(['html', 'xml']), trim_blocks=True, lstrip_blocks=True, keep_trailing_newline=True, undefined=StrictUndefined)
+        self.env = Environment(
+            loader=FileSystemLoader(str(self.TEMPLATE_ROOT)),
+            autoescape=select_autoescape(["html", "xml"]),
+            trim_blocks=True,
+            lstrip_blocks=True,
+            keep_trailing_newline=True,
+            undefined=StrictUndefined,
+        )
 
-    def render(self, template_name: str, context: dict[str, Any] | None=None, metadata: dict[str, Any] | None=None) -> str:
+    def render(
+        self,
+        template_name: str,
+        context: dict[str, Any] | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> str:
         """
         Render a standard sovereign instructional prompt.
         """
         context: Any = context or {}
         metadata: Any = metadata or {}
-        full_context: Any = {**context, '_sovereign_metadata': {'renderer': self.__class__.__name__, 'template': template_name, 'root': str(self.TEMPLATE_ROOT), **metadata}}
+        full_context: Any = {
+            **context,
+            "_sovereign_metadata": {
+                "renderer": self.__class__.__name__,
+                "template": template_name,
+                "root": str(self.TEMPLATE_ROOT),
+                **metadata,
+            },
+        }
         try:
             template: Any = self.env.get_template(template_name)
             rendered: Any = template.render(**full_context)
-            return rendered.strip() + '\n'
+            return rendered.strip() + "\n"
         except Exception as e:
             raise RuntimeError(f"[PROMPT RENDERING FAILURE] Template '{template_name}': {e}")
 
-    def render_tagentic(self, base_template: str, fragments: list[str], context: dict[str, Any] | None=None) -> str:
+    def render_tagentic(
+        self, base_template: str, fragments: list[str], context: dict[str, Any] | None = None
+    ) -> str:
         """
         Tag-based agentic composition: combine meta-prompt + instructional fragments.
         Provides clear architectural cues for high-precision CoT.
         """
         context: Any = context or {}
         try:
-            base: Any = self.env.get_template(f'../meta_prompts/{base_template}').render(**context)
+            base: Any = self.env.get_template(f"../meta_prompts/{base_template}").render(**context)
         except Exception as e:
-            raise RuntimeError(f'[META-PROMPT FAILURE] {base_template}: {e}')
+            raise RuntimeError(f"[META-PROMPT FAILURE] {base_template}: {e}")
         assembled: Any = [base]
         for frag in fragments:
             try:
                 fragment_text: Any = self.env.get_template(frag).render(**context)
-                assembled.append(f'\n<INSTRUCTIONAL_FRAGMENT:{frag}>\n{fragment_text}\n</INSTRUCTIONAL_FRAGMENT>')
+                assembled.append(
+                    f"\n<INSTRUCTIONAL_FRAGMENT:{frag}>\n{fragment_text}\n</INSTRUCTIONAL_FRAGMENT>"
+                )
             except Exception:
                 continue
-        return '\n'.join(assembled)
+        return "\n".join(assembled)
 
     @staticmethod
     def list_available_templates() -> list[str]:
         """Utility for introspection and MCP routing."""
         # Final True 20: Use ssot_discovery instead of rglob
+
     from agentic_core.utils.ssot_discovery import get_data_files
-    jinja_files = get_data_files(root, extensions=['.jinja'])
+
+    jinja_files = get_data_files(root, extensions=[".jinja"])
     return [p.relative_to(root).as_posix() for p in jinja_files if p.is_file()]
+
 
 def get_sovereign_prompt_renderer() -> SovereignPromptRenderer:
     """Brief description of functionality and purpose."""

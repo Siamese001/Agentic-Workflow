@@ -32,6 +32,7 @@ class ExecutionContext:
     Usage:
         from apps_shared.utils.common_patterns import ExecutionContext
     """
+
     mission_id: str = ""
     step_id: str = ""
     timestamp: datetime = field(default_factory=datetime.utcnow)
@@ -68,7 +69,9 @@ class BaseRefiner:
         self.config = config or {}
         self.weights = self.config.get("weights", {})
 
-    def refine(self, data: dict[str, Any], weights: dict[str, float] | None = None) -> dict[str, Any]:
+    def refine(
+        self, data: dict[str, Any], weights: dict[str, float] | None = None
+    ) -> dict[str, Any]:
         """
         Apply refinement weights to data.
 
@@ -87,7 +90,7 @@ class BaseRefiner:
                 if isinstance(result[key], (int, float)):
                     result[key] = result[key] * weight
                 elif isinstance(result[key], list):
-                    result[key] = result[key][:int(len(result[key]) * weight)]
+                    result[key] = result[key][: int(len(result[key]) * weight)]
 
         result["_refined"] = True
         result["_weights_applied"] = active_weights
@@ -144,8 +147,8 @@ class BaseTaskExecutor(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         raise NotImplementedError("Subclass must implement _do_execute")
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()
 
 
 class BaseDiagnoser:
@@ -199,6 +202,7 @@ class PolicyResult:
     Usage:
         from apps_shared.utils.common_patterns import PolicyResult
     """
+
     policy_name: str
     passed: bool
     verdict: str = "unknown"

@@ -3,6 +3,7 @@
 Live diagnosis of user's dashboard issue.
 Checks what's actually happening when browser loads the dashboard.
 """
+
 import time
 
 from playwright.sync_api import sync_playwright
@@ -42,13 +43,13 @@ def diagnose():
             }
         """)
 
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("DIAGNOSIS RESULTS")
-        print("="*70)
+        print("=" * 70)
 
         print("\n1. Data Variables:")
         for key, value in check.items():
-            status = "✅" if value == 'EXISTS' or (isinstance(value, int) and value > 0) else "❌"
+            status = "✅" if value == "EXISTS" or (isinstance(value, int) and value > 0) else "❌"
             print(f"   {status} {key}: {value}")
 
         print(f"\n2. Console Messages ({len(console_messages)}):")
@@ -69,6 +70,7 @@ def diagnose():
 
         input("\nPress Enter to close browser...")
         browser.close()
+
 
 if __name__ == "__main__":
     diagnose()

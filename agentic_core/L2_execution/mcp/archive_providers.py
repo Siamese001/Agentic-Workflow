@@ -10,6 +10,7 @@ from enum import Enum
 
 class ProviderType(Enum):
     """Supported MCP Provider types."""
+
     STUB = "stub"
     REDIS = "redis"
     CHROMADB = "chromadb"

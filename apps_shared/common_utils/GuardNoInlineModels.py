@@ -12,32 +12,51 @@ import sys
 # Logger Setup
 Logger = logging.getLogger("sovereign.models")
 handler = logging.StreamHandler(sys.stderr)
-handler.setFormatter(logging.Formatter("[MODELS] %(levelname)s %(asctime)s | %(message)s", "%H:%M:%S"))
+handler.setFormatter(
+    logging.Formatter("[MODELS] %(levelname)s %(asctime)s | %(message)s", "%H:%M:%S")
+)
 Logger.addHandler(handler)
 Logger.setLevel(logging.INFO)
 
 # NAMING FIXED: CONTRACT_SIGNALS → contract_signals
-contract_signals = ("Profile", "Config", "State", "Context", "Result", "Message", "Request", "Response")
+contract_signals = (
+    "Profile",
+    "Config",
+    "State",
+    "Context",
+    "Result",
+    "Message",
+    "Request",
+    "Response",
+)
 # NAMING FIXED: EXEMPT → exempt
 exempt = {"agentic_core/schemas/models/core_contracts.py"}
 
+
 # NAMING FIXED: ModelVisitor → ModelVisitor
 class ModelVisitor(ast.NodeVisitor):
-    '''Brief description of functionality and purpose.'''
+    """Brief description of functionality and purpose."""
 
     def visit_ClassDef(self, node):
-
-        is_pydantic = any(isinstance(base, ast.Name) and base.id in {"BaseModel", "RootModel"} for base in node.bases)
+        is_pydantic = any(
+            isinstance(base, ast.Name) and base.id in {"BaseModel", "RootModel"}
+            for base in node.bases
+        )
         is_contract = any(node.name.endswith(s) for s in CONTRACT_SIGNALS)
-        has_dataclass = any(isinstance(d, ast.Name) and d.id == "dataclass" for d in node.decorator_list)
+        has_dataclass = any(
+            isinstance(d, ast.Name) and d.id == "dataclass" for d in node.decorator_list
+        )
 
         if is_pydantic or (has_dataclass and is_contract):
-            Logger.error(f"BLOCKED: Inline contract '{node.name}' found at L{node.lineno}. Migrate to core_contracts.py.")
+            Logger.error(
+                f"BLOCKED: Inline contract '{node.name}' found at L{node.lineno}. Migrate to core_contracts.py."
+            )
             sys.exit(1)
         self.generic_visit(node)
 
+
 def main():
-    '''Brief description of functionality and purpose.'''
+    """Brief description of functionality and purpose."""
 
     for arg in sys.argv[1:]:
         if arg in EXEMPT or "tests/" in arg:
@@ -49,6 +68,7 @@ def main():
                 ModelVisitor().visit(ast.parse(f.read()))
             except Exception as e:
                 Logger.warning(f"Parse Warning in {arg}: {e}")
+
 
 if __name__ == "__main__":
     main()

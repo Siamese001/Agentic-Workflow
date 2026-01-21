@@ -224,7 +224,7 @@ def _functional_case_response_validator_parses_object(
     _tmp_path: Path,
 ) -> None:
     validator = ResponseValidator()
-    payload, error = validator.validate("irrelevant {\"status\": \"ok\"}", dict)
+    payload, error = validator.validate('irrelevant {"status": "ok"}', dict)
     assert payload == {"status": "ok"}
     assert error is None
 
@@ -387,9 +387,7 @@ def _functional_case_context_budget_truncation_labels_output(
     _tmp_path: Path,
 ) -> None:
     long_text = "abc" * 4000
-    pruned = asyncio.run(
-        workflow_context.context_budget_manager._prune_agentic(long_text, 10)
-    )
+    pruned = asyncio.run(workflow_context.context_budget_manager._prune_agentic(long_text, 10))
     assert "DOCUMENT PRUNED" in pruned
 
 
@@ -426,7 +424,9 @@ def _functional_case_base_tool_uses_cache(
     class EchoTool(BaseTool):
         tool_name = "echo_tool"
 
-        async def _run_async_internal(self, tool_input: dict[str, Any], workflow_id: str) -> dict[str, Any]:
+        async def _run_async_internal(
+            self, tool_input: dict[str, Any], workflow_id: str
+        ) -> dict[str, Any]:
             return {"echo": tool_input["value"], "workflow": workflow_id}
 
     tool = EchoTool(workflow_context)
@@ -456,7 +456,9 @@ def _functional_case_dynamic_tool_loader_handles_missing_dir(
     assert tools == {}
 
 
-FUNCTIONAL_BEHAVIOR_CASES: list[Callable[[WorkflowContext, ConfigV10_7, CacheManager, Path], None]] = [
+FUNCTIONAL_BEHAVIOR_CASES: list[
+    Callable[[WorkflowContext, ConfigV10_7, CacheManager, Path], None]
+] = [
     _functional_case_response_validator_parses_object,
     _functional_case_response_validator_handles_list,
     _functional_case_response_validator_reports_error,
@@ -717,15 +719,27 @@ ARCHITECTURAL_CASES = [
         id="wrap-mcp-present",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "agent_orchestration_v10_7.py", "StateGraph", should_exist=True),
+        partial(
+            _assert_file_pattern, "agent_orchestration_v10_7.py", "StateGraph", should_exist=True
+        ),
         id="stategraph-usage",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "agent_orchestration_v10_7.py", "load_dynamic_tools", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "agent_orchestration_v10_7.py",
+            "load_dynamic_tools",
+            should_exist=True,
+        ),
         id="dynamic-tools",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "agent_tools_v10_7.py", "class QAClaimValidatorTool", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "agent_tools_v10_7.py",
+            "class QAClaimValidatorTool",
+            should_exist=True,
+        ),
         id="qa-claim-tool",
     ),
     pytest.param(
@@ -733,23 +747,48 @@ ARCHITECTURAL_CASES = [
         id="hyde-tool",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "stacks_v10_7/strategy.py", "class QueryComplexityClassifier", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "stacks_v10_7/strategy.py",
+            "class QueryComplexityClassifier",
+            should_exist=True,
+        ),
         id="strategy-stack-query-classifier",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "stacks_v10_7/safety.py", "class PIISanitizerAgent", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "stacks_v10_7/safety.py",
+            "class PIISanitizerAgent",
+            should_exist=True,
+        ),
         id="safety-stack-pii",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "stacks_v10_7/drafting.py", "class DraftingGuildCoordinator", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "stacks_v10_7/drafting.py",
+            "class DraftingGuildCoordinator",
+            should_exist=True,
+        ),
         id="drafting-guild",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "stacks_v10_7/bullet.py", "class AsyncBulletGeneratorAgent", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "stacks_v10_7/bullet.py",
+            "class AsyncBulletGeneratorAgent",
+            should_exist=True,
+        ),
         id="bullet-generator",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "stacks_v10_7/hil.py", "class HILAmbiguityDetectorAgent", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "stacks_v10_7/hil.py",
+            "class HILAmbiguityDetectorAgent",
+            should_exist=True,
+        ),
         id="hil-ambiguity",
     ),
     pytest.param(
@@ -765,7 +804,12 @@ ARCHITECTURAL_CASES = [
         id="agent-stacks-wrap-mcp",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "strategy_ensemble_v10_7.py", "PlannerAssessment", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "strategy_ensemble_v10_7.py",
+            "PlannerAssessment",
+            should_exist=True,
+        ),
         id="planner-assessment-present",
     ),
 ]
@@ -785,63 +829,129 @@ def test_architectural_compliance_matrix(arch_case: Callable[[], None]) -> None:
 
 DESIGN_VALIDATION_CASES = [
     pytest.param(
-        partial(_assert_file_pattern, "master_config_v10_7.json", "\"schema_version\": \"master_config_v10.7\"", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "master_config_v10_7.json",
+            '"schema_version": "master_config_v10.7"',
+            should_exist=True,
+        ),
         id="schema-version",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "master_config_v10_7.json", "\"enable_semantic_caching\": true", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "master_config_v10_7.json",
+            '"enable_semantic_caching": true',
+            should_exist=True,
+        ),
         id="semantic-caching-flag",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "master_config_v10_7.json", "semantic_cache_similarity_threshold", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "master_config_v10_7.json",
+            "semantic_cache_similarity_threshold",
+            should_exist=True,
+        ),
         id="semantic-threshold",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "master_config_v10_7.json", "\"enable_constitutional_review\": true", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "master_config_v10_7.json",
+            '"enable_constitutional_review": true',
+            should_exist=True,
+        ),
         id="constitution-flag",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "master_config_v10_7.json", "strategy_tot_branching_factor", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "master_config_v10_7.json",
+            "strategy_tot_branching_factor",
+            should_exist=True,
+        ),
         id="strategy-tot",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "master_config_v10_7.json", "\"enable_meta_learning\": true", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "master_config_v10_7.json",
+            '"enable_meta_learning": true',
+            should_exist=True,
+        ),
         id="meta-learning-enabled",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "master_config_v10_7.json", "feedback_log_path", should_exist=True),
+        partial(
+            _assert_file_pattern, "master_config_v10_7.json", "feedback_log_path", should_exist=True
+        ),
         id="feedback-log-path",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "master_config_v10_7.json", "generated_tools_path", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "master_config_v10_7.json",
+            "generated_tools_path",
+            should_exist=True,
+        ),
         id="generated-tools-path",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "master_config_v10_7.json", "\"enable_async_llm\": true", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "master_config_v10_7.json",
+            '"enable_async_llm": true',
+            should_exist=True,
+        ),
         id="async-llm",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "master_config_v10_7.json", "max_batch_queue_size", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "master_config_v10_7.json",
+            "max_batch_queue_size",
+            should_exist=True,
+        ),
         id="batch-queue",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "master_config_v10_7.json", "\"enable_tool_caching\": true", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "master_config_v10_7.json",
+            '"enable_tool_caching": true',
+            should_exist=True,
+        ),
         id="tool-caching",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "master_config_v10_7.json", "enable_semantic_validation", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "master_config_v10_7.json",
+            "enable_semantic_validation",
+            should_exist=True,
+        ),
         id="semantic-validation",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "master_config_v10_7.json", "wrap_nodes_by_default", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "master_config_v10_7.json",
+            "wrap_nodes_by_default",
+            should_exist=True,
+        ),
         id="wrap-nodes-default",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "master_config_v10_7.json", "default_job_input", should_exist=True),
+        partial(
+            _assert_file_pattern, "master_config_v10_7.json", "default_job_input", should_exist=True
+        ),
         id="default-job-input",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "master_config_v10_7.json", "meta_loop_config", should_exist=True),
+        partial(
+            _assert_file_pattern, "master_config_v10_7.json", "meta_loop_config", should_exist=True
+        ),
         id="meta-loop-section",
     ),
 ]
@@ -861,63 +971,135 @@ def test_design_validation_matrix(design_case: Callable[[], None]) -> None:
 
 INTEGRATION_FLOW_CASES = [
     pytest.param(
-        partial(_assert_file_pattern, "agent_orchestration_v10_7.py", "run_sanitize_pii", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "agent_orchestration_v10_7.py",
+            "run_sanitize_pii",
+            should_exist=True,
+        ),
         id="sanitize-pii-node",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "agent_orchestration_v10_7.py", "run_detect_prompt_injection", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "agent_orchestration_v10_7.py",
+            "run_detect_prompt_injection",
+            should_exist=True,
+        ),
         id="prompt-injection-node",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "agent_orchestration_v10_7.py", "run_classify_complexity", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "agent_orchestration_v10_7.py",
+            "run_classify_complexity",
+            should_exist=True,
+        ),
         id="complexity-node",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "agent_orchestration_v10_7.py", "run_tot_strategy", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "agent_orchestration_v10_7.py",
+            "run_tot_strategy",
+            should_exist=True,
+        ),
         id="tot-strategy-node",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "agent_orchestration_v10_7.py", "run_detect_ambiguity", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "agent_orchestration_v10_7.py",
+            "run_detect_ambiguity",
+            should_exist=True,
+        ),
         id="ambiguity-node",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "agent_orchestration_v10_7.py", "run_prompt_engineering", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "agent_orchestration_v10_7.py",
+            "run_prompt_engineering",
+            should_exist=True,
+        ),
         id="prompt-engineering-node",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "agent_orchestration_v10_7.py", "run_rag_stack", should_exist=True),
+        partial(
+            _assert_file_pattern, "agent_orchestration_v10_7.py", "run_rag_stack", should_exist=True
+        ),
         id="rag-stack-node",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "agent_orchestration_v10_7.py", "run_generate_bullets", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "agent_orchestration_v10_7.py",
+            "run_generate_bullets",
+            should_exist=True,
+        ),
         id="bullet-node",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "agent_orchestration_v10_7.py", "run_qa_validation", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "agent_orchestration_v10_7.py",
+            "run_qa_validation",
+            should_exist=True,
+        ),
         id="qa-node",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "agent_orchestration_v10_7.py", "run_constitutional_review", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "agent_orchestration_v10_7.py",
+            "run_constitutional_review",
+            should_exist=True,
+        ),
         id="constitutional-node",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "agent_orchestration_v10_7.py", "check_constitution", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "agent_orchestration_v10_7.py",
+            "check_constitution",
+            should_exist=True,
+        ),
         id="constitution-check",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "agent_orchestration_v10_7.py", "human_in_the_loop", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "agent_orchestration_v10_7.py",
+            "human_in_the_loop",
+            should_exist=True,
+        ),
         id="hil-hook",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "agent_orchestration_v10_7.py", "workflow.set_entry_point", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "agent_orchestration_v10_7.py",
+            "workflow.set_entry_point",
+            should_exist=True,
+        ),
         id="entry-point",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "agent_orchestration_v10_7.py", "workflow.add_edge", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "agent_orchestration_v10_7.py",
+            "workflow.add_edge",
+            should_exist=True,
+        ),
         id="edges-defined",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "agent_orchestration_v10_7.py", "workflow.add_conditional_edges", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "agent_orchestration_v10_7.py",
+            "workflow.add_conditional_edges",
+            should_exist=True,
+        ),
         id="conditional-edges",
     ),
 ]
@@ -937,7 +1119,9 @@ def test_integration_flow_matrix(integration_case: Callable[[], None]) -> None:
 
 DATA_TRANSFORMATION_CASES = [
     pytest.param(
-        partial(_assert_file_pattern, "core_v10_7.py", "class DraftStrategyOutput", should_exist=True),
+        partial(
+            _assert_file_pattern, "core_v10_7.py", "class DraftStrategyOutput", should_exist=True
+        ),
         id="draft-strategy-output",
     ),
     pytest.param(
@@ -945,7 +1129,9 @@ DATA_TRANSFORMATION_CASES = [
         id="red-team-output",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "core_v10_7.py", "class RefineSectionOutput", should_exist=True),
+        partial(
+            _assert_file_pattern, "core_v10_7.py", "class RefineSectionOutput", should_exist=True
+        ),
         id="refine-section-output",
     ),
     pytest.param(
@@ -961,15 +1147,30 @@ DATA_TRANSFORMATION_CASES = [
         id="qa-tone-output",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "core_v10_7.py", "class QAThematicAlignmentOutput", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "core_v10_7.py",
+            "class QAThematicAlignmentOutput",
+            should_exist=True,
+        ),
         id="qa-thematic-output",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "core_v10_7.py", "class QASemanticEntailmentOutput", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "core_v10_7.py",
+            "class QASemanticEntailmentOutput",
+            should_exist=True,
+        ),
         id="qa-semantic-output",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "core_v10_7.py", "class QANarrativeThreadOutput", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "core_v10_7.py",
+            "class QANarrativeThreadOutput",
+            should_exist=True,
+        ),
         id="qa-narrative-output",
     ),
     pytest.param(
@@ -977,7 +1178,9 @@ DATA_TRANSFORMATION_CASES = [
         id="qa-jd-skills-output",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "core_v10_7.py", "class QASignalScoreOutput", should_exist=True),
+        partial(
+            _assert_file_pattern, "core_v10_7.py", "class QASignalScoreOutput", should_exist=True
+        ),
         id="qa-signal-output",
     ),
     pytest.param(
@@ -985,11 +1188,18 @@ DATA_TRANSFORMATION_CASES = [
         id="qa-tenure-output",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "core_v10_7.py", "class QAMissedOpportunitiesOutput", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "core_v10_7.py",
+            "class QAMissedOpportunitiesOutput",
+            should_exist=True,
+        ),
         id="qa-missed-output",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "core_v10_7.py", "class QAAdversarialOutput", should_exist=True),
+        partial(
+            _assert_file_pattern, "core_v10_7.py", "class QAAdversarialOutput", should_exist=True
+        ),
         id="qa-adversarial-output",
     ),
     pytest.param(
@@ -1021,15 +1231,24 @@ CONTRACT_ENFORCEMENT_CASES = [
         id="json-parsing-error",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "core_v10_7.py", "class PydanticSchemaError", should_exist=True),
+        partial(
+            _assert_file_pattern, "core_v10_7.py", "class PydanticSchemaError", should_exist=True
+        ),
         id="pydantic-schema-error",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "core_v10_7.py", "class MCPClientInitializationError", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "core_v10_7.py",
+            "class MCPClientInitializationError",
+            should_exist=True,
+        ),
         id="mcp-init-error",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "core_v10_7.py", "class WorkflowTimeoutError", should_exist=True),
+        partial(
+            _assert_file_pattern, "core_v10_7.py", "class WorkflowTimeoutError", should_exist=True
+        ),
         id="workflow-timeout-error",
     ),
     pytest.param(
@@ -1037,15 +1256,30 @@ CONTRACT_ENFORCEMENT_CASES = [
         id="circuit-breaker-class",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "core_v10_7.py", "class CircuitBreakerOpenError", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "core_v10_7.py",
+            "class CircuitBreakerOpenError",
+            should_exist=True,
+        ),
         id="circuit-breaker-open",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "core_v10_7.py", "def exponential_backoff_retry", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "core_v10_7.py",
+            "def exponential_backoff_retry",
+            should_exist=True,
+        ),
         id="exponential-backoff",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "agent_tools_v10_7.py", "def resolve_mcp_client", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "agent_tools_v10_7.py",
+            "def resolve_mcp_client",
+            should_exist=True,
+        ),
         id="resolve-mcp",
     ),
     pytest.param(
@@ -1053,15 +1287,27 @@ CONTRACT_ENFORCEMENT_CASES = [
         id="wrap-mcp-contract",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "master_config_v10_7.json", "\"enable_circuit_breaker\": true", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "master_config_v10_7.json",
+            '"enable_circuit_breaker": true',
+            should_exist=True,
+        ),
         id="config-circuit-breaker",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "master_config_v10_7.json", "enable_idempotency_validation", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "master_config_v10_7.json",
+            "enable_idempotency_validation",
+            should_exist=True,
+        ),
         id="config-idempotency",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "master_config_v10_7.json", "max_local_retries", should_exist=True),
+        partial(
+            _assert_file_pattern, "master_config_v10_7.json", "max_local_retries", should_exist=True
+        ),
         id="config-local-retries",
     ),
     pytest.param(
@@ -1069,7 +1315,12 @@ CONTRACT_ENFORCEMENT_CASES = [
         id="workflow-context-mcp",
     ),
     pytest.param(
-        partial(_assert_file_pattern, "agent_orchestration_v10_7.py", "CircuitBreaker", should_exist=True),
+        partial(
+            _assert_file_pattern,
+            "agent_orchestration_v10_7.py",
+            "CircuitBreaker",
+            should_exist=True,
+        ),
         id="orchestration-circuit-breaker",
     ),
 ]
@@ -1080,6 +1331,7 @@ def test_contract_enforcement_matrix(contract_case: Callable[[], None]) -> None:
     """Asserts defensive contracts, guardrails, and error classes are in place."""
 
     contract_case()
+
 
 # ---------------------------------------------------------------------------
 # Config loader
@@ -1278,7 +1530,9 @@ def test_resolve_mcp_client_optional_returns_stub(workflow_context: WorkflowCont
     assert tool.get_mcp_client("nonexistent") is stub
 
 
-def test_resolve_mcp_client_required_raises_without_fallback(workflow_context: WorkflowContext) -> None:
+def test_resolve_mcp_client_required_raises_without_fallback(
+    workflow_context: WorkflowContext,
+) -> None:
     workflow_context.config._config["mcp_config"]["fallback_mode"] = "error"
     workflow_context._load_mcp_config()
     workflow_context.reset_mcp_clients()
@@ -1297,7 +1551,9 @@ def test_resolve_mcp_client_required_raises_without_fallback(workflow_context: W
         resolve_mcp_client(tool, "nonexistent", optional=False)
 
 
-def test_dynamic_tool_loader_respects_mcp_requirements(workflow_context: WorkflowContext, tmp_path) -> None:
+def test_dynamic_tool_loader_respects_mcp_requirements(
+    workflow_context: WorkflowContext, tmp_path
+) -> None:
     workflow_context.wrap_mcp_nodes = True
     workflow_context.reset_mcp_clients()
 

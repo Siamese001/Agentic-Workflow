@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, state, workflow
@@ -37,6 +36,7 @@ class HierarchyEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
             CORE_L4_SUBFOLDER_MAP,
             SOVEREIGN_REGISTRY,
         )
+
         self.canon_structure = SOVEREIGN_REGISTRY  # Legacy bridge – migrate to SOVEREIGN_REGISTRY
         self.l3_map = CORE_L3_SUBFOLDER_MAP
         self.l4_map = CORE_L4_SUBFOLDER_MAP
@@ -45,6 +45,7 @@ class HierarchyEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
 
         # [DEPTH ARCHIVAL] Where depth-drift goes to die
         from agentic_core.L5_safety.validators.structure_blueprint import DEPRECATION_ARCHIVE
+
         self.archive_root = project_root / DEPRECATION_ARCHIVE / "depth_violations"
         self.archive_root.mkdir(parents=True, exist_ok=True)
 
@@ -68,11 +69,14 @@ class HierarchyEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
 
             for l3_name in expected_l3:
                 l3_path = l2_path / l3_name
-                if not l3_path.exists(): continue
+                if not l3_path.exists():
+                    continue
 
                 # [L4 DRILL DOWN]
                 expected_l4 = set(self.l4_map.get(l3_name, []))
-                actual_l4 = {p.name for p in l3_path.iterdir() if p.is_dir() and not p.name.startswith(".")}
+                actual_l4 = {
+                    p.name for p in l3_path.iterdir() if p.is_dir() and not p.name.startswith(".")
+                }
 
                 for missing_l4 in expected_l4 - actual_l4:
                     l4_path = l3_path / missing_l4
@@ -87,7 +91,14 @@ class HierarchyEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
         }
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """Observability metrics agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -112,7 +123,10 @@ class HierarchyEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
         Apps depth enforcement. If it's not depth 3, it gets archived.
         """
         from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
-        apps_exact_depth = SOVEREIGN_REGISTRY["apps_rg"]["depth"]  # Legacy bridge – migrate to SOVEREIGN_REGISTRY
+
+        apps_exact_depth = SOVEREIGN_REGISTRY["apps_rg"][
+            "depth"
+        ]  # Legacy bridge – migrate to SOVEREIGN_REGISTRY
         actions = []
 
         # [APPS DEPTH 3] Target all files under apps_* (Universal enforcement)
@@ -132,14 +146,18 @@ class HierarchyEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
                 archive_path.parent.mkdir(parents=True, exist_ok=True)
 
                 explanation = f"# APPS DEPTH VIOLATION ARCHIVED — {__import__('datetime').datetime.now().isoformat()}\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n"
-                explanation += f"# {rel} was depth {depth}, but apps_* MUST be exactly {apps_exact_depth}.\n\n"
+                explanation += (
+                    f"# {rel} was depth {depth}, but apps_* MUST be exactly {apps_exact_depth}.\n\n"
+                )
 
                 try:
                     content = file_path.read_text(encoding="utf-8", errors="ignore")
                     archive_path.write_text(explanation + content, encoding="utf-8")
                     file_path.unlink()
                     actions.append(f"ARCHIVED apps_* drift: {rel}")
-                    self.ctx.report("DepthEnforcer", 1, True, f"Archived {rel} (apps depth {depth})")
+                    self.ctx.report(
+                        "DepthEnforcer", 1, True, f"Archived {rel} (apps depth {depth})"
+                    )
                 except Exception as e:
                     actions.append(f"APPS ARCHIVE FAILED: {rel} — {e}")
 
@@ -150,7 +168,10 @@ class HierarchyEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
         Tests depth enforcement. If it's not depth 3, it gets archived.
         """
         from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
-        tests_exact_depth = SOVEREIGN_REGISTRY["tests"]["depth"]  # Legacy bridge – migrate to SOVEREIGN_REGISTRY
+
+        tests_exact_depth = SOVEREIGN_REGISTRY["tests"][
+            "depth"
+        ]  # Legacy bridge – migrate to SOVEREIGN_REGISTRY
         actions = []
 
         # [TESTS DEPTH 3] Target all files under tests/ (Universal enforcement)
@@ -170,7 +191,9 @@ class HierarchyEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
                 archive_path.parent.mkdir(parents=True, exist_ok=True)
 
                 explanation = f"# TESTS DEPTH VIOLATION ARCHIVED — {__import__('datetime').datetime.now().isoformat()}\n"
-                explanation += f"# {rel} was depth {depth}, but tests MUST be exactly {tests_exact_depth}.\n\n"
+                explanation += (
+                    f"# {rel} was depth {depth}, but tests MUST be exactly {tests_exact_depth}.\n\n"
+                )
 
                 try:
                     content = file_path.read_text(encoding="utf-8", errors="ignore")
@@ -190,7 +213,10 @@ class HierarchyEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
         from agentic_core.L5_safety.validators.structure_blueprint import (
             SOVEREIGN_REGISTRY,
         )
-        agentic_core_exact_depth = SOVEREIGN_REGISTRY["agentic_core"]["depth"]  # Legacy bridge – migrate to SOVEREIGN_REGISTRY
+
+        agentic_core_exact_depth = SOVEREIGN_REGISTRY["agentic_core"][
+            "depth"
+        ]  # Legacy bridge – migrate to SOVEREIGN_REGISTRY
         actions = []
 
         # [UNIVERSAL ENFORCEMENT] Target common data/doc extensions
@@ -244,23 +270,19 @@ class HierarchyEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
 
             for l3_name in expected_l3:
                 l3_path = l2_path / l3_name
-                if not l3_path.exists(): continue
+                if not l3_path.exists():
+                    continue
 
                 expected_l4 = set(self.l4_map.get(l3_name, []))
-                actual_l4 = {p.name for p in l3_path.iterdir() if p.is_dir() and not p.name.startswith(".")}
+                actual_l4 = {
+                    p.name for p in l3_path.iterdir() if p.is_dir() and not p.name.startswith(".")
+                }
 
                 missing_l4 = expected_l4 - actual_l4
                 if missing_l4:
-                    violations.append({
-                        "path": f"{l2_name}/{l3_name}",
-                        "Missing": list(missing_l4)
-                    })
+                    violations.append({"path": f"{l2_name}/{l3_name}", "Missing": list(missing_l4)})
 
-        return {
-            "status": "validated",
-            "violations": violations,
-            "compliant": len(violations) == 0
-        }
+        return {"status": "validated", "violations": violations, "compliant": len(violations) == 0}
 
     async def execute(self, ctx: Any) -> Any:
         """Execute execute operation."""

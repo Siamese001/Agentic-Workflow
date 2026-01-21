@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator
@@ -23,18 +22,24 @@ from .L5SafetyBaseAgent import L5SafetyBaseAgent  # NEW: Import canonical L5 bas
 #         log_error) and standardized initialization.
 # ------------------------------------------------------------------
 
+
 class ConstitutionalReviewResult:
     """Stub for ConstitutionalReviewResult - TODO: Replace with sovereign equivalent"""
+
     def __init__(self, review_passed=True, violations_found=None, feedback="") -> None:
         self.review_passed = review_passed
         self.violations_found = violations_found or []
         self.feedback = feedback
 
+
 def track_metrics(name):
     """Stub decorator for track_metrics - TODO: Replace with sovereign equivalent"""
+
     def decorator(func):
         return func
+
     return decorator
+
 
 async def _format_prompt_with_defaults(template, data, budget_manager, goal_state, top_failures):
     """Stub for _format_prompt_with_defaults"""
@@ -54,7 +59,9 @@ class ConstitutionalReviewerAgent(L5SafetyBaseAgent, MCPHardenedMixin):
         self.log_info("Running final constitutional review...")  # now real implementation
 
         if not self.config.agent_stacks.enable_constitutional_review:
-            self.log_warning("Constitutional review is disabled. Passing by default.")  # now real implementation
+            self.log_warning(
+                "Constitutional review is disabled. Passing by default."
+            )  # now real implementation
             return ConstitutionalReviewResult(
                 review_passed=True,
                 violations_found=[],
@@ -104,7 +111,14 @@ class ConstitutionalReviewerAgent(L5SafetyBaseAgent, MCPHardenedMixin):
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """Operational guardrail agent - no repository healing required."""
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository()
@@ -132,5 +146,7 @@ class ConstitutionalReviewerAgent(L5SafetyBaseAgent, MCPHardenedMixin):
             results["tests"].append({"name": "test_instantiation", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
+            results["tests"].append(
+                {"name": "test_instantiation", "status": "failed", "error": str(e)}
+            )
         return results

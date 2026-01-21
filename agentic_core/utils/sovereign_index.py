@@ -26,6 +26,7 @@ SSOT PRINCIPLE:
     All file discovery should use SovereignIndex instead of direct rglob calls.
     This ensures consistent exclusion patterns and optimal performance.
 """
+
 from __future__ import annotations
 
 import fnmatch
@@ -38,6 +39,7 @@ from pathlib import Path
 # [SSOT] Import exclusion patterns from the single source of truth
 try:
     from agentic_core.L5_safety.validators.structure_blueprint import GLOBAL_EXCLUDED_DIRS
+
     _SSOT_EXCLUSIONS_AVAILABLE = True
 except ImportError:
     _SSOT_EXCLUSIONS_AVAILABLE = False
@@ -68,13 +70,30 @@ class SovereignIndex:
     # Default exclusion patterns - Use SSOT from structure_blueprint if available
     # PRODUCTION LENS: Excludes test directories to focus on production code
     DEFAULT_EXCLUDED_DIRS: set[str] = (
-        set(GLOBAL_EXCLUDED_DIRS) if _SSOT_EXCLUSIONS_AVAILABLE and GLOBAL_EXCLUDED_DIRS else {
-            '__pycache__', '.pytest_cache', '.mypy_cache', 'build', 'dist', '.eggs',
-            '.git', '.svn', '.hg',
-            '.venv', 'venv', 'env', '.env', 'node_modules',
-            'coverage_html', 'htmlcov', '.coverage', 'reports',
-            'archives', '.sovereign_healing_backup',
-            'tests',  # Production Lens - exclude test files from healing scans
+        set(GLOBAL_EXCLUDED_DIRS)
+        if _SSOT_EXCLUSIONS_AVAILABLE and GLOBAL_EXCLUDED_DIRS
+        else {
+            "__pycache__",
+            ".pytest_cache",
+            ".mypy_cache",
+            "build",
+            "dist",
+            ".eggs",
+            ".git",
+            ".svn",
+            ".hg",
+            ".venv",
+            "venv",
+            "env",
+            ".env",
+            "node_modules",
+            "coverage_html",
+            "htmlcov",
+            ".coverage",
+            "reports",
+            "archives",
+            ".sovereign_healing_backup",
+            "tests",  # Production Lens - exclude test files from healing scans
         }
     )
 
@@ -158,11 +177,15 @@ class SovereignIndex:
 
         # Check cache first
         if pattern in self._cache:
-            Logger.info(f"[INDEX] Cache Hit: Pattern '{pattern}' -> {len(self._cache[pattern])} files (from cache)")
+            Logger.info(
+                f"[INDEX] Cache Hit: Pattern '{pattern}' -> {len(self._cache[pattern])} files (from cache)"
+            )
             return self._cache[pattern].copy()
 
         # Cache miss - need to scan
-        Logger.info(f"[INDEX] Cache Miss: Pattern '{pattern}' -> scanning {len(self._all_files)} indexed files")
+        Logger.info(
+            f"[INDEX] Cache Miss: Pattern '{pattern}' -> scanning {len(self._all_files)} indexed files"
+        )
 
         # Filter files by pattern
         matched = []
@@ -173,7 +196,9 @@ class SovereignIndex:
         # Cache the result
         self._cache[pattern] = matched
 
-        Logger.info(f"[INDEX] Disk Scan: Pattern '{pattern}' matched {len(matched)} files (now cached)")
+        Logger.info(
+            f"[INDEX] Disk Scan: Pattern '{pattern}' matched {len(matched)} files (now cached)"
+        )
         return matched.copy()
 
     def get_python_files(self) -> list[Path]:
@@ -328,9 +353,7 @@ class SovereignIndex:
         self._last_scan_time = time.time() - start_time
         self._initialized = True
 
-        Logger.info(
-            f"[INDEX] Scanned {len(self._all_files)} files in {self._last_scan_time:.2f}s"
-        )
+        Logger.info(f"[INDEX] Scanned {len(self._all_files)} files in {self._last_scan_time:.2f}s")
 
         return len(self._all_files)
 
@@ -350,7 +373,7 @@ class SovereignIndex:
                             if entry.name in self._excluded_dirs:
                                 continue
                             # Skip hidden directories (except .git which is already excluded)
-                            if entry.name.startswith('.') and entry.name not in self._excluded_dirs:
+                            if entry.name.startswith(".") and entry.name not in self._excluded_dirs:
                                 continue
                             # Recurse into subdirectory
                             self._scan_directory(Path(entry.path))

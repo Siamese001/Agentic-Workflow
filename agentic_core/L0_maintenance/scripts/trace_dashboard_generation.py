@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Trace dashboard generation to find where it's failing."""
+
 import json
 import sys
 from pathlib import Path
@@ -21,22 +22,26 @@ try:
     print("=" * 80)
 
     # Check template path
-    template_path = project_root / AGENTIC_CORE_DIR / "config" / "validators" / "dashboard_template.html"
+    template_path = (
+        project_root / AGENTIC_CORE_DIR / "config" / "validators" / "dashboard_template.html"
+    )
     print(f"\nTemplate path: {template_path}")
     print(f"Template exists: {template_path.exists()}")
 
     if template_path.exists():
-        template = template_path.read_text(encoding='utf-8')
+        template = template_path.read_text(encoding="utf-8")
         print(f"Template size: {len(template):,} bytes")
-        has_dashboard = 'const dashboardData = [];' in template
-        has_recommendations = 'const recommendationsData = [];' in template
+        has_dashboard = "const dashboardData = [];" in template
+        has_recommendations = "const recommendationsData = [];" in template
         has_timestamp = 'const lastUpdatedStr = "";' in template
-        has_gauge = 'const gaugeData = {};' in template
+        has_gauge = "const gaugeData = {};" in template
         print(f"Has 'const dashboardData = [];': {has_dashboard}")
         print(f"Has 'const recommendationsData = [];': {has_recommendations}")
         print(f"Has 'const lastUpdatedStr = \"\";': {has_timestamp}")
         print(f"Has 'const gaugeData = {{}}': {has_gauge}")
-        print(f"Has '<!-- STRATEGIC_REVIEW_INSERT -->': {'<!-- STRATEGIC_REVIEW_INSERT -->' in template}")
+        print(
+            f"Has '<!-- STRATEGIC_REVIEW_INSERT -->': {'<!-- STRATEGIC_REVIEW_INSERT -->' in template}"
+        )
         print(f"Has '<!-- TOP_RECS_INSERT -->': {'<!-- TOP_RECS_INSERT -->' in template}")
 
         # Try a simple injection test
@@ -47,10 +52,14 @@ try:
         test_data = [{"Territory": "Test", "Total": 1}]
         test_json = json.dumps(test_data)
 
-        html = template.replace('const dashboardData = [];', f'const dashboardData = {test_json};')
+        html = template.replace("const dashboardData = [];", f"const dashboardData = {test_json};")
 
-        print(f"After injection, 'const dashboardData = [];' still present: {'const dashboardData = [];' in html}")
-        print(f"After injection, 'const dashboardData = [' present: {'const dashboardData = [' in html}")
+        print(
+            f"After injection, 'const dashboardData = [];' still present: {'const dashboardData = [];' in html}"
+        )
+        print(
+            f"After injection, 'const dashboardData = [' present: {'const dashboardData = [' in html}"
+        )
 
     print("\n" + "=" * 80)
     print("ATTEMPTING FULL GENERATION")
@@ -67,6 +76,7 @@ try:
         print(f"Type: {type(e).__name__}")
         print(f"Message: {str(e)}")
         import traceback
+
         traceback.print_exc()
 
     # Check if dashboard was created
@@ -76,4 +86,5 @@ try:
 except Exception as e:
     print(f"Fatal error: {e}")
     import traceback
+
     traceback.print_exc()

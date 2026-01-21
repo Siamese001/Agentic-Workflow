@@ -26,16 +26,17 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 # Derived from CORE_SUBFOLDER_MAP keys in structure_blueprint.py
 gravity_layers = list(CORE_SUBFOLDER_MAP.keys())
 
+
 # NOT_AN_AGENT — validator utility, not a true agent — excluded from agent discovery
 class GravityComplianceValidatorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
-    '''Brief description of functionality and purpose.'''
+    """Brief description of functionality and purpose."""
 
     def __init__(self, project_root: Path) -> None:
         warnings.warn(
             "GravityComplianceValidatorAgent is deprecated. Use GravityValidatorAgent from "
             "agentic_core.L5_safety.validators.GravityValidatorAgent instead.",
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         self.root = project_root.resolve()
         self.violations = []
@@ -48,7 +49,6 @@ class GravityComplianceValidatorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
         return -1  # Unknown = no restriction
 
     def scan_file(self, file_path: Path):
-
         try:
             content = file_path.read_text(encoding="utf-8", errors="ignore")
         except Exception:
@@ -68,14 +68,15 @@ class GravityComplianceValidatorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
 
             # Violation: importing a lower-authority (higher index) layer
             if import_rank > current_rank:
-                self.violations.append({
-                    "file": file_path.relative_to(self.root),
-                    "source_layer": GRAVITY_LAYERS[current_rank],
-                    "illegal_import": GRAVITY_LAYERS[import_rank]
-                })
+                self.violations.append(
+                    {
+                        "file": file_path.relative_to(self.root),
+                        "source_layer": GRAVITY_LAYERS[current_rank],
+                        "illegal_import": GRAVITY_LAYERS[import_rank],
+                    }
+                )
 
     def run(self) -> Dict[str, Any]:
-
         print("=== GRAVITY COMPLIANCE SCAN ===")
         for py_file in self.root.rglob("*.py"):
             if "agentic_core" in py_file.parts:
@@ -93,8 +94,9 @@ class GravityComplianceValidatorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
         return False
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()
+
 
 if __name__ == "__main__":
     PROJECT_ROOT = Path(__file__).parent.parent  # Assumes script in /scripts/

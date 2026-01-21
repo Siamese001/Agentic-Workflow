@@ -1,12 +1,13 @@
 """Verify L2 Execution data is now correct (user's specific example)."""
+
 import json
 
 # Load source data
-agents = json.load(open('agent_discovery_full.json'))
-l2_agents = [a for a in agents if 'L2_execution' in a.get('path', '')]
+agents = json.load(open("agent_discovery_full.json"))
+l2_agents = [a for a in agents if "L2_execution" in a.get("path", "")]
 
 # Calculate expected from source
-mcp_count = sum(1 for a in l2_agents if a.get('mcp_hardened'))
+mcp_count = sum(1 for a in l2_agents if a.get("mcp_hardened"))
 expected_mcp_pct = round(mcp_count / len(l2_agents) * 100, 1) if l2_agents else 0
 
 print("=" * 70)
@@ -20,24 +21,26 @@ print(f"  Expected MCP %: {expected_mcp_pct}%")
 print()
 
 # Load dashboard and extract L2 data
-html = open('agentic_core/L6_observability/dashboards/autonomy_dashboard.html', encoding='utf-8').read()
+html = open(
+    "agentic_core/L6_observability/dashboards/autonomy_dashboard.html", encoding="utf-8"
+).read()
 
 # Find L2 Execution/Core row
 lines = []
 in_data = False
-for line in html.split('\n'):
-    if 'const dashboardData = [' in line:
+for line in html.split("\n"):
+    if "const dashboardData = [" in line:
         in_data = True
-        lines.append('[')
+        lines.append("[")
         continue
     if in_data:
         lines.append(line)
-        if '];' in line:
-            lines[-1] = lines[-1].replace('];', ']')
+        if "];" in line:
+            lines[-1] = lines[-1].replace("];", "]")
             break
 
-data = json.loads(''.join(lines))
-l2_core = next((r for r in data if r['Territory'] == 'L2 Execution/Core'), None)
+data = json.loads("".join(lines))
+l2_core = next((r for r in data if r["Territory"] == "L2 Execution/Core"), None)
 
 if l2_core:
     print("DASHBOARD DATA (autonomy_dashboard.html):")
@@ -49,7 +52,7 @@ if l2_core:
 
     # Compare
     print("VALIDATION:")
-    dashboard_mcp = l2_core['MCP Capable %']
+    dashboard_mcp = l2_core["MCP Capable %"]
 
     if dashboard_mcp == 80.0:
         print("  ❌ STILL HARDCODED 80% - NOT FIXED")

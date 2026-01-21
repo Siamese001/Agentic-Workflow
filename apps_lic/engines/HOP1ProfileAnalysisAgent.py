@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, validator, workflow
@@ -60,12 +59,12 @@ class HOP1ProfileAnalysisAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMi
         Returns:
             Path to output state file
         """
-        print(f"\n{'='*80}")
+        print(f"\n{'=' * 80}")
         print("HOP-1: PROFILE ANALYSIS")
-        print(f"{'='*80}\n")
+        print(f"{'=' * 80}\n")
 
         # Extract profile data
-        title = mission.recipient_profile.get('title', '').lower()
+        title = mission.recipient_profile.get("title", "").lower()
 
         # Classify Archetype using config-based rules
         Archetype = None
@@ -101,8 +100,8 @@ class HOP1ProfileAnalysisAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMi
             "key_indicators": key_indicators,
             "needs_manual_override": needs_manual_override,
             "recipient_title": title,
-            "recipient_name": mission.recipient_profile.get('name', ''),
-            "recipient_company": mission.recipient_profile.get('company', '')
+            "recipient_name": mission.recipient_profile.get("name", ""),
+            "recipient_company": mission.recipient_profile.get("company", ""),
         }
 
         # Write to state
@@ -168,7 +167,9 @@ class HOP1ProfileAnalysisAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMi
                 Logger.warning("Manual override threshold invalid — resetting to 0.7")
                 self.manual_override_threshold = 0.7
             elif self.manual_override_threshold < 0 or self.manual_override_threshold > 1.0:
-                Logger.warning(f"Threshold {self.manual_override_threshold} out of bounds — clamping")
+                Logger.warning(
+                    f"Threshold {self.manual_override_threshold} out of bounds — clamping"
+                )
                 self.manual_override_threshold = max(0.0, min(1.0, self.manual_override_threshold))
         except Exception as e:
             Logger.error(f"Threshold bounds check failed: {e}")

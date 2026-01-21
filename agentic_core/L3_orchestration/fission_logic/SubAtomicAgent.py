@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, healer, memory, orchestrator, prompt, state, validator, workflow
@@ -8,7 +7,7 @@ from __future__ import annotations
 
 import ast
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
 from typing import Any
 
@@ -22,7 +21,14 @@ class SubAtomicAgent:
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L1 cognition - operational only."""
         if _call_path is None:
             _call_path = set()
@@ -38,27 +44,31 @@ class SubAtomicAgent:
         finally:
             _call_path.discard(agent_name)
 
+
 # Alias for backward compatibility
+
 
 # NOT_AN_AGENT — base implementation class, not a true agent — excluded from discovery
 class sub_atomic_agent_impl:
-    '''Brief description of functionality and purpose.'''
+    """Brief description of functionality and purpose."""
 
     def __init__(self, ctx: Any, name: str):
         self.ctx = ctx
         self.name = name
+
     def can_run(self) -> bool:
-
         return True
-    def execute(self) -> None:
 
+    def execute(self) -> None:
         pass
+
 
 # NAMING FIXED: NestingDepthVisitor → nesting_depth_visitor
 class nesting_depth_visitor(ast.NodeVisitor):
     """
     A visitor to calculate and report violations for excessive nesting depth within an AST.
     """
+
     def __init__(self, max_allowed_depth: int, filepath: str):
         self.max_allowed_depth = max_allowed_depth
         self.filepath = filepath
@@ -69,12 +79,20 @@ class nesting_depth_visitor(ast.NodeVisitor):
         """
         Constructs the Violation message string, flattening expressions to reduce syntactic nesting.
         """
-        lineno_val = getattr(node, 'lineno', 'N/A')
+        lineno_val = getattr(node, "lineno", "N/A")
         node_type_val = type(node).__name__
         message = (
-            self.filepath + ":" + str(lineno_val) + ": " +
-            "Nesting depth " + str(current_depth_val) + " exceeds max " +
-            str(self.max_allowed_depth) + " at " + node_type_val + " block."
+            self.filepath
+            + ":"
+            + str(lineno_val)
+            + ": "
+            + "Nesting depth "
+            + str(current_depth_val)
+            + " exceeds max "
+            + str(self.max_allowed_depth)
+            + " at "
+            + node_type_val
+            + " block."
         )
         return message
 
@@ -90,53 +108,39 @@ class nesting_depth_visitor(ast.NodeVisitor):
 
     # Override visit methods for nodes that increase nesting
     def visit_FunctionDef(self, node):
-
         self._generic_visit_with_depth(node)
 
     def visit_AsyncFunctionDef(self, node):
-
         self._generic_visit_with_depth(node)
 
     def visit_ClassDef(self, node):
-
         self._generic_visit_with_depth(node)
 
     def visit_If(self, node):
-
         self._generic_visit_with_depth(node)
 
     def visit_For(self, node):
-
         self._generic_visit_with_depth(node)
 
     def visit_AsyncFor(self, node):
-
         self._generic_visit_with_depth(node)
 
     def visit_While(self, node):
-
         self._generic_visit_with_depth(node)
 
     def visit_With(self, node):
-
         self._generic_visit_with_depth(node)
 
     def visit_AsyncWith(self, node):
-
         self._generic_visit_with_depth(node)
 
     def visit_Try(self, node):
-
         self._generic_visit_with_depth(node)
 
     def visit_ExceptHandler(self, node):
-
         self._generic_visit_with_depth(node)
 
 
-
-
-
 def get_sub_atomic_agent() -> Any:
-    '''Brief description of functionality and purpose.'''
+    """Brief description of functionality and purpose."""
     return sub_atomic_agent_impl

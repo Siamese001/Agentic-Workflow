@@ -20,7 +20,7 @@ class PlanPhase(BaseModel):
     key_deliverables: list[str] = Field(..., description="Specific outputs to achieve")
     stakeholder_focus: str = Field(..., description="Key stakeholders to engage")
 
-    @validator('key_deliverables')
+    @validator("key_deliverables")
     def validate_deliverables(cls, v):
         """Ensure at least 3 deliverables."""
         if len(v) < 3:
@@ -35,7 +35,7 @@ class OnboardingPlan(BaseModel):
     risk_assessment: str = Field(..., description="Potential risks and mitigations")
     resource_requirements: list[str] = Field(..., description="Resources needed for success")
 
-    @validator('phases')
+    @validator("phases")
     def validate_three_phases(cls, v):
         """Ensure exactly 3 phases."""
         if len(v) != 3:
@@ -53,14 +53,14 @@ class OnboardingPlannerAgent:
             "speed": "Focus on rapid iteration and MVP delivery",
             "hiring": "Build core team with velocity",
             "fundraising": "Prepare metrics and demos for investors",
-            "product": "Ship features that drive user acquisition"
+            "product": "Ship features that drive user acquisition",
         }
 
         self.enterprise_priorities = {
             "governance": "Establish compliance and risk frameworks",
             "integration": "Align with existing systems and processes",
             "stakeholders": "Build consensus across business units",
-            "optimization": "Identify and deliver cost efficiencies"
+            "optimization": "Identify and deliver cost efficiencies",
         }
 
         # Technology-specific audit items
@@ -72,16 +72,13 @@ class OnboardingPlannerAgent:
             "microservices": "Map microservice dependencies and bottlenecks",
             "ml pipelines": "Audit ML pipeline efficiency and reproducibility",
             "data warehouse": "Assess data warehouse performance and costs",
-            "llm": "Review LLM deployment and inference costs"
+            "llm": "Review LLM deployment and inference costs",
         }
 
         logger.info("Initialized OnboardingPlannerAgent")
 
     def generate_plan(
-        self,
-        job_description: str,
-        company_maturity: str,
-        role_title: str
+        self, job_description: str, company_maturity: str, role_title: str
     ) -> OnboardingPlan:
         """Generate a 30-60-90 day onboarding plan.
 
@@ -98,7 +95,9 @@ class OnboardingPlannerAgent:
             priorities = self._extract_priorities(job_description, company_maturity)
 
             # Generate the three phases
-            phases = self._generate_phases(priorities, job_description, company_maturity, role_title)
+            phases = self._generate_phases(
+                priorities, job_description, company_maturity, role_title
+            )
 
             # Assess risks and requirements
             risk_assessment = self._assess_risks(company_maturity, role_title)
@@ -107,7 +106,7 @@ class OnboardingPlannerAgent:
             plan = OnboardingPlan(
                 phases=phases,
                 risk_assessment=risk_assessment,
-                resource_requirements=resource_requirements
+                resource_requirements=resource_requirements,
             )
 
             logger.info(f"Generated onboarding plan for {role_title} at {company_maturity}")
@@ -135,24 +134,32 @@ class OnboardingPlannerAgent:
                 # Focus on technical excellence
                 for phase in plan.phases:
                     phase.key_deliverables = [
-                        d for d in phase.key_deliverables
-                        if "architecture" in d.lower() or "code" in d.lower() or "technical" in d.lower()
+                        d
+                        for d in phase.key_deliverables
+                        if "architecture" in d.lower()
+                        or "code" in d.lower()
+                        or "technical" in d.lower()
                     ] + [
                         "Complete technical debt assessment",
                         "Establish coding standards and review process",
-                        "Create system architecture documentation"
+                        "Create system architecture documentation",
                     ][:3]
 
-            elif "head of ai" in role_lower or "vp of ai" in role_lower or "director of ai" in role_lower:
+            elif (
+                "head of ai" in role_lower
+                or "vp of ai" in role_lower
+                or "director of ai" in role_lower
+            ):
                 # Focus on leadership and strategy
                 for phase in plan.phases:
                     phase.key_deliverables = [
-                        d for d in phase.key_deliverables
+                        d
+                        for d in phase.key_deliverables
                         if "team" in d.lower() or "strategy" in d.lower() or "budget" in d.lower()
                     ] + [
                         "Develop AI talent acquisition strategy",
                         "Create 2026 AI roadmap and budget proposal",
-                        "Establish AI governance framework"
+                        "Establish AI governance framework",
                     ][:3]
 
             return plan
@@ -178,21 +185,23 @@ class OnboardingPlannerAgent:
                 "This 90-day roadmap focuses on strategic value delivery while ensuring smooth integration and team alignment.",
                 "",
                 "---",
-                ""
+                "",
             ]
 
             # Render each phase
             for i, phase in enumerate(plan.phases, 1):
-                lines.extend([
-                    f"## {phase.phase_name}",
-                    "",
-                    f"**Primary Objective:** {phase.primary_objective}",
-                    "",
-                    f"**Stakeholder Focus:** {phase.stakeholder_focus}",
-                    "",
-                    "**Key Deliverables:**",
-                    ""
-                ])
+                lines.extend(
+                    [
+                        f"## {phase.phase_name}",
+                        "",
+                        f"**Primary Objective:** {phase.primary_objective}",
+                        "",
+                        f"**Stakeholder Focus:** {phase.stakeholder_focus}",
+                        "",
+                        "**Key Deliverables:**",
+                        "",
+                    ]
+                )
 
                 for deliverable in phase.key_deliverables:
                     lines.append(f"- [ ] {deliverable}")
@@ -200,24 +209,21 @@ class OnboardingPlannerAgent:
                 lines.extend(["", "---", ""])
 
             # Add risk and resources
-            lines.extend([
-                "## Risk Assessment",
-                "",
-                plan.risk_assessment,
-                "",
-                "## Resource Requirements",
-                ""
-            ])
+            lines.extend(
+                ["## Risk Assessment", "", plan.risk_assessment, "", "## Resource Requirements", ""]
+            )
 
             for resource in plan.resource_requirements:
                 lines.append(f"- {resource}")
 
-            lines.extend([
-                "",
-                "---",
-                "",
-                "*This roadmap demonstrates operational readiness and strategic thinking for the role.*"
-            ])
+            lines.extend(
+                [
+                    "",
+                    "---",
+                    "",
+                    "*This roadmap demonstrates operational readiness and strategic thinking for the role.*",
+                ]
+            )
 
             return "\n".join(lines)
 
@@ -267,7 +273,7 @@ class OnboardingPlannerAgent:
         priorities: dict[str, str],
         job_description: str,
         company_maturity: str,
-        role_title: str
+        role_title: str,
     ) -> list[PlanPhase]:
         """Generate the three phases of the plan.
 
@@ -287,7 +293,7 @@ class OnboardingPlannerAgent:
             # Phase 1: Discovery and Audit (Listen First rule)
             phase1_deliverables = [
                 "Complete listening tour with key stakeholders",
-                "Audit current tech stack and processes"
+                "Audit current tech stack and processes",
             ]
 
             # Add specific technology audits
@@ -296,64 +302,71 @@ class OnboardingPlannerAgent:
                     phase1_deliverables.append(self.tech_audit_mapping[tech])
                     break  # Add only one specific tech audit
 
-            phase1_deliverables.extend([
-                "Establish baseline metrics and KPIs",
-                "Identify and deliver one quick win (30-day impact)"
-            ])
+            phase1_deliverables.extend(
+                [
+                    "Establish baseline metrics and KPIs",
+                    "Identify and deliver one quick win (30-day impact)",
+                ]
+            )
 
             # Phase 2: Execute and Stabilize
             phase2_deliverables = [
                 "Address critical technical debt identified in Phase 1",
-                "Structure team roles and responsibilities"
+                "Structure team roles and responsibilities",
             ]
 
             if company_maturity.lower() == "startup":
-                phase2_deliverables.extend([
-                    "Ship MVP feature or improvement",
-                    "Establish development velocity metrics"
-                ])
+                phase2_deliverables.extend(
+                    ["Ship MVP feature or improvement", "Establish development velocity metrics"]
+                )
             else:
-                phase2_deliverables.extend([
-                "Launch pilot program or beta feature",
-                "Implement governance and compliance frameworks"
-            ])
+                phase2_deliverables.extend(
+                    [
+                        "Launch pilot program or beta feature",
+                        "Implement governance and compliance frameworks",
+                    ]
+                )
 
             # Phase 3: Strategize and Scale
             phase3_deliverables = [
                 "Develop 2026 strategic roadmap",
-                "Optimize costs and performance"
+                "Optimize costs and performance",
             ]
 
             if "head of" in role_title.lower() or "director" in role_title.lower():
-                phase3_deliverables.extend([
-                    "Hand off operational tasks to team leads",
-                    "Establish succession planning for key roles"
-                ])
+                phase3_deliverables.extend(
+                    [
+                        "Hand off operational tasks to team leads",
+                        "Establish succession planning for key roles",
+                    ]
+                )
             else:
-                phase3_deliverables.extend([
-                    "Document best practices and patterns",
-                    "Mentor team members on advanced techniques"
-                ])
+                phase3_deliverables.extend(
+                    [
+                        "Document best practices and patterns",
+                        "Mentor team members on advanced techniques",
+                    ]
+                )
 
             phases = [
                 PlanPhase(
                     phase_name="Days 1-30: Discovery & Quick Win",
                     primary_objective="Understand current state and deliver immediate value",
                     key_deliverables=phase1_deliverables,
-                    stakeholder_focus="Direct reports, peers, and key business stakeholders"
+                    stakeholder_focus="Direct reports, peers, and key business stakeholders",
                 ),
                 PlanPhase(
                     phase_name="Days 31-60: Execution & Stabilization",
                     primary_objective="Execute on critical priorities and stabilize operations",
                     key_deliverables=phase2_deliverables,
-                    stakeholder_focus="Team members and cross-functional partners"
+                    stakeholder_focus="Team members and cross-functional partners",
                 ),
                 PlanPhase(
                     phase_name="Days 61-90: Strategy & Scale",
                     primary_objective="Establish long-term strategy and scale impact",
                     key_deliverables=phase3_deliverables,
-                    stakeholder_focus="Leadership team and key decision makers"
-                )
+                    stakeholder_focus="Leadership team and key decision makers",
+                ),
             ]
 
             return phases
@@ -427,19 +440,20 @@ class OnboardingPlannerAgent:
             base_resources = [
                 "Access to key systems and documentation",
                 "Dedicated time with direct reports and stakeholders",
-                "Budget for team building and tools"
+                "Budget for team building and tools",
             ]
 
             if company_maturity.lower() == "startup":
-                base_resources.extend([
-                    "Authority to make rapid technical decisions",
-                    "Support for recruiting key hires"
-                ])
+                base_resources.extend(
+                    [
+                        "Authority to make rapid technical decisions",
+                        "Support for recruiting key hires",
+                    ]
+                )
             else:
-                base_resources.extend([
-                    "Cross-functional liaison support",
-                    "Change management resources"
-                ])
+                base_resources.extend(
+                    ["Cross-functional liaison support", "Change management resources"]
+                )
 
             return base_resources
 
@@ -459,7 +473,7 @@ class OnboardingPlannerAgent:
         return OnboardingPlan(
             phases=self._generate_fallback_phases(),
             risk_assessment="Standard onboarding risks apply",
-            resource_requirements=["Basic onboarding resources"]
+            resource_requirements=["Basic onboarding resources"],
         )
 
     def _generate_fallback_phases(self) -> list[PlanPhase]:
@@ -475,9 +489,9 @@ class OnboardingPlannerAgent:
                 key_deliverables=[
                     "Meet with key stakeholders",
                     "Learn current processes",
-                    "Identify initial opportunities"
+                    "Identify initial opportunities",
                 ],
-                stakeholder_focus="Team and immediate stakeholders"
+                stakeholder_focus="Team and immediate stakeholders",
             ),
             PlanPhase(
                 phase_name="Days 31-60: Execution",
@@ -485,9 +499,9 @@ class OnboardingPlannerAgent:
                 key_deliverables=[
                     "Complete first project",
                     "Build relationships",
-                    "Demonstrate competence"
+                    "Demonstrate competence",
                 ],
-                stakeholder_focus="Team and peers"
+                stakeholder_focus="Team and peers",
             ),
             PlanPhase(
                 phase_name="Days 61-90: Strategy",
@@ -495,10 +509,10 @@ class OnboardingPlannerAgent:
                 key_deliverables=[
                     "Develop strategic plan",
                     "Show measurable results",
-                    "Prepare for next quarter"
+                    "Prepare for next quarter",
                 ],
-                stakeholder_focus="Leadership and stakeholders"
-            )
+                stakeholder_focus="Leadership and stakeholders",
+            ),
         ]
 
 
@@ -513,11 +527,7 @@ def create_onboarding_planner_agent() -> OnboardingPlannerAgent:
 
 
 # Convenience function for quick plan generation
-def generate_onboarding_plan(
-    job_description: str,
-    company_maturity: str,
-    role_title: str
-) -> str:
+def generate_onboarding_plan(job_description: str, company_maturity: str, role_title: str) -> str:
     """Quickly generate an onboarding roadmap.
 
     Args:

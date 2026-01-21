@@ -20,7 +20,9 @@ from typing import Any
 from agentic_core.prompt_governance.version_registry.PromptRegistry import get_prompt_registry
 
 Logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 
 def collapse_duplicates():
@@ -57,7 +59,10 @@ def collapse_duplicates():
         # Process in reverse to preserve latest entries first
         for entry in reversed(entries):
             # Create key from DUPLICATE_KEY_FIELDS
-            key = tuple(entry.get(field) for field in ["version", "purpose", "author", "content_hash", "territory"])
+            key = tuple(
+                entry.get(field)
+                for field in ["version", "purpose", "author", "content_hash", "territory"]
+            )
 
             if key not in seen_keys:
                 seen_keys.add(key)
@@ -98,7 +103,9 @@ def collapse_duplicates():
     if original_count > 0:
         print(f"   Reduction: {100 * total_removed / original_count:.1f}%")
 
-    Logger.info(f"Cleanup complete: {original_count} → {final_count} entries ({total_removed} removed)")
+    Logger.info(
+        f"Cleanup complete: {original_count} → {final_count} entries ({total_removed} removed)"
+    )
 
 
 if __name__ == "__main__":

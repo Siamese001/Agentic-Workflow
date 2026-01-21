@@ -9,6 +9,7 @@ Tests for the foundational hardening components:
 
 All tests must pass 100%.
 """
+
 import os
 import sys
 from pathlib import Path
@@ -36,7 +37,9 @@ class TestIOrchestrator:
                 return True
 
         obj = CompleteOrchestrator()
-        assert isinstance(obj, IOrchestrator), "Complete implementation should pass isinstance check"
+        assert isinstance(obj, IOrchestrator), (
+            "Complete implementation should pass isinstance check"
+        )
 
     def test_protocol_adherence_missing_validate_stability(self):
         """Test Case C: Missing validate_stability fails isinstance check."""
@@ -45,10 +48,13 @@ class TestIOrchestrator:
         class IncompleteOrchestrator:
             def run_mission(self, context: dict[str, Any]) -> dict[str, Any]:
                 return {"status": "SUCCESS"}
+
             # Missing validate_stability!
 
         obj = IncompleteOrchestrator()
-        assert not isinstance(obj, IOrchestrator), "Missing validate_stability should fail isinstance check"
+        assert not isinstance(obj, IOrchestrator), (
+            "Missing validate_stability should fail isinstance check"
+        )
 
     def test_protocol_adherence_missing_run_mission(self):
         """Missing run_mission fails isinstance check."""
@@ -60,7 +66,9 @@ class TestIOrchestrator:
                 return True
 
         obj = IncompleteOrchestrator()
-        assert not isinstance(obj, IOrchestrator), "Missing run_mission should fail isinstance check"
+        assert not isinstance(obj, IOrchestrator), (
+            "Missing run_mission should fail isinstance check"
+        )
 
     def test_ihealable_protocol_complete(self):
         """IHealable protocol with complete implementation."""
@@ -68,10 +76,7 @@ class TestIOrchestrator:
 
         class CompleteHealer:
             def heal_repository(
-                self,
-                dry_run: bool = True,
-                execute: bool = False,
-                **kwargs: Any
+                self, dry_run: bool = True, execute: bool = False, **kwargs: Any
             ) -> dict[str, Any]:
                 return {"violations_found": 0, "violations_fixed": 0}
 
@@ -86,7 +91,9 @@ class TestIOrchestrator:
             pass  # Missing heal_repository
 
         obj = IncompleteHealer()
-        assert not isinstance(obj, IHealable), "Missing heal_repository should fail isinstance check"
+        assert not isinstance(obj, IHealable), (
+            "Missing heal_repository should fail isinstance check"
+        )
 
 
 class TestInfrastructureMixin:
@@ -117,7 +124,7 @@ class TestInfrastructureMixin:
         agent = BrokenAgent()
 
         # _infra_initialized should be False (class default, not instance)
-        assert getattr(agent, '_infra_initialized', False) is False
+        assert getattr(agent, "_infra_initialized", False) is False
 
         # verify_state should raise RuntimeError
         with pytest.raises(RuntimeError) as exc_info:

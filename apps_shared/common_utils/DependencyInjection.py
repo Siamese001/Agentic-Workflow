@@ -101,22 +101,22 @@ class TestDependencyInjection:
         self.ctx.user_id = "test_user"
         self.ctx.session_id = "test_session"
         # Remove any existing attributes that might interfere
-        for attr in ['pinecone_adapter', 'SafetyEngine', 'state_manager']:
+        for attr in ["pinecone_adapter", "SafetyEngine", "state_manager"]:
             if hasattr(self.ctx, attr):
                 delattr(self.ctx, attr)
 
     def test_inject_dependencies_adds_services(self) -> None:
         """Test that inject_dependencies adds services to context."""
         # Ensure context doesn't have services
-        assert not hasattr(self.ctx, 'pinecone_adapter')
-        assert not hasattr(self.ctx, 'SafetyEngine')
+        assert not hasattr(self.ctx, "pinecone_adapter")
+        assert not hasattr(self.ctx, "SafetyEngine")
 
         # Inject dependencies
         updated_ctx = inject_dependencies(self.ctx)
 
         # Should have services added
-        assert hasattr(updated_ctx, 'pinecone_adapter')
-        assert hasattr(updated_ctx, 'SafetyEngine')
+        assert hasattr(updated_ctx, "pinecone_adapter")
+        assert hasattr(updated_ctx, "SafetyEngine")
         assert isinstance(updated_ctx.pinecone_adapter, PineconeAdapter)
         assert isinstance(updated_ctx.SafetyEngine, SafetyEngine)
 
@@ -131,7 +131,7 @@ class TestDependencyInjection:
 
         # Should preserve existing service
         assert updated_ctx.pinecone_adapter is existing_adapter
-        assert hasattr(updated_ctx, 'SafetyEngine')
+        assert hasattr(updated_ctx, "SafetyEngine")
 
 
 class TestLayerDIIntegration:
@@ -143,16 +143,13 @@ class TestLayerDIIntegration:
 
     def test_pinecone_adapter_di_interface(self) -> None:
         """Test that PineconeAdapter provides DI-compatible interface."""
-#         from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.pinecone_adapter import PineconeConfig  # DEPRECATED: Archive import removed to protect archives from validation edits
+        #         from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.pinecone_adapter import PineconeConfig  # DEPRECATED: Archive import removed to protect archives from validation edits
 
-        config = PineconeConfig(
-            api_key="test_key",
-            index_name="test_index"
-        )
+        config = PineconeConfig(api_key="test_key", index_name="test_index")
         adapter = PineconeAdapter(config)
 
         # Should have retrieve_evidence method for DI
-        assert hasattr(adapter, 'retrieve_evidence')
+        assert hasattr(adapter, "retrieve_evidence")
         assert callable(adapter.retrieve_evidence)
 
     def test_safety_engine_di_interface(self) -> None:
@@ -160,7 +157,7 @@ class TestLayerDIIntegration:
         engine = SafetyEngine()
 
         # Should have evaluate method for DI
-        assert hasattr(engine, 'evaluate')
+        assert hasattr(engine, "evaluate")
         assert callable(engine.evaluate)
 
 
@@ -169,48 +166,47 @@ class TestDIAtomicityCompliance:
 
     def test_no_direct_imports_in_l2(self) -> None:
         """Test that L2 doesn't directly import services."""
-#         import archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.execution  # DEPRECATED: Archive import removed to protect archives from validation edits
+        #         import archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.execution  # DEPRECATED: Archive import removed to protect archives from validation edits
 
         # Should import from DI container, not direct services
         source_lines = []
         try:
-            with open('l2/execution.py') as f:
+            with open("l2/execution.py") as f:
                 source_lines = f.readlines()
         except FileNotFoundError:
             # Skip if file not found in test environment
             return
 
-        source = ''.join(source_lines)
+        source = "".join(source_lines)
 
         # Should contain DI imports
-        assert 'from infra.di_container import' in source
+        assert "from infra.di_container import" in source
 
         # Should not contain direct Pinecone imports for business logic
         # (except for type hints)
-        business_logic_imports = [
-            'from pinecone import',
-            'import pinecone'
-        ]
+        business_logic_imports = ["from pinecone import", "import pinecone"]
 
         for imp in business_logic_imports:
             # Allow in comments or type hints only
-            lines_with_imp = [line for line in source_lines if imp in line and not line.strip().startswith('#')]
+            lines_with_imp = [
+                line for line in source_lines if imp in line and not line.strip().startswith("#")
+            ]
             assert len(lines_with_imp) == 0, f"Found direct import: {imp}"
 
     def test_no_direct_imports_in_l3(self) -> None:
         """Test that L3 doesn't directly import services."""
-#         import archives.legacy_resume_gen.Agentic-Workflow-10_9.l3  # INVALID: Cannot import from path with hyphens
+        #         import archives.legacy_resume_gen.Agentic-Workflow-10_9.l3  # INVALID: Cannot import from path with hyphens
 
         # Should import from DI container
         source_lines = []
         try:
-            with open('l3/__init__.py') as f:
+            with open("l3/__init__.py") as f:
                 source_lines = f.readlines()
         except FileNotFoundError:
             return
 
-        source = ''.join(source_lines)
-        assert 'from infra.di_container import' in source
+        source = "".join(source_lines)
+        assert "from infra.di_container import" in source
 
 
 if __name__ == "__main__":

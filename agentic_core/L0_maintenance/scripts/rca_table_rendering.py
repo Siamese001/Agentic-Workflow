@@ -4,6 +4,7 @@ RCA: Why tables are not loading after switching to real data
 
 Compare mock data structure vs real data structure to identify mismatch
 """
+
 import json
 import re
 
@@ -21,11 +22,11 @@ def rca_table_rendering():
     print("=" * 70)
 
     dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
-    html = dashboard_path.read_text(encoding='utf-8')
+    html = dashboard_path.read_text(encoding="utf-8")
 
     # Extract dashboardData
     print("\n1. Extracting dashboardData...")
-    dash_match = re.search(r'const dashboardData = (\[.*?\]);', html, re.DOTALL)
+    dash_match = re.search(r"const dashboardData = (\[.*?\]);", html, re.DOTALL)
     if not dash_match:
         print("   ❌ dashboardData not found")
         return
@@ -34,7 +35,7 @@ def rca_table_rendering():
     print(f"   ✅ dashboardData: {len(data)} rows")
 
     # Get territory names from dashboardData
-    territory_names = [row['Territory'] for row in data if row['Territory'] != 'TOTAL']
+    territory_names = [row["Territory"] for row in data if row["Territory"] != "TOTAL"]
     print(f"\n2. Territory names in dashboardData ({len(territory_names)}):")
     for i, name in enumerate(territory_names[:5], 1):
         print(f"   {i}. '{name}'")
@@ -42,7 +43,7 @@ def rca_table_rendering():
 
     # Extract realAgentData
     print("\n3. Extracting realAgentData...")
-    real_match = re.search(r'const realAgentData = (\{.*?\});', html, re.DOTALL)
+    real_match = re.search(r"const realAgentData = (\{.*?\});", html, re.DOTALL)
     if not real_match:
         print("   ❌ realAgentData not found")
         return
@@ -73,12 +74,16 @@ def rca_table_rendering():
     print(f"   In realAgentData but NOT in dashboardData: {len(in_real_not_dash)}")
 
     if in_dash_not_real:
-        print(f"\n   ❌ MISMATCH: {len(in_dash_not_real)} territories in dashboardData have NO realAgentData:")
+        print(
+            f"\n   ❌ MISMATCH: {len(in_dash_not_real)} territories in dashboardData have NO realAgentData:"
+        )
         for name in sorted(in_dash_not_real)[:10]:
             print(f"      - '{name}'")
 
     if in_real_not_dash:
-        print(f"\n   ⚠️  EXTRA: {len(in_real_not_dash)} territories in realAgentData not in dashboardData:")
+        print(
+            f"\n   ⚠️  EXTRA: {len(in_real_not_dash)} territories in realAgentData not in dashboardData:"
+        )
         for name in sorted(in_real_not_dash)[:10]:
             print(f"      - '{name}'")
 
@@ -90,10 +95,10 @@ def rca_table_rendering():
     print(f"\n   Sample territory: '{sample_territory}'")
     print(f"   Keys: {list(sample_data.keys())}")
 
-    if 'agents' in sample_data:
+    if "agents" in sample_data:
         print(f"   ✅ Has 'agents' array: {len(sample_data['agents'])} agents")
-        if sample_data['agents']:
-            agent = sample_data['agents'][0]
+        if sample_data["agents"]:
+            agent = sample_data["agents"][0]
             print(f"   Agent keys: {list(agent.keys())}")
     else:
         print("   ❌ Missing 'agents' array")
@@ -102,11 +107,11 @@ def rca_table_rendering():
     print("\n7. Checking rendering function expectations:")
 
     # Find where globalAgentData is used
-    if 'globalAgentData[territory]' in html:
+    if "globalAgentData[territory]" in html:
         print("   ✅ Code uses: globalAgentData[territory]")
-    if 'globalAgentData[territoryName]' in html:
+    if "globalAgentData[territoryName]" in html:
         print("   ✅ Code uses: globalAgentData[territoryName]")
-    if 'globalAgentData[row.Territory]' in html:
+    if "globalAgentData[row.Territory]" in html:
         print("   ✅ Code uses: globalAgentData[row.Territory]")
 
     # ROOT CAUSE SUMMARY
@@ -116,7 +121,9 @@ def rca_table_rendering():
 
     if len(in_dash_not_real) > 0:
         print("\n❌ CRITICAL ISSUE FOUND:")
-        print(f"   {len(in_dash_not_real)} territories in dashboardData have NO corresponding realAgentData")
+        print(
+            f"   {len(in_dash_not_real)} territories in dashboardData have NO corresponding realAgentData"
+        )
         print("\n   IMPACT:")
         print("   - When rendering tries to access globalAgentData[territory]")
         print("   - It gets undefined for these territories")
@@ -143,6 +150,7 @@ def rca_table_rendering():
         print("   - Check browser console for JavaScript errors")
         print("   - Verify loadData() is being called")
         print("   - Check if DOM elements exist (kpiGrid, codeQualityGrid)")
+
 
 if __name__ == "__main__":
     rca_table_rendering()

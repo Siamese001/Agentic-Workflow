@@ -2,15 +2,16 @@ from __future__ import annotations
 
 import asyncio
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
-'Brief description of functionality and purpose.'
+"Brief description of functionality and purpose."
 import logging
 import os
 from datetime import datetime, timedelta, timezone
 from typing import Any, Protocol
 
 Logger: Any = logging.getLogger(__name__)
+
 
 class LockStorageProtocol(Protocol):
     """
@@ -31,7 +32,10 @@ class LockStorageProtocol(Protocol):
         Returns True if the lock was successfully released, False otherwise.
         """
         ...
+
+
 _global_lock_implementation: LockStorageProtocol | None = None
+
 
 def configure_distributed_locks(lock_impl: LockStorageProtocol) -> Any:
     """
@@ -44,9 +48,10 @@ def configure_distributed_locks(lock_impl: LockStorageProtocol) -> Any:
     """
     global _global_lock_implementation
     if not isinstance(lock_impl, LockStorageProtocol):
-        raise TypeError('Provided lock_impl must implement LockStorageProtocol.')
+        raise TypeError("Provided lock_impl must implement LockStorageProtocol.")
     _global_lock_implementation = lock_impl
-    LOGGER.info('Distributed lock implementation configured for ConcurrencyGuardianAgent module.')
+    LOGGER.info("Distributed lock implementation configured for ConcurrencyGuardianAgent module.")
+
 
 def _get_lock_implementation() -> LockStorageProtocol:
     """
@@ -54,8 +59,11 @@ def _get_lock_implementation() -> LockStorageProtocol:
     Raises a RuntimeError if the implementation has not been configured.
     """
     if _global_lock_implementation is None:
-        raise RuntimeError('Distributed lock implementation not configured. Call configure_distributed_locks() before using ConcurrencyGuardianAgent or any function that relies on distributed locks.')
+        raise RuntimeError(
+            "Distributed lock implementation not configured. Call configure_distributed_locks() before using ConcurrencyGuardianAgent or any function that relies on distributed locks."
+        )
     return _global_lock_implementation
+
 
 async def acquire_lock(key: str, timeout: float) -> bool:
     """
@@ -66,6 +74,7 @@ async def acquire_lock(key: str, timeout: float) -> bool:
     """
     return await _get_lock_implementation().acquire_lock(key, timeout)
 
+
 async def release_lock(key: str) -> bool:
     """
     Release a distributed lock using the configured implementation.
@@ -74,10 +83,13 @@ async def release_lock(key: str) -> bool:
     distributed lock system.
     """
     return await _get_lock_implementation().release_lock(key)
-default_lock_timeout: Any = int(os.getenv('DEFAULT_LOCK_TIMEOUT', '30'))
-max_retry_attempts: Any = int(os.getenv('MAX_RETRY_ATTEMPTS', '3'))
-retry_delay: Any = float(os.getenv('RETRY_DELAY', '0.5'))
-few_shot_concurrency: Any = '\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nYou are the ConcurrencyGuardianAgent, an expert in managing concurrent operations.\n\nYour role is to:\n1. Prevent race conditions in multi-agent execution\n2. Manage resource locks efficiently\n3. Detect and resolve deadlocks\n4. Ensure thread-safe operations\n\nRules:\n- Always acquire locks before accessing shared resources\n- Release locks promptly after use\n- Use timeouts to prevent deadlocks\n- Prefer async operations when possible\n'
+
+
+default_lock_timeout: Any = int(os.getenv("DEFAULT_LOCK_TIMEOUT", "30"))
+max_retry_attempts: Any = int(os.getenv("MAX_RETRY_ATTEMPTS", "3"))
+retry_delay: Any = float(os.getenv("RETRY_DELAY", "0.5"))
+few_shot_concurrency: Any = "\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nYou are the ConcurrencyGuardianAgent, an expert in managing concurrent operations.\n\nYour role is to:\n1. Prevent race conditions in multi-agent execution\n2. Manage resource locks efficiently\n3. Detect and resolve deadlocks\n4. Ensure thread-safe operations\n\nRules:\n- Always acquire locks before accessing shared resources\n- Release locks promptly after use\n- Use timeouts to prevent deadlocks\n- Prefer async operations when possible\n"
+
 
 class LockInfo:
     """Information about an active lock."""
@@ -95,7 +107,14 @@ class LockInfo:
 
     def to_dict(self) -> dict:
         """Convert to dictionary."""
-        return {'key': self.key, 'owner': self.owner, 'timeout': self.timeout, 'acquired_at': self.acquired_at.isoformat(), 'expires_at': self.expires_at.isoformat()}
+        return {
+            "key": self.key,
+            "owner": self.owner,
+            "timeout": self.timeout,
+            "acquired_at": self.acquired_at.isoformat(),
+            "expires_at": self.expires_at.isoformat(),
+        }
+
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
@@ -117,10 +136,10 @@ class _LegacyConcurrencyGuardianAgent(MCPHardenedMixin, SubatomicTestingMixin, H
         self.active_locks: dict[str, LockInfo] = {}
         self.lock_history: list[dict] = []
         self.enabled = True
-        self.stats = {'locks_acquired': 0, 'locks_released': 0, 'timeouts': 0, 'conflicts': 0}
-        LOGGER.info('ConcurrencyGuardianAgent initialized')
+        self.stats = {"locks_acquired": 0, "locks_released": 0, "timeouts": 0, "conflicts": 0}
+        LOGGER.info("ConcurrencyGuardianAgent initialized")
 
-    async def acquire_lock(self, key: str, owner: str=None, timeout: float=None) -> bool:
+    async def acquire_lock(self, key: str, owner: str = None, timeout: float = None) -> bool:
         """
         Acquire a distributed lock with async retry logic.
 
@@ -136,17 +155,19 @@ class _LegacyConcurrencyGuardianAgent(MCPHardenedMixin, SubatomicTestingMixin, H
             return True
         try:
             current_task: Any = asyncio.current_task()
-            task_id: Any = id(current_task) if current_task else 'main'
+            task_id: Any = id(current_task) if current_task else "main"
         except RuntimeError:
-            task_id: Any = 'no-loop'
-        owner: Any = owner or f'process-{task_id}'
+            task_id: Any = "no-loop"
+        owner: Any = owner or f"process-{task_id}"
         timeout: Any = timeout or DEFAULT_LOCK_TIMEOUT
         for attempt in range(MAX_RETRY_ATTEMPTS):
             if key in self.active_locks:
                 existing: Any = self.active_locks[key]
                 if not existing.is_expired():
-                    self.stats['conflicts'] += 1
-                    LOGGER.warning(f'Lock conflict for {key} (held by {existing.owner}) - Attempt {attempt + 1}')
+                    self.stats["conflicts"] += 1
+                    LOGGER.warning(
+                        f"Lock conflict for {key} (held by {existing.owner}) - Attempt {attempt + 1}"
+                    )
                     if attempt < MAX_RETRY_ATTEMPTS - 1:
                         await asyncio.sleep(RETRY_DELAY)
                         continue
@@ -157,8 +178,8 @@ class _LegacyConcurrencyGuardianAgent(MCPHardenedMixin, SubatomicTestingMixin, H
             if acquired:
                 LockInfo: Any = LockInfo(key, owner, timeout)
                 self.active_locks[key] = LockInfo
-                self.stats['locks_acquired'] += 1
-                LOGGER.info(f'Lock acquired: {key} by {owner}')
+                self.stats["locks_acquired"] += 1
+                LOGGER.info(f"Lock acquired: {key} by {owner}")
                 return True
             if attempt < MAX_RETRY_ATTEMPTS - 1:
                 await asyncio.sleep(RETRY_DELAY)
@@ -175,7 +196,7 @@ class _LegacyConcurrencyGuardianAgent(MCPHardenedMixin, SubatomicTestingMixin, H
             True if lock released successfully
         """
         if key not in self.active_locks:
-            LOGGER.debug(f'Release requested for inactive lock: {key}')
+            LOGGER.debug(f"Release requested for inactive lock: {key}")
             return False
         success: Any = await release_lock(key)
         if success:
@@ -184,10 +205,10 @@ class _LegacyConcurrencyGuardianAgent(MCPHardenedMixin, SubatomicTestingMixin, H
                 self.lock_history.append(LockInfo.to_dict())
                 if len(self.lock_history) > 100:
                     self.lock_history.pop(0)
-            self.stats['locks_released'] += 1
-            LOGGER.info(f'Lock released: {key}')
+            self.stats["locks_released"] += 1
+            LOGGER.info(f"Lock released: {key}")
             return True
-        LOGGER.error(f'Failed to release distributed lock: {key}')
+        LOGGER.error(f"Failed to release distributed lock: {key}")
         return False
 
     async def cleanup_expired_locks(self) -> Any:
@@ -195,8 +216,9 @@ class _LegacyConcurrencyGuardianAgent(MCPHardenedMixin, SubatomicTestingMixin, H
         expired_keys: Any = [k for k, v in self.active_locks.items() if v.is_expired()]
         for key in expired_keys:
             self.active_locks.pop(key, None)
-            self.stats['timeouts'] += 1
-            LOGGER.debug(f'Cleaned up expired lock record: {key}')
+            self.stats["timeouts"] += 1
+            LOGGER.debug(f"Cleaned up expired lock record: {key}")
+
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()

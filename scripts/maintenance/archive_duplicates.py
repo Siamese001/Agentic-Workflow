@@ -25,13 +25,12 @@ TARGETS = [
     "agentic_core/L5_safety/guardrails/UnifiedStructureEnforcerAgent.py",
     "agentic_core/L5_safety/guardrails/UnifiedStructureHealerAgent.py",
     "agentic_core/L5_safety/guardrails/UnifiedStructureValidatorAgent.py",
-
     # 2. The Duplicate Model Router (from ToolRegistry)
     "agentic_core/L2_execution/ToolRegistry/UnifiedModelRouterAgent.py",
-
     # 3. The Duplicate Hygiene Agent (from apps_shared)
-    "apps_shared/base_agents/HygieneGuardianAgent.py"
+    "apps_shared/base_agents/HygieneGuardianAgent.py",
 ]
+
 
 def main():
     print(f"[*] Starting Archive Operation: {TIMESTAMP}")
@@ -81,6 +80,7 @@ def main():
         print("✅ Archive operation completed successfully.")
     else:
         print("⚠️  No files were moved.")
+
 
 if __name__ == "__main__":
     main()

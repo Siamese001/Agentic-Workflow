@@ -3,6 +3,7 @@ DashboardRenderer - Renders dashboard HTML from data.
 
 Stub module for backwards compatibility.
 """
+
 from pathlib import Path
 from typing import Any
 
@@ -22,4 +23,4 @@ class DashboardRenderer:
         return True
 
 
-__all__ = ['DashboardRenderer']
+__all__ = ["DashboardRenderer"]

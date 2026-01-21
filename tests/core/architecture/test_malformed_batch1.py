@@ -5,6 +5,7 @@ Test Suite: Batch 1 Malformed Agents Structural Integrity
 Verifies that Batch 1 agents have no top-level heal_repository functions
 and that the class methods are properly wired.
 """
+
 import ast
 import sys
 from pathlib import Path
@@ -15,10 +16,12 @@ sys.path.insert(0, str(PROJECT_ROOT))
 PASSED = 0
 FAILED = 0
 
+
 def test_pass(test_id: str, msg: str):
     global PASSED
     PASSED += 1
     print(f"  ✅ {test_id}: {msg}")
+
 
 def test_fail(test_id: str, msg: str):
     global FAILED
@@ -38,7 +41,7 @@ def test_batch1_structural_integrity():
         "agentic_core/L3_orchestration/workflow_engines/CoordinateObservabilityOperationsAgent.py",
         "agentic_core/L5_safety/guardrails/TestCoverageGuardianAgent.py",
         "agentic_core/L5_safety/guardrails/MultiProviderRouterAgent.py",
-        "agentic_core/L3_orchestration/workflow_engines/SovereignRagOrchestratorAgent.py"
+        "agentic_core/L3_orchestration/workflow_engines/SovereignRagOrchestratorAgent.py",
     ]
 
     for rel_path in targets:
@@ -50,14 +53,17 @@ def test_batch1_structural_integrity():
             continue
 
         # 1. Static Analysis - check for top-level heal_repository
-        content = full_path.read_text(encoding='utf-8')
+        content = full_path.read_text(encoding="utf-8")
         lines = content.splitlines()
 
         # Check for top-level definition (def heal_repository at start of line)
-        top_level_defs = [i+1 for i, l in enumerate(lines) if l.startswith("def heal_repository")]
+        top_level_defs = [i + 1 for i, l in enumerate(lines) if l.startswith("def heal_repository")]
 
         if len(top_level_defs) > 0:
-            test_fail(f"{agent_name}-ORPHAN", f"Still has top-level heal_repository at lines: {top_level_defs}")
+            test_fail(
+                f"{agent_name}-ORPHAN",
+                f"Still has top-level heal_repository at lines: {top_level_defs}",
+            )
         else:
             test_pass(f"{agent_name}-ORPHAN", "No top-level heal_repository found")
 
@@ -110,5 +116,6 @@ def main():
         print(f"\n  ❌ {FAILED} TESTS FAILED")
         return 1
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     sys.exit(main())

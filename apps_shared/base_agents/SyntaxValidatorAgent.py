@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: guardrail
@@ -52,6 +51,7 @@ Logger = logging.getLogger(__name__)
 @dataclass
 class SyntaxViolation:
     """Structured syntax error report."""
+
     file_path: Path
     line_number: int
     column: int
@@ -75,7 +75,7 @@ class SyntaxValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin)
     SOVEREIGN_ROOTS = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, SCRIPTS_DIR]
 
     # Directories to skip
-    SKIP_DIRS = {'__pycache__', '.git', 'node_modules', '.venv', 'venv', ARCHIVES_DIR}
+    SKIP_DIRS = {"__pycache__", ".git", "node_modules", ".venv", "venv", ARCHIVES_DIR}
 
     def __init__(self, project_root: Path = None) -> None:
         """Initialize the syntax validator."""
@@ -94,7 +94,7 @@ class SyntaxValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin)
             SyntaxViolation if syntax error found, None if valid
         """
         try:
-            content = file_path.read_text(encoding='utf-8')
+            content = file_path.read_text(encoding="utf-8")
             ast.parse(content, filename=str(file_path))
             return None  # No syntax errors
 
@@ -104,7 +104,7 @@ class SyntaxValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin)
                 line_number=e.lineno or 0,
                 column=e.offset or 0,
                 error_message=e.msg or "Unknown syntax error",
-                error_type="SyntaxError"
+                error_type="SyntaxError",
             )
         except UnicodeDecodeError as e:
             return SyntaxViolation(
@@ -112,7 +112,7 @@ class SyntaxValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin)
                 line_number=0,
                 column=0,
                 error_message=f"Unicode decode error: {str(e)}",
-                error_type="UnicodeDecodeError"
+                error_type="UnicodeDecodeError",
             )
         except Exception as e:
             self.logger.warning(f"Unexpected error validating {file_path}: {e}")
@@ -121,7 +121,7 @@ class SyntaxValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin)
                 line_number=0,
                 column=0,
                 error_message=f"Validation error: {str(e)}",
-                error_type=type(e).__name__
+                error_type=type(e).__name__,
             )
 
     def scan_directory(self, directory: Path) -> list[SyntaxViolation]:
@@ -137,6 +137,7 @@ class SyntaxValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin)
         violations = []
 
         from agentic_core.utils.ssot_discovery import get_python_files
+
         for py_file in get_python_files(directory):
             # Skip excluded directories
             if any(skip_dir in py_file.parts for skip_dir in self.SKIP_DIRS):
@@ -166,7 +167,7 @@ class SyntaxValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin)
         return {
             "total_violations": len(all_violations),
             "violations": all_violations,
-            "status": "FAIL" if all_violations else "PASS"
+            "status": "FAIL" if all_violations else "PASS",
         }
 
     @standard_heal
@@ -176,7 +177,7 @@ class SyntaxValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin)
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: list[str] | None = None
+        _call_path: list[str] | None = None,
     ) -> dict[str, Any]:
         """
         Canon Key 51 compliance: Audit and report syntax state.
@@ -201,7 +202,7 @@ class SyntaxValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin)
         # Validate all files
         results = self.validate_repository()
 
-        violations = results.get('violations', [])
+        violations = results.get("violations", [])
 
         # Report findings
         if violations:
@@ -231,7 +232,7 @@ class SyntaxValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin)
             "status": "PASS" if not violations else "FAIL",
             "dry_run": dry_run,
             "execute": execute,
-            "summary": f"Found {len(violations)} syntax errors, fixed {fixed_count}"
+            "summary": f"Found {len(violations)} syntax errors, fixed {fixed_count}",
         }
 
     def get_violation_summary(self, violations: list[SyntaxViolation]) -> dict[str, Any]:
@@ -264,7 +265,9 @@ class SyntaxValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin)
             "total": len(violations),
             "by_error_type": {k: len(v) for k, v in by_error_type.items()},
             "by_file": {k: len(v) for k, v in by_file.items()},
-            "most_common_error": max(by_error_type.items(), key=lambda x: len(x[1]))[0] if by_error_type else None
+            "most_common_error": max(by_error_type.items(), key=lambda x: len(x[1]))[0]
+            if by_error_type
+            else None,
         }
 
 

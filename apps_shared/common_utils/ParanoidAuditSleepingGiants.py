@@ -7,6 +7,7 @@ Identifies agents with high-risk capabilities that are "Armed but Disconnected":
 - Disconnected Interface: Trivial heal_repository with orphaned substantial methods
 - Shadow Execution: __main__ blocks, print() instead of logging
 """
+
 from __future__ import annotations
 
 import ast
@@ -18,6 +19,7 @@ from pathlib import Path
 @dataclass
 class SleepingGiant:
     """Represents a potentially dangerous agent."""
+
     file_path: Path
     agent_name: str
     dangerous_imports: list[str] = field(default_factory=list)
@@ -36,21 +38,29 @@ class SleepingGiant:
 
 
 DANGEROUS_IMPORTS = {
-    'shutil': ['rmtree', 'move', 'copy', 'copytree'],
-    'os': ['remove', 'unlink', 'rmdir', 'makedirs', 'rename'],
-    'subprocess': ['run', 'call', 'Popen', 'check_output'],
+    "shutil": ["rmtree", "move", "copy", "copytree"],
+    "os": ["remove", "unlink", "rmdir", "makedirs", "rename"],
+    "subprocess": ["run", "call", "Popen", "check_output"],
 }
 
 MUTATION_PATTERNS = [
-    r'\.write_text\s*\(',
-    r'\.write\s*\(',
+    r"\.write_text\s*\(",
+    r"\.write\s*\(",
     r'open\s*\([^)]*["\']w["\']',
-    r'\.unlink\s*\(',
-    r'\.rmtree\s*\(',
-    r'\.remove\s*\(',
+    r"\.unlink\s*\(",
+    r"\.rmtree\s*\(",
+    r"\.remove\s*\(",
 ]
 
-EXCLUDED_DIRS = {'__pycache__', '.git', 'archives', 'void_violations', 'node_modules', '.venv', 'venv'}
+EXCLUDED_DIRS = {
+    "__pycache__",
+    ".git",
+    "archives",
+    "void_violations",
+    "node_modules",
+    ".venv",
+    "venv",
+}
 
 
 class AgentAnalyzer(ast.NodeVisitor):
@@ -75,24 +85,24 @@ class AgentAnalyzer(ast.NodeVisitor):
     def visit_ImportFrom(self, node: ast.ImportFrom):
         if node.module:
             self.imports.add(node.module)
-            base_module = node.module.split('.')[0]
+            base_module = node.module.split(".")[0]
             if base_module in DANGEROUS_IMPORTS:
                 for alias in node.names:
                     if alias.name in DANGEROUS_IMPORTS.get(base_module, []):
                         self.dangerous_imports.append(f"{base_module}.{alias.name}")
-            if 'argparse' in node.module:
+            if "argparse" in node.module:
                 self.uses_argparse = True
         for alias in node.names:
-            if alias.name == 'argparse':
+            if alias.name == "argparse":
                 self.uses_argparse = True
         self.generic_visit(node)
 
     def visit_ClassDef(self, node: ast.ClassDef):
         self.current_class = node.name
         self.classes[node.name] = {
-            'bases': [self._get_base_name(b) for b in node.bases],
-            'methods': {},
-            'heal_repository': None,
+            "bases": [self._get_base_name(b) for b in node.bases],
+            "methods": {},
+            "heal_repository": None,
         }
         self.generic_visit(node)
         self.current_class = None
@@ -100,31 +110,31 @@ class AgentAnalyzer(ast.NodeVisitor):
     def visit_FunctionDef(self, node: ast.FunctionDef):
         if self.current_class:
             method_info = {
-                'name': node.name,
-                'lines': node.end_lineno - node.lineno + 1 if node.end_lineno else 1,
-                'body': ast.unparse(node) if hasattr(ast, 'unparse') else '',
-                'calls': self._get_method_calls(node),
+                "name": node.name,
+                "lines": node.end_lineno - node.lineno + 1 if node.end_lineno else 1,
+                "body": ast.unparse(node) if hasattr(ast, "unparse") else "",
+                "calls": self._get_method_calls(node),
             }
-            self.classes[self.current_class]['methods'][node.name] = method_info
+            self.classes[self.current_class]["methods"][node.name] = method_info
 
-            if node.name == 'heal_repository':
-                self.classes[self.current_class]['heal_repository'] = method_info
+            if node.name == "heal_repository":
+                self.classes[self.current_class]["heal_repository"] = method_info
         self.generic_visit(node)
 
     def visit_Assign(self, node: ast.Assign):
         # Check for hardcoded paths
         for target in node.targets:
             if isinstance(target, ast.Name):
-                if target.id in ('ROOT', 'TARGET', 'PROJECT_ROOT', 'BASE_DIR'):
+                if target.id in ("ROOT", "TARGET", "PROJECT_ROOT", "BASE_DIR"):
                     if isinstance(node.value, ast.Constant) and isinstance(node.value.value, str):
-                        if '/' in node.value.value or '\\' in node.value.value:
+                        if "/" in node.value.value or "\\" in node.value.value:
                             self.hardcoded_paths.append(f"{target.id} = {node.value.value}")
         self.generic_visit(node)
 
     def visit_If(self, node: ast.If):
         # Check for if __name__ == "__main__"
         if isinstance(node.test, ast.Compare):
-            if isinstance(node.test.left, ast.Name) and node.test.left.id == '__name__':
+            if isinstance(node.test.left, ast.Name) and node.test.left.id == "__name__":
                 self.has_main_block = True
         self.generic_visit(node)
 
@@ -141,7 +151,7 @@ class AgentAnalyzer(ast.NodeVisitor):
         for child in ast.walk(node):
             if isinstance(child, ast.Call):
                 if isinstance(child.func, ast.Attribute):
-                    if isinstance(child.func.value, ast.Name) and child.func.value.id == 'self':
+                    if isinstance(child.func.value, ast.Name) and child.func.value.id == "self":
                         calls.add(child.func.attr)
         return calls
 
@@ -149,12 +159,12 @@ class AgentAnalyzer(ast.NodeVisitor):
 def analyze_file(file_path: Path) -> SleepingGiant | None:
     """Analyze a single file for Sleeping Giant patterns."""
     try:
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
     except Exception:
         return None
 
     # Quick filter - must be an Agent file
-    if 'Agent' not in file_path.name and 'class' not in content:
+    if "Agent" not in file_path.name and "class" not in content:
         return None
 
     try:
@@ -169,18 +179,22 @@ def analyze_file(file_path: Path) -> SleepingGiant | None:
     mutation_methods = []
     for pattern in MUTATION_PATTERNS:
         if re.search(pattern, content):
-            mutation_methods.append(pattern.replace('\\', '').replace('s*', '').replace('(', ''))
+            mutation_methods.append(pattern.replace("\\", "").replace("s*", "").replace("(", ""))
 
     # Check for print() usage for errors
-    uses_print_for_errors = bool(re.search(r'print\s*\(\s*["\'].*(?:error|Error|ERROR|fail|Fail|FAIL)', content))
+    uses_print_for_errors = bool(
+        re.search(r'print\s*\(\s*["\'].*(?:error|Error|ERROR|fail|Fail|FAIL)', content)
+    )
 
     # Find agent classes
     for class_name, class_info in analyzer.classes.items():
-        if not class_name.endswith('Agent'):
+        if not class_name.endswith("Agent"):
             continue
 
         # Check if it inherits from HealerMixin or has heal_repository
-        has_healer = 'HealerMixin' in class_info['bases'] or 'heal_repository' in class_info['methods']
+        has_healer = (
+            "HealerMixin" in class_info["bases"] or "heal_repository" in class_info["methods"]
+        )
         if not has_healer:
             continue
 
@@ -196,30 +210,33 @@ def analyze_file(file_path: Path) -> SleepingGiant | None:
         )
 
         # Analyze heal_repository
-        heal_repo = class_info.get('heal_repository')
+        heal_repo = class_info.get("heal_repository")
         if heal_repo:
-            giant.heal_repo_lines = heal_repo['lines']
-            body = heal_repo['body']
+            giant.heal_repo_lines = heal_repo["lines"]
+            body = heal_repo["body"]
 
             # Check if trivial
             is_trivial = (
-                heal_repo['lines'] <= 6 or
-                'return {' in body and ('skipped' in body or 'violations' in body) or
-                body.strip().endswith('pass') or
-                'return super().heal_repository' in body
+                heal_repo["lines"] <= 6
+                or "return {" in body
+                and ("skipped" in body or "violations" in body)
+                or body.strip().endswith("pass")
+                or "return super().heal_repository" in body
             )
             giant.heal_repo_is_trivial = is_trivial
 
             # Check for zombie healer
-            if 'return super().heal_repository' in body or body.strip().endswith('pass'):
+            if "return super().heal_repository" in body or body.strip().endswith("pass"):
                 giant.is_zombie_healer = True
 
             # Find orphaned methods
-            heal_calls = heal_repo['calls']
+            heal_calls = heal_repo["calls"]
             substantial_methods = [
-                name for name, info in class_info['methods'].items()
-                if name not in ('__init__', '__post_init__', 'heal_repository', '__str__', '__repr__')
-                and info['lines'] > 5
+                name
+                for name, info in class_info["methods"].items()
+                if name
+                not in ("__init__", "__post_init__", "heal_repository", "__str__", "__repr__")
+                and info["lines"] > 5
                 and name not in heal_calls
             ]
             giant.orphaned_methods = substantial_methods
@@ -303,7 +320,9 @@ def main():
 
     for giant in giants:
         if giant.risk_score in ("CRITICAL", "High"):
-            print(f"{giant.agent_name:<40} {giant.risk_score:<10} {len(giant.orphaned_methods):<5} {giant.latent_capability[:40]}")
+            print(
+                f"{giant.agent_name:<40} {giant.risk_score:<10} {len(giant.orphaned_methods):<5} {giant.latent_capability[:40]}"
+            )
             if giant.risk_score == "CRITICAL":
                 critical_giants.append(giant)
             else:
@@ -321,7 +340,9 @@ def main():
         print(f"   Risk Score: {giant.risk_score}")
         print(f"   Latent Capability: {giant.latent_capability}")
         print(f"   Disconnect Status: {giant.disconnect_status}")
-        print(f"   heal_repository lines: {giant.heal_repo_lines} (Trivial: {giant.heal_repo_is_trivial})")
+        print(
+            f"   heal_repository lines: {giant.heal_repo_lines} (Trivial: {giant.heal_repo_is_trivial})"
+        )
         if giant.orphaned_methods:
             print(f"   Orphaned Methods: {', '.join(giant.orphaned_methods[:10])}")
         if giant.has_main_block:

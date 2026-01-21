@@ -6,6 +6,7 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 Ensures brand voice and professional tone in resume content.
 """
+
 from __future__ import annotations
 
 import json
@@ -29,7 +30,9 @@ class BrandComplianceAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin)
     """
 
     FORBIDDEN_PHRASES = [
-        "i am", "i'm", "my name is",  # First person in summary
+        "i am",
+        "i'm",
+        "my name is",  # First person in summary
         "responsible for",  # Weak phrasing
         "duties included",  # Passive
         "helped with",  # Vague
@@ -42,9 +45,21 @@ class BrandComplianceAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin)
     ]
 
     POWER_VERBS = [
-        "achieved", "delivered", "drove", "led", "managed",
-        "developed", "created", "implemented", "optimized", "increased",
-        "reduced", "improved", "launched", "designed", "built",
+        "achieved",
+        "delivered",
+        "drove",
+        "led",
+        "managed",
+        "developed",
+        "created",
+        "implemented",
+        "optimized",
+        "increased",
+        "reduced",
+        "improved",
+        "launched",
+        "designed",
+        "built",
     ]
 
     async def execute(self) -> None:
@@ -88,7 +103,10 @@ class BrandComplianceAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin)
                     suggestions.append("Experience section could use more action verbs")
 
         if issues:
-            self.record_fail(f"Brand violations: {len(issues)}", data={"issues": issues, "suggestions": suggestions})
+            self.record_fail(
+                f"Brand violations: {len(issues)}",
+                data={"issues": issues, "suggestions": suggestions},
+            )
             self.add_signal("BRAND_VIOLATION")
         else:
             self.record_pass("Brand compliant", data={"suggestions": suggestions})
@@ -112,7 +130,9 @@ class BrandComplianceAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin)
             return json.dumps(content)
         return str(content)
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs: Any) -> dict[str, Any]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs: Any
+    ) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 

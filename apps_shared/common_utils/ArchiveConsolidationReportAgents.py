@@ -11,6 +11,7 @@ Usage:
     python scripts/archive_consolidation_report_agents.py --dry-run
     python scripts/archive_consolidation_report_agents.py
 """
+
 from __future__ import annotations
 
 import argparse
@@ -31,23 +32,19 @@ LEGACY_AGENTS: dict[str, list[str]] = {
         "DangerousBuiltinsValidatorAgent.py",
         "DebuggerValidatorAgent.py",
     ],
-
     # Priority 2: L4 Checkpoint Managers -> UnifiedCheckpointManagerAgent
     "L4_Checkpoint_Managers": [
         "CheckpointManagerAgent.py",
         "AutonomousCheckpointManagerAgent.py",
     ],
-
     # Priority 3: L5 Hygiene Validators (already archived in legacy_validators)
     # Skipping - already handled
-
     # Priority 4: L5 Pattern Enforcers -> CodeStandardsEnforcerAgent
     "L5_Pattern_Enforcers": [
         "BaseClassEnforcerAgent.py",
         "PatternEnforcerAgent.py",
         "TypeHintEnforcementAgent.py",
     ],
-
     # Priority 5: L4 State Management -> UnifiedStateManagementAgent
     "L4_State_Management": [
         "AutonomousStateGuardianAgent.py",
@@ -55,14 +52,12 @@ LEGACY_AGENTS: dict[str, list[str]] = {
         "MemoryManagerAgent.py",
         "ValidationContextManagerAgent.py",
     ],
-
     # Additional from report appendix
     "L0_Test_Utilities": [
         "MockOrchestratorAgent.py",
         "ScriptToAgentClassifierAgent.py",
         "TestAgent.py",
     ],
-
     "L3_Exercisers": [
         "GeneralExerciserAgent.py",
         "L1CognitionExerciserAgent.py",
@@ -115,8 +110,8 @@ def archive_file(source: Path, category: str, dry_run: bool = False) -> tuple[bo
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Archive legacy agents from consolidation report')
-    parser.add_argument('--dry-run', action='store_true', help='Show what would be done')
+    parser = argparse.ArgumentParser(description="Archive legacy agents from consolidation report")
+    parser.add_argument("--dry-run", action="store_true", help="Show what would be done")
     args = parser.parse_args()
 
     print("=" * 70)

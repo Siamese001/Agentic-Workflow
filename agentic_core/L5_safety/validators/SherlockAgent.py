@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, workflow
@@ -9,7 +8,7 @@ from __future__ import annotations
 import asyncio
 from dataclasses import dataclass
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
 import os
 import re
@@ -48,12 +47,13 @@ class SherlockAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin, Hea
     - Analysis state checkpointed for persistent debugging
     - Trace snapshots stored in L4 ledger
     """
+
     def __init__(self, context: Any) -> None:
         """Initialize the instance."""
         super().__init__(context)
         self.triggered = False
         self.last_failure = None
-        self._mcp_audit('init')
+        self._mcp_audit("init")
 
     def _perform_healing(self, anomaly: AnomalyReport) -> bool:
         """Perform healing for diagnostic anomalies."""
@@ -76,14 +76,16 @@ class SherlockAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin, Hea
         """Manually trigger an investigation from another agent (TestPilot)."""
         self.triggered = True
         self.last_failure = {
-            'modified_file': modified_file,
-            'test_file': test_file,
-            'traceback': traceback
+            "modified_file": modified_file,
+            "test_file": test_file,
+            "traceback": traceback,
         }
 
     async def execute(self) -> None:
         """Execute execute operation."""
-        print(f"\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Investigating test failure...")
+        print(
+            f"\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Investigating test failure..."
+        )
         # Replaced blocking calls with async sleep
         await asyncio.sleep(0)
 
@@ -95,14 +97,14 @@ class SherlockAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin, Hea
 
     async def _analyze_failure(self, failure_info: dict) -> Any:
         """Analyze failure."""
-        if not getattr(self.ctx, 'intelligence_enabled', False):
+        if not getattr(self.ctx, "intelligence_enabled", False):
             return
 
         print(f"   [SCAN] Analyzing failure in {failure_info.get('test_file', 'unknown')}")
 
         # 1. Read files
-        primary = failure_info.get('modified_file')
-        traceback = failure_info.get('traceback', '')
+        primary = failure_info.get("modified_file")
+        traceback = failure_info.get("traceback", "")
 
         # Extract error file from traceback or default to primary
         error_file = self._extract_error_file(traceback) or primary
@@ -115,25 +117,27 @@ class SherlockAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin, Hea
         # 2. Formulate Prompt
         prompt = f"""
 ROOT CAUSE ANALYSIS:
-Test File: {failure_info.get('test_file')}
+Test File: {failure_info.get("test_file")}
 Modified File: {primary}
 Traceback:
 {traceback[:2000]}
 
 Context:
-{files_content.get(primary, '')[:2000]}
+{files_content.get(primary, "")[:2000]}
 
 Task: Identify the root cause and provide a fixed version of {primary}.
 Return ONLY the python code for {primary}.
 """
         # 3. Request Fix
         # Use resilient mutation capability
-        fix = await self.ctx.resilient_mutation(self.name, prompt, code=files_content.get(primary, ""))
+        fix = await self.ctx.resilient_mutation(
+            self.name, prompt, code=files_content.get(primary, "")
+        )
 
         if fix and fix != files_content.get(primary, ""):
             print(f"   🕵️ Sherlock proposing fix for {primary}")
             if self.ctx.write_compliant_file(primary, fix):
-                if hasattr(self.ctx, 'modified_files'):
+                if hasattr(self.ctx, "modified_files"):
                     self.ctx.modified_files.add(primary)
                 print("   [OK] Fix Applied")
 
@@ -148,8 +152,8 @@ Return ONLY the python code for {primary}.
 
     @standard_heal
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()
 
 
 # Legacy classes removed 2026-01-06 - use standalone TestPilotAgent.py and ToolsmithAgent.py

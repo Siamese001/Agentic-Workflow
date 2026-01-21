@@ -72,5 +72,5 @@ class RgStrategicPlannerAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMix
         self.record_pass(f"Strategy: {plan['strategy']}", data=plan)
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()

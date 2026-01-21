@@ -6,6 +6,7 @@ It should be detected as an "orphan" (dead code) by the UnifiedHygieneValidatorA
 
 DO NOT IMPORT THIS FILE - Used for testing orphan detection.
 """
+
 from __future__ import annotations
 
 

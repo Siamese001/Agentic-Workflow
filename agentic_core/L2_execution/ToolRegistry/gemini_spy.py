@@ -3,6 +3,7 @@ L6 Observability: Gemini Spy
 
 Monitors and logs Gemini API interactions for observability.
 """
+
 from __future__ import annotations
 
 import logging
@@ -21,11 +22,7 @@ class GeminiSpy:
     def record_call(self, endpoint: str, request: Any, response: Any) -> None:
         """Record a Gemini API call."""
         if self.enabled:
-            self.calls.append({
-                "endpoint": endpoint,
-                "request": request,
-                "response": response
-            })
+            self.calls.append({"endpoint": endpoint, "request": request, "response": response})
 
     def get_call_count(self) -> int:
         """Get total number of recorded calls."""

@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 
 class EvidenceType(str, Enum):
     """Types of evidence items."""
+
     GITHUB_REPO = "GITHUB_REPO"
     LIVE_DEMO = "LIVE_DEMO"
     PUBLICATION = "PUBLICATION"  # Blog, Paper, Patent
@@ -29,6 +30,7 @@ class EvidenceType(str, Enum):
 
 class EvidenceItem(BaseModel):
     """Individual evidence item."""
+
     id: str
     url: str
     title: str
@@ -54,7 +56,9 @@ class EvidenceInjector:
         self.evidence_library: list[EvidenceItem] = []
         self._links_used = 0
 
-        logger.info(f"Initialized EvidenceInjector (max {max_links_per_bullet}/bullet, {max_links_per_resume}/resume)")
+        logger.info(
+            f"Initialized EvidenceInjector (max {max_links_per_bullet}/bullet, {max_links_per_resume}/resume)"
+        )
 
     def load_library(self, path: str) -> None:
         """Load evidence library from file.
@@ -69,19 +73,20 @@ class EvidenceInjector:
             return
 
         try:
-            with open(file_path, encoding='utf-8') as f:
-                if file_path.suffix.lower() in ['.yaml', '.yml']:
+            with open(file_path, encoding="utf-8") as f:
+                if file_path.suffix.lower() in [".yaml", ".yml"]:
                     import yaml
+
                     data = yaml.safe_load(f)
                 else:
                     data = json.load(f)
 
             # Parse evidence items
             self.evidence_library = []
-            for item_data in data.get('evidence', []):
+            for item_data in data.get("evidence", []):
                 # Convert type string to enum
-                if 'type' in item_data and isinstance(item_data['type'], str):
-                    item_data['type'] = EvidenceType(item_data['type'])
+                if "type" in item_data and isinstance(item_data["type"], str):
+                    item_data["type"] = EvidenceType(item_data["type"])
 
                 evidence = EvidenceItem(**item_data)
                 self.evidence_library.append(evidence)
@@ -178,7 +183,7 @@ class EvidenceInjector:
         # Sort by similarity (descending)
         matches.sort(key=lambda m: m[0], reverse=True)
 
-        return matches[:self.max_links_per_bullet]
+        return matches[: self.max_links_per_bullet]
 
     def _calculate_similarity(self, bullet: str, evidence: EvidenceItem) -> float:
         """Calculate similarity between bullet and evidence.
@@ -208,7 +213,9 @@ class EvidenceInjector:
         if evidence.description:
             desc_words = evidence.description.lower().split()
             if desc_words:
-                matches = sum(1 for word in desc_words[:20] if word in bullet)  # Check first 20 words
+                matches = sum(
+                    1 for word in desc_words[:20] if word in bullet
+                )  # Check first 20 words
                 desc_score = matches / min(len(desc_words), 20)
 
         # Weighted combination
@@ -246,15 +253,15 @@ class EvidenceInjector:
 
         # Try to find technical terms or achievements
         technical_patterns = [
-            r'\b[A-Z][a-z]+(?:[A-Z][a-z]+)*\b',  # CamelCase terms
-            r'\b\w+(?:-\w+)+\b',  # Hyphenated terms
-            r'\b\w+(?:\s+\w+){1,3}\b'  # 2-4 word phrases
+            r"\b[A-Z][a-z]+(?:[A-Z][a-z]+)*\b",  # CamelCase terms
+            r"\b\w+(?:-\w+)+\b",  # Hyphenated terms
+            r"\b\w+(?:\s+\w+){1,3}\b",  # 2-4 word phrases
         ]
 
         for pattern in technical_patterns:
             matches = re.findall(pattern, bullet)
             for match in matches:
-                if len(match) > 3 and match.lower() not in ['and', 'the', 'for', 'with', 'from']:
+                if len(match) > 3 and match.lower() not in ["and", "the", "for", "with", "from"]:
                     return match
 
         return None
@@ -299,7 +306,7 @@ class EvidenceInjector:
             "type_distribution": type_counts,
             "max_links_per_bullet": self.max_links_per_bullet,
             "max_links_per_resume": self.max_links_per_resume,
-            "links_injected": self._links_used
+            "links_injected": self._links_used,
         }
 
 
@@ -353,7 +360,7 @@ def create_sample_library(path: str = "evidence_library.json") -> None:
             "type": "GITHUB_REPO",
             "keywords": ["rag", "retrieval", "augmented", "generation", "pipeline", "vector"],
             "description": "A production-ready RAG pipeline with 10M+ documents processed",
-            "priority": 3
+            "priority": 3,
         },
         {
             "id": "ml_platform_demo",
@@ -362,7 +369,7 @@ def create_sample_library(path: str = "evidence_library.json") -> None:
             "type": "LIVE_DEMO",
             "keywords": ["machine learning", "platform", "demo", "interactive", "visualization"],
             "description": "Interactive demo of ML platform with real-time predictions",
-            "priority": 2
+            "priority": 2,
         },
         {
             "id": "distributed_systems_paper",
@@ -371,7 +378,7 @@ def create_sample_library(path: str = "evidence_library.json") -> None:
             "type": "PUBLICATION",
             "keywords": ["distributed", "systems", "scaling", "microservices", "architecture"],
             "description": "Research paper on distributed systems scaling patterns",
-            "priority": 1
+            "priority": 1,
         },
         {
             "id": "performance_case_study",
@@ -380,7 +387,7 @@ def create_sample_library(path: str = "evidence_library.json") -> None:
             "type": "CASE_STUDY",
             "keywords": ["performance", "optimization", "10x", "latency", "throughput"],
             "description": "Case study on achieving 10x performance improvement",
-            "priority": 2
+            "priority": 2,
         },
         {
             "id": "tech_portfolio",
@@ -389,13 +396,13 @@ def create_sample_library(path: str = "evidence_library.json") -> None:
             "type": "PORTFOLIO",
             "keywords": ["portfolio", "projects", "showcase", "work", "achievements"],
             "description": "Comprehensive portfolio of technical projects",
-            "priority": 1
-        }
+            "priority": 1,
+        },
     ]
 
     library_data = {"evidence": sample_evidence}
 
-    with open(path, 'w', encoding='utf-8') as f:
+    with open(path, "w", encoding="utf-8") as f:
         json.dump(library_data, f, indent=2)
 
     logger.info(f"Created sample evidence library at {path}")

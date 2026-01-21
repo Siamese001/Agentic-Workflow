@@ -28,7 +28,7 @@ class RankedEvidence(BaseModel):
     key_entities: list[str] = Field(default_factory=list, description="Corroborated entities")
     doc_id: str | None = Field(None, description="Document identifier for logging")
 
-    @validator('year_detected')
+    @validator("year_detected")
     def validate_year(cls, v):
         """Validate year is within reasonable range."""
         if v is not None:
@@ -64,7 +64,7 @@ class EvidenceRanker:
         freshness_weight: float = 0.4,
         corroboration_weight: float = 0.2,
         semantic_weight: float = 0.4,
-        current_year: int | None = None
+        current_year: int | None = None,
     ):
         """Initialize the evidence ranker.
 
@@ -88,27 +88,27 @@ class EvidenceRanker:
 
         # Year extraction patterns
         self.year_patterns = [
-            r'\b(20[2-3][0-9])\b',  # 2020-2039
-            r'\b([2-3][0-9]{3})\b',  # 2000-3999 (broader)
+            r"\b(20[2-3][0-9])\b",  # 2020-2039
+            r"\b([2-3][0-9]{3})\b",  # 2000-3999 (broader)
         ]
 
         # Entity extraction patterns
         self.entity_patterns = [
-            r'\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\b',  # Capitalized phrases
-            r'\b([A-Z]{2,})\b',  # Acronyms
-            r'\$[\d,]+(?:\.\d+)?[kmb]?',  # Money values
-            r'\b\d+(?:,\d{3})*(?:\.\d+)?%\b',  # Percentages
+            r"\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\b",  # Capitalized phrases
+            r"\b([A-Z]{2,})\b",  # Acronyms
+            r"\$[\d,]+(?:\.\d+)?[kmb]?",  # Money values
+            r"\b\d+(?:,\d{3})*(?:\.\d+)?%\b",  # Percentages
         ]
 
-        logger.info(f"Initialized EvidenceRanker with weights: "
-                   f"freshness={self.freshness_weight:.2f}, "
-                   f"corroboration={self.corroboration_weight:.2f}, "
-                   f"semantic={self.semantic_weight:.2f}")
+        logger.info(
+            f"Initialized EvidenceRanker with weights: "
+            f"freshness={self.freshness_weight:.2f}, "
+            f"corroboration={self.corroboration_weight:.2f}, "
+            f"semantic={self.semantic_weight:.2f}"
+        )
 
     def rank_evidence(
-        self,
-        signals: list[dict[str, Any]],
-        current_year: int | None = None
+        self, signals: list[dict[str, Any]], current_year: int | None = None
     ) -> list[RankedEvidence]:
         """Rank evidence based on freshness and corroboration.
 
@@ -148,7 +148,9 @@ class EvidenceRanker:
                         continue
 
                     if not 0.0 <= semantic_score <= 1.0:
-                        logger.warning(f"Semantic score out of bounds for doc {doc_id}: {semantic_score}")
+                        logger.warning(
+                            f"Semantic score out of bounds for doc {doc_id}: {semantic_score}"
+                        )
                         semantic_score = max(0.0, min(1.0, semantic_score))
 
                     # Calculate freshness score
@@ -160,11 +162,13 @@ class EvidenceRanker:
                     )
 
                     # Calculate final score
-                    corroboration_normalized = min(1.0, corroboration_count / 3.0)  # Normalize to 0-1
+                    corroboration_normalized = min(
+                        1.0, corroboration_count / 3.0
+                    )  # Normalize to 0-1
                     final_score = (
-                        semantic_score * self.semantic_weight +
-                        freshness_score * self.freshness_weight +
-                        corroboration_normalized * self.corroboration_weight
+                        semantic_score * self.semantic_weight
+                        + freshness_score * self.freshness_weight
+                        + corroboration_normalized * self.corroboration_weight
                     )
 
                     # Create ranked evidence
@@ -177,7 +181,7 @@ class EvidenceRanker:
                         semantic_score=semantic_score,
                         metadata=metadata if isinstance(metadata, dict) else {},
                         key_entities=key_entities,
-                        doc_id=doc_id
+                        doc_id=doc_id,
                     )
 
                     ranked_signals.append(ranked)
@@ -187,7 +191,7 @@ class EvidenceRanker:
                         f"semantic={semantic_score:.3f}, "
                         f"freshness={freshness_score:.3f}, "
                         f"corroboration={corroboration_count}",
-                        extra={"doc_id": doc_id, "final_score": final_score}
+                        extra={"doc_id": doc_id, "final_score": final_score},
                     )
 
                 except Exception as e:
@@ -197,7 +201,9 @@ class EvidenceRanker:
             # Sort by final score descending
             ranked_signals.sort(key=lambda x: x.final_score, reverse=True)
 
-            logger.info(f"Ranked {len(signals)} signals, top score: {ranked_signals[0].final_score:.3f if ranked_signals else 0:.3f}")
+            logger.info(
+                f"Ranked {len(signals)} signals, top score: {ranked_signals[0].final_score:.3f if ranked_signals else 0:.3f}"
+            )
             return ranked_signals
 
         except Exception as e:
@@ -284,10 +290,7 @@ class EvidenceRanker:
             return None
 
     def _count_corroboration(
-        self,
-        content: str,
-        all_entities: dict[str, list[str]],
-        all_signals: list[dict[str, Any]]
+        self, content: str, all_entities: dict[str, list[str]], all_signals: list[dict[str, Any]]
     ) -> tuple[int, list[str]]:
         """Count how many other signals corroborate this one.
 
@@ -314,7 +317,9 @@ class EvidenceRanker:
                     corroboration_counts[entity] = len(all_entities[entity])
 
             # Calculate total corroboration (sum of corroborating signals)
-            total_corroboration = sum(count - 1 for count in corroboration_counts.values() if count > 1)
+            total_corroboration = sum(
+                count - 1 for count in corroboration_counts.values() if count > 1
+            )
 
             # Identify key entities (those with corroboration)
             key_entities = [entity for entity, count in corroboration_counts.items() if count > 1]
@@ -377,9 +382,31 @@ class EvidenceRanker:
 
                 # Skip common words
                 common_words = {
-                    "the", "and", "or", "but", "in", "on", "at", "to", "for", "of",
-                    "with", "by", "is", "are", "was", "were", "be", "been", "have",
-                    "has", "had", "this", "that", "these", "those"
+                    "the",
+                    "and",
+                    "or",
+                    "but",
+                    "in",
+                    "on",
+                    "at",
+                    "to",
+                    "for",
+                    "of",
+                    "with",
+                    "by",
+                    "is",
+                    "are",
+                    "was",
+                    "were",
+                    "be",
+                    "been",
+                    "have",
+                    "has",
+                    "had",
+                    "this",
+                    "that",
+                    "these",
+                    "those",
                 }
 
                 if entity.lower() not in common_words:
@@ -421,12 +448,16 @@ class EvidenceRanker:
                 "total": len(ranked_evidence),
                 "recent_count": recent_count,
                 "corroborated_count": corroborated_count,
-                "avg_freshness": sum(e.freshness_score for e in ranked_evidence) / len(ranked_evidence),
-                "avg_corroboration": sum(e.corroboration_count for e in ranked_evidence) / len(ranked_evidence),
-                "year_range": (min(years_detected), max(years_detected)) if years_detected else None,
+                "avg_freshness": sum(e.freshness_score for e in ranked_evidence)
+                / len(ranked_evidence),
+                "avg_corroboration": sum(e.corroboration_count for e in ranked_evidence)
+                / len(ranked_evidence),
+                "year_range": (min(years_detected), max(years_detected))
+                if years_detected
+                else None,
                 "avg_year": avg_year,
                 "top_score": ranked_evidence[0].final_score,
-                "bottom_score": ranked_evidence[-1].final_score
+                "bottom_score": ranked_evidence[-1].final_score,
             }
         except Exception as e:
             logger.error(f"Error getting ranking summary: {str(e)}")
@@ -438,7 +469,7 @@ def create_evidence_ranker(
     freshness_weight: float = 0.4,
     corroboration_weight: float = 0.2,
     semantic_weight: float = 0.4,
-    current_year: int | None = None
+    current_year: int | None = None,
 ) -> EvidenceRanker:
     """Create an EvidenceRanker instance.
 
@@ -455,7 +486,7 @@ def create_evidence_ranker(
         freshness_weight=freshness_weight,
         corroboration_weight=corroboration_weight,
         semantic_weight=semantic_weight,
-        current_year=current_year
+        current_year=current_year,
     )
 
 
@@ -463,7 +494,7 @@ def create_evidence_ranker(
 def rank_evidence(
     signals: list[dict[str, Any]],
     prioritize_freshness: bool = True,
-    current_year: int | None = None
+    current_year: int | None = None,
 ) -> list[RankedEvidence]:
     """Quickly rank evidence by freshness and corroboration.
 
@@ -481,7 +512,7 @@ def rank_evidence(
         freshness_weight=weights[0],
         corroboration_weight=weights[1],
         semantic_weight=weights[2],
-        current_year=current_year
+        current_year=current_year,
     )
 
     return ranker.rank_evidence(signals)

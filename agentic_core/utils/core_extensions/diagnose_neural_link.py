@@ -19,7 +19,6 @@ load_dotenv(dotenv_path=project_root / ".env", override=True)
 try:
     # Mock context for standalone execution
     class MockContext:
-
         def __init__(self):
             self.redis_client = None
             self.pinecone_index = None
@@ -27,8 +26,9 @@ except ImportError as e:
     print(f"[X] Import Error: {e}")
     exit(1)
 
+
 async def diagnose_engine():
-    '''Brief description of functionality and purpose.'''
+    """Brief description of functionality and purpose."""
 
     print("[*] Starting Neural Link Diagnostic...")
     print(f"    Target Model: {os.getenv('GEMINI_MODEL', 'Not Set')}")
@@ -55,7 +55,7 @@ async def diagnose_engine():
             code=test_code,
             Task=Task,
             round_num=1,
-            fission_active=True
+            fission_active=True,
         )
 
         duration = time.time() - start_time
@@ -63,7 +63,9 @@ async def diagnose_engine():
 
         # 1. Latency Check
         if duration < 0.1:
-            print("[ALERT] ZERO-LATENCY DETECTED! The engine is likely returning cached/empty data.")
+            print(
+                "[ALERT] ZERO-LATENCY DETECTED! The engine is likely returning cached/empty data."
+            )
 
         # 2. JSON Validation
         print("\n[>] Parsing Fission Output...")
@@ -81,6 +83,7 @@ async def diagnose_engine():
 
     except Exception as e:
         print(f"[CRITICAL] Connectivity or Engine Failure: {e}")
+
 
 if __name__ == "__main__":
     asyncio.run(diagnose_engine())

@@ -18,6 +18,7 @@ class TelemetryManager:
     Centralized telemetry system using Redis Pub/Sub for real-time dashboarding.
     Replaces legacy file-based 'runtime_state.json' polling.
     """
+
     _instance = None
 
     def __new__(cls):
@@ -33,6 +34,7 @@ class TelemetryManager:
         if self.redis is None:
             try:
                 from agentic_core.L2_execution.mcp.redis import SovereignRedisClient
+
                 self.redis = SovereignRedisClient()
             except ImportError:
                 pass  # Graceful degradation if core isn't loaded
@@ -50,10 +52,12 @@ class TelemetryManager:
         current = self.redis.get(self.state_key) or "{}"
         state = json.loads(current) if isinstance(current, str) else {}
         state.update(updates)
-        self.redis.execute('set', key=self.state_key, value=json.dumps(state))
+        self.redis.execute("set", key=self.state_key, value=json.dumps(state))
 
         # 2. Publish update event for live stream
-        msg = json.dumps({"type": "state_update", "data": updates, "timestamp": datetime.now().isoformat()})
+        msg = json.dumps(
+            {"type": "state_update", "data": updates, "timestamp": datetime.now().isoformat()}
+        )
         self.redis._get_client().publish(self.stream_key, msg)
 
     def log_event(self, event_type: str, payload: dict[str, Any]):
@@ -65,10 +69,12 @@ class TelemetryManager:
         if not self.redis or not self.redis._get_client():
             return
 
-        msg = json.dumps({
-            "type": "event",
-            "event_type": event_type,
-            "payload": payload,
-            "timestamp": datetime.now().isoformat()
-        })
+        msg = json.dumps(
+            {
+                "type": "event",
+                "event_type": event_type,
+                "payload": payload,
+                "timestamp": datetime.now().isoformat(),
+            }
+        )
         self.redis._get_client().publish(self.stream_key, msg)

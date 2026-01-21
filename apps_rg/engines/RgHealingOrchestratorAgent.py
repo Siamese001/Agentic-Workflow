@@ -6,6 +6,7 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 Orchestrates the complete self-healing process for resume generation.
 """
+
 from __future__ import annotations
 
 import time
@@ -81,9 +82,7 @@ class RgHealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTesti
 
             # Determine strategy
             strategy = SignalRouterAgent.determine_strategy(
-                cycle_num,
-                self.ctx.signals,
-                self.ctx.modified_sections
+                cycle_num, self.ctx.signals, self.ctx.modified_sections
             )
             print(f"   📋 Strategy: {strategy.value}")
 
@@ -93,7 +92,9 @@ class RgHealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTesti
             self.cycle_results.append(result)
 
             # Log cycle result
-            print(f"   ✅ Passed: {len(result.passed_agents)} | ❌ Failed: {len(result.failed_agents)}")
+            print(
+                f"   ✅ Passed: {len(result.passed_agents)} | ❌ Failed: {len(result.failed_agents)}"
+            )
             if result.rollback_triggered:
                 print("   ⏪ Rollback triggered")
 
@@ -141,7 +142,9 @@ class RgHealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTesti
             final_resume=self.ctx.current_resume.copy(),
         )
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs: Any) -> dict[str, Any]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs: Any
+    ) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 

@@ -10,6 +10,7 @@ Scans all agents to verify:
 
 Detects both direct methods and inherited capabilities from base classes.
 """
+
 import ast
 import json
 from collections import defaultdict
@@ -28,36 +29,36 @@ from agentic_core.utils.security import safe_execute
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 AGENTIC_CORE = PROJECT_ROOT / AGENTIC_CORE_DIR
 DISCOVERY_JSON = PROJECT_ROOT / AGENT_DISCOVERY_JSON
-DISCOVERY_SCRIPT = PROJECT_ROOT / SCRIPTS_DIR / 'full_agent_discovery.py'
+DISCOVERY_SCRIPT = PROJECT_ROOT / SCRIPTS_DIR / "full_agent_discovery.py"
 
 # Base classes that provide testing capabilities
 SELF_TESTING_BASES = {
-    'SubAtomicAgent',  # L2
-    'SubatomicTestingMixin',  # L2
-    'L3OrchestrationBaseAgent',  # L3
-    'L3SubatomicTestingMixin',  # L3
-    'L4StateBaseAgent',  # L4
-    'L4SubatomicTestingMixin',  # L4
-    'CanonBaseAgent',  # Has testing
+    "SubAtomicAgent",  # L2
+    "SubatomicTestingMixin",  # L2
+    "L3OrchestrationBaseAgent",  # L3
+    "L3SubatomicTestingMixin",  # L3
+    "L4StateBaseAgent",  # L4
+    "L4SubatomicTestingMixin",  # L4
+    "CanonBaseAgent",  # Has testing
 }
 
 DELEGATION_BASES = {
-    'MaintenanceBaseAgent',  # L0
-    'L0DelegationTestingMixin',  # L0
-    'L0DelegationMixin',  # L0
+    "MaintenanceBaseAgent",  # L0
+    "L0DelegationTestingMixin",  # L0
+    "L0DelegationMixin",  # L0
 }
 
 HEALING_BASES = {
-    'HealerMixin',
-    'SubAtomicAgent',  # L2 - has HealerMixin
-    'L3OrchestrationBaseAgent',  # L3 - has HealerMixin
-    'L4StateBaseAgent',  # L4 - has HealerMixin
-    'L5SafetyBaseAgent',  # L5 - has HealerMixin
-    'CanonBaseAgent',  # Parent - child bases have HealerMixin
-    'L3SubatomicTestingMixin',  # L3 agents inherit healing via base
-    'L4SubatomicTestingMixin',  # L4 agents inherit healing via base
-    'SubatomicTestingMixin',  # L2 agents inherit healing via base
-    'ABC',  # CanonBaseAgent inherits from ABC + HealerMixin
+    "HealerMixin",
+    "SubAtomicAgent",  # L2 - has HealerMixin
+    "L3OrchestrationBaseAgent",  # L3 - has HealerMixin
+    "L4StateBaseAgent",  # L4 - has HealerMixin
+    "L5SafetyBaseAgent",  # L5 - has HealerMixin
+    "CanonBaseAgent",  # Parent - child bases have HealerMixin
+    "L3SubatomicTestingMixin",  # L3 agents inherit healing via base
+    "L4SubatomicTestingMixin",  # L4 agents inherit healing via base
+    "SubatomicTestingMixin",  # L2 agents inherit healing via base
+    "ABC",  # CanonBaseAgent inherits from ABC + HealerMixin
 }
 
 # REMOVED: infer_layer() function - migrated to canonical_truth.py (Phase 3)
@@ -90,47 +91,47 @@ def analyze_agent(class_node: ast.ClassDef, file_path: Path) -> dict:
     layer = get_canonical_layer(file_path)
 
     # Check for self-testing
-    has_self_test_method = has_method(class_node, '_run_self_tests')
+    has_self_test_method = has_method(class_node, "_run_self_tests")
     inherits_self_testing = bool(bases & SELF_TESTING_BASES)
     has_self_testing = has_self_test_method or inherits_self_testing
 
     # Check for delegation
-    has_delegate_method = has_method(class_node, '_delegate_tests')
+    has_delegate_method = has_method(class_node, "_delegate_tests")
     inherits_delegation = bool(bases & DELEGATION_BASES)
     has_delegation = has_delegate_method or inherits_delegation
 
     # Check for healing
-    has_heal_method = has_method(class_node, 'heal') or has_method(class_node, 'apply_fix')
+    has_heal_method = has_method(class_node, "heal") or has_method(class_node, "apply_fix")
     inherits_healing = bool(bases & HEALING_BASES)
     has_healing = has_heal_method or inherits_healing
 
     # Determine testing type
-    testing_type = 'None'
+    testing_type = "None"
     if has_self_testing:
-        testing_type = 'Self'
+        testing_type = "Self"
     elif has_delegation:
-        testing_type = 'Delegated'
+        testing_type = "Delegated"
 
     return {
-        'name': class_node.name,
-        'file': str(file_path.relative_to(PROJECT_ROOT)),
-        'layer': layer,
-        'bases': list(bases),
-        'has_self_testing': has_self_testing,
-        'has_delegation': has_delegation,
-        'has_healing': has_healing,
-        'testing_type': testing_type,
-        'self_test_method': has_self_test_method,
-        'delegate_method': has_delegate_method,
-        'inherits_self_testing': inherits_self_testing,
-        'inherits_delegation': inherits_delegation,
+        "name": class_node.name,
+        "file": str(file_path.relative_to(PROJECT_ROOT)),
+        "layer": layer,
+        "bases": list(bases),
+        "has_self_testing": has_self_testing,
+        "has_delegation": has_delegation,
+        "has_healing": has_healing,
+        "testing_type": testing_type,
+        "self_test_method": has_self_test_method,
+        "delegate_method": has_delegate_method,
+        "inherits_self_testing": inherits_self_testing,
+        "inherits_delegation": inherits_delegation,
     }
 
 
 def regenerate_discovery_json():
     """Regenerate the canonical agent discovery JSON."""
     print("[REGENERATING] Running full_agent_discovery.py for fresh data...")
-    safe_execute(['python', str(DISCOVERY_SCRIPT)], cwd=str(PROJECT_ROOT), check=False)
+    safe_execute(["python", str(DISCOVERY_SCRIPT)], cwd=str(PROJECT_ROOT), check=False)
 
 
 def load_from_canonical_json() -> list[dict]:
@@ -139,7 +140,7 @@ def load_from_canonical_json() -> list[dict]:
     if not DISCOVERY_JSON.exists():
         regenerate_discovery_json()
 
-    with open(DISCOVERY_JSON, encoding='utf-8') as f:
+    with open(DISCOVERY_JSON, encoding="utf-8") as f:
         return json.load(f)
 
 
@@ -160,12 +161,13 @@ def main():
     # Scan all Python files in agentic_core
     # Phase 6.9 Sub-50: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_python_files
+
     for py_file in get_python_files(AGENTIC_CORE):
-        if '__pycache__' in str(py_file) or '.sovereign_healing_backup' in str(py_file):
+        if "__pycache__" in str(py_file) or ".sovereign_healing_backup" in str(py_file):
             continue
 
         try:
-            source = py_file.read_text(encoding='utf-8', errors='replace')
+            source = py_file.read_text(encoding="utf-8", errors="replace")
             tree = ast.parse(source)
         except Exception as e:
             errors.append(f"Parse error in {py_file.name}: {e}")
@@ -183,32 +185,66 @@ def main():
                 is_agent = False
 
                 # Pattern 1: Ends with Agent
-                if node.name.endswith('Agent'):
+                if node.name.endswith("Agent"):
                     is_agent = True
 
                 # Pattern 2: Known agent-like suffixes
-                if node.name.endswith(('Executor', 'Validator', 'Enforcer', 'Guardian', 'Sentinel', 'Inspector', 'Architect', 'Engineer', 'Healer', 'Oracle', 'Curator', 'Router', 'Orchestrator', 'Conductor')):
+                if node.name.endswith(
+                    (
+                        "Executor",
+                        "Validator",
+                        "Enforcer",
+                        "Guardian",
+                        "Sentinel",
+                        "Inspector",
+                        "Architect",
+                        "Engineer",
+                        "Healer",
+                        "Oracle",
+                        "Curator",
+                        "Router",
+                        "Orchestrator",
+                        "Conductor",
+                    )
+                ):
                     is_agent = True
 
                 # Pattern 3: Inherits from agent bases
                 bases = extract_bases(node)
-                if bases & {'SubAtomicAgent', 'CanonBaseAgent', 'MaintenanceBaseAgent',
-                           'L3OrchestrationBaseAgent', 'L4StateBaseAgent', 'L5SafetyBaseAgent',
-                           'HealerMixin', 'SubatomicTestingMixin', 'L3SubatomicTestingMixin',
-                           'L4SubatomicTestingMixin', 'AutonomyMixin', 'AdaptiveExecutionMixin'}:
+                if bases & {
+                    "SubAtomicAgent",
+                    "CanonBaseAgent",
+                    "MaintenanceBaseAgent",
+                    "L3OrchestrationBaseAgent",
+                    "L4StateBaseAgent",
+                    "L5SafetyBaseAgent",
+                    "HealerMixin",
+                    "SubatomicTestingMixin",
+                    "L3SubatomicTestingMixin",
+                    "L4SubatomicTestingMixin",
+                    "AutonomyMixin",
+                    "AdaptiveExecutionMixin",
+                }:
                     is_agent = True
 
                 if not is_agent:
                     continue
 
                 # Skip lowercase or pure snake_case
-                if node.name.islower() or ('_' in node.name and not node.name[0].isupper()):
+                if node.name.islower() or ("_" in node.name and not node.name[0].isupper()):
                     continue
 
                 # Skip known base classes (not concrete agents)
-                skip_bases = {'SubAtomicAgent', 'CanonBaseAgent', 'MaintenanceBaseAgent',
-                             'L3OrchestrationBaseAgent', 'L4StateBaseAgent', 'L5SafetyBaseAgent',
-                             'IActionPlane', 'ValidationProtocol'}
+                skip_bases = {
+                    "SubAtomicAgent",
+                    "CanonBaseAgent",
+                    "MaintenanceBaseAgent",
+                    "L3OrchestrationBaseAgent",
+                    "L4StateBaseAgent",
+                    "L5SafetyBaseAgent",
+                    "IActionPlane",
+                    "ValidationProtocol",
+                }
                 if node.name in skip_bases:
                     continue
 
@@ -218,22 +254,22 @@ def main():
     # Statistics by layer
     by_layer = defaultdict(list)
     for agent in agents:
-        by_layer[agent['layer']].append(agent)
+        by_layer[agent["layer"]].append(agent)
 
     # Compliance analysis
-    l2_l4_agents = [a for a in agents if a['layer'] in ['L2', 'L3', 'L4']]
-    l2_l4_non_compliant = [a for a in l2_l4_agents if not a['has_self_testing']]
+    l2_l4_agents = [a for a in agents if a["layer"] in ["L2", "L3", "L4"]]
+    l2_l4_non_compliant = [a for a in l2_l4_agents if not a["has_self_testing"]]
 
-    l0_agents = [a for a in agents if a['layer'] == 'L0']
-    l0_non_compliant = [a for a in l0_agents if not a['has_delegation']]
+    l0_agents = [a for a in agents if a["layer"] == "L0"]
+    l0_non_compliant = [a for a in l0_agents if not a["has_delegation"]]
 
-    healing_agents = [a for a in agents if a['has_healing']]
+    healing_agents = [a for a in agents if a["has_healing"]]
 
     # Print summary
     print(f"Total agents scanned: {len(agents)}")
     print()
     print("Layer Distribution:")
-    for layer in ['L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'other']:
+    for layer in ["L0", "L1", "L2", "L3", "L4", "L5", "other"]:
         count = len(by_layer[layer])
         if count > 0:
             print(f"  {layer}: {count} agents")
@@ -284,24 +320,24 @@ def main():
 
     # Save detailed report
     report = {
-        'summary': {
-            'total_agents': len(agents),
-            'l2_l4_total': len(l2_l4_agents),
-            'l2_l4_compliant': len(l2_l4_agents) - len(l2_l4_non_compliant),
-            'l2_l4_non_compliant': len(l2_l4_non_compliant),
-            'l0_total': len(l0_agents),
-            'l0_compliant': len(l0_agents) - len(l0_non_compliant),
-            'l0_non_compliant': len(l0_non_compliant),
-            'healing_total': len(healing_agents),
-            'healing_coverage_pct': 100 * len(healing_agents) // len(agents) if agents else 0,
+        "summary": {
+            "total_agents": len(agents),
+            "l2_l4_total": len(l2_l4_agents),
+            "l2_l4_compliant": len(l2_l4_agents) - len(l2_l4_non_compliant),
+            "l2_l4_non_compliant": len(l2_l4_non_compliant),
+            "l0_total": len(l0_agents),
+            "l0_compliant": len(l0_agents) - len(l0_non_compliant),
+            "l0_non_compliant": len(l0_non_compliant),
+            "healing_total": len(healing_agents),
+            "healing_coverage_pct": 100 * len(healing_agents) // len(agents) if agents else 0,
         },
-        'l2_l4_non_compliant': l2_l4_non_compliant,
-        'l0_non_compliant': l0_non_compliant,
-        'all_agents': agents,
+        "l2_l4_non_compliant": l2_l4_non_compliant,
+        "l0_non_compliant": l0_non_compliant,
+        "all_agents": agents,
     }
 
-    report_path = PROJECT_ROOT / 'testing_compliance_report.json'
-    with open(report_path, 'w', encoding='utf-8') as f:
+    report_path = PROJECT_ROOT / "testing_compliance_report.json"
+    with open(report_path, "w", encoding="utf-8") as f:
         json.dump(report, f, indent=2)
 
     print(f"Detailed report saved to: {report_path}")
@@ -314,7 +350,9 @@ def main():
     if len(l2_l4_non_compliant) == 0 and len(l0_non_compliant) == 0:
         print("✅ ✅ ✅ EXACT 0 VIOLATIONS - PHASES 1 & 2 COMPLETE! ✅ ✅ ✅")
     else:
-        print(f"❌ {len(l2_l4_non_compliant)} L2-L4 violations, {len(l0_non_compliant)} L0 violations")
+        print(
+            f"❌ {len(l2_l4_non_compliant)} L2-L4 violations, {len(l0_non_compliant)} L0 violations"
+        )
         print("   Additional fixes needed.")
     print()
 
@@ -324,5 +362,5 @@ def main():
             print(f"  - {error}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

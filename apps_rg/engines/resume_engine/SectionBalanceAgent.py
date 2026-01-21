@@ -64,9 +64,7 @@ class SectionBalanceAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
 
         # Calculate total content length
         total_length = sum(
-            len(self._to_string(v))
-            for k, v in resume.items()
-            if not k.startswith("_")
+            len(self._to_string(v)) for k, v in resume.items() if not k.startswith("_")
         )
 
         if total_length == 0:
@@ -107,5 +105,5 @@ class SectionBalanceAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
         return str(content)
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()

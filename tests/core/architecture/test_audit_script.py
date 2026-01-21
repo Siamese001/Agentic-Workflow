@@ -7,6 +7,7 @@ Verifies the audit script correctly classifies:
 2. DIVERGENT - Different logic between orphan and class method
 3. ORPHAN_ONLY - No matching class method exists
 """
+
 import sys
 import tempfile
 from pathlib import Path
@@ -22,15 +23,18 @@ pytest.skip("Script 'scripts.audit_malformed_agents' does not exist", allow_modu
 PASSED = 0
 FAILED = 0
 
+
 def test_pass(test_id: str, msg: str):
     global PASSED
     PASSED += 1
     print(f"  ✅ {test_id}: {msg}")
 
+
 def test_fail(test_id: str, msg: str):
     global FAILED
     FAILED += 1
     print(f"  ❌ {test_id}: {msg}")
+
 
 # =============================================================================
 # Test 1: The Clone (EXACT_DUPLICATE)
@@ -42,16 +46,18 @@ def test_exact_duplicate():
     print("=" * 70)
 
     # Create a temporary file with exact duplicate
-    code = '''
+    code = """
 class TestAgent:
     def run(self):
         pass
 
 def run(self):
     pass
-'''
+"""
 
-    with tempfile.NamedTemporaryFile(mode='w', suffix='Agent.py', delete=False, encoding='utf-8') as f:
+    with tempfile.NamedTemporaryFile(
+        mode="w", suffix="Agent.py", delete=False, encoding="utf-8"
+    ) as f:
         f.write(code)
         temp_path = Path(f.name)
 
@@ -84,6 +90,7 @@ def run(self):
     finally:
         temp_path.unlink()
 
+
 # =============================================================================
 # Test 2: The Mutant (DIVERGENT)
 # =============================================================================
@@ -94,7 +101,7 @@ def test_divergent():
     print("=" * 70)
 
     # Create a temporary file with divergent methods
-    code = '''
+    code = """
 class TestAgent:
     def run(self):
         pass
@@ -104,9 +111,11 @@ def run(self):
     result = do_something()
     process(result)
     return result
-'''
+"""
 
-    with tempfile.NamedTemporaryFile(mode='w', suffix='Agent.py', delete=False, encoding='utf-8') as f:
+    with tempfile.NamedTemporaryFile(
+        mode="w", suffix="Agent.py", delete=False, encoding="utf-8"
+    ) as f:
         f.write(code)
         temp_path = Path(f.name)
 
@@ -139,6 +148,7 @@ def run(self):
     finally:
         temp_path.unlink()
 
+
 # =============================================================================
 # Test 3: The Stray (ORPHAN_ONLY)
 # =============================================================================
@@ -149,16 +159,18 @@ def test_orphan_only():
     print("=" * 70)
 
     # Create a temporary file with orphan only
-    code = '''
+    code = """
 class TestAgent:
     pass
 
 def run(self):
     # This method has no home
     return "orphan"
-'''
+"""
 
-    with tempfile.NamedTemporaryFile(mode='w', suffix='Agent.py', delete=False, encoding='utf-8') as f:
+    with tempfile.NamedTemporaryFile(
+        mode="w", suffix="Agent.py", delete=False, encoding="utf-8"
+    ) as f:
         f.write(code)
         temp_path = Path(f.name)
 
@@ -191,6 +203,7 @@ def run(self):
     finally:
         temp_path.unlink()
 
+
 # =============================================================================
 # Main
 # =============================================================================
@@ -219,5 +232,6 @@ def main():
         print(f"\n  ❌ {FAILED} TESTS FAILED")
         return 1
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     sys.exit(main())

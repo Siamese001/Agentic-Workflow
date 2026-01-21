@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 
 class ToolCategory(Enum):
     """Categories of observability tools."""
+
     TRACING = "tracing"
     METRICS = "metrics"
     LOGGING = "logging"
@@ -27,6 +28,7 @@ class ToolCategory(Enum):
 
 class ToolProtocol(Enum):
     """Protocols supported by tools."""
+
     HTTP = "http"
     GRPC = "grpc"
     WEBSOCKET = "websocket"
@@ -36,6 +38,7 @@ class ToolProtocol(Enum):
 @dataclass
 class ToolSpecification:
     """Specification of an observability tool."""
+
     tool_id: str
     name: str
     version: str
@@ -51,6 +54,7 @@ class ToolSpecification:
 @dataclass
 class ToolInvocationContext:
     """Context for tool invocation."""
+
     invocation_id: str
     tool_id: str
     method: str
@@ -64,6 +68,7 @@ class ToolInvocationContext:
 @dataclass
 class ToolInvocationConfig:
     """Configuration for tool invocation."""
+
     default_timeout: float = 30.0
     max_retries: int = 3
     enable_circuit_breaker: bool = True
@@ -75,6 +80,7 @@ class ToolInvocationConfig:
 @dataclass
 class ToolInvocationResult:
     """Result of tool invocation."""
+
     invocation_id: str
     tool_id: str
     method: str
@@ -99,8 +105,7 @@ class ObservabilityToolInvoker:
         self._circuit_breakers: dict[str, dict[str, Any]] = {}
         self._initialize_tools()
 
-    def register_tool(self, tool_spec: ToolSpecification,
-                     client: Any | None = None) -> None:
+    def register_tool(self, tool_spec: ToolSpecification, client: Any | None = None) -> None:
         """Register an observability tool.
 
         Args:
@@ -115,13 +120,14 @@ class ObservabilityToolInvoker:
         self._circuit_breakers[tool_spec.tool_id] = {
             "failures": 0,
             "last_failure": None,
-            "state": "closed"  # closed, open, half_open
+            "state": "closed",  # closed, open, half_open
         }
 
         self.logger.info(f"Registered tool: {tool_spec.tool_id}")
 
-    def invoke_tool(self, context: ToolInvocationContext,
-                   parameters: dict[str, Any]) -> ToolInvocationResult:
+    def invoke_tool(
+        self, context: ToolInvocationContext, parameters: dict[str, Any]
+    ) -> ToolInvocationResult:
         """Invoke an observability tool.
 
         Args:
@@ -143,7 +149,7 @@ class ObservabilityToolInvoker:
                     context.tool_id,
                     context.method,
                     f"Tool not registered: {context.tool_id}",
-                    start_time
+                    start_time,
                 )
 
             # Check circuit breaker
@@ -153,7 +159,7 @@ class ObservabilityToolInvoker:
                     context.tool_id,
                     context.method,
                     "Circuit breaker is open",
-                    start_time
+                    start_time,
                 )
 
             # Validate parameters
@@ -165,7 +171,7 @@ class ObservabilityToolInvoker:
                     context.tool_id,
                     context.method,
                     f"Parameter validation failed: {validation_errors}",
-                    start_time
+                    start_time,
                 )
 
             # Execute invocation with retry
@@ -190,15 +196,12 @@ class ObservabilityToolInvoker:
             self.logger.error(f"Tool invocation failed: {str(e)}")
             self._record_failure(context.tool_id)
             return self._create_error_result(
-                context.invocation_id,
-                context.tool_id,
-                context.method,
-                str(e),
-                start_time
+                context.invocation_id, context.tool_id, context.method, str(e), start_time
             )
 
-    def invoke_tool_batch(self, contexts: list[ToolInvocationContext],
-                          parameters_list: list[dict[str, Any]]) -> list[ToolInvocationResult]:
+    def invoke_tool_batch(
+        self, contexts: list[ToolInvocationContext], parameters_list: list[dict[str, Any]]
+    ) -> list[ToolInvocationResult]:
         """Invoke multiple tools.
 
         Args:
@@ -219,8 +222,9 @@ class ObservabilityToolInvoker:
 
         return results
 
-    def invoke_tool_stream(self, context: ToolInvocationContext,
-                          parameters: dict[str, Any]) -> dict[str, object]:
+    def invoke_tool_stream(
+        self, context: ToolInvocationContext, parameters: dict[str, Any]
+    ) -> dict[str, object]:
         """Invoke tool with streaming response.
 
         Args:
@@ -276,8 +280,9 @@ class ObservabilityToolInvoker:
             self._reset_circuit_breaker(tool_id)
             self.logger.info(f"Reset circuit breaker for tool: {tool_id}")
 
-    def _execute_with_retry(self, context: ToolInvocationContext,
-                           parameters: dict[str, Any]) -> ToolInvocationResult:
+    def _execute_with_retry(
+        self, context: ToolInvocationContext, parameters: dict[str, Any]
+    ) -> ToolInvocationResult:
         """Execute tool invocation with retry logic."""
         last_error = None
         max_retries = context.retry_policy.get("max_retries", self.config.max_retries)
@@ -298,7 +303,7 @@ class ObservabilityToolInvoker:
                         response=response.get("data"),
                         response_code=response.get("status_code", 200),
                         headers=response.get("headers", {}),
-                        metrics=response.get("metrics", {})
+                        metrics=response.get("metrics", {}),
                     )
                 else:
                     # Simulate invocation
@@ -307,22 +312,23 @@ class ObservabilityToolInvoker:
             except Exception as e:
                 last_error = str(e)
                 if attempt < max_retries:
-                    retry_delay = context.retry_policy.get("delay", 2 ** attempt)
-                    self.logger.warning(f"Invocation attempt {attempt + 1} failed, retrying in {retry_delay}s: {last_error}")
+                    retry_delay = context.retry_policy.get("delay", 2**attempt)
+                    self.logger.warning(
+                        f"Invocation attempt {attempt + 1} failed, retrying in {retry_delay}s: {last_error}"
+                    )
                     time.sleep(retry_delay)
                 else:
-                    self.logger.error(f"Invocation failed after {attempt + 1} attempts: {last_error}")
+                    self.logger.error(
+                        f"Invocation failed after {attempt + 1} attempts: {last_error}"
+                    )
 
         return self._create_error_result(
-            context.invocation_id,
-            context.tool_id,
-            context.method,
-            last_error,
-            time.time()
+            context.invocation_id, context.tool_id, context.method, last_error, time.time()
         )
 
-    def _simulate_invocation(self, context: ToolInvocationContext,
-                            parameters: dict[str, Any]) -> ToolInvocationResult:
+    def _simulate_invocation(
+        self, context: ToolInvocationContext, parameters: dict[str, Any]
+    ) -> ToolInvocationResult:
         """Simulate tool invocation."""
         tool_spec = self._registered_tools[context.tool_id]
 
@@ -335,30 +341,35 @@ class ObservabilityToolInvoker:
                 "trace_id": parameters.get("trace_id", str(uuid.uuid4())),
                 "spans": [
                     {"operation": "span1", "duration": 0.1},
-                    {"operation": "span2", "duration": 0.2}
-                ]
+                    {"operation": "span2", "duration": 0.2},
+                ],
             }
         elif tool_spec.category == ToolCategory.METRICS:
             response = {
                 "metrics": [
-                    {"name": "cpu_usage", "value": 45.2, "timestamp": datetime.utcnow().isoformat()},
-                    {"name": "memory_usage", "value": 67.8, "timestamp": datetime.utcnow().isoformat()}
+                    {
+                        "name": "cpu_usage",
+                        "value": 45.2,
+                        "timestamp": datetime.utcnow().isoformat(),
+                    },
+                    {
+                        "name": "memory_usage",
+                        "value": 67.8,
+                        "timestamp": datetime.utcnow().isoformat(),
+                    },
                 ]
             }
         elif tool_spec.category == ToolCategory.LOGGING:
             response = {
                 "logs": [
                     {"message": f"Log entry for {context.method}", "level": "info"},
-                    {"message": "Another log entry", "level": "warning"}
+                    {"message": "Another log entry", "level": "warning"},
                 ]
             }
         elif tool_spec.category == ToolCategory.MONITORING:
             response = {
                 "status": "healthy",
-                "checks": [
-                    {"name": "database", "status": "ok"},
-                    {"name": "redis", "status": "ok"}
-                ]
+                "checks": [{"name": "database", "status": "ok"}, {"name": "redis", "status": "ok"}],
             }
         else:
             response = {"message": f"Mock response from {tool_spec.name}"}
@@ -371,12 +382,12 @@ class ObservabilityToolInvoker:
             response=response,
             response_code=200,
             headers={"content-type": "application/json"},
-            metrics={"processing_time": 0.1}
+            metrics={"processing_time": 0.1},
         )
 
-    def _validate_parameters(self, parameters: dict[str, Any],
-                            tool_spec: ToolSpecification,
-                            method: str) -> list[str]:
+    def _validate_parameters(
+        self, parameters: dict[str, Any], tool_spec: ToolSpecification, method: str
+    ) -> list[str]:
         """Validate tool parameters."""
         errors = []
 
@@ -406,7 +417,7 @@ class ObservabilityToolInvoker:
             "float": (int, float),
             "boolean": bool,
             "array": list,
-            "object": dict
+            "object": dict,
         }
 
         expected_python_type = type_map.get(expected_type)
@@ -452,7 +463,7 @@ class ObservabilityToolInvoker:
             self._circuit_breakers[tool_id] = {
                 "failures": 0,
                 "last_failure": None,
-                "state": "closed"
+                "state": "closed",
             }
 
     def _record_invocation_metrics(self, result: ToolInvocationResult) -> None:
@@ -460,8 +471,9 @@ class ObservabilityToolInvoker:
         # Placeholder for metrics recording
         pass
 
-    def _create_error_result(self, invocation_id: str, tool_id: str,
-                            method: str, error: str, start_time: float) -> ToolInvocationResult:
+    def _create_error_result(
+        self, invocation_id: str, tool_id: str, method: str, error: str, start_time: float
+    ) -> ToolInvocationResult:
         """Create error result."""
         return ToolInvocationResult(
             invocation_id=invocation_id,
@@ -469,7 +481,7 @@ class ObservabilityToolInvoker:
             method=method,
             success=False,
             error=error,
-            execution_time=time.time() - start_time
+            execution_time=time.time() - start_time,
         )
 
     def _initialize_tools(self) -> None:
@@ -486,12 +498,10 @@ class ObservabilityToolInvoker:
             parameters_schema={
                 "collect": {
                     "trace_id": {"type": "string", "required": False},
-                    "service": {"type": "string", "required": False}
+                    "service": {"type": "string", "required": False},
                 },
-                "analyze": {
-                    "trace_data": {"type": "object", "required": True}
-                }
-            }
+                "analyze": {"trace_data": {"type": "object", "required": True}},
+            },
         )
 
         # Metric collector tool
@@ -506,12 +516,10 @@ class ObservabilityToolInvoker:
             parameters_schema={
                 "collect": {
                     "metric_names": {"type": "array", "required": False},
-                    "time_range": {"type": "object", "required": False}
+                    "time_range": {"type": "object", "required": False},
                 },
-                "query": {
-                    "query": {"type": "string", "required": True}
-                }
-            }
+                "query": {"query": {"type": "string", "required": True}},
+            },
         )
 
         # Log analyzer tool
@@ -526,13 +534,13 @@ class ObservabilityToolInvoker:
             parameters_schema={
                 "analyze": {
                     "log_source": {"type": "string", "required": True},
-                    "time_range": {"type": "object", "required": False}
+                    "time_range": {"type": "object", "required": False},
                 },
                 "filter": {
                     "level": {"type": "string", "required": False},
-                    "pattern": {"type": "string", "required": False}
-                }
-            }
+                    "pattern": {"type": "string", "required": False},
+                },
+            },
         )
 
         # Register built-in tools
@@ -546,14 +554,14 @@ def create_observability_tool_invoker(
     default_timeout: float = 30.0,
     max_retries: int = 3,
     enable_circuit_breaker: bool = True,
-    **kwargs: object
+    **kwargs: object,
 ) -> ObservabilityToolInvoker:
     """Create a configured observability tool invoker."""
     config = ToolInvocationConfig(
         default_timeout=default_timeout,
         max_retries=max_retries,
         enable_circuit_breaker=enable_circuit_breaker,
-        **kwargs
+        **kwargs,
     )
     return ObservabilityToolInvoker(config)
 
@@ -565,7 +573,7 @@ def tool_invoke_observability_tool(
     parameters: dict[str, Any],
     invocation_id: str | None = None,
     caller_id: str | None = None,
-    timeout: float = 30.0
+    timeout: float = 30.0,
 ) -> dict[str, Any]:
     """Invoke observability tool.
 
@@ -587,7 +595,7 @@ def tool_invoke_observability_tool(
         tool_id=tool_id,
         method=method,
         caller_id=caller_id,
-        timeout=timeout
+        timeout=timeout,
     )
 
     result = invoker.invoke_tool(context, parameters)
@@ -603,5 +611,5 @@ def tool_invoke_observability_tool(
         "metrics": result.metrics,
         "error": result.error,
         "warnings": result.warnings,
-        "execution_time": result.execution_time
+        "execution_time": result.execution_time,
     }

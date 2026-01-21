@@ -55,9 +55,7 @@ CTA_PATTERNS: dict[RecipientArchetype, CTAPattern] = {
         focus="team_objectives",
         tone="succinct, high-level",
         formality="high",
-        example=(
-            "Would {date_window} work for a brief discussion on {strategic_topic}?"
-        ),
+        example=("Would {date_window} work for a brief discussion on {strategic_topic}?"),
     ),
     RecipientArchetype.SENIOR_TA: CTAPattern(
         style=CTAStyle.TECHNICAL_PEER,
@@ -162,17 +160,17 @@ DAY_BUFFER_MAP: dict[str, DayBufferConfig] = {
 
 # US Federal Holidays (approximate dates for 2025)
 US_HOLIDAYS_2025 = [
-    datetime(2025, 1, 1),   # New Year's Day
+    datetime(2025, 1, 1),  # New Year's Day
     datetime(2025, 1, 20),  # MLK Day
     datetime(2025, 2, 17),  # Presidents Day
     datetime(2025, 5, 26),  # Memorial Day
     datetime(2025, 6, 19),  # Juneteenth
-    datetime(2025, 7, 4),   # Independence Day
-    datetime(2025, 9, 1),   # Labor Day
-    datetime(2025, 10, 13), # Columbus Day
-    datetime(2025, 11, 11), # Veterans Day
-    datetime(2025, 11, 27), # Thanksgiving
-    datetime(2025, 12, 25), # Christmas
+    datetime(2025, 7, 4),  # Independence Day
+    datetime(2025, 9, 1),  # Labor Day
+    datetime(2025, 10, 13),  # Columbus Day
+    datetime(2025, 11, 11),  # Veterans Day
+    datetime(2025, 11, 27),  # Thanksgiving
+    datetime(2025, 12, 25),  # Christmas
 ]
 
 

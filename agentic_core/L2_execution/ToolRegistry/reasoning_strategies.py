@@ -57,11 +57,11 @@ class ChainOfThoughtStrategy(ReasoningStrategy):
 
         steps = []
         for i in range(self.max_steps):
-            step = f"Step {i+1}: Analyze aspect of '{problem}'"
+            step = f"Step {i + 1}: Analyze aspect of '{problem}'"
             steps.append(step)
 
             # Early termination if solution found
-            if context.get('solution_found'):
+            if context.get("solution_found"):
                 break
 
         return steps
@@ -76,7 +76,7 @@ class TreeOfThoughtsStrategy(ReasoningStrategy):
             return ["Invalid input for ToT"]
 
         steps = []
-        branching_factor = self.config.get('branching_factor', 2)
+        branching_factor = self.config.get("branching_factor", 2)
 
         # Root level
         steps.append(f"Root: Explore '{problem}'")
@@ -84,7 +84,7 @@ class TreeOfThoughtsStrategy(ReasoningStrategy):
         # Branch exploration
         for branch in range(branching_factor):
             for depth in range(min(3, self.max_steps)):
-                step = f"Branch {branch+1}, Depth {depth+1}: Evaluate path"
+                step = f"Branch {branch + 1}, Depth {depth + 1}: Evaluate path"
                 steps.append(step)
 
         # Evaluation
@@ -105,15 +105,15 @@ class ReActStrategy(ReasoningStrategy):
 
         for i in range(self.max_steps):
             # Reasoning step
-            steps.append(f"Thought {i+1}: Reason about next action for '{problem}'")
+            steps.append(f"Thought {i + 1}: Reason about next action for '{problem}'")
 
             # Action step
-            steps.append(f"Action {i+1}: Execute selected action")
+            steps.append(f"Action {i + 1}: Execute selected action")
 
             # Observation step
-            steps.append(f"Observation {i+1}: Observe action result")
+            steps.append(f"Observation {i + 1}: Observe action result")
 
-            if context.get('goal_achieved'):
+            if context.get("goal_achieved"):
                 break
 
         return steps
@@ -134,8 +134,8 @@ class ReflectionStrategy(ReasoningStrategy):
 
         # Reflection iterations
         for i in range(min(3, self.max_steps)):
-            steps.append(f"Reflection {i+1}: Critique current approach")
-            steps.append(f"Refinement {i+1}: Improve reasoning")
+            steps.append(f"Reflection {i + 1}: Critique current approach")
+            steps.append(f"Refinement {i + 1}: Improve reasoning")
 
         # Final synthesis
         steps.append("Synthesize refined reasoning")
@@ -158,9 +158,9 @@ class CritiqueStrategy(ReasoningStrategy):
 
         # Critique iterations
         for i in range(min(4, self.max_steps)):
-            steps.append(f"Critique {i+1}: Identify weaknesses")
-            steps.append(f"Counter-argument {i+1}: Challenge proposal")
-            steps.append(f"Defense {i+1}: Strengthen proposal")
+            steps.append(f"Critique {i + 1}: Identify weaknesses")
+            steps.append(f"Counter-argument {i + 1}: Challenge proposal")
+            steps.append(f"Defense {i + 1}: Strengthen proposal")
 
         # Final verdict
         steps.append("Final evaluation: Robustness assessment")
@@ -177,14 +177,14 @@ class MultiPathStrategy(ReasoningStrategy):
             return ["Invalid input for MultiPath"]
 
         steps = []
-        num_paths = self.config.get('num_paths', 3)
+        num_paths = self.config.get("num_paths", 3)
 
         # Parallel path exploration
         for path in range(num_paths):
-            steps.append(f"Path {path+1}: Explore alternative approach")
+            steps.append(f"Path {path + 1}: Explore alternative approach")
 
             for step in range(min(3, self.max_steps)):
-                steps.append(f"  Path {path+1}, Step {step+1}: Develop reasoning")
+                steps.append(f"  Path {path + 1}, Step {step + 1}: Develop reasoning")
 
         # Convergence
         steps.append("Converge paths: Identify common insights")
@@ -196,23 +196,20 @@ class ReasoningStrategyFactory:
     """Factory for creating reasoning strategies."""
 
     _strategies = {
-        'cot': ChainOfThoughtStrategy,
-        'chain_of_thought': ChainOfThoughtStrategy,
-        'tot': TreeOfThoughtsStrategy,
-        'tree_of_thoughts': TreeOfThoughtsStrategy,
-        'react': ReActStrategy,
-        'reflection': ReflectionStrategy,
-        'critique': CritiqueStrategy,
-        'multipath': MultiPathStrategy,
-        'multi_path': MultiPathStrategy,
+        "cot": ChainOfThoughtStrategy,
+        "chain_of_thought": ChainOfThoughtStrategy,
+        "tot": TreeOfThoughtsStrategy,
+        "tree_of_thoughts": TreeOfThoughtsStrategy,
+        "react": ReActStrategy,
+        "reflection": ReflectionStrategy,
+        "critique": CritiqueStrategy,
+        "multipath": MultiPathStrategy,
+        "multi_path": MultiPathStrategy,
     }
 
     @classmethod
     def create(
-        cls,
-        strategy_type: str,
-        max_steps: int = 8,
-        config: dict[str, Any] | None = None
+        cls, strategy_type: str, max_steps: int = 8, config: dict[str, Any] | None = None
     ) -> ReasoningStrategy:
         """
         Create reasoning strategy instance.

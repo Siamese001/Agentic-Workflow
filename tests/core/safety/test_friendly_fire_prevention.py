@@ -14,6 +14,7 @@ Test Categories:
 2. HierarchyAgent Healing Tests (Flatten/Nest)
 3. FilesystemAgent Safety Brake Tests
 """
+
 import sys
 from pathlib import Path
 
@@ -40,6 +41,7 @@ def test_fail(test_id: str, msg: str):
 # ============================================================================
 # === 1. Structure Blueprint Validator Tests ===
 # ============================================================================
+
 
 def test_is_path_allowed_valid_sovereign():
     """Verify is_path_allowed returns True for valid sovereign paths."""
@@ -113,7 +115,10 @@ def test_is_path_allowed_depth_check():
     if is_path_allowed("agentic_core/L2_execution/ToolRegistry/extra/deep/file.py"):
         test_pass("DEEP_VALID", "Deep path passes sovereign gate (depth check is separate)")
     else:
-        test_fail("DEEP_VALID", "is_path_allowed should pass deep paths (depth check is HierarchyAgent's job)")
+        test_fail(
+            "DEEP_VALID",
+            "is_path_allowed should pass deep paths (depth check is HierarchyAgent's job)",
+        )
 
     # Shallow valid path
     if is_path_allowed("agentic_core/L5_safety/validators/LocationAgent.py"):
@@ -125,6 +130,7 @@ def test_is_path_allowed_depth_check():
 # ============================================================================
 # === 2. HierarchyAgent Healing Tests (Flatten/Nest) ===
 # ============================================================================
+
 
 def test_hierarchy_heal_deep_violation_flatten():
     """
@@ -143,23 +149,23 @@ def test_hierarchy_heal_deep_violation_flatten():
         test_fail("FILE_EXISTS", "HierarchyAgent.py not found")
         return
 
-    content = hierarchy_path.read_text(encoding='utf-8')
+    content = hierarchy_path.read_text(encoding="utf-8")
 
     # Check _heal_depth_violation method exists
-    if '_heal_depth_violation' in content:
+    if "_heal_depth_violation" in content:
         test_pass("METHOD_EXISTS", "_heal_depth_violation method exists in HierarchyAgent")
     else:
         test_fail("METHOD_EXISTS", "_heal_depth_violation method NOT found")
         return
 
     # Check FLATTENED logic exists
-    if 'FLATTENED' in content and 'depth > expected' in content:
+    if "FLATTENED" in content and "depth > expected" in content:
         test_pass("FLATTEN_LOGIC", "Flattening logic (depth > expected) exists")
     else:
         test_fail("FLATTEN_LOGIC", "Flattening logic not found")
 
     # Check NESTED logic exists
-    if 'NESTED' in content and 'depth_aligned' in content:
+    if "NESTED" in content and "depth_aligned" in content:
         test_pass("NEST_LOGIC", "Nesting logic (depth_aligned spacers) exists")
     else:
         test_fail("NEST_LOGIC", "Nesting logic not found")
@@ -183,22 +189,22 @@ def test_hierarchy_heal_shallow_violation_nest():
 
     # Static analysis - verify nesting logic in source
     hierarchy_path = PROJECT_ROOT / "agentic_core/L5_safety/validators/HierarchyAgent.py"
-    content = hierarchy_path.read_text(encoding='utf-8')
+    content = hierarchy_path.read_text(encoding="utf-8")
 
     # Check deficit calculation exists
-    if 'deficit = expected - depth' in content:
+    if "deficit = expected - depth" in content:
         test_pass("DEFICIT_CALC", "Deficit calculation exists")
     else:
         test_fail("DEFICIT_CALC", "Deficit calculation not found")
 
     # Check spacers tuple creation
-    if 'spacers = tuple' in content and 'depth_aligned' in content:
+    if "spacers = tuple" in content and "depth_aligned" in content:
         test_pass("SPACERS", "Spacers tuple creation exists")
     else:
         test_fail("SPACERS", "Spacers creation not found")
 
     # Check new_parts construction for nesting
-    if 'new_parts = rel.parts[:-1] + spacers' in content:
+    if "new_parts = rel.parts[:-1] + spacers" in content:
         test_pass("NEST_PARTS", "Nesting path construction exists")
     else:
         test_fail("NEST_PARTS", "Nesting path construction not found")
@@ -215,22 +221,22 @@ def test_hierarchy_heal_collision_fallback():
 
     # Static analysis - verify collision handling in source
     hierarchy_path = PROJECT_ROOT / "agentic_core/L5_safety/validators/HierarchyAgent.py"
-    content = hierarchy_path.read_text(encoding='utf-8')
+    content = hierarchy_path.read_text(encoding="utf-8")
 
     # Check target exists check
-    if 'target_path.exists()' in content:
+    if "target_path.exists()" in content:
         test_pass("COLLISION_CHECK", "Collision check (target_path.exists()) exists")
     else:
         test_fail("COLLISION_CHECK", "Collision check not found")
 
     # Check fallback to legacy archive
-    if '_legacy_archive_depth_violation' in content:
+    if "_legacy_archive_depth_violation" in content:
         test_pass("FALLBACK_METHOD", "_legacy_archive_depth_violation fallback exists")
     else:
         test_fail("FALLBACK_METHOD", "Fallback method not found")
 
     # Check collision triggers fallback
-    if 'return self._legacy_archive_depth_violation' in content:
+    if "return self._legacy_archive_depth_violation" in content:
         test_pass("COLLISION_FALLBACK", "Collision triggers archive fallback")
     else:
         test_fail("COLLISION_FALLBACK", "Collision fallback not found")
@@ -239,6 +245,7 @@ def test_hierarchy_heal_collision_fallback():
 # ============================================================================
 # === 3. FilesystemAgent Safety Brake Tests ===
 # ============================================================================
+
 
 def test_fs_agent_safety_brake_valid_file():
     """
@@ -255,22 +262,25 @@ def test_fs_agent_safety_brake_valid_file():
         test_fail("FILE_EXISTS", "FilesystemAgent.py not found")
         return
 
-    content = fs_path.read_text(encoding='utf-8')
+    content = fs_path.read_text(encoding="utf-8")
 
     # Check is_path_allowed import
-    if 'from agentic_core.L5_safety.validators.structure_blueprint import is_path_allowed' in content:
+    if (
+        "from agentic_core.L5_safety.validators.structure_blueprint import is_path_allowed"
+        in content
+    ):
         test_pass("IMPORT", "is_path_allowed imported from SSOT")
     else:
         test_fail("IMPORT", "is_path_allowed import not found")
 
     # Check safety brake check
-    if 'is_path_allowed' in content and 'return None' in content:
+    if "is_path_allowed" in content and "return None" in content:
         test_pass("SAFETY_BRAKE", "Safety brake (is_path_allowed -> return None) exists")
     else:
         test_fail("SAFETY_BRAKE", "Safety brake not found")
 
     # Check _determine_archive_subpath returns Optional[Path]
-    if 'Optional[Path]' in content or '-> Optional[Path]' in content:
+    if "Optional[Path]" in content or "-> Optional[Path]" in content:
         test_pass("RETURN_TYPE", "_determine_archive_subpath can return None")
     else:
         test_fail("RETURN_TYPE", "Return type not Optional[Path]")
@@ -287,22 +297,22 @@ def test_fs_agent_archives_invalid_file():
 
     # Static analysis - verify uncategorized fallback in source
     fs_path = PROJECT_ROOT / "agentic_core/L5_safety/validators/FilesystemAgent.py"
-    content = fs_path.read_text(encoding='utf-8')
+    content = fs_path.read_text(encoding="utf-8")
 
     # Check uncategorized fallback exists
-    if 'uncategorized' in content:
+    if "uncategorized" in content:
         test_pass("UNCATEGORIZED", "Uncategorized fallback exists")
     else:
         test_fail("UNCATEGORIZED", "Uncategorized fallback not found")
 
     # Check cleanup_violations handles None return
-    if 'archive_subpath is None' in content:
+    if "archive_subpath is None" in content:
         test_pass("NONE_HANDLING", "cleanup_violations handles None return")
     else:
         test_fail("NONE_HANDLING", "None handling not found in cleanup_violations")
 
     # Check SKIPPED action for valid files
-    if 'SKIPPED' in content and 'valid sovereign territory' in content:
+    if "SKIPPED" in content and "valid sovereign territory" in content:
         test_pass("SKIP_ACTION", "SKIPPED action for valid sovereign files exists")
     else:
         test_fail("SKIP_ACTION", "SKIPPED action not found")
@@ -311,6 +321,7 @@ def test_fs_agent_archives_invalid_file():
 # ============================================================================
 # === Main Execution ===
 # ============================================================================
+
 
 def main():
     print("=" * 70)

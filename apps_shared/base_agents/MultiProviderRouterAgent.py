@@ -7,7 +7,6 @@ Routes requests across OpenAI, Anthropic, and Google Vertex with intelligent fai
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-
 import json
 import os
 import random
@@ -27,13 +26,16 @@ from data.sdks_mcps.client_wrappers.vertex_client import VertexClient, VertexCon
 
 class Provider(Enum):
     """Available model providers."""
+
     OPENAI = "openai"
     ANTHROPIC = "anthropic"
     GOOGLE_VERTEX = "google_vertex"
 
+
 @dataclass
 class ProviderConfig:
     """Configuration for a specific provider."""
+
     provider: Provider
     enabled: bool = True
     priority: int = 1  # Lower number = higher priority
@@ -42,15 +44,18 @@ class ProviderConfig:
     timeout: int = 60
     config: dict[str, object] = field(default_factory=dict)
 
+
 @dataclass
 class RouterConfig:
     """Configuration for the multi-provider router."""
+
     providers: list[ProviderConfig] = field(default_factory=list)
     default_strategy: str = "priority"  # priority, round_robin, weighted, fastest
     enable_failover: bool = True
     enable_caching: bool = True
     health_check_interval: int = 300  # seconds
     circuit_breaker_threshold: int = 5  # failures before circuit opens
+
 
 class MultiProviderRouterAgent(MCPHardenedMixin):
     """Production router with intelligent provider selection and failover."""
@@ -86,25 +91,25 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
                     enabled=bool(os.getenv("OPENAI_API_KEY")),
                     priority=1,
                     weight=1.0,
-                    config={"model": "gpt-4o-2024-08-06"}
+                    config={"model": "gpt-4o-2024-08-06"},
                 ),
                 ProviderConfig(
                     provider=Provider.ANTHROPIC,
                     enabled=bool(os.getenv("ANTHROPIC_API_KEY")),
                     priority=2,
                     weight=1.0,
-                    config={"model": "claude-3-5-sonnet-20241022", "enable_caching": True}
+                    config={"model": "claude-3-5-sonnet-20241022", "enable_caching": True},
                 ),
                 ProviderConfig(
                     provider=Provider.GOOGLE_VERTEX,
                     enabled=bool(os.getenv("GOOGLE_CLOUD_PROJECT")),
                     priority=3,
                     weight=0.8,
-                    config={"model": "gemini-1.5-pro-002", "enable_grounding": True}
-                )
+                    config={"model": "gemini-1.5-pro-002", "enable_grounding": True},
+                ),
             ],
             default_strategy="priority",
-            enable_failover=True
+            enable_failover=True,
         )
 
     def _initialize_clients(self) -> Any:
@@ -133,19 +138,19 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
                 self.health_status[provider_config.provider] = {
                     "healthy": True,
                     "last_check": time.time(),
-                    "consecutive_failures": 0
+                    "consecutive_failures": 0,
                 }
                 self.circuit_breakers[provider_config.provider] = {
                     "state": "closed",  # closed, open, half_open
                     "failure_count": 0,
-                    "last_failure": 0
+                    "last_failure": 0,
                 }
                 self.usage_stats[provider_config.provider] = {
                     "requests": 0,
                     "successes": 0,
                     "failures": 0,
                     "avg_latency": 0.0,
-                    "total_cost": 0.0
+                    "total_cost": 0.0,
                 }
 
             except Exception as e:
@@ -159,7 +164,8 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
         messages: list[dict[str, object]],
         strategy: str | None = None,
         providers: list[Provider] | None = None,
-        **kwargs: dict[str, object]) -> dict[str, object]:
+        **kwargs: dict[str, object],
+    ) -> dict[str, object]:
         """Route chat completion request to optimal provider.
 
         Args:
@@ -201,8 +207,8 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
                         "strategy": strategy,
                         "providers_tried": [p.value for p in available_providers],
                         "selected_provider": provider.value,
-                        "latency": end_time - start_time
-                    }
+                        "latency": end_time - start_time,
+                    },
                 }
 
             except Exception as e:
@@ -217,26 +223,21 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
             "success": False,
             "error": str(last_error),
             "providers_attempted": [p.value for p in available_providers],
-            "metadata": {
-                "strategy": strategy,
-                "all_providers_failed": True
-            }
+            "metadata": {"strategy": strategy, "all_providers_failed": True},
         }
 
     def structured_completion(
         self,
         messages: list[dict[str, object]],
         schema: dict[str, object],
-        **kwargs: dict[str, object]) -> dict[str, object]:
+        **kwargs: dict[str, object],
+    ) -> dict[str, object]:
         """Route structured output completion to optimal provider."""
         # Prefer OpenAI for structured output (best JSON schema support)
         preferred_providers = [Provider.OPENAI, Provider.ANTHROPIC, Provider.GOOGLE_VERTEX]
 
         result = self.chat_completion(
-            messages=messages,
-            providers=preferred_providers,
-            schema=schema,
-            **kwargs
+            messages=messages, providers=preferred_providers, schema=schema, **kwargs
         )
 
         if result["success"]:
@@ -248,7 +249,9 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
 
         return result
 
-    def _parse_structured_output(self, provider: Provider, response: Any, result: dict[str, object]) -> None:
+    def _parse_structured_output(
+        self, provider: Provider, response: Any, result: dict[str, object]
+    ) -> None:
         """Parse structured output based on provider."""
         if provider == Provider.OPENAI:
             # OpenAI already returns structured data
@@ -261,7 +264,7 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
     def _parse_anthropic_structured(self, response: Any, result: dict[str, object]) -> None:
         """Parse JSON from Anthropic response."""
         try:
-            if hasattr(response, 'content') and response.content:
+            if hasattr(response, "content") and response.content:
                 content = response.content[0].text
                 structured_data = json.loads(content)
                 result["structured_data"] = structured_data
@@ -283,7 +286,8 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
         self,
         batch_requests: list[dict[str, object]],
         strategy: str = "weighted",
-        **kwargs: dict[str, object]) -> list[dict[str, object]]:
+        **kwargs: dict[str, object],
+    ) -> list[dict[str, object]]:
         """Route batch requests across multiple providers."""
         # Distribute requests across providers
         provider_distribution = self._distribute_batch_requests(batch_requests, strategy)
@@ -294,11 +298,13 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
             if not self._is_provider_available(provider):
                 # Mark all requests as failed
                 for req in requests:
-                    results.append({
-                        "success": False,
-                        "error": f"Provider {provider.value} unavailable",
-                        "request_id": req.get("id", "unknown")
-                    })
+                    results.append(
+                        {
+                            "success": False,
+                            "error": f"Provider {provider.value} unavailable",
+                            "request_id": req.get("id", "unknown"),
+                        }
+                    )
                 continue
 
             try:
@@ -313,36 +319,38 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
                     for req in requests:
                         try:
                             response = client.generate_content(**req)
-                            client_results.append({
-                                "success": True,
-                                "response": response,
-                                "request_id": req.get("id", "unknown")
-                            })
+                            client_results.append(
+                                {
+                                    "success": True,
+                                    "response": response,
+                                    "request_id": req.get("id", "unknown"),
+                                }
+                            )
                         except Exception as e:
-                            client_results.append({
-                                "success": False,
-                                "error": str(e),
-                                "request_id": req.get("id", "unknown")
-                            })
+                            client_results.append(
+                                {
+                                    "success": False,
+                                    "error": str(e),
+                                    "request_id": req.get("id", "unknown"),
+                                }
+                            )
 
                 results.extend(client_results)
 
             except Exception as e:
                 # Mark all requests as failed
                 for req in requests:
-                    results.append({
-                        "success": False,
-                        "error": str(e),
-                        "request_id": req.get("id", "unknown")
-                    })
+                    results.append(
+                        {"success": False, "error": str(e), "request_id": req.get("id", "unknown")}
+                    )
 
         return results
 
-    def _select_providers(self,
-         providers: list[Provider] | None,
-         strategy: str) -> list[Provider]:
+    def _select_providers(self, providers: list[Provider] | None, strategy: str) -> list[Provider]:
         """Select providers based on strategy and health."""
-        candidate_providers = [p for p in providers if p in self.clients] if providers else list(self.clients.keys())
+        candidate_providers = (
+            [p for p in providers if p in self.clients] if providers else list(self.clients.keys())
+        )
         healthy_providers = [p for p in candidate_providers if self._is_provider_available(p)]
         if not healthy_providers:
             return candidate_providers
@@ -352,18 +360,19 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
         """Apply selection strategy using dispatch table."""
         strategy_dispatch = {
             "priority": lambda ps: sorted(ps, key=lambda p: self._get_provider_config(p).priority),
-            "round_robin": lambda ps: sorted(ps, key=lambda p: (self.request_count + list(ps).index(p)) % len(ps)),
-            "weighted": lambda ps: random.choices(ps, weights=[self._get_provider_config(p).weight for p in ps], k=len(ps)),
+            "round_robin": lambda ps: sorted(
+                ps, key=lambda p: (self.request_count + list(ps).index(p)) % len(ps)
+            ),
+            "weighted": lambda ps: random.choices(
+                ps, weights=[self._get_provider_config(p).weight for p in ps], k=len(ps)
+            ),
             "fastest": lambda ps: sorted(ps, key=lambda p: self.usage_stats[p]["avg_latency"]),
         }
         return strategy_dispatch.get(strategy, lambda ps: ps)(providers)
 
-    def _distribute_batch_requests(self,
-         requests: list[dict[str,
-         object]],
-         strategy: str) -> dict[Provider,
-         list[dict[str,
-         object]]]:
+    def _distribute_batch_requests(
+        self, requests: list[dict[str, object]], strategy: str
+    ) -> dict[Provider, list[dict[str, object]]]:
         """Distribute batch requests across providers."""
         available_providers = self._select_providers(None, strategy)
 
@@ -398,7 +407,9 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
     # Role prefixes for Vertex prompt conversion
     VERTEX_ROLE_PREFIX = {"system": "System", "user": "User", "assistant": "Assistant"}
 
-    def _call_provider(self, provider: Provider, messages: list[dict[str, object]], **kwargs: dict[str, object]) -> Any:
+    def _call_provider(
+        self, provider: Provider, messages: list[dict[str, object]], **kwargs: dict[str, object]
+    ) -> Any:
         """Call the specific provider with appropriate format using dispatch."""
         dispatch = {
             Provider.OPENAI: self._call_openai,
@@ -413,13 +424,20 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
 
     def _call_anthropic(self, messages: list[dict[str, object]], **kwargs) -> Any:
         """Call Anthropic provider with message format conversion."""
-        anthropic_messages = [{"role": m["role"], "content": [{"type": "text", "text": m["content"]}]} for m in messages]
+        anthropic_messages = [
+            {"role": m["role"], "content": [{"type": "text", "text": m["content"]}]}
+            for m in messages
+        ]
         return self.clients[Provider.ANTHROPIC].message(messages=anthropic_messages, **kwargs)
 
     def _call_vertex(self, messages: list[dict[str, object]], **kwargs) -> Any:
         """Call Google Vertex provider with prompt conversion."""
-        prompt = "\n\n".join(f"{self.VERTEX_ROLE_PREFIX.get(m['role'], 'User')}: {m['content']}" for m in messages)
-        return self.clients[Provider.GOOGLE_VERTEX].generate_content(prompt=prompt.strip(), **kwargs)
+        prompt = "\n\n".join(
+            f"{self.VERTEX_ROLE_PREFIX.get(m['role'], 'User')}: {m['content']}" for m in messages
+        )
+        return self.clients[Provider.GOOGLE_VERTEX].generate_content(
+            prompt=prompt.strip(), **kwargs
+        )
 
     def _is_provider_available(self, provider: Provider) -> bool:
         """Check if provider is available (healthy and circuit not open)."""
@@ -457,8 +475,9 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
 
             # Update average latency
             total_requests = stats["requests"]
-            stats["avg_latency"] = (stats["avg_latency"] * (total_requests - 1)
-                + latency) / total_requests
+            stats["avg_latency"] = (
+                stats["avg_latency"] * (total_requests - 1) + latency
+            ) / total_requests
 
             # Reset circuit breaker if it was failing
             circuit = self.circuit_breakers[provider]
@@ -492,6 +511,7 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
 
     def _start_health_monitoring(self) -> Any:
         """Start background health monitoring thread."""
+
         def health_check() -> Any:
             """Execute health_check operation."""
             while True:
@@ -509,14 +529,13 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
                 if provider == Provider.OPENAI:
                     client = self.clients[provider]
                     client.chat_completion(
-                        messages=[{"role": "user", "content": "Hi"}],
-                        max_tokens=1
+                        messages=[{"role": "user", "content": "Hi"}], max_tokens=1
                     )
                 elif provider == Provider.ANTHROPIC:
                     client = self.clients[provider]
                     client.message(
                         messages=[{"role": "user", "content": [{"type": "text", "text": "Hi"}]}],
-                        max_tokens=1
+                        max_tokens=1,
                     )
                 elif provider == Provider.GOOGLE_VERTEX:
                     client = self.clients[provider]
@@ -548,20 +567,33 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
                 provider.value: {
                     "health": self.health_status.get(provider, {"healthy": False}),
                     "circuit_breaker": self.circuit_breakers.get(provider, {"state": "unknown"}),
-                    "usage": stats
+                    "usage": stats,
                 }
                 for provider, stats in self.usage_stats.items()
-            }
+            },
         }
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L5 safety/guardrails - operational only."""
         if _call_path is None:
             _call_path = set()
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
-        super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+        super().heal_repository(
+            dry_run=dry_run,
+            execute=execute,
+            depth=depth,
+            max_depth=max_depth,
+            _call_path=_call_path,
+        )
 
         agent_name = "MultiProviderRouterAgent"
         if agent_name in _call_path:
@@ -575,12 +607,14 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
         finally:
             _call_path.discard(agent_name)
 
+
 # builder function for easy instantiation
 def create_multi_provider_router(
     enable_openai: bool = None,
     enable_anthropic: bool = None,
     enable_vertex: bool = None,
-    **kwargs: dict[str, object]) -> MultiProviderRouterAgent:
+    **kwargs: dict[str, object],
+) -> MultiProviderRouterAgent:
     """Create configured multi-provider router.
 
     Args:
@@ -604,34 +638,41 @@ def create_multi_provider_router(
         enable_vertex = bool(os.getenv("GOOGLE_CLOUD_PROJECT"))
 
     if enable_openai:
-        provider_configs.append(ProviderConfig(
-            provider=Provider.OPENAI,
-            enabled=True,
-            priority=1,
-            weight=1.0,
-            config={"model": "gpt-4o-2024-08-06"}
-        ))
+        provider_configs.append(
+            ProviderConfig(
+                provider=Provider.OPENAI,
+                enabled=True,
+                priority=1,
+                weight=1.0,
+                config={"model": "gpt-4o-2024-08-06"},
+            )
+        )
 
     if enable_anthropic:
-        provider_configs.append(ProviderConfig(
-            provider=Provider.ANTHROPIC,
-            enabled=True,
-            priority=2,
-            weight=1.0,
-            config={"model": "claude-3-5-sonnet-20241022", "enable_caching": True}
-        ))
+        provider_configs.append(
+            ProviderConfig(
+                provider=Provider.ANTHROPIC,
+                enabled=True,
+                priority=2,
+                weight=1.0,
+                config={"model": "claude-3-5-sonnet-20241022", "enable_caching": True},
+            )
+        )
 
     if enable_vertex:
-        provider_configs.append(ProviderConfig(
-            provider=Provider.GOOGLE_VERTEX,
-            enabled=True,
-            priority=3,
-            weight=0.8,
-            config={"model": "gemini-1.5-pro-002", "enable_grounding": True}
-        ))
+        provider_configs.append(
+            ProviderConfig(
+                provider=Provider.GOOGLE_VERTEX,
+                enabled=True,
+                priority=3,
+                weight=0.8,
+                config={"model": "gemini-1.5-pro-002", "enable_grounding": True},
+            )
+        )
 
     config = RouterConfig(providers=provider_configs, **kwargs)
     return MultiProviderRouterAgent(config)
+
 
 # Example usage
 if __name__ == "__main__":
@@ -639,25 +680,21 @@ if __name__ == "__main__":
     router = create_multi_provider_router()
 
     # Test simple completion
-    messages = [
-        {"role": "user", "content": "Explain quantum computing in 50 words."}
-    ]
+    messages = [{"role": "user", "content": "Explain quantum computing in 50 words."}]
 
     try:
         result = router.chat_completion(messages, strategy="priority")
 
-        if result['success']:
-            if hasattr(result['response'], 'choices'):
-                content = result['response'].choices[0].message.content
-            elif hasattr(result['response'], 'content'):
-                content = result['response'].content[0].text
+        if result["success"]:
+            if hasattr(result["response"], "choices"):
+                content = result["response"].choices[0].message.content
+            elif hasattr(result["response"], "content"):
+                content = result["response"].content[0].text
             else:
-                content = str(result['response'])
+                content = str(result["response"])
             print(f"Completion from {result['provider']}: {content}")
         else:
             print(f"Completion failed: {result['error']}")
 
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
-
-

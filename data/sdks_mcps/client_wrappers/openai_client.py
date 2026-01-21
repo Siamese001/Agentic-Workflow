@@ -21,6 +21,7 @@ from data.sdks_mcps.reference_clients.minimal_openai import (
 @dataclass
 class OpenAIConfig:
     """Configuration for OpenAI client."""
+
     api_key: str | None = None
     base_url: str | None = None
     timeout: int = 60
@@ -29,6 +30,7 @@ class OpenAIConfig:
     default_model: str = "gpt-4o-2024-08-06"
     default_temperature: float = 0.7
     default_max_tokens: int = 4096
+
 
 class OpenAIClient:
     """Production-ready OpenAI client with comprehensive error handling."""
@@ -40,23 +42,18 @@ class OpenAIClient:
             base_url=self.config.base_url,
             organization=self.config.organization,
             timeout=self.config.timeout,
-            max_retries=self.config.max_retries
+            max_retries=self.config.max_retries,
         )
 
         # Track usage for cost monitoring
-        self.usage_stats = {
-            "total_requests": 0,
-            "total_tokens": 0,
-            "total_cost": 0.0,
-            "errors": 0
-        }
+        self.usage_stats = {"total_requests": 0, "total_tokens": 0, "total_cost": 0.0, "errors": 0}
 
     @backoff.on_exception(
         backoff.expo,
         (RateLimitError, APIError, APITimeoutError),
         max_tries=5,
         foundation=1,
-        max_value=60
+        max_value=60,
     )
     def chat_completion(
         self,
@@ -68,7 +65,8 @@ class OpenAIClient:
         tools: list[dict[str, object]] | None = None,
         tool_choice: str | dict[str, object] | None = None,
         stream: bool = False,
-        **kwargs: dict[str, object]) -> ChatCompletion | object:
+        **kwargs: dict[str, object],
+    ) -> ChatCompletion | object:
         """Execute chat completion with retry logic and error handling.
 
         Args:
@@ -91,9 +89,11 @@ class OpenAIClient:
             params = {
                 "model": model or self.config.default_model,
                 "messages": messages,
-                "temperature": temperature if temperature is not None else self.config.default_temperature,
+                "temperature": temperature
+                if temperature is not None
+                else self.config.default_temperature,
                 "max_tokens": max_tokens or self.config.default_max_tokens,
-                **kwargs
+                **kwargs,
             }
 
             if response_format:
@@ -122,7 +122,8 @@ class OpenAIClient:
         messages: list[dict[str, str]],
         schema: dict[str, object],
         model: str | None = None,
-        **kwargs: dict[str, object]) -> dict[str, object]:
+        **kwargs: dict[str, object],
+    ) -> dict[str, object]:
         """Execute structured output completion with validation.
 
         Args:
@@ -136,17 +137,11 @@ class OpenAIClient:
         """
         response_format = {
             "type": "json_schema",
-            "json_schema": {
-                "name": schema.get("title", "response"),
-                "schema": schema
-            }
+            "json_schema": {"name": schema.get("title", "response"), "schema": schema},
         }
 
         response = self.chat_completion(
-            messages=messages,
-            response_format=response_format,
-            model=model,
-            **kwargs
+            messages=messages, response_format=response_format, model=model, **kwargs
         )
 
         # Parse and validate structured response
@@ -163,29 +158,19 @@ class OpenAIClient:
                 "usage": {
                     "prompt_tokens": response.usage.prompt_tokens,
                     "completion_tokens": response.usage.completion_tokens,
-                    "total_tokens": response.usage.total_tokens
+                    "total_tokens": response.usage.total_tokens,
                 },
-                "model": response.model
+                "model": response.model,
             }
 
         except json.JSONDecodeError as e:
-            return {
-                "success": False,
-                "error": f"JSON parsing failed: {e}",
-                "raw_content": content
-            }
+            return {"success": False, "error": f"JSON parsing failed: {e}", "raw_content": content}
         except Exception as e:
-            return {
-                "success": False,
-                "error": f"Validation failed: {e}",
-                "raw_content": content
-            }
+            return {"success": False, "error": f"Validation failed: {e}", "raw_content": content}
 
     def stream_completion(
-        self,
-        messages: list[dict[str, str]],
-        callback: callable = None,
-        **kwargs: dict[str, object]) -> list[str]:
+        self, messages: list[dict[str, str]], callback: callable = None, **kwargs: dict[str, object]
+    ) -> list[str]:
         """Stream chat completion with optional callback.
 
         Args:
@@ -210,9 +195,7 @@ class OpenAIClient:
         return chunks
 
     def batch_completion(
-        self,
-        batch_requests: list[dict[str, object]],
-        concurrent_limit: int = 5
+        self, batch_requests: list[dict[str, object]], concurrent_limit: int = 5
     ) -> list[dict[str, object]]:
         """Execute multiple completions with controlled concurrency.
 
@@ -230,13 +213,13 @@ class OpenAIClient:
                 return {
                     "success": True,
                     "response": self.chat_completion(**request_data),
-                    "request_id": request_data.get("id", "unknown")
+                    "request_id": request_data.get("id", "unknown"),
                 }
             except Exception as e:
                 return {
                     "success": False,
                     "error": str(e),
-                    "request_id": request_data.get("id", "unknown")
+                    "request_id": request_data.get("id", "unknown"),
                 }
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=concurrent_limit) as executor:
@@ -253,7 +236,9 @@ class OpenAIClient:
             cost = (usage.prompt_tokens * 0.0025 + usage.completion_tokens * 0.01) / 1000
             self.usage_stats["total_cost"] += cost
 
-    def _validate_schema(self, data: object, schema: dict[str, object]): # Changed Any to object for consistency
+    def _validate_schema(
+        self, data: object, schema: dict[str, object]
+    ):  # Changed Any to object for consistency
         """Basic schema validation for structured output."""
         schema_type = schema.get("type")
 
@@ -299,18 +284,13 @@ class OpenAIClient:
 
     def reset_usage_stats(self):
         """Reset usage statistics."""
-        self.usage_stats = {
-            "total_requests": 0,
-            "total_tokens": 0,
-            "total_cost": 0.0,
-            "errors": 0
-        }
+        self.usage_stats = {"total_requests": 0, "total_tokens": 0, "total_cost": 0.0, "errors": 0}
+
 
 # builder function for easy instantiation
 def create_openai_client(
-    api_key: str | None = None,
-    model: str = "gpt-4o-2024-08-06",
-    **kwargs: dict[str, object]) -> OpenAIClient:
+    api_key: str | None = None, model: str = "gpt-4o-2024-08-06", **kwargs: dict[str, object]
+) -> OpenAIClient:
     """Create configured OpenAI client.
 
     Args:
@@ -324,6 +304,7 @@ def create_openai_client(
     config = OpenAIConfig(api_key=api_key, default_model=model, **kwargs)
     return OpenAIClient(config)
 
+
 # Example usage
 if __name__ == "__main__":
     # Create client
@@ -332,7 +313,7 @@ if __name__ == "__main__":
     # Simple completion
     messages = [
         {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content": "Explain quantum computing in 100 words."}
+        {"role": "user", "content": "Explain quantum computing in 100 words."},
     ]
 
     try:
@@ -343,17 +324,14 @@ if __name__ == "__main__":
             "type": "object",
             "properties": {
                 "summary": {"type": "string"},
-                "key_points": {"type": "array", "items": {"type": "string"}}
+                "key_points": {"type": "array", "items": {"type": "string"}},
             },
-            "required": ["summary"]
+            "required": ["summary"],
         }
 
-        structured = client.structured_completion(
-            messages=messages,
-            schema=schema
-        )
+        structured = client.structured_completion(messages=messages, schema=schema)
 
         # Usage stats
 
     except Exception:
-        pass # Added pass to complete the try-except block
+        pass  # Added pass to complete the try-except block

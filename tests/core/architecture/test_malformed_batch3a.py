@@ -6,6 +6,7 @@ Verifies that Batch 3A agents have integrated their orphans correctly.
 Note: Some "orphans" are intentionally module-level (lazy loaders, signal handlers,
 convenience functions) and should NOT be moved into classes.
 """
+
 import ast
 import sys
 from pathlib import Path
@@ -16,10 +17,12 @@ sys.path.insert(0, str(PROJECT_ROOT))
 PASSED = 0
 FAILED = 0
 
+
 def test_pass(test_id: str, msg: str):
     global PASSED
     PASSED += 1
     print(f"  ✅ {test_id}: {msg}")
+
 
 def test_fail(test_id: str, msg: str):
     global FAILED
@@ -35,12 +38,21 @@ def test_batch3a_orphan_moves():
 
     # These are the actual orphans that need to be class methods
     targets = [
-        ("agentic_core/L3_orchestration/fission_logic/SubAtomicAgent.py",
-         ['heal_repository'], "SubAtomicAgent"),
-        ("agentic_core/L3_orchestration/workflow_engines/DagExecutorAgent.py",
-         ['__init__', 'execute'], "DagExecutorAgent"),
-        ("agentic_core/L3_orchestration/workflow_engines/WorkflowOrchestratorAgent.py",
-         ['__init__', 'execute'], "LicWorkflowOrchestratorAgent"),
+        (
+            "agentic_core/L3_orchestration/fission_logic/SubAtomicAgent.py",
+            ["heal_repository"],
+            "SubAtomicAgent",
+        ),
+        (
+            "agentic_core/L3_orchestration/workflow_engines/DagExecutorAgent.py",
+            ["__init__", "execute"],
+            "DagExecutorAgent",
+        ),
+        (
+            "agentic_core/L3_orchestration/workflow_engines/WorkflowOrchestratorAgent.py",
+            ["__init__", "execute"],
+            "LicWorkflowOrchestratorAgent",
+        ),
     ]
 
     for rel_path, required_methods, class_name in targets:
@@ -53,14 +65,17 @@ def test_batch3a_orphan_moves():
             test_fail(f"{agent_name}", f"File not found: {rel_path}")
             continue
 
-        content = full_path.read_text(encoding='utf-8')
+        content = full_path.read_text(encoding="utf-8")
         lines = content.splitlines()
 
         # 1. Check for orphans (top-level functions)
         for method in required_methods:
-            orphans = [i+1 for i, l in enumerate(lines) if l.startswith(f"def {method}(")]
+            orphans = [i + 1 for i, l in enumerate(lines) if l.startswith(f"def {method}(")]
             if len(orphans) > 0:
-                test_fail(f"{agent_name}-{method}-ORPHAN", f"Top-level '{method}' still exists at lines: {orphans}")
+                test_fail(
+                    f"{agent_name}-{method}-ORPHAN",
+                    f"Top-level '{method}' still exists at lines: {orphans}",
+                )
             else:
                 test_pass(f"{agent_name}-{method}-ORPHAN", f"No top-level '{method}' found")
 
@@ -115,5 +130,6 @@ def main():
         print(f"\n  ❌ {FAILED} TESTS FAILED")
         return 1
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     sys.exit(main())

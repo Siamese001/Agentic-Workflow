@@ -7,6 +7,7 @@ Tests verify that:
 - Constants are properly loaded from SSOT
 - ssot_discovery uses the centralized constants
 """
+
 import sys
 from pathlib import Path
 
@@ -19,14 +20,16 @@ sys.path.insert(0, str(PROJECT_ROOT))
 def test_registry_import_ssot():
     """Verify registry loads from new config location."""
     from agentic_core.config.blueprint_sovereign.registry import SOVEREIGN_REGISTRY
+
     assert isinstance(SOVEREIGN_REGISTRY, dict)
     assert len(SOVEREIGN_REGISTRY) > 0
-    assert 'agentic_core' in SOVEREIGN_REGISTRY
+    assert "agentic_core" in SOVEREIGN_REGISTRY
 
 
 def test_constants_ssot():
     """Verify constants are loaded from SSOT."""
     from agentic_core.config.blueprint_sovereign.constants import DEFAULT_EXCLUDE_DIRS
+
     assert ".sovereign_healing_backup" in DEFAULT_EXCLUDE_DIRS
     assert "node_modules" in DEFAULT_EXCLUDE_DIRS
     assert "__pycache__" in DEFAULT_EXCLUDE_DIRS
@@ -35,6 +38,7 @@ def test_constants_ssot():
 def test_constants_active_canon_keys():
     """Verify ACTIVE_CANON_KEYS is properly defined."""
     from agentic_core.config.blueprint_sovereign.constants import ACTIVE_CANON_KEYS
+
     assert isinstance(ACTIVE_CANON_KEYS, list)
     assert len(ACTIVE_CANON_KEYS) == 20
     assert 0 in ACTIVE_CANON_KEYS
@@ -44,9 +48,10 @@ def test_constants_active_canon_keys():
 def test_healing_config_ssot():
     """Verify HEALING_CONFIG loads from registry."""
     from agentic_core.config.blueprint_sovereign.registry import HEALING_CONFIG
+
     assert isinstance(HEALING_CONFIG, dict)
-    assert 'max_rounds' in HEALING_CONFIG
-    assert 'global_budget' in HEALING_CONFIG
+    assert "max_rounds" in HEALING_CONFIG
+    assert "global_budget" in HEALING_CONFIG
 
 
 def test_package_init_exports():
@@ -57,6 +62,7 @@ def test_package_init_exports():
         HEALING_CONFIG,
         SOVEREIGN_REGISTRY,
     )
+
     assert DEFAULT_EXCLUDE_DIRS is not None
     assert SOVEREIGN_REGISTRY is not None
     assert HEALING_CONFIG is not None
@@ -66,6 +72,7 @@ def test_package_init_exports():
 def test_ssot_discovery_uses_constants():
     """Verify ssot_discovery imports from SSOT constants."""
     from agentic_core.utils.ssot_discovery import DEFAULT_EXCLUDE_DIRS
+
     # Should contain the same exclusions as the SSOT
     assert ".sovereign_healing_backup" in DEFAULT_EXCLUDE_DIRS
     assert "archives" in DEFAULT_EXCLUDE_DIRS
@@ -87,24 +94,27 @@ def test_layer_dirs_consistency():
 def test_variable_depth_subfolders():
     """Verify VARIABLE_DEPTH_SUBFOLDERS is defined."""
     from agentic_core.config.blueprint_sovereign.registry import VARIABLE_DEPTH_SUBFOLDERS
+
     assert isinstance(VARIABLE_DEPTH_SUBFOLDERS, frozenset)
-    assert 'utils' in VARIABLE_DEPTH_SUBFOLDERS
-    assert 'config' in VARIABLE_DEPTH_SUBFOLDERS
+    assert "utils" in VARIABLE_DEPTH_SUBFOLDERS
+    assert "config" in VARIABLE_DEPTH_SUBFOLDERS
 
 
 def test_l4_approved_folders():
     """Verify L4_APPROVED_FOLDERS is defined."""
     from agentic_core.config.blueprint_sovereign.registry import L4_APPROVED_FOLDERS
+
     assert isinstance(L4_APPROVED_FOLDERS, set)
-    assert 'agentic_core/L5_safety/validators' in L4_APPROVED_FOLDERS
+    assert "agentic_core/L5_safety/validators" in L4_APPROVED_FOLDERS
 
 
 def test_gravity_config():
     """Verify GRAVITY_CONFIG is properly defined."""
     from agentic_core.config.blueprint_sovereign.registry import GRAVITY_CONFIG
+
     assert isinstance(GRAVITY_CONFIG, dict)
-    assert 'enabled' in GRAVITY_CONFIG
-    assert GRAVITY_CONFIG['enabled'] is True
+    assert "enabled" in GRAVITY_CONFIG
+    assert GRAVITY_CONFIG["enabled"] is True
 
 
 if __name__ == "__main__":

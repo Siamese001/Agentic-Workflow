@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Test the BaseClassEnforcerAgent."""
+
 import sys
 from pathlib import Path
 
@@ -20,11 +21,12 @@ def main():
     print(f"Violations: {result.get('violation_count', 0)}")
     print(f"Compliance Rate: {result.get('compliance_rate', 0)}%")
 
-    if result.get('violations'):
+    if result.get("violations"):
         print("\nSample Violations (first 10):")
-        for v in result['violations'][:10]:
+        for v in result["violations"][:10]:
             print(f"  {v['class_name']} ({v['layer']}): expected {v['expected_base']}")
             print(f"    current: {v['current_bases']}")
+
 
 if __name__ == "__main__":
     main()

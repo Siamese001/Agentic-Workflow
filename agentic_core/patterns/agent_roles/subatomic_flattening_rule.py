@@ -17,6 +17,7 @@ from dataclasses import dataclass
 # NAMING FIXED: ComplexityMetrics → ComplexityMetrics
 class ComplexityMetrics:
     """Metrics for measuring method complexity."""
+
     line_count: int
     nesting_depth: int
     conditional_branches: int
@@ -31,6 +32,7 @@ class ComplexityMetrics:
 # NAMING FIXED: ExtractionCandidate → ExtractionCandidate
 class ExtractionCandidate:
     """Represents a code block candidate for extraction."""
+
     block_type: str  # "initialization", "conditional_branch", "loop", "error_handling"
     start_line: int
     end_line: int
@@ -64,7 +66,7 @@ class FlatteningPattern:
         "nested_conditional_with_validation",
         "repeated_dictionary_updates",
         "initialization_blocks",
-        "error_handling_blocks"
+        "error_handling_blocks",
     ]
 
     # Naming Conventions
@@ -73,11 +75,13 @@ class FlatteningPattern:
         "conditional_branch": "_process_",
         "validation": "_validate_",
         "transformation": "_transform_",
-        "error_handling": "_handle_"
+        "error_handling": "_handle_",
     }
 
     @classmethod
-    def analyze_method(cls, method_code: str, method_name: str) -> tuple[ComplexityMetrics, list[ExtractionCandidate]]:
+    def analyze_method(
+        cls, method_code: str, method_name: str
+    ) -> tuple[ComplexityMetrics, list[ExtractionCandidate]]:
         """
         Analyze a method and identify extraction candidates.
 
@@ -94,8 +98,8 @@ class FlatteningPattern:
             return ComplexityMetrics(0, 0, 0, 0), []
 
         # Calculate metrics
-        lines = method_code.split('\n')
-        line_count = len([l for l in lines if l.strip() and not l.strip().startswith('#')])
+        lines = method_code.split("\n")
+        line_count = len([l for l in lines if l.strip() and not l.strip().startswith("#")])
         nesting_depth = cls._calculate_max_nesting(tree)
         conditional_branches = cls._count_conditionals(tree)
 
@@ -103,7 +107,7 @@ class FlatteningPattern:
             line_count=line_count,
             nesting_depth=nesting_depth,
             conditional_branches=conditional_branches,
-            duplicate_patterns=0  # Would need semantic analysis
+            duplicate_patterns=0,  # Would need semantic analysis
         )
 
         # Identify extraction candidates
@@ -119,7 +123,6 @@ class FlatteningPattern:
         max_depth = 0
 
         def visit_node(node, depth=0):
-
             nonlocal max_depth
             max_depth = max(max_depth, depth)
 
@@ -147,7 +150,9 @@ class FlatteningPattern:
         return count
 
     @classmethod
-    def _identify_extraction_candidates(cls, tree: ast.AST, method_name: str) -> list[ExtractionCandidate]:
+    def _identify_extraction_candidates(
+        cls, tree: ast.AST, method_name: str
+    ) -> list[ExtractionCandidate]:
         """
         Identify code blocks that should be extracted into helper methods.
 
@@ -162,37 +167,43 @@ class FlatteningPattern:
             # Pattern 1: Dictionary initialization
             if isinstance(node, ast.Assign) and isinstance(node.value, ast.Dict):
                 if len(node.value.keys) >= 5:  # Large dict initialization
-                    candidates.append(ExtractionCandidate(
-                        block_type="initialization",
-                        start_line=node.lineno,
-                        end_line=node.end_lineno or node.lineno,
-                        line_count=(node.end_lineno or node.lineno) - node.lineno + 1,
-                        nesting_level=1,
-                        suggested_name=f"_initialize_{node.targets[0].id if hasattr(node.targets[0], 'id') else 'result'}",
-                        dependencies=[],
-                        returns="Dict[str, Any]"
-                    ))
+                    candidates.append(
+                        ExtractionCandidate(
+                            block_type="initialization",
+                            start_line=node.lineno,
+                            end_line=node.end_lineno or node.lineno,
+                            line_count=(node.end_lineno or node.lineno) - node.lineno + 1,
+                            nesting_level=1,
+                            suggested_name=f"_initialize_{node.targets[0].id if hasattr(node.targets[0], 'id') else 'result'}",
+                            dependencies=[],
+                            returns="Dict[str, Any]",
+                        )
+                    )
 
             # Pattern 2: If/elif chains with similar structure
             if isinstance(node, ast.If):
                 # Check for if/elif pattern with similar bodies
                 if node.orelse and isinstance(node.orelse[0], ast.If):
                     # This is an if/elif chain
-                    candidates.append(ExtractionCandidate(
-                        block_type="conditional_branch",
-                        start_line=node.lineno,
-                        end_line=node.end_lineno or node.lineno,
-                        line_count=(node.end_lineno or node.lineno) - node.lineno + 1,
-                        nesting_level=2,
-                        suggested_name="_process_conditional_branch",
-                        dependencies=[],
-                        returns="Dict[str, Any]"
-                    ))
+                    candidates.append(
+                        ExtractionCandidate(
+                            block_type="conditional_branch",
+                            start_line=node.lineno,
+                            end_line=node.end_lineno or node.lineno,
+                            line_count=(node.end_lineno or node.lineno) - node.lineno + 1,
+                            nesting_level=2,
+                            suggested_name="_process_conditional_branch",
+                            dependencies=[],
+                            returns="Dict[str, Any]",
+                        )
+                    )
 
         return candidates
 
     @classmethod
-    def generate_extraction_plan(cls, metrics: ComplexityMetrics, candidates: list[ExtractionCandidate]) -> dict:
+    def generate_extraction_plan(
+        cls, metrics: ComplexityMetrics, candidates: list[ExtractionCandidate]
+    ) -> dict:
         """
         Generate a step-by-step extraction plan.
 
@@ -202,14 +213,12 @@ class FlatteningPattern:
         if not metrics.exceeds_threshold():
             return {
                 "needs_extraction": False,
-                "reason": "Method within acceptable complexity thresholds"
+                "reason": "Method within acceptable complexity thresholds",
             }
 
         # Sort candidates by potential impact (line count * nesting level)
         sorted_candidates = sorted(
-            candidates,
-            key=lambda c: c.line_count * c.nesting_level,
-            reverse=True
+            candidates, key=lambda c: c.line_count * c.nesting_level, reverse=True
         )
 
         return {
@@ -217,7 +226,7 @@ class FlatteningPattern:
             "current_metrics": {
                 "lines": metrics.line_count,
                 "nesting": metrics.nesting_depth,
-                "branches": metrics.conditional_branches
+                "branches": metrics.conditional_branches,
             },
             "extraction_steps": [
                 {
@@ -225,15 +234,15 @@ class FlatteningPattern:
                     "block_type": candidate.block_type,
                     "lines": f"{candidate.start_line}-{candidate.end_line}",
                     "suggested_name": candidate.suggested_name,
-                    "expected_reduction": candidate.line_count
+                    "expected_reduction": candidate.line_count,
                 }
                 for i, candidate in enumerate(sorted_candidates[:3])  # Top 3 candidates
             ],
             "projected_metrics": {
                 "lines": metrics.line_count - sum(c.line_count for c in sorted_candidates[:3]),
                 "nesting": max(2, metrics.nesting_depth - 2),
-                "improvement": f"{(sum(c.line_count for c in sorted_candidates[:3]) / metrics.line_count * 100):.1f}% reduction"
-            }
+                "improvement": f"{(sum(c.line_count for c in sorted_candidates[:3]) / metrics.line_count * 100):.1f}% reduction",
+            },
         }
 
 
@@ -243,7 +252,6 @@ agent_logic_pattern = {
     "source_file": "agentic_core/agent_logic.py",
     "method_name": "check_and_learn",
     "date": "2025-12-19",
-
     "before": {
         "lines": 85,
         "nesting_depth": 4,
@@ -252,10 +260,9 @@ agent_logic_pattern = {
             "Exceeded 40-line threshold by 112%",
             "Exceeded 3-level nesting by 33%",
             "SystemArchitect hit 'Enough thinking reasoning limit'",
-            "Multiple Clean Slate Protocol retries"
-        ]
+            "Multiple Clean Slate Protocol retries",
+        ],
     },
-
     "extraction_strategy": {
         "identified_blocks": [
             {
@@ -263,26 +270,25 @@ agent_logic_pattern = {
                 "lines": "129-136",
                 "pattern": "Dictionary with 6 key-value pairs",
                 "extracted_to": "_initialize_validation_result()",
-                "reduction": "8 lines"
+                "reduction": "8 lines",
             },
             {
                 "type": "conditional_branch",
                 "lines": "138-152",
                 "pattern": "If block with validation call and result update",
                 "extracted_to": "_process_l1_match(new_entry, best_match)",
-                "reduction": "15 lines"
+                "reduction": "15 lines",
             },
             {
                 "type": "conditional_branch",
                 "lines": "154-172",
                 "pattern": "Elif block with validation call, result update, and promotion",
                 "extracted_to": "_process_l2_match(new_entry, best_match)",
-                "reduction": "19 lines"
-            }
+                "reduction": "19 lines",
+            },
         ],
-        "total_extracted": "42 lines (49% of original method)"
+        "total_extracted": "42 lines (49% of original method)",
     },
-
     "after": {
         "lines": 50,
         "nesting_depth": 2,
@@ -291,64 +297,61 @@ agent_logic_pattern = {
             "41% line reduction (85 → 50 lines)",
             "50% nesting reduction (4 → 2 levels)",
             "103% preservation (added helper methods)",
-            "Ready for single-pass healing (~11.5K tokens)"
-        ]
+            "Ready for single-pass healing (~11.5K tokens)",
+        ],
     },
-
     "helper_methods": [
         {
             "name": "_initialize_validation_result",
             "lines": 10,
             "nesting": 1,
             "purpose": "Encapsulate default result structure",
-            "pattern": "Pure data structure initialization"
+            "pattern": "Pure data structure initialization",
         },
         {
             "name": "_process_l1_match",
             "lines": 15,
             "nesting": 1,
             "purpose": "Handle L1 Redis cache hit validation",
-            "pattern": "Validation + result formatting + logging"
+            "pattern": "Validation + result formatting + logging",
         },
         {
             "name": "_process_l2_match",
             "lines": 20,
             "nesting": 2,
             "purpose": "Handle L2 Qdrant cache hit with promotion",
-            "pattern": "Validation + result formatting + conditional promotion + logging"
-        }
+            "pattern": "Validation + result formatting + conditional promotion + logging",
+        },
     ],
-
     "success_metrics": {
         "preservation_rate": 103.0,
         "complexity_reduction": 41.0,
         "nesting_reduction": 50.0,
         "healing_readiness": "single_pass",
-        "token_budget": "11.5K / 24.5K (47% usage)"
+        "token_budget": "11.5K / 24.5K (47% usage)",
     },
-
     "reusable_pattern": {
         "trigger": "method > 40 lines AND nesting > 3",
         "recognition": [
             "If/elif chains with similar structure",
             "Repeated dictionary updates",
             "Large initialization blocks",
-            "Nested conditionals with side effects"
+            "Nested conditionals with side effects",
         ],
         "extraction_heuristic": [
             "1. Identify logical blocks (initialization, branches, error handling)",
             "2. Extract blocks with 8+ lines into private helpers",
             "3. Name helpers: _[action]_[noun] (e.g., _process_l1_match)",
             "4. Preserve behavior: maintain all side effects and logging",
-            "5. Verify: ensure nesting ≤ 3 and lines ≤ 40 after extraction"
+            "5. Verify: ensure nesting ≤ 3 and lines ≤ 40 after extraction",
         ],
         "naming_convention": {
             "initialization": "_initialize_[result_name]",
             "processing": "_process_[data_source]_[action]",
             "validation": "_validate_[aspect]",
-            "handling": "_handle_[event]_[action]"
-        }
-    }
+            "handling": "_handle_[event]_[action]",
+        },
+    },
 }
 
 

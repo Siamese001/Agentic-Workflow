@@ -6,6 +6,7 @@ The CodeStandardsEnforcerAgent should flag this as an INHERITANCE_ERR.
 
 DO NOT FIX - Used for testing inheritance validation.
 """
+
 from __future__ import annotations
 
 from typing import Any

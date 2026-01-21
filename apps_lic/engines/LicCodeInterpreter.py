@@ -47,17 +47,87 @@ class KeywordExtractionResult:
 
 
 # shared English stop words
-STOP_WORDS = frozenset([
-    "a", "an", "and", "are", "as", "at", "be", "by", "for", "from",
-    "has", "he", "in", "is", "it", "its", "of", "on", "that", "the",
-    "to", "was", "were", "will", "with", "the", "this", "but", "they",
-    "have", "had", "what", "when", "where", "who", "which", "why", "how",
-    "all", "each", "every", "both", "few", "more", "most", "other",
-    "some", "such", "no", "nor", "not", "only", "own", "same", "so",
-    "than", "too", "very", "can", "just", "should", "now", "also",
-    "into", "over", "after", "before", "between", "under", "again",
-    "further", "then", "once", "here", "there", "any", "about",
-])
+STOP_WORDS = frozenset(
+    [
+        "a",
+        "an",
+        "and",
+        "are",
+        "as",
+        "at",
+        "be",
+        "by",
+        "for",
+        "from",
+        "has",
+        "he",
+        "in",
+        "is",
+        "it",
+        "its",
+        "of",
+        "on",
+        "that",
+        "the",
+        "to",
+        "was",
+        "were",
+        "will",
+        "with",
+        "the",
+        "this",
+        "but",
+        "they",
+        "have",
+        "had",
+        "what",
+        "when",
+        "where",
+        "who",
+        "which",
+        "why",
+        "how",
+        "all",
+        "each",
+        "every",
+        "both",
+        "few",
+        "more",
+        "most",
+        "other",
+        "some",
+        "such",
+        "no",
+        "nor",
+        "not",
+        "only",
+        "own",
+        "same",
+        "so",
+        "than",
+        "too",
+        "very",
+        "can",
+        "just",
+        "should",
+        "now",
+        "also",
+        "into",
+        "over",
+        "after",
+        "before",
+        "between",
+        "under",
+        "again",
+        "further",
+        "then",
+        "once",
+        "here",
+        "there",
+        "any",
+        "about",
+    ]
+)
 
 
 class LICCodeInterpreter:
@@ -175,13 +245,9 @@ class LICCodeInterpreter:
             brief_keywords = self.extract_keywords(strategic_brief, top_n=20)
             candidate_words = set(candidate.lower().split())
 
-            keyword_matches = sum(
-                1 for kw in brief_keywords.keywords if kw in candidate_words
-            )
+            keyword_matches = sum(1 for kw in brief_keywords.keywords if kw in candidate_words)
             scores["keyword_density"] = (
-                keyword_matches / len(brief_keywords.keywords)
-                if brief_keywords.keywords
-                else 0.0
+                keyword_matches / len(brief_keywords.keywords) if brief_keywords.keywords else 0.0
             )
 
             # 3. Readability (word count in target range, sentence length)
@@ -375,8 +441,7 @@ class LICCodeInterpreter:
             if sentence_count < requirements["min_sentences"]:
                 result["is_valid"] = False
                 result["violations"].append(
-                    f"Sentence count {sentence_count} below minimum "
-                    f"{requirements['min_sentences']}"
+                    f"Sentence count {sentence_count} below minimum {requirements['min_sentences']}"
                 )
 
         return result

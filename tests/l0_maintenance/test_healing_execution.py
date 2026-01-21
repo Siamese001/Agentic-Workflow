@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Test healing execution and get full summary."""
+
 import sys
 from pathlib import Path
 
@@ -26,7 +27,8 @@ def main():
     print(f"Errors: {result.get('errors', 0)}")
     print("=" * 80)
 
-    return 0 if result.get('errors', 0) == 0 else 1
+    return 0 if result.get("errors", 0) == 0 else 1
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     sys.exit(main())

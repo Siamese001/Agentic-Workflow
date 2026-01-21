@@ -16,6 +16,7 @@ from pathlib import Path
 @dataclass
 class AgentMetadata:
     """Metadata for a single agent file."""
+
     file_path: Path
     relative_path: str
     class_name: str
@@ -32,7 +33,7 @@ class AgentMetadata:
         Only L0-L5 layers can have violations. APP and UNKNOWN are not violations.
         """
         # Skip if either layer is APP or UNKNOWN (not subject to gravity rules)
-        if self.layer in ('APP', 'UNKNOWN') or self.assigned_layer in ('APP', 'UNKNOWN'):
+        if self.layer in ("APP", "UNKNOWN") or self.assigned_layer in ("APP", "UNKNOWN"):
             return False
 
         # Violation if actual layer doesn't match assigned layer
@@ -54,26 +55,35 @@ class SSOTScanner:
 
     # Layer assignment rules from structure_blueprint.py
     LAYER_ASSIGNMENTS: dict[str, str] = {
-        'L0_maintenance': 'L0',
-        'L1_cognition': 'L1',
-        'L2_execution': 'L2',
-        'L3_orchestration': 'L3',
-        'L4_state': 'L4',
-        'L5_safety': 'L5',
-        'observability': 'L3',  # Observability is L3 orchestration
-        'utils': 'L2',  # Utils are L2 execution tools
-        'schemas': 'L2',  # Schemas are L2 execution support
-        'patterns': 'L2',  # Patterns are L2 execution support
-        'config': 'L2',  # Config is L2 execution support
-        'prompt_governance': 'L2',  # Prompt governance is L2
-        'runtime': 'L2',  # Runtime is L2 execution
-        'semantic_memory': 'L2',  # Semantic memory is L2
+        "L0_maintenance": "L0",
+        "L1_cognition": "L1",
+        "L2_execution": "L2",
+        "L3_orchestration": "L3",
+        "L4_state": "L4",
+        "L5_safety": "L5",
+        "observability": "L3",  # Observability is L3 orchestration
+        "utils": "L2",  # Utils are L2 execution tools
+        "schemas": "L2",  # Schemas are L2 execution support
+        "patterns": "L2",  # Patterns are L2 execution support
+        "config": "L2",  # Config is L2 execution support
+        "prompt_governance": "L2",  # Prompt governance is L2
+        "runtime": "L2",  # Runtime is L2 execution
+        "semantic_memory": "L2",  # Semantic memory is L2
     }
 
     # Canonical signals for Phase 4 compliance
     CANON_SIGNALS: set[str] = {
-        'healing', 'testing', 'validation', 'execution', 'orchestration',
-        'state', 'safety', 'cognition', 'intent', 'learning', 'planning'
+        "healing",
+        "testing",
+        "validation",
+        "execution",
+        "orchestration",
+        "state",
+        "safety",
+        "cognition",
+        "intent",
+        "learning",
+        "planning",
     }
 
     def __init__(self, project_root: Path):
@@ -104,6 +114,7 @@ class SSOTScanner:
         # Find all *Agent.py files
         # Operation Zero: Use ssot_discovery instead of glob
         from agentic_core.utils.ssot_discovery import get_agent_files
+
         agent_files = list(get_agent_files(self.project_root))
 
         for agent_file in agent_files:
@@ -136,15 +147,15 @@ class SSOTScanner:
         parts = relative_path.parts
 
         # Check if in agentic_core
-        if parts[0] == 'agentic_core' and len(parts) > 1:
+        if parts[0] == "agentic_core" and len(parts) > 1:
             folder = parts[1]
-            return self.LAYER_ASSIGNMENTS.get(folder, 'UNKNOWN')
+            return self.LAYER_ASSIGNMENTS.get(folder, "UNKNOWN")
 
         # Apps are not assigned to layers
-        if parts[0].startswith('apps_'):
-            return 'APP'
+        if parts[0].startswith("apps_"):
+            return "APP"
 
-        return 'UNKNOWN'
+        return "UNKNOWN"
 
     def get_actual_layer(self, file_path: Path) -> str:
         """
@@ -160,17 +171,17 @@ class SSOTScanner:
         parts = relative_path.parts
 
         # Check if in agentic_core
-        if parts[0] == 'agentic_core' and len(parts) > 1:
+        if parts[0] == "agentic_core" and len(parts) > 1:
             folder = parts[1]
 
             # Direct layer folders
-            if folder.startswith('L') and folder[1].isdigit():
+            if folder.startswith("L") and folder[1].isdigit():
                 return folder[:2]  # L0, L1, L2, etc.
 
             # Infrastructure folders map to layers
-            return self.LAYER_ASSIGNMENTS.get(folder, 'UNKNOWN')
+            return self.LAYER_ASSIGNMENTS.get(folder, "UNKNOWN")
 
-        return 'UNKNOWN'
+        return "UNKNOWN"
 
     def find_gravity_violations(self) -> list[AgentMetadata]:
         """
@@ -195,17 +206,25 @@ class SSOTScanner:
         violations = [a for a in agents if a.has_gravity_violation]
 
         return {
-            'total_agents': len(agents),
-            'compliant_agents': len(agents) - len(violations),
-            'gravity_violations': len(violations),
-            'compliance_percentage': round((len(agents) - len(violations)) / len(agents) * 100, 1) if agents else 100.0
+            "total_agents": len(agents),
+            "compliant_agents": len(agents) - len(violations),
+            "gravity_violations": len(violations),
+            "compliance_percentage": round((len(agents) - len(violations)) / len(agents) * 100, 1)
+            if agents
+            else 100.0,
         }
 
     def _should_exclude(self, file_path: Path) -> bool:
         """Check if file should be excluded from scanning."""
         exclude_patterns = [
-            '.venv', 'venv', 'node_modules', '__pycache__',
-            '.git', '.pytest_cache', 'vendor', 'archives'
+            ".venv",
+            "venv",
+            "node_modules",
+            "__pycache__",
+            ".git",
+            ".pytest_cache",
+            "vendor",
+            "archives",
         ]
 
         path_str = str(file_path)
@@ -222,7 +241,7 @@ class SSOTScanner:
             Agent metadata or None if not a valid agent
         """
         try:
-            content = file_path.read_text(encoding='utf-8')
+            content = file_path.read_text(encoding="utf-8")
             tree = ast.parse(content)
         except (SyntaxError, UnicodeDecodeError):
             return None
@@ -231,7 +250,7 @@ class SSOTScanner:
         agent_class = None
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
-                if node.name.endswith('Agent'):
+                if node.name.endswith("Agent"):
                     agent_class = node
                     break
 
@@ -257,12 +276,12 @@ class SSOTScanner:
 
         return AgentMetadata(
             file_path=file_path,
-            relative_path=relative_path.replace('\\', '/'),
+            relative_path=relative_path.replace("\\", "/"),
             class_name=agent_class.name,
             layer=actual_layer,
             assigned_layer=assigned_layer,
             base_classes=base_classes,
-            signals=signals
+            signals=signals,
         )
 
     def _extract_signals(self, content: str) -> set[str]:

@@ -16,6 +16,7 @@ Features:
 - Territory/location healing
 - Blueprint compliance healing
 """
+
 from __future__ import annotations
 
 import logging
@@ -32,6 +33,7 @@ Logger = logging.getLogger(__name__)
 
 class StructureHealingType(Enum):
     """Types of structure healing."""
+
     GRAVITY = auto()
     HIERARCHY = auto()
     NAMING = auto()
@@ -42,6 +44,7 @@ class StructureHealingType(Enum):
 @dataclass
 class StructureHealingAction:
     """Represents a structure healing action."""
+
     healing_type: StructureHealingType
     file_path: Path
     description: str
@@ -54,6 +57,7 @@ class StructureHealingAction:
 @dataclass
 class StructureHealerConfig:
     """Configuration for structure healing."""
+
     enable_gravity: bool = True
     enable_hierarchy: bool = True
     enable_naming: bool = True
@@ -99,7 +103,9 @@ class UnifiedStructureHealerAgent:
         self._actions: list[StructureHealingAction] = []
 
         if self.config.backup_dir is None:
-            self.config.backup_dir = self.project_root / "archives" / "healing_backups" / "structure"
+            self.config.backup_dir = (
+                self.project_root / "archives" / "healing_backups" / "structure"
+            )
 
         Logger.info("UnifiedStructureHealerAgent initialized")
 

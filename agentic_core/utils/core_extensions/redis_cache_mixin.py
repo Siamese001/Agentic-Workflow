@@ -9,6 +9,7 @@ Features:
 - TTL-based expiration
 - Manual invalidation support
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -68,6 +69,7 @@ class RedisCacheMixin:
         if self._redis_client is None:
             try:
                 from agentic_core.L2_execution.mcp.caching_redis_mcp_client import get_redis_client
+
                 self._redis_client = get_redis_client()
             except Exception as e:
                 if not GRACEFUL_DEGRADATION:

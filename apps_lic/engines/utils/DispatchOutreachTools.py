@@ -13,9 +13,6 @@ from shared.result_types import ExecutionResult
 Logger = logging.getLogger(__name__)
 
 
-
-
-
 class DispatchOutreachTools:
     """Executor for outreach domain."""
 
@@ -30,15 +27,11 @@ class DispatchOutreachTools:
         try:
             output = self._perform_action(action, params)
             return ExecutionResult(
-                success=True,
-                output=output,
-                duration_ms=(time.time() - start) * 1000
+                success=True, output=output, duration_ms=(time.time() - start) * 1000
             )
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
             return ExecutionResult(
-                success=False,
-                error=str(e),
-                duration_ms=(time.time() - start) * 1000
+                success=False, error=str(e), duration_ms=(time.time() - start) * 1000
             )
 
     def _perform_action(self, action: str, params: dict[str, object]) -> object:

@@ -87,9 +87,7 @@ class LICVectorMemory:
 
             self._collection = self._client.get_or_create_collection(
                 name=self.collection_name,
-                metadata={
-                    "description": "LIC Intelligence Provider - Pre-computed research"
-                },
+                metadata={"description": "LIC Intelligence Provider - Pre-computed research"},
             )
 
             self._initialized = True
@@ -117,9 +115,7 @@ class LICVectorMemory:
         """Module implementation."""
         if document_id is None:
             # Generate ID from metadata
-            id_string = (
-                f"{metadata.get('source_url', '')}_{metadata.get('extracted_at', '')}"
-            )
+            id_string = f"{metadata.get('source_url', '')}_{metadata.get('extracted_at', '')}"
             document_id = hashlib.md5(id_string.encode()).hexdigest()
 
         if self._initialized and self._collection is not None:
@@ -174,11 +170,7 @@ class LICVectorMemory:
                         id=results["ids"][0][i],
                         text=results["documents"][0][i],
                         metadata=results["metadatas"][0][i],
-                        distance=(
-                            results["distances"][0][i]
-                            if "distances" in results
-                            else None
-                        ),
+                        distance=(results["distances"][0][i] if "distances" in results else None),
                     )
                     documents.append(doc)
 
@@ -261,9 +253,7 @@ class LICVectorMemory:
                 self._client.delete_collection(self.collection_name)
                 self._collection = self._client.get_or_create_collection(
                     name=self.collection_name,
-                    metadata={
-                        "description": "LIC Intelligence Provider - Pre-computed research"
-                    },
+                    metadata={"description": "LIC Intelligence Provider - Pre-computed research"},
                 )
                 return True
             except (ValueError, TypeError, RuntimeError, KeyError):
@@ -298,9 +288,7 @@ class MockVectorMemory(LICVectorMemory):
     ) -> str:
         """Add document to mock store."""
         if document_id is None:
-            id_string = (
-                f"{metadata.get('source_url', '')}_{metadata.get('extracted_at', '')}"
-            )
+            id_string = f"{metadata.get('source_url', '')}_{metadata.get('extracted_at', '')}"
             document_id = hashlib.md5(id_string.encode()).hexdigest()
 
         self._documents[document_id] = VectorDocument(
@@ -330,9 +318,7 @@ class MockVectorMemory(LICVectorMemory):
             if query_lower in doc.text.lower():
                 # Check metadata filter
                 if filter_metadata:
-                    match = all(
-                        doc.metadata.get(k) == v for k, v in filter_metadata.items()
-                    )
+                    match = all(doc.metadata.get(k) == v for k, v in filter_metadata.items())
                     if not match:
                         continue
                 results.append(doc)

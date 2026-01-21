@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class ArchetypeClassificationResult:
     """Result of archetype classification."""
+
     archetype: str  # C_LEVEL, EXECUTIVE, SENIOR_TA, RECRUITER
     confidence: float
     matched_tokens: list[str]
@@ -27,6 +28,7 @@ class ArchetypeClassificationResult:
 @dataclass
 class RouteSelectionResult:
     """Result of route selection."""
+
     route: str  # INMAIL, CONNECTION_REQ, SHORT_NEW, FOLLOW_UP
     premium_available: bool
     premium_routing_mismatch: bool
@@ -36,6 +38,7 @@ class RouteSelectionResult:
 @dataclass
 class K1Output:
     """K.1 routing agent output."""
+
     archetype: ArchetypeClassificationResult
     route: RouteSelectionResult
     entrance_gates_passed: list[str]
@@ -173,9 +176,7 @@ class K1_RoutingAgent(Agent):
             },
         )
 
-        logger.info(
-            f"K.1 routing complete: {archetype_result.archetype} → {route_result.route}"
-        )
+        logger.info(f"K.1 routing complete: {archetype_result.archetype} → {route_result.route}")
 
         return output
 

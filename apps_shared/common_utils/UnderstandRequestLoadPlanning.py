@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 class ConfigType(Enum):
     """Types of configurations."""
+
     SYSTEM_CONFIG = "system_config"
     APP_CONFIG = "app_config"
     USER_CONFIG = "user_config"
@@ -26,6 +27,7 @@ class ConfigType(Enum):
 
 class ValidationLevel(Enum):
     """Validation levels for configuration."""
+
     NONE = "none"
     BASIC = "basic"
     STRICT = "strict"
@@ -34,6 +36,7 @@ class ValidationLevel(Enum):
 
 class ConfigScope(Enum):
     """Scopes for configuration loading."""
+
     GLOBAL = "global"
     ORGANIZATION = "organization"
     PROJECT = "project"
@@ -45,6 +48,7 @@ class ConfigScope(Enum):
 @dataclass
 class ConfigParameter:
     """Information about a configuration parameter."""
+
     key: str
     value: Any
     type: str
@@ -58,15 +62,17 @@ class ConfigParameter:
 @dataclass
 class ConfigSection:
     """Information about a configuration section."""
+
     name: str
     parameters: list[ConfigParameter] = field(default_factory=list)
-    subsections: list['ConfigSection'] = field(default_factory=list)
+    subsections: list["ConfigSection"] = field(default_factory=list)
     metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
 class ValidationRule:
     """Information about a validation rule."""
+
     name: str
     type: str
     condition: str
@@ -78,6 +84,7 @@ class ValidationRule:
 @dataclass
 class ConfigLoadPlan:
     """Complete plan for configuration loading."""
+
     id: str
     name: str
     config_type: ConfigType
@@ -93,6 +100,7 @@ class ConfigLoadPlan:
 @dataclass
 class ConfigLoadConfig:
     """Configuration for config load planning."""
+
     enable_validation: bool = True
     enable_type_checking: bool = True
     enable_default_values: bool = True
@@ -104,6 +112,7 @@ class ConfigLoadConfig:
 @dataclass
 class ConfigLoadResult:
     """Result of config load planning."""
+
     success: bool
     load_plan: ConfigLoadPlan | None = None
     parameter_count: int = 0
@@ -133,7 +142,9 @@ class ConfigLoadPlanner:
         Returns:
             ConfigLoadResult: Complete planning result with load plan
         """
-        self.logger.info(f"Starting config load planning for: {load_request.get('plan_name', 'unknown')}")
+        self.logger.info(
+            f"Starting config load planning for: {load_request.get('plan_name', 'unknown')}"
+        )
 
         try:
             # Validate input request
@@ -150,8 +161,7 @@ class ConfigLoadPlanner:
 
             # Parse validation rules if enabled
             validation_rules = (
-                self._parse_validation_rules(load_request)
-                if self.config.enable_validation else []
+                self._parse_validation_rules(load_request) if self.config.enable_validation else []
             )
 
             # Parse validation level
@@ -159,14 +169,11 @@ class ConfigLoadPlanner:
 
             # Create load plan
             load_plan = self._create_load_plan(
-                load_request, config_type, scope,
-                sections, validation_rules, validation_level
+                load_request, config_type, scope, sections, validation_rules, validation_level
             )
 
             # Count items
-            parameter_count = sum(
-                len(section.parameters) for section in sections
-            )
+            parameter_count = sum(len(section.parameters) for section in sections)
             section_count = len(sections)
             validation_rule_count = len(validation_rules)
 
@@ -189,8 +196,8 @@ class ConfigLoadPlanner:
                     "plan_name": load_request.get("plan_name"),
                     "config_type": config_type.value,
                     "scope": scope.value,
-                    "planner": "ConfigLoadPlanner"
-                }
+                    "planner": "ConfigLoadPlanner",
+                },
             )
 
             self.logger.info(
@@ -206,8 +213,8 @@ class ConfigLoadPlanner:
                 errors=[str(e)],
                 metadata={
                     "failed_at": datetime.utcnow().isoformat(),
-                    "planner": "ConfigLoadPlanner"
-                }
+                    "planner": "ConfigLoadPlanner",
+                },
             )
 
     def _validate_request(self, request: dict[str, Any]) -> None:
@@ -229,7 +236,7 @@ class ConfigLoadPlanner:
             "user_config": ConfigType.USER_CONFIG,
             "env_config": ConfigType.ENV_CONFIG,
             "feature_flags": ConfigType.FEATURE_FLAGS,
-            "security_config": ConfigType.SECURITY_CONFIG
+            "security_config": ConfigType.SECURITY_CONFIG,
         }
 
         config_type_str = request.get("config_type", "app_config")
@@ -243,7 +250,7 @@ class ConfigLoadPlanner:
             "project": ConfigScope.PROJECT,
             "service": ConfigScope.SERVICE,
             "module": ConfigScope.MODULE,
-            "user": ConfigScope.USER
+            "user": ConfigScope.USER,
         }
 
         scope_str = request.get("scope", "project")
@@ -255,7 +262,7 @@ class ConfigLoadPlanner:
             "none": ValidationLevel.NONE,
             "basic": ValidationLevel.BASIC,
             "strict": ValidationLevel.STRICT,
-            "comprehensive": ValidationLevel.COMPREHENSIVE
+            "comprehensive": ValidationLevel.COMPREHENSIVE,
         }
 
         level_str = request.get("validation_level", self.config.default_validation_level)
@@ -282,7 +289,7 @@ class ConfigLoadPlanner:
                             default_value=raw_param.get("default_value"),
                             description=raw_param.get("description", ""),
                             validation_rules=raw_param.get("validation_rules", []),
-                            metadata=raw_param.get("metadata", {})
+                            metadata=raw_param.get("metadata", {}),
                         )
                         parameters.append(param)
 
@@ -293,7 +300,7 @@ class ConfigLoadPlanner:
                     name=raw_section.get("name", "unnamed"),
                     parameters=parameters,
                     subsections=subsections,
-                    metadata=raw_section.get("metadata", {})
+                    metadata=raw_section.get("metadata", {}),
                 )
                 sections.append(section)
 
@@ -327,20 +334,18 @@ class ConfigLoadPlanner:
                             default_value=raw_param.get("default_value"),
                             description=raw_param.get("description", ""),
                             validation_rules=raw_param.get("validation_rules", []),
-                            metadata=raw_param.get("metadata", {})
+                            metadata=raw_param.get("metadata", {}),
                         )
                         parameters.append(param)
 
                 # Recursively parse nested subsections
-                nested_subsections = self._parse_subsections(
-                    raw_sub.get("subsections", [])
-                )
+                nested_subsections = self._parse_subsections(raw_sub.get("subsections", []))
 
                 subsection = ConfigSection(
                     name=raw_sub.get("name", "unnamed"),
                     parameters=parameters,
                     subsections=nested_subsections,
-                    metadata=raw_sub.get("metadata", {})
+                    metadata=raw_sub.get("metadata", {}),
                 )
                 subsections.append(subsection)
 
@@ -359,7 +364,7 @@ class ConfigLoadPlanner:
                     condition=raw_rule.get("condition", ""),
                     error_message=raw_rule.get("error_message", ""),
                     severity=raw_rule.get("severity", "error"),
-                    metadata=raw_rule.get("metadata", {})
+                    metadata=raw_rule.get("metadata", {}),
                 )
                 rules.append(rule)
 
@@ -372,7 +377,7 @@ class ConfigLoadPlanner:
         scope: ConfigScope,
         sections: list[ConfigSection],
         validation_rules: list[ValidationRule],
-        validation_level: ValidationLevel
+        validation_level: ValidationLevel,
     ) -> ConfigLoadPlan:
         """Create config load plan from parsed components."""
         return ConfigLoadPlan(
@@ -385,7 +390,7 @@ class ConfigLoadPlanner:
             validation_level=validation_level,
             enable_caching=request.get("enable_caching", True),
             cache_ttl=request.get("cache_ttl", 600),
-            metadata=request.get("metadata", {})
+            metadata=request.get("metadata", {}),
         )
 
     def _estimate_load_time(self, plan: ConfigLoadPlan) -> int:
@@ -393,9 +398,7 @@ class ConfigLoadPlanner:
         base_time = 3  # Base setup time
 
         # Time per parameter
-        param_count = sum(
-            len(section.parameters) for section in plan.sections
-        )
+        param_count = sum(len(section.parameters) for section in plan.sections)
         param_time = param_count * 0.01
 
         # Time per validation rule
@@ -406,12 +409,12 @@ class ConfigLoadPlanner:
             ValidationLevel.NONE: 0.5,
             ValidationLevel.BASIC: 1.0,
             ValidationLevel.STRICT: 1.5,
-            ValidationLevel.COMPREHENSIVE: 2.0
+            ValidationLevel.COMPREHENSIVE: 2.0,
         }
 
-        total_time = (
-            base_time + param_time + validation_time
-        ) * level_multiplier.get(plan.validation_level, 1.0)
+        total_time = (base_time + param_time + validation_time) * level_multiplier.get(
+            plan.validation_level, 1.0
+        )
 
         return int(total_time)
 
@@ -421,9 +424,7 @@ class ConfigLoadPlanner:
         base_memory = 10  # 10MB base
 
         # Memory for parameters (assume average 512 bytes per parameter)
-        param_count = sum(
-            len(section.parameters) for section in plan.sections
-        )
+        param_count = sum(len(section.parameters) for section in plan.sections)
         param_memory = param_count * 512
 
         # Memory for validation rules (assume average 256 bytes per rule)
@@ -434,12 +435,11 @@ class ConfigLoadPlanner:
             ValidationLevel.NONE: 0.5,
             ValidationLevel.BASIC: 1.0,
             ValidationLevel.STRICT: 1.5,
-            ValidationLevel.COMPREHENSIVE: 2.0
+            ValidationLevel.COMPREHENSIVE: 2.0,
         }
 
         total_memory_bytes = (
-            base_memory * 1024 * 1024 +
-            param_memory + rule_memory
+            base_memory * 1024 * 1024 + param_memory + rule_memory
         ) * level_multiplier.get(plan.validation_level, 1.0)
 
         return total_memory_bytes // (1024 * 1024)  # Convert to MB
@@ -450,14 +450,14 @@ def create_config_load_planner(
     enable_validation: bool = True,
     enable_type_checking: bool = True,
     enable_default_values: bool = True,
-    **kwargs: object
+    **kwargs: object,
 ) -> ConfigLoadPlanner:
     """Create a configured config load planner."""
     config = ConfigLoadConfig(
         enable_validation=enable_validation,
         enable_type_checking=enable_type_checking,
         enable_default_values=enable_default_values,
-        **kwargs
+        **kwargs,
     )
     return ConfigLoadPlanner(config)
 
@@ -470,7 +470,7 @@ def plan_config_load(
     sections: list[dict[str, Any]] | None = None,
     validation_rules: list[dict[str, Any]] | None = None,
     validation_level: str = "basic",
-    config: dict[str, Any] | None = None
+    config: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Plan config load from simple parameters.
 
@@ -493,7 +493,7 @@ def plan_config_load(
         "scope": scope,
         "sections": sections or [],
         "validation_rules": validation_rules or [],
-        "validation_level": validation_level
+        "validation_level": validation_level,
     }
 
     # Create planner and execute
@@ -515,14 +515,12 @@ def plan_config_load(
                     "default_value": p.default_value,
                     "description": p.description,
                     "validation_rules": p.validation_rules,
-                    "metadata": p.metadata
+                    "metadata": p.metadata,
                 }
                 for p in section.parameters
             ],
-            "subsections": [
-                serialize_section(sub) for sub in section.subsections
-            ],
-            "metadata": section.metadata
+            "subsections": [serialize_section(sub) for sub in section.subsections],
+            "metadata": section.metadata,
         }
 
     return {
@@ -532,9 +530,7 @@ def plan_config_load(
             "name": result.load_plan.name,
             "config_type": result.load_plan.config_type.value,
             "scope": result.load_plan.scope.value,
-            "sections": [
-                serialize_section(section) for section in result.load_plan.sections
-            ],
+            "sections": [serialize_section(section) for section in result.load_plan.sections],
             "validation_rules": [
                 {
                     "name": r.name,
@@ -542,15 +538,17 @@ def plan_config_load(
                     "condition": r.condition,
                     "error_message": r.error_message,
                     "severity": r.severity,
-                    "metadata": r.metadata
+                    "metadata": r.metadata,
                 }
                 for r in result.load_plan.validation_rules
             ],
             "validation_level": result.load_plan.validation_level.value,
             "enable_caching": result.load_plan.enable_caching,
             "cache_ttl": result.load_plan.cache_ttl,
-            "metadata": result.load_plan.metadata
-        } if result.load_plan else None,
+            "metadata": result.load_plan.metadata,
+        }
+        if result.load_plan
+        else None,
         "parameter_count": result.parameter_count,
         "section_count": result.section_count,
         "validation_rule_count": result.validation_rule_count,
@@ -558,5 +556,5 @@ def plan_config_load(
         "memory_estimate": result.memory_estimate,
         "warnings": result.warnings,
         "errors": result.errors,
-        "metadata": result.metadata
+        "metadata": result.metadata,
     }

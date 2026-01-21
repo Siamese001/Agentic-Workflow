@@ -5,6 +5,7 @@ Phase 4.3: Sovereign Health Monitor - Historical Health Persistence (L6 -> L4)
 This module persists health metrics to L4 State (Redis) for historical analysis
 and trend tracking across autonomous healing cycles.
 """
+
 import json
 from datetime import datetime
 from typing import Any
@@ -48,7 +49,7 @@ class SovereignHealthMonitor:
             "timestamp": timestamp,
             "domain": domain,
             "compliance_score": score,
-            "total_fixes": fixes
+            "total_fixes": fixes,
         }
 
         try:
@@ -56,11 +57,12 @@ class SovereignHealthMonitor:
             self.redis.lpush("sovereign_health_history", json.dumps(snapshot))
 
             # Also update current domain health
-            self.redis.set(f"sovereign_health:{domain}", json.dumps({
-                "compliance_score": score,
-                "total_fixes": fixes,
-                "last_updated": timestamp
-            }))
+            self.redis.set(
+                f"sovereign_health:{domain}",
+                json.dumps(
+                    {"compliance_score": score, "total_fixes": fixes, "last_updated": timestamp}
+                ),
+            )
 
             # Increment global fix counter
             self.redis.incr("autonomous_fixes_total", amount=fixes)

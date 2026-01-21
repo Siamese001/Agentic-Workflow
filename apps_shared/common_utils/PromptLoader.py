@@ -3,6 +3,7 @@ Dynamic Prompt Loader for Canon Validator Agents
 
 Loads prompts from modularized markdown files based on agent role.
 """
+
 from pathlib import Path
 
 
@@ -29,7 +30,7 @@ class PromptLoader:
 
         constraints_path = self.prompts_dir / "global" / "constraints.md"
         if constraints_path.exists():
-            self._global_constraints = constraints_path.read_text(encoding='utf-8')
+            self._global_constraints = constraints_path.read_text(encoding="utf-8")
         else:
             self._global_constraints = ""
 
@@ -52,14 +53,20 @@ class PromptLoader:
         # Load from file
         specialist_path = self.prompts_dir / "specialists" / f"{agent_role}.md"
         if specialist_path.exists():
-            content = specialist_path.read_text(encoding='utf-8')
+            content = specialist_path.read_text(encoding="utf-8")
             self._cache[agent_role] = content
             return content
 
         return ""
 
-    def build_full_prompt(self, agent_role: str, task: str, code: str,
-                         original_line_count: int, lesson_learned: str = "") -> str:
+    def build_full_prompt(
+        self,
+        agent_role: str,
+        task: str,
+        code: str,
+        original_line_count: int,
+        lesson_learned: str = "",
+    ) -> str:
         """
         Build complete prompt combining global constraints and specialist instructions.
 
@@ -91,18 +98,18 @@ class PromptLoader:
         if global_constraints:
             # Replace placeholder with actual line count
             constraints_with_count = global_constraints.replace(
-                "{original_line_count}",
-                str(original_line_count)
+                "{original_line_count}", str(original_line_count)
             )
             constraints_with_count = constraints_with_count.replace(
-                "{int(original_line_count * 0.1)}",
-                str(int(original_line_count * 0.1))
+                "{int(original_line_count * 0.1)}", str(int(original_line_count * 0.1))
             )
             sections.append(constraints_with_count)
 
         # Lesson learned from previous failure
         if lesson_learned:
-            sections.append(f"\n📚 LESSON LEARNED FROM PREVIOUS ATTEMPT:\n{lesson_learned}\nApply this lesson to your current fix. Start fresh with the original file.\n")
+            sections.append(
+                f"\n📚 LESSON LEARNED FROM PREVIOUS ATTEMPT:\n{lesson_learned}\nApply this lesson to your current fix. Start fresh with the original file.\n"
+            )
 
         # Code to fix
         sections.append(f"\n{code}")
@@ -115,9 +122,7 @@ class PromptLoader:
         if not specialists_dir.exists():
             return []
 
-        return [
-            f.stem for f in specialists_dir.glob("*.md")
-        ]
+        return [f.stem for f in specialists_dir.glob("*.md")]
 
     def reload_cache(self):
         """Clear cache to force reload of prompts."""
@@ -128,8 +133,10 @@ class PromptLoader:
 # Global instance for easy access
 _loader = PromptLoader()
 
-def load_prompt_for_agent(agent_role: str, task: str, code: str,
-                          original_line_count: int, lesson_learned: str = "") -> str:
+
+def load_prompt_for_agent(
+    agent_role: str, task: str, code: str, original_line_count: int, lesson_learned: str = ""
+) -> str:
     """
     Convenience function to load complete prompt for an agent.
 

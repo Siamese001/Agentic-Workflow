@@ -2,6 +2,7 @@
 Standalone script to run HygieneGuardianAgent on entire repo.
 Reports findings before and after fixes.
 """
+
 import os
 import shutil
 import sys
@@ -23,8 +24,9 @@ def scan_temp_artifacts(root: Path) -> list[Path]:
     artifacts = []
     # Phase 6.7: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_data_files
+
     # Get all files with common artifact extensions
-    for path in get_data_files(root, extensions=['.pyc', '.pyo', '.tmp', '.bak', '.swp']):
+    for path in get_data_files(root, extensions=[".pyc", ".pyo", ".tmp", ".bak", ".swp"]):
         if ".git" not in path.parts:
             artifacts.append(path)
     return artifacts
@@ -82,8 +84,7 @@ def scan_folders_with_only_init(root: Path) -> list[Path]:
                 children = list(current_dir.iterdir())
                 # Filter out .gitkeep and hidden files
                 meaningful_children = [
-                    x for x in children
-                    if x.name not in IGNORE_FILES and not x.name.startswith(".")
+                    x for x in children if x.name not in IGNORE_FILES and not x.name.startswith(".")
                 ]
 
                 # Check if only __init__.py exists (no subdirs, no other files)

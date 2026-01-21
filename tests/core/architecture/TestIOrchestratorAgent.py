@@ -48,9 +48,7 @@ class TestCaseA_EndToEnd:
         # Create strategy and orchestrator
         strategy = HealingStrategy(project_root=Path.cwd())
         orchestrator = UnifiedOrchestratorAgent(
-            strategy=strategy,
-            project_root=Path.cwd(),
-            name="TestOrchestrator"
+            strategy=strategy, project_root=Path.cwd(), name="TestOrchestrator"
         )
 
         # Run mission in dry_run mode
@@ -87,7 +85,9 @@ class TestCaseA_EndToEnd:
                 break
 
         assert preflight_tier is not None, "Pre-Flight tier must exist"
-        assert "SyntaxValidatorAgent" in preflight_tier, "Pre-Flight must include SyntaxValidatorAgent"
+        assert "SyntaxValidatorAgent" in preflight_tier, (
+            "Pre-Flight must include SyntaxValidatorAgent"
+        )
 
     def test_unified_orchestrator_returns_agent_results(self):
         """Verify agent_results contains expected fields."""
@@ -183,8 +183,9 @@ class TestCaseB_LegacyWrapper:
 
         orchestrator = get_consolidated_orchestrator(Path.cwd())
 
-        assert isinstance(orchestrator, UnifiedOrchestratorAgent), \
+        assert isinstance(orchestrator, UnifiedOrchestratorAgent), (
             "get_consolidated_orchestrator must return UnifiedOrchestratorAgent"
+        )
 
     def test_get_consolidated_orchestrator_has_healing_strategy(self):
         """Verify factory configures HealingStrategy."""
@@ -203,9 +204,10 @@ class TestCaseB_LegacyWrapper:
 
         orchestrator = get_consolidated_orchestrator(Path.cwd())
 
-        assert hasattr(orchestrator, 'strategy'), "Orchestrator must have strategy attribute"
-        assert isinstance(orchestrator.strategy, HealingStrategy), \
+        assert hasattr(orchestrator, "strategy"), "Orchestrator must have strategy attribute"
+        assert isinstance(orchestrator.strategy, HealingStrategy), (
             "Strategy must be HealingStrategy"
+        )
 
     def test_legacy_wrapper_run_mission(self):
         """Verify legacy CoreOrchestrationAgent.run_mission works."""
@@ -220,7 +222,9 @@ class TestCaseB_LegacyWrapper:
             warnings.simplefilter("ignore", DeprecationWarning)
 
             # Create with mock to avoid actual agent execution
-            with patch('agentic_core.L3_orchestration.CoreOrchestrationAgent.get_consolidated_orchestrator') as mock_factory:
+            with patch(
+                "agentic_core.L3_orchestration.CoreOrchestrationAgent.get_consolidated_orchestrator"
+            ) as mock_factory:
                 mock_orchestrator = MagicMock()
                 mock_orchestrator.run_mission.return_value = {
                     "status": "SUCCESS",
@@ -228,7 +232,13 @@ class TestCaseB_LegacyWrapper:
                     "total_violations": 2,
                     "is_stable": True,
                     "agent_results": [
-                        {"agent_name": "TestAgent", "status": "PASS", "violations_found": 0, "violations_fixed": 0, "execution_time_ms": 100}
+                        {
+                            "agent_name": "TestAgent",
+                            "status": "PASS",
+                            "violations_found": 0,
+                            "violations_fixed": 0,
+                            "execution_time_ms": 100,
+                        }
                     ],
                     "execution_time_ms": 1000,
                 }
@@ -254,7 +264,9 @@ class TestCaseB_LegacyWrapper:
         with warnings.catch_warnings(record=True) as w:
             warnings.simplefilter("always")
 
-            with patch('agentic_core.L3_orchestration.CoreOrchestrationAgent.get_consolidated_orchestrator'):
+            with patch(
+                "agentic_core.L3_orchestration.CoreOrchestrationAgent.get_consolidated_orchestrator"
+            ):
                 _ = CoreOrchestrationAgent(Path.cwd())
 
             # Check for deprecation warning
@@ -275,8 +287,9 @@ class TestCaseC_BaseAgentHygiene:
         from agentic_core.L2_execution.ToolRegistry.L2ExecutionBaseAgent import L2ExecutionBaseAgent
         from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
-        assert issubclass(L2ExecutionBaseAgent, SovereignBaseAgent), \
+        assert issubclass(L2ExecutionBaseAgent, SovereignBaseAgent), (
             "L2ExecutionBaseAgent must inherit from SovereignBaseAgent"
+        )
 
     def test_l2_execution_base_has_infrastructure(self):
         """Verify L2ExecutionBaseAgent has InfrastructureMixin in MRO."""
@@ -286,8 +299,9 @@ class TestCaseC_BaseAgentHygiene:
         mro_names = [cls.__name__ for cls in L2ExecutionBaseAgent.__mro__]
 
         # InfrastructureMixin should be in MRO (inherited through SovereignBaseAgent)
-        assert "InfrastructureMixin" in mro_names or "SovereignBaseAgent" in mro_names, \
+        assert "InfrastructureMixin" in mro_names or "SovereignBaseAgent" in mro_names, (
             "L2ExecutionBaseAgent must have InfrastructureMixin in MRO (via SovereignBaseAgent)"
+        )
 
     def test_l2_execution_base_mro_order(self):
         """Verify L2ExecutionBaseAgent has correct MRO order."""
@@ -296,14 +310,12 @@ class TestCaseC_BaseAgentHygiene:
         mro_names = [cls.__name__ for cls in L2ExecutionBaseAgent.__mro__]
 
         # SovereignBaseAgent should be in MRO
-        assert "SovereignBaseAgent" in mro_names, \
-            "SovereignBaseAgent must be in MRO"
+        assert "SovereignBaseAgent" in mro_names, "SovereignBaseAgent must be in MRO"
 
         # SovereignBaseAgent should come before object
         sovereign_idx = mro_names.index("SovereignBaseAgent")
         object_idx = mro_names.index("object")
-        assert sovereign_idx < object_idx, \
-            "SovereignBaseAgent must come before object in MRO"
+        assert sovereign_idx < object_idx, "SovereignBaseAgent must come before object in MRO"
 
 
 class TestDeletedFiles:
@@ -315,22 +327,25 @@ class TestDeletedFiles:
         """Verify SSOTOrchestratorAgent.py has been deleted."""
         ssot_path = Path("agentic_core/L3_orchestration/workflow_engines/SSOTOrchestratorAgent.py")
 
-        assert not ssot_path.exists(), \
+        assert not ssot_path.exists(), (
             f"SSOTOrchestratorAgent.py should be deleted but still exists at {ssot_path}"
+        )
 
     def test_canon_base_agent_deleted(self):
         """Verify CanonBaseAgent.py has been deleted."""
         canon_path = Path("agentic_core/L2_execution/ToolRegistry/CanonBaseAgent.py")
 
-        assert not canon_path.exists(), \
+        assert not canon_path.exists(), (
             f"CanonBaseAgent.py should be deleted but still exists at {canon_path}"
+        )
 
     def test_execution_canon_base_agent_deleted(self):
         """Verify ExecutionCanonBaseAgent.py has been deleted."""
         exec_canon_path = Path("agentic_core/L2_execution/ToolRegistry/ExecutionCanonBaseAgent.py")
 
-        assert not exec_canon_path.exists(), \
+        assert not exec_canon_path.exists(), (
             f"ExecutionCanonBaseAgent.py should be deleted but still exists at {exec_canon_path}"
+        )
 
 
 class TestIOrchestrator:
@@ -352,16 +367,19 @@ class TestIOrchestrator:
 
         orchestrator = UnifiedOrchestratorAgent(strategy=mock_strategy)
 
-        assert isinstance(orchestrator, IOrchestrator), \
+        assert isinstance(orchestrator, IOrchestrator), (
             "UnifiedOrchestratorAgent must implement IOrchestrator protocol"
+        )
 
     def test_iorchestrator_has_required_methods(self):
         """Verify IOrchestrator defines required methods."""
         from agentic_core.L5_safety.validators.orchestrator import IOrchestrator
 
         # Check protocol has required methods
-        assert hasattr(IOrchestrator, 'run_mission'), "IOrchestrator must define run_mission"
-        assert hasattr(IOrchestrator, 'validate_stability'), "IOrchestrator must define validate_stability"
+        assert hasattr(IOrchestrator, "run_mission"), "IOrchestrator must define run_mission"
+        assert hasattr(IOrchestrator, "validate_stability"), (
+            "IOrchestrator must define validate_stability"
+        )
 
 
 if __name__ == "__main__":

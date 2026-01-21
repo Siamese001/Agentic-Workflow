@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt, workflow
@@ -32,14 +31,18 @@ Logger = logging.getLogger(__name__)
 
 def timeout(seconds: int) -> Any:
     """Timeout decorator for long-running operations."""
+
     def decorator(func: Any) -> Any:
         """Execute decorator operation."""
+
         @wraps(func)
         def wrapper(*args, **kwargs) -> Any:
             """Execute wrapper operation."""
             # Simplified timeout - in production would use signal/threading
             return func(*args, **kwargs)
+
         return wrapper
+
     return decorator
 
 
@@ -50,7 +53,7 @@ class FileManagerAgent(SovereignBaseAgent):
     def __init__(self, project_root: Path | None = None) -> None:
         """Initialize FileManagerAgent."""
         self.project_root = project_root or Path.cwd()
-        self.backup_dir = self.project_root / '.backups'
+        self.backup_dir = self.project_root / ".backups"
 
     @timeout(300)
     @standard_heal
@@ -60,7 +63,7 @@ class FileManagerAgent(SovereignBaseAgent):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: set | None = None
+        _call_path: set | None = None,
     ) -> dict[str, int]:
         """
         Repository-wide filesystem healing - invoke shared chain.
@@ -99,7 +102,7 @@ class FileManagerAgent(SovereignBaseAgent):
                 execute=execute,
                 depth=depth + 1,
                 max_depth=max_depth,
-                _call_path=_call_path
+                _call_path=_call_path,
             )
 
             # Agent-specific filesystem healing
@@ -129,7 +132,7 @@ class FileManagerAgent(SovereignBaseAgent):
             "fixed_paths": 0,
             "skipped": 0,
             "errors": 0,
-            "total": 0
+            "total": 0,
         }
 
         try:
@@ -171,9 +174,10 @@ class FileManagerAgent(SovereignBaseAgent):
         try:
             # Phase 6.9: Use ssot_discovery instead of glob
             from agentic_core.utils.ssot_discovery import get_data_files
-            for backup_file in get_data_files(self.backup_dir, extensions=['.bak']):
+
+            for backup_file in get_data_files(self.backup_dir, extensions=[".bak"]):
                 # Check if backup is orphaned (original file missing)
-                original = Path(str(backup_file).replace('.bak', ''))
+                original = Path(str(backup_file).replace(".bak", ""))
                 if not original.exists():
                     if execute:
                         backup_file.unlink()
@@ -202,7 +206,10 @@ class FileManagerAgent(SovereignBaseAgent):
         try:
             # Phase 6.9: Use ssot_discovery instead of rglob
             from agentic_core.utils.ssot_discovery import get_data_files, get_python_files
-            all_items = list(get_python_files(self.project_root)) + list(get_data_files(self.project_root))
+
+            all_items = list(get_python_files(self.project_root)) + list(
+                get_data_files(self.project_root)
+            )
             for item in all_items:
                 if item.is_symlink() and not item.resolve().exists():
                     if execute:
@@ -231,7 +238,7 @@ class FileManagerAgent(SovereignBaseAgent):
         merged = {}
 
         # Standard metrics (sum parent + filesystem)
-        for key in ['healed', 'cleaned_backups', 'fixed_paths', 'skipped', 'errors', 'total']:
+        for key in ["healed", "cleaned_backups", "fixed_paths", "skipped", "errors", "total"]:
             merged[key] = parent.get(key, 0) + fs.get(key, 0)
 
         # Preserve other keys from both dicts
@@ -253,5 +260,7 @@ class FileManagerAgent(SovereignBaseAgent):
             results[TESTS_DIR].append({"name": "test_instantiation", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results[TESTS_DIR].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
+            results[TESTS_DIR].append(
+                {"name": "test_instantiation", "status": "failed", "error": str(e)}
+            )
         return results

@@ -26,6 +26,7 @@ logger = logging.getLogger(__name__)
 
 class ValidationStatus(str, Enum):
     """Validation result status."""
+
     PASS = "PASS"
     FAIL = "FAIL"
     BLOCK = "BLOCK"  # Critical failure - halt immediately
@@ -33,6 +34,7 @@ class ValidationStatus(str, Enum):
 
 class ValidationAction(str, Enum):
     """Action to take on validation failure."""
+
     REGENERATE = "REGENERATE"
     HALT = "HALT"
     SOFT_REJECT = "SOFT_REJECT"
@@ -43,6 +45,7 @@ class ValidationAction(str, Enum):
 @dataclass
 class RuleFailure:
     """Details of a failed validation rule."""
+
     rule_id: str
     rule_name: str
     severity: str
@@ -55,6 +58,7 @@ class RuleFailure:
 @dataclass
 class ValidationResult:
     """Result of validation gate execution."""
+
     status: ValidationStatus
     gate_id: str
     execution_point: str
@@ -148,9 +152,7 @@ class ValidationGateExecutor:
 
                 # CRITICAL: Hard stop on critical failures
                 if gate.severity == "CRITICAL" and gate.blocking:
-                    logger.critical(
-                        f"CRITICAL failure in gate {gate_id}: {failure.message}"
-                    )
+                    logger.critical(f"CRITICAL failure in gate {gate_id}: {failure.message}")
                     return ValidationResult(
                         status=ValidationStatus.BLOCK,
                         gate_id=gate_id,
@@ -203,9 +205,7 @@ class ValidationGateExecutor:
 
         for gate_id, gate in self.validation_gates.items():
             if gate.execution_point == execution_point:
-                result = self.execute_gate(
-                    gate_id, content, k_node_id, execution_point, context
-                )
+                result = self.execute_gate(gate_id, content, k_node_id, execution_point, context)
                 results.append(result)
 
                 # Hard stop on BLOCK
@@ -280,16 +280,18 @@ class ValidationGateExecutor:
 
         Handles scopes: total, per_bullet, per_segment, per_competency, per_paragraph
         """
-        constraint_key = f"{k_node_id}_{check}" if check in self.word_count_constraints else k_node_id
+        constraint_key = (
+            f"{k_node_id}_{check}" if check in self.word_count_constraints else k_node_id
+        )
         constraint = self.word_count_constraints.get(constraint_key)
 
         if not constraint:
             logger.debug(f"No word count constraint for {constraint_key}")
             return None
 
-        scope = constraint.scope if hasattr(constraint, 'scope') else "total"
-        min_words = constraint.min if hasattr(constraint, 'min') else None
-        max_words = constraint.max if hasattr(constraint, 'max') else None
+        scope = constraint.scope if hasattr(constraint, "scope") else "total"
+        min_words = constraint.min if hasattr(constraint, "min") else None
+        max_words = constraint.max if hasattr(constraint, "max") else None
 
         # Segment content based on scope
         if scope == "total":
@@ -312,10 +314,10 @@ class ValidationGateExecutor:
             word_count = len(segment.split())
 
             if min_words and word_count < min_words:
-                failures.append(f"Segment {i+1}: {word_count} words < min {min_words}")
+                failures.append(f"Segment {i + 1}: {word_count} words < min {min_words}")
 
             if max_words and word_count > max_words:
-                failures.append(f"Segment {i+1}: {word_count} words > max {max_words}")
+                failures.append(f"Segment {i + 1}: {word_count} words > max {max_words}")
 
         if failures:
             return RuleFailure(
@@ -500,8 +502,14 @@ class ValidationGateExecutor:
     ) -> RuleFailure | None:
         """Check for placeholders."""
         placeholder_patterns = [
-            r'\[NAME\]', r'\[COMPANY\]', r'\{name\}', r'\{company\}',
-            r'<NAME>', r'<COMPANY>', r'PLACEHOLDER', r'TODO',
+            r"\[NAME\]",
+            r"\[COMPANY\]",
+            r"\{name\}",
+            r"\{company\}",
+            r"<NAME>",
+            r"<COMPANY>",
+            r"PLACEHOLDER",
+            r"TODO",
         ]
 
         found_placeholders = []
@@ -531,7 +539,7 @@ class ValidationGateExecutor:
     ) -> RuleFailure | None:
         """Check claim grounding and hallucination."""
         # Extract claims (simple sentence splitting)
-        claims = [s.strip() for s in content.split('.') if s.strip()]
+        claims = [s.strip() for s in content.split(".") if s.strip()]
 
         # Check if RAG evidence exists for claims
         rag_evidence = context.get("rag_evidence", [])
@@ -544,8 +552,7 @@ class ValidationGateExecutor:
         for claim in claims:
             # Check if any RAG evidence overlaps with claim
             has_evidence = any(
-                self._calculate_similarity(claim, evidence) > 0.3
-                for evidence in rag_evidence
+                self._calculate_similarity(claim, evidence) > 0.3 for evidence in rag_evidence
             )
             if not has_evidence:
                 ungrounded_claims.append(claim[:50] + "...")
@@ -662,7 +669,7 @@ class ValidationGateExecutor:
     def _segment_bullets(self, content: str) -> list[str]:
         """Segment content into bullets."""
         # Split by bullet markers or newlines
-        bullets = re.split(r'[\n•\-\*]\s*', content)
+        bullets = re.split(r"[\n•\-\*]\s*", content)
         return [b.strip() for b in bullets if b.strip()]
 
     def _segment_by_delimiter(self, content: str, delimiter: str) -> list[str]:
@@ -673,12 +680,12 @@ class ValidationGateExecutor:
     def _segment_competencies(self, content: str) -> list[str]:
         """Segment content into competencies."""
         # Assume competencies are numbered or separated by newlines
-        competencies = re.split(r'\n\d+\.\s*|\n\n', content)
+        competencies = re.split(r"\n\d+\.\s*|\n\n", content)
         return [c.strip() for c in competencies if c.strip() and len(c.split()) > 5]
 
     def _segment_paragraphs(self, content: str) -> list[str]:
         """Segment content into paragraphs."""
-        paragraphs = content.split('\n\n')
+        paragraphs = content.split("\n\n")
         return [p.strip() for p in paragraphs if p.strip()]
 
     def _calculate_similarity(self, text1: str, text2: str) -> float:

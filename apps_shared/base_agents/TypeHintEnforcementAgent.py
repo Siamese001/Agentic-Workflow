@@ -12,12 +12,13 @@ Migration:
         check_type_hints,
     )
 """
+
 import warnings
 
 warnings.warn(
     "TypeHintEnforcementAgent is deprecated. Use CodeStandardsEnforcerAgent instead.",
     DeprecationWarning,
-    stacklevel=2
+    stacklevel=2,
 )
 
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
@@ -39,7 +40,7 @@ from __future__ import annotations
 # Surgery Scope: Single file — adds basic Any / inferred hints where Missing
 import ast
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
 from pathlib import Path
 from typing import Any
@@ -99,7 +100,11 @@ class TypeHintEnforcementAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
                 new_source = ast.unparse(new_tree)
 
                 if new_source != source:
-                    file_path.write_text(new_source + "\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n", encoding="utf-8")
+                    file_path.write_text(
+                        new_source
+                        + "\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n",
+                        encoding="utf-8",
+                    )
                     message = f"Added {fixer.added_count} Missing type hint(s)"
                     print(f"      [HEALED] {file_path.name}: {message}")
                     ctx.report(
@@ -135,11 +140,19 @@ def get_type_hint_enforcement_agent(ctx, project_root=None) -> TypeHintEnforceme
 
 class TypeHintEnforcementAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """TypeHintEnforcementAgent agent for autonomous operations."""
+
     # ... (rest of the class remains the same)
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L5 safety/validators - operational only."""
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository()

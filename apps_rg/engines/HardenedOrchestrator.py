@@ -301,10 +301,7 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
         if self.resumed_from_checkpoint and self.workflow_state:
             current_k_node = self.workflow_state.current_k_node
             # Skip already completed hops
-            execution_order = [
-                hop for i, hop in enumerate(execution_order)
-                if i >= current_k_node
-            ]
+            execution_order = [hop for i, hop in enumerate(execution_order) if i >= current_k_node]
             Logger.info(f"Skipping {current_k_node} already completed hops")
 
         # Execute remaining hops
@@ -318,7 +315,7 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
         }
 
         for i, hop_id in enumerate(execution_order):
-            Logger.info(f"Executing hop {hop_id} ({i+1}/{len(execution_order)})")
+            Logger.info(f"Executing hop {hop_id} ({i + 1}/{len(execution_order)})")
 
             # Get hop specification
             hop_spec = next((h for h in self.spec.hops if h.id == hop_id), None)
@@ -369,8 +366,12 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
         results["final_state"] = {
             "current_k_node": self.workflow_state.current_k_node if self.workflow_state else 0,
             "total_k_nodes": self.workflow_state.total_k_nodes if self.workflow_state else 0,
-            "progress_percentage": self.workflow_state.get_progress_percentage() if self.workflow_state else 0,
-            "execution_log_count": len(self.workflow_state.execution_log) if self.workflow_state else 0,
+            "progress_percentage": self.workflow_state.get_progress_percentage()
+            if self.workflow_state
+            else 0,
+            "execution_log_count": len(self.workflow_state.execution_log)
+            if self.workflow_state
+            else 0,
         }
 
         Logger.info(

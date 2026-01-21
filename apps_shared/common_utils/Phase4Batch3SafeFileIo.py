@@ -11,6 +11,7 @@ This script:
 EXCLUDED FILES:
 - file_utils.py (the implementation itself)
 """
+
 from __future__ import annotations
 
 import argparse
@@ -38,7 +39,7 @@ EXCLUDED_DIRS = {
 SAFE_FILE_IMPORT = "from agentic_core.utils.file_utils import safe_read_file, safe_write_file"
 
 # Pattern to detect file open calls
-OPEN_PATTERN = re.compile(r'\bopen\s*\(')
+OPEN_PATTERN = re.compile(r"\bopen\s*\(")
 
 
 def find_python_files(root: Path) -> list[Path]:
@@ -79,7 +80,7 @@ class FileIOVisitor(ast.NodeVisitor):
 
     def visit_Call(self, node: ast.Call):
         """Find open() calls."""
-        if isinstance(node.func, ast.Name) and node.func.id == 'open':
+        if isinstance(node.func, ast.Name) and node.func.id == "open":
             self.has_open_calls = True
 
         self.generic_visit(node)
@@ -90,7 +91,11 @@ def find_safe_insertion_line(tree: ast.AST, visitor: FileIOVisitor) -> int:
     if visitor.last_import_line > 0:
         return visitor.last_import_line
 
-    if tree.body and isinstance(tree.body[0], ast.Expr) and isinstance(tree.body[0].value, (ast.Constant, ast.Str)):
+    if (
+        tree.body
+        and isinstance(tree.body[0], ast.Expr)
+        and isinstance(tree.body[0].value, (ast.Constant, ast.Str))
+    ):
         return tree.body[0].end_lineno
 
     return 0
@@ -110,7 +115,7 @@ def process_file(file_path: Path, dry_run: bool = True) -> dict:
     }
 
     try:
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
     except Exception as e:
         result["skipped"] = True
         result["reason"] = f"Read error: {e}"
@@ -153,7 +158,7 @@ def process_file(file_path: Path, dry_run: bool = True) -> dict:
     result["import_added"] = True
 
     # Final Safety Check
-    new_content = '\n'.join(lines) + '\n'
+    new_content = "\n".join(lines) + "\n"
 
     try:
         ast.parse(new_content)
@@ -165,7 +170,7 @@ def process_file(file_path: Path, dry_run: bool = True) -> dict:
     # Write
     if not dry_run:
         try:
-            file_path.write_text(new_content, encoding='utf-8')
+            file_path.write_text(new_content, encoding="utf-8")
         except Exception as e:
             result["skipped"] = True
             result["reason"] = f"Write error: {e}"
@@ -206,7 +211,9 @@ def main():
 
         if result["skipped"]:
             stats["files_skipped"] += 1
-            if "Already has" not in str(result["reason"]) and "No open" not in str(result["reason"]):
+            if "Already has" not in str(result["reason"]) and "No open" not in str(
+                result["reason"]
+            ):
                 print(f"  [SKIP] {file_path.name}: {result['reason']}")
             continue
 
@@ -225,6 +232,7 @@ def main():
     print(f"  Files skipped:     {stats['files_skipped']}")
     print("\nNote: This batch adds safe_read_file/safe_write_file imports.")
     print("Manual review recommended for actual open() replacement.")
+
 
 if __name__ == "__main__":
     main()

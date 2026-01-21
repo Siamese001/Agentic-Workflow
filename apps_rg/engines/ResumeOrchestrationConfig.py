@@ -15,6 +15,7 @@ from runtime.shared.routing import RoutingTier
 
 class RAGType(str, Enum):
     """RAG execution type."""
+
     INTERNAL = "Internal"  # No external RAG, use only provided context
     HYBRID = "Hybrid"  # Mix of internal context and external retrieval
     AGENTIC = "Agentic"  # Full multi-hop agentic RAG with planning
@@ -22,6 +23,7 @@ class RAGType(str, Enum):
 
 class ClaimVerificationMode(str, Enum):
     """Claim verification strictness."""
+
     PERMISSIVE = "permissive"  # Allow unverified claims
     BALANCED = "balanced"  # Verify critical claims only
     STRICT = "strict"  # Verify all factual claims
@@ -29,6 +31,7 @@ class ClaimVerificationMode(str, Enum):
 
 class ValidationSeverity(str, Enum):
     """Validation gate Severity."""
+
     INFO = "INFO"
     WARN = "WARN"
     CRITICAL = "CRITICAL"
@@ -37,6 +40,7 @@ class ValidationSeverity(str, Enum):
 @dataclass
 class WordCountConstraint:
     """Word count constraint for a section."""
+
     min: int | None = None
     max: int | None = None
     scope: str = "total"  # "total", "per_bullet", "per_segment", "per_competency", "per_paragraph"
@@ -54,6 +58,7 @@ class WordCountConstraint:
 @dataclass
 class CharCountConstraint:
     """Character count constraint for a section."""
+
     min: int | None = None
     max: int | None = None
 
@@ -69,6 +74,7 @@ class CharCountConstraint:
 @dataclass
 class ReasoningConfig:
     """Reasoning configuration for K-node execution."""
+
     temperature: float = 0.7
     RagType: RAGType = RAGType.HYBRID
     rag_total_calls: int = 5
@@ -86,6 +92,7 @@ class ReasoningConfig:
 @dataclass
 class ProvenanceRule:
     """Provenance rule for bullet generation."""
+
     verbatim: int  # Number of verbatim bullets from master resume
     transformed: int  # Number of transformed bullets
     synthetic: int  # Number of synthetic bullets
@@ -104,6 +111,7 @@ class ProvenanceRule:
 @dataclass
 class ValidationGate:
     """Validation gate configuration."""
+
     gate_id: str
     execution_point: str
     blocking: bool

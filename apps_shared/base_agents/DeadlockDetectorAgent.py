@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, validator, workflow
@@ -24,6 +23,7 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger = logging.getLogger(__name__)
 
+
 @dataclass
 class DeadlockDetectorAgent(HealerMixin, SubatomicTestingMixin):
     """
@@ -42,7 +42,7 @@ class DeadlockDetectorAgent(HealerMixin, SubatomicTestingMixin):
         self.alerted_tasks: set[str] = set()
         self.monitor_task: asyncio.Task | None = None
         self.enabled = True
-        self._mcp_audit('init')
+        self._mcp_audit("init")
         Logger.info("DeadlockDetectorAgent initialized")
 
     def _run_self_tests(self) -> bool:
@@ -164,11 +164,13 @@ class DeadlockDetectorAgent(HealerMixin, SubatomicTestingMixin):
 
                 # Get stack trace
                 stack_trace = monitor.get_stack_trace()
-                monitor.stack_traces.append({
-                    "timestamp": datetime.utcnow().isoformat(),
-                    "elapsed": elapsed,
-                    "trace": stack_trace
-                })
+                monitor.stack_traces.append(
+                    {
+                        "timestamp": datetime.utcnow().isoformat(),
+                        "elapsed": elapsed,
+                        "trace": stack_trace,
+                    }
+                )
 
                 # Alert if threshold exceeded
                 if monitor.timeout_count >= DEADLOCK_THRESHOLD:
@@ -195,7 +197,7 @@ class DeadlockDetectorAgent(HealerMixin, SubatomicTestingMixin):
             "last_heartbeat": datetime.fromtimestamp(monitor.last_heartbeat).isoformat(),
             "timeout_count": monitor.timeout_count,
             "stack_traces": monitor.stack_traces[-3:],  # Last 3 traces
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.utcnow().isoformat(),
         }
 
         # Log alert
@@ -220,15 +222,14 @@ class DeadlockDetectorAgent(HealerMixin, SubatomicTestingMixin):
             if len(alerts) > 100:
                 alerts = alerts[-100:]
 
-            with open(alert_file, 'w') as f:
+            with open(alert_file, "w") as f:
                 json.dump(alerts, f, indent=2)
         except Exception as e:
             LOGGER.error(f"Failed to save deadlock alert: {e}")
 
     def get_status(self) -> dict:
         """Get current monitoring status."""
-        active_tasks = sum(1 for m in self.monitored_tasks.values()
-                          if not m.Task.done())
+        active_tasks = sum(1 for m in self.monitored_tasks.values() if not m.Task.done())
 
         return {
             "enabled": self.enabled,
@@ -237,7 +238,7 @@ class DeadlockDetectorAgent(HealerMixin, SubatomicTestingMixin):
             "total_registered": len(self.monitored_tasks),
             "alerted_tasks": len(self.alerted_tasks),
             "max_phase_time": MAX_PHASE_TIME,
-            "heartbeat_interval": HEARTBEAT_INTERVAL
+            "heartbeat_interval": HEARTBEAT_INTERVAL,
         }
 
     def get_task_details(self, task_id: str) -> dict | None:
@@ -254,7 +255,7 @@ class DeadlockDetectorAgent(HealerMixin, SubatomicTestingMixin):
             "elapsed": time.time() - monitor.start_time,
             "timeout_count": monitor.timeout_count,
             "is_done": monitor.Task.done(),
-            "stack_traces": monitor.stack_traces
+            "stack_traces": monitor.stack_traces,
         }
 
     @timeout(120)
@@ -265,13 +266,17 @@ class DeadlockDetectorAgent(HealerMixin, SubatomicTestingMixin):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: set | None = None
+        _call_path: set | None = None,
     ) -> dict[str, int]:
         """
         Deadlock Healing - Clears stale tasks and resets corrupted monitors.
         """
         metrics = super().heal_repository(
-            dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path
+            dry_run=dry_run,
+            execute=execute,
+            depth=depth,
+            max_depth=max_depth,
+            _call_path=_call_path,
         )
         if not isinstance(metrics, dict):
             metrics = {"violations": 0, "fixed": 0, "errors": 0}

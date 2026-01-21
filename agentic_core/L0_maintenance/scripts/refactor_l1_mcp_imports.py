@@ -22,10 +22,11 @@ OLD_IMPORT = "from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCP
 # New import (utils - foundational)
 NEW_IMPORT = "from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin"
 
+
 def refactor_file(file_path: Path) -> bool:
     """Replace L5 MCPHardenedMixin import with utils location."""
     try:
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
 
         if OLD_IMPORT not in content:
             return False
@@ -34,7 +35,7 @@ def refactor_file(file_path: Path) -> bool:
         new_content = content.replace(OLD_IMPORT, NEW_IMPORT)
 
         # Write back
-        file_path.write_text(new_content, encoding='utf-8')
+        file_path.write_text(new_content, encoding="utf-8")
 
         print(f"✅ Fixed: {file_path.relative_to(REPO)}")
         return True
@@ -42,6 +43,7 @@ def refactor_file(file_path: Path) -> bool:
     except Exception as e:
         print(f"❌ Error: {file_path.name}: {e}")
         return False
+
 
 def main():
     """Refactor all L1 files with MCPHardenedMixin imports."""
@@ -67,8 +69,8 @@ def main():
     # Recursively find all .py files
     # Phase 6.7: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_python_files
-    for py_file in get_python_files(l1_dir):
 
+    for py_file in get_python_files(l1_dir):
         files_scanned += 1
         if refactor_file(py_file):
             files_modified += 1
@@ -90,6 +92,7 @@ def main():
         print("ℹ️  No files needed refactoring")
 
     return 0
+
 
 if __name__ == "__main__":
     exit(main())

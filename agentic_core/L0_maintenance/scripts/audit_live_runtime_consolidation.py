@@ -3,32 +3,36 @@
 Audit Live Runtime Tab for Consolidation Opportunities.
 Identifies repeated content, overlapping sections, and weak purpose statements.
 """
+
 import re
 from pathlib import Path
 
 project_root = Path(__file__).parent.parent
-dashboard_html = project_root / "agentic_core" / "L6_observability" / "dashboards" / "autonomy_dashboard.html"
+dashboard_html = (
+    project_root / "agentic_core" / "L6_observability" / "dashboards" / "autonomy_dashboard.html"
+)
+
 
 def audit_live_runtime():
     """Analyze Live Runtime tab structure and content."""
 
-    content = dashboard_html.read_text(encoding='utf-8')
+    content = dashboard_html.read_text(encoding="utf-8")
 
     # Extract Live Runtime tab content
     runtime_start = content.find('id="runtime-content"')
     runtime_end = content.find('id="interview-content"')
     runtime_content = content[runtime_start:runtime_end]
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("LIVE RUNTIME TAB CONSOLIDATION AUDIT")
-    print("="*80)
+    print("=" * 80)
 
     # 1. Identify all sections
     print("\n1. CURRENT SECTIONS:")
 
     # Find all chart-title elements
     titles = re.findall(r'<div class="chart-title">([^<]+)</div>', runtime_content)
-    section_headers = re.findall(r'<h2[^>]*>([^<]+)</h2>', runtime_content)
+    section_headers = re.findall(r"<h2[^>]*>([^<]+)</h2>", runtime_content)
 
     print(f"\n   Section Headers ({len(section_headers)}):")
     for i, header in enumerate(section_headers, 1):
@@ -40,7 +44,7 @@ def audit_live_runtime():
 
     # 2. Identify purpose statements
     print("\n2. PURPOSE STATEMENTS:")
-    purposes = re.findall(r'Purpose: ([^<]+)', runtime_content)
+    purposes = re.findall(r"Purpose: ([^<]+)", runtime_content)
 
     for i, purpose in enumerate(purposes, 1):
         print(f"\n   {i}. {purpose[:100]}{'...' if len(purpose) > 100 else ''}")
@@ -50,25 +54,33 @@ def audit_live_runtime():
 
     overlaps = [
         {
-            'type': 'Event Logging',
-            'sections': ['📜 Real-Time Event Log', '📟 Live Sovereign Log'],
-            'issue': 'Both show real-time event streams - redundant functionality'
+            "type": "Event Logging",
+            "sections": ["📜 Real-Time Event Log", "📟 Live Sovereign Log"],
+            "issue": "Both show real-time event streams - redundant functionality",
         },
         {
-            'type': 'Statistics Display',
-            'sections': ['📊 Meta-Learning Statistics', '📊 Vector Storage Statistics', '📊 Execution Summary'],
-            'issue': 'Multiple stats panels with similar layouts - could consolidate'
+            "type": "Statistics Display",
+            "sections": [
+                "📊 Meta-Learning Statistics",
+                "📊 Vector Storage Statistics",
+                "📊 Execution Summary",
+            ],
+            "issue": "Multiple stats panels with similar layouts - could consolidate",
         },
         {
-            'type': 'Timeline/Stream Views',
-            'sections': ['📜 Experience Stream', '🔍 Pattern Extraction Timeline', '📈 Execution Timeline'],
-            'issue': 'Multiple scrollable lists showing chronological data - similar UX'
+            "type": "Timeline/Stream Views",
+            "sections": [
+                "📜 Experience Stream",
+                "🔍 Pattern Extraction Timeline",
+                "📈 Execution Timeline",
+            ],
+            "issue": "Multiple scrollable lists showing chronological data - similar UX",
         },
         {
-            'type': 'KPI Boxes',
-            'sections': ['API Latency boxes', 'Meta-Learning Experiences', 'Patterns Extracted'],
-            'issue': 'Standalone KPI boxes that could be integrated into relevant sections'
-        }
+            "type": "KPI Boxes",
+            "sections": ["API Latency boxes", "Meta-Learning Experiences", "Patterns Extracted"],
+            "issue": "Standalone KPI boxes that could be integrated into relevant sections",
+        },
     ]
 
     for overlap in overlaps:
@@ -81,20 +93,20 @@ def audit_live_runtime():
 
     weak_purposes = [
         {
-            'section': 'Real-Time Event Log',
-            'current': 'Captures all system events in chronological order. Use this for debugging issues...',
-            'issue': 'Generic - doesn\'t explain WHAT events or HOW to use for debugging'
+            "section": "Real-Time Event Log",
+            "current": "Captures all system events in chronological order. Use this for debugging issues...",
+            "issue": "Generic - doesn't explain WHAT events or HOW to use for debugging",
         },
         {
-            'section': 'Live Sovereign Log',
-            'current': 'Terminal-style log showing all system events as they stream in...',
-            'issue': 'Overlaps with Event Log - unclear differentiation'
+            "section": "Live Sovereign Log",
+            "current": "Terminal-style log showing all system events as they stream in...",
+            "issue": "Overlaps with Event Log - unclear differentiation",
         },
         {
-            'section': 'Meta-Learning Activity',
-            'current': 'Tracks how the system learns from experience and adapts...',
-            'issue': 'High-level - needs specific metrics and thresholds'
-        }
+            "section": "Meta-Learning Activity",
+            "current": "Tracks how the system learns from experience and adapts...",
+            "issue": "High-level - needs specific metrics and thresholds",
+        },
     ]
 
     for weak in weak_purposes:
@@ -103,36 +115,36 @@ def audit_live_runtime():
         print(f"      Issue: {weak['issue']}")
 
     # 5. Recommendations
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("CONSOLIDATION RECOMMENDATIONS")
-    print("="*80)
+    print("=" * 80)
 
     recommendations = [
         {
-            'action': 'MERGE Event Logs',
-            'details': 'Combine "Real-Time Event Log" and "Live Sovereign Log" into single "System Event Stream" with filtering by event type',
-            'benefit': 'Eliminates redundancy, reduces vertical scrolling, clearer UX'
+            "action": "MERGE Event Logs",
+            "details": 'Combine "Real-Time Event Log" and "Live Sovereign Log" into single "System Event Stream" with filtering by event type',
+            "benefit": "Eliminates redundancy, reduces vertical scrolling, clearer UX",
         },
         {
-            'action': 'CONSOLIDATE Statistics',
-            'details': 'Create unified "System Performance Dashboard" with tabs for Meta-Learning, Redis, Pinecone, Execution',
-            'benefit': 'Reduces visual clutter, easier comparison across subsystems'
+            "action": "CONSOLIDATE Statistics",
+            "details": 'Create unified "System Performance Dashboard" with tabs for Meta-Learning, Redis, Pinecone, Execution',
+            "benefit": "Reduces visual clutter, easier comparison across subsystems",
         },
         {
-            'action': 'INTEGRATE KPI Boxes',
-            'details': 'Move API latency KPIs into relevant sections (Pinecone stats, Meta-Learning stats)',
-            'benefit': 'Contextualizes metrics, reduces standalone elements'
+            "action": "INTEGRATE KPI Boxes",
+            "details": "Move API latency KPIs into relevant sections (Pinecone stats, Meta-Learning stats)",
+            "benefit": "Contextualizes metrics, reduces standalone elements",
         },
         {
-            'action': 'ENHANCE Purpose Statements',
-            'details': 'Add specific thresholds, expected ranges, and actionable insights to each section',
-            'benefit': 'Higher signal - users know WHAT to look for and WHEN to act'
+            "action": "ENHANCE Purpose Statements",
+            "details": "Add specific thresholds, expected ranges, and actionable insights to each section",
+            "benefit": "Higher signal - users know WHAT to look for and WHEN to act",
         },
         {
-            'action': 'ADD Executive Summary',
-            'details': 'Create top-level "System Health Overview" showing critical metrics from all subsystems',
-            'benefit': 'Quick glance status, reduces need to scroll through all sections'
-        }
+            "action": "ADD Executive Summary",
+            "details": 'Create top-level "System Health Overview" showing critical metrics from all subsystems',
+            "benefit": "Quick glance status, reduces need to scroll through all sections",
+        },
     ]
 
     for i, rec in enumerate(recommendations, 1):
@@ -141,9 +153,9 @@ def audit_live_runtime():
         print(f"   Benefit: {rec['benefit']}")
 
     # 6. Proposed Structure
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("PROPOSED CONSOLIDATED STRUCTURE")
-    print("="*80)
+    print("=" * 80)
 
     proposed = """
     LIVE RUNTIME TAB (Consolidated)
@@ -184,15 +196,16 @@ def audit_live_runtime():
 
     print(proposed)
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("SIGNAL-TO-NOISE IMPROVEMENT")
-    print("="*80)
+    print("=" * 80)
     print("\nCurrent: 8 major sections + 4 KPI boxes + 2 event logs = 14 visual elements")
     print("Proposed: 5 consolidated sections = 5 visual elements")
     print("Reduction: 64% fewer elements, 3x higher information density per element")
     print("\nPurpose Statement Enhancement:")
     print("  Before: Generic descriptions of what section shows")
     print("  After: Specific thresholds, expected ranges, and action triggers")
+
 
 if __name__ == "__main__":
     audit_live_runtime()

@@ -43,7 +43,7 @@ class DocumentationAgent(SubatomicTestingMixin, SubAtomicAgent):
         Runs missing docstrings check and reports results
         to the validation context.
         """
-        print(f'\n[>>>] {self.agent.name} ACTIVATED: Documentation Check...')
+        print(f"\n[>>>] {self.agent.name} ACTIVATED: Documentation Check...")
         passed, details = self.check_no_missing_docstrings()
         self.agent.ctx.report(self.agent.name, 21, passed, details)
 
@@ -72,8 +72,10 @@ class DocumentationAgent(SubatomicTestingMixin, SubAtomicAgent):
         """
         file_violations: list[str] = []
         for node in ast.walk(tree):
-            if isinstance(node, ast.FunctionDef | ast.ClassDef) and self._has_missing_docstring(node):
-                file_violations.append(f'{fp}:{node.lineno} {node.name}')
+            if isinstance(node, ast.FunctionDef | ast.ClassDef) and self._has_missing_docstring(
+                node
+            ):
+                file_violations.append(f"{fp}:{node.lineno} {node.name}")
         return file_violations
 
     def check_no_missing_docstrings(self) -> tuple[bool, list[str]]:
@@ -91,7 +93,7 @@ class DocumentationAgent(SubatomicTestingMixin, SubAtomicAgent):
         violations: list[str] = []
         for fp in self.agent.ctx.python_files:
             try:
-                with open(fp, encoding='utf-8') as f:
+                with open(fp, encoding="utf-8") as f:
                     tree = ast.parse(f.read())
                 violations.extend(self._find_missing_docstring_violations_in_tree(tree, fp))
             except Exception:

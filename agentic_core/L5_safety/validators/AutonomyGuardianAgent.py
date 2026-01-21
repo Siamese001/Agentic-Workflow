@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: prompt, workflow
@@ -34,7 +33,10 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 log = logging.getLogger(__name__)
 
-class AutonomyGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin, RedisCacheMixin, PineconeVectorMixin):
+
+class AutonomyGuardianAgent(
+    SubatomicTestingMixin, HealerMixin, MCPHardenedMixin, RedisCacheMixin, PineconeVectorMixin
+):
     """
     Sovereign guardian for agent autonomy enforcement.
 
@@ -61,6 +63,7 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
         self.gemini_embedder = None
         try:
             from agentic_core.semantic_memory.embeddings.gemini_embedder import get_gemini_embedder
+
             self.gemini_embedder = get_gemini_embedder()
             log.info("[AutonomyGuardian] Gemini embedder initialized for semantic Meta-Learning")
         except Exception as e:
@@ -91,7 +94,9 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
         try:
             content = agent_file.read_text(encoding="utf-8", errors="ignore")
             tree = ast.parse(content)
-            method_names = {node.name for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)}
+            method_names = {
+                node.name for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)
+            }
             for req_method in self.required_methods:
                 if req_method not in method_names:
                     violations.append(req_method)
@@ -110,6 +115,7 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
         """Check for forbidden runner scripts."""
         # Phase 6.7: Use ssot_discovery instead of rglob
         from agentic_core.utils.ssot_discovery import get_python_files
+
         for dir_path in self.forbidden_dirs:
             dir_obj = self.project_root / dir_path
             if dir_obj.exists():
@@ -128,7 +134,14 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
                     violations.append((agent_path, f"MISSING_METHOD:{m}"))
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set[str] | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set[str] | None = None,
+    ) -> dict[str, int]:
         """Meta-healing: Purge forbidden scripts and report missing methods."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         actual_execute = execute and not dry_run
@@ -162,18 +175,32 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
 
         self._generate_dashboard_v2_with_rows(today, dashboard_rows, total_row)
 
-    def _save_modular_markdown_report(self, today: str, total_row: dict[str, Any], dashboard_rows: list[dict[str, Any]]) -> None:
+    def _save_modular_markdown_report(
+        self, today: str, total_row: dict[str, Any], dashboard_rows: list[dict[str, Any]]
+    ) -> None:
         """Passive Markdown renderer consuming pre-computed L6 rows."""
-        report_path = self.project_root / AGENTIC_CORE_DIR / "L6_observability" / REPORTS_DIR / "autonomy_compliance_report.md"
+        report_path = (
+            self.project_root
+            / AGENTIC_CORE_DIR
+            / "L6_observability"
+            / REPORTS_DIR
+            / "autonomy_compliance_report.md"
+        )
         md = f"# Autonomy Compliance SSOT Report — {today}\n\n"
         md += f"System Health: {total_row['Health']:.1f}% | Risk: {total_row['Risk']}\n\n"
         md += "| Territory | Total | % Heal Cap | % Heal Inv | % Test | CC | Health |\n|---|---|---|---|---|---|---|\n"
         for row in dashboard_rows:
-            md += "| {Territory} | {Total} | {Heal Cap %} | {Heal Invocation %} | {Test %} | {Avg CC} | {Health} |\n".format(**row)
-        md += "| **TOTAL** | **{Total}** | **{Heal Cap %}** | **** | **{Test %}** | **{Avg CC}** | **{Health}** |\n".format(**total_row)
+            md += "| {Territory} | {Total} | {Heal Cap %} | {Heal Invocation %} | {Test %} | {Avg CC} | {Health} |\n".format(
+                **row
+            )
+        md += "| **TOTAL** | **{Total}** | **{Heal Cap %}** | **** | **{Test %}** | **{Avg CC}** | **{Health}** |\n".format(
+            **total_row
+        )
         report_path.write_text(md, encoding="utf-8")
 
-    def _generate_dashboard_v2_with_rows(self, today: str, dashboard_rows: list[dict[str, Any]], total_row: dict[str, Any]) -> None:
+    def _generate_dashboard_v2_with_rows(
+        self, today: str, dashboard_rows: list[dict[str, Any]], total_row: dict[str, Any]
+    ) -> None:
         """L6 Interactive Dashboard generation consuming pre-computed unified rows."""
         renderer = DashboardRenderer(self.project_root)
         recs = renderer.generate_recommendations(total_row, dashboard_rows)
@@ -182,7 +209,14 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
         html = renderer.render(dashboard_rows, recs, questions, gauge_data, today)
         renderer.save(html)
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: list | None = None) -> dict[str, Any]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: list | None = None,
+    ) -> dict[str, Any]:
         """
         Autonomous healing with Cognitive Performance tracking.
 
@@ -206,6 +240,7 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
 
         # Set timestamp for Meta-Learning cache keys
         from datetime import datetime
+
         self.timestamp = datetime.now().isoformat()
 
         # Phase 4.4: Semantic Search for existing patterns in Pinecone
@@ -230,7 +265,7 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
             agent_paths = []
             if self.discovery_json_path.exists():
                 try:
-                    with open(self.discovery_json_path, encoding='utf-8') as f:
+                    with open(self.discovery_json_path, encoding="utf-8") as f:
                         agents_data = json.load(f)
                         for agent in agents_data:
                             path_str = agent.get("path", "")
@@ -241,14 +276,19 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
                 except Exception as json_err:
                     log.error(f"[AutonomyGuardian] SSOT JSON load failed: {json_err}")
             else:
-                log.warning("[AutonomyGuardian] SSOT JSON missing! Falling back to restricted scan.")
+                log.warning(
+                    "[AutonomyGuardian] SSOT JSON missing! Falling back to restricted scan."
+                )
 
             # Fallback: only scan agentic_core (NOT .sovereign_healing_backup)
             if not agent_paths:
-                log.warning("[AutonomyGuardian] Fallback to agentic_core scan (discovery JSON unavailable)")
+                log.warning(
+                    "[AutonomyGuardian] Fallback to agentic_core scan (discovery JSON unavailable)"
+                )
                 agentic_core_dir = self.project_root / "agentic_core"
                 # Phase 6.7: Use ssot_discovery instead of rglob
                 from agentic_core.utils.ssot_discovery import get_agent_files
+
                 agent_paths = list(get_agent_files(agentic_core_dir))
 
             for agent_path in agent_paths:
@@ -257,7 +297,7 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
 
                 # Check if agent has heal_repository method
                 try:
-                    with open(agent_path, encoding='utf-8') as f:
+                    with open(agent_path, encoding="utf-8") as f:
                         content = f.read()
                         tree = ast.parse(content)
 
@@ -276,18 +316,20 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
                             log.info(f"[AutonomyGuardian] Healing: {agent_path}")
 
                             # Find the class definition and add the method
-                            lines = content.split('\n')
+                            lines = content.split("\n")
                             class_indent = None
                             insert_line = None
 
                             for i, line in enumerate(lines):
-                                if 'class ' in line and 'Agent' in line:
+                                if "class " in line and "Agent" in line:
                                     # Found agent class, determine indent
                                     class_indent = len(line) - len(line.lstrip())
                                     # Find end of class (look for next method or end)
                                     for j in range(i + 1, len(lines)):
-                                        if lines[j].strip() and not lines[j].strip().startswith('#'):
-                                            if lines[j].strip().startswith('def '):
+                                        if lines[j].strip() and not lines[j].strip().startswith(
+                                            "#"
+                                        ):
+                                            if lines[j].strip().startswith("def "):
                                                 insert_line = j
                                                 break
                                     if insert_line is None:
@@ -295,35 +337,39 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
                                     break
 
                             if class_indent is not None and insert_line is not None:
-                                method_indent = ' ' * (class_indent + 4)
+                                method_indent = " " * (class_indent + 4)
                                 heal_stub = [
-                                    '',
-                                    f'{method_indent}def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:',
+                                    "",
+                                    f"{method_indent}def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:",
                                     f'{method_indent}    """',
-                                    f'{method_indent}    Autonomous healing method (Canon Key 51 compliance).',
-                                    f'{method_indent}    ',
-                                    f'{method_indent}    Args:',
-                                    f'{method_indent}        dry_run: If True, only report violations without fixing',
-                                    f'{method_indent}        execute: If True, apply fixes',
-                                    f'{method_indent}    ',
-                                    f'{method_indent}    Returns:',
-                                    f'{method_indent}        Dict with healing summary',
+                                    f"{method_indent}    Autonomous healing method (Canon Key 51 compliance).",
+                                    f"{method_indent}    ",
+                                    f"{method_indent}    Args:",
+                                    f"{method_indent}        dry_run: If True, only report violations without fixing",
+                                    f"{method_indent}        execute: If True, apply fixes",
+                                    f"{method_indent}    ",
+                                    f"{method_indent}    Returns:",
+                                    f"{method_indent}        Dict with healing summary",
                                     f'{method_indent}    """',
                                     f'{method_indent}    return {{"violations": 0, "fixed": 0, "errors": 0}}',
-                                    ''
+                                    "",
                                 ]
 
                                 lines = lines[:insert_line] + heal_stub + lines[insert_line:]
 
                                 # Write back to file
                                 try:
-                                    with open(agent_path, 'w', encoding='utf-8') as f:
-                                        f.write('\n'.join(lines))
+                                    with open(agent_path, "w", encoding="utf-8") as f:
+                                        f.write("\n".join(lines))
                                     summary["fixed"] += 1
-                                    log.info(f"[AutonomyGuardian] ✅ Added heal_repository() to {agent_path}")
+                                    log.info(
+                                        f"[AutonomyGuardian] ✅ Added heal_repository() to {agent_path}"
+                                    )
                                 except Exception as write_error:
                                     summary["errors"] += 1
-                                    log.error(f"[AutonomyGuardian] Failed to write {agent_path}: {write_error}")
+                                    log.error(
+                                        f"[AutonomyGuardian] Failed to write {agent_path}: {write_error}"
+                                    )
 
                 except Exception as e:
                     summary["errors"] += 1
@@ -365,29 +411,37 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
                         embedding = self.gemini_embedder.embed_query(healing_description)
 
                         # Upsert full semantic signature to Pinecone
-                        asyncio.run(self.vector_upsert(
-                            id=vector_id,
-                            embedding=embedding,
-                            metadata={
-                                "action": "inject_heal_repository_stub",
-                                "target": "CanonKey51",
-                                "violations": summary.get("violations", 0),
-                                "fixed": summary.get("fixed", 0),
-                                "timestamp": self.timestamp,
-                                "agent": "AutonomyGuardianAgent",
-                                "description": healing_description
-                            }
-                        ))
+                        asyncio.run(
+                            self.vector_upsert(
+                                id=vector_id,
+                                embedding=embedding,
+                                metadata={
+                                    "action": "inject_heal_repository_stub",
+                                    "target": "CanonKey51",
+                                    "violations": summary.get("violations", 0),
+                                    "fixed": summary.get("fixed", 0),
+                                    "timestamp": self.timestamp,
+                                    "agent": "AutonomyGuardianAgent",
+                                    "description": healing_description,
+                                },
+                            )
+                        )
 
-                        log.info(f"[META-LEARNING] Semantic fix signature persisted to Pinecone: {vector_id}")
+                        log.info(
+                            f"[META-LEARNING] Semantic fix signature persisted to Pinecone: {vector_id}"
+                        )
                         print("[Meta-Learning] ✅ Semantic fix signature persisted to Pinecone.")
 
                     except Exception as pinecone_error:
                         log.warning(f"[META-LEARNING] Pinecone upsert failed: {pinecone_error}")
                 else:
-                    log.info("[META-LEARNING] Gemini embedder unavailable - skipping Pinecone upsert")
+                    log.info(
+                        "[META-LEARNING] Gemini embedder unavailable - skipping Pinecone upsert"
+                    )
                     log.info(f"[META-LEARNING] Description: {healing_description}")
-                    log.info(f"[META-LEARNING] Metadata: action=inject_heal_repository_stub, target=CanonKey51, fixed={summary['fixed']}")
+                    log.info(
+                        f"[META-LEARNING] Metadata: action=inject_heal_repository_stub, target=CanonKey51, fixed={summary['fixed']}"
+                    )
 
             except Exception as meta_error:
                 log.warning(f"[META-LEARNING] Failed to record healing event: {meta_error}")
@@ -418,11 +472,14 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
 
             # Search Pinecone for similar patterns
             import asyncio
-            results = asyncio.run(self.vector_search(
-                query_embedding=query_embedding,
-                top_k=1,
-                filter={"action": "inject_heal_repository_stub"}
-            ))
+
+            results = asyncio.run(
+                self.vector_search(
+                    query_embedding=query_embedding,
+                    top_k=1,
+                    filter={"action": "inject_heal_repository_stub"},
+                )
+            )
 
             if results and len(results) > 0:
                 return results[0]

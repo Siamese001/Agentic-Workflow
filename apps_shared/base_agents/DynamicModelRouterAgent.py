@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: memory, orchestrator, prompt, workflow
@@ -42,9 +41,11 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger = logging.getLogger(__name__)
 
+
 # NAMING FIXED: ModelTier → ModelTier
 class ModelTier(str, Enum):
     """Model tiers based on capability and cost."""
+
     FLASH_BASIC = "gemini-2.5-flash"  # 8K thinking budget, cheap
     FLASH_EXTENDED = "gemini-2.5-flash"  # 16K thinking budget, moderate
     DEEP_THINK = "gemini-3.0-deep-think"  # 24K+ thinking budget, expensive
@@ -65,6 +66,7 @@ ModelTier._run_self_tests()
 # NAMING FIXED: RoutingDecision → RoutingDecision
 class RoutingDecision:
     """Model routing decision with rationale."""
+
     ModelTier: ModelTier
     thinking_budget: int
     temperature: float
@@ -88,6 +90,7 @@ class RoutingDecision:
 # NAMING FIXED: ComplexityProfile → ComplexityProfile
 class ComplexityProfile:
     """Comprehensive complexity profile for routing."""
+
     file_path: str
     total_lines: int
     max_nesting: int
@@ -148,17 +151,19 @@ class DynamicModelRouterAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
         # The ValidationContext is expected to provide these pre-initialized components.
         # If they are not present in ctx, they will be None, and a warning will be logged.
 
-        self.engine = getattr(self.ctx, 'subatomic_engine', None)
-        self.safety = getattr(self.ctx, 'SafetyGuardrail', None)
-        self.fission = getattr(self.ctx, 'FissionManagerAgent', None)
+        self.engine = getattr(self.ctx, "subatomic_engine", None)
+        self.safety = getattr(self.ctx, "SafetyGuardrail", None)
+        self.fission = getattr(self.ctx, "FissionManagerAgent", None)
 
         # Log a warning if any are Missing, similar to the original try-except's intent.
         # The original code had a single try-except for all three.
         # If any of the three were not successfully initialized and provided by ctx,
         # we log a warning and ensure all related attributes are None to match original behavior.
         if not (self.engine and self.safety and self.fission):
-            Logger.warning("One or more Sub-Atomic Engine components (engine, safety, fission) "
-                           "were not found in ValidationContext. DynamicModelRouter will operate without them.")
+            Logger.warning(
+                "One or more Sub-Atomic Engine components (engine, safety, fission) "
+                "were not found in ValidationContext. DynamicModelRouter will operate without them."
+            )
             self.engine = None
             self.safety = None
             self.fission = None
@@ -171,14 +176,14 @@ class DynamicModelRouterAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
         self.BUDGETS = {
             ModelTier.FLASH_BASIC: 8000,
             ModelTier.FLASH_EXTENDED: 16000,
-            ModelTier.DEEP_THINK: 24576
+            ModelTier.DEEP_THINK: 24576,
         }
 
         # Temperature settings
         self.TEMPERATURES = {
             ModelTier.FLASH_BASIC: 0.1,  # Low for deterministic fixes
             ModelTier.FLASH_EXTENDED: 0.2,  # Moderate for refactoring
-            ModelTier.DEEP_THINK: 0.3  # Higher for creative solutions
+            ModelTier.DEEP_THINK: 0.3,  # Higher for creative solutions
         }
 
     async def execute(self) -> Any:
@@ -195,14 +200,16 @@ class DynamicModelRouterAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
             decision = self._route_to_model(profile)
 
             # Store routing decision in context
-            if not hasattr(self.ctx, 'routing_decisions'):
+            if not hasattr(self.ctx, "routing_decisions"):
                 self.ctx.routing_decisions = {}
 
             self.ctx.routing_decisions[file_path] = decision
 
-            Logger.info(f"   {file_path}: {decision.ModelTier.value} "
-                       f"(complexity: {profile.complexity_score:.1f}, "
-                       f"budget: {decision.thinking_budget})")
+            Logger.info(
+                f"   {file_path}: {decision.ModelTier.value} "
+                f"(complexity: {profile.complexity_score:.1f}, "
+                f"budget: {decision.thinking_budget})"
+            )
 
     def _analyze_file_complexity(self, file_path: str) -> ComplexityProfile:
         """
@@ -215,7 +222,7 @@ class DynamicModelRouterAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
             Complexity profile
         """
         try:
-            with open(file_path, encoding='utf-8') as f:
+            with open(file_path, encoding="utf-8") as f:
                 source = f.read()
         except Exception as e:
             Logger.warning(f"Could not read {file_path}: {e}")
@@ -227,30 +234,31 @@ class DynamicModelRouterAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
             # Syntax errors need basic model for fixing
             return ComplexityProfile(
                 file_path=file_path,
-                total_lines=len(source.split('\n')),
+                total_lines=len(source.split("\n")),
                 max_nesting=0,
                 function_count=0,
                 max_function_lines=0,
                 cyclomatic_complexity=0,
                 import_count=0,
                 class_count=0,
-                complexity_score=20.0  # Low score for syntax fixes
+                complexity_score=20.0,  # Low score for syntax fixes
             )
 
         # Calculate metrics
-        total_lines = len([l for l in source.split('\n') if l.strip()])
+        total_lines = len([l for l in source.split("\n") if l.strip()])
         max_nesting = self._calculate_max_nesting(tree)
         functions = self._extract_functions(tree)
         function_count = len(functions)
-        max_function_lines = max([f['lines'] for f in functions.values()], default=0)
+        max_function_lines = max([f["lines"] for f in functions.values()], default=0)
         cyclomatic_complexity = self._calculate_cyclomatic_complexity(tree)
-        import_count = sum(1 for node in ast.walk(tree) if isinstance(node, (ast.Import, ast.ImportFrom)))
+        import_count = sum(
+            1 for node in ast.walk(tree) if isinstance(node, (ast.Import, ast.ImportFrom))
+        )
         class_count = sum(1 for node in ast.walk(tree) if isinstance(node, ast.ClassDef))
 
         # Calculate complexity score (0-100)
         complexity_score = self._calculate_complexity_score(
-            total_lines, max_nesting, max_function_lines,
-            cyclomatic_complexity, function_count
+            total_lines, max_nesting, max_function_lines, cyclomatic_complexity, function_count
         )
 
         return ComplexityProfile(
@@ -262,7 +270,7 @@ class DynamicModelRouterAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
             cyclomatic_complexity=cyclomatic_complexity,
             import_count=import_count,
             class_count=class_count,
-            complexity_score=complexity_score
+            complexity_score=complexity_score,
         )
 
     def _calculate_max_nesting(self, tree: ast.AST) -> int:
@@ -290,7 +298,7 @@ class DynamicModelRouterAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
         for node in ast.walk(tree):
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 lines = (node.end_lineno or node.lineno) - node.lineno + 1
-                functions[node.name] = {'lines': lines}
+                functions[node.name] = {"lines": lines}
 
         return functions
 
@@ -306,9 +314,14 @@ class DynamicModelRouterAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
 
         return complexity
 
-    def _calculate_complexity_score(self, total_lines: int, max_nesting: int,
-                                   max_function_lines: int, cyclomatic: int,
-                                   function_count: int) -> float:
+    def _calculate_complexity_score(
+        self,
+        total_lines: int,
+        max_nesting: int,
+        max_function_lines: int,
+        cyclomatic: int,
+        function_count: int,
+    ) -> float:
         """
         Calculate overall complexity score (0-100).
 
@@ -328,11 +341,11 @@ class DynamicModelRouterAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
 
         # Weighted average
         complexity_score = (
-            size_score * 0.20 +
-            nesting_score * 0.30 +
-            function_size_score * 0.25 +
-            cyclomatic_score * 0.15 +
-            function_count_score * 0.10
+            size_score * 0.20
+            + nesting_score * 0.30
+            + function_size_score * 0.25
+            + cyclomatic_score * 0.15
+            + function_count_score * 0.10
         )
 
         return complexity_score
@@ -376,7 +389,7 @@ class DynamicModelRouterAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
             temperature=temperature,
             rationale=rationale,
             estimated_tokens=estimated_tokens,
-            complexity_score=score
+            complexity_score=score,
         )
 
     def _create_default_profile(self, file_path: str) -> ComplexityProfile:
@@ -390,7 +403,7 @@ class DynamicModelRouterAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
             cyclomatic_complexity=0,
             import_count=0,
             class_count=0,
-            complexity_score=30.0  # Medium default
+            complexity_score=30.0,  # Medium default
         )
 
     def get_routing_for_file(self, file_path: str) -> RoutingDecision | None:
@@ -403,14 +416,14 @@ class DynamicModelRouterAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
         Returns:
             Routing decision or None
         """
-        if not hasattr(self.ctx, 'routing_decisions'):
+        if not hasattr(self.ctx, "routing_decisions"):
             return None
 
         return self.ctx.routing_decisions.get(file_path)
 
     def generate_routing_report(self) -> str:
         """Generate routing report for all files."""
-        if not hasattr(self.ctx, 'routing_decisions'):
+        if not hasattr(self.ctx, "routing_decisions"):
             return "No routing decisions available"
 
         decisions = self.ctx.routing_decisions
@@ -419,7 +432,7 @@ class DynamicModelRouterAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
         by_tier = {
             ModelTier.FLASH_BASIC: [],
             ModelTier.FLASH_EXTENDED: [],
-            ModelTier.DEEP_THINK: []
+            ModelTier.DEEP_THINK: [],
         }
 
         for file_path, decision in decisions.items():
@@ -439,14 +452,21 @@ class DynamicModelRouterAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
             f"  Flash Extended: {sum(d.estimated_tokens for _, d in by_tier[ModelTier.FLASH_EXTENDED])} tokens",
             f"  Deep Think: {sum(d.estimated_tokens for _, d in by_tier[ModelTier.DEEP_THINK])} tokens",
             "",
-            "=" * 80
+            "=" * 80,
         ]
 
         return "\n".join(lines)
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L2 execution agent - operational only."""
         if _call_path is None:
             _call_path = set()
@@ -458,7 +478,13 @@ class DynamicModelRouterAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
         _call_path.add(agent_name)
         try:
             print(f"[{agent_name}] L2 execution - operational only")
-            super().heal_repository(dry_run=dry_run, execute=execute, depth=depth+1, max_depth=max_depth, _call_path=_call_path)
+            super().heal_repository(
+                dry_run=dry_run,
+                execute=execute,
+                depth=depth + 1,
+                max_depth=max_depth,
+                _call_path=_call_path,
+            )
             return {"skipped": 1}
         finally:
             _call_path.discard(agent_name)
@@ -466,6 +492,7 @@ class DynamicModelRouterAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
 
 # Singleton instance
 _model_router = None
+
 
 def get_model_router(ctx: Any) -> DynamicModelRouterAgent:
     """Get or create global Model Router instance."""
@@ -476,6 +503,7 @@ def get_model_router(ctx: Any) -> DynamicModelRouterAgent:
     if _model_router is None:
         _model_router = DynamicModelRouterAgent(ctx)
     return _model_router
+
 
 def get_dynamic_model_routerAgent(ctx: Any) -> Any:
     """Execute get_dynamic_model_routerAgent operation."""

@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 class GradeStatus(Enum):
     """Status of document grading."""
+
     PASS = "PASS"
     FALLBACK_REQUIRED = "FALLBACK_REQUIRED"
     UNCERTAIN = "UNCERTAIN"
@@ -25,6 +26,7 @@ class GradeStatus(Enum):
 @dataclass
 class RetrievalGrade:
     """Result of retrieval grading."""
+
     status: GradeStatus
     relevance_ratio: float
     confidence: float
@@ -42,11 +44,13 @@ class RetrievalGrade:
 class RetrievalGrader:
     """Grades retrieved documents for relevance to the query."""
 
-    def __init__(self,
-                 relevance_threshold: float = 0.5,
-                 confidence_threshold: float = 0.7,
-                 use_fast_model: bool = True,
-                 max_docs_to_grade: int = 10):
+    def __init__(
+        self,
+        relevance_threshold: float = 0.5,
+        confidence_threshold: float = 0.7,
+        use_fast_model: bool = True,
+        max_docs_to_grade: int = 10,
+    ):
         """Initialize the retrieval grader.
 
         Args:
@@ -66,16 +70,17 @@ class RetrievalGrader:
             "passes": 0,
             "fallbacks": 0,
             "uncertain": 0,
-            "avg_relevance": 0.0
+            "avg_relevance": 0.0,
         }
 
-        logger.info(f"Initialized RetrievalGrader - Threshold: {relevance_threshold}, "
-                   f"Confidence: {confidence_threshold}, Fast Model: {use_fast_model}")
+        logger.info(
+            f"Initialized RetrievalGrader - Threshold: {relevance_threshold}, "
+            f"Confidence: {confidence_threshold}, Fast Model: {use_fast_model}"
+        )
 
-    async def grade_documents(self,
-                            query: str,
-                            documents: list[str],
-                            document_ids: list[str] | None = None) -> RetrievalGrade:
+    async def grade_documents(
+        self, query: str, documents: list[str], document_ids: list[str] | None = None
+    ) -> RetrievalGrade:
         """Grade documents for relevance to the query.
 
         Args:
@@ -90,8 +95,8 @@ class RetrievalGrader:
         self.stats["total_gradings"] += 1
 
         # Limit documents to grade
-        docs_to_grade = documents[:self.max_docs_to_grade]
-        ids_to_grade = document_ids[:self.max_docs_to_grade] if document_ids else None
+        docs_to_grade = documents[: self.max_docs_to_grade]
+        ids_to_grade = document_ids[: self.max_docs_to_grade] if document_ids else None
 
         # Grade each document
         relevant_docs = []
@@ -114,9 +119,14 @@ class RetrievalGrader:
         avg_confidence = total_confidence / len(docs_to_grade) if docs_to_grade else 0
 
         # Determine status
-        if relevance_ratio >= self.relevance_threshold and avg_confidence >= self.confidence_threshold:
+        if (
+            relevance_ratio >= self.relevance_threshold
+            and avg_confidence >= self.confidence_threshold
+        ):
             status = GradeStatus.PASS
-            reasoning = f"High relevance ({relevance_ratio:.2f}) and confidence ({avg_confidence:.2f})"
+            reasoning = (
+                f"High relevance ({relevance_ratio:.2f}) and confidence ({avg_confidence:.2f})"
+            )
             self.stats["passes"] += 1
         elif relevance_ratio < self.relevance_threshold * 0.3:
             status = GradeStatus.FALLBACK_REQUIRED
@@ -129,13 +139,14 @@ class RetrievalGrader:
 
         # Update stats
         self.stats["avg_relevance"] = (
-            (self.stats["avg_relevance"] * (self.stats["total_gradings"] - 1) + relevance_ratio)
-            / self.stats["total_gradings"]
-        )
+            self.stats["avg_relevance"] * (self.stats["total_gradings"] - 1) + relevance_ratio
+        ) / self.stats["total_gradings"]
 
         grading_time = time.time() - start_time
-        logger.info(f"Grading completed in {grading_time:.3f}s - "
-                   f"Status: {status.value}, Relevance: {relevance_ratio:.2f}")
+        logger.info(
+            f"Grading completed in {grading_time:.3f}s - "
+            f"Status: {status.value}, Relevance: {relevance_ratio:.2f}"
+        )
 
         return RetrievalGrade(
             status=status,
@@ -143,7 +154,7 @@ class RetrievalGrader:
             confidence=avg_confidence,
             relevant_docs=relevant_docs,
             irrelevant_docs=irrelevant_docs,
-            reasoning=reasoning
+            reasoning=reasoning,
         )
 
     async def _grade_single_document(self, query: str, document: str) -> tuple[bool, float]:
@@ -170,8 +181,14 @@ class RetrievalGrader:
         # Check for explicit negation or irrelevance
         doc_lower = document.lower()
         negative_indicators = [
-            "not relevant", "does not contain", "unrelated", "different topic",
-            "no information", "not found", "cannot answer", "insufficient"
+            "not relevant",
+            "does not contain",
+            "unrelated",
+            "different topic",
+            "no information",
+            "not found",
+            "cannot answer",
+            "insufficient",
         ]
 
         has_negative = any(indicator in doc_lower for indicator in negative_indicators)
@@ -210,18 +227,15 @@ class RetrievalGrader:
                 "relevance_threshold": self.relevance_threshold,
                 "confidence_threshold": self.confidence_threshold,
                 "use_fast_model": self.use_fast_model,
-                "max_docs_to_grade": self.max_docs_to_grade
-            }
+                "max_docs_to_grade": self.max_docs_to_grade,
+            },
         }
 
 
 class WebSearchFallback:
     """Fallback web search when retrieval fails."""
 
-    def __init__(self,
-                 search_provider: str = "tavily",
-                 max_results: int = 5,
-                 timeout: float = 5.0):
+    def __init__(self, search_provider: str = "tavily", max_results: int = 5, timeout: float = 5.0):
         """Initialize web search fallback.
 
         Args:
@@ -258,14 +272,14 @@ class WebSearchFallback:
                     "title": f"Web result 1 for {query}",
                     "url": "https://example.com/1",
                     "snippet": f"This is a web search result about {query}",
-                    "source": "web"
+                    "source": "web",
                 },
                 {
                     "title": f"Web result 2 for {query}",
                     "url": "https://example.com/2",
                     "snippet": f"Additional information about {query}",
-                    "source": "web"
-                }
+                    "source": "web",
+                },
             ]
 
             return {
@@ -273,7 +287,7 @@ class WebSearchFallback:
                 "results": results,
                 "source": "web_search",
                 "total_results": len(results),
-                "fallback_triggered": True
+                "fallback_triggered": True,
             }
 
         except Exception as e:
@@ -283,7 +297,7 @@ class WebSearchFallback:
                 "results": [],
                 "source": "web_search",
                 "error": str(e),
-                "fallback_triggered": True
+                "fallback_triggered": True,
             }
 
 

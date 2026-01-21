@@ -3,6 +3,7 @@ L1 Cognition Memory module.
 
 Provides memory management capabilities for cognitive agents.
 """
+
 import logging
 from typing import Any, Dict, List, Optional
 
@@ -39,12 +40,14 @@ class MemoryStore:
 
 class WorkingMemory(MemoryStore):
     """Short-term working memory."""
+
     pass
 
 
 class LongTermMemory(MemoryStore):
     """Long-term persistent memory."""
+
     pass
 
 
-__all__ = ['MemoryStore', 'WorkingMemory', 'LongTermMemory']
+__all__ = ["MemoryStore", "WorkingMemory", "LongTermMemory"]

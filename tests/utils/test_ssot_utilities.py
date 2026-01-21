@@ -6,6 +6,7 @@ Tests verify that:
 - Atomic write and safe read work correctly
 - Directory creation works
 """
+
 import sys
 from pathlib import Path
 

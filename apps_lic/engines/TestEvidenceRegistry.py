@@ -1,4 +1,5 @@
 """EvidenceRegistry behavior tests."""
+
 from src.lic_agentic.rag.evidence_registry import EvidenceRegistry
 
 

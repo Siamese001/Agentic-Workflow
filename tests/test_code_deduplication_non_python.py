@@ -11,6 +11,7 @@ Tests that the deduplication agent can detect and handle duplicates in:
 
 MANDATORY: 100% pass rate required
 """
+
 from __future__ import annotations
 
 import sys
@@ -33,6 +34,7 @@ class TestNonPythonFileDeduplication(unittest.TestCase):
     def tearDown(self):
         """Clean up temporary directory."""
         import shutil
+
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
     def test_json_file_duplicate_detection(self):
@@ -152,8 +154,9 @@ Content here.
         agent.scan_file_level_duplicates(all_files)
 
         # Should detect 3 duplicate groups
-        self.assertEqual(len(agent.file_duplicate_groups), 3,
-                        "Should detect 3 groups of duplicate files")
+        self.assertEqual(
+            len(agent.file_duplicate_groups), 3, "Should detect 3 groups of duplicate files"
+        )
 
     def test_whitespace_normalization(self):
         """Test that whitespace differences don't affect duplicate detection."""
@@ -175,8 +178,9 @@ Content here.
         hash2 = agent._hash_entire_file(file2)
 
         # After normalization (removing blank lines), should match
-        self.assertEqual(hash1, hash2,
-                        "Files with different whitespace should normalize to same hash")
+        self.assertEqual(
+            hash1, hash2, "Files with different whitespace should normalize to same hash"
+        )
 
     def test_filename_duplicate_detection_non_python(self):
         """Test filename duplicate detection for non-Python files."""
@@ -199,8 +203,11 @@ Content here.
         agent.scan_filename_duplicates(all_files, self.temp_path)
 
         # Should detect filename duplicate
-        self.assertIn("config.json", agent.filename_duplicates,
-                     "Should detect duplicate filename across directories")
+        self.assertIn(
+            "config.json",
+            agent.filename_duplicates,
+            "Should detect duplicate filename across directories",
+        )
 
 
 class TestNonPythonFileExtensions(unittest.TestCase):
@@ -214,8 +221,15 @@ class TestNonPythonFileExtensions(unittest.TestCase):
 
         # These should all be processable
         test_extensions = [
-            ".json", ".yaml", ".yml", ".md", ".txt",
-            ".toml", ".ini", ".cfg", ".conf"
+            ".json",
+            ".yaml",
+            ".yml",
+            ".md",
+            ".txt",
+            ".toml",
+            ".ini",
+            ".cfg",
+            ".conf",
         ]
 
         temp_dir = tempfile.mkdtemp()
@@ -228,10 +242,10 @@ class TestNonPythonFileExtensions(unittest.TestCase):
 
                 # Should not raise exception
                 file_hash = agent._hash_entire_file(test_file)
-                self.assertIsNotNone(file_hash,
-                                    f"Should be able to hash {ext} files")
+                self.assertIsNotNone(file_hash, f"Should be able to hash {ext} files")
         finally:
             import shutil
+
             shutil.rmtree(temp_dir, ignore_errors=True)
 
 

@@ -34,29 +34,28 @@ class blackboard_lease_verifier(Protocol):
     Protocol defining the methods expected from a blackboard-like object
     for HealingLease verification and security event logging.
     """
-    def verify_healing_lease(self, agent_id: str, file_path: str) -> bool:
 
-        ...
-    def log_security_event(self, agent_id: str, event_type: str, file_path: str, details: dict[str, Any]) -> None:
-
-        ...
+    def verify_healing_lease(self, agent_id: str, file_path: str) -> bool: ...
+    def log_security_event(
+        self, agent_id: str, event_type: str, file_path: str, details: dict[str, Any]
+    ) -> None: ...
 
 
 EXCLUDED_DIRS: set[str] = {
-    '.git',
-    '__pycache__',
-    '.pytest_cache',
-    'node_modules',
-    '.venv',
-    'venv',
-    'env',
-    'archives',
-    'data',
-    '.idea',
-    '.vscode',
-    'build',
-    'dist',
-    'eggs',
+    ".git",
+    "__pycache__",
+    ".pytest_cache",
+    "node_modules",
+    ".venv",
+    "venv",
+    "env",
+    "archives",
+    "data",
+    ".idea",
+    ".vscode",
+    "build",
+    "dist",
+    "eggs",
 }
 
 
@@ -74,7 +73,7 @@ def get_project_root() -> Path:
     """Get the project root directory."""
     current = Path(__file__).resolve()
     while current.parent != current:
-        if (current / 'agentic_core').exists() or (current / '.git').exists():
+        if (current / "agentic_core").exists() or (current / ".git").exists():
             return current
         current = current.parent
     return Path.cwd()
@@ -108,9 +107,7 @@ def validate_sandbox(path: str) -> Path:
     path_parts = resolved.relative_to(project_root).parts
     for part in path_parts:
         if part in EXCLUDED_DIRS:
-            raise SandboxViolationError(
-                f"Access denied: {part} is in excluded directories"
-            )
+            raise SandboxViolationError(f"Access denied: {part} is in excluded directories")
 
     return resolved
 
@@ -125,17 +122,19 @@ def require_healing_lease(func):
     Decorator to verify HealingLease before write operations.
     Integrates with AtomicBlackboard from Phase 2.
     """
+
     @wraps(func)
     def wrapper(*args, **kwargs):
-
-        blackboard = kwargs.get('blackboard')
-        agent_id = kwargs.get('agent_id')
-        file_path = kwargs.get('path') or (args[0].path if args else None)
+        blackboard = kwargs.get("blackboard")
+        agent_id = kwargs.get("agent_id")
+        file_path = kwargs.get("path") or (args[0].path if args else None)
 
         if blackboard and agent_id and file_path:
             # Removed direct import of AtomicBlackboard to avoid architectural Violation.
             # Instead, check if the provided blackboard object has the required method (duck typing).
-            if hasattr(blackboard, 'verify_healing_lease') and callable(blackboard.verify_healing_lease):
+            if hasattr(blackboard, "verify_healing_lease") and callable(
+                blackboard.verify_healing_lease
+            ):
                 if not blackboard.verify_healing_lease(agent_id, file_path):
                     raise HealingLeaseError(
                         f"Agent {agent_id} does not hold HealingLease for {file_path}"
@@ -168,7 +167,7 @@ def read_file(args: ReadFileArgs) -> str:
     if not resolved_path.is_file():
         raise ValueError(f"Not a file: {args.path}")
 
-    with open(resolved_path, encoding='utf-8') as f:
+    with open(resolved_path, encoding="utf-8") as f:
         return f.read()
 
 
@@ -177,7 +176,7 @@ def write_file(
     args: WriteFileArgs,
     blackboard=None,
     agent_id: str | None = None,
-    override_preservation: bool = False
+    override_preservation: bool = False,
 ) -> None:
     """
     Write content to file with sandbox validation, HealingLease verification, and preservation enforcement.
@@ -201,7 +200,7 @@ def write_file(
     # Preservation enforcement: Check line count if file exists
     if resolved_path.exists() and not override_preservation:
         try:
-            with open(resolved_path, encoding='utf-8') as f:
+            with open(resolved_path, encoding="utf-8") as f:
                 original_lines = len(f.readlines())
 
             new_lines = len(args.content.splitlines())
@@ -212,7 +211,9 @@ def write_file(
             if new_lines < min_lines:
                 # Log to AtomicBlackboard if available and has the method
                 if blackboard:
-                    if hasattr(blackboard, 'log_security_event') and callable(blackboard.log_security_event):
+                    if hasattr(blackboard, "log_security_event") and callable(
+                        blackboard.log_security_event
+                    ):
                         try:
                             blackboard.log_security_event(
                                 agent_id=agent_id or "unknown",
@@ -222,8 +223,10 @@ def write_file(
                                     "original_lines": original_lines,
                                     "new_lines": new_lines,
                                     "threshold": min_lines,
-                                    "deletion_percentage": round((1 - new_lines/original_lines) * 100, 2)
-                                }
+                                    "deletion_percentage": round(
+                                        (1 - new_lines / original_lines) * 100, 2
+                                    ),
+                                },
                             )
                         except Exception:
                             # Catch any errors during logging itself
@@ -232,7 +235,7 @@ def write_file(
                 raise PreservationViolationError(
                     f"Preservation Violation: New content ({new_lines} lines) is less than 90% "
                     f"of original ({original_lines} lines). Minimum required: {min_lines} lines. "
-                    f"This would delete {round((1 - new_lines/original_lines) * 100, 2)}% of the file. "
+                    f"This would delete {round((1 - new_lines / original_lines) * 100, 2)}% of the file. "
                     f"Set override_preservation=True if this is intentional (SystemArchitect only)."
                 )
         except (OSError, UnicodeDecodeError):
@@ -242,16 +245,12 @@ def write_file(
     if args.create_dirs:
         resolved_path.parent.mkdir(parents=True, exist_ok=True)
 
-    with open(resolved_path, 'w', encoding='utf-8') as f:
+    with open(resolved_path, "w", encoding="utf-8") as f:
         f.write(args.content)
 
 
 @require_healing_lease
-def move_file(
-    args: MoveFileArgs,
-    blackboard=None,
-    agent_id: str | None = None
-) -> None:
+def move_file(args: MoveFileArgs, blackboard=None, agent_id: str | None = None) -> None:
     """
     Move or rename a file with sandbox validation and HealingLease verification.
 
@@ -273,7 +272,7 @@ def move_file(
     warnings.warn(
         "filesystem.move_file() is deprecated. Use ArchivalGatekeeper.safe_move() directly.",
         DeprecationWarning,
-        stacklevel=2
+        stacklevel=2,
     )
 
     source_path = validate_sandbox(args.source)
@@ -294,7 +293,7 @@ def move_file(
         dest_path,
         agent_id or "filesystem.move_file",
         "Filesystem move operation",
-        overwrite=args.overwrite
+        overwrite=args.overwrite,
     )
 
     if not result.success:
@@ -354,11 +353,7 @@ def list_files(args: ListFilesArgs) -> list[str]:
 
 
 @require_healing_lease
-def delete_file(
-    args: DeleteFileArgs,
-    blackboard=None,
-    agent_id: str | None = None
-) -> None:
+def delete_file(args: DeleteFileArgs, blackboard=None, agent_id: str | None = None) -> None:
     """
     Delete a file with sandbox validation and HealingLease verification.
 
@@ -379,7 +374,7 @@ def delete_file(
     warnings.warn(
         "filesystem.delete_file() is deprecated. Use ArchivalGatekeeper.safe_delete() directly.",
         DeprecationWarning,
-        stacklevel=2
+        stacklevel=2,
     )
 
     resolved_path = validate_sandbox(args.path)
@@ -393,9 +388,7 @@ def delete_file(
     # DELEGATION: Use ArchivalGatekeeper for safe delete (soft delete to archive)
     gatekeeper = ArchivalGatekeeper.get_instance(get_project_root())
     result = gatekeeper.safe_delete(
-        resolved_path,
-        agent_id or "filesystem.delete_file",
-        "Filesystem delete operation"
+        resolved_path, agent_id or "filesystem.delete_file", "Filesystem delete operation"
     )
 
     if not result.success:

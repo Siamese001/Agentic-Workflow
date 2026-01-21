@@ -16,6 +16,7 @@ Logger = logging.getLogger(__name__)
 
 class PIIType(Enum):
     """Types of PII to detect."""
+
     EMAIL = "email"
     PHONE = "phone"
     SSN = "ssn"
@@ -29,6 +30,7 @@ class PIIType(Enum):
 @dataclass
 class PIIMatch:
     """Single PII detection match."""
+
     PiiType: PIIType
     original: str
     redaction_token: str
@@ -39,6 +41,7 @@ class PIIMatch:
 @dataclass
 class PIIResult:
     """PII detection and scrubbing result."""
+
     original_text: str
     scrubbed_text: str
     detected_pii: list[PIIMatch]
@@ -70,13 +73,13 @@ class PIIScrubber:
         self.enable_logging = enable_logging
 
         self.pii_patterns = {
-            PIIType.EMAIL: r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b',
-            PIIType.PHONE: r'\b(?:\+?1[-.\s]?)?\(?([0-9]{3})\)?[-.\s]?([0-9]{3})[-.\s]?([0-9]{4})\b',
-            PIIType.SSN: r'\b\d{3}-\d{2}-\d{4}\b',
-            PIIType.CREDIT_CARD: r'\b\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}\b',
-            PIIType.URL: r'https?://(?:[-\w.])+(?:[:\d]+)?(?:/(?:[\w/_.])*(?:\?(?:[\w&=%.])*)?(?:#(?:\w*))?)?',
-            PIIType.IP_ADDRESS: r'\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b',
-            PIIType.DOB: r'\b(?:0?[1-9]|1[0-2])[/-](?:0?[1-9]|[12][0-9]|3[01])[/-](?:19|20)\d{2}\b',
+            PIIType.EMAIL: r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b",
+            PIIType.PHONE: r"\b(?:\+?1[-.\s]?)?\(?([0-9]{3})\)?[-.\s]?([0-9]{3})[-.\s]?([0-9]{4})\b",
+            PIIType.SSN: r"\b\d{3}-\d{2}-\d{4}\b",
+            PIIType.CREDIT_CARD: r"\b\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}\b",
+            PIIType.URL: r"https?://(?:[-\w.])+(?:[:\d]+)?(?:/(?:[\w/_.])*(?:\?(?:[\w&=%.])*)?(?:#(?:\w*))?)?",
+            PIIType.IP_ADDRESS: r"\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b",
+            PIIType.DOB: r"\b(?:0?[1-9]|1[0-2])[/-](?:0?[1-9]|[12][0-9]|3[01])[/-](?:19|20)\d{2}\b",
         }
 
         self.redaction_map: dict[str, str] = {}
@@ -128,7 +131,7 @@ class PIIScrubber:
                 extra={
                     "pii_count": len(detected_pii),
                     "pii_types": [m.PiiType.value for m in detected_pii],
-                }
+                },
             )
 
         return PIIResult(

@@ -47,6 +47,7 @@ try:
 except ImportError:
     # Fallback defaults
     from pathlib import Path
+
     AGENT_DISCOVERY_JSON = "agent_discovery_full.json"
     AGENT_DISCOVERY_MANIFEST_JSON = "agent_discovery_manifest.json"
     AGENTIC_CORE_DIR = Path("agentic_core")
@@ -60,12 +61,14 @@ except ImportError:
     L4_STATE_DIR = Path("agentic_core/L4_state")
     L5_SAFETY_DIR = Path("agentic_core/L5_safety")
     L6_OBSERVABILITY_DIR = Path("agentic_core/L6_observability")
+
     def get_validated_project_root():
         return Path.cwd()
 
 
 class L0SovereignSeverity(Enum):
     """Sovereign event Severity levels for L0 delegation."""
+
     INFO = "INFO"
     WARNING = "WARNING"
     ERROR = "ERROR"
@@ -95,28 +98,33 @@ class L0DelegationMixin(MCPHardenedMixin):
         Returns:
             Dict with specialist validation result
         """
-        self._emit_l0_event(L0SovereignSeverity.WARNING, "L0_OPERATION_FAILED", {
-            "operation": operation,
-            "error": error[:200]
-        })
+        self._emit_l0_event(
+            L0SovereignSeverity.WARNING,
+            "L0_OPERATION_FAILED",
+            {"operation": operation, "error": error[:200]},
+        )
 
         # Delegate to TestSovereigntyAgent for validation
         ValidationResult = await self._delegate_to_specialist(operation, error, context)
 
         if ValidationResult["passed"]:
-            self._emit_l0_event(L0SovereignSeverity.INFO, "L0_SPECIALIST_VALIDATED", {
-                "operation": operation,
-                "Recommendation": "retry_safe"
-            })
+            self._emit_l0_event(
+                L0SovereignSeverity.INFO,
+                "L0_SPECIALIST_VALIDATED",
+                {"operation": operation, "Recommendation": "retry_safe"},
+            )
         else:
-            self._emit_l0_event(L0SovereignSeverity.ERROR, "L0_SPECIALIST_REJECTED", {
-                "operation": operation,
-                "reason": ValidationResult.get("error", "unknown")
-            })
+            self._emit_l0_event(
+                L0SovereignSeverity.ERROR,
+                "L0_SPECIALIST_REJECTED",
+                {"operation": operation, "reason": ValidationResult.get("error", "unknown")},
+            )
 
         return ValidationResult
 
-    async def validate_healing_result(self, healed_code: str, original_code: str, context: dict) -> dict:
+    async def validate_healing_result(
+        self, healed_code: str, original_code: str, context: dict
+    ) -> dict:
         """Validate healing result by delegating to TestSovereigntyAgent.
 
         L0 healing agents should call this after producing healed code
@@ -130,22 +138,30 @@ class L0DelegationMixin(MCPHardenedMixin):
         Returns:
             Dict with validation result
         """
-        self._emit_l0_event(L0SovereignSeverity.INFO, "L0_HEALING_VALIDATION_REQUESTED", {
-            "original_lines": len(original_code.splitlines()),
-            "healed_lines": len(healed_code.splitlines())
-        })
+        self._emit_l0_event(
+            L0SovereignSeverity.INFO,
+            "L0_HEALING_VALIDATION_REQUESTED",
+            {
+                "original_lines": len(original_code.splitlines()),
+                "healed_lines": len(healed_code.splitlines()),
+            },
+        )
 
         # Delegate to specialist for comprehensive testing
         result = await self._delegate_healing_to_specialist(healed_code, context)
 
         if result["passed"]:
-            self._emit_l0_event(L0SovereignSeverity.INFO, "L0_HEALING_VALIDATED", {
-                "tests_passed": len(result.get(TESTS_DIR, []))
-            })
+            self._emit_l0_event(
+                L0SovereignSeverity.INFO,
+                "L0_HEALING_VALIDATED",
+                {"tests_passed": len(result.get(TESTS_DIR, []))},
+            )
         else:
-            self._emit_l0_event(L0SovereignSeverity.ERROR, "L0_HEALING_REJECTED", {
-                "reason": result.get("error", "validation_failed")
-            })
+            self._emit_l0_event(
+                L0SovereignSeverity.ERROR,
+                "L0_HEALING_REJECTED",
+                {"reason": result.get("error", "validation_failed")},
+            )
 
         return result
 
@@ -154,18 +170,19 @@ class L0DelegationMixin(MCPHardenedMixin):
         try:
             # from agentic_core.L5_safety.validators.TestSovereigntyAgent import TestSovereigntyAgent  # Refactored to dynamic import (Sprint 1)
             import importlib
-            module = importlib.import_module('agentic_core.L5_safety.validators.TestSovereigntyAgent')
+
+            module = importlib.import_module(
+                "agentic_core.L5_safety.validators.TestSovereigntyAgent"
+            )
             TestSovereigntyAgent = module.TestSovereigntyAgent
 
             specialist = TestSovereigntyAgent()
-            result = await specialist.execute({
-                "type": "basic",
-                "context": {
-                    "layer": "L0",
-                    "operation": operation,
-                    "error": error
+            result = await specialist.execute(
+                {
+                    "type": "basic",
+                    "context": {"layer": "L0", "operation": operation, "error": error},
                 }
-            })
+            )
             return result
         except ImportError:
             return {"passed": False, "error": "TestSovereigntyAgent not available", TESTS_DIR: []}
@@ -175,21 +192,21 @@ class L0DelegationMixin(MCPHardenedMixin):
     async def _delegate_healing_to_specialist(self, healed_code: str, context: dict) -> dict:
         """Delegate healed code validation to TestSovereigntyAgent."""
         try:
-#             from agentic_core.L5_safety.validators.TestSovereigntyAgent import TestSovereigntyAgent  # Refactored to dynamic import (Sprint 1)
+            #             from agentic_core.L5_safety.validators.TestSovereigntyAgent import TestSovereigntyAgent  # Refactored to dynamic import (Sprint 1)
 
             specialist = TestSovereigntyAgent()
-            result = await specialist.execute({
-                "Artifact": healed_code,
-                "type": "python_code_integration",
-                "coverage_target": 95
-            })
+            result = await specialist.execute(
+                {"Artifact": healed_code, "type": "python_code_integration", "coverage_target": 95}
+            )
             return result
         except ImportError:
             return {"passed": False, "error": "TestSovereigntyAgent not available", TESTS_DIR: []}
         except Exception as e:
             return {"passed": False, "error": str(e), TESTS_DIR: []}
 
-    def _emit_l0_event(self, Severity: L0SovereignSeverity, event_type: str, payload: dict | None = None) -> None:
+    def _emit_l0_event(
+        self, Severity: L0SovereignSeverity, event_type: str, payload: dict | None = None
+    ) -> None:
         """Emit L0 delegation event for observability."""
         self.log_info(f"SUBATOMIC L0 {Severity.value} | {event_type}")
         if payload:
@@ -197,7 +214,9 @@ class L0DelegationMixin(MCPHardenedMixin):
 
 
 @dataclass
-class MaintenanceBaseAgent(L0MaintenanceBaseAgent, L0DelegationMixin, RedisCacheMixin, PineconeVectorMixin):
+class MaintenanceBaseAgent(
+    L0MaintenanceBaseAgent, L0DelegationMixin, RedisCacheMixin, PineconeVectorMixin
+):
     """Base class for L0 Maintenance agents with delegation-only testing.
 
     Inherits from L0MaintenanceBaseAgent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
@@ -245,7 +264,7 @@ class MaintenanceBaseAgent(L0MaintenanceBaseAgent, L0DelegationMixin, RedisCache
                 validation = await self.validate_healing_result(
                     healed_code=result["healed_code"],
                     original_code=result.get("original_code", ""),
-                    context=Task
+                    context=Task,
                 )
                 result["validation"] = validation
                 if not validation["passed"]:
@@ -256,18 +275,19 @@ class MaintenanceBaseAgent(L0MaintenanceBaseAgent, L0DelegationMixin, RedisCache
         except Exception as e:
             # On failure, delegate for analysis
             delegation_result = await self.delegate_on_failure(
-                operation=Task.get("operation", "unknown"),
-                error=str(e),
-                context=Task
+                operation=Task.get("operation", "unknown"), error=str(e), context=Task
             )
-            return {
-                "success": False,
-                "error": str(e),
-                "delegation_result": delegation_result
-            }
+            return {"success": False, "error": str(e), "delegation_result": delegation_result}
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L0 maintenance base agent - invoke shared healing chain."""
         if _call_path is None:
             _call_path = set()
@@ -278,7 +298,13 @@ class MaintenanceBaseAgent(L0MaintenanceBaseAgent, L0DelegationMixin, RedisCache
             return {"errors": 1, "depth_limited": True}
         _call_path.add(agent_name)
         try:
-            super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+            super().heal_repository(
+                dry_run=dry_run,
+                execute=execute,
+                depth=depth,
+                max_depth=max_depth,
+                _call_path=_call_path,
+            )
             self.log_info("L0 maintenance - healing chain invoked")
             return {"skipped": 1}
         finally:

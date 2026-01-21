@@ -38,6 +38,7 @@ class SecurityLevel(Enum):
     Defines the intensity and thoroughness of security checks,
     from basic validation to paranoid-level scrutiny.
     """
+
     BASIC = "basic"
     STANDARD = "standard"
     STRICT = "strict"
@@ -51,6 +52,7 @@ class AnalysisType(Enum):
     Defines the different aspects of code that can be analyzed
     for semantic consistency and quality.
     """
+
     DOCSTRING = "docstring"
     CONTENT = "content"
     STRUCTURE = "structure"
@@ -64,6 +66,7 @@ class RefactorType(Enum):
     Defines the various refactoring patterns that can be recommended
     to improve code structure and maintainability.
     """
+
     EXTRACT_METHOD = "extract_method"
     EXTRACT_CLASS = "extract_class"
     RENAME = "rename"
@@ -78,6 +81,7 @@ class PhaseType(Enum):
     Defines how phases can be executed in the orchestration workflow,
     including sequential, parallel, and conditional execution.
     """
+
     SEQUENTIAL = "sequential"
     PARALLEL = "parallel"
     CONDITIONAL = "conditional"
@@ -86,6 +90,7 @@ class PhaseType(Enum):
 @dataclass
 class SecurityIssue:
     """A security issue found during scanning."""
+
     issue_id: str
     Severity: str
     category: str
@@ -98,6 +103,7 @@ class SecurityIssue:
 @dataclass
 class SemanticMatch:
     """A semantic search match."""
+
     file_path: str
     content_preview: str
     similarity_score: float
@@ -107,6 +113,7 @@ class SemanticMatch:
 @dataclass
 class RefactorProposal:
     """A refactoring proposal."""
+
     proposal_id: str
     refactor_type: RefactorType
     target: str
@@ -119,6 +126,7 @@ class RefactorProposal:
 @dataclass
 class PhaseResult:
     """Result of a phase execution."""
+
     phase_name: str
     phase_type: PhaseType
     agents_executed: list[str]
@@ -166,7 +174,9 @@ class SecurityHardener:
         ],
     }
 
-    def __init__(self, ctx: ResumeEngineContext, level: SecurityLevel = SecurityLevel.STANDARD) -> None:
+    def __init__(
+        self, ctx: ResumeEngineContext, level: SecurityLevel = SecurityLevel.STANDARD
+    ) -> None:
         self.ctx = ctx
         self.level = level
         self._issues: list[SecurityIssue] = []
@@ -193,7 +203,9 @@ class SecurityHardener:
                 for i, line in enumerate(lines, 1):
                     if re.search(pattern, line, re.IGNORECASE):
                         issue = SecurityIssue(
-                            issue_id=hashlib.sha256(f"{file_path}:{i}:{category}".encode()).hexdigest()[:12],
+                            issue_id=hashlib.sha256(
+                                f"{file_path}:{i}:{category}".encode()
+                            ).hexdigest()[:12],
                             Severity=self._get_severity(category),
                             category=category,
                             file_path=file_path,
@@ -303,22 +315,42 @@ class SemanticAnalyzer:
 
     # Weak words to detect
     WEAK_WORDS = [
-        "helped", "assisted", "worked on", "responsible for",
-        "participated", "involved", "contributed", "supported",
+        "helped",
+        "assisted",
+        "worked on",
+        "responsible for",
+        "participated",
+        "involved",
+        "contributed",
+        "supported",
     ]
 
     # Strong action verbs
     STRONG_VERBS = [
-        "led", "delivered", "achieved", "increased", "reduced",
-        "developed", "implemented", "designed", "built", "created",
-        "launched", "managed", "drove", "optimized", "transformed",
+        "led",
+        "delivered",
+        "achieved",
+        "increased",
+        "reduced",
+        "developed",
+        "implemented",
+        "designed",
+        "built",
+        "created",
+        "launched",
+        "managed",
+        "drove",
+        "optimized",
+        "transformed",
     ]
 
     def __init__(self, ctx: ResumeEngineContext) -> None:
         self.ctx = ctx
         self._analyses: list[dict[str, Any]] = []
 
-    def analyze_content(self, content: str, analysis_type: AnalysisType = AnalysisType.CONTENT) -> dict[str, Any]:
+    def analyze_content(
+        self, content: str, analysis_type: AnalysisType = AnalysisType.CONTENT
+    ) -> dict[str, Any]:
         """
         Analyze content for quality metrics.
 
@@ -339,13 +371,11 @@ class SemanticAnalyzer:
 
         # Basic metrics
         words = content.split()
-        sentences = re.split(r'[.!?]+', content)
+        sentences = re.split(r"[.!?]+", content)
 
         result["metrics"]["word_count"] = len(words)
         result["metrics"]["sentence_count"] = len([s for s in sentences if s.strip()])
-        result["metrics"]["avg_sentence_length"] = (
-            len(words) / max(1, len(sentences))
-        )
+        result["metrics"]["avg_sentence_length"] = len(words) / max(1, len(sentences))
 
         # Weak word detection
         weak_found = []
@@ -354,14 +384,14 @@ class SemanticAnalyzer:
                 weak_found.append(word)
 
         if weak_found:
-            result["issues"].append({
-                "type": "weak_language",
-                "words": weak_found,
-                "message": f"Found {len(weak_found)} weak word(s)",
-            })
-            result["suggestions"].append(
-                "Replace weak words with strong action verbs"
+            result["issues"].append(
+                {
+                    "type": "weak_language",
+                    "words": weak_found,
+                    "message": f"Found {len(weak_found)} weak word(s)",
+                }
             )
+            result["suggestions"].append("Replace weak words with strong action verbs")
 
         # Strong verb detection
         strong_found = []
@@ -377,13 +407,13 @@ class SemanticAnalyzer:
         result["metrics"]["quantified_achievements"] = len(metrics_found)
 
         if len(metrics_found) == 0:
-            result["issues"].append({
-                "type": "no_metrics",
-                "message": "No quantified achievements found",
-            })
-            result["suggestions"].append(
-                "Add specific metrics (e.g., 'increased revenue by 25%')"
+            result["issues"].append(
+                {
+                    "type": "no_metrics",
+                    "message": "No quantified achievements found",
+                }
             )
+            result["suggestions"].append("Add specific metrics (e.g., 'increased revenue by 25%')")
 
         # Calculate quality score
         score = 100
@@ -541,7 +571,9 @@ class StrategicAdvisor:
 
         return proposals
 
-    def get_ats_recommendations(self, resume: dict[str, Any], JobDescription: str = "") -> list[str]:
+    def get_ats_recommendations(
+        self, resume: dict[str, Any], JobDescription: str = ""
+    ) -> list[str]:
         """
         Get ATS optimization recommendations.
 
@@ -573,7 +605,15 @@ class StrategicAdvisor:
             resume_words = set(resume_str.split())
 
             # Find Missing keywords
-            important_keywords = {"python", "javascript", "aws", "docker", "kubernetes", "agile", "scrum"}
+            important_keywords = {
+                "python",
+                "javascript",
+                "aws",
+                "docker",
+                "kubernetes",
+                "agile",
+                "scrum",
+            }
             jd_keywords = jd_words & important_keywords
             Missing = jd_keywords - resume_words
 
@@ -640,7 +680,9 @@ class OmniContext:
                         items.append(json.dumps(item, indent=2))
                     section_text = f"# {section_name.upper()}\n" + "\n".join(items)
                 else:
-                    section_text = f"# {section_name.upper()}\n" + ", ".join(str(c) for c in content)
+                    section_text = f"# {section_name.upper()}\n" + ", ".join(
+                        str(c) for c in content
+                    )
             else:
                 section_text = f"# {section_name.upper()}\n{json.dumps(content)}"
 
@@ -685,12 +727,14 @@ class OmniContext:
             if word_matches > 0:
                 score = word_matches / len(query_words)
 
-                matches.append(SemanticMatch(
-                    file_path=section_name,
-                    content_preview=info["content"][:200],
-                    similarity_score=score,
-                    metadata={"section": section_name},
-                ))
+                matches.append(
+                    SemanticMatch(
+                        file_path=section_name,
+                        content_preview=info["content"][:200],
+                        similarity_score=score,
+                        metadata={"section": section_name},
+                    )
+                )
 
         # Sort by score and return top_k
         matches.sort(key=lambda m: m.similarity_score, reverse=True)
@@ -784,7 +828,10 @@ class UnifiedOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTesting
                 PhaseType.PARALLEL,
                 [
                     ("StrategicAdvisor", lambda: self.strategic.analyze_structure(resume)),
-                    ("ATSOptimizer", lambda: self.strategic.get_ats_recommendations(resume, JobDescription)),
+                    (
+                        "ATSOptimizer",
+                        lambda: self.strategic.get_ats_recommendations(resume, JobDescription),
+                    ),
                 ],
             )
 
@@ -869,5 +916,5 @@ class UnifiedOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTesting
         }
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()

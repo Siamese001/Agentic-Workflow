@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Trace what territory names are used in onclick handlers"""
+
 import re
 from pathlib import Path
 
-html = Path('reports/autonomy_dashboard.html').read_text(encoding='utf-8')
+html = Path("reports/autonomy_dashboard.html").read_text(encoding="utf-8")
 
 # Find all onclick handlers with openDrillModal
 pattern = r"onclick=\"openDrillModal\('([^']+)'(?:,\s*'([^']*)')?\)\""
@@ -22,12 +23,12 @@ print(f"Unique territories in onclick: {len(territories_clicked)}")
 # Now check if these match dashboardData territories
 import json
 
-data_start = html.find('const dashboardData = ')
-data_end = html.find('];', data_start)
-data_str = html[data_start+22:data_end+1]
+data_start = html.find("const dashboardData = ")
+data_end = html.find("];", data_start)
+data_str = html[data_start + 22 : data_end + 1]
 dashboard_data = json.loads(data_str)
 
-data_territories = {r.get('Territory') for r in dashboard_data if r.get('Territory') != 'TOTAL'}
+data_territories = {r.get("Territory") for r in dashboard_data if r.get("Territory") != "TOTAL"}
 
 print(f"Territories in dashboardData: {len(data_territories)}")
 

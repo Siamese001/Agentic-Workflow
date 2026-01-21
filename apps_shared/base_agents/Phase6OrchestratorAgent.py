@@ -131,5 +131,5 @@ class Phase6OrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingM
         }
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()

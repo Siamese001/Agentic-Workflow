@@ -32,9 +32,12 @@ try:
         L0DelegationTestingMixin,
     )
 except ImportError:
+
     class L0DelegationTestingMixin:
         """Stub mixin for L0 delegation testing - original archived."""
+
         pass
+
 
 from agentic_core.L5_safety.validators.decorators import standard_heal
 from agentic_core.L5_safety.validators.structure_blueprint import (
@@ -63,6 +66,7 @@ class L0MaintenanceBaseAgent(L0DelegationTestingMixin, SovereignBaseAgent):
     - Basic Self-Testing: NO (boot-time stability)
     - Delegation to TestSovereigntyAgent: YES (on failure)
     """
+
     name: str = "L0MaintenanceBaseAgent"
     layer: str = "L0"
 
@@ -71,11 +75,24 @@ class L0MaintenanceBaseAgent(L0DelegationTestingMixin, SovereignBaseAgent):
         super().__post_init__()
 
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set = None) -> dict[str, Any]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set = None,
+    ) -> dict[str, Any]:
         """Invoke shared healing chain then allow subclass override."""
         if _call_path is None:
             _call_path = set()
-        result = super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+        result = super().heal_repository(
+            dry_run=dry_run,
+            execute=execute,
+            depth=depth,
+            max_depth=max_depth,
+            _call_path=_call_path,
+        )
         return result
 
     def _run_self_tests(self) -> dict:
@@ -87,5 +104,7 @@ class L0MaintenanceBaseAgent(L0DelegationTestingMixin, SovereignBaseAgent):
             results[TESTS_DIR].append({"name": "test_instantiation", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results[TESTS_DIR].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
+            results[TESTS_DIR].append(
+                {"name": "test_instantiation", "status": "failed", "error": str(e)}
+            )
         return results

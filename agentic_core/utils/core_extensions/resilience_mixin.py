@@ -20,6 +20,7 @@ from .telemetry import SystemTelemetry, get_telemetry
 
 class TokenLimitError(Exception):
     """Raised when token budget exceeds model limits."""
+
     pass
 
 
@@ -232,6 +233,7 @@ class HardeningMixin:
     def reset_circuit_breaker(self) -> None:
         """Reset circuit breaker to CLOSED state (for testing)."""
         from .circuit_breaker import CircuitBreakerState
+
         self.circuit_breaker.state = CircuitBreakerState.CLOSED
         self.circuit_breaker.failure_count = 0
         self.circuit_breaker.success_count = 0

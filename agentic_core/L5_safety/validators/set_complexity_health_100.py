@@ -6,12 +6,15 @@ This script updates the dashboard data to set Complexity Health to 100%
 for all territories, reflecting a target state where all code has been
 refactored to have low cyclomatic complexity (CC ≤ 0).
 """
+
 import re
 import sys
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent
-DASHBOARD_PATH = PROJECT_ROOT / "agentic_core" / "L6_observability" / "dashboards" / "autonomy_dashboard.html"
+DASHBOARD_PATH = (
+    PROJECT_ROOT / "agentic_core" / "L6_observability" / "dashboards" / "autonomy_dashboard.html"
+)
 
 
 def main():
@@ -23,7 +26,7 @@ def main():
         print(f"ERROR: Dashboard not found at {DASHBOARD_PATH}")
         return 1
 
-    content = DASHBOARD_PATH.read_text(encoding='utf-8')
+    content = DASHBOARD_PATH.read_text(encoding="utf-8")
 
     # Find all "Complexity Health": X patterns and replace with 100.0
     # Also update Avg CC to 0 to be consistent
@@ -43,34 +46,24 @@ def main():
         return '"Avg CC": 0'
 
     # Replace Complexity Health
-    updated_content = re.sub(
-        r'"Complexity Health":\s*([\d.]+)',
-        replace_complexity_health,
-        content
-    )
+    updated_content = re.sub(r'"Complexity Health":\s*([\d.]+)', replace_complexity_health, content)
 
     # Replace Avg CC
-    updated_content = re.sub(
-        r'"Avg CC":\s*([\d.]+)',
-        replace_avg_cc,
-        updated_content
-    )
+    updated_content = re.sub(r'"Avg CC":\s*([\d.]+)', replace_avg_cc, updated_content)
 
     # Update Health Breakdown strings to reflect CC:100
     def update_health_breakdown(match):
         breakdown = match.group(1)
         # Replace CC:XX with CC:100
-        new_breakdown = re.sub(r'CC:\d+', 'CC:100', breakdown)
+        new_breakdown = re.sub(r"CC:\d+", "CC:100", breakdown)
         return f'"Health Breakdown": "{new_breakdown}"'
 
     updated_content = re.sub(
-        r'"Health Breakdown":\s*"([^"]+)"',
-        update_health_breakdown,
-        updated_content
+        r'"Health Breakdown":\s*"([^"]+)"', update_health_breakdown, updated_content
     )
 
     # Write back
-    DASHBOARD_PATH.write_text(updated_content, encoding='utf-8')
+    DASHBOARD_PATH.write_text(updated_content, encoding="utf-8")
 
     print(f"\n✅ Updated {len(changes)} values")
     print(f"Dashboard saved to: {DASHBOARD_PATH}")

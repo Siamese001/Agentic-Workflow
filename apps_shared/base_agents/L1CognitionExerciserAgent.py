@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: guardrail, healer, memory, prompt, state, workflow
@@ -21,54 +20,67 @@ def _get_thought_node() -> Any:
     """Get thought node."""
     try:
         from agentic_core.L1_cognition.thought_engine import ThoughtNode
+
         return ThoughtNode
     except Exception:
         return None
+
 
 def _get_chain_of_thought_executor() -> Any:
     """Get chain of thought executor."""
     try:
         from agentic_core.L1_cognition.thought_engine import ChainOfThoughtExecutor
+
         return ChainOfThoughtExecutor
     except Exception:
         return None
+
 
 def _get_tree_of_thoughts_node() -> Any:
     """Get tree of thoughts node."""
     try:
         from agentic_core.L1_cognition.thought_engine import TreeOfThoughtsNode
+
         return TreeOfThoughtsNode
     except Exception:
         return None
+
 
 def _get_react_node() -> Any:
     """Get react node."""
     try:
         from agentic_core.L1_cognition.thought_engine import ReActNode
+
         return ReActNode
     except Exception:
         return None
+
 
 def _get_intent_classifier() -> Any:
     """Get intent classifier."""
     try:
         from agentic_core.L1_cognition.intent_analysis import IntentClassifier
+
         return IntentClassifier
     except Exception:
         return None
+
 
 def _get_mission_decomposer() -> Any:
     """Get mission decomposer."""
     try:
         from agentic_core.L1_cognition.planning import MissionDecomposer
+
         return MissionDecomposer
     except Exception:
         return None
+
 
 def log_event(event_type: str, payload: dict) -> Any:
     """Log event with fallback to print."""
     try:
         from agentic_core.runtime.shared_runtime import log_event as _log_event
+
         _log_event(event_type, payload)
     except Exception:
         print(f"[L1CognitionExerciserAgent] Event logged (stub): {event_type} = {payload}")
@@ -127,7 +139,7 @@ class L1CognitionExerciserAgent(L1CognitionBaseAgent):
             dummy_queries = [
                 "What is the capital of France?",
                 "Plan a simple recipe for tea",
-                f"Synthetic exercise {uuid.uuid4().hex[:8]}"
+                f"Synthetic exercise {uuid.uuid4().hex[:8]}",
             ]
             results = [classifier.parse_intent(q) for q in dummy_queries]
             return f"Intent parsed: {len(results)} synthetic queries processed"
@@ -208,9 +220,11 @@ class L1CognitionExerciserAgent(L1CognitionBaseAgent):
             results["tests"].append({"name": "test_instantiation", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
+            results["tests"].append(
+                {"name": "test_instantiation", "status": "failed", "error": str(e)}
+            )
         return results
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()

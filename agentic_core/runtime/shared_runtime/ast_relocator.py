@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import ast
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
 from pathlib import Path
 
@@ -14,12 +14,14 @@ try:
 except IndexError:
     project_root = Path.cwd()
 
+
 # NAMING FIXED: ASTRelocator → AstRelocator
 class AstRelocator(ast.NodeVisitor):
     """
     [L6 SURGERY] AST-based code relocation engine.
     Surgically extracts classes/functions and calculates their sovereign coordinates.
     """
+
     def __init__(self, file_path: Path, content: str):
         self.file_path = file_path
         self.content_lines = content.splitlines()
@@ -29,16 +31,18 @@ class AstRelocator(ast.NodeVisitor):
 
     def visit_ClassDef(self, node: ast.ClassDef):
         """Capture top-level classes."""
-        self.entities.append({
-            "type": "class",
-            "name": node.name,
-            "lineno": node.lineno,
-            # Python 3.8+ support for decorators in line count
-            "start_line": getattr(node, 'lineno', node.lineno),
-            "end_lineno": getattr(node, 'end_lineno', node.lineno),
-            "node": node,
-            "suggested_location": self._suggest_placement(node, node.name, "Class")
-        })
+        self.entities.append(
+            {
+                "type": "class",
+                "name": node.name,
+                "lineno": node.lineno,
+                # Python 3.8+ support for decorators in line count
+                "start_line": getattr(node, "lineno", node.lineno),
+                "end_lineno": getattr(node, "end_lineno", node.lineno),
+                "node": node,
+                "suggested_location": self._suggest_placement(node, node.name, "Class"),
+            }
+        )
         # Track context to skip inner functions
         old_class = self.current_class
         self.current_class = node.name
@@ -50,18 +54,22 @@ class AstRelocator(ast.NodeVisitor):
         if self.current_class:
             return self.generic_visit(node)
 
-        self.entities.append({
-            "type": "function",
-            "name": node.name,
-            "lineno": node.lineno,
-            "start_line": getattr(node, 'lineno', node.lineno),
-            "end_lineno": getattr(node, 'end_lineno', node.lineno),
-            "node": node,
-            "suggested_location": self._suggest_placement(node, node.name, "Function")
-        })
+        self.entities.append(
+            {
+                "type": "function",
+                "name": node.name,
+                "lineno": node.lineno,
+                "start_line": getattr(node, "lineno", node.lineno),
+                "end_lineno": getattr(node, "end_lineno", node.lineno),
+                "node": node,
+                "suggested_location": self._suggest_placement(node, node.name, "Function"),
+            }
+        )
         self.generic_visit(node)
 
-    def _suggest_placement(self, node: ast.AST, name: str, entity_type: str) -> tuple[str, str, float]:
+    def _suggest_placement(
+        self, node: ast.AST, name: str, entity_type: str
+    ) -> tuple[str, str, float]:
         """
         [SEMANTIC SCORING] Calculates placement confidence using the Rich Semantic Registry.
         Returns (L1, L2, Confidence_Score).
@@ -102,7 +110,9 @@ class AstRelocator(ast.NodeVisitor):
                 if entity_type == "Class" and hasattr(node, "bases"):
                     for base in node.bases:
                         # Handle simple names (class A(B)) and attributes (class A(mod.B))
-                        base_name = getattr(base, "id", "") or getattr(getattr(base, "attr", None), "value", "")
+                        base_name = getattr(base, "id", "") or getattr(
+                            getattr(base, "attr", None), "value", ""
+                        )
                         if base_name and any(base_name in b for b in meta.get("bases", [])):
                             score += 4.0  # Massive boost for explicit inheritance match
 
@@ -113,7 +123,6 @@ class AstRelocator(ast.NodeVisitor):
         return best_match
 
     def get_movable_entities(self) -> list[dict]:
-
         self.visit(self.tree)
         return self.entities
 
@@ -122,7 +131,7 @@ class AstRelocator(ast.NodeVisitor):
         """Surgically extract code block including decorators."""
         # Convert 1-based lineno to 0-based index
         # Note: Decorators are usually included in lineno in Py3.8+
-        lines = content_lines[start-1:end]
+        lines = content_lines[start - 1 : end]
         return "\n".join(lines) + "\n"
 
     @staticmethod
@@ -131,7 +140,7 @@ class AstRelocator(ast.NodeVisitor):
         try:
             # Calculate module path relative to project root
             rel_path = new_path.relative_to(project_root)
-            module_path = str(rel_path.with_suffix('')).replace('/', '.').replace('\\', '.')
+            module_path = str(rel_path.with_suffix("")).replace("/", ".").replace("\\", ".")
             return f"from {module_path} import {entity_name}"
         except ValueError:
             return f"# Could not resolve import for {entity_name}"

@@ -24,6 +24,7 @@ from vertexai.preview import grounding as vertex_grounding
 @dataclass
 class VertexConfig:
     """Configuration for Vertex AI client."""
+
     project_id: str | None = None
     location: str = "us-central1"
     model: str = "gemini-1.5-pro-002"
@@ -32,6 +33,7 @@ class VertexConfig:
     timeout: int = 60
     enable_grounding: bool = True
     default_safety_threshold: HarmBlockThreshold = HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE
+
 
 class VertexClient:
     """Production-ready Vertex AI client with grounding and safety support."""
@@ -42,7 +44,7 @@ class VertexClient:
         # Initialize Vertex AI
         vertex_init(
             project=self.config.project_id or os.getenv("GOOGLE_CLOUD_PROJECT"),
-            location=self.config.location
+            location=self.config.location,
         )
 
         self.model = GenerativeModel(self.config.model)
@@ -55,7 +57,7 @@ class VertexClient:
             "total_tokens": 0,
             "grounding_tokens": 0,
             "total_cost": 0.0,
-            "errors": 0
+            "errors": 0,
         }
 
     @backoff.on_exception(
@@ -63,7 +65,7 @@ class VertexClient:
         Exception,  # Vertex AI uses standard exceptions
         max_tries=5,
         factor=1,
-        max_value=60
+        max_value=60,
     )
     def generate_content(
         self,
@@ -75,7 +77,8 @@ class VertexClient:
         safety_settings: dict[HarmCategory, HarmBlockThreshold] | None = None,
         tools: list[Tool] | None = None,
         stream: bool = False,
-        **kwargs: dict[str, object]) -> object:
+        **kwargs: dict[str, object],
+    ) -> object:
         """Generate content with retry logic and optional grounding.
 
         Args:
@@ -102,7 +105,7 @@ class VertexClient:
             generation_config = GenerationConfig(
                 temperature=temperature if temperature is not None else self.config.temperature,
                 max_output_tokens=max_tokens or self.config.max_tokens,
-                **kwargs
+                **kwargs,
             )
 
             # Safety settings
@@ -115,20 +118,20 @@ class VertexClient:
                 safety_cfg = [
                     SafetySetting(
                         category=HarmCategory.HARM_CATEGORY_HARASSMENT,
-                        threshold=self.config.default_safety_threshold
+                        threshold=self.config.default_safety_threshold,
                     ),
                     SafetySetting(
                         category=HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-                        threshold=self.config.default_safety_threshold
+                        threshold=self.config.default_safety_threshold,
                     ),
                     SafetySetting(
                         category=HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-                        threshold=self.config.default_safety_threshold
+                        threshold=self.config.default_safety_threshold,
                     ),
                     SafetySetting(
                         category=HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-                        threshold=self.config.default_safety_threshold
-                    )
+                        threshold=self.config.default_safety_threshold,
+                    ),
                 ]
 
             # Tools (including grounding)
@@ -137,8 +140,7 @@ class VertexClient:
                 grounding_tool = Tool.from_google_search_retrieval(
                     vertex_grounding.GoogleSearchRetrieval(
                         dynamic_retrieval_config=vertex_grounding.DynamicRetrievalConfig(
-                            mode="MODE_DYNAMIC",
-                            dynamic_threshold=0.7
+                            mode="MODE_DYNAMIC", dynamic_threshold=0.7
                         )
                     )
                 )
@@ -156,7 +158,7 @@ class VertexClient:
                     safety_settings=safety_cfg,
                     tools=tool_list,
                     system_instruction=system_inst,
-                    stream=True
+                    stream=True,
                 )
             else:
                 response = self.model.generate_content(
@@ -165,10 +167,12 @@ class VertexClient:
                     safety_settings=safety_cfg,
                     tools=tool_list,
                     system_instruction=system_inst,
-                    stream=False
+                    stream=False,
                 )
 
-                self._update_usage_stats(response.usage_metadata if hasattr(response, 'usage_metadata') else None)
+                self._update_usage_stats(
+                    response.usage_metadata if hasattr(response, "usage_metadata") else None
+                )
                 return response
 
         except Exception as e:
@@ -180,7 +184,8 @@ class VertexClient:
         prompt: str,
         grounding_threshold: float = 0.7,
         include_citations: bool = True,
-        **kwargs: dict[str, object]) -> dict[str, object]:
+        **kwargs: dict[str, object],
+    ) -> dict[str, object]:
         """Generate response with Google Search grounding and citations.
 
         Args:
@@ -196,48 +201,47 @@ class VertexClient:
         grounding_tool = Tool.from_google_search_retrieval(
             vertex_grounding.GoogleSearchRetrieval(
                 dynamic_retrieval_config=vertex_grounding.DynamicRetrievalConfig(
-                    mode="MODE_DYNAMIC",
-                    dynamic_threshold=grounding_threshold
+                    mode="MODE_DYNAMIC", dynamic_threshold=grounding_threshold
                 )
             )
         )
 
-        response = self.generate_content(
-            prompt=prompt,
-            tools=[grounding_tool],
-            **kwargs
-        )
+        response = self.generate_content(prompt=prompt, tools=[grounding_tool], **kwargs)
 
         # Extract grounding information
         grounding_metadata = None
         citations = []
 
-        if hasattr(response, 'candidates') and response.candidates:
+        if hasattr(response, "candidates") and response.candidates:
             candidate = response.candidates[0]
 
-            if hasattr(candidate, 'grounding_metadata') and candidate.grounding_metadata:
+            if hasattr(candidate, "grounding_metadata") and candidate.grounding_metadata:
                 grounding_metadata = {
                     "grounding_score": candidate.grounding_metadata.grounding_score,
-                    "grounding_supports": []
+                    "grounding_supports": [],
                 }
 
                 # Extract grounding supports
-                if hasattr(candidate.grounding_metadata, 'grounding_supports'):
+                if hasattr(candidate.grounding_metadata, "grounding_supports"):
                     for support in candidate.grounding_metadata.grounding_supports:
                         grounding_support = {
-                            "segment": support.grounding_chunk.segment.text if support.grounding_chunk.segment else "",
+                            "segment": support.grounding_chunk.segment.text
+                            if support.grounding_chunk.segment
+                            else "",
                             "score": support.grounding_score,
-                            "sources": []
+                            "sources": [],
                         }
 
                         # Extract sources
-                        if hasattr(support, 'grounding_chunk') and support.grounding_chunk.web:
+                        if hasattr(support, "grounding_chunk") and support.grounding_chunk.web:
                             for source in support.grounding_chunk.web:
-                                grounding_support["sources"].append({
-                                    "uri": source.uri,
-                                    "title": source.title,
-                                    "snippet": source.snippet
-                                })
+                                grounding_support["sources"].append(
+                                    {
+                                        "uri": source.uri,
+                                        "title": source.title,
+                                        "snippet": source.snippet,
+                                    }
+                                )
 
                         grounding_metadata["grounding_supports"].append(grounding_support)
 
@@ -251,7 +255,7 @@ class VertexClient:
             "grounding_enabled": True,
             "grounding_metadata": grounding_metadata,
             "citations": citations,
-            "usage": self._extract_usage(response)
+            "usage": self._extract_usage(response),
         }
 
     def safe_response(
@@ -259,7 +263,8 @@ class VertexClient:
         prompt: str,
         safety_threshold: HarmBlockThreshold = HarmBlockThreshold.BLOCK_NONE,
         custom_safety: dict[HarmCategory, HarmBlockThreshold] | None = None,
-        **kwargs: dict[str, object]) -> dict[str, object]:
+        **kwargs: dict[str, object],
+    ) -> dict[str, object]:
         """Generate response with configurable safety settings.
 
         Args:
@@ -276,42 +281,38 @@ class VertexClient:
             HarmCategory.HARM_CATEGORY_HARASSMENT: safety_threshold,
             HarmCategory.HARM_CATEGORY_HATE_SPEECH: safety_threshold,
             HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: safety_threshold,
-            HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: safety_threshold
+            HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: safety_threshold,
         }
 
-        response = self.generate_content(
-            prompt=prompt,
-            safety_settings=safety_settings,
-            **kwargs
-        )
+        response = self.generate_content(prompt=prompt, safety_settings=safety_settings, **kwargs)
 
         # Extract safety ratings
         safety_ratings = []
-        if hasattr(response, 'candidates') and response.candidates:
+        if hasattr(response, "candidates") and response.candidates:
             candidate = response.candidates[0]
-            if hasattr(candidate, 'safety_ratings'):
+            if hasattr(candidate, "safety_ratings"):
                 for rating in candidate.safety_ratings:
-                    safety_ratings.append({
-                        "category": rating.category.name,
-                        "probability": rating.probability.name if rating.probability else None,
-                        "blocked": rating.blocked if hasattr(rating, 'blocked') else False
-                    })
+                    safety_ratings.append(
+                        {
+                            "category": rating.category.name,
+                            "probability": rating.probability.name if rating.probability else None,
+                            "blocked": rating.blocked if hasattr(rating, "blocked") else False,
+                        }
+                    )
 
         return {
             "content": response.text,
             "model": self.config.model,
             "safety_ratings": safety_ratings,
-            "finish_reason": response.candidates[0].finish_reason.name if hasattr(response.candidates[0],
-                 'finish_reason') else None,
-
-            "usage": self._extract_usage(response)
+            "finish_reason": response.candidates[0].finish_reason.name
+            if hasattr(response.candidates[0], "finish_reason")
+            else None,
+            "usage": self._extract_usage(response),
         }
 
     def stream_response(
-        self,
-        prompt: str,
-        callback: callable = None,
-        **kwargs: dict[str, object]) -> list[str]:
+        self, prompt: str, callback: callable = None, **kwargs: dict[str, object]
+    ) -> list[str]:
         """Stream response with optional callback.
 
         Args:
@@ -346,11 +347,13 @@ class VertexClient:
                     citation = {
                         "uri": source["uri"],
                         "title": source["title"],
-                        "snippet": source["snippet"][:200]
-                            + "..." if len(source["snippet"]) > 200 else source["snippet"],
+                        "snippet": source["snippet"][:200] + "..."
+                        if len(source["snippet"]) > 200
+                        else source["snippet"],
                         "confidence": support["score"],
-                        "referenced_text": support["segment"][:100]
-                            + "..." if len(support["segment"]) > 100 else support["segment"]
+                        "referenced_text": support["segment"][:100] + "..."
+                        if len(support["segment"]) > 100
+                        else support["segment"],
                     }
                     citations.append(citation)
                     seen_sources.add(source["uri"])
@@ -359,11 +362,11 @@ class VertexClient:
 
     def _extract_usage(self, response) -> dict[str, object]:
         """Extract usage metadata from response."""
-        if hasattr(response, 'usage_metadata'):
+        if hasattr(response, "usage_metadata"):
             return {
                 "prompt_tokens": response.usage_metadata.prompt_token_count,
                 "candidates_tokens": response.usage_metadata.candidates_token_count,
-                "total_tokens": response.usage_metadata.total_token_count
+                "total_tokens": response.usage_metadata.total_token_count,
             }
         return {}
 
@@ -406,8 +409,9 @@ class VertexClient:
             "total_tokens": 0,
             "grounding_tokens": 0,
             "total_cost": 0.0,
-            "errors": 0
+            "errors": 0,
         }
+
 
 # builder function for easy instantiation
 def create_vertex_client(
@@ -415,7 +419,8 @@ def create_vertex_client(
     location: str = "us-central1",
     model: str = "gemini-1.5-pro-002",
     enable_grounding: bool = True,
-    **kwargs: dict[str, object]) -> VertexClient:
+    **kwargs: dict[str, object],
+) -> VertexClient:
     """Create configured Vertex AI client.
 
     Args:
@@ -433,9 +438,10 @@ def create_vertex_client(
         location=location,
         model=model,
         enable_grounding=enable_grounding,
-        **kwargs
+        **kwargs,
     )
     return VertexClient(config)
+
 
 # Example usage
 if __name__ == "__main__":
@@ -448,14 +454,12 @@ if __name__ == "__main__":
 
         # Grounded response
         grounded = client.grounded_response(
-            "What are the latest developments in AI large language models?",
-            grounding_threshold=0.7
+            "What are the latest developments in AI large language models?", grounding_threshold=0.7
         )
 
         # Safe response with custom safety
         safe = client.safe_response(
-            "Write a professional email template",
-            safety_threshold=HarmBlockThreshold.BLOCK_NONE
+            "Write a professional email template", safety_threshold=HarmBlockThreshold.BLOCK_NONE
         )
 
         # Usage stats

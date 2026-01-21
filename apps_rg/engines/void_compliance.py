@@ -45,6 +45,7 @@ KEY_TO_FOLDER_MAP = CANON_KEY_TO_FOLDER_MAP
 # FILE NAMING CONVENTIONS (Key 49 Hardening)
 # ==============================================================================
 
+
 def validate_file_naming(file_path: Path, project_root: Path) -> tuple[bool, str]:
     """
     Enforces descriptive snake_case naming for L-layer signals.
@@ -69,14 +70,17 @@ def validate_file_naming(file_path: Path, project_root: Path) -> tuple[bool, str
 
     # 2. Special Handling for Root-Level Files (Key 0 Protected)
     if is_root_file:
-        protected = ROOT_PROTECTED_FILES # [GAP 16]
+        protected = ROOT_PROTECTED_FILES  # [GAP 16]
         if file_name in protected:
             return True, "Protected root file (Key 0 exempt)"
 
         # Sovereign markers are required for any root-level python logic
         sovereign_markers = {"validator", "compliance", "healer", "enforcer", "governor"}
         if not any(m in lower_stem for m in sovereign_markers):
-            return False, f"SOVEREIGN VIOLATION: Root file '{file_name}' Missing marker {sovereign_markers}."
+            return (
+                False,
+                f"SOVEREIGN VIOLATION: Root file '{file_name}' Missing marker {sovereign_markers}.",
+            )
         return True, ""
 
     # 3. Nested Files: Forbidden Generic/Versioned Patterns
@@ -103,8 +107,9 @@ GUIDANCE_EXAMPLES: dict[str, str] = {
     "apps_shared/utils/validation": "Shared Pydantic models or regex patterns used across multiple app domains.",
     "apps_rg/agents/rankers": "Scoring logic specifically for resume-to-JD matching (Domain-specific).",
     "config/agents/prompts": "System instructions and persona definitions used to initialize LLM sessions.",
-    "scripts/operations/integrity": "Utilities that check for structural drift or 'Span of Two' violations."
+    "scripts/operations/integrity": "Utilities that check for structural drift or 'Span of Two' violations.",
 }
+
 
 def get_placement_guidance(content_preview: str) -> str:
     """
@@ -127,7 +132,8 @@ def get_placement_guidance(content_preview: str) -> str:
     if any(x in content_preview for x in ["pinecone", "redis", "storage", "cache"]):
         return "agentic_core/L4_state"
 
-    return "agentic_core/L1_cognition" # Default safe-haven for generic logic
+    return "agentic_core/L1_cognition"  # Default safe-haven for generic logic
+
 
 def check_span_of_two_violation(folder_path: Path) -> tuple[bool, str]:
     """
@@ -139,13 +145,17 @@ def check_span_of_two_violation(folder_path: Path) -> tuple[bool, str]:
         return True, ""
 
     meaningful_children = [
-        x for x in folder_path.iterdir()
+        x
+        for x in folder_path.iterdir()
         if x.name not in {".git", "__pycache__", ".pytest_cache", ".ruff_cache"}
         and not x.name.startswith(".")
     ]
 
     if len(meaningful_children) == 1 and meaningful_children[0].is_dir():
-        return False, f"SPAN-OF-TWO VIOLATION: Redundant tunnel '{folder_path.name}' -> flatten" # [GAP 4/13]
+        return (
+            False,
+            f"SPAN-OF-TWO VIOLATION: Redundant tunnel '{folder_path.name}' -> flatten",
+        )  # [GAP 4/13]
 
     return True, ""
 
@@ -162,11 +172,33 @@ KEY_TO_FOLDER_MAP = CANON_KEY_TO_FOLDER_MAP
 # ==============================================================================
 
 STDLIB_MODULES = {
-    "os", "sys", "pathlib", "logging", "asyncio", "typing", "dataclasses",
-    "collections", "json", "re", "datetime", "functools", "itertools",
-    "abc", "enum", "contextlib", "threading", "time", "random", "math",
-    "urllib", "http", "socket", "subprocess", "shutil"
+    "os",
+    "sys",
+    "pathlib",
+    "logging",
+    "asyncio",
+    "typing",
+    "dataclasses",
+    "collections",
+    "json",
+    "re",
+    "datetime",
+    "functools",
+    "itertools",
+    "abc",
+    "enum",
+    "contextlib",
+    "threading",
+    "time",
+    "random",
+    "math",
+    "urllib",
+    "http",
+    "socket",
+    "subprocess",
+    "shutil",
 }
+
 
 def validate_import_conventions(file_path: Path, project_root: Path) -> list[str]:
     """
@@ -194,7 +226,7 @@ def validate_import_conventions(file_path: Path, project_root: Path) -> list[str
         return violations
 
     import_nodes = [n for n in ast.walk(tree) if isinstance(n, (ast.Import, ast.ImportFrom))]
-    import_nodes.sort(key=lambda n: n.lineno if hasattr(n, 'lineno') else 0)
+    import_nodes.sort(key=lambda n: n.lineno if hasattr(n, "lineno") else 0)
 
     # 1. No relative/star imports (except relative imports in __init__.py)
     for node in import_nodes:
@@ -203,9 +235,13 @@ def validate_import_conventions(file_path: Path, project_root: Path) -> list[str
                 # Relative imports are explicitly allowed in __init__.py files
                 # as they are standard for exposing package APIs (Facade Pattern)
                 if not is_init_file:
-                    violations.append(f"RELATIVE IMPORT FORBIDDEN (Line {node.lineno}): Use absolute paths (allowed in __init__.py only).")
+                    violations.append(
+                        f"RELATIVE IMPORT FORBIDDEN (Line {node.lineno}): Use absolute paths (allowed in __init__.py only)."
+                    )
             if any(a.name == "*" for a in node.names):
-                violations.append(f"STAR IMPORT FORBIDDEN (Line {node.lineno}): 'import *' detected.")
+                violations.append(
+                    f"STAR IMPORT FORBIDDEN (Line {node.lineno}): 'import *' detected."
+                )
 
     # 2. Ordering Check (stdlib → third-party → local)
     categories = {"stdlib": [], "thirdparty": [], "local": []}
@@ -232,8 +268,11 @@ def validate_import_conventions(file_path: Path, project_root: Path) -> list[str
     for cat in ["stdlib", "thirdparty", "local"]:
         if categories[cat] and prev_cat and categories[prev_cat]:
             if min(categories[cat]) < max(categories[prev_cat]):
-                violations.append(f"IMPORT ORDER VIOLATION: {cat.capitalize()} appears before {prev_cat}.")
-        if categories[cat]: prev_cat = cat
+                violations.append(
+                    f"IMPORT ORDER VIOLATION: {cat.capitalize()} appears before {prev_cat}."
+                )
+        if categories[cat]:
+            prev_cat = cat
 
     # 3. Expanded Circular Risk
     if own_root and own_root in imported_roots:
@@ -245,6 +284,7 @@ def validate_import_conventions(file_path: Path, project_root: Path) -> list[str
 # ==============================================================================
 # ENFORCEMENT FUNCTIONS
 # ==============================================================================
+
 
 def validate_file_location(file_path: Path, project_root: Path) -> tuple[bool, str]:
     """
@@ -270,10 +310,15 @@ def validate_file_location(file_path: Path, project_root: Path) -> tuple[bool, s
 
         # [ETERNAL DEPTH 4] Universal enforcement for all L-layers
         if root_folder == "agentic_core":
-            agentic_core_exact_depth = SOVEREIGN_REGISTRY["agentic_core"]["depth"]  # Legacy bridge – migrate to SOVEREIGN_REGISTRY
+            agentic_core_exact_depth = SOVEREIGN_REGISTRY["agentic_core"][
+                "depth"
+            ]  # Legacy bridge – migrate to SOVEREIGN_REGISTRY
             if depth != agentic_core_exact_depth:
                 reason = "SHALLOW" if depth < agentic_core_exact_depth else "DEEP"
-                return False, f"{reason} VIOLATION: '{rel_path}' depth {depth} != {agentic_core_exact_depth}"
+                return (
+                    False,
+                    f"{reason} VIOLATION: '{rel_path}' depth {depth} != {agentic_core_exact_depth}",
+                )
 
         # [ETERNAL DEPTH 3] All apps_* folders — exact depth 3
         if root_folder.startswith("apps_"):
@@ -291,8 +336,13 @@ def validate_file_location(file_path: Path, project_root: Path) -> tuple[bool, s
         if root_folder == "agentic_core":
             stage = parts[2]
             # Check against authorized list AND standard P/S/L naming convention
-            if stage not in ALLOWED_CORE_STAGES and not (stage.startswith('P') or stage.startswith('S') or stage.startswith('L')):
-                return False, f"UNAUTHORIZED STAGE: '{stage}' is not a recognized Sovereign territory."
+            if stage not in ALLOWED_CORE_STAGES and not (
+                stage.startswith("P") or stage.startswith("S") or stage.startswith("L")
+            ):
+                return (
+                    False,
+                    f"UNAUTHORIZED STAGE: '{stage}' is not a recognized Sovereign territory.",
+                )
 
         return True, f"{root_folder} depth verified"
 
@@ -311,12 +361,20 @@ def validate_file_location(file_path: Path, project_root: Path) -> tuple[bool, s
 
         # Check for numbered prefix pattern (NOT APPROVED)
         if root_folder and root_folder[0:2].isdigit() and root_folder[2:3] == "_":
-            return False, f"VOID VIOLATION: Numbered folder '{root_folder}' not approved (use approved folders only)"
+            return (
+                False,
+                f"VOID VIOLATION: Numbered folder '{root_folder}' not approved (use approved folders only)",
+            )
 
         # SOVEREIGN PROTECTION: Key 0 (General) must remain at Project Root
         validator_markers = {"validator", "compliance", "canon"}
-        if root_folder.startswith("apps_") and any(m in file_path.name.lower() for m in validator_markers):
-            return False, f"GRAVITY ERROR: Sovereign compliance logic ('{file_path.name}') leaked into downstream '{root_folder}'."
+        if root_folder.startswith("apps_") and any(
+            m in file_path.name.lower() for m in validator_markers
+        ):
+            return (
+                False,
+                f"GRAVITY ERROR: Sovereign compliance logic ('{file_path.name}') leaked into downstream '{root_folder}'.",
+            )
 
         # [L6 HARDENING] Strict Naming Enforcement
         is_name_valid, name_reason = validate_file_naming(file_path, project_root)
@@ -360,8 +418,7 @@ def get_applicable_keys_for_file(file_path: Path, project_root: Path) -> set[int
 
 
 def enforce_void_compliance(
-    files: list[Path],
-    project_root: Path
+    files: list[Path], project_root: Path
 ) -> tuple[list[Path], list[tuple[Path, str]]]:
     """
     Filter files to only those in allowed folders.
@@ -417,13 +474,14 @@ def generate_ascii_tree(start_path: Path, max_depth: int = 3) -> str:
     tree.append(f"{start_path.name}/")
 
     def _add(path, prefix, depth):
-        if depth > max_depth: return
-        items = sorted([x for x in path.iterdir() if x.name not in {'.git', '__pycache__'}])
+        if depth > max_depth:
+            return
+        items = sorted([x for x in path.iterdir() if x.name not in {".git", "__pycache__"}])
         for i, item in enumerate(items):
-            connector = "└── " if i == len(items)-1 else "├── "
+            connector = "└── " if i == len(items) - 1 else "├── "
             tree.append(f"{prefix}{connector}{item.name}")
             if item.is_dir():
-                _add(item, prefix + ("    " if i == len(items)-1 else "│   "), depth + 1)
+                _add(item, prefix + ("    " if i == len(items) - 1 else "│   "), depth + 1)
 
     _add(start_path, "", 1)
     return "\n".join(tree)
@@ -435,7 +493,15 @@ def check_span_of_two_violations(project_root: Path) -> list[tuple[Path, str]]:
     Replaces the buggy total_children == 1 check to allow single-file leaves.
     """
     violations = []
-    IGNORE_DIRS = {".git", ".venv", "venv", "__pycache__", "node_modules", ".pytest_cache", ".ruff_cache"}
+    IGNORE_DIRS = {
+        ".git",
+        ".venv",
+        "venv",
+        "__pycache__",
+        "node_modules",
+        ".pytest_cache",
+        ".ruff_cache",
+    }
 
     for root_folder in ALLOWED_ROOT_FOLDERS:
         root_path = project_root / root_folder
@@ -452,6 +518,7 @@ def check_span_of_two_violations(project_root: Path) -> list[tuple[Path, str]]:
                 violations.append((current_dir, msg))
 
     return violations
+
 
 def validate_canonical_hierarchy(project_root: Path) -> list[tuple[Path, str]]:
     """
@@ -470,12 +537,19 @@ def validate_canonical_hierarchy(project_root: Path) -> list[tuple[Path, str]]:
         # 1. Root Level Check: No files directly in Sovereign Root (depth 1)
         root_files = [p.name for p in root_path.iterdir() if p.is_file() and p.suffix == ".py"]
         if root_files:
-            violations.append((root_path, f"DEPTH VIOLATION (Key 41): Files directly under Root '{root_key}' (depth 1). Found: {root_files}"))
+            violations.append(
+                (
+                    root_path,
+                    f"DEPTH VIOLATION (Key 41): Files directly under Root '{root_key}' (depth 1). Found: {root_files}",
+                )
+            )
 
         # 2. Level 1 Validation (e.g., agentic_core -> L1_cognition)
         # layers is now a list of allowed L1 folders from SOVEREIGN_REGISTRY
         expected_l1 = set(layers) if isinstance(layers, list) else set(layers.keys())
-        actual_l1 = {p.name for p in root_path.iterdir() if p.is_dir() and not p.name.startswith(".")}
+        actual_l1 = {
+            p.name for p in root_path.iterdir() if p.is_dir() and not p.name.startswith(".")
+        }
 
         # Whitelist L6_meta for autonomous agents
         if "L6_meta" in actual_l1:
@@ -483,7 +557,12 @@ def validate_canonical_hierarchy(project_root: Path) -> list[tuple[Path, str]]:
 
         unexpected_l1 = actual_l1 - expected_l1
         for bad in unexpected_l1:
-            violations.append((root_path / bad, f"HIERARCHY DRIFT: Unapproved L1 folder '{bad}'. Allowed: {expected_l1}"))
+            violations.append(
+                (
+                    root_path / bad,
+                    f"HIERARCHY DRIFT: Unapproved L1 folder '{bad}'. Allowed: {expected_l1}",
+                )
+            )
 
         # 3. Level 2 Validation + Min Depth Enforcement
         # For L2 validation, we need to check CORE_SUBFOLDER_MAP for agentic_core
@@ -495,13 +574,19 @@ def validate_canonical_hierarchy(project_root: Path) -> list[tuple[Path, str]]:
 
                 # Get expected L2 folders from CORE_SUBFOLDER_MAP
                 expected_l2 = set(CORE_SUBFOLDER_MAP.get(l1_name, []))
-                actual_l2_dirs = {p.name for p in l1_path.iterdir() if p.is_dir() and not p.name.startswith(".")}
-                actual_l2_files = [p.name for p in l1_path.iterdir() if p.is_file() and p.suffix == ".py"]
+                actual_l2_dirs = {
+                    p.name for p in l1_path.iterdir() if p.is_dir() and not p.name.startswith(".")
+                }
+                actual_l2_files = [
+                    p.name for p in l1_path.iterdir() if p.is_file() and p.suffix == ".py"
+                ]
 
                 # Whitelist autonomous agents to prevent drift violations
                 AUTONOMOUS_WHITELIST = {
-                    "autonomous_checkpoint_manager.py", "autonomous_state_guardian.py",
-                    "self_updating_safety_engine.py", "neural_auto_immune_agent.py"
+                    "autonomous_checkpoint_manager.py",
+                    "autonomous_state_guardian.py",
+                    "self_updating_safety_engine.py",
+                    "neural_auto_immune_agent.py",
                 }
 
                 # Filter out whitelisted autonomous agents from violations
@@ -510,7 +595,12 @@ def validate_canonical_hierarchy(project_root: Path) -> list[tuple[Path, str]]:
                 # Unexpected L2 folders
                 unexpected_l2 = actual_l2_dirs - expected_l2
                 for bad in unexpected_l2:
-                    violations.append((l1_path / bad, f"HIERARCHY DRIFT: Unapproved subfolder '{bad}' under '{l1_name}'. Allowed: {expected_l2}"))
+                    violations.append(
+                        (
+                            l1_path / bad,
+                            f"HIERARCHY DRIFT: Unapproved subfolder '{bad}' under '{l1_name}'. Allowed: {expected_l2}",
+                        )
+                    )
         elif isinstance(layers, dict):
             # Legacy dict format support
             for l1_name, l2_list in layers.items():
@@ -519,13 +609,19 @@ def validate_canonical_hierarchy(project_root: Path) -> list[tuple[Path, str]]:
                     continue
 
                 expected_l2 = set(l2_list)
-                actual_l2_dirs = {p.name for p in l1_path.iterdir() if p.is_dir() and not p.name.startswith(".")}
-                actual_l2_files = [p.name for p in l1_path.iterdir() if p.is_file() and p.suffix == ".py"]
+                actual_l2_dirs = {
+                    p.name for p in l1_path.iterdir() if p.is_dir() and not p.name.startswith(".")
+                }
+                actual_l2_files = [
+                    p.name for p in l1_path.iterdir() if p.is_file() and p.suffix == ".py"
+                ]
 
                 # Whitelist autonomous agents to prevent drift violations
                 AUTONOMOUS_WHITELIST = {
-                    "autonomous_checkpoint_manager.py", "autonomous_state_guardian.py",
-                    "self_updating_safety_engine.py", "neural_auto_immune_agent.py"
+                    "autonomous_checkpoint_manager.py",
+                    "autonomous_state_guardian.py",
+                    "self_updating_safety_engine.py",
+                    "neural_auto_immune_agent.py",
                 }
 
                 # Filter out whitelisted autonomous agents from violations
@@ -534,7 +630,12 @@ def validate_canonical_hierarchy(project_root: Path) -> list[tuple[Path, str]]:
                 # Unexpected L2 folders
                 unexpected_l2 = actual_l2_dirs - expected_l2
                 for bad in unexpected_l2:
-                    violations.append((l1_path / bad, f"HIERARCHY DRIFT: Unapproved subfolder '{bad}' under '{l1_name}'. Allowed: {expected_l2}"))
+                    violations.append(
+                        (
+                            l1_path / bad,
+                            f"HIERARCHY DRIFT: Unapproved subfolder '{bad}' under '{l1_name}'. Allowed: {expected_l2}",
+                        )
+                    )
 
     return violations
 
@@ -544,7 +645,15 @@ def check_import_waterfall_violations(file_path: Path, project_root: Path) -> li
     Unified Integrity Pass: Enforces Gravity (Waterfall) + Style (Conventions).
     """
     violations = []
-    SYSTEM_FOLDERS = {".venv", "venv", ".git", "__pycache__", "node_modules", ".pytest_cache", ".ruff_cache"}
+    SYSTEM_FOLDERS = {
+        ".venv",
+        "venv",
+        ".git",
+        "__pycache__",
+        "node_modules",
+        ".pytest_cache",
+        ".ruff_cache",
+    }
 
     try:
         rel_path = file_path.relative_to(project_root)
@@ -566,8 +675,7 @@ def check_import_waterfall_violations(file_path: Path, project_root: Path) -> li
 
     # Upstream sovereign: brain core + any future non-domain sovereign supports (e.g., prompt_governance, schemas)
     upstream_sovereign_roots = {
-        root for root in all_registry_roots
-        if not root.startswith("apps_") and root != "tests"
+        root for root in all_registry_roots if not root.startswith("apps_") and root != "tests"
     }
 
     # Downstream: everything else (domains + tests)
@@ -592,8 +700,10 @@ def check_import_waterfall_violations(file_path: Path, project_root: Path) -> li
     # Build regex only if there are downstream roots (defensive)
     if downstream_roots:
         forbidden_pattern = re.compile(
-            r"^(?:import|from)\s+(" + "|".join(map(re.escape, sorted(downstream_roots))) + r")(?:\.\w|\s|$)",
-            re.MULTILINE
+            r"^(?:import|from)\s+("
+            + "|".join(map(re.escape, sorted(downstream_roots)))
+            + r")(?:\.\w|\s|$)",
+            re.MULTILINE,
         )
 
         matches = forbidden_pattern.findall(content)

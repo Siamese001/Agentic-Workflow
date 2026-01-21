@@ -13,9 +13,10 @@ from services.configuration import ConfigurationService
 
 Logger: Any = logging.getLogger(__name__)
 
+
 def fix_multiline_strings(content: Any) -> Any:
     """Fix multiline strings that should use triple quotes."""
-    lines: Any = content.split('\n')
+    lines: Any = content.split("\n")
     fixed_lines: Any = []
     i: Any = 0
     while i < len(lines):
@@ -33,29 +34,32 @@ def fix_multiline_strings(content: Any) -> Any:
                         j += 1
         fixed_lines.append(line)
         i += 1
-    return '\n'.join(fixed_lines)
+    return "\n".join(fixed_lines)
+
 
 def fix_indentation_errors(content: Any) -> Any:
     """Fix common indentation errors."""
-    lines: Any = content.split('\n')
+    lines: Any = content.split("\n")
     fixed_lines: Any = []
     for line in lines:
-        if '\t' in line:
-            line: Any = line.replace('\t', '    ')
-        if line.strip() == '' and line != '':
+        if "\t" in line:
+            line: Any = line.replace("\t", "    ")
+        if line.strip() == "" and line != "":
             pass
         fixed_lines.append(line)
-    return '\n'.join(fixed_lines)
+    return "\n".join(fixed_lines)
+
 
 def fix_fstring_errors(content: Any) -> Any:
     """Fix common f-string syntax errors."""
-    lines: Any = content.split('\n')
+    lines: Any = content.split("\n")
     fixed_lines: Any = []
     for line in lines:
-        if 'f"' in line and '{{' not in line and ('}}' not in line):
+        if 'f"' in line and "{{" not in line and ("}}" not in line):
             pass
         fixed_lines.append(line)
-    return '\n'.join(fixed_lines)
+    return "\n".join(fixed_lines)
+
 
 def check_syntax(content: Any) -> Any:
     """Check if content has valid Python syntax."""
@@ -65,27 +69,29 @@ def check_syntax(content: Any) -> Any:
     except SyntaxError as e:
         return (False, str(e))
 
+
 def fix_file(filepath: Any) -> Any:
     """Fix syntax errors in a single file."""
     try:
-        with open(filepath, encoding='utf-8') as f:
+        with open(filepath, encoding="utf-8") as f:
             original_content: Any = f.read()
         is_valid, error = check_syntax(original_content)
         if is_valid:
-            return (True, 'Already valid')
+            return (True, "Already valid")
         fixed_content: Any = original_content
         fixed_content: Any = fix_multiline_strings(fixed_content)
         fixed_content: Any = fix_indentation_errors(fixed_content)
         fixed_content: Any = fix_fstring_errors(fixed_content)
         is_valid, error = check_syntax(fixed_content)
         if is_valid:
-            with open(filepath, 'w', encoding='utf-8') as f:
+            with open(filepath, "w", encoding="utf-8") as f:
                 f.write(fixed_content)
-            return (True, 'Fixed')
+            return (True, "Fixed")
         else:
-            return (False, f'Still broken: {error}')
+            return (False, f"Still broken: {error}")
     except Exception as e:
-        return (False, f'Error: {str(e)}')
+        return (False, f"Error: {str(e)}")
+
 
 def main() -> Any:
     """Fix all Python files in the project."""
@@ -94,24 +100,26 @@ def main() -> Any:
     try:
         excluded_dirs: Any = ConfigurationService().excluded_dirs
     except:
-        excluded_dirs: Any = ['.git', '__pycache__', 'venv']
+        excluded_dirs: Any = [".git", "__pycache__", "venv"]
     try:
         logger_instance: Any = ConfigurationService().Logger
     except:
         logger_instance: Any = logging.getLogger(__name__)
-    for root, dirs, files in os.walk('.'):
+    for root, dirs, files in os.walk("."):
         dirs[:] = [d for d in dirs if d not in excluded_dirs]
         for file in files:
-            if file.endswith('.py'):
+            if file.endswith(".py"):
                 filepath: Any = os.path.join(root, file)
                 success, message = fix_file(filepath)
                 if success:
-                    if message == 'Fixed':
-                        logger_instance.info(f'✅ Fixed: {filepath}')
+                    if message == "Fixed":
+                        logger_instance.info(f"✅ Fixed: {filepath}")
                         fixed_count += 1
                 else:
-                    logger_instance.info(f'❌ Failed: {filepath} - {message}')
+                    logger_instance.info(f"❌ Failed: {filepath} - {message}")
                     failed_count += 1
-    logger_instance.info(f'\nSummary: {fixed_count} fixed, {failed_count} still broken')
-if __name__ == '__main__':
+    logger_instance.info(f"\nSummary: {fixed_count} fixed, {failed_count} still broken")
+
+
+if __name__ == "__main__":
     main()

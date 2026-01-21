@@ -31,12 +31,15 @@ def test_ssot_import():
         assert ARCHIVES_DIR == "archives", f"Expected 'archives', got '{ARCHIVES_DIR}'"
 
         # Verify ArchivalGatekeeper uses correct name
-        assert ArchivalGatekeeper.ARCHIVE_ROOT_NAME == "archives", \
+        assert ArchivalGatekeeper.ARCHIVE_ROOT_NAME == "archives", (
             f"Expected 'archives', got '{ArchivalGatekeeper.ARCHIVE_ROOT_NAME}'"
+        )
 
         print("  ✅ PASS: ARCHIVES_DIR imported successfully")
         print(f"     ARCHIVES_DIR = '{ARCHIVES_DIR}'")
-        print(f"     ArchivalGatekeeper.ARCHIVE_ROOT_NAME = '{ArchivalGatekeeper.ARCHIVE_ROOT_NAME}'")
+        print(
+            f"     ArchivalGatekeeper.ARCHIVE_ROOT_NAME = '{ArchivalGatekeeper.ARCHIVE_ROOT_NAME}'"
+        )
         return True
     except Exception as e:
         print(f"  ❌ FAIL: {e}")
@@ -56,13 +59,14 @@ def test_path_resolution():
         # Verify path contains 'archives' not '.archive'
         archive_path = str(gatekeeper.archive_root)
 
-        assert 'archives' in archive_path, f"'archives' not in path: {archive_path}"
-        assert '.archive' not in archive_path, f"'.archive' found in path: {archive_path}"
-        assert 'gatekeeper' in archive_path, f"'gatekeeper' not in path: {archive_path}"
+        assert "archives" in archive_path, f"'archives' not in path: {archive_path}"
+        assert ".archive" not in archive_path, f"'.archive' found in path: {archive_path}"
+        assert "gatekeeper" in archive_path, f"'gatekeeper' not in path: {archive_path}"
 
         expected = project_root / "archives" / "gatekeeper"
-        assert gatekeeper.archive_root == expected, \
+        assert gatekeeper.archive_root == expected, (
             f"Expected {expected}, got {gatekeeper.archive_root}"
+        )
 
         print("  ✅ PASS: Archive root resolves correctly")
         print(f"     archive_root = {gatekeeper.archive_root}")
@@ -80,8 +84,9 @@ def test_exclusion_logic():
     try:
         from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_EXCLUDED_FOLDERS
 
-        assert 'archives' in SOVEREIGN_EXCLUDED_FOLDERS, \
+        assert "archives" in SOVEREIGN_EXCLUDED_FOLDERS, (
             "'archives' not in SOVEREIGN_EXCLUDED_FOLDERS"
+        )
 
         print("  ✅ PASS: 'archives' is in SOVEREIGN_EXCLUDED_FOLDERS")
         print(f"     SOVEREIGN_EXCLUDED_FOLDERS = {sorted(SOVEREIGN_EXCLUDED_FOLDERS)}")
@@ -115,9 +120,9 @@ def test_no_hardcoded_paths():
 
 
 def main():
-    print("="*70)
+    print("=" * 70)
     print("SSOT Compliance Verification")
-    print("="*70)
+    print("=" * 70)
 
     results = []
     results.append(("SSOT Import", test_ssot_import()))
@@ -125,9 +130,9 @@ def main():
     results.append(("Exclusion Logic", test_exclusion_logic()))
     results.append(("No Hardcoded Paths", test_no_hardcoded_paths()))
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("SUMMARY")
-    print("="*70)
+    print("=" * 70)
 
     passed = sum(1 for _, result in results if result)
     total = len(results)
@@ -146,5 +151,5 @@ def main():
         return 1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

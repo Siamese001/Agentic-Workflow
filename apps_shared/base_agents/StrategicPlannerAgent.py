@@ -22,23 +22,28 @@ from dataclasses import dataclass, field
 
 class MissionPriority(Enum):
     """Mission priority levels."""
-    CRITICAL: Any = 'CRITICAL'
-    HIGH: Any = 'HIGH'
-    MEDIUM: Any = 'MEDIUM'
-    LOW: Any = 'LOW'
+
+    CRITICAL: Any = "CRITICAL"
+    HIGH: Any = "HIGH"
+    MEDIUM: Any = "MEDIUM"
+    LOW: Any = "LOW"
+
 
 class MissionStatus(Enum):
     """Mission status values."""
-    PLANNED: Any = 'PLANNED'
-    ACTIVE: Any = 'ACTIVE'
-    PAUSED: Any = 'PAUSED'
-    COMPLETED: Any = 'COMPLETED'
-    FAILED: Any = 'FAILED'
-    CANCELLED: Any = 'CANCELLED'
+
+    PLANNED: Any = "PLANNED"
+    ACTIVE: Any = "ACTIVE"
+    PAUSED: Any = "PAUSED"
+    COMPLETED: Any = "COMPLETED"
+    FAILED: Any = "FAILED"
+    CANCELLED: Any = "CANCELLED"
+
 
 @dataclass
 class MissionPhase:
     """A single phase of a mission."""
+
     name: str
     agents: list[str]
     dependencies: list[str] = field(default_factory=list)
@@ -50,11 +55,22 @@ class MissionPhase:
 
     def to_dict(self) -> dict:
         """Convert to dictionary."""
-        return {'name': self.name, 'agents': self.agents, 'dependencies': self.dependencies, 'estimated_duration': self.estimated_duration, 'resources': self.resources, 'parallel': self.parallel, 'retry_count': self.retry_count, 'max_retries': self.max_retries}
+        return {
+            "name": self.name,
+            "agents": self.agents,
+            "dependencies": self.dependencies,
+            "estimated_duration": self.estimated_duration,
+            "resources": self.resources,
+            "parallel": self.parallel,
+            "retry_count": self.retry_count,
+            "max_retries": self.max_retries,
+        }
+
 
 @dataclass
 class MissionPlan:
     """Complete mission plan."""
+
     mission_id: str
     cycle_id: int
     priority: MissionPriority
@@ -66,21 +82,48 @@ class MissionPlan:
 
     def to_dict(self) -> dict:
         """Convert to dictionary."""
-        return {'mission_id': self.mission_id, 'cycle_id': self.cycle_id, 'priority': self.priority.value, 'objective': self.objective, 'phases': [p.to_dict() for p in self.phases], 'risk_assessment': self.risk_assessment, 'created_at': self.created_at.isoformat(), 'status': self.status.value}
+        return {
+            "mission_id": self.mission_id,
+            "cycle_id": self.cycle_id,
+            "priority": self.priority.value,
+            "objective": self.objective,
+            "phases": [p.to_dict() for p in self.phases],
+            "risk_assessment": self.risk_assessment,
+            "created_at": self.created_at.isoformat(),
+            "status": self.status.value,
+        }
 
     @classmethod
     def from_dict(cls, data: dict) -> MissionPlan:
         """Create from dictionary."""
-        plan: Any = cls(mission_id=data['mission_id'], cycle_id=data['cycle_id'], priority=MissionPriority(data['priority']), objective=data['objective'], risk_assessment=data.get('risk_assessment', {}), status=MissionStatus(data.get('status', 'PLANNED')))
-        for phase_data in data.get('phases', []):
-            phase: Any = MissionPhase(name=phase_data['name'], agents=phase_data['agents'], dependencies=phase_data.get('dependencies', []), estimated_duration=phase_data.get('estimated_duration', 300), resources=phase_data.get('resources', []), parallel=phase_data.get('parallel', False), retry_count=phase_data.get('retry_count', 0), max_retries=phase_data.get('max_retries', 3))
+        plan: Any = cls(
+            mission_id=data["mission_id"],
+            cycle_id=data["cycle_id"],
+            priority=MissionPriority(data["priority"]),
+            objective=data["objective"],
+            risk_assessment=data.get("risk_assessment", {}),
+            status=MissionStatus(data.get("status", "PLANNED")),
+        )
+        for phase_data in data.get("phases", []):
+            phase: Any = MissionPhase(
+                name=phase_data["name"],
+                agents=phase_data["agents"],
+                dependencies=phase_data.get("dependencies", []),
+                estimated_duration=phase_data.get("estimated_duration", 300),
+                resources=phase_data.get("resources", []),
+                parallel=phase_data.get("parallel", False),
+                retry_count=phase_data.get("retry_count", 0),
+                max_retries=phase_data.get("max_retries", 3),
+            )
             plan.phases.append(phase)
         return plan
+
 
 # DUPLICATE ACCEPTED: App-specific customization valid
 # (different contexts: L1 strategic cognition vs L2 planning vs apps_rg implementations)
 # - Intentional variants for domain-specific planning
 # - Documented 2026-01-06
+
 
 class StrategicPlannerAgent(HealerMixin, MCPHardenedMixin):
     """
@@ -102,17 +145,70 @@ class StrategicPlannerAgent(HealerMixin, MCPHardenedMixin):
             from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import (
                 SovereignMCPRouter,
             )
-            self.McpRouterAgent = SovereignMCPRouter(role='cognition_strategic')
+
+            self.McpRouterAgent = SovereignMCPRouter(role="cognition_strategic")
         except Exception as e:
-            LOGGER.warning(f'MCP Router initialization failed: {e}. Using legacy planning.')
+            LOGGER.warning(f"MCP Router initialization failed: {e}. Using legacy planning.")
             self.McpRouterAgent = None
-        LOGGER.info('StrategicPlannerAgent initialized')
+        LOGGER.info("StrategicPlannerAgent initialized")
 
     def _load_agent_capabilities(self) -> dict[str, dict]:
         """Load agent capabilities and requirements."""
-        return {'ArchitectureGovernor': {'purpose': 'Enforce architectural rules', 'resources': ['cpu', 'file_access'], 'phase': 'validation'}, 'TestPilot': {'purpose': 'Run property-based tests', 'resources': ['cpu', 'memory'], 'phase': 'testing'}, 'ReflectionAgent': {'purpose': 'Learn from execution', 'resources': ['memory', 'pinecone'], 'phase': 'learning'}, 'GitAgent': {'purpose': 'Commit changes', 'resources': ['git', 'network'], 'phase': 'execution'}, 'SafetyInspectorAgent': {'purpose': 'Security validation', 'resources': ['cpu', 'llm'], 'phase': 'validation'}, 'TruthKeeper': {'purpose': 'Docstring consistency', 'resources': ['cpu', 'llm'], 'phase': 'validation'}, 'RedSentinelAgent': {'purpose': 'Fuzz testing', 'resources': ['cpu'], 'phase': 'testing'}, 'TheCartographer': {'purpose': 'Semantic mapping', 'resources': ['cpu', 'llm'], 'phase': 'analysis'}, 'Historian': {'purpose': 'Memory optimization', 'resources': ['disk'], 'phase': 'optimization'}}
+        return {
+            "ArchitectureGovernor": {
+                "purpose": "Enforce architectural rules",
+                "resources": ["cpu", "file_access"],
+                "phase": "validation",
+            },
+            "TestPilot": {
+                "purpose": "Run property-based tests",
+                "resources": ["cpu", "memory"],
+                "phase": "testing",
+            },
+            "ReflectionAgent": {
+                "purpose": "Learn from execution",
+                "resources": ["memory", "pinecone"],
+                "phase": "learning",
+            },
+            "GitAgent": {
+                "purpose": "Commit changes",
+                "resources": ["git", "network"],
+                "phase": "execution",
+            },
+            "SafetyInspectorAgent": {
+                "purpose": "Security validation",
+                "resources": ["cpu", "llm"],
+                "phase": "validation",
+            },
+            "TruthKeeper": {
+                "purpose": "Docstring consistency",
+                "resources": ["cpu", "llm"],
+                "phase": "validation",
+            },
+            "RedSentinelAgent": {
+                "purpose": "Fuzz testing",
+                "resources": ["cpu"],
+                "phase": "testing",
+            },
+            "TheCartographer": {
+                "purpose": "Semantic mapping",
+                "resources": ["cpu", "llm"],
+                "phase": "analysis",
+            },
+            "Historian": {
+                "purpose": "Memory optimization",
+                "resources": ["disk"],
+                "phase": "optimization",
+            },
+        }
 
-    async def generate_plan(self, objective: str, cycle_id: int, priority: MissionPriority=MissionPriority.MEDIUM, context: dict=None) -> MissionPlan:
+    async def generate_plan(
+        self,
+        objective: str,
+        cycle_id: int,
+        priority: MissionPriority = MissionPriority.MEDIUM,
+        context: dict = None,
+    ) -> MissionPlan:
         """
         Generate a mission plan for the given objective.
         Phase 13B: Full MCP reasoning integration via Sequential Thinking.
@@ -126,27 +222,48 @@ class StrategicPlannerAgent(HealerMixin, MCPHardenedMixin):
             Generated mission plan
         """
         from agentic_core.config.blueprint_sovereign.sovereign_config import config
+
         if config.SEQUENTIAL_THINKING_MCP_ENABLED and self.McpRouterAgent:
             try:
                 return await self._generate_plan_with_mcp(objective, cycle_id, priority, context)
             except Exception as e:
-                LOGGER.error(f'MCP planning failed: {e}. Falling back to legacy.')
+                LOGGER.error(f"MCP planning failed: {e}. Falling back to legacy.")
         return self._generate_plan_legacy(objective, cycle_id, priority, context)
 
-    async def _generate_plan_with_mcp(self, objective: str, cycle_id: int, priority: MissionPriority, context: dict) -> MissionPlan:
+    async def _generate_plan_with_mcp(
+        self, objective: str, cycle_id: int, priority: MissionPriority, context: dict
+    ) -> MissionPlan:
         """Generate plan using Sequential Thinking MCP."""
         from agentic_core.config.blueprint_sovereign.sovereign_config import config
-        mcp_payload = {'Task': f'Generate comprehensive sovereign mission plan for objective: {objective}', 'cycle_id': cycle_id, 'priority': priority.value, 'context': context or {}, 'max_steps': config.SEQ_THINKING_MAX_STEPS, 'temperature': config.SEQ_THINKING_TEMPERATURE, 'enable_hypothesis_branching': config.SEQ_THINKING_ENABLE_HYPOTHESIS_BRANCHING, 'enable_self_revision': config.SEQ_THINKING_ENABLE_SELF_REVISION, 'prune_low_confidence': config.SEQ_THINKING_PRUNE_LOW_CONFIDENCE, 'min_confidence_threshold': config.SEQ_THINKING_MIN_HYPOTHESIS_CONFIDENCE}
-        result = await self.McpRouterAgent.manager.call_tool(tool_name='mcp10_sequentialthinking', args=mcp_payload)
+
+        mcp_payload = {
+            "Task": f"Generate comprehensive sovereign mission plan for objective: {objective}",
+            "cycle_id": cycle_id,
+            "priority": priority.value,
+            "context": context or {},
+            "max_steps": config.SEQ_THINKING_MAX_STEPS,
+            "temperature": config.SEQ_THINKING_TEMPERATURE,
+            "enable_hypothesis_branching": config.SEQ_THINKING_ENABLE_HYPOTHESIS_BRANCHING,
+            "enable_self_revision": config.SEQ_THINKING_ENABLE_SELF_REVISION,
+            "prune_low_confidence": config.SEQ_THINKING_PRUNE_LOW_CONFIDENCE,
+            "min_confidence_threshold": config.SEQ_THINKING_MIN_HYPOTHESIS_CONFIDENCE,
+        }
+        result = await self.McpRouterAgent.manager.call_tool(
+            tool_name="mcp10_sequentialthinking", args=mcp_payload
+        )
         plan = self._extract_mission_plan_from_mcp(result, objective, cycle_id, priority)
-        LOGGER.info('[L1 PLANNING] Mission plan generated via Sequential Thinking MCP')
+        LOGGER.info("[L1 PLANNING] Mission plan generated via Sequential Thinking MCP")
         return plan
 
-    def _extract_mission_plan_from_mcp(self, mcp_result: dict, objective: str, cycle_id: int, priority: MissionPriority) -> MissionPlan:
+    def _extract_mission_plan_from_mcp(
+        self, mcp_result: dict, objective: str, cycle_id: int, priority: MissionPriority
+    ) -> MissionPlan:
         """Extract MissionPlan from Sequential Thinking MCP result."""
         mission_id = f"mission-{cycle_id}-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
-        plan = MissionPlan(mission_id=mission_id, cycle_id=cycle_id, priority=priority, objective=objective)
-        thought_content = mcp_result.get('thought', '')
+        plan = MissionPlan(
+            mission_id=mission_id, cycle_id=cycle_id, priority=priority, objective=objective
+        )
+        thought_content = mcp_result.get("thought", "")
         if thought_content:
             plan.phases = self._parse_phases_from_thought(thought_content)
         if not plan.phases:
@@ -158,36 +275,101 @@ class StrategicPlannerAgent(HealerMixin, MCPHardenedMixin):
     def _parse_phases_from_thought(self, thought: str) -> list[MissionPhase]:
         """Parse mission phases from Sequential Thinking output."""
         phases = []
-        if 'reconnaissance' in thought.lower():
-            phases.append(MissionPhase(name='reconnaissance', agents=['Historian', 'TheCartographer'], dependencies=[], estimated_duration=120, resources=['cpu', 'disk'], parallel=True))
-        if 'validation' in thought.lower():
-            phases.append(MissionPhase(name='validation', agents=['ArchitectureGovernor', 'SafetyInspectorAgent', 'TruthKeeper'], dependencies=['reconnaissance'] if phases else [], estimated_duration=300, resources=['cpu', 'llm', 'file_access'], parallel=True))
+        if "reconnaissance" in thought.lower():
+            phases.append(
+                MissionPhase(
+                    name="reconnaissance",
+                    agents=["Historian", "TheCartographer"],
+                    dependencies=[],
+                    estimated_duration=120,
+                    resources=["cpu", "disk"],
+                    parallel=True,
+                )
+            )
+        if "validation" in thought.lower():
+            phases.append(
+                MissionPhase(
+                    name="validation",
+                    agents=["ArchitectureGovernor", "SafetyInspectorAgent", "TruthKeeper"],
+                    dependencies=["reconnaissance"] if phases else [],
+                    estimated_duration=300,
+                    resources=["cpu", "llm", "file_access"],
+                    parallel=True,
+                )
+            )
         return phases
 
-    def _generate_plan_legacy(self, objective: str, cycle_id: int, priority: MissionPriority, context: dict) -> MissionPlan:
+    def _generate_plan_legacy(
+        self, objective: str, cycle_id: int, priority: MissionPriority, context: dict
+    ) -> MissionPlan:
         """Legacy mission plan generation."""
         mission_id = f"mission-{cycle_id}-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
-        plan = MissionPlan(mission_id=mission_id, cycle_id=cycle_id, priority=priority, objective=objective)
+        plan = MissionPlan(
+            mission_id=mission_id, cycle_id=cycle_id, priority=priority, objective=objective
+        )
         phases = self._generate_phases(objective, context or {})
         plan.phases = phases
         plan.risk_assessment = self._assess_risks(plan)
         self.active_missions[mission_id] = plan
-        LOGGER.info(f'Generated mission plan: {mission_id}')
-        LOGGER.info(f'  Objective: {objective}')
-        LOGGER.info(f'  Phases: {len(phases)}')
+        LOGGER.info(f"Generated mission plan: {mission_id}")
+        LOGGER.info(f"  Objective: {objective}")
+        LOGGER.info(f"  Phases: {len(phases)}")
         return plan
 
     def _generate_phases(self, objective: str, context: dict) -> list[MissionPhase]:
         """Generate mission phases based on objective."""
         phases = []
-        phases.append(MissionPhase(name='reconnaissance', agents=['Historian', 'TheCartographer'], dependencies=[], estimated_duration=120, resources=['cpu', 'disk'], parallel=True))
-        phases.append(MissionPhase(name='validation', agents=['ArchitectureGovernor', 'SafetyInspectorAgent', 'TruthKeeper'], dependencies=['reconnaissance'], estimated_duration=300, resources=['cpu', 'llm', 'file_access'], parallel=True))
-        phases.append(MissionPhase(name='testing', agents=['TestPilot', 'RedSentinelAgent'], dependencies=['validation'], estimated_duration=600, resources=['cpu', 'memory'], parallel=True))
-        phases.append(MissionPhase(name='learning', agents=['ReflectionAgent'], dependencies=['testing'], estimated_duration=180, resources=['memory', 'pinecone']))
-        phases.append(MissionPhase(name='execution', agents=['GitAgent'], dependencies=['learning'], estimated_duration=60, resources=['git', 'network']))
-        if context.get('skip_testing'):
-            phases = [p for p in phases if p.name != 'testing']
-        if context.get('urgent'):
+        phases.append(
+            MissionPhase(
+                name="reconnaissance",
+                agents=["Historian", "TheCartographer"],
+                dependencies=[],
+                estimated_duration=120,
+                resources=["cpu", "disk"],
+                parallel=True,
+            )
+        )
+        phases.append(
+            MissionPhase(
+                name="validation",
+                agents=["ArchitectureGovernor", "SafetyInspectorAgent", "TruthKeeper"],
+                dependencies=["reconnaissance"],
+                estimated_duration=300,
+                resources=["cpu", "llm", "file_access"],
+                parallel=True,
+            )
+        )
+        phases.append(
+            MissionPhase(
+                name="testing",
+                agents=["TestPilot", "RedSentinelAgent"],
+                dependencies=["validation"],
+                estimated_duration=600,
+                resources=["cpu", "memory"],
+                parallel=True,
+            )
+        )
+        phases.append(
+            MissionPhase(
+                name="learning",
+                agents=["ReflectionAgent"],
+                dependencies=["testing"],
+                estimated_duration=180,
+                resources=["memory", "pinecone"],
+            )
+        )
+        phases.append(
+            MissionPhase(
+                name="execution",
+                agents=["GitAgent"],
+                dependencies=["learning"],
+                estimated_duration=60,
+                resources=["git", "network"],
+            )
+        )
+        if context.get("skip_testing"):
+            phases = [p for p in phases if p.name != "testing"]
+        if context.get("urgent"):
             for phase in phases:
                 phase.estimated_duration = int(phase.estimated_duration * 0.7)
         return phases
@@ -202,21 +384,23 @@ class StrategicPlannerAgent(HealerMixin, MCPHardenedMixin):
                 resource_usage[resource] = resource_usage.get(resource, 0) + 1
         for resource, count in resource_usage.items():
             if count > 3:
-                risks.append(f'Resource contention for {resource}')
-                mitigations.append(f'Stagger phases using {resource}')
+                risks.append(f"Resource contention for {resource}")
+                mitigations.append(f"Stagger phases using {resource}")
         for phase in plan.phases:
             if phase.estimated_duration > 600:
-                risks.append(f'Long running phase: {phase.name}')
-                mitigations.append(f'Add progress monitoring for {phase.name}')
+                risks.append(f"Long running phase: {phase.name}")
+                mitigations.append(f"Add progress monitoring for {phase.name}")
         all_agents = set()
         for phase in plan.phases:
             all_agents.update(phase.agents)
         if len(all_agents) > 8:
-            risks.append('High agent coordination complexity')
-            mitigations.append('Consider parallel execution where possible')
-        return {'risks': risks, 'mitigations': mitigations, 'risk_score': min(len(risks) * 10, 100)}
+            risks.append("High agent coordination complexity")
+            mitigations.append("Consider parallel execution where possible")
+        return {"risks": risks, "mitigations": mitigations, "risk_score": min(len(risks) * 10, 100)}
 
-    def update_phase_status(self, mission_id: str, phase_name: str, status: str, result: dict=None) -> Any:
+    def update_phase_status(
+        self, mission_id: str, phase_name: str, status: str, result: dict = None
+    ) -> Any:
         """
         Update the status of a mission phase.
         Args:
@@ -226,15 +410,18 @@ class StrategicPlannerAgent(HealerMixin, MCPHardenedMixin):
             result: Phase execution result
         """
         if mission_id not in self.active_missions:
-            LOGGER.error(f'Mission not found: {mission_id}')
+            LOGGER.error(f"Mission not found: {mission_id}")
             return
         plan: Any = self.active_missions[mission_id]
         for phase in plan.phases:
             if phase.name == phase_name:
-                if not hasattr(phase, 'results'):
+                if not hasattr(phase, "results"):
                     phase.results = {}
-                phase.results[status] = {'timestamp': datetime.utcnow().isoformat(), 'result': result or {}}
-                LOGGER.info(f'Updated phase {phase_name} status to {status}')
+                phase.results[status] = {
+                    "timestamp": datetime.utcnow().isoformat(),
+                    "result": result or {},
+                }
+                LOGGER.info(f"Updated phase {phase_name} status to {status}")
                 break
 
     def complete_mission(self, mission_id: str, status: MissionStatus) -> Any:
@@ -251,7 +438,7 @@ class StrategicPlannerAgent(HealerMixin, MCPHardenedMixin):
         plan.status = status
         self.mission_history.append(plan.to_dict())
         del self.active_missions[mission_id]
-        LOGGER.info(f'Mission {mission_id} completed with status {status.value}')
+        LOGGER.info(f"Mission {mission_id} completed with status {status.value}")
 
     def get_mission_plan(self, mission_id: str) -> MissionPlan | None:
         """Get a mission plan by ID."""
@@ -275,7 +462,7 @@ class StrategicPlannerAgent(HealerMixin, MCPHardenedMixin):
         if not plan:
             return None
         for phase in plan.phases:
-            if not hasattr(phase, 'results'):
+            if not hasattr(phase, "results"):
                 return phase
         return None
 
@@ -283,12 +470,24 @@ class StrategicPlannerAgent(HealerMixin, MCPHardenedMixin):
         """Get summary of mission execution."""
         plan: Any = self.active_missions.get(mission_id)
         if not plan:
-            return {'error': 'Mission not found'}
-        completed_phases: Any = sum(1 for p in plan.phases if hasattr(p, 'results'))
+            return {"error": "Mission not found"}
+        completed_phases: Any = sum(1 for p in plan.phases if hasattr(p, "results"))
         total_phases: Any = len(plan.phases)
         total_duration: Any = sum(p.estimated_duration for p in plan.phases)
-        return {'mission_id': plan.mission_id, 'objective': plan.objective, 'priority': plan.priority.value, 'status': plan.status.value, 'progress': f'{completed_phases}/{total_phases}', 'progress_percent': completed_phases / total_phases * 100 if total_phases > 0 else 0, 'total_duration': total_duration, 'risk_score': plan.risk_assessment.get('risk_score', 0)}
+        return {
+            "mission_id": plan.mission_id,
+            "objective": plan.objective,
+            "priority": plan.priority.value,
+            "status": plan.status.value,
+            "progress": f"{completed_phases}/{total_phases}",
+            "progress_percent": completed_phases / total_phases * 100 if total_phases > 0 else 0,
+            "total_duration": total_duration,
+            "risk_score": plan.risk_assessment.get("risk_score", 0),
+        }
+
+
 _strategic_planner: StrategicPlannerAgent | None = None
+
 
 def get_strategic_planner() -> StrategicPlannerAgent:
     """Get or create the global StrategicPlannerAgent instance."""
@@ -297,24 +496,32 @@ def get_strategic_planner() -> StrategicPlannerAgent:
         _strategic_planner = StrategicPlannerAgent()
     return _strategic_planner
 
+
 def initialize_strategic_planner() -> Any:
     """Initialize the StrategicPlannerAgent system."""
     get_strategic_planner()
-    LOGGER.info('StrategicPlannerAgent system initialized')
+    LOGGER.info("StrategicPlannerAgent system initialized")
 
-def generate_mission_plan(objective: str, cycle_id: int, priority: MissionPriority=MissionPriority.MEDIUM, context: dict=None) -> MissionPlan:
+
+def generate_mission_plan(
+    objective: str,
+    cycle_id: int,
+    priority: MissionPriority = MissionPriority.MEDIUM,
+    context: dict = None,
+) -> MissionPlan:
     """Generate a mission plan."""
     planner: Any = get_strategic_planner()
     return planner.generate_plan(objective, cycle_id, priority, context)
 
+
 def _run_self_tests(self) -> dict:
-        """Run internal self-tests."""
-        results = {"passed": 0, "failed": 0, "tests": []}
-        try:
-            assert self is not None
-            results["passed"] += 1
-            results["tests"].append({"name": "test_instantiation", "status": "passed"})
-        except AssertionError as e:
-            results["failed"] += 1
-            results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
-        return results
+    """Run internal self-tests."""
+    results = {"passed": 0, "failed": 0, "tests": []}
+    try:
+        assert self is not None
+        results["passed"] += 1
+        results["tests"].append({"name": "test_instantiation", "status": "passed"})
+    except AssertionError as e:
+        results["failed"] += 1
+        results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
+    return results

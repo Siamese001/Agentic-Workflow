@@ -14,7 +14,10 @@ import pytest
 RESTORED_AGENTS_MAP = [
     # (Class Name, Full Module Path)
     ("MetaLearningAgent", "agentic_core.L1_cognition.thought_engine.MetaLearningAgent"),
-    ("StrategicRecommendationAgent", "agentic_core.L1_cognition.thought_engine.StrategicRecommendationAgent"),
+    (
+        "StrategicRecommendationAgent",
+        "agentic_core.L1_cognition.thought_engine.StrategicRecommendationAgent",
+    ),
     ("BudgetAgent", "agentic_core.L1_cognition.thought_engine.BudgetAgent"),
     ("CodeDeduplicationAgent", "agentic_core.L5_safety.validators.CodeDeduplicationAgent"),
     ("PatternEnforcerAgent", "agentic_core.L5_safety.validators.PatternEnforcerAgent"),
@@ -25,17 +28,20 @@ RESTORED_AGENTS_MAP = [
     ("BenchmarkingAgent", "agentic_core.L6_observability.BenchmarkingAgent"),
 ]
 
-class TestRestorationIntegrity:
 
+class TestRestorationIntegrity:
     def test_terminal_colors_migration(self):
         """
         TC-001: Verifies terminal_colors is accessible in its new home.
         """
         try:
             import agentic_core.utils.terminal_colors as tc
-            assert hasattr(tc, 'PrintColors'), "terminal_colors module missing PrintColors class"
+
+            assert hasattr(tc, "PrintColors"), "terminal_colors module missing PrintColors class"
         except ImportError:
-            pytest.fail("Could not import agentic_core.utils.terminal_colors. Move may be incomplete.")
+            pytest.fail(
+                "Could not import agentic_core.utils.terminal_colors. Move may be incomplete."
+            )
 
     def test_filesystem_agent_import_safety(self):
         """
@@ -43,6 +49,7 @@ class TestRestorationIntegrity:
         """
         try:
             from agentic_core.L5_safety.validators.FilesystemAgent import FilesystemAgent
+
             # Just importing it is often enough to trigger module-level errors
             assert FilesystemAgent is not None
         except ImportError as e:
@@ -83,10 +90,11 @@ class TestRestorationIntegrity:
             # 2. Check source code for forbidden strings (crude but effective for imports)
             source = inspect.getsource(module)
             if "archives." in source:
-                 pytest.fail(f"{class_name} still contains imports from 'archives.'")
+                pytest.fail(f"{class_name} still contains imports from 'archives.'")
 
         except ImportError:
             pytest.skip(f"Skipping mixin check for {class_name} due to import failure")
+
 
 if __name__ == "__main__":
     sys.exit(pytest.main(["-v", __file__]))

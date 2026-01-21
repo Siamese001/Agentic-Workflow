@@ -29,6 +29,7 @@ from .context import OutreachEngineContext
 
 class OutreachHealingStrategy(Enum):
     """Healing strategies for outreach campaigns."""
+
     FULL_DIAGNOSTIC = "full_diagnostic"
     VERIFICATION_ONLY = "verification_only"
     QUALITY_FOCUS = "quality_focus"
@@ -39,6 +40,7 @@ class OutreachHealingStrategy(Enum):
 @dataclass
 class OutreachCycleResult:
     """Result of a single healing cycle."""
+
     cycle_number: int
     strategy: OutreachHealingStrategy
     agents_executed: list[str]
@@ -55,6 +57,7 @@ class OutreachCycleResult:
 @dataclass
 class OutreachHealingResult:
     """Result of the complete healing process."""
+
     success: bool
     total_cycles: int
     final_signals: set[str]
@@ -143,8 +146,8 @@ class OutreachSignalRouterAgent(MCPHardenedMixin, HealerMixin):
         return OutreachHealingStrategy.QUALITY_FOCUS
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()
 
 
 class OutreachAgentFactory(MCPHardenedMixin, HealerMixin):
@@ -238,8 +241,8 @@ class OutreachAgentFactory(MCPHardenedMixin, HealerMixin):
         return agents
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()
 
 
 class OutreachHealingCycle:
@@ -269,6 +272,7 @@ class OutreachHealingCycle:
             OutreachCycleResult with cycle execution details
         """
         import time
+
         self.start_time = time.time()
 
         signals_before = set(self.ctx.signals)
@@ -365,9 +369,11 @@ class OutreachHealingCycle:
         if OutreachSignalRouterAgent.has_critical_signal(self.ctx.signals):
             return True
 
-        if (self.cycle_number > 1 and
-            self.ctx.has_signal("TEST_FAILURE") and
-            self.ctx.campaign_backups):
+        if (
+            self.cycle_number > 1
+            and self.ctx.has_signal("TEST_FAILURE")
+            and self.ctx.campaign_backups
+        ):
             return True
 
         return False

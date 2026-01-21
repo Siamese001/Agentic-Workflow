@@ -3,6 +3,7 @@
 Validate that no hardcoded paths exist - enforce SSOT compliance.
 Run this as pre-commit hook or CI check.
 """
+
 import re
 from pathlib import Path
 
@@ -10,57 +11,57 @@ PROJECT_ROOT = Path(__file__).parent.parent
 
 # Directories to exclude
 EXCLUDED_DIRS = {
-    '__pycache__', '.pytest_cache', 'build', 'dist',
-    '.git', '.venv', 'venv', 'env', 'node_modules',
-    'archives', 'legacy', 'deprecated', 'test_data',
+    "__pycache__",
+    ".pytest_cache",
+    "build",
+    "dist",
+    ".git",
+    ".venv",
+    "venv",
+    "env",
+    "node_modules",
+    "archives",
+    "legacy",
+    "deprecated",
+    "test_data",
 }
 
 # Files that are allowed to have hardcoded paths
 EXCLUDED_FILES = {
-    'structure_blueprint.py',  # SSOT definition file
-    'validate_path_ssot.py',   # This file
-    'scan_hardcoded_paths.py',
-    'refactor_hardcoded_paths.py',
+    "structure_blueprint.py",  # SSOT definition file
+    "validate_path_ssot.py",  # This file
+    "scan_hardcoded_paths.py",
+    "refactor_hardcoded_paths.py",
 }
 
 # Patterns that indicate hardcoded paths (violations)
 HARDCODED_PATH_PATTERNS = [
     # Agent discovery files
-    (r'(?<!AGENT_DISCOVERY_JSON\s*=\s*)["\']agent_discovery_full\.json["\']',
-     'Use AGENT_DISCOVERY_JSON constant'),
-    (r'(?<!AGENT_DISCOVERY_MANIFEST_JSON\s*=\s*)["\']agent_discovery_full\.manifest\.json["\']',
-     'Use AGENT_DISCOVERY_MANIFEST_JSON constant'),
-
+    (
+        r'(?<!AGENT_DISCOVERY_JSON\s*=\s*)["\']agent_discovery_full\.json["\']',
+        "Use AGENT_DISCOVERY_JSON constant",
+    ),
+    (
+        r'(?<!AGENT_DISCOVERY_MANIFEST_JSON\s*=\s*)["\']agent_discovery_full\.manifest\.json["\']',
+        "Use AGENT_DISCOVERY_MANIFEST_JSON constant",
+    ),
     # Layer directories - exact matches only
-    (r'["\']agentic_core/L0_maintenance["\'](?!\s*[:\]])',
-     'Use L0_MAINTENANCE_DIR constant'),
-    (r'["\']agentic_core/L1_cognition["\'](?!\s*[:\]])',
-     'Use L1_COGNITION_DIR constant'),
-    (r'["\']agentic_core/L2_execution["\'](?!\s*[:\]])',
-     'Use L2_EXECUTION_DIR constant'),
-    (r'["\']agentic_core/L3_orchestration["\'](?!\s*[:\]])',
-     'Use L3_ORCHESTRATION_DIR constant'),
-    (r'["\']agentic_core/L4_state["\'](?!\s*[:\]])',
-     'Use L4_STATE_DIR constant'),
-    (r'["\']agentic_core/L5_safety["\'](?!\s*[:\]])',
-     'Use L5_SAFETY_DIR constant'),
-    (r'["\']agentic_core/L6_observability["\'](?!\s*[:\]])',
-     'Use L6_OBSERVABILITY_DIR constant'),
-
+    (r'["\']agentic_core/L0_maintenance["\'](?!\s*[:\]])', "Use L0_MAINTENANCE_DIR constant"),
+    (r'["\']agentic_core/L1_cognition["\'](?!\s*[:\]])', "Use L1_COGNITION_DIR constant"),
+    (r'["\']agentic_core/L2_execution["\'](?!\s*[:\]])', "Use L2_EXECUTION_DIR constant"),
+    (r'["\']agentic_core/L3_orchestration["\'](?!\s*[:\]])', "Use L3_ORCHESTRATION_DIR constant"),
+    (r'["\']agentic_core/L4_state["\'](?!\s*[:\]])', "Use L4_STATE_DIR constant"),
+    (r'["\']agentic_core/L5_safety["\'](?!\s*[:\]])', "Use L5_SAFETY_DIR constant"),
+    (r'["\']agentic_core/L6_observability["\'](?!\s*[:\]])', "Use L6_OBSERVABILITY_DIR constant"),
     # Dashboard directory
-    (r'["\']agentic_core/L6_observability/dashboards["\']',
-     'Use DASHBOARD_DIR constant'),
-
+    (r'["\']agentic_core/L6_observability/dashboards["\']', "Use DASHBOARD_DIR constant"),
     # Core directories - only flag bare references
-    (r'(?<![/\w])["\']agentic_core["\'](?!\s*[:\]./])',
-     'Use AGENTIC_CORE_DIR constant'),
-    (r'(?<![/\w])["\']scripts["\'](?!\s*[:\]./])',
-     'Use SCRIPTS_DIR constant'),
-    (r'["\']tests/unit["\']',
-     'Use TESTS_UNIT_DIR constant'),
-    (r'(?<![/\w])["\']tests["\'](?!\s*[:\]./])',
-     'Use TESTS_DIR constant'),
+    (r'(?<![/\w])["\']agentic_core["\'](?!\s*[:\]./])', "Use AGENTIC_CORE_DIR constant"),
+    (r'(?<![/\w])["\']scripts["\'](?!\s*[:\]./])', "Use SCRIPTS_DIR constant"),
+    (r'["\']tests/unit["\']', "Use TESTS_UNIT_DIR constant"),
+    (r'(?<![/\w])["\']tests["\'](?!\s*[:\]./])', "Use TESTS_DIR constant"),
 ]
+
 
 def should_exclude_path(path: Path) -> bool:
     """Check if path should be excluded from validation."""
@@ -71,6 +72,7 @@ def should_exclude_path(path: Path) -> bool:
         return True
     return False
 
+
 def validate_file(file_path: Path) -> list[tuple[int, str, str]]:
     """Validate a single file for hardcoded paths.
 
@@ -80,17 +82,17 @@ def validate_file(file_path: Path) -> list[tuple[int, str, str]]:
     violations = []
 
     try:
-        content = file_path.read_text(encoding='utf-8', errors='ignore')
-        lines = content.split('\n')
+        content = file_path.read_text(encoding="utf-8", errors="ignore")
+        lines = content.split("\n")
 
         # Skip if file imports from structure_blueprint (likely compliant)
-        if 'from agentic_core.L5_safety.validators.structure_blueprint import' in content:
+        if "from agentic_core.L5_safety.validators.structure_blueprint import" in content:
             # File uses SSOT, but still check for violations
             pass
 
         for line_num, line in enumerate(lines, 1):
             # Skip import lines
-            if 'import' in line and 'structure_blueprint' in line:
+            if "import" in line and "structure_blueprint" in line:
                 continue
 
             # Skip lines defining SSOT constants
@@ -106,6 +108,7 @@ def validate_file(file_path: Path) -> list[tuple[int, str, str]]:
         pass
 
     return violations
+
 
 def validate_repository() -> tuple[bool, dict]:
     """Validate entire repository.
@@ -125,6 +128,7 @@ def validate_repository() -> tuple[bool, dict]:
     # Scan all Python files
     # Final True 20: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_python_files
+
     for py_file in get_python_files(PROJECT_ROOT):
         if should_exclude_path(py_file):
             continue
@@ -184,6 +188,7 @@ def validate_repository() -> tuple[bool, dict]:
 
         return False, violations_by_file
 
+
 def main():
     is_compliant, violations = validate_repository()
 
@@ -193,6 +198,7 @@ def main():
     else:
         print(f"\n❌ Validation failed: {sum(len(v) for v in violations.values())} violations")
         return 1
+
 
 if __name__ == "__main__":
     exit(main())

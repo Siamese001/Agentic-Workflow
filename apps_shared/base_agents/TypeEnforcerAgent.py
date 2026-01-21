@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, healer, memory, orchestrator, prompt, state, validator, workflow
@@ -29,11 +28,12 @@ from agentic_core.utils.core_extensions.decorators import standard_heal
 @dataclass
 class TypeEnforcerAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin):
     """ROLE: Type Guardian. Enforces PEP 484."""
-    async def execute(self) -> None:
 
+    async def execute(self) -> None:
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Type Contracts...")
         await asyncio.sleep(0)
+
     @standard_heal
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()

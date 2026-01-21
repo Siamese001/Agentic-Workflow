@@ -61,5 +61,5 @@ class LicReflectionAgent(SubatomicTestingMixin, OutreachAgent, MCPHardenedMixin)
         print(f"   [{self.name}] ✅ Reflection complete")
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()

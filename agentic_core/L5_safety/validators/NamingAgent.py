@@ -58,7 +58,9 @@ except ImportError:
         is not available. Used for testing and development environments.
         """
 
-        def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, **kwargs: Any) -> dict[str, Any]:
+        def heal_repository(
+            self, dry_run: bool = True, execute: bool = False, depth: int = 0, **kwargs: Any
+        ) -> dict[str, Any]:
             """
             Autonomous healing method (Canon Key 51 compliance).
 
@@ -80,16 +82,19 @@ except ImportError:
             metrics = {"violations_found": 0, "violations_fixed": 0, "errors": 0}
 
             # === ZOMBIE VACCINATION: Wired orphaned methods ===
-            if hasattr(self, 'validate_name'):
+            if hasattr(self, "validate_name"):
                 try:
                     validation_result = self.validate_name()
                     if validation_result:
-                        metrics['violations_found'] += len(validation_result) if isinstance(validation_result, list) else 1
+                        metrics["violations_found"] += (
+                            len(validation_result) if isinstance(validation_result, list) else 1
+                        )
                 except Exception as e:
                     import logging
+
                     Logger = logging.getLogger(__name__)
-                    Logger.error(f'Error in validate_name: {e}')
-                    metrics['errors'] += 1
+                    Logger.error(f"Error in validate_name: {e}")
+                    metrics["errors"] += 1
             # === END VACCINATION ===
 
             return metrics
@@ -158,4 +163,4 @@ def get_naming_agent(project_root: str | None = None) -> NamingAgent:
     return NamingAgent()
 
 
-__all__ = ['NamingAgent', 'get_naming_agent', 'TREE_SITTER_AVAILABLE', 'PlacementResult']
+__all__ = ["NamingAgent", "get_naming_agent", "TREE_SITTER_AVAILABLE", "PlacementResult"]

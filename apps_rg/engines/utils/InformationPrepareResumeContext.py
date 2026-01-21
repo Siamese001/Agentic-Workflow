@@ -12,9 +12,6 @@ from shared.result_types import FormatResult
 Logger = logging.getLogger(__name__)
 
 
-
-
-
 class PrepareResumeContext:
     """Formatter for resume domain."""
 

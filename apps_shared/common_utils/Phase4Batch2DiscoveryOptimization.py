@@ -13,6 +13,7 @@ EXCLUDED FILES:
 - sovereign_index.py (the implementation itself)
 - full_agent_discovery.py (special discovery logic)
 """
+
 from __future__ import annotations
 
 import argparse
@@ -45,7 +46,7 @@ SOVEREIGN_INDEX_IMPORT = "from agentic_core.utils.sovereign_index import Soverei
 # Patterns to detect file discovery
 RGLOB_PATTERN = re.compile(r'\.rglob\s*\(\s*["\'](\*\.py|.*\.py)["\']')
 GLOB_PATTERN = re.compile(r'\.glob\s*\(\s*["\'](\*\*/\*\.py|\*\.py)["\']')
-OS_WALK_PATTERN = re.compile(r'os\.walk\s*\(')
+OS_WALK_PATTERN = re.compile(r"os\.walk\s*\(")
 
 
 def find_python_files(root: Path) -> list[Path]:
@@ -90,18 +91,18 @@ class DiscoveryVisitor(ast.NodeVisitor):
         """Find rglob, glob, and os.walk calls."""
         # Check for .rglob() or .glob() calls
         if isinstance(node.func, ast.Attribute):
-            if node.func.attr == 'rglob':
+            if node.func.attr == "rglob":
                 # Check if it's for Python files
                 if node.args and isinstance(node.args[0], ast.Constant):
-                    if '*.py' in str(node.args[0].value):
+                    if "*.py" in str(node.args[0].value):
                         self.has_rglob_calls = True
-            elif node.func.attr == 'glob':
+            elif node.func.attr == "glob":
                 if node.args and isinstance(node.args[0], ast.Constant):
-                    if '*.py' in str(node.args[0].value):
+                    if "*.py" in str(node.args[0].value):
                         self.has_glob_calls = True
-            elif node.func.attr == 'walk':
+            elif node.func.attr == "walk":
                 # Check if it's os.walk
-                if isinstance(node.func.value, ast.Name) and node.func.value.id == 'os':
+                if isinstance(node.func.value, ast.Name) and node.func.value.id == "os":
                     self.has_os_walk_calls = True
 
         self.generic_visit(node)
@@ -112,7 +113,11 @@ def find_safe_insertion_line(tree: ast.AST, visitor: DiscoveryVisitor) -> int:
     if visitor.last_import_line > 0:
         return visitor.last_import_line
 
-    if tree.body and isinstance(tree.body[0], ast.Expr) and isinstance(tree.body[0].value, (ast.Constant, ast.Str)):
+    if (
+        tree.body
+        and isinstance(tree.body[0], ast.Expr)
+        and isinstance(tree.body[0].value, (ast.Constant, ast.Str))
+    ):
         return tree.body[0].end_lineno
 
     return 0
@@ -133,7 +138,7 @@ def process_file(file_path: Path, dry_run: bool = True) -> dict:
     }
 
     try:
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
     except Exception as e:
         result["skipped"] = True
         result["reason"] = f"Read error: {e}"
@@ -142,7 +147,7 @@ def process_file(file_path: Path, dry_run: bool = True) -> dict:
     # Check for discovery patterns using regex first (faster)
     has_rglob = bool(RGLOB_PATTERN.search(content))
     has_glob = bool(GLOB_PATTERN.search(content))
-    has_os_walk = bool(OS_WALK_PATTERN.search(content)) and '.py' in content
+    has_os_walk = bool(OS_WALK_PATTERN.search(content)) and ".py" in content
 
     if not (has_rglob or has_glob or has_os_walk):
         result["skipped"] = True
@@ -186,7 +191,7 @@ def process_file(file_path: Path, dry_run: bool = True) -> dict:
         return result
 
     # Final Safety Check
-    new_content = '\n'.join(lines) + '\n'
+    new_content = "\n".join(lines) + "\n"
 
     try:
         ast.parse(new_content)
@@ -198,7 +203,7 @@ def process_file(file_path: Path, dry_run: bool = True) -> dict:
     # Write
     if not dry_run:
         try:
-            file_path.write_text(new_content, encoding='utf-8')
+            file_path.write_text(new_content, encoding="utf-8")
         except Exception as e:
             result["skipped"] = True
             result["reason"] = f"Write error: {e}"
@@ -239,7 +244,9 @@ def main():
 
         if result["skipped"]:
             stats["files_skipped"] += 1
-            if "Already uses" not in str(result["reason"]) and "No discovery" not in str(result["reason"]):
+            if "Already uses" not in str(result["reason"]) and "No discovery" not in str(
+                result["reason"]
+            ):
                 print(f"  [SKIP] {file_path.name}: {result['reason']}")
             continue
 
@@ -258,6 +265,7 @@ def main():
     print(f"  Files skipped:     {stats['files_skipped']}")
     print("\nNote: This batch adds SovereignIndex imports to files with discovery patterns.")
     print("Manual review recommended for actual rglob/glob replacement.")
+
 
 if __name__ == "__main__":
     main()

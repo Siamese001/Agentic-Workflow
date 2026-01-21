@@ -14,7 +14,8 @@ import re
 from collections import defaultdict
 from pathlib import Path
 
-APPS_DIRS = ['apps_rg', 'apps_lic', 'apps_shared']
+APPS_DIRS = ["apps_rg", "apps_lic", "apps_shared"]
+
 
 def get_all_classes_in_codebase(dirs: list[str]) -> dict[str, list[str]]:
     """Get all classes and which files they appear in."""
@@ -23,11 +24,11 @@ def get_all_classes_in_codebase(dirs: list[str]) -> dict[str, list[str]]:
     for d in dirs:
         if not Path(d).exists():
             continue
-        for py_file in Path(d).rglob('*.py'):
-            if '__pycache__' in str(py_file) or '__init__' in py_file.name:
+        for py_file in Path(d).rglob("*.py"):
+            if "__pycache__" in str(py_file) or "__init__" in py_file.name:
                 continue
             try:
-                content = py_file.read_text(encoding='utf-8', errors='replace')
+                content = py_file.read_text(encoding="utf-8", errors="replace")
                 tree = ast.parse(content)
                 for node in ast.walk(tree):
                     if isinstance(node, ast.ClassDef):
@@ -37,6 +38,7 @@ def get_all_classes_in_codebase(dirs: list[str]) -> dict[str, list[str]]:
 
     return class_files
 
+
 def find_redundant_files(dirs: list[str], class_files: dict[str, list[str]]) -> list[str]:
     """Find files where ALL classes exist in other files."""
     redundant = []
@@ -44,15 +46,17 @@ def find_redundant_files(dirs: list[str], class_files: dict[str, list[str]]) -> 
     for d in dirs:
         if not Path(d).exists():
             continue
-        for py_file in Path(d).rglob('*.py'):
-            if '__pycache__' in str(py_file) or '__init__' in py_file.name:
+        for py_file in Path(d).rglob("*.py"):
+            if "__pycache__" in str(py_file) or "__init__" in py_file.name:
                 continue
 
             try:
-                content = py_file.read_text(encoding='utf-8', errors='replace')
+                content = py_file.read_text(encoding="utf-8", errors="replace")
                 tree = ast.parse(content)
 
-                file_classes = [node.name for node in ast.walk(tree) if isinstance(node, ast.ClassDef)]
+                file_classes = [
+                    node.name for node in ast.walk(tree) if isinstance(node, ast.ClassDef)
+                ]
 
                 if not file_classes:
                     continue
@@ -72,6 +76,7 @@ def find_redundant_files(dirs: list[str], class_files: dict[str, list[str]]) -> 
 
     return redundant
 
+
 def find_similar_named_files(dirs: list[str]) -> list[tuple[str, str]]:
     """Find files with similar names that might be duplicates."""
     all_files = {}
@@ -79,14 +84,14 @@ def find_similar_named_files(dirs: list[str]) -> list[tuple[str, str]]:
     for d in dirs:
         if not Path(d).exists():
             continue
-        for py_file in Path(d).rglob('*.py'):
-            if '__pycache__' in str(py_file) or '__init__' in py_file.name:
+        for py_file in Path(d).rglob("*.py"):
+            if "__pycache__" in str(py_file) or "__init__" in py_file.name:
                 continue
 
             # Normalize name
             name = py_file.stem.lower()
-            name = re.sub(r'^(task_|tool_|request_|retry_task_)', '', name)
-            name = re.sub(r'(_v\d+|_\d+)$', '', name)
+            name = re.sub(r"^(task_|tool_|request_|retry_task_)", "", name)
+            name = re.sub(r"(_v\d+|_\d+)$", "", name)
 
             if name not in all_files:
                 all_files[name] = []
@@ -96,6 +101,7 @@ def find_similar_named_files(dirs: list[str]) -> list[tuple[str, str]]:
     similar_groups = {k: v for k, v in all_files.items() if len(v) > 1}
     return similar_groups
 
+
 def find_low_value_files(dirs: list[str]) -> list[str]:
     """Find files that are likely low value (small, no docstrings, test-like)."""
     low_value = []
@@ -103,12 +109,12 @@ def find_low_value_files(dirs: list[str]) -> list[str]:
     for d in dirs:
         if not Path(d).exists():
             continue
-        for py_file in Path(d).rglob('*.py'):
-            if '__pycache__' in str(py_file) or '__init__' in py_file.name:
+        for py_file in Path(d).rglob("*.py"):
+            if "__pycache__" in str(py_file) or "__init__" in py_file.name:
                 continue
 
             try:
-                content = py_file.read_text(encoding='utf-8', errors='replace')
+                content = py_file.read_text(encoding="utf-8", errors="replace")
                 lines = len(content.splitlines())
 
                 # Skip very small files
@@ -117,11 +123,11 @@ def find_low_value_files(dirs: list[str]) -> list[str]:
                     continue
 
                 # Check for test-only files in non-test locations
-                if 'test' in py_file.stem.lower() and 'tests' not in str(py_file):
+                if "test" in py_file.stem.lower() and "tests" not in str(py_file):
                     tree = ast.parse(content)
                     classes = [n for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
                     # If all classes are test classes
-                    if classes and all(c.name.startswith('Test') for c in classes):
+                    if classes and all(c.name.startswith("Test") for c in classes):
                         low_value.append(str(py_file))
                         continue
 
@@ -129,6 +135,7 @@ def find_low_value_files(dirs: list[str]) -> list[str]:
                 pass
 
     return low_value
+
 
 def main():
     print("=" * 80)
@@ -204,5 +211,6 @@ def main():
 
     print(f"\n  ✓ Deleted {deleted} files")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

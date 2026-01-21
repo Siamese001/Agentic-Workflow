@@ -15,6 +15,7 @@ Features:
 - Support for both LIC (outreach) and RG (resume) workflows
 - Phase-specific execution with validation
 """
+
 from __future__ import annotations
 
 import logging
@@ -35,6 +36,7 @@ Logger = logging.getLogger(__name__)
 
 class WorkflowPhase(Enum):
     """Workflow phases for LIC and RG applications."""
+
     # Common phases
     INIT = auto()
     VALIDATION = auto()
@@ -63,13 +65,15 @@ class WorkflowPhase(Enum):
 
 class WorkflowType(Enum):
     """Type of workflow."""
+
     LIC = "lic"  # LinkedIn Outreach
-    RG = "rg"    # Resume Generation
+    RG = "rg"  # Resume Generation
 
 
 @dataclass
 class PhaseConfig:
     """Configuration for a workflow phase."""
+
     phase: WorkflowPhase
     name: str
     description: str
@@ -85,6 +89,7 @@ class PhaseConfig:
 @dataclass
 class PhaseResult:
     """Result of a phase execution."""
+
     phase: WorkflowPhase
     success: bool
     data: dict[str, Any] = field(default_factory=dict)
@@ -97,6 +102,7 @@ class PhaseResult:
 @dataclass
 class WorkflowState:
     """Current state of a workflow execution."""
+
     workflow_id: str
     workflow_type: WorkflowType
     current_phase: WorkflowPhase
@@ -294,7 +300,9 @@ class AppWorkflowOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHarden
             ready = []
             for phase in remaining:
                 config = self._phase_configs[phase]
-                if all(dep in order or dep not in self._phase_configs for dep in config.dependencies):
+                if all(
+                    dep in order or dep not in self._phase_configs for dep in config.dependencies
+                ):
                     ready.append(phase)
 
             if not ready:
@@ -477,7 +485,9 @@ class AppWorkflowOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHarden
             Logger.error(f"Workflow execution error: {e}")
 
         state.completed_at = datetime.now()
-        Logger.info(f"Workflow {state.workflow_id} completed with status {state.current_phase.name}")
+        Logger.info(
+            f"Workflow {state.workflow_id} completed with status {state.current_phase.name}"
+        )
 
         return state
 
@@ -519,6 +529,7 @@ class AppWorkflowOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHarden
 # =============================================================================
 # BACKWARD COMPATIBILITY FACTORY METHODS
 # =============================================================================
+
 
 def create_legacy_lic_workflow_orchestrator(**kwargs: Any) -> AppWorkflowOrchestratorAgent:
     """

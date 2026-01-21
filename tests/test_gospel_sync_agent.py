@@ -8,35 +8,34 @@ from pathlib import Path
 
 
 # Setup mock for MCPHardenedMixin
-class MockMixin: pass
-mock_module = type(sys)('mock')
+class MockMixin:
+    pass
+
+
+mock_module = type(sys)("mock")
 mock_module.MCPHardenedMixin = MockMixin
-sys.modules['agentic_core.utils.core_extensions.mcp_hardened_mixin'] = mock_module
+sys.modules["agentic_core.utils.core_extensions.mcp_hardened_mixin"] = mock_module
 
 # Mock the structure_blueprint import with a simple test blueprint
-mock_blueprint_module = type(sys)('mock_blueprint')
+mock_blueprint_module = type(sys)("mock_blueprint")
 mock_blueprint_module.STRUCTURE_BLUEPRINT = {
-    "L0_maintenance": {
-        "path": "agentic_core/L0_maintenance",
-        "agents": ["GospelSyncAgent"]
-    },
+    "L0_maintenance": {"path": "agentic_core/L0_maintenance", "agents": ["GospelSyncAgent"]},
     "L5_safety": {
         "path": "agentic_core/L5_safety/validators",
-        "agents": ["ToxicDependencyAuditor"]
-    }
+        "agents": ["ToxicDependencyAuditor"],
+    },
 }
 # Add required functions to mock
-mock_blueprint_module.get_validated_project_root = lambda: Path('.')
+mock_blueprint_module.get_validated_project_root = lambda: Path(".")
 mock_blueprint_module.safe_path_join = lambda base, *parts: Path(base).joinpath(*parts)
 mock_blueprint_module.validate_path_within_project = lambda path: True
-sys.modules['agentic_core.config.blueprint_sovereign.structure_blueprint'] = mock_blueprint_module
+sys.modules["agentic_core.config.blueprint_sovereign.structure_blueprint"] = mock_blueprint_module
 
 # Direct import
 import importlib.util
 
 spec = importlib.util.spec_from_file_location(
-    'GospelSyncAgent',
-    Path('agentic_core/L5_safety/validators/GospelSyncAgent.py')
+    "GospelSyncAgent", Path("agentic_core/L5_safety/validators/GospelSyncAgent.py")
 )
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
@@ -50,7 +49,7 @@ def test_canonical_files_extraction():
     print("TEST 1: CANONICAL FILES EXTRACTION")
     print("=" * 60)
 
-    agent = GospelSyncAgent(root_dir='.')
+    agent = GospelSyncAgent(root_dir=".")
     canonical = agent._get_canonical_files()
 
     print(f"Canonical files from blueprint: {len(canonical)}")
@@ -58,7 +57,7 @@ def test_canonical_files_extraction():
         print(f"  - {f}")
 
     assert len(canonical) > 0, "Should extract canonical files from blueprint"
-    assert any('GospelSyncAgent' in f for f in canonical)
+    assert any("GospelSyncAgent" in f for f in canonical)
 
     print("\n✅ TEST 1 PASSED: Canonical files extracted")
 
@@ -69,7 +68,7 @@ def test_actual_files_scan():
     print("TEST 2: ACTUAL FILES SCAN")
     print("=" * 60)
 
-    agent = GospelSyncAgent(root_dir='.')
+    agent = GospelSyncAgent(root_dir=".")
     actual = agent._get_actual_files()
 
     print(f"Actual .py files found: {len(actual)}")
@@ -88,7 +87,7 @@ def test_sync_audit():
     print("TEST 3: SYNC AUDIT")
     print("=" * 60)
 
-    agent = GospelSyncAgent(root_dir='.')
+    agent = GospelSyncAgent(root_dir=".")
     results = agent.perform_sync_audit()
 
     print(f"Heretical files: {len(results['heresy'])}")
@@ -97,9 +96,9 @@ def test_sync_audit():
 
     # With our mock blueprint, there will be heresy (files not in blueprint)
     # This is expected since the mock only has 2 agents
-    assert 'heresy' in results
-    assert 'missing' in results
-    assert 'synchronized' in results
+    assert "heresy" in results
+    assert "missing" in results
+    assert "synchronized" in results
 
     print("\n✅ TEST 3 PASSED: Sync audit completed")
 
@@ -111,16 +110,16 @@ def test_heretical_file_detection():
     print("=" * 60)
 
     # Create a heretic file
-    heretic_path = Path('agentic_core/L1_cognition/HereticTest.py')
+    heretic_path = Path("agentic_core/L1_cognition/HereticTest.py")
     heretic_path.parent.mkdir(parents=True, exist_ok=True)
     heretic_path.write_text("# Heretical test file\nprint('I am a heretic!')\n")
 
     try:
-        agent = GospelSyncAgent(root_dir='.')
+        agent = GospelSyncAgent(root_dir=".")
         results = agent.perform_sync_audit()
 
         # Check if heretic is detected
-        heretic_detected = any('HereticTest' in h for h in results['heresy'])
+        heretic_detected = any("HereticTest" in h for h in results["heresy"])
         print(f"Heretic file created: {heretic_path}")
         print(f"Heretic detected in audit: {heretic_detected}")
 
@@ -144,11 +143,11 @@ def test_missing_canon_detection():
 
     # The mock blueprint expects ToxicDependencyAuditor at a specific path
     # Let's check if it's detected as missing or present
-    agent = GospelSyncAgent(root_dir='.')
+    agent = GospelSyncAgent(root_dir=".")
     results = agent.perform_sync_audit()
 
     print(f"Missing canon files: {len(results['missing'])}")
-    for m in results['missing'][:5]:
+    for m in results["missing"][:5]:
         print(f"  ❌ {m}")
 
     # With our mock blueprint, some files may be missing
@@ -161,7 +160,7 @@ def test_report_generation():
     print("TEST 6: REPORT GENERATION")
     print("=" * 60)
 
-    agent = GospelSyncAgent(root_dir='.')
+    agent = GospelSyncAgent(root_dir=".")
     agent.perform_sync_audit()
 
     print("\nGenerated Report:")

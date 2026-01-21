@@ -33,19 +33,20 @@ class SovereignPineconeClient(MCPHardenedMixin, HealerMixin):
             namespace: Default namespace for operations
         """
         super().__init__()
-        self.index_name = index_name or os.getenv('PINECONE_INDEX_NAME', 'canon-memory-l2')
-        self.namespace = namespace or ''
+        self.index_name = index_name or os.getenv("PINECONE_INDEX_NAME", "canon-memory-l2")
+        self.namespace = namespace or ""
         self.audit_log: list[dict[str, Any]] = []
         self._pc = None
         self._index = None
-        self._mcp_audit('init')
+        self._mcp_audit("init")
 
     def _get_client(self):
         """Lazy-load Pinecone client."""
         if self._pc is None:
             try:
                 from pinecone import Pinecone
-                api_key = os.getenv('PINECONE_API_KEY')
+
+                api_key = os.getenv("PINECONE_API_KEY")
                 if not api_key:
                     Logger.warning("[SOVEREIGN PINECONE] No API key - using stub mode")
                     return None
@@ -53,7 +54,9 @@ class SovereignPineconeClient(MCPHardenedMixin, HealerMixin):
                 self._index = self._pc.Index(self.index_name)
                 Logger.info(f"[SOVEREIGN PINECONE] Connected to index: {self.index_name}")
             except ImportError:
-                Logger.warning("[SOVEREIGN PINECONE] pinecone-client not installed - using stub mode")
+                Logger.warning(
+                    "[SOVEREIGN PINECONE] pinecone-client not installed - using stub mode"
+                )
                 return None
             except Exception as e:
                 Logger.error(f"[SOVEREIGN PINECONE] Connection failed: {e}")
@@ -62,11 +65,13 @@ class SovereignPineconeClient(MCPHardenedMixin, HealerMixin):
 
     def _audit(self, operation: str, payload: dict[str, Any], result: Any) -> None:
         """Record operation to audit log."""
-        self.audit_log.append({
-            'operation': operation,
-            'namespace': self.namespace,
-            'success': result.get('success', False) if isinstance(result, dict) else True
-        })
+        self.audit_log.append(
+            {
+                "operation": operation,
+                "namespace": self.namespace,
+                "success": result.get("success", False) if isinstance(result, dict) else True,
+            }
+        )
 
     def execute(self, operation: str, **payload) -> dict[str, Any]:
         """
@@ -82,70 +87,73 @@ class SovereignPineconeClient(MCPHardenedMixin, HealerMixin):
         Logger.debug(f"[SOVEREIGN PINECONE] {operation}")
 
         index = self._get_client()
-        namespace = payload.get('namespace', self.namespace)
+        namespace = payload.get("namespace", self.namespace)
 
         if index is None:
             # Stub mode - return mock response
             result = {
-                'success': True,
-                'stub_mode': True,
-                'message': f'Stub: {operation} would be executed'
+                "success": True,
+                "stub_mode": True,
+                "message": f"Stub: {operation} would be executed",
             }
             self._audit(operation, payload, result)
             return result
 
         try:
-            if operation == 'upsert':
-                vectors = payload.get('vectors', [])
+            if operation == "upsert":
+                vectors = payload.get("vectors", [])
                 response = index.upsert(vectors=vectors, namespace=namespace)
-                result = {'success': True, 'upserted_count': response.upserted_count}
+                result = {"success": True, "upserted_count": response.upserted_count}
 
-            elif operation == 'query':
-                vector = payload.get('vector', [])
-                top_k = payload.get('top_k', 10)
-                include_metadata = payload.get('include_metadata', True)
+            elif operation == "query":
+                vector = payload.get("vector", [])
+                top_k = payload.get("top_k", 10)
+                include_metadata = payload.get("include_metadata", True)
                 response = index.query(
                     vector=vector,
                     top_k=top_k,
                     namespace=namespace,
-                    include_metadata=include_metadata
+                    include_metadata=include_metadata,
                 )
                 result = {
-                    'success': True,
-                    'matches': [
-                        {'id': m.id, 'score': m.score, 'metadata': m.metadata}
+                    "success": True,
+                    "matches": [
+                        {"id": m.id, "score": m.score, "metadata": m.metadata}
                         for m in response.matches
-                    ]
+                    ],
                 }
 
-            elif operation == 'delete':
-                ids = payload.get('ids', [])
+            elif operation == "delete":
+                ids = payload.get("ids", [])
                 if ids:
                     index.delete(ids=ids, namespace=namespace)
-                result = {'success': True, 'deleted': len(ids)}
+                result = {"success": True, "deleted": len(ids)}
 
-            elif operation == 'describe_stats':
+            elif operation == "describe_stats":
                 response = index.describe_index_stats()
-                result = {'success': True, 'stats': response.to_dict()}
+                result = {"success": True, "stats": response.to_dict()}
 
             else:
-                result = {'success': False, 'error': f'Unsupported Pinecone operation: {operation}'}
+                result = {"success": False, "error": f"Unsupported Pinecone operation: {operation}"}
 
         except Exception as e:
             Logger.error(f"[SOVEREIGN PINECONE] {operation} failed: {e}")
-            result = {'success': False, 'error': str(e)}
+            result = {"success": False, "error": str(e)}
 
         self._audit(operation, payload, result)
         return result
 
+
 def _run_self_tests(self) -> dict:
-        """Run internal self-tests."""
-        results = {"passed": 0, "failed": 0, TESTS_DIR: []}
-        try:
-            assert self is not None
-            results["passed"] += 1
-            results[TESTS_DIR].append({"name": "test_instantiation", "status": "passed"})
-        except AssertionError as e:
-            results["failed"] += 1
-            results[TESTS_DIR].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
-        return results
+    """Run internal self-tests."""
+    results = {"passed": 0, "failed": 0, TESTS_DIR: []}
+    try:
+        assert self is not None
+        results["passed"] += 1
+        results[TESTS_DIR].append({"name": "test_instantiation", "status": "passed"})
+    except AssertionError as e:
+        results["failed"] += 1
+        results[TESTS_DIR].append(
+            {"name": "test_instantiation", "status": "failed", "error": str(e)}
+        )
+    return results

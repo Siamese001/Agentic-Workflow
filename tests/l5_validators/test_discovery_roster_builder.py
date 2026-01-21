@@ -11,13 +11,14 @@ Tests the discovery-based roster building system:
 
 Run: python scripts/test_discovery_roster_builder.py
 """
+
 import os
 import sys
 
 if sys.platform.startswith("win"):
     os.system("chcp 65001 >nul 2>&1")
-    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
-    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 from pathlib import Path
 from typing import Any
@@ -30,6 +31,7 @@ sys.path.insert(0, str(project_root))
 # ============================================================================
 # TEST FUNCTIONS
 # ============================================================================
+
 
 def test_1_discovery_file_exists() -> tuple[bool, str]:
     """Test 1: Verify agent_discovery_full.json exists."""
@@ -66,7 +68,7 @@ def test_3_agents_have_required_fields() -> tuple[bool, str]:
     from agentic_core.L3_orchestration.discovery_roster_builder import load_discovery_data
 
     data = load_discovery_data(project_root)
-    required_fields = ['class_name', 'path', 'layer', 'inheritance', 'key_methods']
+    required_fields = ["class_name", "path", "layer", "inheritance", "key_methods"]
 
     missing_count = 0
     for agent in data[:50]:  # Check first 50
@@ -96,11 +98,11 @@ def test_4_healer_filter_works() -> tuple[bool, str]:
 
     # Verify all filtered agents have HealerMixin or heal_repository
     for agent in healers[:20]:
-        inheritance = agent.get('inheritance', [])
-        methods = agent.get('key_methods', [])
+        inheritance = agent.get("inheritance", [])
+        methods = agent.get("key_methods", [])
 
-        has_healer = 'HealerMixin' in inheritance
-        has_method = 'heal_repository' in methods
+        has_healer = "HealerMixin" in inheritance
+        has_method = "heal_repository" in methods
 
         if not (has_healer or has_method):
             return False, f"{agent['class_name']} lacks HealerMixin and heal_repository"
@@ -127,18 +129,21 @@ def test_5_layer_sorting_correct_order() -> tuple[bool, str]:
     # Verify order is correct
     prev_priority = -1
     for agent in sorted_agents:
-        layer = agent.get('layer', 'Utils')
+        layer = agent.get("layer", "Utils")
         priority = LAYER_PRIORITY.get(layer, 99)
 
         if priority < prev_priority:
-            return False, f"Sort order violated: {layer} (priority {priority}) after priority {prev_priority}"
+            return (
+                False,
+                f"Sort order violated: {layer} (priority {priority}) after priority {prev_priority}",
+            )
 
         prev_priority = priority
 
     # Check that L0 agents come before L6
     layers_seen = []
     for agent in sorted_agents[:30]:
-        layer = agent.get('layer')
+        layer = agent.get("layer")
         if layer and layer not in layers_seen:
             layers_seen.append(layer)
 
@@ -161,12 +166,12 @@ def test_6_l0_agents_first() -> tuple[bool, str]:
         return False, "No sorted agents"
 
     # Check first few agents are L0
-    first_layers = [a.get('layer') for a in sorted_agents[:5]]
-    l0_count = sum(1 for l in first_layers if l == 'L0')
+    first_layers = [a.get("layer") for a in sorted_agents[:5]]
+    l0_count = sum(1 for l in first_layers if l == "L0")
 
     if l0_count == 0:
         # Check if there are any L0 agents at all
-        all_l0 = [a for a in sorted_agents if a.get('layer') == 'L0']
+        all_l0 = [a for a in sorted_agents if a.get("layer") == "L0"]
         if all_l0:
             return False, f"L0 agents exist ({len(all_l0)}) but not first in order"
         return True, "No L0 agents in discovery (acceptable)"
@@ -191,10 +196,10 @@ def test_7_l5_safety_before_apps() -> tuple[bool, str]:
     first_apps_idx = None
 
     for i, agent in enumerate(sorted_agents):
-        layer = agent.get('layer')
-        if layer == 'L5' and first_l5_idx is None:
+        layer = agent.get("layer")
+        if layer == "L5" and first_l5_idx is None:
             first_l5_idx = i
-        if layer == 'Apps' and first_apps_idx is None:
+        if layer == "Apps" and first_apps_idx is None:
             first_apps_idx = i
 
     if first_l5_idx is None:
@@ -223,8 +228,8 @@ def test_8_base_agents_excluded() -> tuple[bool, str]:
     # Check no base agents in filtered list
     base_agents_found = []
     for agent in healers:
-        class_name = agent.get('class_name', '')
-        if class_name.endswith('BaseAgent') or class_name in SKIP_AGENTS:
+        class_name = agent.get("class_name", "")
+        if class_name.endswith("BaseAgent") or class_name in SKIP_AGENTS:
             base_agents_found.append(class_name)
 
     if base_agents_found:
@@ -278,7 +283,7 @@ def test_10_instantiated_agents_have_heal_repository() -> tuple[bool, str]:
     # Verify all have heal_repository
     missing_method = []
     for name, instance in roster:
-        if not hasattr(instance, 'heal_repository'):
+        if not hasattr(instance, "heal_repository"):
             missing_method.append(name)
         elif not callable(instance.heal_repository):
             missing_method.append(f"{name} (not callable)")
@@ -319,7 +324,7 @@ def test_12_roster_layer_distribution() -> tuple[bool, str]:
     # Count layers
     layer_counts = {}
     for agent in sorted_agents:
-        layer = agent.get('layer', 'Unknown')
+        layer = agent.get("layer", "Unknown")
         layer_counts[layer] = layer_counts.get(layer, 0) + 1
 
     if len(layer_counts) < 3:
@@ -363,9 +368,18 @@ def test_15_path_to_module_conversion() -> tuple[bool, str]:
     from agentic_core.L3_orchestration.discovery_roster_builder import path_to_module
 
     test_cases = [
-        ("agentic_core\\L5_safety\\validators\\LocationAgent.py", "agentic_core.L5_safety.validators.LocationAgent"),
-        ("agentic_core/L3_orchestration/ConsolidatedOrchestratorAgent.py", "agentic_core.L3_orchestration.ConsolidatedOrchestratorAgent"),
-        ("apps_rg\\engines\\DispatchOutreachToolsAgent.py", "apps_rg.engines.DispatchOutreachToolsAgent"),
+        (
+            "agentic_core\\L5_safety\\validators\\LocationAgent.py",
+            "agentic_core.L5_safety.validators.LocationAgent",
+        ),
+        (
+            "agentic_core/L3_orchestration/ConsolidatedOrchestratorAgent.py",
+            "agentic_core.L3_orchestration.ConsolidatedOrchestratorAgent",
+        ),
+        (
+            "apps_rg\\engines\\DispatchOutreachToolsAgent.py",
+            "apps_rg.engines.DispatchOutreachToolsAgent",
+        ),
     ]
 
     for path, expected in test_cases:
@@ -380,7 +394,7 @@ def test_16_layer_priority_complete() -> tuple[bool, str]:
     """Test 16: Verify all expected layers have priorities."""
     from agentic_core.L3_orchestration.discovery_roster_builder import LAYER_PRIORITY
 
-    expected_layers = ['L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'Apps', 'Utils']
+    expected_layers = ["L0", "L1", "L2", "L3", "L4", "L5", "L6", "Apps", "Utils"]
 
     missing = [l for l in expected_layers if l not in LAYER_PRIORITY]
 
@@ -388,7 +402,7 @@ def test_16_layer_priority_complete() -> tuple[bool, str]:
         return False, f"Missing layer priorities: {missing}"
 
     # Verify L0 < L6 < Apps
-    if not (LAYER_PRIORITY['L0'] < LAYER_PRIORITY['L6'] < LAYER_PRIORITY['Apps']):
+    if not (LAYER_PRIORITY["L0"] < LAYER_PRIORITY["L6"] < LAYER_PRIORITY["Apps"]):
         return False, "Layer priority order incorrect"
 
     return True, f"All {len(expected_layers)} layers have correct priorities"
@@ -438,6 +452,7 @@ def test_18_healer_count_reasonable() -> tuple[bool, str]:
 # TEST RUNNER
 # ============================================================================
 
+
 def run_all_tests() -> dict[str, Any]:
     """Run all tests and return results."""
     tests = [
@@ -483,22 +498,26 @@ def run_all_tests() -> dict[str, Any]:
             else:
                 results["failed"] += 1
 
-            results["details"].append({
-                "name": name,
-                "passed": passed,
-                "message": message,
-            })
+            results["details"].append(
+                {
+                    "name": name,
+                    "passed": passed,
+                    "message": message,
+                }
+            )
 
             print(f"\n{icon} {name}")
             print(f"   {message}")
 
         except Exception as e:
             results["failed"] += 1
-            results["details"].append({
-                "name": name,
-                "passed": False,
-                "message": f"ERROR: {e}",
-            })
+            results["details"].append(
+                {
+                    "name": name,
+                    "passed": False,
+                    "message": f"ERROR: {e}",
+                }
+            )
             print(f"\n❌ {name}")
             print(f"   ERROR: {e}")
 

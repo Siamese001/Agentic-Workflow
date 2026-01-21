@@ -23,16 +23,19 @@ Logger = logging.getLogger(__name__)
 
 # Approved domains for external HTTP (sovereignty enforcement)
 ALLOWED_DOMAINS: set[str] = {
-    'python.org', 'docs.python.org',
-    'github.com', 'raw.githubusercontent.com', 'api.github.com',
-    'readthedocs.io',
-    'developer.mozilla.org',
-    'stackoverflow.com',
-    'pypi.org',
-    'api.pinecone.io',
-    'api.anthropic.com',
-    'api.openai.com',
-    'generativelanguage.googleapis.com',
+    "python.org",
+    "docs.python.org",
+    "github.com",
+    "raw.githubusercontent.com",
+    "api.github.com",
+    "readthedocs.io",
+    "developer.mozilla.org",
+    "stackoverflow.com",
+    "pypi.org",
+    "api.pinecone.io",
+    "api.anthropic.com",
+    "api.openai.com",
+    "generativelanguage.googleapis.com",
 }
 
 
@@ -58,10 +61,9 @@ class SovereignHttpClient(MCPHardenedMixin, HealerMixin):
         if self._session is None:
             try:
                 import requests
+
                 self._session = requests.Session()
-                self._session.headers.update({
-                    'User-Agent': 'SovereignHttpClient/1.0'
-                })
+                self._session.headers.update({"User-Agent": "SovereignHttpClient/1.0"})
                 Logger.info("[SOVEREIGN HTTP] Session initialized")
             except ImportError:
                 Logger.warning("[SOVEREIGN HTTP] requests not installed")
@@ -72,16 +74,20 @@ class SovereignHttpClient(MCPHardenedMixin, HealerMixin):
         """Validate URL against sovereignty rules."""
         try:
             parsed = urlparse(url)
-            host = (parsed.hostname or '').lower()
+            host = (parsed.hostname or "").lower()
 
             # Block internal/localhost unless explicitly allowed
             if not self.allow_internal:
-                if host in {'localhost', '127.0.0.1'} or host.startswith('192.168.') or host.endswith('.local'):
+                if (
+                    host in {"localhost", "127.0.0.1"}
+                    or host.startswith("192.168.")
+                    or host.endswith(".local")
+                ):
                     Logger.warning(f"[SOVEREIGN HTTP] Blocked internal URL: {url}")
                     return False
 
             # Check domain allowlist
-            if not any(host == d or host.endswith('.' + d) for d in ALLOWED_DOMAINS):
+            if not any(host == d or host.endswith("." + d) for d in ALLOWED_DOMAINS):
                 Logger.warning(f"[SOVEREIGN HTTP] Domain not in allowlist: {host}")
                 return False
 
@@ -92,12 +98,14 @@ class SovereignHttpClient(MCPHardenedMixin, HealerMixin):
     def _audit(self, operation: str, url: str, result: Any) -> None:
         """Record operation to audit log."""
         parsed = urlparse(url)
-        self.audit_log.append({
-            'operation': operation,
-            'host': parsed.hostname,
-            'path': parsed.path[:50],
-            'success': result.get('success', False) if isinstance(result, dict) else True
-        })
+        self.audit_log.append(
+            {
+                "operation": operation,
+                "host": parsed.hostname,
+                "path": parsed.path[:50],
+                "success": result.get("success", False) if isinstance(result, dict) else True,
+            }
+        )
 
     def execute(self, operation: str, **payload) -> dict[str, Any]:
         """
@@ -110,51 +118,52 @@ class SovereignHttpClient(MCPHardenedMixin, HealerMixin):
         Returns:
             Result dictionary with success status and response data
         """
-        url = payload.get('url', '')
+        url = payload.get("url", "")
         Logger.debug(f"[SOVEREIGN HTTP] {operation.upper()}: {url[:100]}")
 
         # Validate URL
         if not self._validate_url(url):
-            result = {
-                'success': False,
-                'error': 'URL blocked by sovereignty rules'
-            }
+            result = {"success": False, "error": "URL blocked by sovereignty rules"}
             self._audit(operation, url, result)
             return result
 
         session = self._get_session()
         if session is None:
             result = {
-                'success': True,
-                'stub_mode': True,
-                'message': f'Stub: {operation.upper()} {url} would be executed'
+                "success": True,
+                "stub_mode": True,
+                "message": f"Stub: {operation.upper()} {url} would be executed",
             }
             self._audit(operation, url, result)
             return result
 
-        timeout = payload.get('timeout', self.timeout)
-        headers = payload.get('headers', {})
+        timeout = payload.get("timeout", self.timeout)
+        headers = payload.get("headers", {})
 
         try:
-            if operation == 'get':
-                params = payload.get('params', {})
+            if operation == "get":
+                params = payload.get("params", {})
                 response = session.get(url, params=params, headers=headers, timeout=timeout)
 
-            elif operation == 'post':
-                data = payload.get('data')
-                json_data = payload.get('json')
-                response = session.post(url, data=data, json=json_data, headers=headers, timeout=timeout)
+            elif operation == "post":
+                data = payload.get("data")
+                json_data = payload.get("json")
+                response = session.post(
+                    url, data=data, json=json_data, headers=headers, timeout=timeout
+                )
 
-            elif operation == 'put':
-                data = payload.get('data')
-                json_data = payload.get('json')
-                response = session.put(url, data=data, json=json_data, headers=headers, timeout=timeout)
+            elif operation == "put":
+                data = payload.get("data")
+                json_data = payload.get("json")
+                response = session.put(
+                    url, data=data, json=json_data, headers=headers, timeout=timeout
+                )
 
-            elif operation == 'delete':
+            elif operation == "delete":
                 response = session.delete(url, headers=headers, timeout=timeout)
 
             else:
-                result = {'success': False, 'error': f'Unsupported HTTP operation: {operation}'}
+                result = {"success": False, "error": f"Unsupported HTTP operation: {operation}"}
                 self._audit(operation, url, result)
                 return result
 
@@ -167,30 +176,26 @@ class SovereignHttpClient(MCPHardenedMixin, HealerMixin):
             except Exception:
                 body = response.text[:1000]  # Truncate large responses
 
-            result = {
-                'success': True,
-                'status_code': response.status_code,
-                'body': body
-            }
+            result = {"success": True, "status_code": response.status_code, "body": body}
 
         except Exception as e:
             Logger.error(f"[SOVEREIGN HTTP] {operation.upper()} {url} failed: {e}")
-            result = {
-                'success': False,
-                'error': str(e)
-            }
+            result = {"success": False, "error": str(e)}
 
         self._audit(operation, url, result)
         return result
 
+
 def _run_self_tests(self) -> dict:
-        """Run internal self-tests."""
-        results = {"passed": 0, "failed": 0, TESTS_DIR: []}
-        try:
-            assert self is not None
-            results["passed"] += 1
-            results[TESTS_DIR].append({"name": "test_instantiation", "status": "passed"})
-        except AssertionError as e:
-            results["failed"] += 1
-            results[TESTS_DIR].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
-        return results
+    """Run internal self-tests."""
+    results = {"passed": 0, "failed": 0, TESTS_DIR: []}
+    try:
+        assert self is not None
+        results["passed"] += 1
+        results[TESTS_DIR].append({"name": "test_instantiation", "status": "passed"})
+    except AssertionError as e:
+        results["failed"] += 1
+        results[TESTS_DIR].append(
+            {"name": "test_instantiation", "status": "failed", "error": str(e)}
+        )
+    return results

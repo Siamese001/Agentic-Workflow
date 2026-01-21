@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, healer, memory, prompt, validator, workflow
@@ -11,7 +10,9 @@ from agentic_core.utils.core_extensions.event_emission_mixin import EventEmissio
 from agentic_core.utils.core_extensions.rate_limit_mixin import RateLimitMixin
 
 
-class PilotOrchestrator(RateLimitMixin, StateValidationMixin, EventEmissionMixin, ContextPropagationMixin):
+class PilotOrchestrator(
+    RateLimitMixin, StateValidationMixin, EventEmissionMixin, ContextPropagationMixin
+):
     """
     Pilot L3 Agent demonstrating the fully hardened stack.
     - Limits orchestration rate (4.1)

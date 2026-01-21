@@ -18,12 +18,15 @@ project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 
-
 async def main():
     """Delete duplicates with dry-run or execute mode."""
     parser = argparse.ArgumentParser(description="Delete duplicate files")
-    parser.add_argument("--execute", action="store_true", help="Actually delete files (default is dry-run)")
-    parser.add_argument("--dry-run", action="store_true", help="Simulate deletion without actually deleting")
+    parser.add_argument(
+        "--execute", action="store_true", help="Actually delete files (default is dry-run)"
+    )
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Simulate deletion without actually deleting"
+    )
     args = parser.parse_args()
 
     # Default to dry-run if neither flag is specified
@@ -70,9 +73,9 @@ async def main():
     print(f"Mode: {'DRY RUN' if delete_result['dry_run'] else 'EXECUTED'}")
     print()
 
-    if delete_result['errors']:
+    if delete_result["errors"]:
         print("Errors encountered:")
-        for error in delete_result['errors']:
+        for error in delete_result["errors"]:
             print(f"  ❌ {error['path']}: {error['error']}")
         print()
 

@@ -2,43 +2,43 @@
 Dashboard SSOT Audit Script
 Identifies split-brain violations where metric definitions differ between scripts.
 """
+
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent
 
 # Core dashboard scripts to audit
 CORE_SCRIPTS = [
-    'scripts/full_agent_discovery.py',
-    'scripts/regenerate_dashboard_full.py',
-    'scripts/test_dashboard_end_to_end.py',
+    "scripts/full_agent_discovery.py",
+    "scripts/regenerate_dashboard_full.py",
+    "scripts/test_dashboard_end_to_end.py",
 ]
 
 # Metrics to audit for SSOT violations
 METRICS = [
-    'has_tests',
-    'has_healing',
-    'mcp_hardened',
-    'invocation',
-    'typed_pct',
-    'documented_pct',
-    'proper_base_class',
-    'schema_strictness',
+    "has_tests",
+    "has_healing",
+    "mcp_hardened",
+    "invocation",
+    "typed_pct",
+    "documented_pct",
+    "proper_base_class",
+    "schema_strictness",
 ]
+
 
 def find_metric_definitions(script_path: Path, metric: str) -> list:
     """Find all lines where a metric is calculated or checked."""
-    content = script_path.read_text(encoding='utf-8')
-    lines = content.split('\n')
+    content = script_path.read_text(encoding="utf-8")
+    lines = content.split("\n")
 
     definitions = []
     for i, line in enumerate(lines, 1):
         # Look for assignment or calculation patterns
-        if metric in line.lower() and ('=' in line or 'sum(' in line or 'for ' in line):
-            definitions.append({
-                'line': i,
-                'code': line.strip()[:120]
-            })
+        if metric in line.lower() and ("=" in line or "sum(" in line or "for " in line):
+            definitions.append({"line": i, "code": line.strip()[:120]})
     return definitions
+
 
 def audit_script(script_path: Path) -> dict:
     """Audit a single script for metric definitions."""
@@ -48,6 +48,7 @@ def audit_script(script_path: Path) -> dict:
         if defs:
             results[metric] = defs
     return results
+
 
 def main():
     print("=" * 80)
@@ -86,5 +87,6 @@ def main():
                 print(f"    - {s}")
             print("   → POTENTIAL SPLIT-BRAIN VIOLATION")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

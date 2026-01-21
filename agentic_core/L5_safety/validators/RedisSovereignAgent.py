@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, orchestrator, prompt, validator, workflow
@@ -34,6 +33,7 @@ class RedisSovereignAgent(HealerMixin, MCPHardenedMixin):
     """
     Sovereign Redis controller — hardened, monitored, eternal.
     """
+
     _instance = None
 
     def __new__(cls, project_root: Path, ctx: Any | None = None) -> RedisSovereignAgent:
@@ -80,11 +80,9 @@ class RedisSovereignAgent(HealerMixin, MCPHardenedMixin):
         # Handle SSL configuration to avoid version conflicts
         if env.REDIS_SSL:
             # Explicitly manage SSL params to avoid redis-py version conflicts
-            connection_kwargs.update({
-                "ssl": True,
-                "ssl_cert_reqs": None,
-                "ssl_check_hostname": False
-            })
+            connection_kwargs.update(
+                {"ssl": True, "ssl_cert_reqs": None, "ssl_check_hostname": False}
+            )
 
         if env.REDIS_PASSWORD:
             connection_kwargs["password"] = env.REDIS_PASSWORD
@@ -100,8 +98,8 @@ class RedisSovereignAgent(HealerMixin, MCPHardenedMixin):
 
     def _run_self_tests(self) -> bool:
         """Phase 1: Self-testing for L4 compliance."""
-        assert hasattr(self, 'client'), "Missing client"
-        assert hasattr(self, 'pool'), "Missing pool"
+        assert hasattr(self, "client"), "Missing client"
+        assert hasattr(self, "pool"), "Missing pool"
         return True
 
     def get_client(self) -> redis.Redis:
@@ -162,7 +160,14 @@ class RedisSovereignAgent(HealerMixin, MCPHardenedMixin):
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L4 state agent - operational only."""
         if _call_path is None:
             # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
@@ -179,5 +184,6 @@ class RedisSovereignAgent(HealerMixin, MCPHardenedMixin):
             return {"skipped": 1}
         finally:
             _call_path.discard(agent_name)
+
 
 # PascalCase is now the canonical name

@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import logging
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
 from dataclasses import dataclass, field
 from enum import Enum

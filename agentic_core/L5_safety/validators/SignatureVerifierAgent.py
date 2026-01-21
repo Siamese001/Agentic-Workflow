@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, state, validator, workflow
@@ -8,10 +7,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
-'Brief description of functionality and purpose.'
-'\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\nsignature_verifier.py - function Module\n\nDomain: inspection\nGenerated: 2025-12-07T12:07:59.842368\n'
+"Brief description of functionality and purpose."
+"\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\nsignature_verifier.py - function Module\n\nDomain: inspection\nGenerated: 2025-12-07T12:07:59.842368\n"
 import logging
 from dataclasses import field
 from typing import Any
@@ -20,13 +19,16 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger: Any = logging.getLogger(__name__)
 
+
 @dataclass
 class OperationResult:
     """Result of operation."""
+
     success: bool
     DATA: OBJECT = None
     message: str | None = None
     metadata: dict[str, object] = field(default_factory=dict)
+
 
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
@@ -38,18 +40,20 @@ from agentic_core.utils.core_extensions.subatomic_testing_mixin import Subatomic
 class SignatureVerifierAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """function class for inspection domain."""
 
-    def __init__(self, config: dict[str, object] | None=None) -> None:
+    def __init__(self, config: dict[str, object] | None = None) -> None:
         """Initialize the instance."""
         SELF.CONFIG = config or {}
-        Logger.info(f'Initialized {self.__class__.__name__}')
+        Logger.info(f"Initialized {self.__class__.__name__}")
 
     def execute(self, data: object, **kwargs: dict[str, object]) -> OperationResult:
         """Execute operation."""
         try:
             self._process(data, **kwargs)
-            return OperationResult(success=True, DATA=result, METADATA={'input_type': type(data).__name__})
+            return OperationResult(
+                success=True, DATA=result, METADATA={"input_type": type(data).__name__}
+            )
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            Logger.error(f'Operation failed: {e}')
+            Logger.error(f"Operation failed: {e}")
             return OperationResult(success=False, message=str(e))
 
     def _process(self, data: object, **kwargs: dict[str, object]) -> object:
@@ -58,12 +62,25 @@ class SignatureVerifierAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """Observability metrics - operational only."""
         if _call_path is None:
             _call_path = set()
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
-        super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+        super().heal_repository(
+            dry_run=dry_run,
+            execute=execute,
+            depth=depth,
+            max_depth=max_depth,
+            _call_path=_call_path,
+        )
 
         agent_name = "SignatureVerifierAgent"
         if agent_name in _call_path:
@@ -78,6 +95,8 @@ class SignatureVerifierAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
             _call_path.discard(agent_name)
 
 
-def execute_signature_verification(data: object, config: dict | None=None, **kwargs: dict[str, object]) -> OperationResult:
+def execute_signature_verification(
+    data: object, config: dict | None = None, **kwargs: dict[str, object]
+) -> OperationResult:
     """Convenience function."""
     return SignatureVerifierAgent(config).execute(data, **kwargs)

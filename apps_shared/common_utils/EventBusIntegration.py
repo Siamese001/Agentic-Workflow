@@ -23,9 +23,7 @@ class HardenedEventBus:
     """Event Bus wrapped with hardened infrastructure."""
 
     def __init__(
-        self,
-        event_bus: EventBus | None = None,
-        bulkhead_manager: BulkheadManager | None = None
+        self, event_bus: EventBus | None = None, bulkhead_manager: BulkheadManager | None = None
     ):
         """Initialize hardened event bus.
 
@@ -39,7 +37,7 @@ class HardenedEventBus:
             "events_published": 0,
             "events_failed": 0,
             "events_retried": 0,
-            "bulkhead_rejections": 0
+            "bulkhead_rejections": 0,
         }
 
         logger.info("Initialized HardenedEventBus")
@@ -64,10 +62,7 @@ class HardenedEventBus:
         logger.info("HardenedEventBus initialized")
 
     async def publish(
-        self,
-        channel: str,
-        event: SystemEvent,
-        priority: TaskPriority = TaskPriority.MEDIUM
+        self, channel: str, event: SystemEvent, priority: TaskPriority = TaskPriority.MEDIUM
     ) -> bool:
         """Publish an event with hardened protection.
 
@@ -86,7 +81,7 @@ class HardenedEventBus:
                 channel,
                 event,
                 bulkhead_name="event_publish",
-                priority=priority
+                priority=priority,
             )
 
             self._stats["events_published"] += 1
@@ -101,16 +96,14 @@ class HardenedEventBus:
                 event,  # Using event as envelope-like object
                 FailureReason.PROCESSING_ERROR,
                 "HardenedEventBus.publish",
-                str(e)
+                str(e),
             )
 
             logger.error(f"Failed to publish event {event.id}: {e}")
             return False
 
     async def subscribe(
-        self,
-        channel: str,
-        callback: Callable[[SystemEvent], Awaitable[None]]
+        self, channel: str, callback: Callable[[SystemEvent], Awaitable[None]]
     ) -> None:
         """Subscribe to events with hardened protection.
 
@@ -158,25 +151,19 @@ class HardenedEventBus:
         return {
             "event_bus": event_bus_health,
             "bulkheads": bulkhead_stats,
-            "stats": self._stats.copy()
+            "stats": self._stats.copy(),
         }
 
     async def _register_bulkheads(self) -> None:
         """Register bulkheads for event operations."""
         # Bulkhead for publishing events
         await self.bulkhead_manager.create_bulkhead(
-            "event_publish",
-            max_concurrency=10,
-            queue_size=100,
-            priority=TaskPriority.HIGH
+            "event_publish", max_concurrency=10, queue_size=100, priority=TaskPriority.HIGH
         )
 
         # Bulkhead for processing events
         await self.bulkhead_manager.create_bulkhead(
-            "event_process",
-            max_concurrency=20,
-            queue_size=200,
-            priority=TaskPriority.MEDIUM
+            "event_process", max_concurrency=20, queue_size=200, priority=TaskPriority.MEDIUM
         )
 
         logger.debug("Registered event bus bulkheads")
@@ -188,21 +175,13 @@ class HardenedEventBus:
         # Circuit breaker for publishing
         await registry.get_circuit_breaker(
             "event_publish",
-            CircuitBreakerConfig(
-                failure_threshold=5,
-                timeout=30.0,
-                failure_rate_threshold=0.5
-            )
+            CircuitBreakerConfig(failure_threshold=5, timeout=30.0, failure_rate_threshold=0.5),
         )
 
         # Circuit breaker for processing
         await registry.get_circuit_breaker(
             "event_process",
-            CircuitBreakerConfig(
-                failure_threshold=10,
-                timeout=60.0,
-                failure_rate_threshold=0.3
-            )
+            CircuitBreakerConfig(failure_threshold=10, timeout=60.0, failure_rate_threshold=0.3),
         )
 
         logger.debug("Registered event bus circuit breakers")
@@ -213,22 +192,12 @@ class HardenedEventBus:
 
         # Retry policy for publishing
         executor.register_policy(
-            "event_publish",
-            RetryConfig(
-                max_attempts=3,
-                base_delay=0.5,
-                max_delay=5.0
-            )
+            "event_publish", RetryConfig(max_attempts=3, base_delay=0.5, max_delay=5.0)
         )
 
         # Retry policy for processing
         executor.register_policy(
-            "event_process",
-            RetryConfig(
-                max_attempts=5,
-                base_delay=1.0,
-                max_delay=10.0
-            )
+            "event_process", RetryConfig(max_attempts=5, base_delay=1.0, max_delay=10.0)
         )
 
         logger.debug("Registered event bus retry policies")
@@ -241,16 +210,10 @@ class HardenedEventBus:
             event: Event to publish
         """
         executor = await get_retry_executor()
-        await executor.execute(
-            self.event_bus.publish,
-            channel,
-            event,
-            policy="event_publish"
-        )
+        await executor.execute(self.event_bus.publish, channel, event, policy="event_publish")
 
     def _wrap_callback(
-        self,
-        callback: Callable[[SystemEvent], Awaitable[None]]
+        self, callback: Callable[[SystemEvent], Awaitable[None]]
     ) -> Callable[[SystemEvent], Awaitable[None]]:
         """Wrap callback with hardened processing.
 
@@ -260,14 +223,12 @@ class HardenedEventBus:
         Returns:
             Hardened callback
         """
+
         async def hardened_callback(event: SystemEvent) -> None:
             try:
                 # Execute through bulkhead
                 await self.bulkhead_manager.execute(
-                    self._process_event,
-                    callback,
-                    event,
-                    bulkhead_name="event_process"
+                    self._process_event, callback, event, bulkhead_name="event_process"
                 )
 
             except Exception as e:
@@ -277,18 +238,13 @@ class HardenedEventBus:
                 # Send to dead letter queue
                 dlq = await get_dead_letter_queue()
                 await dlq.add_failed_envelope(
-                    event,
-                    FailureReason.PROCESSING_ERROR,
-                    "HardenedEventBus.process",
-                    str(e)
+                    event, FailureReason.PROCESSING_ERROR, "HardenedEventBus.process", str(e)
                 )
 
         return hardened_callback
 
     async def _process_event(
-        self,
-        callback: Callable[[SystemEvent], Awaitable[None]],
-        event: SystemEvent
+        self, callback: Callable[[SystemEvent], Awaitable[None]], event: SystemEvent
     ) -> None:
         """Process event with retry policy.
 
@@ -297,11 +253,7 @@ class HardenedEventBus:
             event: Event to process
         """
         executor = await get_retry_executor()
-        await executor.execute(
-            callback,
-            event,
-            policy="event_process"
-        )
+        await executor.execute(callback, event, policy="event_process")
 
 
 # Global hardened event bus
@@ -329,7 +281,7 @@ async def publish_hardened_event(
     source_component: str,
     payload: dict[str, Any],
     trace_id: str | None = None,
-    priority: TaskPriority = TaskPriority.MEDIUM
+    priority: TaskPriority = TaskPriority.MEDIUM,
 ) -> bool:
     """Publish a hardened system event.
 
@@ -347,10 +299,7 @@ async def publish_hardened_event(
 
     # Create event
     event = SystemEvent(
-        type=event_type,
-        source_component=source_component,
-        payload=payload,
-        trace_id=trace_id
+        type=event_type, source_component=source_component, payload=payload, trace_id=trace_id
     )
 
     # Publish through hardened bus
@@ -362,8 +311,7 @@ async def publish_hardened_event(
 
 # Event subscription helpers with hardening
 async def subscribe_to_events(
-    event_type: EventType,
-    callback: Callable[[SystemEvent], Awaitable[None]]
+    event_type: EventType, callback: Callable[[SystemEvent], Awaitable[None]]
 ) -> None:
     """Subscribe to events with hardened processing.
 
@@ -378,10 +326,7 @@ async def subscribe_to_events(
 
 
 # Decorator for hardened event publishing
-def hardened_event_publisher(
-    event_type: EventType,
-    priority: TaskPriority = TaskPriority.MEDIUM
-):
+def hardened_event_publisher(event_type: EventType, priority: TaskPriority = TaskPriority.MEDIUM):
     """Decorator to automatically publish hardened events.
 
     Args:
@@ -391,11 +336,12 @@ def hardened_event_publisher(
     Returns:
         Decorated function
     """
+
     def decorator(func):
         async def async_wrapper(*args, **kwargs):
             # Extract trace_id from first argument if it's a SignalEnvelope
             trace_id = None
-            if args and hasattr(args[0], 'trace_id'):
+            if args and hasattr(args[0], "trace_id"):
                 trace_id = args[0].trace_id
 
             # Publish start event
@@ -404,7 +350,7 @@ def hardened_event_publisher(
                 func.__module__ + "." + func.__name__,
                 {"status": "started", "args_count": len(args)},
                 trace_id=trace_id,
-                priority=priority
+                priority=priority,
             )
 
             try:
@@ -417,7 +363,7 @@ def hardened_event_publisher(
                     func.__module__ + "." + func.__name__,
                     {"status": "completed", "success": True},
                     trace_id=trace_id,
-                    priority=priority
+                    priority=priority,
                 )
 
                 return result
@@ -429,9 +375,10 @@ def hardened_event_publisher(
                     func.__module__ + "." + func.__name__,
                     {"status": "failed", "error": str(e)},
                     trace_id=trace_id,
-                    priority=TaskPriority.HIGH  # High priority for errors
+                    priority=TaskPriority.HIGH,  # High priority for errors
                 )
                 raise
 
         return async_wrapper
+
     return decorator

@@ -14,19 +14,19 @@ from pathlib import Path
 # Patterns for sensitive data detection
 SENSITIVE_PATTERNS = [
     # Email addresses
-    r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b',
+    r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b",
     # Phone numbers (US format)
-    r'\b\d{3}[-.]?\d{3}[-.]?\d{4}\b',
+    r"\b\d{3}[-.]?\d{3}[-.]?\d{4}\b",
     # Social Security Numbers
-    r'\b\d{3}-\d{2}-\d{4}\b',
+    r"\b\d{3}-\d{2}-\d{4}\b",
     # Credit card numbers
-    r'\b\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}\b',
+    r"\b\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}\b",
     # API keys (common patterns)
     r'(?:api[_-]?key|apikey|api[_-]?secret|secret[_-]?key|token)[\s:=]+["\']?[A-Za-z0-9+/]{20,}["\']?',
     # Passwords
     r'(?:password|passwd|pwd)[\s:=]+["\']?[^\s"\']{6,}["\']?',
     # URLs with potential sensitive data
-    r'https?://[^\s]*\?(?:[^\s]*[&=])*(?:token|key|secret|password)=[^\s&]*',
+    r"https?://[^\s]*\?(?:[^\s]*[&=])*(?:token|key|secret|password)=[^\s&]*",
     # JSON fields with common sensitive keys
     r'"(?:password|secret|token|api_key|credit_card|ssn|phone|email)"\s*:\s*"[^"]*"',
 ]
@@ -34,12 +34,12 @@ SENSITIVE_PATTERNS = [
 # Sanitization patterns
 SANITIZATION_PATTERNS = [
     # User context data
-    (r'user[_-]?data["\']?\s*[:=]\s*{[^}]*}', 'user_data={REDACTED}'),
-    (r'context["\']?\s*[:=]\s*{[^}]*}', 'context={REDACTED}'),
-    (r'raw_output["\']?\s*[:=]\s*["\']?[^"\'\n]*["\']?', 'raw_output={REDACTED}'),
-    (r'content["\']?\s*[:=]\s*["\']?[^"\'\n]*["\']?', 'content={REDACTED}'),
+    (r'user[_-]?data["\']?\s*[:=]\s*{[^}]*}', "user_data={REDACTED}"),
+    (r'context["\']?\s*[:=]\s*{[^}]*}', "context={REDACTED}"),
+    (r'raw_output["\']?\s*[:=]\s*["\']?[^"\'\n]*["\']?', "raw_output={REDACTED}"),
+    (r'content["\']?\s*[:=]\s*["\']?[^"\'\n]*["\']?', "content={REDACTED}"),
     # Large JSON objects
-    (r'\{[^{}]{200,}\}', '{DATA_REDACTED}'),
+    (r"\{[^{}]{200,}\}", "{DATA_REDACTED}"),
     # Long string values (potential data)
     (r'["\'][^"\']{100,}["\']', '"REDACTED"'),
 ]
@@ -61,9 +61,7 @@ class SecureLogger:
         # Configure handler if not already configured
         if not self.Logger.handlers:
             handler = logging.StreamHandler()
-            formatter = logging.Formatter(
-                '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-            )
+            formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
             handler.setFormatter(formatter)
             self.Logger.addHandler(handler)
 
@@ -80,7 +78,7 @@ class SecureLogger:
 
         # Apply sensitive data patterns
         for pattern in SENSITIVE_PATTERNS:
-            sanitized = re.sub(pattern, '{REDACTED}', sanitized, flags=re.IGNORECASE)
+            sanitized = re.sub(pattern, "{REDACTED}", sanitized, flags=re.IGNORECASE)
 
         # Apply sanitization patterns
         for pattern, replacement in SANITIZATION_PATTERNS:
@@ -162,7 +160,9 @@ class SecureLoggerAdapter:
     def _sanitize(self, message: str) -> str:
         """Quick sanitize for common patterns."""
         # Quick redaction for obvious sensitive data
-        if any(keyword in message.lower() for keyword in ['password', 'secret', 'token', 'api_key']):
+        if any(
+            keyword in message.lower() for keyword in ["password", "secret", "token", "api_key"]
+        ):
             return f"{message[:50]}... [REDACTED]"
         return message
 

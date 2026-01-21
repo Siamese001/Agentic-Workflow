@@ -126,7 +126,7 @@ class MCPClientStub:
             extra={
                 "client_name": name,
                 "parameters": parameters,
-            }
+            },
         )
 
     def __call__(self, *args, **kwargs) -> dict[str, Any]:
@@ -181,7 +181,7 @@ class MCPClientRegistry:
                 "client_name": spec.name,
                 "Provider": spec.Provider,
                 "is_stub": isinstance(client, MCPClientStub),
-            }
+            },
         )
 
     def get(self, name: str) -> Any | None:

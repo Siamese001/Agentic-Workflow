@@ -2,6 +2,7 @@
 """
 Inspect dashboard in browser by fetching and analyzing the rendered HTML
 """
+
 import json
 import re
 
@@ -28,12 +29,12 @@ def inspect_dashboard():
         html = response.text
 
         # Parse with BeautifulSoup
-        soup = BeautifulSoup(html, 'html.parser')
+        soup = BeautifulSoup(html, "html.parser")
 
         # Check for key DOM elements
         print("\n2. Checking DOM elements:")
-        kpi_grid = soup.find(id='kpiGrid')
-        code_quality_grid = soup.find(id='codeQualityGrid')
+        kpi_grid = soup.find(id="kpiGrid")
+        code_quality_grid = soup.find(id="codeQualityGrid")
 
         if kpi_grid:
             print("   ✅ #kpiGrid exists")
@@ -56,9 +57,9 @@ def inspect_dashboard():
 
         # Check for dashboardData
         print("\n3. Checking embedded data:")
-        if 'const dashboardData = [' in html:
+        if "const dashboardData = [" in html:
             print("   ✅ dashboardData found in HTML")
-            match = re.search(r'const dashboardData = (\[.*?\]);', html, re.DOTALL)
+            match = re.search(r"const dashboardData = (\[.*?\]);", html, re.DOTALL)
             if match:
                 try:
                     data = json.loads(match.group(1))
@@ -68,9 +69,9 @@ def inspect_dashboard():
         else:
             print("   ❌ dashboardData NOT FOUND")
 
-        if 'const realAgentData = {' in html:
+        if "const realAgentData = {" in html:
             print("   ✅ realAgentData found in HTML")
-            match = re.search(r'const realAgentData = (\{.*?\});', html, re.DOTALL)
+            match = re.search(r"const realAgentData = (\{.*?\});", html, re.DOTALL)
             if match:
                 try:
                     data = json.loads(match.group(1))
@@ -82,40 +83,40 @@ def inspect_dashboard():
 
         # Check for loadData function
         print("\n4. Checking JavaScript functions:")
-        if 'function loadData()' in html:
+        if "function loadData()" in html:
             print("   ✅ loadData() function exists")
         else:
             print("   ❌ loadData() function NOT FOUND")
 
-        if 'loadData();' in html:
+        if "loadData();" in html:
             print("   ✅ loadData() is called")
         else:
             print("   ❌ loadData() is NOT called")
 
-        if 'function renderTerritorySummaryTable' in html:
+        if "function renderTerritorySummaryTable" in html:
             print("   ✅ renderTerritorySummaryTable() exists")
         else:
             print("   ❌ renderTerritorySummaryTable() NOT FOUND")
 
         # Check for tables in rendered HTML
         print("\n5. Checking rendered tables:")
-        tables = soup.find_all('table')
+        tables = soup.find_all("table")
         print(f"   Found {len(tables)} <table> elements")
 
         if tables:
             for i, table in enumerate(tables, 1):
-                rows = table.find_all('tr')
+                rows = table.find_all("tr")
                 print(f"   Table {i}: {len(rows)} rows")
 
         # Check for any visible text content
         print("\n6. Checking visible content:")
-        body = soup.find('body')
+        body = soup.find("body")
         if body:
             text = body.get_text(strip=True)
             if len(text) > 0:
                 print(f"   Body text length: {len(text)} chars")
                 # Show first 200 chars
-                preview = text[:200].replace('\n', ' ')
+                preview = text[:200].replace("\n", " ")
                 print(f"   Preview: {preview}...")
             else:
                 print("   ⚠️  Body is EMPTY")
@@ -150,6 +151,7 @@ def inspect_dashboard():
         print("   python agentic_core/L6_observability/dashboards/simple_server.py")
     except Exception as e:
         print(f"\n❌ ERROR: {e}")
+
 
 if __name__ == "__main__":
     inspect_dashboard()

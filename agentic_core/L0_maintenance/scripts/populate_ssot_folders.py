@@ -14,7 +14,9 @@ import sys
 from pathlib import Path
 
 # Anchor to project root to allow imports
-project_root = Path(__file__).resolve().parents[3]  # Go up 3 levels: scripts -> L0_maintenance -> agentic_core -> project_root
+project_root = (
+    Path(__file__).resolve().parents[3]
+)  # Go up 3 levels: scripts -> L0_maintenance -> agentic_core -> project_root
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
@@ -32,35 +34,36 @@ LAYER_BEST_PRACTICES = {
         "thought_engine": "Chain-of-thought, tree-of-thought, ReAct pattern implementations. Reference: Yao et al. (2022) ReAct paper.",
         "planning": "Hierarchical Task decomposition. HTN, BDI patterns. Reference: Ghallab et al. 'PDDL'.",
         "knowledge": "Static, curated eternal truth. No dynamic retrieval here — use semantic_memory for runtime.",
-        "static_index": "Permanent store of vetted research papers, prompt constitutions, tool schemas. Indexed at embed time."
+        "static_index": "Permanent store of vetted research papers, prompt constitutions, tool schemas. Indexed at embed time.",
     },
     "L2_execution": {
         "default": "Safe, sandboxed tool interaction. All tools must be registered and validated.",
         "ToolRegistry": "Single source of truth for all available tools. Each tool: schema + implementation + safety policy.",
-        "sandbox": "Isolated execution environment. No direct system access outside approved tools."
+        "sandbox": "Isolated execution environment. No direct system access outside approved tools.",
     },
     "L3_orchestration": {
         "default": "Workflow composition and agent handoff. Memory-aware routing.",
-        "workflow_engines": "State machine, DAG, and reactive workflow implementations. Reference: Temporal.io patterns."
+        "workflow_engines": "State machine, DAG, and reactive workflow implementations. Reference: Temporal.io patterns.",
     },
     "L4_state": {
         "default": "Persistent, auditable state management. Redis-backed ledger.",
         "ValidationContext": "Checkpointing, session persistence, drift detection.",
-        "persistence_layer": "Single interface to Redis/Pinecone/filesystem — abstraction only."
+        "persistence_layer": "Single interface to Redis/Pinecone/filesystem — abstraction only.",
     },
     "L5_safety": {
         "default": "Red-team guards, policy enforcement, auto-immune response.",
         "policy": "Formal policy definitions. All actions routed through L5 before execution.",
-        "audit_logs": "Immutable forensic ledger. Every decision recorded."
+        "audit_logs": "Immutable forensic ledger. Every decision recorded.",
     },
     "semantic_memory": {
         "vector_stores": "Abstract interface to Pinecone/Chroma/etc. No direct imports — use registry.",
-        "embedding_logic": "Gemini-only embedding pipeline. No fallback to other providers."
+        "embedding_logic": "Gemini-only embedding pipeline. No fallback to other providers.",
     },
     "prompt_governance": {
         "meta_prompts": "Sovereign prompt constitution and system prompts. No raw strings outside this folder."
-    }
+    },
 }
+
 
 def get_purpose(l1: str, l2: str, depth3: str = None) -> str:
     layer_data = LAYER_BEST_PRACTICES.get(l1, {})
@@ -68,6 +71,7 @@ def get_purpose(l1: str, l2: str, depth3: str = None) -> str:
     key = depth3 if depth3 and depth3 in layer_data else l2
     specific = layer_data.get(key, layer_data.get("default", "Sovereign territory"))
     return specific
+
 
 def generate_init_content(l1: str, l2: str, depth3: str = None) -> str:
     folder = f"{l1}/{l2}" + (f"/{depth3}" if depth3 else "")
@@ -106,6 +110,7 @@ __all__ = []
 '''
     return template.strip() + "\n"
 
+
 def main():
     print("[*] Starting Intelligent Sovereign Population...")
     populated = 0
@@ -133,7 +138,7 @@ def main():
             init_path = l2_path / "__init__.py"
             # Overwrite if empty or very small (low signal)
             if not init_path.exists() or init_path.stat().st_size < 200:
-                init_path.write_text(generate_init_content(l1, l2), encoding='utf-8')
+                init_path.write_text(generate_init_content(l1, l2), encoding="utf-8")
                 print(f"   [SMART POPULATED] {l2_path.relative_to(project_root)}/__init__.py")
                 populated += 1
 
@@ -142,11 +147,18 @@ def main():
                 if depth3.is_dir() and depth3.name not in {"__pycache__"}:
                     d3_init = depth3 / "__init__.py"
                     if not d3_init.exists() or d3_init.stat().st_size < 200:
-                        d3_init.write_text(generate_init_content(l1, l2, depth3.name), encoding='utf-8')
-                        print(f"   [SMART POPULATED] {depth3.relative_to(project_root)}/__init__.py")
+                        d3_init.write_text(
+                            generate_init_content(l1, l2, depth3.name), encoding="utf-8"
+                        )
+                        print(
+                            f"   [SMART POPULATED] {depth3.relative_to(project_root)}/__init__.py"
+                        )
                         populated += 1
 
-    print(f"\n[COMPLETE] {populated} SSOT folders intelligently populated with layer-specific best practices")
+    print(
+        f"\n[COMPLETE] {populated} SSOT folders intelligently populated with layer-specific best practices"
+    )
+
 
 if __name__ == "__main__":
     main()

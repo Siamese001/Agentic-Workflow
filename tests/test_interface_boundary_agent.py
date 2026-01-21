@@ -9,17 +9,19 @@ from pathlib import Path
 
 
 # Setup mock for MCPHardenedMixin
-class MockMixin: pass
-mock_module = type(sys)('mock')
+class MockMixin:
+    pass
+
+
+mock_module = type(sys)("mock")
 mock_module.MCPHardenedMixin = MockMixin
-sys.modules['agentic_core.utils.core_extensions.mcp_hardened_mixin'] = mock_module
+sys.modules["agentic_core.utils.core_extensions.mcp_hardened_mixin"] = mock_module
 
 # Direct import
 import importlib.util
 
 spec = importlib.util.spec_from_file_location(
-    'InterfaceBoundaryAgent',
-    Path('agentic_core/L5_safety/validators/InterfaceBoundaryAgent.py')
+    "InterfaceBoundaryAgent", Path("agentic_core/L5_safety/validators/InterfaceBoundaryAgent.py")
 )
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
@@ -33,21 +35,21 @@ def test_complexity_trigger():
     print("TEST 1: COMPLEXITY TRIGGER TEST")
     print("=" * 60)
 
-    agent = InterfaceBoundaryAgent(root_dir='.', complexity_threshold=15)
+    agent = InterfaceBoundaryAgent(root_dir=".", complexity_threshold=15)
     violations = agent.audit_boundaries()
 
-    mock_detected = any('mock_heavy_utility' in v['file'] for v in violations)
+    mock_detected = any("mock_heavy_utility" in v["file"] for v in violations)
     print(f"Mock heavy utility detected: {mock_detected}")
     print(f"Total violations found: {len(violations)}")
 
     if mock_detected:
-        mock_violation = [v for v in violations if 'mock_heavy_utility' in v['file']][0]
-        method_count = mock_violation['complexity']['method_count']
-        action = mock_violation['action']
+        mock_violation = [v for v in violations if "mock_heavy_utility" in v["file"]][0]
+        method_count = mock_violation["complexity"]["method_count"]
+        action = mock_violation["action"]
         print(f"Method count: {method_count}")
         print(f"Action: {action}")
         assert method_count >= 20, f"Expected >= 20 methods, got {method_count}"
-        assert action == 'EXTRACT_INTERFACE'
+        assert action == "EXTRACT_INTERFACE"
         print("✅ TEST 1 PASSED: Complexity trigger working")
         return mock_violation
     else:
@@ -62,15 +64,15 @@ def test_interface_integrity():
     print("=" * 60)
 
     # Get violation from complexity trigger test
-    agent = InterfaceBoundaryAgent(root_dir='.', complexity_threshold=15)
+    agent = InterfaceBoundaryAgent(root_dir=".", complexity_threshold=15)
     violations = agent.audit_boundaries()
-    violation = next((v for v in violations if 'mock_heavy_utility' in v.get('file', '')), None)
+    violation = next((v for v in violations if "mock_heavy_utility" in v.get("file", "")), None)
 
     if not violation:
         print("❌ TEST 2 SKIPPED: No violation to test")
         return
 
-    agent = InterfaceBoundaryAgent(root_dir='.')
+    agent = InterfaceBoundaryAgent(root_dir=".")
     stub = agent.generate_interface_stub(violation)
 
     print("Generated interface stub:")
@@ -87,19 +89,19 @@ def test_interface_integrity():
         return
 
     # Verify ABC import
-    assert 'from abc import ABC, abstractmethod' in stub
+    assert "from abc import ABC, abstractmethod" in stub
     print("✅ ABC import: PRESENT")
 
     # Verify interface name
-    assert 'class IMock' in stub or 'class Imock' in stub
+    assert "class IMock" in stub or "class Imock" in stub
     print("✅ Interface class: PRESENT")
 
     # Verify public methods are included
-    assert 'method_01' in stub
+    assert "method_01" in stub
     print("✅ Public methods: INCLUDED")
 
     # Verify private methods are excluded
-    assert '_private_method' not in stub
+    assert "_private_method" not in stub
     print("✅ Private methods: EXCLUDED")
 
     print("✅ TEST 2 PASSED: Interface integrity verified")
@@ -111,7 +113,7 @@ def test_boundary_report():
     print("TEST 3: BOUNDARY REPORT TEST")
     print("=" * 60)
 
-    agent = InterfaceBoundaryAgent(root_dir='.', complexity_threshold=15)
+    agent = InterfaceBoundaryAgent(root_dir=".", complexity_threshold=15)
     agent.audit_boundaries()
 
     print("Agent report output:")

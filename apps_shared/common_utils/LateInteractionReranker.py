@@ -42,6 +42,7 @@ class LateInteractionReranker:
         # Try to check availability without loading
         try:
             from sentence_transformers import CrossEncoder
+
             return True
         except ImportError:
             logger.warning("sentence_transformers not available, reranker will be in fallback mode")
@@ -88,11 +89,7 @@ class LateInteractionReranker:
             return False
 
     def rerank(
-        self,
-        query: str,
-        documents: list[str],
-        top_k: int | None = None,
-        batch_size: int = 32
+        self, query: str, documents: list[str], top_k: int | None = None, batch_size: int = 32
     ) -> list[str]:
         """Rerank documents based on query relevance.
 
@@ -139,11 +136,7 @@ class LateInteractionReranker:
             logger.debug(f"Reranking {len(documents)} documents")
             start_time = time.time()
 
-            scores = self._model.predict(
-                pairs,
-                batch_size=batch_size,
-                show_progress_bar=False
-            )
+            scores = self._model.predict(pairs, batch_size=batch_size, show_progress_bar=False)
 
             # Sort documents by score (descending)
             scored_docs = list(zip(documents, scores))
@@ -160,7 +153,7 @@ class LateInteractionReranker:
                 score_stats = {
                     "min": float(min(scores)),
                     "max": float(max(scores)),
-                    "mean": float(sum(scores) / len(scores))
+                    "mean": float(sum(scores) / len(scores)),
                 }
                 logger.debug(f"Score distribution: {score_stats}")
 
@@ -173,11 +166,7 @@ class LateInteractionReranker:
             return documents[:top_k]
 
     def rerank_with_scores(
-        self,
-        query: str,
-        documents: list[str],
-        top_k: int | None = None,
-        batch_size: int = 32
+        self, query: str, documents: list[str], top_k: int | None = None, batch_size: int = 32
     ) -> list[tuple[str, float]]:
         """Rerank documents and return with scores.
 
@@ -214,11 +203,7 @@ class LateInteractionReranker:
         pairs = [(query, doc) for doc in documents]
 
         try:
-            scores = self._model.predict(
-                pairs,
-                batch_size=batch_size,
-                show_progress_bar=False
-            )
+            scores = self._model.predict(pairs, batch_size=batch_size, show_progress_bar=False)
 
             # Sort and return with scores
             scored_docs = list(zip(documents, scores))
@@ -240,17 +225,21 @@ class LateInteractionReranker:
             "model_name": self.model_name,
             "loaded": self._model_loaded,
             "fallback_mode": self._fallback_mode,
-            "available": self.is_available
+            "available": self.is_available,
         }
 
         if self._model_loaded and not self._fallback_mode:
             # Try to get additional model info
             try:
-                if hasattr(self._model, 'config'):
-                    info.update({
-                        "max_seq_length": getattr(self._model.config, 'max_position_embeddings', 'unknown'),
-                        "num_labels": getattr(self._model.config, 'num_labels', 'unknown')
-                    })
+                if hasattr(self._model, "config"):
+                    info.update(
+                        {
+                            "max_seq_length": getattr(
+                                self._model.config, "max_position_embeddings", "unknown"
+                            ),
+                            "num_labels": getattr(self._model.config, "num_labels", "unknown"),
+                        }
+                    )
             except Exception:
                 pass
 
@@ -259,10 +248,7 @@ class LateInteractionReranker:
 
 # Convenience function for direct usage
 def rerank_documents(
-    query: str,
-    documents: list[str],
-    model_name: str = "ms-marco-MiniLM-L-6-v2",
-    top_k: int = 5
+    query: str, documents: list[str], model_name: str = "ms-marco-MiniLM-L-6-v2", top_k: int = 5
 ) -> list[str]:
     """Rerank documents using default settings.
 
@@ -291,6 +277,8 @@ class PassThroughReranker:
         """Return documents in original order."""
         return documents[:top_k] if top_k else documents
 
-    def rerank_with_scores(self, query: str, documents: list[str], top_k: int | None = None) -> list[tuple[str, float]]:
+    def rerank_with_scores(
+        self, query: str, documents: list[str], top_k: int | None = None
+    ) -> list[tuple[str, float]]:
         """Return documents with dummy scores."""
         return [(doc, 0.0) for doc in (documents[:top_k] if top_k else documents)]

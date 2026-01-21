@@ -20,6 +20,7 @@ Usage:
     python scripts/update_validator_imports.py --dry-run
     python scripts/update_validator_imports.py
 """
+
 from __future__ import annotations
 
 import argparse
@@ -142,8 +143,8 @@ def update_imports_in_file(file_path: Path, dry_run: bool = False) -> list[str]:
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Update legacy validator imports')
-    parser.add_argument('--dry-run', action='store_true', help='Show what would be done')
+    parser = argparse.ArgumentParser(description="Update legacy validator imports")
+    parser.add_argument("--dry-run", action="store_true", help="Show what would be done")
     args = parser.parse_args()
 
     print("=" * 70)

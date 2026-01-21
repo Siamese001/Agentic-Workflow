@@ -13,5 +13,5 @@ __all__ = [
     "ExecutionPhase",
     "ExecutionContext",
     "AgentResult",
-    "MissionResult"
+    "MissionResult",
 ]

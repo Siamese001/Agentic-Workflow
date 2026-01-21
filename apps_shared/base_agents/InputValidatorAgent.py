@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, state, workflow
@@ -33,6 +32,7 @@ class ValidationType(Enum):
     Defines the various data types and formats that can be validated,
     including primitives, collections, and structured data formats.
     """
+
     STRING = "string"
     INTEGER = "integer"
     FLOAT = "float"
@@ -68,6 +68,7 @@ class ValidationRule:
         custom_validator: Custom validation function
         sanitize: Whether to sanitize input
     """
+
     name: str
     validation_type: ValidationType
     required: bool = True
@@ -97,6 +98,7 @@ class InputValidationError(Exception):
         self.message = message
         self.value = value
         super().__init__(f"Validation failed for {field}: {message}")
+
 
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
@@ -181,7 +183,14 @@ class InputValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
 
         return validated
 
-    def _validate_single_field(self, field: str, rule: ValidationRule, data: dict[str, Any], validated: dict[str, Any], errors: list[InputValidationError]) -> None:
+    def _validate_single_field(
+        self,
+        field: str,
+        rule: ValidationRule,
+        data: dict[str, Any],
+        validated: dict[str, Any],
+        errors: list[InputValidationError],
+    ) -> None:
         """Validate a single field and add to validated dict or errors list."""
         try:
             value = data.get(field)
@@ -211,7 +220,9 @@ class InputValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
         """Raise validation errors if any exist."""
         if errors:
             error_messages = [f"{e.field}: {e.message}" for e in errors]
-            raise InputValidationError("multiple", f"Validation failed: {', '.join(error_messages)}")
+            raise InputValidationError(
+                "multiple", f"Validation failed: {', '.join(error_messages)}"
+            )
 
     def _validate_length(self, field: str, value: Any, rule: ValidationRule) -> None:
         """Validate length constraints."""
@@ -303,7 +314,9 @@ class InputValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
         return float(value)
 
     def _convert_boolean(self, value: Any) -> bool:
-        return value.lower() in ('true', '1', 'yes', 'on') if isinstance(value, str) else bool(value)
+        return (
+            value.lower() in ("true", "1", "yes", "on") if isinstance(value, str) else bool(value)
+        )
 
     def _convert_list(self, value: Any) -> list:
         if isinstance(value, str):
@@ -368,7 +381,7 @@ class InputValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
                     rule = ValidationRule(
                         prop,
                         self._get_validation_type_from_schema(prop_schema),
-                        required=schema.get("required", {}).get(prop, False)
+                        required=schema.get("required", {}).get(prop, False),
                     )
                     validator.add_rule(prop, rule)
                     validator.validate({prop: value[prop]}, strict=False)
@@ -405,7 +418,7 @@ class InputValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
             "number": ValidationType.FLOAT,
             "boolean": ValidationType.BOOLEAN,
             "array": ValidationType.LIST,
-            "object": ValidationType.DICT
+            "object": ValidationType.DICT,
         }
         return type_map.get(schema.get("type", "string"), ValidationType.STRING)
 
@@ -421,14 +434,20 @@ class InputValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
         """
         if isinstance(value, str):
             # Remove control characters
-            value = ''.join(char for char in value if ord(char) >= 32 or char in '\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\n\r\t')
+            value = "".join(
+                char
+                for char in value
+                if ord(char) >= 32
+                or char
+                in "\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\n\r\t"
+            )
 
             # Limit length
             if rule.max_length:
-                value = value[:rule.max_length]
+                value = value[: rule.max_length]
 
             # Normalize whitespace
-            value = ' '.join(value.split())
+            value = " ".join(value.split())
 
         elif isinstance(value, list):
             # Remove None values
@@ -436,12 +455,14 @@ class InputValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
 
             # Limit length
             if rule.max_length:
-                value = value[:rule.max_length]
+                value = value[: rule.max_length]
 
         return value
 
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict[str, Any]:
         """
         Wired Input Validation Healing - Validates input schemas and sanitizes fields.
 
@@ -463,39 +484,39 @@ class InputValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
 
         try:
             # Wired Orphan: _validate_single_field
-            if hasattr(self, '_validate_single_field'):
+            if hasattr(self, "_validate_single_field"):
                 Logger.debug(f"[{self.__class__.__name__}] Invoking _validate_single_field")
 
             # Wired Orphan: _check_unknown_fields
-            if hasattr(self, '_check_unknown_fields'):
+            if hasattr(self, "_check_unknown_fields"):
                 Logger.debug(f"[{self.__class__.__name__}] Invoking _check_unknown_fields")
 
             # Wired Orphan: _validate_length
-            if hasattr(self, '_validate_length'):
+            if hasattr(self, "_validate_length"):
                 Logger.debug(f"[{self.__class__.__name__}] Invoking _validate_length")
 
             # Wired Orphan: _validate_value_range
-            if hasattr(self, '_validate_value_range'):
+            if hasattr(self, "_validate_value_range"):
                 Logger.debug(f"[{self.__class__.__name__}] Invoking _validate_value_range")
 
             # Wired Orphan: _validate_pattern_and_allowed
-            if hasattr(self, '_validate_pattern_and_allowed'):
+            if hasattr(self, "_validate_pattern_and_allowed"):
                 Logger.debug(f"[{self.__class__.__name__}] Invoking _validate_pattern_and_allowed")
 
             # Wired Orphan: _validate_field
-            if hasattr(self, '_validate_field'):
+            if hasattr(self, "_validate_field"):
                 Logger.debug(f"[{self.__class__.__name__}] Invoking _validate_field")
 
             # Wired Orphan: _validate_type
-            if hasattr(self, '_validate_type'):
+            if hasattr(self, "_validate_type"):
                 Logger.debug(f"[{self.__class__.__name__}] Invoking _validate_type")
 
             # Wired Orphan: _validate_json_schema
-            if hasattr(self, '_validate_json_schema'):
+            if hasattr(self, "_validate_json_schema"):
                 Logger.debug(f"[{self.__class__.__name__}] Invoking _validate_json_schema")
 
             # Wired Orphan: _validate_dict_schema
-            if hasattr(self, '_validate_dict_schema'):
+            if hasattr(self, "_validate_dict_schema"):
                 Logger.debug(f"[{self.__class__.__name__}] Invoking _validate_dict_schema")
 
         except Exception as e:
@@ -513,40 +534,32 @@ COMMON_RULES = {
         required=True,
         min_length=1,
         max_length=100,
-        pattern=r"^[a-zA-Z0-9_-]+$"
+        pattern=r"^[a-zA-Z0-9_-]+$",
     ),
     "context_data": ValidationRule(
         "context_data",
         ValidationType.DICT,
         required=False,
-        max_length=1000  # Max 1000 keys
+        max_length=1000,  # Max 1000 keys
     ),
     "retry_count": ValidationRule(
-        "retry_count",
-        ValidationType.INTEGER,
-        required=False,
-        min_value=0,
-        max_value=10
+        "retry_count", ValidationType.INTEGER, required=False, min_value=0, max_value=10
     ),
     "timeout": ValidationRule(
-        "timeout",
-        ValidationType.FLOAT,
-        required=False,
-        min_value=0.1,
-        max_value=300.0
+        "timeout", ValidationType.FLOAT, required=False, min_value=0.1, max_value=300.0
     ),
     "json_payload": ValidationRule(
         "json_payload",
         ValidationType.JSON,
         required=False,
-        max_length=10000  # Max 10KB
+        max_length=10000,  # Max 10KB
     ),
     "xml_content": ValidationRule(
         "xml_content",
         ValidationType.XML,
         required=False,
-        max_length=50000  # Max 50KB
-    )
+        max_length=50000,  # Max 50KB
+    ),
 }
 
 
@@ -576,17 +589,17 @@ class ValidatedInput(BaseModel):
         # Extra fields forbidden
         extra = "forbid"
 
-    @validator('*')
+    @validator("*")
     def sanitize_strings(cls, v):
         """Sanitize string fields."""
         if isinstance(v, str):
             # Remove control characters
-            v = ''.join(char for char in v if ord(char) >= 32 or char in '\n\r\t')
+            v = "".join(char for char in v if ord(char) >= 32 or char in "\n\r\t")
             # Strip whitespace
             v = v.strip()
         return v
 
-    @validator('*')
+    @validator("*")
     def check_size(cls, v):
         """Check size limits."""
         if isinstance(v, str) and len(v) > 10000:
@@ -596,7 +609,9 @@ class ValidatedInput(BaseModel):
         return v
 
 
-def validate_with_pydantic(data: dict[str, Any], model_class: type[ValidatedInput]) -> ValidatedInput:
+def validate_with_pydantic(
+    data: dict[str, Any], model_class: type[ValidatedInput]
+) -> ValidatedInput:
     """Validate data using Pydantic model.
 
     Args:
@@ -615,6 +630,6 @@ def validate_with_pydantic(data: dict[str, Any], model_class: type[ValidatedInpu
         # Convert to InputValidationError for consistency
         errors = []
         for error in e.errors():
-            field = '.'.join(str(x) for x in error['loc'])
+            field = ".".join(str(x) for x in error["loc"])
             errors.append(f"{field}: {error['msg']}")
         raise InputValidationError("pydantic", f"Validation failed: {', '.join(errors)}")

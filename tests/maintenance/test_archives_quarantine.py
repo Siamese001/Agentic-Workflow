@@ -43,12 +43,12 @@ def test_ssot_global_excluded_dirs():
     try:
         from agentic_core.L5_safety.validators.structure_blueprint import GLOBAL_EXCLUDED_DIRS
 
-        if 'archives' in GLOBAL_EXCLUDED_DIRS:
+        if "archives" in GLOBAL_EXCLUDED_DIRS:
             test_pass("ARCHIVES", "'archives' in GLOBAL_EXCLUDED_DIRS")
         else:
             test_fail("ARCHIVES", "'archives' NOT in GLOBAL_EXCLUDED_DIRS")
 
-        if '.sovereign_healing_backup' in GLOBAL_EXCLUDED_DIRS:
+        if ".sovereign_healing_backup" in GLOBAL_EXCLUDED_DIRS:
             test_pass("BACKUP", "'.sovereign_healing_backup' in GLOBAL_EXCLUDED_DIRS")
         else:
             test_fail("BACKUP", "'.sovereign_healing_backup' NOT in GLOBAL_EXCLUDED_DIRS")
@@ -66,12 +66,12 @@ def test_ssot_sovereign_excluded_folders():
     try:
         from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_EXCLUDED_FOLDERS
 
-        if 'archives' in SOVEREIGN_EXCLUDED_FOLDERS:
+        if "archives" in SOVEREIGN_EXCLUDED_FOLDERS:
             test_pass("ARCHIVES", "'archives' in SOVEREIGN_EXCLUDED_FOLDERS")
         else:
             test_fail("ARCHIVES", "'archives' NOT in SOVEREIGN_EXCLUDED_FOLDERS")
 
-        if '.sovereign_healing_backup' in SOVEREIGN_EXCLUDED_FOLDERS:
+        if ".sovereign_healing_backup" in SOVEREIGN_EXCLUDED_FOLDERS:
             test_pass("BACKUP", "'.sovereign_healing_backup' in SOVEREIGN_EXCLUDED_FOLDERS")
         else:
             test_fail("BACKUP", "'.sovereign_healing_backup' NOT in SOVEREIGN_EXCLUDED_FOLDERS")
@@ -92,9 +92,9 @@ def test_sovereign_index_exclusion():
         test_fail("FILE", "sovereign_index.py not found")
         return
 
-    content = index_path.read_text(encoding='utf-8')
+    content = index_path.read_text(encoding="utf-8")
 
-    if "'archives'" in content and 'DEFAULT_EXCLUDED_DIRS' in content:
+    if "'archives'" in content and "DEFAULT_EXCLUDED_DIRS" in content:
         test_pass("ARCHIVES", "'archives' in DEFAULT_EXCLUDED_DIRS")
     else:
         test_fail("ARCHIVES", "'archives' NOT in DEFAULT_EXCLUDED_DIRS")
@@ -117,9 +117,9 @@ def test_duplicate_detector_exclusion():
         test_fail("FILE", "DuplicateCodeDetectorAgent.py not found")
         return
 
-    content = detector_path.read_text(encoding='utf-8')
+    content = detector_path.read_text(encoding="utf-8")
 
-    if 'ARCHIVES_DIR' in content and 'EXCLUDE_DIRS' in content:
+    if "ARCHIVES_DIR" in content and "EXCLUDE_DIRS" in content:
         test_pass("ARCHIVES", "ARCHIVES_DIR in EXCLUDE_DIRS")
     else:
         test_fail("ARCHIVES", "ARCHIVES_DIR NOT in EXCLUDE_DIRS")
@@ -141,14 +141,14 @@ def test_conftest_quarantine():
         test_fail("FILE", "conftest.py not found")
         return
 
-    content = conftest_path.read_text(encoding='utf-8')
+    content = conftest_path.read_text(encoding="utf-8")
 
-    if 'QUARANTINED_DIRS' in content:
+    if "QUARANTINED_DIRS" in content:
         test_pass("CONSTANT", "QUARANTINED_DIRS constant defined")
     else:
         test_fail("CONSTANT", "QUARANTINED_DIRS constant NOT defined")
 
-    if 'is_quarantined_path' in content:
+    if "is_quarantined_path" in content:
         test_pass("FUNCTION", "is_quarantined_path function defined")
     else:
         test_fail("FUNCTION", "is_quarantined_path function NOT defined")
@@ -170,16 +170,16 @@ def test_canon_validator_no_archives_import():
         test_fail("FILE", "canon_validator_agentic_v2_thin.py not found")
         return
 
-    content = validator_path.read_text(encoding='utf-8')
+    content = validator_path.read_text(encoding="utf-8")
 
     # Check for imports from archives (should NOT exist)
-    if 'from archives.' in content or 'import archives.' in content:
+    if "from archives." in content or "import archives." in content:
         test_fail("NO_ARCHIVES_IMPORT", "Still imports from archives/")
     else:
         test_pass("NO_ARCHIVES_IMPORT", "No imports from archives/")
 
     # Check for correct terminal_colors import
-    if 'from agentic_core.utils.terminal_colors import' in content:
+    if "from agentic_core.utils.terminal_colors import" in content:
         test_pass("TERMINAL_COLORS", "terminal_colors imported from correct location")
     else:
         test_fail("TERMINAL_COLORS", "terminal_colors NOT imported from correct location")

@@ -1,4 +1,5 @@
 """Debug script to identify invocation pipeline discrepancy."""
+
 import json
 from pathlib import Path
 
@@ -24,7 +25,7 @@ print(f"Registry paths: {len(registry_by_path)}")
 # Count invocation from JSON
 inv_counts = {}
 for entry in registry:
-    inv = entry.get('invocation', 'Missing')
+    inv = entry.get("invocation", "Missing")
     inv_counts[inv] = inv_counts.get(inv, 0) + 1
 print(f"JSON invocation counts: {inv_counts}")
 

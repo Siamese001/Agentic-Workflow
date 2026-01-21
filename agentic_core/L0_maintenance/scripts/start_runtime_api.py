@@ -27,6 +27,7 @@ API Endpoints:
     GET /api/metrics/latency            - API latency metrics
     POST /api/meta-learning/experience  - Record new experience
 """
+
 import argparse
 import sys
 from pathlib import Path
@@ -35,13 +36,16 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
+
 def main():
     """Start the Runtime API server."""
     parser = argparse.ArgumentParser(description="Start Runtime API Server")
     parser.add_argument("--host", default="0.0.0.0", help="Host to bind to (default: 0.0.0.0)")
     parser.add_argument("--port", type=int, default=8081, help="Port to listen on (default: 8081)")
     parser.add_argument("--reload", action="store_true", help="Enable auto-reload for development")
-    parser.add_argument("--workers", type=int, default=1, help="Number of worker processes (default: 1)")
+    parser.add_argument(
+        "--workers", type=int, default=1, help="Number of worker processes (default: 1)"
+    )
     args = parser.parse_args()
 
     print("=" * 70)
@@ -78,7 +82,7 @@ def main():
             port=args.port,
             reload=args.reload,
             workers=args.workers if not args.reload else 1,
-            log_level="info"
+            log_level="info",
         )
     except ImportError as e:
         print(f"\n❌ Error: Missing dependency - {e}")

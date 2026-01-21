@@ -7,6 +7,7 @@ This script:
 2. For each agent class, adds a heal_repository() method that calls super().heal_repository()
 3. This converts "Inherited" → "Yes" status, maximizing invocation %
 """
+
 import ast
 import json
 from pathlib import Path
@@ -24,11 +25,12 @@ HEAL_METHOD_TEMPLATE = '''
         return super().heal_repository()
 '''
 
+
 def load_inherited_agents() -> list[dict]:
     """Load agents with invocation='Inherited' status."""
-    with open(DISCOVERY_JSON, encoding='utf-8') as f:
+    with open(DISCOVERY_JSON, encoding="utf-8") as f:
         agents = json.load(f)
-    return [a for a in agents if a.get('invocation') == 'Inherited']
+    return [a for a in agents if a.get("invocation") == "Inherited"]
 
 
 def find_class_end(source: str, class_name: str) -> tuple[int, int]:
@@ -44,7 +46,7 @@ def find_class_end(source: str, class_name: str) -> tuple[int, int]:
             if node.body:
                 last_node = node.body[-1]
                 # Get end line of last node
-                end_line = getattr(last_node, 'end_lineno', last_node.lineno)
+                end_line = getattr(last_node, "end_lineno", last_node.lineno)
                 # Find indentation
                 lines = source.splitlines()
                 if node.body:
@@ -69,7 +71,7 @@ def has_heal_repository(source: str, class_name: str) -> bool:
     for node in ast.walk(tree):
         if isinstance(node, ast.ClassDef) and node.name == class_name:
             for item in node.body:
-                if isinstance(item, ast.FunctionDef) and item.name == 'heal_repository':
+                if isinstance(item, ast.FunctionDef) and item.name == "heal_repository":
                     return True
     return False
 
@@ -77,7 +79,7 @@ def has_heal_repository(source: str, class_name: str) -> bool:
 def add_heal_repository(file_path: Path, class_name: str) -> bool:
     """Add heal_repository method to a class."""
     try:
-        source = file_path.read_text(encoding='utf-8')
+        source = file_path.read_text(encoding="utf-8")
     except Exception as e:
         print(f"  [ERROR] Cannot read {file_path}: {e}")
         return False
@@ -95,23 +97,27 @@ def add_heal_repository(file_path: Path, class_name: str) -> bool:
 
     # Create indented method
     method_lines = HEAL_METHOD_TEMPLATE.strip().splitlines()
-    indented_method = '\n' + '\n'.join(' ' * indent + line if line.strip() else '' for line in method_lines) + '\n'
+    indented_method = (
+        "\n"
+        + "\n".join(" " * indent + line if line.strip() else "" for line in method_lines)
+        + "\n"
+    )
 
     # Insert method at end of class
     lines = source.splitlines(keepends=True)
 
     # Find actual insertion point (after last line of class body)
     insert_idx = end_line
-    while insert_idx < len(lines) and lines[insert_idx - 1].strip() == '':
+    while insert_idx < len(lines) and lines[insert_idx - 1].strip() == "":
         insert_idx += 1
 
     # Insert the method
     new_lines = lines[:end_line] + [indented_method] + lines[end_line:]
-    new_source = ''.join(new_lines)
+    new_source = "".join(new_lines)
 
     # Write back
     try:
-        file_path.write_text(new_source, encoding='utf-8')
+        file_path.write_text(new_source, encoding="utf-8")
         print(f"  [ADDED] heal_repository to {class_name}")
         return True
     except Exception as e:
@@ -130,8 +136,8 @@ def main():
     # Group by file to avoid multiple writes
     by_file: dict[str, list[str]] = {}
     for agent in agents:
-        path = agent.get('path', '')
-        class_name = agent.get('class_name', '')
+        path = agent.get("path", "")
+        class_name = agent.get("class_name", "")
         if path and class_name:
             full_path = str(PROJECT_ROOT / path)
             if full_path not in by_file:

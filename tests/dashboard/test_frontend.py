@@ -6,6 +6,7 @@ Tests for dashboard frontend components.
 
 Migrated from: agentic_core/L0_maintenance/scripts/test_phase3_phase4_frontend.py
 """
+
 import sys
 from pathlib import Path
 
@@ -28,9 +29,9 @@ class TestMetaLearningPanel:
         """Verify meta-learning panel classes are defined."""
         js_file = js_dir / "components" / "meta-learning-panel.js"
         if js_file.exists():
-            content = js_file.read_text(encoding='utf-8')
+            content = js_file.read_text(encoding="utf-8")
             # Check for class definition or window export (actual class is MetaLearningDashboard)
-            assert 'MetaLearning' in content, "MetaLearning classes not found in file"
+            assert "MetaLearning" in content, "MetaLearning classes not found in file"
 
 
 @pytest.mark.dashboard
@@ -46,9 +47,9 @@ class TestRedisMonitor:
         """Verify Redis monitor classes are defined."""
         js_file = js_dir / "components" / "redis-monitor.js"
         if js_file.exists():
-            content = js_file.read_text(encoding='utf-8')
+            content = js_file.read_text(encoding="utf-8")
             # Actual class is RedisOperationCounter/RedisOperationLog
-            assert 'Redis' in content, "Redis classes not found in file"
+            assert "Redis" in content, "Redis classes not found in file"
 
 
 @pytest.mark.dashboard
@@ -64,9 +65,9 @@ class TestPineconeMonitor:
         """Verify Pinecone monitor classes are defined."""
         js_file = js_dir / "components" / "pinecone-monitor.js"
         if js_file.exists():
-            content = js_file.read_text(encoding='utf-8')
+            content = js_file.read_text(encoding="utf-8")
             # Actual class is PineconeOperationsDashboard
-            assert 'Pinecone' in content, "Pinecone classes not found in file"
+            assert "Pinecone" in content, "Pinecone classes not found in file"
 
 
 @pytest.mark.dashboard
@@ -82,9 +83,11 @@ class TestExecutionFlow:
         """Verify ExecutionFlow class is defined."""
         js_file = js_dir / "components" / "execution-flow.js"
         if js_file.exists():
-            content = js_file.read_text(encoding='utf-8')
+            content = js_file.read_text(encoding="utf-8")
             # Check for any execution flow related class
-            assert 'Execution' in content or 'Timeline' in content, "Execution flow classes not found"
+            assert "Execution" in content or "Timeline" in content, (
+                "Execution flow classes not found"
+            )
 
 
 @pytest.mark.dashboard
@@ -100,5 +103,5 @@ class TestMetaLearningController:
         """Verify controller has polling functionality."""
         js_file = js_dir / "controllers" / "meta-learning-controller.js"
         if js_file.exists():
-            content = js_file.read_text(encoding='utf-8')
-            assert 'poll' in content.lower() or 'interval' in content.lower()
+            content = js_file.read_text(encoding="utf-8")
+            assert "poll" in content.lower() or "interval" in content.lower()

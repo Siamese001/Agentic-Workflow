@@ -8,7 +8,9 @@ def test_full_pipeline_pass_rate():
     stack = OutreachStack(ReasoningToggles())
     samples = [
         SimpleNamespace(prompt="Excited to connect", company_id="ACME", contact_id="C1"),
-        SimpleNamespace(prompt="Shared interest in innovation", company_id="OMEGA", contact_id="C2"),
+        SimpleNamespace(
+            prompt="Shared interest in innovation", company_id="OMEGA", contact_id="C2"
+        ),
         SimpleNamespace(prompt="Curious about collaboration", company_id="BETA", contact_id="C3"),
     ]
     passes = 0
@@ -21,8 +23,8 @@ def test_full_pipeline_pass_rate():
     assert passes / len(samples) >= 0.85
     assert stack.validator.metrics.pass_rate() >= 0.85
     failing_drafts = [
-        "Subject: Follow up\n\n" +
-        " ".join(
+        "Subject: Follow up\n\n"
+        + " ".join(
             [
                 "This detailed note maintains substantial context for evaluation",
                 "and demonstrates reflective intent with customer centric framing",
@@ -30,10 +32,10 @@ def test_full_pipeline_pass_rate():
                 "The narrative reiterates partnership opportunities across multiple domains",
                 "and reinforces diligence in aligning outcomes with stakeholder needs",
             ]
-        ) +
-        "\nCTA: Would a quick sync be useful?\nBest regards,\nLIC Outreach Bot",
-        "Subject: Quick ping\n\n" +
-        " ".join(
+        )
+        + "\nCTA: Would a quick sync be useful?\nBest regards,\nLIC Outreach Bot",
+        "Subject: Quick ping\n\n"
+        + " ".join(
             [
                 "Here is another comprehensive paragraph designed to hold steady token counts",
                 "showing empathy and curiosity about mutual goals",
@@ -41,8 +43,8 @@ def test_full_pipeline_pass_rate():
                 "The structure acknowledges prior interactions and commitments",
                 "and articulates the shared momentum behind the outreach",
             ]
-        ) +
-        "\nCTA: Can we schedule a short intro?\nBest regards,\nLIC Outreach Bot",
+        )
+        + "\nCTA: Can we schedule a short intro?\nBest regards,\nLIC Outreach Bot",
     ]
     for failing in failing_drafts:
         verdict = stack.validator.check(

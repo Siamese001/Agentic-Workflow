@@ -13,8 +13,11 @@ from typing import Any
 
 from agentic_core.action_node_modules import ActionNodeCore, SecureToolsImpl
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-Logger: Any = logging.getLogger('ActionNode')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+Logger: Any = logging.getLogger("ActionNode")
+
 
 class ActionNode:
     """
@@ -23,7 +26,7 @@ class ActionNode:
     Security: STRICT WHITELIST of allowed tools.
     """
 
-    def __init__(self, work_dir: str='./workspace'):
+    def __init__(self, work_dir: str = "./workspace"):
         """
         Initializes the ActionNode with a specified working directory.
 
@@ -32,13 +35,18 @@ class ActionNode:
         """
         self.work_dir: Path = Path(work_dir).resolve()
         self.tools_impl = SecureToolsImpl(self.work_dir)
-        self.allowed_tools: dict[str, Any] = {'write_file': self.tools_impl.tool_write_file, 'read_file': self.tools_impl.tool_read_file, 'list_files': self.tools_impl.tool_list_files, 'run_command': self.tools_impl.tool_run_command}
+        self.allowed_tools: dict[str, Any] = {
+            "write_file": self.tools_impl.tool_write_file,
+            "read_file": self.tools_impl.tool_read_file,
+            "list_files": self.tools_impl.tool_list_files,
+            "run_command": self.tools_impl.tool_run_command,
+        }
         self.core = ActionNodeCore(str(self.work_dir), self.allowed_tools)
         if not self.work_dir.exists():
-            Logger.info(f'Creating workspace directory: {self.work_dir}')
+            Logger.info(f"Creating workspace directory: {self.work_dir}")
             self.work_dir.mkdir(parents=True)
         else:
-            Logger.info(f'Using existing workspace directory: {self.work_dir}')
+            Logger.info(f"Using existing workspace directory: {self.work_dir}")
 
     def execute_plan(self, plan: dict[str, Any]) -> dict[str, Any]:
         """
@@ -53,4 +61,6 @@ class ActionNode:
                             of each executed step.
         """
         return self.core.execute_plan(plan)
-__all__ = ['ActionNode']
+
+
+__all__ = ["ActionNode"]

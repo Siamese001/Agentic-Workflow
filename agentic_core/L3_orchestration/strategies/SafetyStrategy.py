@@ -10,6 +10,7 @@ SSOT PRINCIPLE:
     All safety-related orchestration flows through this strategy,
     which is injected into UnifiedOrchestratorAgent.
 """
+
 from __future__ import annotations
 
 import logging
@@ -83,27 +84,33 @@ class SafetyStrategy:
                 from agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent import (
                     UnifiedCodeValidatorAgent,
                 )
+
                 return UnifiedCodeValidatorAgent(project_root=self.project_root)
             elif agent_name == "HygieneGuardianAgent":
                 from agentic_core.L5_safety.validators.HygieneGuardianAgent import (
                     HygieneGuardianAgent,
                 )
+
                 return HygieneGuardianAgent(project_root=self.project_root)
             elif agent_name == "NamingAgent":
                 from agentic_core.L5_safety.validators.NamingAgent import NamingAgent
+
                 return NamingAgent(project_root=self.project_root)
             elif agent_name == "LocationAgent":
                 from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+
                 return LocationAgent(project_root=self.project_root)
             elif agent_name == "UnifiedStructureEnforcerAgent":
                 from agentic_core.L5_safety.unified.UnifiedStructureEnforcerAgent import (
                     UnifiedStructureEnforcerAgent,
                 )
+
                 return UnifiedStructureEnforcerAgent(project_root=self.project_root)
             elif agent_name == "StructuralHealerAgent":
                 from agentic_core.L5_safety.validators.StructuralHealerAgent import (
                     StructuralHealerAgent,
                 )
+
                 return StructuralHealerAgent(project_root=self.project_root)
             else:
                 Logger.warning(f"[SafetyStrategy] Unknown agent: {agent_name}")
@@ -118,7 +125,7 @@ class SafetyStrategy:
         agent_name: str,
         dry_run: bool = True,
         execute: bool = False,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> dict[str, Any]:
         """
         Execute a single agent and return results.
@@ -134,10 +141,11 @@ class SafetyStrategy:
             Dictionary with execution results
         """
         import time
+
         start_time = time.time()
 
         try:
-            if hasattr(agent, 'heal_repository'):
+            if hasattr(agent, "heal_repository"):
                 result = agent.heal_repository(dry_run=dry_run, execute=execute)
                 execution_time_ms = (time.time() - start_time) * 1000
 
@@ -167,10 +175,7 @@ class SafetyStrategy:
             }
 
     def should_abort_tier(
-        self,
-        tier_name: str,
-        tier_results: list[dict[str, Any]],
-        execute: bool
+        self, tier_name: str, tier_results: list[dict[str, Any]], execute: bool
     ) -> bool:
         """
         Determine if execution should abort after a tier.

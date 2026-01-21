@@ -5,13 +5,15 @@ from typing import Any
 # TODO: Replace 'from .constitutional_ai_enums import *' with explicit imports
 # # from .constitutional_ai_enums import *  # Star import removed
 
+
 @dataclass
 class ConstitutionalPrinciple:
     """A constitutional principle for AI governance."""
+
     id: str
     name: str
-    description: str = ''
-    category: str = 'general'
+    description: str = ""
+    category: str = "general"
     priority: int = 0
     examples: list[str] = None
     definition: str | None = None
@@ -23,9 +25,11 @@ class ConstitutionalPrinciple:
         if self.definition and (not self.description):
             self.description = self.definition
 
+
 @dataclass
 class LLMJudgment:
     """Judgment from an LLM on content compliance."""
+
     principle: str
     is_compliant: bool
     confidence: float
@@ -41,9 +45,11 @@ class LLMJudgment:
         """Get principle ID (alias for principle)."""
         return self.principle
 
+
 @dataclass
 class ConstitutionalRule:
     """A single constitutional rule."""
+
     id: str
     name: str
     type: RuleType
@@ -57,9 +63,11 @@ class ConstitutionalRule:
         if self.keywords is None:
             self.keywords = []
 
+
 @dataclass
 class ViolationReport:
     """Report of a rule violation."""
+
     rule_id: str
     rule_name: str
     violation_type: ViolationType
@@ -68,9 +76,11 @@ class ViolationReport:
     matched_text: str | None = None
     confidence: float = 0.0
 
+
 @dataclass
 class ConstitutionalReviewResult:
     """Result of constitutional review."""
+
     approved: bool
     violations: list[ViolationReport]
     score: float

@@ -15,14 +15,16 @@ def remove_duplicates():
     dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
 
     print("Reading dashboard HTML...")
-    lines = dashboard_path.read_text(encoding='utf-8').splitlines(keepends=True)
+    lines = dashboard_path.read_text(encoding="utf-8").splitlines(keepends=True)
 
     # Line numbers to remove (keep first at 1427, remove others)
     # Convert to 0-indexed
     lines_to_remove_start = [10187 - 1, 18947 - 1, 27567 - 1, 36187 - 1]
 
     print(f"Total lines: {len(lines)}")
-    print(f"Removing duplicate realAgentData declarations at lines: {[l+1 for l in lines_to_remove_start]}")
+    print(
+        f"Removing duplicate realAgentData declarations at lines: {[l + 1 for l in lines_to_remove_start]}"
+    )
 
     # For each duplicate, find the end of the declaration (the closing };)
     ranges_to_remove = []
@@ -30,7 +32,7 @@ def remove_duplicates():
     for start_line in lines_to_remove_start:
         # Find the comment line before it
         comment_line = start_line - 1
-        if comment_line >= 0 and 'Real per-agent data' in lines[comment_line]:
+        if comment_line >= 0 and "Real per-agent data" in lines[comment_line]:
             # Find the closing }; after the declaration
             end_line = start_line
             brace_count = 0
@@ -38,26 +40,27 @@ def remove_duplicates():
 
             for i in range(start_line, min(start_line + 10000, len(lines))):
                 line = lines[i]
-                if '{' in line:
-                    brace_count += line.count('{')
+                if "{" in line:
+                    brace_count += line.count("{")
                     found_start = True
-                if '}' in line:
-                    brace_count -= line.count('}')
-                    if found_start and brace_count == 0 and '};' in line:
+                if "}" in line:
+                    brace_count -= line.count("}")
+                    if found_start and brace_count == 0 and "};" in line:
                         end_line = i
                         break
 
             ranges_to_remove.append((comment_line, end_line))
-            print(f"  Range: lines {comment_line+1} to {end_line+1}")
+            print(f"  Range: lines {comment_line + 1} to {end_line + 1}")
 
     # Remove ranges in reverse order to preserve indices
     for start, end in reversed(ranges_to_remove):
-        del lines[start:end+1]
+        del lines[start : end + 1]
 
     # Write back
-    dashboard_path.write_text(''.join(lines), encoding='utf-8')
+    dashboard_path.write_text("".join(lines), encoding="utf-8")
     print(f"✅ Removed {len(ranges_to_remove)} duplicate declarations")
     print(f"   New file has {len(lines)} lines")
+
 
 if __name__ == "__main__":
     remove_duplicates()

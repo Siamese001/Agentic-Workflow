@@ -24,11 +24,7 @@ class HallucinationDetector:
         Returns:
             Dictionary with check results
         """
-        return {
-            "is_hallucination": False,
-            "confidence": 0.95,
-            "issues": []
-        }
+        return {"is_hallucination": False, "confidence": 0.95, "issues": []}
 
     def validate_resume_content(self, resume_data: dict[str, Any]) -> dict[str, Any]:
         """
@@ -40,8 +36,4 @@ class HallucinationDetector:
         Returns:
             Validation results
         """
-        return {
-            "valid": True,
-            "warnings": [],
-            "score": 0.95
-        }
+        return {"valid": True, "warnings": [], "score": 0.95}

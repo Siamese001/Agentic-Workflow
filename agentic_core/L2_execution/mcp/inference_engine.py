@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: guardrail, healer, memory, orchestrator, validator, workflow
@@ -8,7 +7,7 @@ from __future__ import annotations
 
 import logging
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
 import os
 import time
@@ -34,14 +33,17 @@ from agentic_core.runtime.shared_runtime.SemanticCache import (
 # NAMING FIXED: HardStateProtocol → HardStateProtocol
 class HardStateProtocol(Protocol):
     """Protocol for the HardState attribute of SignalContext."""
+
     execution_id: str
     node_id: str
+
     def add_trace(self, EVENT: str, DATA: dict[str, Any]) -> HardStateProtocol: ...
 
 
 # NAMING FIXED: SignalContextProtocol → SignalContextProtocol
 class SignalContextProtocol(Protocol):
     """Protocol for SignalContext to allow dependency injection."""
+
     def get_thermal_params(self) -> dict[str, float]: ...
 
     def get_anchored_context(self) -> str | None: ...
@@ -58,9 +60,11 @@ class SignalContextProtocol(Protocol):
 # NAMING FIXED: LOGGER → Logger
 Logger = logging.getLogger(__name__)
 
+
 # NAMING FIXED: Provider → Provider
 class Provider(str, Enum):
     """Enum for supported LLM providers."""
+
     OPENAI = "openai"
     ANTHROPIC = "anthropic"
     GOOGLE = "google"
@@ -69,6 +73,7 @@ class Provider(str, Enum):
     TOGETHER = "together"
     FIREWORKS = "fireworks"
 
+
 # --- LLM Client Wrappers for OpenAI-compatible interface ---
 # These wrappers ensure that all LLM clients expose a `chat.completions.create` method
 # with an OpenAI-like response structure, as expected by InferenceEngine.infer.
@@ -76,35 +81,46 @@ class Provider(str, Enum):
 # responses, so these wrappers will return non-streaming-like objects even if `stream=True`
 # is passed to their `create` method.
 
+
 # NAMING FIXED: OpenAIClientWrapper → OpenAiClientWrapper
 class OpenAiClientWrapper:
     """Wrapper for OpenAI client to provide a consistent interface."""
+
     def __init__(self, client: openai.AsyncOpenAI):
         self._client = client
 
     @property
     def chat(self):
-
         return self._client.chat
+
 
 # NAMING FIXED: AnthropicClientWrapper → AnthropicClientWrapper
 class AnthropicClientWrapper:
     """Wrapper for Anthropic client to conform to OpenAI chat.completions.create interface."""
+
     def __init__(self, client: anthropic.AsyncAnthropic):
         self._client = client
 
     @property
     def chat(self):
-
         return self
 
     @property
     def completions(self):
-
         return self
 
-    async def create(self, messages: list[dict[str, Any]], model: str, temperature: float, top_p: float, frequency_penalty: float, presence_penalty: float, stream: bool, max_tokens: int | None = None, **kwargs) -> Any:
-
+    async def create(
+        self,
+        messages: list[dict[str, Any]],
+        model: str,
+        temperature: float,
+        top_p: float,
+        frequency_penalty: float,
+        presence_penalty: float,
+        stream: bool,
+        max_tokens: int | None = None,
+        **kwargs,
+    ) -> Any:
         anthropic_messages = []
         for msg in messages:
             if msg["role"] == "user":
@@ -116,7 +132,7 @@ class AnthropicClientWrapper:
 
         # Anthropic requires max_tokens
         if max_tokens is None:
-            max_tokens = 1024 # Default if not provided by request
+            max_tokens = 1024  # Default if not provided by request
 
         response = await self._client.messages.create(
             model=model,
@@ -126,38 +142,43 @@ class AnthropicClientWrapper:
             top_p=top_p,
             # frequency_penalty and presence_penalty are not directly supported by Anthropic
             # and are ignored here to maintain compatibility with the original API call.
-            stream=False, # Force non-streaming as InferenceEngine.infer expects a direct response object
-            **kwargs
+            stream=False,  # Force non-streaming as InferenceEngine.infer expects a direct response object
+            **kwargs,
         )
 
         # Convert Anthropic response to an OpenAI-like structure
         class MockChoice:
-
             def __init__(self, content):
-                self.message = type('obj', (object,), {'content': content})()
+                self.message = type("obj", (object,), {"content": content})()
 
         class MockUsage:
-
             def __init__(self, input_tokens, output_tokens):
                 self.input_tokens = input_tokens
                 self.output_tokens = output_tokens
-            def model_dump(self):
 
-                return {"prompt_tokens": self.input_tokens, "completion_tokens": self.output_tokens, "total_tokens": self.input_tokens + self.output_tokens}
+            def model_dump(self):
+                return {
+                    "prompt_tokens": self.input_tokens,
+                    "completion_tokens": self.output_tokens,
+                    "total_tokens": self.input_tokens + self.output_tokens,
+                }
 
         class MockResponse:
-
             def __init__(self, response_content, usage_input, usage_output):
                 self.choices = [MockChoice(response_content)]
                 self.usage = MockUsage(usage_input, usage_output)
 
-        return MockResponse(response.content, response.usage.input_tokens, response.usage.output_tokens)
+        return MockResponse(
+            response.content, response.usage.input_tokens, response.usage.output_tokens
+        )
+
 
 # NAMING FIXED: GoogleClientWrapper → GoogleClientWrapper
 class GoogleClientWrapper:
     """Wrapper for Google client to conform to OpenAI chat.completions.create interface.
     Updated to use google.genai package (replaces deprecated google-generativeai).
     """
+
     def __init__(self):
         api_key = os.getenv("GOOGLE_API_KEY")
         if not api_key:
@@ -172,18 +193,27 @@ class GoogleClientWrapper:
     def completions(self):
         return self
 
-    async def create(self, messages: list[dict[str, Any]], model: str, temperature: float, top_p: float, frequency_penalty: float, presence_penalty: float, stream: bool, max_tokens: int | None = None, **kwargs) -> Any:
+    async def create(
+        self,
+        messages: list[dict[str, Any]],
+        model: str,
+        temperature: float,
+        top_p: float,
+        frequency_penalty: float,
+        presence_penalty: float,
+        stream: bool,
+        max_tokens: int | None = None,
+        **kwargs,
+    ) -> Any:
         # Build contents for new API
         contents = []
         for msg in messages:
             role = "user" if msg["role"] == "user" else "model"
-            contents.append({
-                "role": role,
-                "parts": [{"text": msg["content"]}]
-            })
+            contents.append({"role": role, "parts": [{"text": msg["content"]}]})
 
         # Use new google.genai API
         from google.genai import types
+
         config = types.GenerateContentConfig(
             temperature=temperature,
             top_p=top_p,
@@ -199,21 +229,26 @@ class GoogleClientWrapper:
         # Convert Google response to an OpenAI-like structure
         class MockChoice:
             def __init__(self, content):
-                self.message = type('obj', (object,), {'content': content})()
+                self.message = type("obj", (object,), {"content": content})()
 
         class MockUsage:
             def __init__(self, prompt_tokens, completion_tokens):
                 self.prompt_tokens = prompt_tokens
                 self.completion_tokens = completion_tokens
-            def model_dump(self):
-                return {"prompt_tokens": self.prompt_tokens, "completion_tokens": self.completion_tokens, "total_tokens": self.prompt_tokens + self.completion_tokens}
 
-        content = response.text if hasattr(response, 'text') else ""
+            def model_dump(self):
+                return {
+                    "prompt_tokens": self.prompt_tokens,
+                    "completion_tokens": self.completion_tokens,
+                    "total_tokens": self.prompt_tokens + self.completion_tokens,
+                }
+
+        content = response.text if hasattr(response, "text") else ""
         prompt_tokens = 0
         completion_tokens = 0
-        if hasattr(response, 'usage_metadata'):
-            prompt_tokens = getattr(response.usage_metadata, 'prompt_token_count', 0)
-            completion_tokens = getattr(response.usage_metadata, 'candidates_token_count', 0)
+        if hasattr(response, "usage_metadata"):
+            prompt_tokens = getattr(response.usage_metadata, "prompt_token_count", 0)
+            completion_tokens = getattr(response.usage_metadata, "candidates_token_count", 0)
 
         class MockResponse:
             def __init__(self, response_content, usage_input, usage_output):
@@ -222,19 +257,22 @@ class GoogleClientWrapper:
 
         return MockResponse(content, prompt_tokens, completion_tokens)
 
+
 # NAMING FIXED: GenericOpenAICompatibleClientWrapper → GenericOpenAiCompatibleClientWrapper
 class GenericOpenAiCompatibleClientWrapper:
     """Wrapper for clients that are largely OpenAI-compatible (e.g., Mistral, Groq, Together, Fireworks)."""
+
     def __init__(self, client):
         self._client = client
 
     @property
     def chat(self):
+        return self._client.chat  # Assume client has a .chat attribute with .completions.create
 
-        return self._client.chat # Assume client has a .chat attribute with .completions.create
 
 # --- Local Client Factory ---
 _local_client_cache: dict[Provider, Any] = {}
+
 
 def _get_llm_client_instance(Provider: Provider) -> Any:
     """
@@ -268,18 +306,22 @@ def _get_llm_client_instance(Provider: Provider) -> Any:
             raise ValueError(f"Unsupported Provider: {Provider}")
     return _local_client_cache[Provider]
 
+
 # NAMING FIXED: InferenceMode → InferenceMode
 class InferenceMode(str, Enum):
     """Inference modes for different types of cognitive operations."""
-    CREATIVE = "creative"          # Max temperature, high entropy
-    ANALYTICAL = "analytical"      # Medium temperature, structured thinking
-    VALIDATION = "validation"      # Low temperature, precision focused
-    FORMATTING = "formatting"      # Very low temperature, template adherence
+
+    CREATIVE = "creative"  # Max temperature, high entropy
+    ANALYTICAL = "analytical"  # Medium temperature, structured thinking
+    VALIDATION = "validation"  # Low temperature, precision focused
+    FORMATTING = "formatting"  # Very low temperature, template adherence
+
 
 @dataclass
 # NAMING FIXED: InferenceRequest → InferenceRequest
 class InferenceRequest:
     """Request structure for inference engine."""
+
     prompt: str
     context: SignalContextProtocol  # Changed to use Protocol for dependency injection
     mode: InferenceMode = InferenceMode.ANALYTICAL
@@ -292,10 +334,12 @@ class InferenceRequest:
     temperature_override: float | None = None
     top_p_override: float | None = None
 
+
 @dataclass
 # NAMING FIXED: InferenceResult → InferenceResult
 class InferenceResult:
     """Result structure for inference engine."""
+
     content: str
     usage: dict[str, Any]
     thermal_params_used: dict[str, float]
@@ -303,6 +347,7 @@ class InferenceResult:
     Provider: Provider
     model: str
     context_updated: bool = False
+
 
 # NAMING FIXED: ThermostatMiddleware → ThermostatMiddleware
 class ThermostatMiddleware:
@@ -338,7 +383,7 @@ class ThermostatMiddleware:
                 "temperature": request.temperature_override,
                 "top_p": request.top_p_override or 0.85,
                 "frequency_penalty": 0.0,
-                "presence_penalty": 0.0
+                "presence_penalty": 0.0,
             }
         else:
             # Get from context thermal config
@@ -349,7 +394,7 @@ class ThermostatMiddleware:
                 InferenceMode.CREATIVE: {"temperature": 0.9, "top_p": 0.95},
                 InferenceMode.ANALYTICAL: {"temperature": 0.7, "top_p": 0.85},
                 InferenceMode.VALIDATION: {"temperature": 0.1, "top_p": 0.50},
-                InferenceMode.FORMATTING: {"temperature": 0.3, "top_p": 0.70}
+                InferenceMode.FORMATTING: {"temperature": 0.3, "top_p": 0.70},
             }
 
             if request.mode in mode_adjustments:
@@ -379,7 +424,7 @@ class ThermostatMiddleware:
             "node_id": request.context.HardState.node_id,
             "mode": request.mode.value,
             "Provider": request.Provider.value,
-            "thermal_params": params.copy()
+            "thermal_params": params.copy(),
         }
         self._thermal_history.append(log_entry)
 
@@ -394,8 +439,8 @@ class ThermostatMiddleware:
                 "node_id": log_entry["node_id"],
                 "mode": log_entry["mode"],
                 "temperature": params["temperature"],
-                "top_p": params["top_p"]
-            }
+                "top_p": params["top_p"],
+            },
         )
 
     def get_thermal_history(self, execution_id: str | None = None) -> list[dict[str, Any]]:
@@ -411,6 +456,7 @@ class ThermostatMiddleware:
             return [h for h in self._thermal_history if h["execution_id"] == execution_id]
         return self._thermal_history.copy()
 
+
 # NAMING FIXED: InferenceEngine → InferenceEngine
 class InferenceEngine:
     """
@@ -424,7 +470,7 @@ class InferenceEngine:
         self,
         thermostat: ThermostatMiddleware | None = None,
         default_provider: Provider = Provider.OPENAI,
-        enable_logging: bool = True
+        enable_logging: bool = True,
     ):
         """Initialize inference engine.
 
@@ -440,18 +486,15 @@ class InferenceEngine:
 
         # Initialize semantic cache for response caching
         self.cache: SemanticCache = create_semantic_cache(
-            ttl=3600,
-            max_entries=10000,
-            enable_semantic_matching=True,
-            similarity_threshold=0.92
+            ttl=3600, max_entries=10000, enable_semantic_matching=True, similarity_threshold=0.92
         )
 
         Logger.info(
             "inference_engine_initialized",
             extra={
                 "default_provider": default_provider.value,
-                "thermostat_enabled": thermostat is not None
-            }
+                "thermostat_enabled": thermostat is not None,
+            },
         )
 
     async def infer(self, request: InferenceRequest) -> InferenceResult:
@@ -470,7 +513,7 @@ class InferenceEngine:
         cache_context = {
             "mode": request.mode.value if request.mode else "default",
             "model": request.model or self._get_default_model(request.Provider),
-            "thermal": thermal_params
+            "thermal": thermal_params,
         }
         cache_prompt = request.prompt
 
@@ -485,8 +528,8 @@ class InferenceEngine:
                     extra={
                         "match_type": cache_result.match_type,
                         "similarity": cache_result.similarity_score,
-                        "age_s": cache_result.age_seconds
-                    }
+                        "age_s": cache_result.age_seconds,
+                    },
                 )
             # Reconstruct result with cached data
             return InferenceResult(
@@ -496,7 +539,7 @@ class InferenceEngine:
                 execution_time_ms=0.1,  # Near-zero for cache
                 Provider=request.Provider,
                 model=cached_result.model,
-                context_updated=False  # No new trace
+                context_updated=False,  # No new trace
             )
 
         start_time = time.time()
@@ -512,7 +555,7 @@ class InferenceEngine:
             "top_p": thermal_params["top_p"],
             "frequency_penalty": thermal_params["frequency_penalty"],
             "presence_penalty": thermal_params["presence_penalty"],
-            "stream": request.STREAM # Note: Current implementation of infer method does not fully support streaming
+            "stream": request.STREAM,  # Note: Current implementation of infer method does not fully support streaming
         }
 
         if request.max_tokens:
@@ -537,8 +580,8 @@ class InferenceEngine:
                     "model": api_params["model"],
                     "thermal_params": thermal_params,
                     "usage": usage,
-                    "execution_time_ms": execution_time
-                }
+                    "execution_time_ms": execution_time,
+                },
             )
             request.context.update_timestamp()
 
@@ -550,7 +593,7 @@ class InferenceEngine:
                 execution_time_ms=execution_time,
                 Provider=request.Provider,
                 model=api_params["model"],
-                context_updated=True
+                context_updated=True,
             )
 
             # Cache set (store full result)
@@ -558,7 +601,7 @@ class InferenceEngine:
                 prompt=cache_prompt,
                 response=result,
                 context=cache_context,
-                metadata={"mode": request.mode.value if request.mode else "default"}
+                metadata={"mode": request.mode.value if request.mode else "default"},
             )
 
             if self.enable_logging:
@@ -570,8 +613,8 @@ class InferenceEngine:
                         "model": api_params["model"],
                         "temperature": thermal_params["temperature"],
                         "tokens_used": usage.get("total_tokens", 0),
-                        "execution_time_ms": execution_time
-                    }
+                        "execution_time_ms": execution_time,
+                    },
                 )
 
             return result
@@ -582,9 +625,9 @@ class InferenceEngine:
                 extra={
                     "execution_id": request.context.HardState.execution_id,
                     "Provider": request.Provider.value,
-                    "error": str(e)
+                    "error": str(e),
                 },
-                exc_info=True
+                exc_info=True,
             )
             raise
 
@@ -635,9 +678,9 @@ class InferenceEngine:
             Provider.MISTRAL: "mistral-large",
             Provider.GROQ: "llama2-70b-4096",
             Provider.TOGETHER: "meta-llama/Llama-2-70b-chat-hf",
-            Provider.FIREWORKS: "accounts/fireworks/models/llama-v2-70b-chat"
+            Provider.FIREWORKS: "accounts/fireworks/models/llama-v2-70b-chat",
         }
-        return defaults.get(Provider.value, "gpt-4") # Fix: Use Provider.value consistently
+        return defaults.get(Provider.value, "gpt-4")  # Fix: Use Provider.value consistently
 
     def get_thermal_history(self, execution_id: str | None = None) -> list[dict[str, Any]]:
         """Get thermal parameter usage history.
@@ -650,12 +693,14 @@ class InferenceEngine:
         """
         return self.thermostat.get_thermal_history(execution_id)
 
+
 # Factory functions for common inference patterns
+
 
 async def creative_inference(
     prompt: str,
-    context: SignalContextProtocol, # Changed to use Protocol
-    Provider: Provider = Provider.OPENAI
+    context: SignalContextProtocol,  # Changed to use Protocol
+    Provider: Provider = Provider.OPENAI,
 ) -> InferenceResult:
     """
     Perform creative inference with maximum temperature.
@@ -676,10 +721,11 @@ async def creative_inference(
     )
     return await engine.infer(request)
 
+
 async def validation_inference(
     prompt: str,
-    context: SignalContextProtocol, # Changed to use Protocol
-    Provider: Provider = Provider.OPENAI
+    context: SignalContextProtocol,  # Changed to use Protocol
+    Provider: Provider = Provider.OPENAI,
 ) -> InferenceResult:
     """
     Perform validation inference with minimum temperature.
@@ -700,10 +746,11 @@ async def validation_inference(
     )
     return await engine.infer(request)
 
+
 async def analytical_inference(
     prompt: str,
-    context: SignalContextProtocol, # Changed to use Protocol
-    Provider: Provider = Provider.OPENAI
+    context: SignalContextProtocol,  # Changed to use Protocol
+    Provider: Provider = Provider.OPENAI,
 ) -> InferenceResult:
     """
     Perform analytical inference with balanced temperature.

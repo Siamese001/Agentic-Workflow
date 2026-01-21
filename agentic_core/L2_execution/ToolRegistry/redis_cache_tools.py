@@ -8,7 +8,8 @@ Tool ID Prefix: ACT-004
 import logging
 from typing import Any
 
-Logger: Any = logging.getLogger('ActionRegistry.RedisCache')
+Logger: Any = logging.getLogger("ActionRegistry.RedisCache")
+
 
 class RedisCache:
     """
@@ -20,7 +21,7 @@ class RedisCache:
         """Initializes the mock Redis storage."""
         self._redis_store: dict[str, str] = {}
         self._redis_hash: dict[str, dict[str, str]] = {}
-        Logger.info('📦 Mock RedisCache initialized.')
+        Logger.info("📦 Mock RedisCache initialized.")
 
     def string_set(self, key: str, value: str) -> str:
         """
@@ -97,4 +98,6 @@ class RedisCache:
         display_value: Any = f"{value[:50]}{('...' if len(value) > 50 else '')}"
         Logger.info(f"📦 Redis HGET: '{key}'.'{field}' = '{display_value}'")
         return value
-__all__ = ['RedisCache']
+
+
+__all__ = ["RedisCache"]

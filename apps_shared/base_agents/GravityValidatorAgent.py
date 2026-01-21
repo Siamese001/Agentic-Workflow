@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: guardrail
@@ -51,6 +50,7 @@ Logger = logging.getLogger(__name__)
 @dataclass
 class GravityViolation:
     """Structured violation for unified gravity detection."""
+
     file_path: Path
     import_line: str
     violation_type: str  # 'intra_core', 'upstream_downstream', 'upward_leak'
@@ -73,9 +73,10 @@ class GravityValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin):
     Detection only - delegates healing to GravityHealerAgent.
     """
 
-
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -89,24 +90,27 @@ class GravityValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin):
         super().heal_repository()
 
         # === ZOMBIE VACCINATION: Wired orphaned methods ===
-        if hasattr(self, 'validate_file'):
+        if hasattr(self, "validate_file"):
             try:
                 validation_result = self.validate_file()
                 if validation_result:
-                    metrics['violations'] += len(validation_result) if isinstance(validation_result, list) else 1
+                    metrics["violations"] += (
+                        len(validation_result) if isinstance(validation_result, list) else 1
+                    )
             except Exception as e:
-                Logger.error(f'Error in validate_file: {e}')
-                metrics['errors'] += 1
-        if hasattr(self, 'validate_repository'):
+                Logger.error(f"Error in validate_file: {e}")
+                metrics["errors"] += 1
+        if hasattr(self, "validate_repository"):
             try:
                 validation_result = self.validate_repository()
                 if validation_result:
-                    metrics['violations'] += len(validation_result) if isinstance(validation_result, list) else 1
+                    metrics["violations"] += (
+                        len(validation_result) if isinstance(validation_result, list) else 1
+                    )
             except Exception as e:
-                Logger.error(f'Error in validate_repository: {e}')
-                metrics['errors'] += 1
+                Logger.error(f"Error in validate_repository: {e}")
+                metrics["errors"] += 1
         # === END VACCINATION ===
-
 
         return {"violations": 0, "fixed": 0, "errors": 0}
 
@@ -165,44 +169,52 @@ class GravityValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin):
 
                     # 1. Intra-core violation (importing from lower-authority layer)
                     if current_rank != -1 and imp_rank > current_rank:
-                        raw_violations.append(GravityViolation(
-                            file_path=file_path,
-                            import_line=line.strip(),
-                            violation_type="intra_core",
-                            source_layer=self.layers[current_rank],
-                            target_layer=imp_layer,
-                            severity=8,
-                            suggested_action="RELOCATE_FILE",
-                            line_number=line_num
-                        ))
+                        raw_violations.append(
+                            GravityViolation(
+                                file_path=file_path,
+                                import_line=line.strip(),
+                                violation_type="intra_core",
+                                source_layer=self.layers[current_rank],
+                                target_layer=imp_layer,
+                                severity=8,
+                                suggested_action="RELOCATE_FILE",
+                                line_number=line_num,
+                            )
+                        )
 
                     # 2. Upward Leak (Low-layer importing L4/L5)
                     if imp_layer in ["L4_state", "L5_safety"] and current_rank < 3:
-                        raw_violations.append(GravityViolation(
-                            file_path=file_path,
-                            import_line=line.strip(),
-                            violation_type="upward_leak",
-                            source_layer=self.layers[current_rank] if current_rank != -1 else "unknown",
-                            target_layer=imp_layer,
-                            severity=9,
-                            suggested_action="DYNAMIC_IMPORT",
-                            line_number=line_num
-                        ))
+                        raw_violations.append(
+                            GravityViolation(
+                                file_path=file_path,
+                                import_line=line.strip(),
+                                violation_type="upward_leak",
+                                source_layer=self.layers[current_rank]
+                                if current_rank != -1
+                                else "unknown",
+                                target_layer=imp_layer,
+                                severity=9,
+                                suggested_action="DYNAMIC_IMPORT",
+                                line_number=line_num,
+                            )
+                        )
 
                 # 3. Upstream → Downstream (Core → Apps/Tests)
                 if "agentic_core" in file_path.parts:
                     downstream_match = re.search(r"^(?:import|from)\s+(apps_\w+|tests)", clean_line)
                     if downstream_match:
-                        raw_violations.append(GravityViolation(
-                            file_path=file_path,
-                            import_line=line.strip(),
-                            violation_type="upstream_downstream",
-                            source_layer="agentic_core",
-                            target_layer=downstream_match.group(1),
-                            severity=10,
-                            suggested_action="COMMENT_OUT",
-                            line_number=line_num
-                        ))
+                        raw_violations.append(
+                            GravityViolation(
+                                file_path=file_path,
+                                import_line=line.strip(),
+                                violation_type="upstream_downstream",
+                                source_layer="agentic_core",
+                                target_layer=downstream_match.group(1),
+                                severity=10,
+                                suggested_action="COMMENT_OUT",
+                                line_number=line_num,
+                            )
+                        )
 
         except Exception as e:
             self.logger.error(f"Failed to scan {file_path}: {e}")
@@ -237,7 +249,7 @@ class GravityValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin):
                     "action": v.suggested_action,
                 }
                 for v in violations
-            ]
+            ],
         }
 
     async def validate_repository(self) -> dict[str, Any]:
@@ -252,8 +264,8 @@ class GravityValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin):
 
         # Operation Zero: Use ssot_discovery instead of rglob
         from agentic_core.utils.ssot_discovery import get_python_files
-        for py_file in get_python_files(self.root):
 
+        for py_file in get_python_files(self.root):
             files_scanned += 1
             violations = await self.detect_violations(py_file)
             all_violations.extend(violations)
@@ -261,7 +273,9 @@ class GravityValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin):
         # Group by violation type
         by_type = {
             "intra_core": [v for v in all_violations if v.violation_type == "intra_core"],
-            "upstream_downstream": [v for v in all_violations if v.violation_type == "upstream_downstream"],
+            "upstream_downstream": [
+                v for v in all_violations if v.violation_type == "upstream_downstream"
+            ],
             "upward_leak": [v for v in all_violations if v.violation_type == "upward_leak"],
         }
 

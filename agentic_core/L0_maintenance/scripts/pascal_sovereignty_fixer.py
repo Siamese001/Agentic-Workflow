@@ -3,6 +3,7 @@
 
 Converts all snake_case class definitions to PascalCase and updates references.
 """
+
 import ast
 import re
 import sys
@@ -15,7 +16,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 
 def snake_to_pascal(name: str) -> str:
     """Convert snake_case to PascalCase."""
-    return ''.join(word.capitalize() for word in name.split('_'))
+    return "".join(word.capitalize() for word in name.split("_"))
 
 
 def find_snake_case_classes(repo_root: Path, target_prefixes: list[str]) -> dict[str, str]:
@@ -24,11 +25,12 @@ def find_snake_case_classes(repo_root: Path, target_prefixes: list[str]) -> dict
 
     # Phase 6.7: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_python_files
+
     for path in get_python_files(repo_root):
         if not any(prefix in str(path) for prefix in target_prefixes):
             continue
         try:
-            content = path.read_text(encoding='utf-8')
+            content = path.read_text(encoding="utf-8")
             tree = ast.parse(content)
         except (SyntaxError, UnicodeDecodeError):
             continue
@@ -44,7 +46,7 @@ def find_snake_case_classes(repo_root: Path, target_prefixes: list[str]) -> dict
 def fix_file(path: Path, mapping: dict[str, str], dry_run: bool = False) -> tuple[bool, list[str]]:
     """Fix a single file by renaming classes and references."""
     try:
-        content = path.read_text(encoding='utf-8')
+        content = path.read_text(encoding="utf-8")
         original = content
     except (UnicodeDecodeError, FileNotFoundError):
         return False, []
@@ -56,32 +58,32 @@ def fix_file(path: Path, mapping: dict[str, str], dry_run: bool = False) -> tupl
 
     for snake, pascal in sorted_mapping:
         # Replace class definitions
-        pattern_class = rf'\bclass\s+{re.escape(snake)}\s*(\(|:)'
+        pattern_class = rf"\bclass\s+{re.escape(snake)}\s*(\(|:)"
         if re.search(pattern_class, content):
-            content = re.sub(pattern_class, f'class {pascal}\\1', content)
-            changes.append(f'class {snake} -> {pascal}')
+            content = re.sub(pattern_class, f"class {pascal}\\1", content)
+            changes.append(f"class {snake} -> {pascal}")
 
         # Replace references (whole word only)
-        pattern_ref = rf'\b{re.escape(snake)}\b'
+        pattern_ref = rf"\b{re.escape(snake)}\b"
         if re.search(pattern_ref, content):
             new_content = re.sub(pattern_ref, pascal, content)
             if new_content != content:
                 content = new_content
-                if f'class {snake}' not in str(changes):
-                    changes.append(f'ref {snake} -> {pascal}')
+                if f"class {snake}" not in str(changes):
+                    changes.append(f"ref {snake} -> {pascal}")
 
     if content != original:
         if not dry_run:
-            path.write_text(content, encoding='utf-8')
+            path.write_text(content, encoding="utf-8")
         return True, changes
 
     return False, []
 
 
 def main():
-    repo_root = Path('.')
+    repo_root = Path(".")
     target_prefixes = [AGENTIC_CORE_DIR, APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR]
-    dry_run = '--dry-run' in sys.argv
+    dry_run = "--dry-run" in sys.argv
 
     print(f"{'[DRY RUN] ' if dry_run else ''}Pascal Sovereignty Fixer")
     print("=" * 60)
@@ -98,6 +100,7 @@ def main():
 
     # Phase 6.7: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_python_files
+
     for path in get_python_files(repo_root):
         if not any(prefix in str(path) for prefix in target_prefixes):
             continue
@@ -123,5 +126,5 @@ def main():
     return 0 if fixed_count == 0 or not dry_run else 1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

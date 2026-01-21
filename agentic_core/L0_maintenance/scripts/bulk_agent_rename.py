@@ -155,7 +155,9 @@ def should_process_file(file_path: Path) -> bool:
     return True
 
 
-def rename_in_file(file_path: Path, renames: dict[str, str], dry_run: bool = True) -> list[tuple[str, str]]:
+def rename_in_file(
+    file_path: Path, renames: dict[str, str], dry_run: bool = True
+) -> list[tuple[str, str]]:
     """Rename classes in a file."""
     try:
         content = file_path.read_text(encoding="utf-8", errors="ignore")
@@ -170,10 +172,10 @@ def rename_in_file(file_path: Path, renames: dict[str, str], dry_run: bool = Tru
             continue
 
         # Use word boundary to avoid partial matches
-        pattern = rf'\b{re.escape(old_name)}\b'
+        pattern = rf"\b{re.escape(old_name)}\b"
 
         # Check if this would match the new name (avoid double-renaming)
-        if old_name + "Agent" == new_name and re.search(rf'\b{re.escape(new_name)}\b', content):
+        if old_name + "Agent" == new_name and re.search(rf"\b{re.escape(new_name)}\b", content):
             # Already has Agent suffix in some places, only rename bare occurrences
             pass
 
@@ -208,6 +210,7 @@ def main():
     """Find all agent files to rename."""
     # Phase 6.9: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_agent_files
+
     agent_files = list(get_agent_files(root_dir=root))
     agent_files = [f for f in agent_files if should_process_file(f)]
 

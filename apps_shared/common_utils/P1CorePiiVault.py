@@ -14,6 +14,7 @@ try:
     from presidio_analyzer import AnalyzerEngine
     from presidio_anonymizer import AnonymizerEngine
     from presidio_anonymizer.entities import OperatorConfig
+
     PRESIDIO_AVAILABLE = True
 except ImportError:
     LOGGER.warning("Presidio not installed. PII detection will be limited.")
@@ -57,9 +58,17 @@ class PIIVault:
             # Analyze text for PII
             results = self.analyzer.analyze(
                 text=text,
-                entities=["PERSON", "EMAIL_ADDRESS", "PHONE_NUMBER", "US_SSN",
-                         "CREDIT_CARD", "IBAN_CODE", "IP_ADDRESS", "URL"],
-                language='en'
+                entities=[
+                    "PERSON",
+                    "EMAIL_ADDRESS",
+                    "PHONE_NUMBER",
+                    "US_SSN",
+                    "CREDIT_CARD",
+                    "IBAN_CODE",
+                    "IP_ADDRESS",
+                    "URL",
+                ],
+                language="en",
             )
 
             # Store original values for potential restoration
@@ -67,17 +76,19 @@ class PIIVault:
                 self._mappings[session_id] = {}
 
             for result in results:
-                original_value = text[result.start:result.end]
+                original_value = text[result.start : result.end]
                 self._mappings[session_id][str(result.start)] = {
                     "value": original_value,
-                    "type": result.entity_type
+                    "type": result.entity_type,
                 }
 
             # Anonymize with custom operators
             anonymized = self.anonymizer.anonymize(
                 text=text,
                 analyzer_results=results,
-                operators={"DEFAULT": OperatorConfig("replace", {"new_value": f"<{result.entity_type}>"})}
+                operators={
+                    "DEFAULT": OperatorConfig("replace", {"new_value": f"<{result.entity_type}>"})
+                },
             )
 
             return anonymized.text
@@ -107,7 +118,7 @@ class PIIVault:
             for pos, info in mappings.items():
                 token = f"<{info['type']}>"
                 if token in restored:
-                    restored = restored.replace(token, info['value'], 1)
+                    restored = restored.replace(token, info["value"], 1)
 
             return restored
         except Exception as e:
@@ -119,15 +130,16 @@ class PIIVault:
         import re
 
         # Simple email redaction
-        text = re.sub(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b',
-                     '<EMAIL_ADDRESS>', text)
+        text = re.sub(
+            r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b", "<EMAIL_ADDRESS>", text
+        )
 
         # Simple phone redaction
-        text = re.sub(r'\b\d{3}-\d{3}-\d{4}\b', '<PHONE_NUMBER>', text)
-        text = re.sub(r'\b\(\d{3}\)\s*\d{3}-\d{4}\b', '<PHONE_NUMBER>', text)
+        text = re.sub(r"\b\d{3}-\d{3}-\d{4}\b", "<PHONE_NUMBER>", text)
+        text = re.sub(r"\b\(\d{3}\)\s*\d{3}-\d{4}\b", "<PHONE_NUMBER>", text)
 
         # Simple SSN redaction
-        text = re.sub(r'\b\d{3}-\d{2}-\d{4}\b', '<US_SSN>', text)
+        text = re.sub(r"\b\d{3}-\d{2}-\d{4}\b", "<US_SSN>", text)
 
         return text
 
@@ -150,7 +162,7 @@ class PIIVault:
         return {
             "active_sessions": len(self._mappings),
             "presidio_available": PRESIDIO_AVAILABLE,
-            "total_mappings": sum(len(m) for m in self._mappings.values())
+            "total_mappings": sum(len(m) for m in self._mappings.values()),
         }
 
 

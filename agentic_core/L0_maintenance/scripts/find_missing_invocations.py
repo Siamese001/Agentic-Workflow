@@ -3,10 +3,11 @@
 Find agents that have healing capability but invocation='No'.
 These need to have invocation added to reach 100% invocation rate.
 """
+
 import json
 
 # Load agent discovery data
-with open('agent_discovery_full.json') as f:
+with open("agent_discovery_full.json") as f:
     agents = json.load(f)
 
 print(f"Total agents: {len(agents)}")
@@ -14,16 +15,16 @@ print(f"Total agents: {len(agents)}")
 # Find agents with healing but no invocation
 missing_invocation = []
 for agent in agents:
-    invocation = agent.get('invocation', 'No')
-    has_healing = agent.get('has_healing', False)
+    invocation = agent.get("invocation", "No")
+    has_healing = agent.get("has_healing", False)
 
     # Has healing but invocation is No
-    if has_healing and invocation != 'Yes':
+    if has_healing and invocation != "Yes":
         missing_invocation.append(agent)
 
-print(f"\n{'='*70}")
+print(f"\n{'=' * 70}")
 print(f"AGENTS WITH HEALING BUT NO INVOCATION: {len(missing_invocation)}")
-print(f"{'='*70}")
+print(f"{'=' * 70}")
 
 if not missing_invocation:
     print("✅ All agents with healing have invocation!")
@@ -35,13 +36,13 @@ else:
         print(f"    Invocation: {agent.get('invocation')}")
         print(f"    Has Healing: {agent.get('has_healing')}")
 
-print(f"\n{'='*70}")
+print(f"\n{'=' * 70}")
 print("SUMMARY")
-print(f"{'='*70}")
+print(f"{'=' * 70}")
 print(f"Total agents: {len(agents)}")
 print(f"Agents with healing: {sum(1 for a in agents if a.get('has_healing'))}")
 print(f"Agents with invocation=Yes: {sum(1 for a in agents if a.get('invocation') == 'Yes')}")
 print(f"Missing invocation: {len(missing_invocation)}")
-current_pct = sum(1 for a in agents if a.get('invocation') == 'Yes') / len(agents) * 100
+current_pct = sum(1 for a in agents if a.get("invocation") == "Yes") / len(agents) * 100
 print(f"Current Invocation %: {current_pct:.1f}%")
 print("Target: 100%")

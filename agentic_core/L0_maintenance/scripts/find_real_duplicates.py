@@ -3,6 +3,7 @@
 Find REAL duplicate agent files (different paths, same or similar content).
 Excludes phantom duplicates where the same path appears twice.
 """
+
 import hashlib
 from collections import defaultdict
 from datetime import datetime
@@ -34,13 +35,13 @@ def find_real_duplicates(project_root: Path):
     # Find all agent files
     # Phase 6.9: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_agent_files
+
     agent_files = [f for f in get_agent_files(project_root) if is_agent_file(f)]
 
     # Exclude certain directories
     excluded_dirs = {".venv", "venv", "__pycache__", ".git", "node_modules", "coverage_html"}
     agent_files = [
-        f for f in agent_files
-        if not any(excluded in f.parts for excluded in excluded_dirs)
+        f for f in agent_files if not any(excluded in f.parts for excluded in excluded_dirs)
     ]
 
     print(f"[SCAN] Found {len(agent_files)} agent files")
@@ -74,8 +75,9 @@ def infer_rationale(canonical: Path, duplicate: Path, project_root: Path) -> str
     if "blueprint_sovereign" in dup_str:
         return "Leftover blueprint template — production version is canonical"
 
-    if ("validators" in can_str and "agents" in dup_str) or \
-       ("agents" in can_str and "validators" in dup_str):
+    if ("validators" in can_str and "agents" in dup_str) or (
+        "agents" in can_str and "validators" in dup_str
+    ):
         return "Location overlap: same agent in agents/ vs validators/ directories"
 
     return "Exact duplicate — likely copy-paste or migration artifact"
@@ -95,7 +97,7 @@ def main():
     output_file = project_root / REPORTS_DIR / "real_duplicates_table.md"
     output_file.parent.mkdir(exist_ok=True)
 
-    with open(output_file, 'w', encoding='utf-8') as f:
+    with open(output_file, "w", encoding="utf-8") as f:
         f.write("# Real Duplicate Agents (Different Paths)\n")
         f.write(f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
         f.write(f"**Total Real Duplicates:** {len(duplicates)}\n\n")
@@ -105,10 +107,9 @@ def main():
 
         for _file_hash, files in duplicates:
             # Sort by path priority (production > blueprint)
-            files_sorted = sorted(files, key=lambda f: (
-                0 if "blueprint_sovereign" not in str(f) else 1,
-                str(f)
-            ))
+            files_sorted = sorted(
+                files, key=lambda f: (0 if "blueprint_sovereign" not in str(f) else 1, str(f))
+            )
 
             canonical = files_sorted[0]
             agent_name = canonical.stem
@@ -125,10 +126,9 @@ def main():
         f.write("```bash\n")
 
         for _file_hash, files in duplicates:
-            files_sorted = sorted(files, key=lambda f: (
-                0 if "blueprint_sovereign" not in str(f) else 1,
-                str(f)
-            ))
+            files_sorted = sorted(
+                files, key=lambda f: (0 if "blueprint_sovereign" not in str(f) else 1, str(f))
+            )
 
             for duplicate in files_sorted[1:]:
                 duplicate_rel = duplicate.relative_to(project_root)
@@ -140,15 +140,14 @@ def main():
     print(f"   Real duplicate groups: {len(duplicates)}")
 
     # Print summary
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("REAL DUPLICATES FOUND")
-    print("="*80)
+    print("=" * 80)
 
     for _file_hash, files in duplicates:
-        files_sorted = sorted(files, key=lambda f: (
-            0 if "blueprint_sovereign" not in str(f) else 1,
-            str(f)
-        ))
+        files_sorted = sorted(
+            files, key=lambda f: (0 if "blueprint_sovereign" not in str(f) else 1, str(f))
+        )
 
         canonical = files_sorted[0]
         agent_name = canonical.stem

@@ -6,6 +6,7 @@ Tests:
 2. Active dependency scanning
 3. Dry-run mode validation
 """
+
 import sys
 from pathlib import Path
 
@@ -18,9 +19,9 @@ sys.path.insert(0, str(project_root))
 
 def test_protected_paths():
     """Test that protected paths are blocked from archival."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST 1: Protected Path Whitelist")
-    print("="*70)
+    print("=" * 70)
 
     relocator = SSOTRelocator(project_root=project_root, dry_run=True)
 
@@ -36,12 +37,10 @@ def test_protected_paths():
     for test_path in protected_test_cases:
         archive_path = project_root / "archives" / "test" / test_path.name
         result = relocator._relocate_folder(
-            source=test_path,
-            target=archive_path,
-            action='ARCHIVED'
+            source=test_path, target=archive_path, action="ARCHIVED"
         )
 
-        is_blocked = result.action == 'BLOCKED'
+        is_blocked = result.action == "BLOCKED"
         status = "✅ BLOCKED" if is_blocked else "❌ NOT BLOCKED"
         print(f"{status}: {test_path.name}")
         print(f"   Action: {result.action}")
@@ -56,9 +55,9 @@ def test_protected_paths():
 
 def test_active_dependency_scan():
     """Test that folders with active imports are blocked."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST 2: Active Dependency Scanning")
-    print("="*70)
+    print("=" * 70)
 
     relocator = SSOTRelocator(project_root=project_root, dry_run=True)
 
@@ -84,9 +83,9 @@ def test_active_dependency_scan():
 
 def test_dry_run_mode():
     """Test that dry-run mode prevents actual operations."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST 3: Dry-Run Mode Validation")
-    print("="*70)
+    print("=" * 70)
 
     relocator = SSOTRelocator(project_root=project_root, dry_run=True)
 
@@ -97,15 +96,11 @@ def test_dry_run_mode():
 
     archive_path = project_root / "archives" / "test" / "temp_test_folder_for_ssot"
 
-    result = relocator._relocate_folder(
-        source=test_folder,
-        target=archive_path,
-        action='ARCHIVED'
-    )
+    result = relocator._relocate_folder(source=test_folder, target=archive_path, action="ARCHIVED")
 
     # Check that folder still exists (dry-run didn't move it)
     still_exists = test_folder.exists()
-    is_dry_run = "(DRY-RUN)" in result.action or result.action == 'BLOCKED'
+    is_dry_run = "(DRY-RUN)" in result.action or result.action == "BLOCKED"
 
     # Cleanup
     if test_folder.exists():
@@ -123,9 +118,9 @@ def test_dry_run_mode():
 
 def test_knowledge_folder_protection():
     """Comprehensive test specifically for knowledge/ folder protection."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST 4: Knowledge Folder Comprehensive Protection")
-    print("="*70)
+    print("=" * 70)
 
     relocator = SSOTRelocator(project_root=project_root, dry_run=True)
 
@@ -134,12 +129,10 @@ def test_knowledge_folder_protection():
 
     # Test 1: Whitelist protection
     result = relocator._relocate_folder(
-        source=knowledge_path,
-        target=archive_path,
-        action='ARCHIVED'
+        source=knowledge_path, target=archive_path, action="ARCHIVED"
     )
 
-    whitelist_blocked = result.action == 'BLOCKED' and 'Protected' in result.error
+    whitelist_blocked = result.action == "BLOCKED" and "Protected" in result.error
     print(f"{'✅' if whitelist_blocked else '❌'} Whitelist Protection: {result.error}")
 
     # Test 2: Active dependency detection
@@ -151,16 +144,18 @@ def test_knowledge_folder_protection():
     print(f"{'✅' if still_exists else '❌'} Folder Still Exists: {still_exists}")
 
     all_passed = whitelist_blocked and has_active_deps and still_exists
-    print(f"\n📊 Knowledge Folder Protection: {'✅ FULLY PROTECTED' if all_passed else '❌ VULNERABLE'}")
+    print(
+        f"\n📊 Knowledge Folder Protection: {'✅ FULLY PROTECTED' if all_passed else '❌ VULNERABLE'}"
+    )
 
     return all_passed
 
 
 def main():
     """Run all safety verification tests."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("SSOT Relocator Safety Verification Suite")
-    print("="*70)
+    print("=" * 70)
 
     tests = [
         ("Protected Path Whitelist", test_protected_paths),
@@ -179,9 +174,9 @@ def main():
             results[test_name] = False
 
     # Summary
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST SUMMARY")
-    print("="*70)
+    print("=" * 70)
 
     for test_name, passed in results.items():
         status = "✅ PASSED" if passed else "❌ FAILED"
@@ -191,7 +186,9 @@ def main():
     total_tests = len(results)
     success_rate = total_passed / total_tests * 100
 
-    print(f"\n📊 Overall Success Rate: {success_rate:.1f}% ({total_passed}/{total_tests} tests passed)")
+    print(
+        f"\n📊 Overall Success Rate: {success_rate:.1f}% ({total_passed}/{total_tests} tests passed)"
+    )
 
     if all(results.values()):
         print("\n✅ ALL SAFETY CHECKS PASSED - SSOTRelocator is properly hardened")

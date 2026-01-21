@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class HeadlineOutput:
     """Executive title composer output."""
+
     headline: str
     segment_1: str  # Industry/Domain
     segment_2: str  # Leadership/Role
@@ -32,10 +33,32 @@ class HeadlineOutput:
 
 # Technology keywords that MUST NOT appear in Segment 1 (Industry-First violation)
 TECHNOLOGY_KEYWORDS = [
-    "AI", "ML", "Python", "Java", "AWS", "Azure", "GCP", "Kubernetes",
-    "Docker", "React", "Angular", "Node.js", "TensorFlow", "PyTorch",
-    "SQL", "NoSQL", "MongoDB", "PostgreSQL", "Redis", "Kafka",
-    "Microservices", "API", "REST", "GraphQL", "DevOps", "CI/CD",
+    "AI",
+    "ML",
+    "Python",
+    "Java",
+    "AWS",
+    "Azure",
+    "GCP",
+    "Kubernetes",
+    "Docker",
+    "React",
+    "Angular",
+    "Node.js",
+    "TensorFlow",
+    "PyTorch",
+    "SQL",
+    "NoSQL",
+    "MongoDB",
+    "PostgreSQL",
+    "Redis",
+    "Kafka",
+    "Microservices",
+    "API",
+    "REST",
+    "GraphQL",
+    "DevOps",
+    "CI/CD",
 ]
 
 
@@ -69,11 +92,7 @@ class Executive_Title_Composer(Agent):
             word_count_max: Maximum word count (default 13)
             char_limit: Character limit (default 90)
         """
-        super().__init__(
-            config,
-            k_node_id="K.4",
-            element="Executive Title (Industry-First)"
-        )
+        super().__init__(config, k_node_id="K.4", element="Executive Title (Industry-First)")
 
         self.word_count_min = word_count_min
         self.word_count_max = word_count_max
@@ -196,7 +215,7 @@ TARGET INDUSTRY: {target_industry}
 TARGET ROLE: {target_role}
 
 VALUE PROPOSITIONS (use for Segment 3):
-{chr(10).join(f'- {vp}' for vp in value_propositions[:3])}
+{chr(10).join(f"- {vp}" for vp in value_propositions[:3])}
 
 JOB DESCRIPTION CONTEXT:
 {job_description[:300]}...

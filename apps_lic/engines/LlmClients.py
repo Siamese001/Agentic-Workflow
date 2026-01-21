@@ -19,7 +19,7 @@ class GeminiLLMClient:
         if not self.api_key:
             raise ValueError("GEMINI_API_KEY not found in environment")
         genai.configure(api_key=self.api_key)
-        self.model = genai.GenerativeModel('gemini-1.5-pro-latest')
+        self.model = genai.GenerativeModel("gemini-1.5-pro-latest")
         self.circuit_breaker = circuit_breaker
 
     def _execute_llm_call(self, prompt: str) -> str:

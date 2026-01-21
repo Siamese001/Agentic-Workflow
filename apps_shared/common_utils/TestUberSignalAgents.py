@@ -66,16 +66,16 @@ class UberSignalTestSuite:
 
     async def test_architecture_visualizer(self):
         """Test the Architecture Visualizer Agent."""
-        logger.info("\n" + "="*60)
+        logger.info("\n" + "=" * 60)
         logger.info("TESTING: Architecture Visualizer Agent")
-        logger.info("="*60)
+        logger.info("=" * 60)
 
         try:
             # Test 1: Generate diagram from bullet
             diagram_artifact = await self.architecture_agent.generate_diagram(
                 description=self.test_architecture_bullet,
                 diagram_type=DiagramType.FLOWCHART,
-                caption="RAG Pipeline Architecture"
+                caption="RAG Pipeline Architecture",
             )
 
             if diagram_artifact:
@@ -105,9 +105,9 @@ class UberSignalTestSuite:
 
     async def test_cultural_decoder(self):
         """Test the Cultural Decoder Agent."""
-        logger.info("\n" + "="*60)
+        logger.info("\n" + "=" * 60)
         logger.info("TESTING: Cultural Decoder Agent")
-        logger.info("="*60)
+        logger.info("=" * 60)
 
         try:
             # Test 1: Load pre-loaded DNA
@@ -119,9 +119,7 @@ class UberSignalTestSuite:
 
             # Test 2: Rewrite for culture
             aligned_content = await self.cultural_agent.rewrite_for_culture(
-                original_text=self.test_resume_summary,
-                company_dna=amazon_dna,
-                text_type="resume"
+                original_text=self.test_resume_summary, company_dna=amazon_dna, text_type="resume"
             )
 
             logger.info("\n✅ Content rewritten for Amazon culture!")
@@ -133,8 +131,7 @@ class UberSignalTestSuite:
 
             # Test 3: Audit cultural fit
             audit_result = self.cultural_agent.audit_fit(
-                text=self.test_resume_summary,
-                company_name="Google"
+                text=self.test_resume_summary, company_name="Google"
             )
 
             logger.info("\n✅ Cultural fit audit completed!")
@@ -143,7 +140,7 @@ class UberSignalTestSuite:
             logger.info(f"   - Grade: {audit_result['grade']}")
             logger.info(f"   - Suggestions: {len(audit_result['suggestions'])}")
 
-            for suggestion in audit_result['suggestions']:
+            for suggestion in audit_result["suggestions"]:
                 logger.info(f"     • {suggestion}")
 
         except Exception as e:
@@ -151,15 +148,14 @@ class UberSignalTestSuite:
 
     async def test_pre_mortem_agent(self):
         """Test the Pre-Mortem Agent."""
-        logger.info("\n" + "="*60)
+        logger.info("\n" + "=" * 60)
         logger.info("TESTING: Pre-Mortem Agent")
-        logger.info("="*60)
+        logger.info("=" * 60)
 
         try:
             # Test 1: Analyze onboarding plan
             pre_mortem_report = await self.pre_mortem_agent.analyze_plan(
-                plan_text=self.test_onboarding_plan,
-                plan_type="onboarding"
+                plan_text=self.test_onboarding_plan, plan_type="onboarding"
             )
 
             logger.info("✅ Pre-mortem analysis completed!")
@@ -192,9 +188,9 @@ class UberSignalTestSuite:
 
     async def test_integration_scenario(self):
         """Test all three agents working together on a complete scenario."""
-        logger.info("\n" + "="*60)
+        logger.info("\n" + "=" * 60)
         logger.info("TESTING: Integrated Scenario")
-        logger.info("="*60)
+        logger.info("=" * 60)
 
         try:
             # Scenario: A candidate applying for Head of AI at Netflix
@@ -211,7 +207,7 @@ class UberSignalTestSuite:
             aligned_summary = await self.cultural_agent.rewrite_for_culture(
                 original_text=self.test_resume_summary,
                 company_dna=netflix_dna,
-                text_type="executive_summary"
+                text_type="executive_summary",
             )
 
             logger.info("✅ Step 1: Cultural alignment complete")
@@ -226,7 +222,7 @@ class UberSignalTestSuite:
             architecture_diagram = await self.architecture_agent.generate_diagram(
                 description=tech_bullet,
                 diagram_type=DiagramType.FLOWCHART,
-                caption="Netflix ML Architecture"
+                caption="Netflix ML Architecture",
             )
 
             logger.info("✅ Step 2: Architecture diagram generated")
@@ -242,17 +238,16 @@ class UberSignalTestSuite:
             """
 
             risk_analysis = await self.pre_mortem_agent.analyze_plan(
-                plan_text=ai_plan,
-                plan_type="AI leadership"
+                plan_text=ai_plan, plan_type="AI leadership"
             )
 
             logger.info("✅ Step 3: Risk analysis complete")
             logger.info(f"   Risk Score: {risk_analysis.overall_risk_score:.1%}")
 
             # Generate integrated output
-            logger.info("\n" + "="*60)
+            logger.info("\n" + "=" * 60)
             logger.info("🚀 INTEGRATED OUTPUT FOR NETFLIX APPLICATION")
-            logger.info("="*60)
+            logger.info("=" * 60)
 
             logger.info("\n📋 Executive Summary (Culturally Aligned):")
             logger.info(aligned_summary.aligned_text)
@@ -261,7 +256,9 @@ class UberSignalTestSuite:
             logger.info(self.architecture_agent.render_artifact(architecture_diagram))
 
             logger.info("\n⚠️  Risk Assessment:")
-            logger.info(f"Overall Risk: {risk_analysis.overall_risk_score:.1%} - {risk_analysis.go_no_go_recommendation}")
+            logger.info(
+                f"Overall Risk: {risk_analysis.overall_risk_score:.1%} - {risk_analysis.go_no_go_recommendation}"
+            )
 
             logger.info("\n✅ Integration test successful!")
 
@@ -271,16 +268,16 @@ class UberSignalTestSuite:
     async def run_all_tests(self):
         """Run all tests sequentially."""
         logger.info("🚀 Starting Uber High Signal Agents Test Suite")
-        logger.info("="*60)
+        logger.info("=" * 60)
 
         await self.test_architecture_visualizer()
         await self.test_cultural_decoder()
         await self.test_pre_mortem_agent()
         await self.test_integration_scenario()
 
-        logger.info("\n" + "="*60)
+        logger.info("\n" + "=" * 60)
         logger.info("✅ ALL TESTS COMPLETED")
-        logger.info("="*60)
+        logger.info("=" * 60)
 
 
 async def main():

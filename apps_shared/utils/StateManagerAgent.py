@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt
@@ -36,10 +35,7 @@ class StateManager:
     """
 
     def __init__(
-        self,
-        mission_id: str,
-        state_directory: str = None,
-        create_if_missing: bool = True
+        self, mission_id: str, state_directory: str = None, create_if_missing: bool = True
     ):
         """
         Initialize state manager for a mission
@@ -61,12 +57,7 @@ class StateManager:
         print(f"[StateManager] Initialized for mission: {mission_id}")
         print(f"[StateManager] State directory: {self.mission_dir}")
 
-    def write_state(
-        self,
-        hop_id: str,
-        data: dict[str, Any],
-        atomic: bool = True
-    ) -> str:
+    def write_state(self, hop_id: str, data: dict[str, Any], atomic: bool = True) -> str:
         """
         Write state file for a HOP
 
@@ -91,21 +82,21 @@ class StateManager:
             "mission_id": self.mission_id,
             "timestamp": datetime.now().isoformat(),
             "schema_version": "13.0",
-            **data
+            **data,
         }
 
         if atomic:
             # Atomic write: write to temp file, then rename
             temp_filepath = filepath.with_suffix(".tmp")
 
-            with open(temp_filepath, 'w') as f:
+            with open(temp_filepath, "w") as f:
                 json.dump(data_with_metadata, f, indent=2, default=str)
 
             # Atomic rename
             temp_filepath.replace(filepath)
         else:
             # Direct write
-            with open(filepath, 'w') as f:
+            with open(filepath, "w") as f:
                 json.dump(data_with_metadata, f, indent=2, default=str)
 
         # Calculate checksum
@@ -115,11 +106,7 @@ class StateManager:
 
         return str(filepath)
 
-    def read_state(
-        self,
-        hop_id: str,
-        validate_checksum: bool = False
-    ) -> dict[str, Any]:
+    def read_state(self, hop_id: str, validate_checksum: bool = False) -> dict[str, Any]:
         """
         Read state file for a HOP
 
@@ -185,10 +172,9 @@ class StateManager:
         if not self.mission_dir.exists():
             return []
 
-        state_files = sorted([
-            f.name for f in self.mission_dir.iterdir()
-            if f.is_file() and f.suffix == ".json"
-        ])
+        state_files = sorted(
+            [f.name for f in self.mission_dir.iterdir() if f.is_file() and f.suffix == ".json"]
+        )
 
         return state_files
 
@@ -213,7 +199,7 @@ class StateManager:
             "mission_id": self.mission_id,
             "total_states": len(states),
             "completed_hops": sorted(completed_hops),
-            "state_files": states
+            "state_files": states,
         }
 
     def create_checkpoint(self, checkpoint_name: str) -> str:
@@ -240,10 +226,10 @@ class StateManager:
             "checkpoint_name": checkpoint_name,
             "created_at": datetime.now().isoformat(),
             "mission_id": self.mission_id,
-            "state_files": self.list_states()
+            "state_files": self.list_states(),
         }
 
-        with open(checkpoint_dir / "checkpoint_metadata.json", 'w') as f:
+        with open(checkpoint_dir / "checkpoint_metadata.json", "w") as f:
             json.dump(metadata, f, indent=2)
 
         print(f"[StateManager] Created Checkpoint: {checkpoint_name}")
@@ -365,7 +351,7 @@ class StateManager:
         """
         sha256 = hashlib.sha256()
 
-        with open(filepath, 'rb') as f:
+        with open(filepath, "rb") as f:
             for chunk in iter(lambda: f.read(4096), b""):
                 sha256.update(chunk)
 
@@ -411,7 +397,7 @@ class StateManager:
         # Update and save
         checksums[hop_id] = checksum
 
-        with open(checksums_file, 'w') as f:
+        with open(checksums_file, "w") as f:
             json.dump(checksums, f, indent=2)
 
 
@@ -420,7 +406,6 @@ class StateManager:
 from .StateValidatorAgent import StateValidatorAgent as StateValidator
 
 # StateValidatorDeprecatedAgent extracted to StateValidatorDeprecatedAgent.py (Phase B Task 2)
-
 
 
 def test_state_manager():
@@ -435,25 +420,32 @@ def test_state_manager():
     # Write some test states
     print("--- Writing test states ---")
 
-    manager.write_state("HOP-1", {
-        "Archetype": "C_LEVEL",
-        "confidence": 0.95,
-        "reasoning": "Title indicates CEO",
-        "key_indicators": ["ceo"]
-    })
+    manager.write_state(
+        "HOP-1",
+        {
+            "Archetype": "C_LEVEL",
+            "confidence": 0.95,
+            "reasoning": "Title indicates CEO",
+            "key_indicators": ["ceo"],
+        },
+    )
 
-    manager.write_state("HOP-2", {
-        "recipient_insights": ["Strategic AI leader"],
-        "company_context": ["Enterprise AI platform"],
-        "rag_results": [
-            {"source": "LinkedIn", "SourceType": "RECIPIENT_LINKEDIN_ABOUT", "text": "Profile text"}
-        ]
-    })
+    manager.write_state(
+        "HOP-2",
+        {
+            "recipient_insights": ["Strategic AI leader"],
+            "company_context": ["Enterprise AI platform"],
+            "rag_results": [
+                {
+                    "source": "LinkedIn",
+                    "SourceType": "RECIPIENT_LINKEDIN_ABOUT",
+                    "text": "Profile text",
+                }
+            ],
+        },
+    )
 
-    manager.write_state("HOP-4", {
-        "Route": "INMAIL",
-        "reasoning": "Not connected, first message"
-    })
+    manager.write_state("HOP-4", {"Route": "INMAIL", "reasoning": "Not connected, first message"})
 
     # Read states
     print("\n--- Reading test states ---")
@@ -501,6 +493,7 @@ def test_state_manager():
 
     # Remove test directory
     import shutil
+
     shutil.rmtree(manager.mission_dir)
 
     # Remove archive
@@ -511,7 +504,13 @@ def test_state_manager():
 
 
 @timeout(300)
-def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+def heal_repository(
+    dry_run: bool = True,
+    execute: bool = False,
+    depth: int = 0,
+    max_depth: int = 3,
+    _call_path: set | None = None,
+) -> dict[str, int]:
     """Apps_shared/utils - operational only."""
     if _call_path is None:
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
@@ -528,6 +527,7 @@ def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0,
         return {"skipped": 1}
     finally:
         _call_path.discard(agent_name)
+
 
 if __name__ == "__main__":
     """

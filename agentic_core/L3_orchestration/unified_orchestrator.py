@@ -79,7 +79,7 @@ class MissionStrategy(Protocol):
         agent_name: str,
         dry_run: bool = True,
         execute: bool = False,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> dict[str, Any]:
         """
         Execute a single agent and return results.
@@ -101,7 +101,9 @@ class MissionStrategy(Protocol):
         """
         ...
 
-    def should_abort_tier(self, tier_name: str, tier_results: list[dict[str, Any]], execute: bool) -> bool:
+    def should_abort_tier(
+        self, tier_name: str, tier_results: list[dict[str, Any]], execute: bool
+    ) -> bool:
         """
         Determine if execution should abort after a tier.
 
@@ -119,6 +121,7 @@ class MissionStrategy(Protocol):
 @dataclass
 class AgentExecutionResult:
     """Result from a single agent execution."""
+
     agent_name: str
     status: str  # 'PASS', 'FAIL', 'ERROR', 'SKIPPED'
     violations_found: int = 0
@@ -131,6 +134,7 @@ class AgentExecutionResult:
 @dataclass
 class MissionReport:
     """Comprehensive mission execution report."""
+
     timestamp: str
     strategy_name: str
     total_agents_run: int
@@ -181,7 +185,7 @@ class UnifiedOrchestratorAgent(InfrastructureMixin):
         self,
         strategy: MissionStrategy,
         project_root: Path | None = None,
-        name: str = "UnifiedOrchestrator"
+        name: str = "UnifiedOrchestrator",
     ) -> None:
         """
         Initialize the unified orchestrator.
@@ -249,8 +253,14 @@ class UnifiedOrchestratorAgent(InfrastructureMixin):
 
             for tier_num, (tier_name, agent_names) in enumerate(tiers.items(), 1):
                 # Check if this tier should be executed (tier filtering)
-                if hasattr(self.strategy, 'should_run_tier') and not self.strategy.should_run_tier(tier_name):
-                    skip_msg = self.strategy.get_tier_skip_message(tier_name) if hasattr(self.strategy, 'get_tier_skip_message') else f"⏭️  SKIPPING {tier_name}"
+                if hasattr(self.strategy, "should_run_tier") and not self.strategy.should_run_tier(
+                    tier_name
+                ):
+                    skip_msg = (
+                        self.strategy.get_tier_skip_message(tier_name)
+                        if hasattr(self.strategy, "get_tier_skip_message")
+                        else f"⏭️  SKIPPING {tier_name}"
+                    )
                     self.logger.info(f"\n{skip_msg}")
                     continue
 
@@ -260,24 +270,30 @@ class UnifiedOrchestratorAgent(InfrastructureMixin):
 
                 for agent_name in agent_names:
                     result = self._execute_agent_safely(
-                        agent_name=agent_name,
-                        dry_run=dry_run,
-                        execute=execute
+                        agent_name=agent_name, dry_run=dry_run, execute=execute
                     )
 
                     agent_results.append(result)
-                    tier_results.append({
-                        "agent_name": result.agent_name,
-                        "status": result.status,
-                        "violations_found": result.violations_found,
-                        "violations_fixed": result.violations_fixed,
-                    })
+                    tier_results.append(
+                        {
+                            "agent_name": result.agent_name,
+                            "status": result.status,
+                            "violations_found": result.violations_found,
+                            "violations_fixed": result.violations_fixed,
+                        }
+                    )
 
                     total_violations += result.violations_found
                     total_fixes += result.violations_fixed
 
                     # Log result
-                    status_icon = "✅" if result.status == "PASS" else "⚠️" if result.status == "FAIL" else "❌"
+                    status_icon = (
+                        "✅"
+                        if result.status == "PASS"
+                        else "⚠️"
+                        if result.status == "FAIL"
+                        else "❌"
+                    )
                     self.logger.info(
                         f"  {status_icon} {agent_name}: {result.status} "
                         f"(violations: {result.violations_found}, fixed: {result.violations_fixed})"
@@ -375,18 +391,10 @@ class UnifiedOrchestratorAgent(InfrastructureMixin):
         aborted = result.get("aborted", False)
 
         # Stable if: SUCCESS status, no unfixed violations, not aborted
-        return (
-            status == "SUCCESS" and
-            total_violations <= total_fixed and
-            not aborted
-        )
+        return status == "SUCCESS" and total_violations <= total_fixed and not aborted
 
     def _execute_agent_safely(
-        self,
-        agent_name: str,
-        dry_run: bool = True,
-        execute: bool = False,
-        **kwargs: Any
+        self, agent_name: str, dry_run: bool = True, execute: bool = False, **kwargs: Any
     ) -> AgentExecutionResult:
         """
         Execute a single agent with crash containment.
@@ -418,11 +426,7 @@ class UnifiedOrchestratorAgent(InfrastructureMixin):
 
             # Execute via strategy
             result = self.strategy.execute_agent(
-                agent=agent,
-                agent_name=agent_name,
-                dry_run=dry_run,
-                execute=execute,
-                **kwargs
+                agent=agent, agent_name=agent_name, dry_run=dry_run, execute=execute, **kwargs
             )
 
             execution_time_ms = (time.time() - start_time) * 1000

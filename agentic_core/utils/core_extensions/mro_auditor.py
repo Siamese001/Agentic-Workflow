@@ -10,6 +10,7 @@ The auditor performs two primary checks:
 1. Static Order Check: Ensures SovereignBaseAgent is at the tail end of MRO before object
 2. Dynamic Propagation Check: Verifies instantiation triggers __post_init__ in SovereignBaseAgent
 """
+
 import inspect
 from pathlib import Path
 
@@ -43,7 +44,9 @@ class MROAuditor:
 
         # Rule 1: SovereignBaseAgent must be present
         if SovereignBaseAgent not in mro:
-            errors.append(f"CRITICAL: {agent_cls.__name__} does not inherit from SovereignBaseAgent.")
+            errors.append(
+                f"CRITICAL: {agent_cls.__name__} does not inherit from SovereignBaseAgent."
+            )
             return errors  # Can't continue without SovereignBaseAgent
 
         # Rule 2: SovereignBaseAgent must be near the end, before MCPHardenedMixin and object
@@ -67,7 +70,7 @@ class MROAuditor:
             cls = mro[i]
             if cls not in allowed_after_sovereign:
                 # Check if it's a stdlib/framework class (has __module__ starting with standard prefixes)
-                if not (cls.__module__.startswith(('builtins', 'abc', 'typing', 'dataclasses'))):
+                if not (cls.__module__.startswith(("builtins", "abc", "typing", "dataclasses"))):
                     errors.append(
                         f"MRO ORDER ERROR: {agent_cls.__name__} has {cls.__name__} AFTER SovereignBaseAgent. "
                         f"Only MCPHardenedMixin and object should appear after the root."
@@ -125,7 +128,7 @@ class MROAuditor:
         if instantiate and not static_errors:
             try:
                 # Try to instantiate with minimal args
-                if hasattr(agent_cls, '__dataclass_fields__'):
+                if hasattr(agent_cls, "__dataclass_fields__"):
                     # Dataclass - try with name only
                     instance = agent_cls(name=f"Test{agent_cls.__name__}")
                 else:
@@ -138,7 +141,9 @@ class MROAuditor:
 
             except Exception as e:
                 # Instantiation failed - not necessarily an MRO error
-                errors.append(f"WARNING: Could not instantiate {agent_cls.__name__} for propagation test: {e}")
+                errors.append(
+                    f"WARNING: Could not instantiate {agent_cls.__name__} for propagation test: {e}"
+                )
 
         return len(errors) == 0, errors
 
@@ -161,6 +166,7 @@ def find_all_agent_classes(root_dir: Path) -> list[type]:
     # Find all Python files
     # Phase 6.8: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_python_files
+
     for py_file in get_python_files(root_dir):
         if py_file.name.startswith("__"):
             continue
@@ -211,4 +217,4 @@ def test_all_agents_mro_compliance():
     assert success, f"Chain Broken: {error}"
 
 
-__all__ = ['MROAuditor', 'find_all_agent_classes', 'test_all_agents_mro_compliance']
+__all__ = ["MROAuditor", "find_all_agent_classes", "test_all_agents_mro_compliance"]

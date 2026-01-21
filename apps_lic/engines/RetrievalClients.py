@@ -25,7 +25,7 @@ class GoogleSearchClient:
     def _execute_search_call(self, query: str, num_results: int = 5) -> list:
         """Execute the actual search API call"""
         res = self.service.cse().list(q=query, cx=self.cse_id, num=num_results).execute()
-        return res.get('items', [])
+        return res.get("items", [])
 
     def search(self, query: str, num_results: int = 5) -> list:
         """
@@ -43,6 +43,8 @@ class GoogleSearchClient:
             CircuitBreakerOpenError: If circuit breaker is OPEN
         """
         try:
-            return self.circuit_breaker.call(self._execute_search_call, query, num_results=num_results)
+            return self.circuit_breaker.call(
+                self._execute_search_call, query, num_results=num_results
+            )
         except Exception as e:
             raise Exception(f"Google Search API call failed: {e}")

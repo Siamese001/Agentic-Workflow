@@ -17,6 +17,7 @@ Key Features:
 Territory: agentic_core/L4_state/ValidationContext/
 Canon Alignment: L4 state persistence, integrity, and recovery
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -41,6 +42,7 @@ Logger = logging.getLogger(__name__)
 @dataclass
 class StateEntry:
     """Represents a single entry in the state manifest."""
+
     key: str
     file_path: str
     file_hash: str
@@ -51,30 +53,31 @@ class StateEntry:
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
-            'key': self.key,
-            'file_path': self.file_path,
-            'file_hash': self.file_hash,
-            'created_at': self.created_at.isoformat(),
-            'updated_at': self.updated_at.isoformat(),
-            'metadata': self.metadata,
+            "key": self.key,
+            "file_path": self.file_path,
+            "file_hash": self.file_hash,
+            "created_at": self.created_at.isoformat(),
+            "updated_at": self.updated_at.isoformat(),
+            "metadata": self.metadata,
         }
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> StateEntry:
         """Create from dictionary."""
         return cls(
-            key=data['key'],
-            file_path=data['file_path'],
-            file_hash=data['file_hash'],
-            created_at=datetime.fromisoformat(data['created_at']),
-            updated_at=datetime.fromisoformat(data['updated_at']),
-            metadata=data.get('metadata', {}),
+            key=data["key"],
+            file_path=data["file_path"],
+            file_hash=data["file_hash"],
+            created_at=datetime.fromisoformat(data["created_at"]),
+            updated_at=datetime.fromisoformat(data["updated_at"]),
+            metadata=data.get("metadata", {}),
         )
 
 
 @dataclass
 class IntegrityReport:
     """Report from integrity check."""
+
     timestamp: datetime
     ghost_files: list[str]  # Files on disk but not in manifest
     orphan_entries: list[str]  # Manifest entries without files
@@ -83,11 +86,11 @@ class IntegrityReport:
 
     def to_dict(self) -> dict[str, Any]:
         return {
-            'timestamp': self.timestamp.isoformat(),
-            'ghost_files': self.ghost_files,
-            'orphan_entries': self.orphan_entries,
-            'hash_mismatches': self.hash_mismatches,
-            'is_healthy': self.is_healthy,
+            "timestamp": self.timestamp.isoformat(),
+            "ghost_files": self.ghost_files,
+            "orphan_entries": self.orphan_entries,
+            "hash_mismatches": self.hash_mismatches,
+            "is_healthy": self.is_healthy,
         }
 
 
@@ -143,7 +146,7 @@ class UnifiedStateManagementAgent(L4StateBaseAgent):
             self._registry_callbacks = []
 
         # Create lock if needed
-        if not hasattr(self, '_lock') or self._lock is None:
+        if not hasattr(self, "_lock") or self._lock is None:
             self._lock = threading.RLock()
 
         # Ensure infrastructure
@@ -173,16 +176,18 @@ class UnifiedStateManagementAgent(L4StateBaseAgent):
         self.manifest_backup = self.memory_root / "manifest.json.bak"
 
         if not self.manifest_path.exists():
-            self._write_manifest_raw({
-                "version": "2.0",
-                "created_at": datetime.now().isoformat(),
-                "entries": {},
-                "stats": {
-                    "total_entries": 0,
-                    "last_cleanup": None,
-                    "last_integrity_check": None,
+            self._write_manifest_raw(
+                {
+                    "version": "2.0",
+                    "created_at": datetime.now().isoformat(),
+                    "entries": {},
+                    "stats": {
+                        "total_entries": 0,
+                        "last_cleanup": None,
+                        "last_integrity_check": None,
+                    },
                 }
-            })
+            )
 
     @property
     def manifest_path(self) -> Path:
@@ -212,11 +217,11 @@ class UnifiedStateManagementAgent(L4StateBaseAgent):
                 return
 
             try:
-                with open(self.manifest_path, encoding='utf-8') as f:
+                with open(self.manifest_path, encoding="utf-8") as f:
                     data = json.load(f)
 
                 self._manifest = {}
-                for key, entry_data in data.get('entries', {}).items():
+                for key, entry_data in data.get("entries", {}).items():
                     try:
                         self._manifest[key] = StateEntry.from_dict(entry_data)
                     except Exception as e:
@@ -247,31 +252,26 @@ class UnifiedStateManagementAgent(L4StateBaseAgent):
                     "total_entries": len(self._manifest),
                     "last_cleanup": None,
                     "last_integrity_check": self._last_integrity_check.isoformat(),
-                }
+                },
             }
 
             self._write_manifest_raw(data)
 
     def _write_manifest_raw(self, data: dict[str, Any]) -> None:
         """Write raw manifest data to disk."""
-        with open(self.manifest_path, 'w', encoding='utf-8') as f:
+        with open(self.manifest_path, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2, default=str)
 
     def _read_manifest_raw(self) -> dict[str, Any]:
         """Read raw manifest data from disk."""
-        with open(self.manifest_path, encoding='utf-8') as f:
+        with open(self.manifest_path, encoding="utf-8") as f:
             return json.load(f)
 
     # =========================================================================
     # STATE OPERATIONS (Atomic Transactions)
     # =========================================================================
 
-    def set_state(
-        self,
-        key: str,
-        data: Any,
-        metadata: dict[str, Any] | None = None
-    ) -> str:
+    def set_state(self, key: str, data: Any, metadata: dict[str, Any] | None = None) -> str:
         """
         Atomically set state data with manifest tracking.
 
@@ -293,7 +293,7 @@ class UnifiedStateManagementAgent(L4StateBaseAgent):
 
             # Write data to disk
             file_path.parent.mkdir(parents=True, exist_ok=True)
-            with open(file_path, 'w', encoding='utf-8') as f:
+            with open(file_path, "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=2, default=str)
 
             # Update manifest
@@ -345,7 +345,7 @@ class UnifiedStateManagementAgent(L4StateBaseAgent):
                 return None
 
             try:
-                with open(file_path, encoding='utf-8') as f:
+                with open(file_path, encoding="utf-8") as f:
                     return json.load(f)
             except Exception as e:
                 Logger.error(f"Failed to read state {key}: {e}")
@@ -418,7 +418,7 @@ class UnifiedStateManagementAgent(L4StateBaseAgent):
             for subdir in ["state", "conversations", "results", "checkpoints"]:
                 subdir_path = self.memory_root / subdir
                 if subdir_path.exists():
-                    json_files = get_data_files(subdir_path, extensions=['.json'])
+                    json_files = get_data_files(subdir_path, extensions=[".json"])
                     for file_path in json_files:
                         if file_path.name != "manifest.json":
                             rel_path = str(file_path.relative_to(self.memory_root))
@@ -437,7 +437,7 @@ class UnifiedStateManagementAgent(L4StateBaseAgent):
                 file_path = self.memory_root / entry.file_path
                 if file_path.exists():
                     try:
-                        with open(file_path, 'rb') as f:
+                        with open(file_path, "rb") as f:
                             current_hash = hashlib.md5(f.read()).hexdigest()
                         if current_hash != entry.file_hash:
                             hash_mismatches.append(key)
@@ -504,7 +504,7 @@ class UnifiedStateManagementAgent(L4StateBaseAgent):
                     file_path = self.memory_root / ghost
 
                     if file_path.exists():
-                        with open(file_path, 'rb') as f:
+                        with open(file_path, "rb") as f:
                             file_hash = hashlib.md5(f.read()).hexdigest()
 
                         now = datetime.now()
@@ -533,7 +533,7 @@ class UnifiedStateManagementAgent(L4StateBaseAgent):
                         file_path = self.memory_root / entry.file_path
 
                         if file_path.exists():
-                            with open(file_path, 'rb') as f:
+                            with open(file_path, "rb") as f:
                                 entry.file_hash = hashlib.md5(f.read()).hexdigest()
                             entry.updated_at = datetime.now()
                             repaired["hashes_updated"] += 1
@@ -677,7 +677,7 @@ class UnifiedStateManagementAgent(L4StateBaseAgent):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: set[str] | None = None
+        _call_path: set[str] | None = None,
     ) -> dict[str, Any]:
         """
         Repository-wide state healing.
@@ -698,7 +698,7 @@ class UnifiedStateManagementAgent(L4StateBaseAgent):
             execute=execute,
             depth=depth,
             max_depth=max_depth,
-            _call_path=_call_path
+            _call_path=_call_path,
         )
 
         if _call_path is None:
@@ -750,7 +750,9 @@ class UnifiedStateManagementAgent(L4StateBaseAgent):
             results["tests"].append({"name": "test_instantiation", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
+            results["tests"].append(
+                {"name": "test_instantiation", "status": "failed", "error": str(e)}
+            )
 
         # Test 2: Set/Get state
         try:
@@ -770,19 +772,23 @@ class UnifiedStateManagementAgent(L4StateBaseAgent):
             results["tests"].append({"name": "test_set_get_state", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append({"name": "test_set_get_state", "status": "failed", "error": str(e)})
+            results["tests"].append(
+                {"name": "test_set_get_state", "status": "failed", "error": str(e)}
+            )
 
         # Test 3: Integrity check
         try:
             report = self.validate_and_sync()
             assert isinstance(report, IntegrityReport)
-            assert hasattr(report, 'is_healthy')
+            assert hasattr(report, "is_healthy")
 
             results["passed"] += 1
             results["tests"].append({"name": "test_integrity_check", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append({"name": "test_integrity_check", "status": "failed", "error": str(e)})
+            results["tests"].append(
+                {"name": "test_integrity_check", "status": "failed", "error": str(e)}
+            )
 
         # Test 4: Manifest persistence
         try:
@@ -798,7 +804,9 @@ class UnifiedStateManagementAgent(L4StateBaseAgent):
             results["tests"].append({"name": "test_manifest_persistence", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append({"name": "test_manifest_persistence", "status": "failed", "error": str(e)})
+            results["tests"].append(
+                {"name": "test_manifest_persistence", "status": "failed", "error": str(e)}
+            )
 
         return results
 
@@ -806,6 +814,7 @@ class UnifiedStateManagementAgent(L4StateBaseAgent):
 # =========================================================================
 # FACTORY FUNCTIONS
 # =========================================================================
+
 
 def get_state_manager(memory_root: Path | None = None) -> UnifiedStateManagementAgent:
     """
@@ -860,8 +869,8 @@ if __name__ == "__main__":
             print(json.dumps(results, indent=2))
         else:
             print(f"Self-tests: {results['passed']} passed, {results['failed']} failed")
-            for test in results['tests']:
-                status = "✓" if test['status'] == 'passed' else "✗"
+            for test in results["tests"]:
+                status = "✓" if test["status"] == "passed" else "✗"
                 print(f"  {status} {test['name']}")
 
     elif args.validate:

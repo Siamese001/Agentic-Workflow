@@ -117,6 +117,7 @@ class AgentCategorizer:
         """Scan folder and categorize all agents."""
         # Sub-20: Use ssot_discovery instead of glob
         from agentic_core.utils.ssot_discovery import get_python_files
+
         py_files = list(get_python_files(self.folder_path))
 
         for py_file in py_files:

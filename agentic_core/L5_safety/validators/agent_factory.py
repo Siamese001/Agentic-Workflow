@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: guardrail, memory, orchestrator, prompt, state, workflow
@@ -11,6 +10,7 @@
 # Removed: apps_shared.base_agents.canon_base_agent_interface
 
 from __future__ import annotations
+
 """
 Agent Factory – L3 Orchestration Layer (Phase 9A & 11 – Dec 26, 2025)
 Wires L1 Cognition agents with L2 Execution implementations via DIP.
@@ -25,7 +25,8 @@ Phase 11: Configurable Implementation Factory
 - Enables zero-cost unit testing with mock implementations
 - Allows runtime switching of agent behavior
 """
-from typing import Optional, Any
+from typing import Any
+
 try:
     from agentic_core.L2_execution.ToolRegistry.L2ExecutionBaseAgent import L2ExecutionBaseAgent
 except ImportError:
@@ -38,13 +39,17 @@ except ImportError:
 
 # Import L1 Agent Classes with fallbacks
 try:
-    from agentic_core.L1_cognition.thought_engine.canon_agents_core import SystemArchitect as SystemArchitect
+    from agentic_core.L1_cognition.thought_engine.canon_agents_core import (
+        SystemArchitect as SystemArchitect,
+    )
 except ImportError:
     SystemArchitect = None
 HealerAgent = GenerativeGuard = None  # Stubs
 
 try:
-    from agentic_core.L1_cognition.thought_engine.canon_agents_syntax import CodeJanitor as CodeJanitor
+    from agentic_core.L1_cognition.thought_engine.canon_agents_syntax import (
+        CodeJanitor as CodeJanitor,
+    )
 except ImportError:
     CodeJanitor = None
 DependencySentinelAgent = None  # Stub
@@ -61,10 +66,6 @@ except ImportError:
     UnifiedCodeEnforcerAgent = None
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
@@ -80,7 +81,7 @@ class AgentFactory(HealerMixin):
     """
 
     @staticmethod
-    def _create_impl(ctx: Optional[Any] = None) -> CanonBaseAgentInterface:
+    def _create_impl(ctx: Any | None = None) -> CanonBaseAgentInterface:
         """
         Create base agent implementation with configurable mode support.
 
@@ -95,7 +96,7 @@ class AgentFactory(HealerMixin):
         Returns:
             CanonBaseAgentInterface: Concrete implementation based on configured mode
         """
-        mode = getattr(config, 'AGENT_IMPLEMENTATION_MODE', 'real') if config else 'real'
+        mode = getattr(config, "AGENT_IMPLEMENTATION_MODE", "real") if config else "real"
 
         if mode == "mock":
             # Zero-cost mock for unit testing without LLM calls
@@ -113,7 +114,7 @@ class AgentFactory(HealerMixin):
         return L2ExecutionBaseAgent(ctx=ctx) if L2ExecutionBaseAgent else None
 
     @staticmethod
-    def create_system_architect(ctx: Optional[Any] = None) -> SystemArchitect:
+    def create_system_architect(ctx: Any | None = None) -> SystemArchitect:
         """
         Create SystemArchitect with injected L2 implementation.
         Injects L2 execution capabilities into L1 strategic architecture reasoning.
@@ -121,7 +122,7 @@ class AgentFactory(HealerMixin):
         return SystemArchitect(AgentFactory._create_impl(ctx))
 
     @staticmethod
-    def create_healer_agent(ctx: Optional[Any] = None) -> HealerAgent:
+    def create_healer_agent(ctx: Any | None = None) -> HealerAgent:
         """
         Create HealerAgent with injected L2 implementation.
 
@@ -130,7 +131,7 @@ class AgentFactory(HealerMixin):
         return HealerAgent(AgentFactory._create_impl(ctx)) if HealerAgent else None
 
     @staticmethod
-    def create_generative_guard(ctx: Optional[Any] = None) -> GenerativeGuard:
+    def create_generative_guard(ctx: Any | None = None) -> GenerativeGuard:
         """
         Create GenerativeGuard with injected L2 implementation.
 
@@ -139,7 +140,7 @@ class AgentFactory(HealerMixin):
         return GenerativeGuard(AgentFactory._create_impl(ctx))
 
     @staticmethod
-    def create_code_janitor(ctx: Optional[Any] = None) -> CodeJanitor:
+    def create_code_janitor(ctx: Any | None = None) -> CodeJanitor:
         """
         Create CodeJanitor with injected L2 implementation.
 
@@ -148,7 +149,7 @@ class AgentFactory(HealerMixin):
         return CodeJanitor(AgentFactory._create_impl(ctx))
 
     @staticmethod
-    def create_dependency_sentinel(ctx: Optional[Any] = None) -> DependencySentinelAgent:
+    def create_dependency_sentinel(ctx: Any | None = None) -> DependencySentinelAgent:
         """
         Create DependencySentinelAgent with injected L2 implementation.
 
@@ -157,7 +158,7 @@ class AgentFactory(HealerMixin):
         return DependencySentinelAgent(AgentFactory._create_impl(ctx))
 
     @staticmethod
-    def create_safety_inspector(ctx: Optional[Any] = None) -> SafetyInspectorAgent:
+    def create_safety_inspector(ctx: Any | None = None) -> SafetyInspectorAgent:
         """
         Create SafetyInspectorAgent with injected L2 implementation.
 
@@ -166,7 +167,7 @@ class AgentFactory(HealerMixin):
         return SafetyInspectorAgent(AgentFactory._create_impl(ctx))
 
     @staticmethod
-    def create_pattern_enforcer(ctx: Optional[Any] = None) -> UnifiedCodeEnforcerAgent:
+    def create_pattern_enforcer(ctx: Any | None = None) -> UnifiedCodeEnforcerAgent:
         """
         Create UnifiedCodeEnforcerAgent with injected L2 implementation.
 
@@ -176,7 +177,7 @@ class AgentFactory(HealerMixin):
 
 
 # Convenience function for creating all agents at once
-def create_all_agents(ctx: Optional[Any] = None) -> dict:
+def create_all_agents(ctx: Any | None = None) -> dict:
     """
     Create all L1 agents with injected L2 implementations.
 
@@ -196,14 +197,15 @@ def create_all_agents(ctx: Optional[Any] = None) -> dict:
         "UnifiedCodeEnforcerAgent": AgentFactory.create_pattern_enforcer(ctx),
     }
 
+
 def _run_self_tests(self) -> dict:
-        """Run internal self-tests."""
-        results = {"passed": 0, "failed": 0, "tests": []}
-        try:
-            assert self is not None
-            results["passed"] += 1
-            results["tests"].append({"name": "test_instantiation", "status": "passed"})
-        except AssertionError as e:
-            results["failed"] += 1
-            results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
-        return results
+    """Run internal self-tests."""
+    results = {"passed": 0, "failed": 0, "tests": []}
+    try:
+        assert self is not None
+        results["passed"] += 1
+        results["tests"].append({"name": "test_instantiation", "status": "passed"})
+    except AssertionError as e:
+        results["failed"] += 1
+        results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
+    return results

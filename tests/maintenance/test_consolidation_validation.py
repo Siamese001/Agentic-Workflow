@@ -40,6 +40,7 @@ def test_fail(test_id: str, msg: str):
 # Test 1: Inheritance Audit
 # ============================================================================
 
+
 def test_inheritance_audit():
     """Validate all agents inherit from approved layer bases."""
     print("\n" + "=" * 60)
@@ -61,13 +62,20 @@ def test_inheritance_audit():
     # Check that each approved base exists
     base_paths = {
         "SovereignBaseAgent": PROJECT_ROOT / "agentic_core/observability/SovereignBaseAgent.py",
-        "L0MaintenanceBaseAgent": PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/L0MaintenanceBaseAgent.py",
-        "L1CognitionBaseAgent": PROJECT_ROOT / "agentic_core/L1_cognition/thought_engine/L1CognitionBaseAgent.py",
-        "L2ExecutionBaseAgent": PROJECT_ROOT / "agentic_core/L2_execution/ToolRegistry/L2ExecutionBaseAgent.py",
-        "L3OrchestrationBaseAgent": PROJECT_ROOT / "agentic_core/L3_orchestration/workflow_engines/L3OrchestrationBaseAgent.py",
-        "L4StateBaseAgent": PROJECT_ROOT / "agentic_core/L4_state/ValidationContext/L4StateBaseAgent.py",
-        "L5SafetyBaseAgent": PROJECT_ROOT / "agentic_core/L5_safety/validators/L5SafetyBaseAgent.py",
-        "L6ObservabilityBaseAgent": PROJECT_ROOT / "agentic_core/L6_observability/L6ObservabilityBaseAgent.py",
+        "L0MaintenanceBaseAgent": PROJECT_ROOT
+        / "agentic_core/L0_maintenance/scripts/L0MaintenanceBaseAgent.py",
+        "L1CognitionBaseAgent": PROJECT_ROOT
+        / "agentic_core/L1_cognition/thought_engine/L1CognitionBaseAgent.py",
+        "L2ExecutionBaseAgent": PROJECT_ROOT
+        / "agentic_core/L2_execution/ToolRegistry/L2ExecutionBaseAgent.py",
+        "L3OrchestrationBaseAgent": PROJECT_ROOT
+        / "agentic_core/L3_orchestration/workflow_engines/L3OrchestrationBaseAgent.py",
+        "L4StateBaseAgent": PROJECT_ROOT
+        / "agentic_core/L4_state/ValidationContext/L4StateBaseAgent.py",
+        "L5SafetyBaseAgent": PROJECT_ROOT
+        / "agentic_core/L5_safety/validators/L5SafetyBaseAgent.py",
+        "L6ObservabilityBaseAgent": PROJECT_ROOT
+        / "agentic_core/L6_observability/L6ObservabilityBaseAgent.py",
     }
 
     for base_name, base_path in base_paths.items():
@@ -89,6 +97,7 @@ def test_inheritance_audit():
         found_in_live = False
         # Phase 6.8: Use ssot_discovery instead of rglob
         from agentic_core.utils.ssot_discovery import get_python_files
+
         for py_file in get_python_files(live_path):
             if py_file.name == f"{deprecated}.py":
                 found_in_live = True
@@ -102,6 +111,7 @@ def test_inheritance_audit():
 # ============================================================================
 # Test 2: Orchestrator SSOT
 # ============================================================================
+
 
 def test_orchestrator_ssot():
     """Validate get_orchestrator returns UnifiedOrchestratorAgent."""
@@ -117,7 +127,9 @@ def test_orchestrator_ssot():
         # Test unified mode
         orchestrator = get_orchestrator("unified")
         if isinstance(orchestrator, UnifiedOrchestratorAgent):
-            test_pass("UNIFIED_MODE", "get_orchestrator('unified') returns UnifiedOrchestratorAgent")
+            test_pass(
+                "UNIFIED_MODE", "get_orchestrator('unified') returns UnifiedOrchestratorAgent"
+            )
         else:
             test_fail("UNIFIED_MODE", f"Wrong type: {type(orchestrator)}")
 
@@ -127,7 +139,9 @@ def test_orchestrator_ssot():
             orchestrator = get_orchestrator("healing")
 
             if isinstance(orchestrator, UnifiedOrchestratorAgent):
-                test_pass("HEALING_MODE", "get_orchestrator('healing') returns UnifiedOrchestratorAgent")
+                test_pass(
+                    "HEALING_MODE", "get_orchestrator('healing') returns UnifiedOrchestratorAgent"
+                )
             else:
                 test_fail("HEALING_MODE", f"Wrong type: {type(orchestrator)}")
 
@@ -148,6 +162,7 @@ def test_orchestrator_ssot():
 # Test 3: Timeout Verification (SovereignIndex)
 # ============================================================================
 
+
 def test_timeout_verification():
     """Validate LocationAgent uses SovereignIndex for performance."""
     print("\n" + "=" * 60)
@@ -161,28 +176,28 @@ def test_timeout_verification():
         test_fail("FILE", "LocationAgent.py not found")
         return
 
-    content = location_agent_path.read_text(encoding='utf-8')
+    content = location_agent_path.read_text(encoding="utf-8")
 
     # Check SovereignIndex import
-    if 'from agentic_core.utils.sovereign_index import SovereignIndex' in content:
+    if "from agentic_core.utils.sovereign_index import SovereignIndex" in content:
         test_pass("IMPORT", "SovereignIndex imported")
     else:
         test_fail("IMPORT", "SovereignIndex NOT imported")
 
     # Check SovereignIndex usage
-    if 'SovereignIndex.get_instance' in content:
+    if "SovereignIndex.get_instance" in content:
         test_pass("USAGE", "SovereignIndex.get_instance() used")
     else:
         test_fail("USAGE", "SovereignIndex.get_instance() NOT used")
 
     # Check _get_python_files uses SovereignIndex
-    if '_get_python_files' in content and 'index.get_files' in content:
+    if "_get_python_files" in content and "index.get_files" in content:
         test_pass("GET_FILES", "_get_python_files uses SovereignIndex")
     else:
         test_fail("GET_FILES", "_get_python_files does NOT use SovereignIndex")
 
     # Check GLOBAL_EXCLUDED_DIRS is respected
-    if 'GLOBAL_EXCLUDED_DIRS' in content or 'SOVEREIGN_EXCLUDED_FOLDERS' in content:
+    if "GLOBAL_EXCLUDED_DIRS" in content or "SOVEREIGN_EXCLUDED_FOLDERS" in content:
         test_pass("EXCLUSIONS", "Uses SSOT exclusion patterns")
     else:
         test_fail("EXCLUSIONS", "Does NOT use SSOT exclusion patterns")
@@ -191,6 +206,7 @@ def test_timeout_verification():
 # ============================================================================
 # Test 4: Deprecation Guard
 # ============================================================================
+
 
 def test_deprecation_guard():
     """Validate deprecated classes trigger DeprecationWarning."""
@@ -214,7 +230,9 @@ def test_deprecation_guard():
             if deprecation_warnings:
                 test_pass("SSOT_DEPRECATION", "SSOTOrchestratorAgent triggers DeprecationWarning")
             else:
-                test_fail("SSOT_DEPRECATION", "SSOTOrchestratorAgent does NOT trigger DeprecationWarning")
+                test_fail(
+                    "SSOT_DEPRECATION", "SSOTOrchestratorAgent does NOT trigger DeprecationWarning"
+                )
 
         # Test HealingOrchestratorAgent deprecation
         with warnings.catch_warnings(record=True) as w:
@@ -223,9 +241,14 @@ def test_deprecation_guard():
 
             deprecation_warnings = [x for x in w if issubclass(x.category, DeprecationWarning)]
             if deprecation_warnings:
-                test_pass("HEALING_DEPRECATION", "HealingOrchestratorAgent triggers DeprecationWarning")
+                test_pass(
+                    "HEALING_DEPRECATION", "HealingOrchestratorAgent triggers DeprecationWarning"
+                )
             else:
-                test_fail("HEALING_DEPRECATION", "HealingOrchestratorAgent does NOT trigger DeprecationWarning")
+                test_fail(
+                    "HEALING_DEPRECATION",
+                    "HealingOrchestratorAgent does NOT trigger DeprecationWarning",
+                )
 
         # Test ConsolidatedOrchestratorAgent deprecation
         with warnings.catch_warnings(record=True) as w:
@@ -234,9 +257,15 @@ def test_deprecation_guard():
 
             deprecation_warnings = [x for x in w if issubclass(x.category, DeprecationWarning)]
             if deprecation_warnings:
-                test_pass("CONSOLIDATED_DEPRECATION", "ConsolidatedOrchestratorAgent triggers DeprecationWarning")
+                test_pass(
+                    "CONSOLIDATED_DEPRECATION",
+                    "ConsolidatedOrchestratorAgent triggers DeprecationWarning",
+                )
             else:
-                test_fail("CONSOLIDATED_DEPRECATION", "ConsolidatedOrchestratorAgent does NOT trigger DeprecationWarning")
+                test_fail(
+                    "CONSOLIDATED_DEPRECATION",
+                    "ConsolidatedOrchestratorAgent does NOT trigger DeprecationWarning",
+                )
 
     except ImportError as e:
         test_fail("IMPORT", f"Cannot import deprecated classes: {e}")
@@ -247,6 +276,7 @@ def test_deprecation_guard():
 # ============================================================================
 # Test 5: Orchestrator Count Verification
 # ============================================================================
+
 
 def test_orchestrator_count():
     """Verify orchestrator AGENT count is reduced to target."""
@@ -275,6 +305,7 @@ def test_orchestrator_count():
 
     # Phase 6.8: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_python_files
+
     for py_file in get_python_files(agentic_core):
         if "Orchestrator" not in py_file.name:
             continue
@@ -292,9 +323,13 @@ def test_orchestrator_count():
     # - MockOrchestratorAgent.py (for testing)
 
     if len(orchestrator_agents) <= 2:
-        test_pass("AGENT_COUNT", f"Orchestrator agent count: {len(orchestrator_agents)} (target: ≤2)")
+        test_pass(
+            "AGENT_COUNT", f"Orchestrator agent count: {len(orchestrator_agents)} (target: ≤2)"
+        )
     else:
-        test_fail("AGENT_COUNT", f"Orchestrator agent count: {len(orchestrator_agents)} (target: ≤2)")
+        test_fail(
+            "AGENT_COUNT", f"Orchestrator agent count: {len(orchestrator_agents)} (target: ≤2)"
+        )
 
     print("  Orchestrator Agents:")
     for f in orchestrator_agents:
@@ -306,6 +341,7 @@ def test_orchestrator_count():
 # ============================================================================
 # Test 6: BaseAgent Count Verification
 # ============================================================================
+
 
 def test_baseagent_count():
     """Verify BaseAgent count is reduced to target."""
@@ -319,6 +355,7 @@ def test_baseagent_count():
 
     # Phase 6.8: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_python_files
+
     for py_file in get_python_files(agentic_core):
         if "BaseAgent" in py_file.name:
             baseagent_files.append(py_file)
@@ -338,6 +375,7 @@ def test_baseagent_count():
 # ============================================================================
 # Main Execution
 # ============================================================================
+
 
 def main():
     print("=" * 60)

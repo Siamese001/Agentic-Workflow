@@ -9,6 +9,7 @@ This catches failures that Python tests miss:
 - Console errors
 - Empty tables despite valid HTML
 """
+
 import asyncio
 import sys
 
@@ -44,7 +45,9 @@ async def test_dashboard_browser():
         try:
             # Navigate to dashboard
             print("2. Loading http://localhost:8080/autonomy_dashboard.html...")
-            response = await page.goto("http://localhost:8080/autonomy_dashboard.html", timeout=10000)
+            response = await page.goto(
+                "http://localhost:8080/autonomy_dashboard.html", timeout=10000
+            )
 
             if not response or response.status != 200:
                 print(f"❌ FAILED: HTTP {response.status if response else 'NO RESPONSE'}")
@@ -58,7 +61,7 @@ async def test_dashboard_browser():
 
             # Check for console errors
             print("4. Checking console for errors...")
-            error_messages = [msg for msg in console_messages if '[error]' in msg.lower()]
+            error_messages = [msg for msg in console_messages if "[error]" in msg.lower()]
 
             if error_messages:
                 print(f"   ❌ Found {len(error_messages)} console errors:")

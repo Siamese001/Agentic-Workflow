@@ -39,15 +39,15 @@ class ContentQualityAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
     """
 
     PLACEHOLDER_PATTERNS = [
-        r'\[(?:NAME|COMPANY|TITLE|PLACEHOLDER|YOUR_NAME|INSERT)\]',  # [PLACEHOLDER] style
-        r'\{(?:name|company|title|placeholder|your_name|insert)\}',  # {placeholder} style
-        r'<(?:NAME|COMPANY|TITLE|PLACEHOLDER)>',    # <PLACEHOLDER> style
-        r'\bTODO\b',
-        r'\bTBD\b',
-        r'\bFIXME\b',
-        r'\bXXX\b',
-        r'Lorem ipsum',
-        r'PLACEHOLDER',
+        r"\[(?:NAME|COMPANY|TITLE|PLACEHOLDER|YOUR_NAME|INSERT)\]",  # [PLACEHOLDER] style
+        r"\{(?:name|company|title|placeholder|your_name|insert)\}",  # {placeholder} style
+        r"<(?:NAME|COMPANY|TITLE|PLACEHOLDER)>",  # <PLACEHOLDER> style
+        r"\bTODO\b",
+        r"\bTBD\b",
+        r"\bFIXME\b",
+        r"\bXXX\b",
+        r"Lorem ipsum",
+        r"PLACEHOLDER",
     ]
 
     MIN_SECTION_LENGTHS = {
@@ -99,7 +99,11 @@ class ContentQualityAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
 
             # Check for quantified achievements in experience
             if section_name == "experience" and content_str:
-                if not re.search(r'\d+[%KMB]?|\$\d+|\d+\s*(years?|months?|projects?|clients?|users?|engineers?|team)', content_str, re.IGNORECASE):
+                if not re.search(
+                    r"\d+[%KMB]?|\$\d+|\d+\s*(years?|months?|projects?|clients?|users?|engineers?|team)",
+                    content_str,
+                    re.IGNORECASE,
+                ):
                     issues.append("Experience section lacks quantified achievements")
 
         if issues:
@@ -127,7 +131,9 @@ class ContentQualityAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
             return json.dumps(content)
         return str(content)
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, int]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict[str, int]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -217,9 +223,7 @@ class TestPilot(ResumeAgent):
         Returns:
             Dict with test results
         """
-        total_content = sum(
-            len(str(v)) for k, v in resume.items() if not k.startswith("_")
-        )
+        total_content = sum(len(str(v)) for k, v in resume.items() if not k.startswith("_"))
         return {
             "passed": total_content >= 200,
             "total_chars": total_content,

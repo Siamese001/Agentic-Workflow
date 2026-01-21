@@ -23,6 +23,7 @@ logger = logging.getLogger(__name__)
 
 class TaskPriority(str, Enum):
     """Task priority levels."""
+
     LOW = "LOW"
     MEDIUM = "MEDIUM"
     HIGH = "HIGH"
@@ -32,6 +33,7 @@ class TaskPriority(str, Enum):
 @dataclass
 class BulkheadConfig:
     """Configuration for a bulkhead."""
+
     max_concurrency: int
     priority: TaskPriority
     queue_size: int = 100
@@ -42,6 +44,7 @@ class BulkheadConfig:
 @dataclass
 class BulkheadMetrics:
     """Metrics for a bulkhead."""
+
     name: str
     max_concurrency: int
     queue_size: int
@@ -86,9 +89,7 @@ class Bulkhead:
         self.semaphore = asyncio.Semaphore(config.max_concurrency)
         self.queue = asyncio.Queue(maxsize=config.queue_size)
         self.metrics = BulkheadMetrics(
-            name=name,
-            max_concurrency=config.max_concurrency,
-            queue_size=config.queue_size
+            name=name, max_concurrency=config.max_concurrency, queue_size=config.queue_size
         )
 
         # Task tracking
@@ -103,7 +104,7 @@ class Bulkhead:
             self._circuit_breaker_config = CircuitBreakerConfig(
                 failure_threshold=max(3, config.max_concurrency // 2),
                 timeout=60.0,
-                failure_rate_threshold=0.5
+                failure_rate_threshold=0.5,
             )
 
         logger.info(f"Created bulkhead '{name}' with max_concurrency={config.max_concurrency}")
@@ -114,21 +115,14 @@ class Bulkhead:
         Returns:
             CircuitBreaker instance if enabled
         """
-        if self.circuit_breaker is None and hasattr(self, '_circuit_breaker_config'):
+        if self.circuit_breaker is None and hasattr(self, "_circuit_breaker_config"):
             registry = await get_circuit_breaker_registry()
             self.circuit_breaker = await registry.get_circuit_breaker(
-                f"bulkhead_{self.name}",
-                self._circuit_breaker_config
+                f"bulkhead_{self.name}", self._circuit_breaker_config
             )
         return self.circuit_breaker
 
-    async def execute(
-        self,
-        coro: Callable,
-        *args,
-        timeout: float | None = None,
-        **kwargs
-    ) -> Any:
+    async def execute(self, coro: Callable, *args, timeout: float | None = None, **kwargs) -> Any:
         """Execute a coroutine within the bulkhead.
 
         Args:
@@ -148,8 +142,7 @@ class Bulkhead:
         circuit_breaker = await self._get_circuit_breaker()
         if circuit_breaker and not circuit_breaker.can_execute():
             raise ResourceExhaustedError(
-                self.name,
-                f"Circuit breaker is {circuit_breaker.state.value}"
+                self.name, f"Circuit breaker is {circuit_breaker.state.value}"
             )
 
         start_time = time.time()
@@ -164,12 +157,10 @@ class Bulkhead:
                 self.metrics.rejected_tasks = self._rejected_count
                 if circuit_breaker:
                     circuit_breaker.record_failure(
-                        ResourceExhaustedError(self.name, "Queue full"),
-                        0
+                        ResourceExhaustedError(self.name, "Queue full"), 0
                     )
                 raise ResourceExhaustedError(
-                    self.name,
-                    f"Queue full ({self.queue.qsize()}/{self.config.queue_size})"
+                    self.name, f"Queue full ({self.queue.qsize()}/{self.config.queue_size})"
                 )
 
             # Add to queue
@@ -185,11 +176,10 @@ class Bulkhead:
                 if circuit_breaker:
                     circuit_breaker.record_failure(
                         asyncio.TimeoutError(f"Timeout acquiring semaphore after {timeout}s"),
-                        timeout * 1000
+                        timeout * 1000,
                     )
                 raise ResourceExhaustedError(
-                    self.name,
-                    f"Timeout acquiring semaphore after {timeout}s"
+                    self.name, f"Timeout acquiring semaphore after {timeout}s"
                 )
 
             # Track wait time
@@ -217,12 +207,7 @@ class Bulkhead:
             self.semaphore.release()
             self._update_metrics()
 
-    async def _execute_with_circuit_breaker(
-        self,
-        coro: Callable,
-        *args,
-        **kwargs
-    ) -> Any:
+    async def _execute_with_circuit_breaker(self, coro: Callable, *args, **kwargs) -> Any:
         """Execute coroutine with circuit breaker tracking.
 
         Args:
@@ -246,12 +231,7 @@ class Bulkhead:
                 logger.error(f"Task in bulkhead '{self.name}' failed: {e}")
                 raise
 
-    async def _execute_with_tracking(
-        self,
-        coro: Callable,
-        *args,
-        **kwargs
-    ) -> Any:
+    async def _execute_with_tracking(self, coro: Callable, *args, **kwargs) -> Any:
         """Execute coroutine with tracking.
 
         Args:
@@ -314,10 +294,7 @@ class Bulkhead:
             True if resources available, False if timeout
         """
         try:
-            await asyncio.wait_for(
-                self.queue.join(),
-                timeout=timeout
-            )
+            await asyncio.wait_for(self.queue.join(), timeout=timeout)
             return self.try_acquire()
         except asyncio.TimeoutError:
             return False
@@ -332,32 +309,26 @@ class BulkheadManager:
         self._global_metrics = {
             "total_active_tasks": 0,
             "total_queued_tasks": 0,
-            "bulkhead_count": 0
+            "bulkhead_count": 0,
         }
 
         # Default configurations
         self._default_configs = {
             "RESUME_GENERATION": BulkheadConfig(
-                max_concurrency=5,
-                priority=TaskPriority.HIGH,
-                queue_size=50
+                max_concurrency=5, priority=TaskPriority.HIGH, queue_size=50
             ),
             "OUTREACH_GENERATION": BulkheadConfig(
-                max_concurrency=10,
-                priority=TaskPriority.MEDIUM,
-                queue_size=100
+                max_concurrency=10, priority=TaskPriority.MEDIUM, queue_size=100
             ),
             "BACKGROUND_ANALYSIS": BulkheadConfig(
-                max_concurrency=2,
-                priority=TaskPriority.LOW,
-                queue_size=20
+                max_concurrency=2, priority=TaskPriority.LOW, queue_size=20
             ),
             "CRITICAL_OPERATIONS": BulkheadConfig(
                 max_concurrency=3,
                 priority=TaskPriority.CRITICAL,
                 queue_size=10,
-                timeout_seconds=60.0
-            )
+                timeout_seconds=60.0,
+            ),
         }
 
         # Initialize default bulkheads
@@ -414,12 +385,7 @@ class BulkheadManager:
         return False
 
     async def execute(
-        self,
-        bulkhead_name: str,
-        coro: Callable,
-        *args,
-        timeout: float | None = None,
-        **kwargs
+        self, bulkhead_name: str, coro: Callable, *args, timeout: float | None = None, **kwargs
     ) -> Any:
         """Execute a coroutine in a specific bulkhead.
 
@@ -438,10 +404,7 @@ class BulkheadManager:
         """
         bulkhead = self.get_bulkhead(bulkhead_name)
         if not bulkhead:
-            raise ResourceExhaustedError(
-                bulkhead_name,
-                "Bulkhead not found"
-            )
+            raise ResourceExhaustedError(bulkhead_name, "Bulkhead not found")
 
         return await bulkhead.execute(coro, *args, timeout=timeout, **kwargs)
 
@@ -460,12 +423,7 @@ class BulkheadManager:
             return "OUTREACH_GENERATION"
 
     async def execute_for_engine(
-        self,
-        engine_type: EngineType,
-        coro: Callable,
-        *args,
-        timeout: float | None = None,
-        **kwargs
+        self, engine_type: EngineType, coro: Callable, *args, timeout: float | None = None, **kwargs
     ) -> Any:
         """Execute a coroutine for a specific engine.
 
@@ -498,15 +456,11 @@ class BulkheadManager:
             total_active += metrics.active_tasks
             total_queued += metrics.queued_tasks
 
-        self._global_metrics.update({
-            "total_active_tasks": total_active,
-            "total_queued_tasks": total_queued
-        })
+        self._global_metrics.update(
+            {"total_active_tasks": total_active, "total_queued_tasks": total_queued}
+        )
 
-        return {
-            "global": self._global_metrics,
-            "bulkheads": bulkhead_metrics
-        }
+        return {"global": self._global_metrics, "bulkheads": bulkhead_metrics}
 
     def log_utilization(self) -> None:
         """Log current utilization of all bulkheads."""
@@ -540,11 +494,15 @@ class BulkheadManager:
 
             # Check for queue buildup
             if metrics.queued_tasks > metrics.config.queue_size * 0.8:
-                issues.append(f"{name}: Queue buildup ({metrics.queued_tasks}/{metrics.config.queue_size})")
+                issues.append(
+                    f"{name}: Queue buildup ({metrics.queued_tasks}/{metrics.config.queue_size})"
+                )
 
             # Check for high rejection rate
             if metrics.completed_tasks > 0:
-                rejection_rate = metrics.rejected_tasks / (metrics.completed_tasks + metrics.rejected_tasks)
+                rejection_rate = metrics.rejected_tasks / (
+                    metrics.completed_tasks + metrics.rejected_tasks
+                )
                 if rejection_rate > 0.1:  # 10% rejection rate
                     issues.append(f"{name}: High rejection rate ({rejection_rate:.1%})")
 
@@ -552,7 +510,7 @@ class BulkheadManager:
             "status": "healthy" if not issues else "degraded",
             "bulkheads": len(self.bulkheads),
             "issues": issues,
-            "metrics": self.get_all_metrics()
+            "metrics": self.get_all_metrics(),
         }
 
 
@@ -585,11 +543,14 @@ def with_bulkhead(bulkhead_name: str, timeout: float | None = None):
     Returns:
         Decorated function
     """
+
     def decorator(func):
         async def wrapper(*args, **kwargs):
             manager = await get_bulkhead_manager()
             return await manager.execute(bulkhead_name, func, *args, timeout=timeout, **kwargs)
+
         return wrapper
+
     return decorator
 
 
@@ -606,7 +567,7 @@ def with_engine_bulkhead(engine_type: EngineType, timeout: float | None = None):
     """
     bulkhead_name = {
         EngineType.RESUME: "RESUME_GENERATION",
-        EngineType.OUTREACH: "OUTREACH_GENERATION"
+        EngineType.OUTREACH: "OUTREACH_GENERATION",
     }[engine_type]
 
     return with_bulkhead(bulkhead_name, timeout)

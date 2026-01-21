@@ -28,7 +28,6 @@ Logic:
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-
 from __future__ import annotations
 
 import subprocess
@@ -45,6 +44,7 @@ from agentic_core.L5_safety.gravity.unified_validator import UnifiedSSOTValidato
 @dataclass
 class ViolationReport:
     """Report of a single violation found during pre-commit scan."""
+
     file_path: str
     line_number: int
     violation_type: str
@@ -75,8 +75,9 @@ class PreCommitSovereignAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
             print(f"Found {len(result['violations'])} violations")
     """
 
-
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -90,24 +91,27 @@ class PreCommitSovereignAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
         super().heal_repository()
 
         # === ZOMBIE VACCINATION: Wired orphaned methods ===
-        if hasattr(self, 'validate_staged_files'):
+        if hasattr(self, "validate_staged_files"):
             try:
                 validation_result = self.validate_staged_files()
                 if validation_result:
-                    metrics['violations'] += len(validation_result) if isinstance(validation_result, list) else 1
+                    metrics["violations"] += (
+                        len(validation_result) if isinstance(validation_result, list) else 1
+                    )
             except Exception as e:
-                Logger.error(f'Error in validate_staged_files: {e}')
-                metrics['errors'] += 1
-        if hasattr(self, 'validate_sovereignty'):
+                Logger.error(f"Error in validate_staged_files: {e}")
+                metrics["errors"] += 1
+        if hasattr(self, "validate_sovereignty"):
             try:
                 validation_result = self.validate_sovereignty()
                 if validation_result:
-                    metrics['violations'] += len(validation_result) if isinstance(validation_result, list) else 1
+                    metrics["violations"] += (
+                        len(validation_result) if isinstance(validation_result, list) else 1
+                    )
             except Exception as e:
-                Logger.error(f'Error in validate_sovereignty: {e}')
-                metrics['errors'] += 1
+                Logger.error(f"Error in validate_sovereignty: {e}")
+                metrics["errors"] += 1
         # === END VACCINATION ===
-
 
         return {"violations": 0, "fixed": 0, "errors": 0}
 
@@ -130,7 +134,7 @@ class PreCommitSovereignAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
                 ["git", "diff", "--cached", "--name-only", "--diff-filter=ACM"],
                 cwd=self.root,
                 text=True,
-                stderr=subprocess.DEVNULL
+                stderr=subprocess.DEVNULL,
             )
             # Filter for Python files only
             python_files = [f for f in output.splitlines() if f.endswith(".py")]
@@ -144,43 +148,37 @@ class PreCommitSovereignAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
 
     def _create_empty_result(self) -> dict[str, Any]:
         """Create empty validation result for no staged files."""
-        return {
-            "compliant": True,
-            "files_scanned": 0,
-            "violations": [],
-            "error": None
-        }
+        return {"compliant": True, "files_scanned": 0, "violations": [], "error": None}
 
     def _create_error_result(self, error: str) -> dict[str, Any]:
         """Create error validation result."""
-        return {
-            "compliant": False,
-            "files_scanned": 0,
-            "violations": [],
-            "error": error
-        }
+        return {"compliant": False, "files_scanned": 0, "violations": [], "error": error}
 
     def _paths_match(self, path1: str, path2: str) -> bool:
         """Check if two paths refer to the same file."""
-        p1 = path1.replace('\\', '/')
-        p2 = path2.replace('\\', '/')
+        p1 = path1.replace("\\", "/")
+        p2 = path2.replace("\\", "/")
         return p1.endswith(p2) or p2.endswith(p1)
 
-    def _filter_staged_violations(self, report: Any, staged_files: list[str]) -> list[ViolationReport]:
+    def _filter_staged_violations(
+        self, report: Any, staged_files: list[str]
+    ) -> list[ViolationReport]:
         """Filter violations to only those in staged files."""
         staged_violations = []
         for violation in report.import_violations:
             violation_path = str(violation.file_path)
             for staged_file in staged_files:
                 if self._paths_match(violation_path, staged_file):
-                    staged_violations.append(ViolationReport(
-                        file_path=staged_file,
-                        line_number=violation.line_number,
-                        violation_type=f"{violation.source_layer} → {violation.target_layer}",
-                        import_statement=violation.import_statement,
-                        source_layer=violation.source_layer,
-                        target_layer=violation.target_layer
-                    ))
+                    staged_violations.append(
+                        ViolationReport(
+                            file_path=staged_file,
+                            line_number=violation.line_number,
+                            violation_type=f"{violation.source_layer} → {violation.target_layer}",
+                            import_statement=violation.import_statement,
+                            source_layer=violation.source_layer,
+                            target_layer=violation.target_layer,
+                        )
+                    )
                     break
         return staged_violations
 
@@ -218,7 +216,7 @@ class PreCommitSovereignAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
             "compliant": len(staged_violations) == 0,
             "files_scanned": len(staged_files),
             "violations": staged_violations,
-            "error": None
+            "error": None,
         }
 
     def validate_sovereignty(self) -> int:
@@ -240,7 +238,9 @@ class PreCommitSovereignAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
             return 1
 
         if result["files_scanned"] > 0:
-            print(f"✅ Sovereignty Validated. {result['files_scanned']} files compliant. Commit permitted.")
+            print(
+                f"✅ Sovereignty Validated. {result['files_scanned']} files compliant. Commit permitted."
+            )
 
         return 0
 
@@ -309,10 +309,11 @@ if __name__ == "__main__":
 """
 
         try:
-            hook_path.write_text(hook_content, encoding='utf-8')
+            hook_path.write_text(hook_content, encoding="utf-8")
             # Make executable (Unix-like systems)
-            if sys.platform != 'win32':
+            if sys.platform != "win32":
                 import os
+
                 os.chmod(hook_path, 0o755)
 
             print(f"✅ Pre-commit hook installed: {hook_path}")
@@ -354,26 +355,10 @@ def main() -> Any:
     parser = argparse.ArgumentParser(
         description="Pre-Commit Sovereign Agent - Git hook for architectural compliance"
     )
-    parser.add_argument(
-        "--install",
-        action="store_true",
-        help="Install as git pre-commit hook"
-    )
-    parser.add_argument(
-        "--uninstall",
-        action="store_true",
-        help="Remove git pre-commit hook"
-    )
-    parser.add_argument(
-        "--validate",
-        action="store_true",
-        help="Validate staged files (hook mode)"
-    )
-    parser.add_argument(
-        "--root",
-        default=".",
-        help="Repository root directory"
-    )
+    parser.add_argument("--install", action="store_true", help="Install as git pre-commit hook")
+    parser.add_argument("--uninstall", action="store_true", help="Remove git pre-commit hook")
+    parser.add_argument("--validate", action="store_true", help="Validate staged files (hook mode)")
+    parser.add_argument("--root", default=".", help="Repository root directory")
 
     args = parser.parse_args()
 

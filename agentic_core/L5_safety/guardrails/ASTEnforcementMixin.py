@@ -5,6 +5,7 @@ Add to validators/enforcers for precise AST analysis (no regex).
 - Use in _ast_audit override
 - Maximizes AST opportunities across all validators
 """
+
 from __future__ import annotations
 
 import ast
@@ -46,41 +47,43 @@ class ASTEnforcementMixin:
                 "pascal_classes": 0,
                 "enums": 0,
                 "dataclasses": 0,
-                "syntax_error": True
+                "syntax_error": True,
             }
 
         # Count snake_case classes (lowercase or contains underscore)
         snake_count = sum(
-            1 for node in ast.walk(tree)
-            if isinstance(node, ast.ClassDef)
-            and (node.name[0].islower() or '_' in node.name)
+            1
+            for node in ast.walk(tree)
+            if isinstance(node, ast.ClassDef) and (node.name[0].islower() or "_" in node.name)
         )
 
         # Count PascalCase classes (proper naming)
         pascal_count = sum(
-            1 for node in ast.walk(tree)
-            if isinstance(node, ast.ClassDef)
-            and node.name[0].isupper()
-            and '_' not in node.name
+            1
+            for node in ast.walk(tree)
+            if isinstance(node, ast.ClassDef) and node.name[0].isupper() and "_" not in node.name
         )
 
         # Count Enum classes
         enum_count = sum(
-            1 for node in ast.walk(tree)
+            1
+            for node in ast.walk(tree)
             if isinstance(node, ast.ClassDef)
-            and any(
-                isinstance(base, ast.Name) and base.id == 'Enum'
-                for base in node.bases
-            )
+            and any(isinstance(base, ast.Name) and base.id == "Enum" for base in node.bases)
         )
 
         # Count dataclasses (via decorator)
         dataclass_count = sum(
-            1 for node in ast.walk(tree)
+            1
+            for node in ast.walk(tree)
             if isinstance(node, ast.ClassDef)
             and any(
-                (isinstance(dec, ast.Name) and dec.id == 'dataclass')
-                or (isinstance(dec, ast.Call) and isinstance(dec.func, ast.Name) and dec.func.id == 'dataclass')
+                (isinstance(dec, ast.Name) and dec.id == "dataclass")
+                or (
+                    isinstance(dec, ast.Call)
+                    and isinstance(dec.func, ast.Name)
+                    and dec.func.id == "dataclass"
+                )
                 for dec in node.decorator_list
             )
         )
@@ -93,8 +96,7 @@ class ASTEnforcementMixin:
                 target = node.targets[0]
                 if isinstance(target, ast.Name) and isinstance(node.value, ast.Name):
                     # PascalCase target = snake_case value
-                    if (target.id[0].isupper() and
-                        node.value.id[0].islower()):
+                    if target.id[0].isupper() and node.value.id[0].islower():
                         alias_count += 1
 
         return {
@@ -103,14 +105,10 @@ class ASTEnforcementMixin:
             "pascal_classes": pascal_count,
             "enums": enum_count,
             "dataclasses": dataclass_count,
-            "syntax_error": False
+            "syntax_error": False,
         }
 
-    def _ast_audit_repo(
-        self,
-        repo_root: Path,
-        target_prefixes: list[str] | None = None
-    ) -> dict:
+    def _ast_audit_repo(self, repo_root: Path, target_prefixes: list[str] | None = None) -> dict:
         """Audit entire repository for snake_case violations.
 
         Args:
@@ -130,6 +128,7 @@ class ASTEnforcementMixin:
 
         # Phase 4: Use ssot_discovery instead of rglob for performance
         from agentic_core.utils.ssot_discovery import get_python_files
+
         all_files = get_python_files(repo_root)
 
         for path in all_files:
@@ -138,16 +137,18 @@ class ASTEnforcementMixin:
                 continue
 
             try:
-                content = path.read_text(encoding='utf-8')
+                content = path.read_text(encoding="utf-8")
                 audit = self._ast_audit_file(content)
 
                 if audit["snake_classes"] or audit["aliases"]:
-                    files_with_violations.append({
-                        "path": str(path),
-                        "snake_classes": audit["snake_classes"],
-                        "aliases": audit["aliases"],
-                        "pascal_classes": audit["pascal_classes"]
-                    })
+                    files_with_violations.append(
+                        {
+                            "path": str(path),
+                            "snake_classes": audit["snake_classes"],
+                            "aliases": audit["aliases"],
+                            "pascal_classes": audit["pascal_classes"],
+                        }
+                    )
                     total_snake += audit["snake_classes"]
                     total_aliases += audit["aliases"]
 
@@ -162,7 +163,7 @@ class ASTEnforcementMixin:
             "total_aliases": total_aliases,
             "total_pascal_classes": total_pascal,
             "violation_count": len(files_with_violations),
-            "summary": f"{len(files_with_violations)} files | {total_snake} snake_classes | {total_aliases} aliases"
+            "summary": f"{len(files_with_violations)} files | {total_snake} snake_classes | {total_aliases} aliases",
         }
 
     def _extract_class_names(self, content: str) -> list[str]:
@@ -176,11 +177,7 @@ class ASTEnforcementMixin:
         """
         try:
             tree = ast.parse(content)
-            return [
-                node.name
-                for node in ast.walk(tree)
-                if isinstance(node, ast.ClassDef)
-            ]
+            return [node.name for node in ast.walk(tree) if isinstance(node, ast.ClassDef)]
         except SyntaxError:
             return []
 
@@ -193,4 +190,4 @@ class ASTEnforcementMixin:
         Returns:
             True if snake_case, False if PascalCase
         """
-        return class_name[0].islower() or '_' in class_name
+        return class_name[0].islower() or "_" in class_name

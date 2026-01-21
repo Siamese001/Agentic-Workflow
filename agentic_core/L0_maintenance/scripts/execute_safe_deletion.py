@@ -16,7 +16,6 @@ project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 
-
 async def main():
     """Execute deletion of verified identical duplicates."""
     print("=" * 120)
@@ -49,17 +48,17 @@ async def main():
     for rec in recommendations[:10]:  # Show first 10
         print(f"   Keeping: {rec['keep']}")
         print(f"   Deleting: {len(rec['delete'])} copies")
-        for del_path in rec['delete'][:3]:  # Show first 3 of each set
+        for del_path in rec["delete"][:3]:  # Show first 3 of each set
             print(f"     - {del_path}")
-        if len(rec['delete']) > 3:
+        if len(rec["delete"]) > 3:
             print(f"     ... and {len(rec['delete']) - 3} more")
         print()
-        total_to_delete += len(rec['delete'])
+        total_to_delete += len(rec["delete"])
 
     if len(recommendations) > 10:
         print(f"   ... and {len(recommendations) - 10} more duplicate sets")
         for rec in recommendations[10:]:
-            total_to_delete += len(rec['delete'])
+            total_to_delete += len(rec["delete"])
 
     print(f"   Total files to delete: {total_to_delete}")
     print()
@@ -76,9 +75,9 @@ async def main():
     print(f"✓ Errors: {len(delete_result['errors'])}")
     print()
 
-    if delete_result['errors']:
+    if delete_result["errors"]:
         print("Errors encountered:")
-        for error in delete_result['errors']:
+        for error in delete_result["errors"]:
             print(f"  ✗ {error['path']}: {error['error']}")
         print()
 

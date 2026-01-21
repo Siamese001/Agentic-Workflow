@@ -13,6 +13,7 @@ TEST CASES:
 USAGE:
     pytest tests/core/architecture/test_phase2_migration.py -v
 """
+
 from __future__ import annotations
 
 from unittest.mock import MagicMock
@@ -34,8 +35,9 @@ class TestCaseA_TheBigSwitch:
         from agentic_core.utils.core_extensions.infrastructure_mixin import InfrastructureMixin
 
         # Check inheritance
-        assert issubclass(SovereignBaseAgent, InfrastructureMixin), \
+        assert issubclass(SovereignBaseAgent, InfrastructureMixin), (
             "SovereignBaseAgent must inherit from InfrastructureMixin"
+        )
 
     def test_sovereign_base_agent_infra_initialized(self):
         """Verify _infra_initialized is True after instantiation."""
@@ -45,10 +47,12 @@ class TestCaseA_TheBigSwitch:
         agent = SovereignBaseAgent(name="TestAgent")
 
         # Verify infrastructure initialized
-        assert hasattr(agent, '_infra_initialized'), \
+        assert hasattr(agent, "_infra_initialized"), (
             "SovereignBaseAgent must have _infra_initialized attribute"
-        assert agent._infra_initialized is True, \
+        )
+        assert agent._infra_initialized is True, (
             "_infra_initialized must be True after instantiation"
+        )
 
     def test_sovereign_base_agent_has_healer_metrics(self):
         """Verify HealerMixin was properly initialized via InfrastructureMixin."""
@@ -57,8 +61,9 @@ class TestCaseA_TheBigSwitch:
         agent = SovereignBaseAgent(name="TestAgent")
 
         # HealerMixin should set _healer_metrics
-        assert hasattr(agent, '_healer_metrics'), \
+        assert hasattr(agent, "_healer_metrics"), (
             "SovereignBaseAgent must have _healer_metrics from HealerMixin"
+        )
 
     def test_sovereign_base_agent_verify_state_passes(self):
         """Verify verify_state() passes for properly initialized agent."""
@@ -78,14 +83,12 @@ class TestCaseA_TheBigSwitch:
         mro_names = [cls.__name__ for cls in mro]
 
         # InfrastructureMixin should be in MRO
-        assert "InfrastructureMixin" in mro_names, \
-            "InfrastructureMixin must be in MRO"
+        assert "InfrastructureMixin" in mro_names, "InfrastructureMixin must be in MRO"
 
         # InfrastructureMixin should come before object
         infra_idx = mro_names.index("InfrastructureMixin")
         object_idx = mro_names.index("object")
-        assert infra_idx < object_idx, \
-            "InfrastructureMixin must come before object in MRO"
+        assert infra_idx < object_idx, "InfrastructureMixin must come before object in MRO"
 
 
 class TestCaseB_StrategyInjection:
@@ -228,8 +231,9 @@ class TestCaseB_StrategyInjection:
         orchestrator = UnifiedOrchestratorAgent(strategy=mock_strategy)
 
         # Check protocol compliance
-        assert isinstance(orchestrator, IOrchestrator), \
+        assert isinstance(orchestrator, IOrchestrator), (
             "UnifiedOrchestratorAgent must implement IOrchestrator"
+        )
 
 
 class TestCaseC_DecoratorSanitization:
@@ -252,10 +256,10 @@ class TestCaseC_DecoratorSanitization:
         agent = TestAgent()
         result = agent.heal_repository()
 
-        assert "violations_fixed" in result, \
-            "Result must have 'violations_fixed' key"
-        assert result["violations_fixed"] == 5, \
+        assert "violations_fixed" in result, "Result must have 'violations_fixed' key"
+        assert result["violations_fixed"] == 5, (
             "'renamed' value should be mapped to 'violations_fixed'"
+        )
 
     def test_standard_heal_normalizes_violations_key(self):
         """Verify 'violations' key is normalized to 'violations_found'."""
@@ -561,11 +565,7 @@ class TestHealingStrategy:
 
         tier_results = [{"status": "FAIL", "violations_found": 1}]
 
-        should_abort = strategy.should_abort_tier(
-            "Tier 0: Pre-Flight",
-            tier_results,
-            execute=False
-        )
+        should_abort = strategy.should_abort_tier("Tier 0: Pre-Flight", tier_results, execute=False)
 
         assert should_abort is True
 

@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, healer, memory, orchestrator, prompt, state, workflow
@@ -30,18 +29,18 @@ class UiValidationAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin)
         """
         Determines if the UIValidationAgent can run based on available services.
         """
-        return 'figma' in self.agent.ctx.services.mcp_clients
+        return "figma" in self.agent.ctx.services.mcp_clients
 
     def execute(self) -> Any:
         """
         Executes UI pattern validation using Figma MCP.
         """
-        print(f'\n[>>>] {self.agent.name} ACTIVATED: Validating UI Patterns...')
+        print(f"\n[>>>] {self.agent.name} ACTIVATED: Validating UI Patterns...")
         if not self.can_run():
-            print('   [!]  Figma MCP not available - skipping UI validation')
+            print("   [!]  Figma MCP not available - skipping UI validation")
             return
-        print('   ℹ UI validation placeholder - Figma MCP integration pending')
+        print("   ℹ UI validation placeholder - Figma MCP integration pending")
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()

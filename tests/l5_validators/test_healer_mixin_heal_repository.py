@@ -8,7 +8,6 @@ Tests that heal_repository is properly inherited from HealerMixin
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, prompt, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-
 import sys
 from pathlib import Path
 
@@ -26,8 +25,7 @@ def test_healer_mixin_has_heal_repository():
     """Test that HealerMixin now provides heal_repository method."""
     print("\n=== Test: HealerMixin provides heal_repository ===")
 
-    assert hasattr(HealerMixin, 'heal_repository'), \
-        "HealerMixin must have heal_repository method"
+    assert hasattr(HealerMixin, "heal_repository"), "HealerMixin must have heal_repository method"
 
     # Create a simple class using HealerMixin
     class TestAgent(HealerMixin):
@@ -36,10 +34,8 @@ def test_healer_mixin_has_heal_repository():
     agent = TestAgent()
 
     # Test method exists and is callable
-    assert hasattr(agent, 'heal_repository'), \
-        "Instance must have heal_repository method"
-    assert callable(agent.heal_repository), \
-        "heal_repository must be callable"
+    assert hasattr(agent, "heal_repository"), "Instance must have heal_repository method"
+    assert callable(agent.heal_repository), "heal_repository must be callable"
 
     print("✓ HealerMixin.heal_repository exists and is callable")
     print("✅ PASSED")
@@ -65,11 +61,7 @@ def test_heal_repository_signature():
 
     # Test with all arguments
     result = agent.heal_repository(
-        dry_run=False,
-        execute=True,
-        depth=1,
-        max_depth=5,
-        _call_path=set()
+        dry_run=False, execute=True, depth=1, max_depth=5, _call_path=set()
     )
     assert isinstance(result, dict), "Must return dict with all args"
     print(f"✓ Full signature call result: {result}")
@@ -91,10 +83,8 @@ def test_heal_repository_cycle_detection():
     call_path = {"TestAgent"}
     result = agent.heal_repository(_call_path=call_path)
 
-    assert result.get("cycle_detected") == True, \
-        "Must detect cycle when agent already in call path"
-    assert result.get("skipped") == 1, \
-        "Must skip when cycle detected"
+    assert result.get("cycle_detected") == True, "Must detect cycle when agent already in call path"
+    assert result.get("skipped") == 1, "Must skip when cycle detected"
     print(f"✓ Cycle detection result: {result}")
 
     print("✅ PASSED")
@@ -113,10 +103,8 @@ def test_heal_repository_depth_limiting():
     # Exceed max depth
     result = agent.heal_repository(depth=10, max_depth=3)
 
-    assert result.get("depth_limited") == True, \
-        "Must detect depth limit exceeded"
-    assert result.get("skipped") == 1, \
-        "Must skip when depth limited"
+    assert result.get("depth_limited") == True, "Must detect depth limit exceeded"
+    assert result.get("skipped") == 1, "Must skip when depth limited"
     print(f"✓ Depth limiting result: {result}")
 
     print("✅ PASSED")
@@ -135,10 +123,14 @@ def test_orchestrator_inherits_heal_repository():
         def think(self, context: ExecutionContext) -> dict[str, Any]:
             return {"thoughts": []}
 
-        def act(self, actions: list[dict[str, Any]], context: ExecutionContext) -> list[dict[str, Any]]:
+        def act(
+            self, actions: list[dict[str, Any]], context: ExecutionContext
+        ) -> list[dict[str, Any]]:
             return []
 
-        def observe(self, action_results: list[dict[str, Any]], context: ExecutionContext) -> dict[str, Any]:
+        def observe(
+            self, action_results: list[dict[str, Any]], context: ExecutionContext
+        ) -> dict[str, Any]:
             return {}
 
         def should_continue(self, context: ExecutionContext) -> bool:
@@ -150,8 +142,7 @@ def test_orchestrator_inherits_heal_repository():
     orchestrator = MockOrchestrator()
 
     # Verify heal_repository is inherited (not defined in IOrchestratorAgent)
-    assert hasattr(orchestrator, 'heal_repository'), \
-        "Orchestrator must have heal_repository"
+    assert hasattr(orchestrator, "heal_repository"), "Orchestrator must have heal_repository"
 
     # Check that it comes from HealerMixin (not overridden)
     method = orchestrator.__class__.heal_repository
@@ -192,12 +183,9 @@ def test_subclass_can_extend_heal_repository():
     agent = ExtendedAgent()
     result = agent.heal_repository()
 
-    assert agent.heal_called == True, \
-        "Custom logic must execute"
-    assert result.get("custom_field") == "extended", \
-        "Custom field must be present"
-    assert "violations" in result, \
-        "Parent fields must be preserved"
+    assert agent.heal_called == True, "Custom logic must execute"
+    assert result.get("custom_field") == "extended", "Custom field must be present"
+    assert "violations" in result, "Parent fields must be preserved"
     print(f"✓ Extended heal_repository result: {result}")
 
     print("✅ PASSED")
@@ -227,6 +215,7 @@ def run_all_tests():
         except Exception as e:
             print(f"\n❌ Test {test_name} FAILED with exception: {e}")
             import traceback
+
             traceback.print_exc()
             results.append((test_name, False))
 

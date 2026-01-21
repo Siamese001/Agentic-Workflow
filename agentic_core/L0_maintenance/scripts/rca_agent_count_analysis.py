@@ -2,6 +2,7 @@
 RCA: Agent Count Drop Analysis
 Compares current discovery vs backup to identify missing agents
 """
+
 import json
 from pathlib import Path
 
@@ -10,18 +11,18 @@ def main():
     current_path = Path("agent_discovery_full.json")
     backup_path = Path("agent_discovery_full.json.backup_phase3")
 
-    with open(current_path, encoding='utf-8') as f:
+    with open(current_path, encoding="utf-8") as f:
         current = json.load(f)
-    with open(backup_path, encoding='utf-8') as f:
+    with open(backup_path, encoding="utf-8") as f:
         backup = json.load(f)
 
     # Handle both list format and dict format
-    current_agents = current if isinstance(current, list) else current.get('agents', [])
-    backup_agents = backup if isinstance(backup, list) else backup.get('agents', [])
+    current_agents = current if isinstance(current, list) else current.get("agents", [])
+    backup_agents = backup if isinstance(backup, list) else backup.get("agents", [])
 
     # Handle different key names (class_name vs name)
     def get_name(a):
-        return a.get('class_name') or a.get('name') or 'unknown'
+        return a.get("class_name") or a.get("name") or "unknown"
 
     current_names = {get_name(a) for a in current_agents}
     backup_names = {get_name(a) for a in backup_agents}
@@ -39,11 +40,13 @@ def main():
     for name in sorted(missing):
         for a in backup_agents:
             if get_name(a) == name:
-                missing_details.append({
-                    'name': name,
-                    'path': a.get('rel_path', 'unknown'),
-                    'layer': a.get('layer', 'unknown')
-                })
+                missing_details.append(
+                    {
+                        "name": name,
+                        "path": a.get("rel_path", "unknown"),
+                        "layer": a.get("layer", "unknown"),
+                    }
+                )
                 print(f"  - {name}: {a.get('rel_path', 'unknown')}")
                 break
 
@@ -60,12 +63,12 @@ def main():
     layer_counts = {}
     path_patterns = {}
     for d in missing_details:
-        layer = d['layer']
+        layer = d["layer"]
         layer_counts[layer] = layer_counts.get(layer, 0) + 1
 
-        path = d['path']
-        if '/' in path:
-            folder = '/'.join(path.split('/')[:2])
+        path = d["path"]
+        if "/" in path:
+            folder = "/".join(path.split("/")[:2])
             path_patterns[folder] = path_patterns.get(folder, 0) + 1
 
     print("\nMissing by layer:")
@@ -75,6 +78,7 @@ def main():
     print("\nMissing by folder:")
     for folder, count in sorted(path_patterns.items(), key=lambda x: -x[1])[:15]:
         print(f"  {folder}: {count}")
+
 
 if __name__ == "__main__":
     main()

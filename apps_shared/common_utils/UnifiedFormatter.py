@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 
 class FormatType(Enum):
     """Types of formatting."""
+
     DEFAULT = "default"
     RESUME_BULLET = "resume_bullet"
     RESUME_SECTION = "resume_section"
@@ -44,7 +45,7 @@ class FormatResult:
             "format_type": self.format_type,
             "success": self.success,
             "metadata": self.metadata,
-            "errors": self.errors
+            "errors": self.errors,
         }
 
 
@@ -95,14 +96,11 @@ class DefaultFormatter(FormatterStrategy):
             return FormatResult(
                 data=formatted,
                 format_type=self.format_name,
-                metadata={"original_type": type(data).__name__}
+                metadata={"original_type": type(data).__name__},
             )
         except Exception as e:
             return FormatResult(
-                data=data,
-                format_type=self.format_name,
-                success=False,
-                errors=[str(e)]
+                data=data, format_type=self.format_name, success=False, errors=[str(e)]
             )
 
     @property
@@ -137,16 +135,11 @@ class ResumeBulletFormatter(FormatterStrategy):
                 bullets = self._apply_config(bullets, config)
 
             return FormatResult(
-                data=bullets,
-                format_type=self.format_name,
-                metadata={"bullet_count": len(bullets)}
+                data=bullets, format_type=self.format_name, metadata={"bullet_count": len(bullets)}
             )
         except Exception as e:
             return FormatResult(
-                data=data,
-                format_type=self.format_name,
-                success=False,
-                errors=[str(e)]
+                data=data, format_type=self.format_name, success=False, errors=[str(e)]
             )
 
     def _format_text_to_bullets(self, text: str) -> list[str]:
@@ -159,14 +152,17 @@ class ResumeBulletFormatter(FormatterStrategy):
             List of bullet points
         """
         # Split by sentences or newlines
-        sentences = [s.strip() for s in text.split('.') if s.strip()]
+        sentences = [s.strip() for s in text.split(".") if s.strip()]
 
         bullets = []
         for sentence in sentences:
             # Ensure it starts with action verb
-            if not any(sentence.startswith(verb) for verb in ["Led", "Managed", "Developed", "Created", "Implemented"]):
+            if not any(
+                sentence.startswith(verb)
+                for verb in ["Led", "Managed", "Developed", "Created", "Implemented"]
+            ):
                 sentence = "• " + sentence
-            elif not sentence.startswith('•'):
+            elif not sentence.startswith("•"):
                 sentence = "• " + sentence
 
             bullets.append(sentence)
@@ -185,8 +181,8 @@ class ResumeBulletFormatter(FormatterStrategy):
         bullets = []
         for item in items:
             bullet = "• " + str(item).strip()
-            if not bullet.endswith('.'):
-                bullet += '.'
+            if not bullet.endswith("."):
+                bullet += "."
             bullets.append(bullet)
 
         return bullets
@@ -223,7 +219,7 @@ class ResumeBulletFormatter(FormatterStrategy):
             return bullet
 
         # Add placeholder for metrics
-        if bullet.endswith('.'):
+        if bullet.endswith("."):
             return bullet[:-1] + " (achieving X% improvement)."
         return bullet + " (achieving X% improvement)."
 
@@ -255,14 +251,11 @@ class ResumeSectionFormatter(FormatterStrategy):
             return FormatResult(
                 data=formatted,
                 format_type=self.format_name,
-                metadata={"section_type": config.get("section_type", "general")}
+                metadata={"section_type": config.get("section_type", "general")},
             )
         except Exception as e:
             return FormatResult(
-                data=data,
-                format_type=self.format_name,
-                success=False,
-                errors=[str(e)]
+                data=data, format_type=self.format_name, success=False, errors=[str(e)]
             )
 
     def _format_dict_section(self, data: dict, config: dict | None) -> dict:
@@ -375,14 +368,11 @@ class OutreachMessageFormatter(FormatterStrategy):
             return FormatResult(
                 data=formatted,
                 format_type=self.format_name,
-                metadata={"message_length": len(str(formatted))}
+                metadata={"message_length": len(str(formatted))},
             )
         except Exception as e:
             return FormatResult(
-                data=data,
-                format_type=self.format_name,
-                success=False,
-                errors=[str(e)]
+                data=data, format_type=self.format_name, success=False, errors=[str(e)]
             )
 
     def _format_message_text(self, text: str, config: dict | None) -> str:
@@ -397,7 +387,12 @@ class OutreachMessageFormatter(FormatterStrategy):
         """
         # Ensure proper greeting
         if not any(greeting in text.lower() for greeting in ["dear", "hi ", "hello"]):
-            text = "Dear " + (config.get("recipient_name", "Hiring Manager") if config else "Hiring Manager") + ",\n\n" + text
+            text = (
+                "Dear "
+                + (config.get("recipient_name", "Hiring Manager") if config else "Hiring Manager")
+                + ",\n\n"
+                + text
+            )
 
         # Ensure proper closing
         if not any(closing in text.lower() for closing in ["sincerely", "regards", "best"]):
@@ -406,7 +401,7 @@ class OutreachMessageFormatter(FormatterStrategy):
         # Check length
         max_length = config.get("max_length", 500) if config else 500
         if len(text) > max_length:
-            text = text[:max_length-3] + "..."
+            text = text[: max_length - 3] + "..."
 
         return text
 
@@ -458,14 +453,11 @@ class OutreachSubjectFormatter(FormatterStrategy):
             return FormatResult(
                 data=formatted,
                 format_type=self.format_name,
-                metadata={"subject_length": len(formatted)}
+                metadata={"subject_length": len(formatted)},
             )
         except Exception as e:
             return FormatResult(
-                data=data,
-                format_type=self.format_name,
-                success=False,
-                errors=[str(e)]
+                data=data, format_type=self.format_name, success=False, errors=[str(e)]
             )
 
     def _format_subject_text(self, text: str, config: dict | None) -> str:
@@ -482,12 +474,12 @@ class OutreachSubjectFormatter(FormatterStrategy):
         text = text[0].upper() + text[1:] if text else text
 
         # Remove trailing periods
-        text = text.rstrip('.')
+        text = text.rstrip(".")
 
         # Check length
         max_length = config.get("max_length", 50) if config else 50
         if len(text) > max_length:
-            text = text[:max_length-3] + "..."
+            text = text[: max_length - 3] + "..."
 
         return text
 
@@ -527,14 +519,11 @@ class JSONFormatter(FormatterStrategy):
             return FormatResult(
                 data=formatted,
                 format_type=self.format_name,
-                metadata={"json_keys": len(parsed) if isinstance(parsed, dict) else 0}
+                metadata={"json_keys": len(parsed) if isinstance(parsed, dict) else 0},
             )
         except Exception as e:
             return FormatResult(
-                data=data,
-                format_type=self.format_name,
-                success=False,
-                errors=[str(e)]
+                data=data, format_type=self.format_name, success=False, errors=[str(e)]
             )
 
     @property
@@ -554,7 +543,7 @@ class UnifiedFormatter:
             FormatType.RESUME_SECTION: ResumeSectionFormatter(),
             FormatType.OUTREACH_MESSAGE: OutreachMessageFormatter(),
             FormatType.OUTREACH_SUBJECT: OutreachSubjectFormatter(),
-            FormatType.JSON: JSONFormatter()
+            FormatType.JSON: JSONFormatter(),
         }
 
         logger.info("Initialized UnifiedFormatter")
@@ -564,7 +553,7 @@ class UnifiedFormatter:
         data: str | dict | list,
         format_type: FormatType | str,
         engine_type: EngineType | None = None,
-        config: dict | None = None
+        config: dict | None = None,
     ) -> FormatResult:
         """Format data using specified strategy.
 
@@ -642,7 +631,7 @@ def format_data(
     data: str | dict | list,
     format_type: FormatType | str,
     engine_type: EngineType | None = None,
-    config: dict | None = None
+    config: dict | None = None,
 ) -> FormatResult:
     """Format data using unified formatter.
 

@@ -1,4 +1,5 @@
 """Unit tests covering MessageArchitect planning and composition."""
+
 from types import SimpleNamespace
 from unittest.mock import patch
 
@@ -92,7 +93,9 @@ def test_stable_artifact_id_depends_on_query():
     architect = MessageArchitect(toggles)
     job_a = RetrievalJob(tool="web_search", query="A", scope="outreach", section="value_wedge")
     job_b = RetrievalJob(tool="web_search", query="B", scope="outreach", section="value_wedge")
-    assert architect._stable_artifact_id(job_a, "ACME") != architect._stable_artifact_id(job_b, "ACME")
+    assert architect._stable_artifact_id(job_a, "ACME") != architect._stable_artifact_id(
+        job_b, "ACME"
+    )
 
 
 def test_draft_package_with_draft_clones_artifacts():
@@ -106,7 +109,9 @@ def test_draft_package_with_draft_clones_artifacts():
 def test_score_quality_counts_reflexion_bonus():
     from src.lic_agentic.agents.k3_message_architect import score_quality
 
-    assert score_quality("Value for you", reflexion=True) > score_quality("Value for you", reflexion=False)
+    assert score_quality("Value for you", reflexion=True) > score_quality(
+        "Value for you", reflexion=False
+    )
 
 
 def test_select_tool_for_news_queries():

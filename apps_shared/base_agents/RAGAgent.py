@@ -35,9 +35,7 @@ class RAG_SearchAgent(BaseAgent):
         resume_experience: list[dict[str, Any]],
         workflow_id: str,
     ) -> None:
-        self.log_info(
-            f"Ingesting {len(resume_experience)} experience blocks into ChromaDB..."
-        )
+        self.log_info(f"Ingesting {len(resume_experience)} experience blocks into ChromaDB...")
         try:
             collection = self.chroma_client.get_or_create_collection(
                 name=self.collection_name,
@@ -75,15 +73,14 @@ class RAG_SearchAgent(BaseAgent):
         corpus_text: list[str] = []
         corpus_metadata: list[dict[str, Any]] = []
         for exp in resume_experience:
-            doc = (
-                f"{exp.get('title')} {exp.get('company')} "
-                f"{' '.join(exp.get('bullet_pool', []))}"
-            )
+            doc = f"{exp.get('title')} {exp.get('company')} {' '.join(exp.get('bullet_pool', []))}"
             corpus_text.append(doc)
             corpus_metadata.append(exp)
         return corpus_text, corpus_metadata
 
-    def _merge_and_deduplicate(self, all_results: list[list[dict[str, Any]]]) -> list[dict[str, Any]]:
+    def _merge_and_deduplicate(
+        self, all_results: list[list[dict[str, Any]]]
+    ) -> list[dict[str, Any]]:
         merged: dict[str, dict[str, Any]] = {}
         for result_list in all_results:
             for item in result_list:
@@ -129,9 +126,7 @@ class RAG_SearchAgent(BaseAgent):
 
         workflow_id = state["metadata"]["workflow_id"]
         query = f"{state['job']['job_title']} at {state['job']['company']}"
-        resume_experience = state["resume"]["master_resume"].get(
-            "professional_experience", []
-        )
+        resume_experience = state["resume"]["master_resume"].get("professional_experience", [])
         a2a_messages = state.get("a2a", {}).get("messages", [])
 
         await self._ingest_resume_to_chroma_async(resume_experience, workflow_id)
@@ -189,7 +184,9 @@ class RAG_SearchAgent(BaseAgent):
                 tool_name = step_data["tool_call"].get("name")
                 tool_input = step_data["tool_call"].get("input", {})
                 if tool_name not in self.tools:
-                    messages.append({"role": "user", "content": f"Error: Tool '{tool_name}' not found."})
+                    messages.append(
+                        {"role": "user", "content": f"Error: Tool '{tool_name}' not found."}
+                    )
                     continue
                 if tool_name == "search_resume_bm25":
                     tool_input["corpus_text"] = corpus_text

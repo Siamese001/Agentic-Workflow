@@ -12,12 +12,13 @@ Migration:
         get_state_guardian,
     )
 """
+
 import warnings
 
 warnings.warn(
     "AutonomousStateGuardianAgent is deprecated. Use UnifiedStateManagementAgent instead.",
     DeprecationWarning,
-    stacklevel=2
+    stacklevel=2,
 )
 
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
@@ -77,6 +78,7 @@ class AutonomousStateGuardianAgent(MCPHardenedMixin, HealerMixin):
             from agentic_core.L4_state.validation_context.autonomous_checkpoint_manager import (
                 create_autonomous_checkpoint_manager,
             )
+
             self.CheckpointManager = create_autonomous_checkpoint_manager()
         except ImportError:
             self.CheckpointManager = None
@@ -100,8 +102,8 @@ class AutonomousStateGuardianAgent(MCPHardenedMixin, HealerMixin):
 
     def _run_self_tests(self) -> bool:
         """Phase 1: Self-testing for L4 compliance."""
-        assert hasattr(self, 'state_manifest_path'), "Missing state_manifest_path"
-        assert hasattr(self, 'is_recovering'), "Missing is_recovering"
+        assert hasattr(self, "state_manifest_path"), "Missing state_manifest_path"
+        assert hasattr(self, "is_recovering"), "Missing is_recovering"
         return True
 
     def awaken(self) -> Any:
@@ -139,7 +141,7 @@ class AutonomousStateGuardianAgent(MCPHardenedMixin, HealerMixin):
         try:
             data = {
                 "drift_patterns": self.meta_patterns,
-                "last_updated": datetime.now().isoformat()
+                "last_updated": datetime.now().isoformat(),
             }
             raw = json.dumps(data, indent=2)
 
@@ -201,6 +203,7 @@ class AutonomousStateGuardianAgent(MCPHardenedMixin, HealerMixin):
                         from agentic_core.L2_execution.ToolRegistry.HybridRetriever import (
                             HybridRetriever,
                         )
+
                         asyncio.create_task(HybridRetriever()._rebuild_from_ingestion())
                         Logger.info("L4: Triggered background reindex")
                     except ImportError:
@@ -226,7 +229,7 @@ class AutonomousStateGuardianAgent(MCPHardenedMixin, HealerMixin):
             event = {
                 "timestamp": datetime.now().isoformat(),
                 "corrupt_checkpoints": corrupt_ids,
-                "count": len(corrupt_ids)
+                "count": len(corrupt_ids),
             }
             events.append(event)
 
@@ -234,13 +237,22 @@ class AutonomousStateGuardianAgent(MCPHardenedMixin, HealerMixin):
             events = events[-100:]
 
             self.corruption_log.write_text(json.dumps(events, indent=2), encoding="utf-8")
-            Logger.debug(f"L4: Logged corruption event with {len(corrupt_ids)} corrupted checkpoints")
+            Logger.debug(
+                f"L4: Logged corruption event with {len(corrupt_ids)} corrupted checkpoints"
+            )
 
         except Exception as e:
             Logger.error(f"Failed to log corruption event: {e}")
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L4 state agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -297,7 +309,7 @@ class AutonomousStateGuardianAgent(MCPHardenedMixin, HealerMixin):
             "guard_task_active": self._guard_task is not None and not self._guard_task.done(),
             "manifest_exists": self.state_manifest_path.exists(),
             "backup_exists": self.state_manifest_backup.exists(),
-            "drift_patterns_count": len(self.meta_patterns)
+            "drift_patterns_count": len(self.meta_patterns),
         }
 
 

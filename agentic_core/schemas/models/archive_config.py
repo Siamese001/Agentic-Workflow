@@ -49,11 +49,13 @@ for d in [DATA_DIR, OUTPUT_DIR, CACHE_DIR, LOGS_DIR]:
 # ENUMS & CONFIG CLASSES
 # =============================================================================
 
+
 class ModelProvider(Enum):
     OPENAI = "openai"
     ANTHROPIC = "anthropic"
     AZURE = "azure"
     LOCAL = "local"
+
 
 @dataclass
 class ModelConfig:
@@ -63,6 +65,7 @@ class ModelConfig:
     temperature: float = DEFAULT_GENERATION_TEMPERATURE
     max_tokens: int = DEFAULT_MAX_OUTPUT_TOKENS
 
+
 @dataclass
 class RAGConfig:
     enabled: bool = True
@@ -70,10 +73,14 @@ class RAGConfig:
     chunk_overlap: int = 200
     retrieval_count: int = 5
 
+
 @dataclass
 class GovernorConfig:
     strict_mode: bool = True
-    constraints: ContentConstraintsConfig = field(default_factory=lambda: ContentConstraintsConfig())
+    constraints: ContentConstraintsConfig = field(
+        default_factory=lambda: ContentConstraintsConfig()
+    )
+
 
 @dataclass
 class WorkflowConfig:
@@ -81,17 +88,21 @@ class WorkflowConfig:
     stop_on_error: bool = True
     parallel_execution: bool = False
 
+
 @dataclass
 class Config:
     """Legacy Config class for backward compatibility"""
+
     model: ModelConfig = field(default_factory=ModelConfig)
     rag: RAGConfig = field(default_factory=RAGConfig)
     governor: GovernorConfig = field(default_factory=GovernorConfig)
     workflow: WorkflowConfig = field(default_factory=WorkflowConfig)
 
+
 # =============================================================================
 # ORIGINAL CONTENT CONSTRAINTS (PRESERVED)
 # =============================================================================
+
 
 @dataclass
 class ContentConstraintsConfig:
@@ -166,12 +177,14 @@ class SignalControlConfig:
 # GLOBAL CONFIG OBJECTS
 # =============================================================================
 
+
 @dataclass
 class GlobalConfig:
     model: ModelConfig = field(default_factory=ModelConfig)
     rag: RAGConfig = field(default_factory=RAGConfig)
     governor: GovernorConfig = field(default_factory=GovernorConfig)
     workflow: WorkflowConfig = field(default_factory=WorkflowConfig)
+
 
 # Singleton Instance
 CONFIG = GlobalConfig()

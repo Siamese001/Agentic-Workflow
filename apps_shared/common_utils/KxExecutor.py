@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class KXExecutionContext:
     """Execution context for K.X node."""
+
     node_config: KNodeConfig
     agent_executor: AgentExecutor
     vector_store: Any | None = None
@@ -32,6 +33,7 @@ class KXExecutionContext:
 @dataclass
 class KXExecutionResult:
     """Result from K.X node execution."""
+
     node_id: str
     element: str
     content: str
@@ -140,8 +142,7 @@ class KXNodeExecutor:
             from .vector_store_clients import create_chroma_collection
 
             collection = create_chroma_collection(
-                context.vector_store,
-                context.metadata.get("collection_name", "knowledge_base")
+                context.vector_store, context.metadata.get("collection_name", "knowledge_base")
             )
 
             results = search_vectors_chroma(
@@ -154,22 +155,26 @@ class KXNodeExecutor:
             sources = []
             if results and "documents" in results:
                 for i, doc in enumerate(results["documents"][0]):
-                    source_type = results.get("metadatas", [[{}]])[0][i].get("source_type", "generic")
+                    source_type = results.get("metadatas", [[{}]])[0][i].get(
+                        "source_type", "generic"
+                    )
                     weight = config.rag_config.source_weighting.get(source_type, 1.0)
 
-                    sources.append({
-                        "document": doc,
-                        "metadata": results.get("metadatas", [[{}]])[0][i],
-                        "distance": results.get("distances", [[0]])[0][i],
-                        "weight": weight,
-                        "weighted_score": weight / (1 + results.get("distances", [[0]])[0][i]),
-                    })
+                    sources.append(
+                        {
+                            "document": doc,
+                            "metadata": results.get("metadatas", [[{}]])[0][i],
+                            "distance": results.get("distances", [[0]])[0][i],
+                            "weight": weight,
+                            "weighted_score": weight / (1 + results.get("distances", [[0]])[0][i]),
+                        }
+                    )
 
             # Sort by weighted score
             sources.sort(key=lambda x: x["weighted_score"], reverse=True)
 
             logger.info(f"Retrieved {len(sources)} sources for K.X node {config.node_id}")
-            return sources[:config.rag_config.min_retrievers]
+            return sources[: config.rag_config.min_retrievers]
 
         except Exception as e:
             logger.warning(f"RAG retrieval failed for K.X node {config.node_id}: {e}")
@@ -195,15 +200,16 @@ class KXNodeExecutor:
 
         # Add RAG context if available
         if rag_sources:
-            rag_context = "\n\n".join([
-                f"Source {i+1} ({src['metadata'].get('source_type', 'unknown')}):\n{src['document']}"
-                for i, src in enumerate(rag_sources[:3])
-            ])
+            rag_context = "\n\n".join(
+                [
+                    f"Source {i + 1} ({src['metadata'].get('source_type', 'unknown')}):\n{src['document']}"
+                    for i, src in enumerate(rag_sources[:3])
+                ]
+            )
 
-            messages.append(AgentMessage(
-                role="user",
-                content=f"Context from knowledge base:\n\n{rag_context}"
-            ))
+            messages.append(
+                AgentMessage(role="user", content=f"Context from knowledge base:\n\n{rag_context}")
+            )
 
         # Add main generation prompt
         prompt = self._build_generation_prompt(config, context)
@@ -243,11 +249,9 @@ class KXNodeExecutor:
 
         # Add source data
         if context.source_data:
-            source_info = "\n".join([
-                f"{key}: {value}"
-                for key, value in context.source_data.items()
-                if key != "query"
-            ])
+            source_info = "\n".join(
+                [f"{key}: {value}" for key, value in context.source_data.items() if key != "query"]
+            )
             if source_info:
                 prompt_parts.append(f"\nSource Data:\n{source_info}")
 
@@ -255,9 +259,13 @@ class KXNodeExecutor:
         if config.reasoning_strategy == ReasoningStrategy.COT:
             prompt_parts.append("\nUse step-by-step reasoning to generate the content.")
         elif config.reasoning_strategy == ReasoningStrategy.TOT:
-            prompt_parts.append(f"\nExplore {config.tot_branches} different approaches and select the best.")
+            prompt_parts.append(
+                f"\nExplore {config.tot_branches} different approaches and select the best."
+            )
         elif config.reasoning_strategy == ReasoningStrategy.HYBRID_COT_TOT:
-            prompt_parts.append("\nUse step-by-step reasoning with multiple branches to find the optimal solution.")
+            prompt_parts.append(
+                "\nUse step-by-step reasoning with multiple branches to find the optimal solution."
+            )
 
         return "\n".join(prompt_parts)
 

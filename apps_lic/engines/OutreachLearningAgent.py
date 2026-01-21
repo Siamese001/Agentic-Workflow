@@ -27,6 +27,7 @@ class OutreachConfidenceLevel(Enum):
     Defines the confidence thresholds used to categorize the reliability
     of outreach decisions and predictions.
     """
+
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
@@ -47,6 +48,7 @@ class OutreachLearningExample:
         confidence: Confidence score (0-1)
         timestamp: ISO timestamp of creation
     """
+
     example_id: str
     TaskType: str
     input_context: str
@@ -67,6 +69,7 @@ class OutreachInstruction:
         source: Source of the instruction
         timestamp: ISO timestamp of creation
     """
+
     text: str
     priority: int
     source: str
@@ -128,9 +131,7 @@ class OutreachLearningLoop:
         error: str,
     ) -> Any:
         """Record a failed outreach attempt."""
-        example_id = hashlib.sha256(
-            f"{TaskType}:{input_context}:{error}".encode()
-        ).hexdigest()[:12]
+        example_id = hashlib.sha256(f"{TaskType}:{input_context}:{error}".encode()).hexdigest()[:12]
 
         example = OutreachLearningExample(
             example_id=example_id,
@@ -345,7 +346,9 @@ class OutreachLearningAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin
                 priority=7,
             )
 
-        self.record_result(True, f"Lead score: {avg_lead_score:.2f}, Message score: {avg_message_score:.2f}")
+        self.record_result(
+            True, f"Lead score: {avg_lead_score:.2f}, Message score: {avg_message_score:.2f}"
+        )
         print(f"   [{self.name}] ✅ Analysis complete")
 
     def inject_instruction(self, instruction: str, priority: int = 5) -> Any:
@@ -360,9 +363,7 @@ class OutreachLearningAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin
         confidence: float = 0.8,
     ) -> Any:
         """Record a successful pattern."""
-        await self.learning_loop.record_success(
-            TaskType, input_context, output_result, confidence
-        )
+        await self.learning_loop.record_success(TaskType, input_context, output_result, confidence)
 
     async def record_failure(
         self,
@@ -374,5 +375,5 @@ class OutreachLearningAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin
         await self.learning_loop.record_failure(TaskType, input_context, error)
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()

@@ -4,6 +4,7 @@ Test Suite: Batch 3B Orphan Moves (L4-L5)
 
 Verifies that Batch 3B agents have integrated their orphans correctly.
 """
+
 import ast
 import sys
 from pathlib import Path
@@ -14,10 +15,12 @@ sys.path.insert(0, str(PROJECT_ROOT))
 PASSED = 0
 FAILED = 0
 
+
 def test_pass(test_id: str, msg: str):
     global PASSED
     PASSED += 1
     print(f"  ✅ {test_id}: {msg}")
+
 
 def test_fail(test_id: str, msg: str):
     global FAILED
@@ -33,16 +36,31 @@ def test_batch3b_orphan_moves():
 
     # Files that MUST have methods moved into the class
     true_orphans = [
-        ("agentic_core/L5_safety/validators/GapClosureArchitectAgent.py",
-         ['__init__', '_build_initial_prompt', '_calculate_gap_coverage'], "GapClosureArchitectAgent"),
-        ("agentic_core/L5_safety/validators/CanonHealerAgent.py",
-         ['heal_repository', '_run_self_tests'], "CanonHealerAgent"),
-        ("agentic_core/L5_safety/validators/BudgetManagerAgent.py",
-         ['heal_repository', '_clean_llm_code'], "BudgetManagerAgent"),
-        ("agentic_core/L5_safety/guardrails/ConstitutionalReviewerAgent.py",
-         ['_run_self_tests'], "ConstitutionalReviewerAgent"),
-        ("agentic_core/L5_safety/guardrails/PromptInjectionDetectorAgent.py",
-         ['_run_self_tests'], "PromptInjectionDetectorAgent"),
+        (
+            "agentic_core/L5_safety/validators/GapClosureArchitectAgent.py",
+            ["__init__", "_build_initial_prompt", "_calculate_gap_coverage"],
+            "GapClosureArchitectAgent",
+        ),
+        (
+            "agentic_core/L5_safety/validators/CanonHealerAgent.py",
+            ["heal_repository", "_run_self_tests"],
+            "CanonHealerAgent",
+        ),
+        (
+            "agentic_core/L5_safety/validators/BudgetManagerAgent.py",
+            ["heal_repository", "_clean_llm_code"],
+            "BudgetManagerAgent",
+        ),
+        (
+            "agentic_core/L5_safety/guardrails/ConstitutionalReviewerAgent.py",
+            ["_run_self_tests"],
+            "ConstitutionalReviewerAgent",
+        ),
+        (
+            "agentic_core/L5_safety/guardrails/PromptInjectionDetectorAgent.py",
+            ["_run_self_tests"],
+            "PromptInjectionDetectorAgent",
+        ),
     ]
 
     for rel_path, required_methods, class_name in true_orphans:
@@ -55,14 +73,17 @@ def test_batch3b_orphan_moves():
             test_fail(f"{agent_name}", f"File not found: {rel_path}")
             continue
 
-        content = full_path.read_text(encoding='utf-8')
+        content = full_path.read_text(encoding="utf-8")
         lines = content.splitlines()
 
         # 1. Check for orphans (top-level functions)
         for method in required_methods:
-            orphans = [i+1 for i, l in enumerate(lines) if l.startswith(f"def {method}(")]
+            orphans = [i + 1 for i, l in enumerate(lines) if l.startswith(f"def {method}(")]
             if len(orphans) > 0:
-                test_fail(f"{agent_name}-{method}-ORPHAN", f"Top-level '{method}' still exists at lines: {orphans}")
+                test_fail(
+                    f"{agent_name}-{method}-ORPHAN",
+                    f"Top-level '{method}' still exists at lines: {orphans}",
+                )
             else:
                 test_pass(f"{agent_name}-{method}-ORPHAN", f"No top-level '{method}' found")
 
@@ -117,5 +138,6 @@ def main():
         print(f"\n  ❌ {FAILED} TESTS FAILED")
         return 1
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     sys.exit(main())

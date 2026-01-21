@@ -19,24 +19,28 @@ logger = logging.getLogger(__name__)
 
 class CircuitState(Enum):
     """Circuit breaker states."""
-    CLOSED = "CLOSED"      # Normal operation
-    OPEN = "OPEN"          # Failing, requests blocked
+
+    CLOSED = "CLOSED"  # Normal operation
+    OPEN = "OPEN"  # Failing, requests blocked
     HALF_OPEN = "HALF_OPEN"  # Testing recovery
 
 
 class CircuitOpenError(Exception):
     """Raised when circuit is open and requests are blocked."""
+
     pass
 
 
 class CriticalServiceFailure(Exception):
     """Raised when a critical service fails and no fallback is available."""
+
     pass
 
 
 @dataclass
 class CircuitBreakerConfig:
     """Configuration for circuit breaker behavior."""
+
     failure_threshold: int = 3
     recovery_timeout: float = 60.0  # seconds
     expected_exception: type = Exception
@@ -74,10 +78,12 @@ class CircuitBreaker:
             "failed_calls": 0,
             "timeout_calls": 0,
             "circuit_opens": 0,
-            "circuit_closes": 0
+            "circuit_closes": 0,
         }
 
-        logger.info(f"Initialized CircuitBreaker '{name}' with threshold {self.config.failure_threshold}")
+        logger.info(
+            f"Initialized CircuitBreaker '{name}' with threshold {self.config.failure_threshold}"
+        )
 
     async def call(self, func: Callable, *args, **kwargs) -> Any:
         """Execute a function through the circuit breaker.
@@ -109,10 +115,7 @@ class CircuitBreaker:
         # Execute the function with timeout if enabled
         try:
             if self.config.monitor_timeout:
-                result = await asyncio.wait_for(
-                    func(*args, **kwargs),
-                    timeout=self.config.timeout
-                )
+                result = await asyncio.wait_for(func(*args, **kwargs), timeout=self.config.timeout)
             else:
                 result = await func(*args, **kwargs)
 
@@ -193,7 +196,7 @@ class CircuitBreaker:
             "failure_count": self.failure_count,
             "success_count": self.success_count,
             "last_failure_time": self.last_failure_time,
-            **self.stats
+            **self.stats,
         }
 
     def reset(self) -> None:
@@ -337,10 +340,7 @@ def get_circuit_breaker(name: str, config: CircuitBreakerConfig | None = None) -
     return CircuitBreakerFactory.get(name, config)
 
 
-def with_circuit_breaker(
-    breaker_name: str,
-    config: CircuitBreakerConfig | None = None
-):
+def with_circuit_breaker(breaker_name: str, config: CircuitBreakerConfig | None = None):
     """Decorator to wrap functions with circuit breaker protection.
 
     Args:
@@ -350,9 +350,12 @@ def with_circuit_breaker(
     Returns:
         Decorated function
     """
+
     def decorator(func):
         async def wrapper(*args, **kwargs):
             breaker = get_circuit_breaker(breaker_name, config)
             return await breaker.call(func, *args, **kwargs)
+
         return wrapper
+
     return decorator

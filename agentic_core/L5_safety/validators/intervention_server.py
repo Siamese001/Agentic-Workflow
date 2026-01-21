@@ -25,14 +25,17 @@ try:
     import uvicorn
     from fastapi import FastAPI
     from fastapi.responses import HTMLResponse, JSONResponse
+
     FASTAPI_AVAILABLE: Any = True
 except ImportError:
     FASTAPI_AVAILABLE: Any = False
-    Logger.warning('FastAPI not available - intervention server disabled')
+    Logger.warning("FastAPI not available - intervention server disabled")
+
 
 @dataclass
 class InterventionContext:
     """Context for human intervention decision."""
+
     workflow_id: str
     cycle: int
     reason: str
@@ -45,7 +48,18 @@ class InterventionContext:
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for API response."""
-        return {'workflow_id': self.workflow_id, 'cycle': self.cycle, 'reason': self.reason, 'risk_factors': self.risk_factors, 'modified_items': self.modified_items, 'signals': self.signals, 'quality_score': self.quality_score, 'recommendations': self.recommendations, 'timestamp': self.timestamp.isoformat()}
+        return {
+            "workflow_id": self.workflow_id,
+            "cycle": self.cycle,
+            "reason": self.reason,
+            "risk_factors": self.risk_factors,
+            "modified_items": self.modified_items,
+            "signals": self.signals,
+            "quality_score": self.quality_score,
+            "recommendations": self.recommendations,
+            "timestamp": self.timestamp.isoformat(),
+        }
+
 
 class InterventionServer:
     """
@@ -65,7 +79,12 @@ class InterventionServer:
                 break
     """
 
-    def __init__(self, host: str='127.0.0.1', port: int=8080, instructions_path: str='observability/human_instructions.md') -> None:
+    def __init__(
+        self,
+        host: str = "127.0.0.1",
+        port: int = 8080,
+        instructions_path: str = "observability/human_instructions.md",
+    ) -> None:
         """
         Initialize the intervention server.
 
@@ -80,76 +99,89 @@ class InterventionServer:
         self.approval_event = asyncio.Event()
         self.current_context: InterventionContext | None = None
         self.decision: str | None = None
-        self.decision_reason: str = ''
+        self.decision_reason: str = ""
         self._server_task: asyncio.Task | None = None
         self._app: Any | None = None
         if FASTAPI_AVAILABLE:
             self._setup_app()
-        Logger.info(f'InterventionServer initialized at {host}:{port}')
+        Logger.info(f"InterventionServer initialized at {host}:{port}")
 
     def _setup_app(self) -> None:
         """Setup FastAPI application with endpoints."""
-        self._app = FastAPI(title='L5+ Intervention Server', description='Human-in-the-Loop approval for autonomous workflows')
+        self._app = FastAPI(
+            title="L5+ Intervention Server",
+            description="Human-in-the-Loop approval for autonomous workflows",
+        )
 
-        @self._app.get('/', response_class=HTMLResponse)
+        @self._app.get("/", response_class=HTMLResponse)
         async def intervention_ui():
             """Render intervention UI."""
             if not self.current_context:
-                return HTMLResponse(content='<h1>No pending intervention</h1>', status_code=200)
+                return HTMLResponse(content="<h1>No pending intervention</h1>", status_code=200)
             ctx = self.current_context
-            risk_html = ''.join(f'<li>{r}</li>' for r in ctx.risk_factors)
-            modified_html = ''.join(f'<li>{m}</li>' for m in ctx.modified_items[:10])
-            signals_html = ''.join(f'<li>{s}</li>' for s in ctx.signals)
-            recs_html = ''.join(f'<li>{r}</li>' for r in ctx.recommendations)
-            html = f"""\n            <!DOCTYPE html>\n            <html>\n            <head>\n                <title>L5+ Intervention Required</title>\n                <style>\n                    body {{ font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }}\n                    .warning {{ background: #fff3cd; border: 1px solid #ffc107; padding: 15px; border-radius: 5px; }}\n                    .risk {{ background: #f8d7da; border: 1px solid #f5c6cb; padding: 10px; border-radius: 5px; margin: 10px 0; }}\n                    .btn {{ padding: 15px 30px; font-size: 18px; margin: 10px; cursor: pointer; border: none; border-radius: 5px; }}\n                    .approve {{ background: #28a745; color: white; }}\n                    .veto {{ background: #dc3545; color: white; }}\n                    .info {{ background: #e7f3ff; padding: 10px; border-radius: 5px; margin: 10px 0; }}\n                    ul {{ margin: 5px 0; }}\n                </style>\n            </head>\n            <body>\n                <h1>[ALERT] Human Intervention Required</h1>\n\n                <div class="warning">\n                    <h2>Workflow: {ctx.workflow_id}</h2>\n                    <p><strong>Cycle:</strong> {ctx.cycle}</p>\n                    <p><strong>Reason:</strong> {ctx.reason}</p>\n                    <p><strong>Quality Score:</strong> {ctx.quality_score or 'N/A'}</p>\n                </div>\n\n                <div class="risk">\n                    <h3>[!] Risk Factors</h3>\n                    <ul>{risk_html or '<li>None specified</li>'}</ul>\n                </div>\n\n                <div class="info">\n                    <h3>📝 Modified Items ({len(ctx.modified_items)})</h3>\n                    <ul>{modified_html or '<li>None</li>'}</ul>\n                </div>\n\n                <div class="info">\n                    <h3>📡 Active Signals</h3>\n                    <ul>{signals_html or '<li>None</li>'}</ul>\n                </div>\n\n                <div class="info">\n                    <h3>💡 Recommendations</h3>\n                    <ul>{recs_html or '<li>None</li>'}</ul>\n                </div>\n\n                <h2>Decision</h2>\n                <form action="/approve" method="post" style="display: inline;">\n                    <button type="submit" class="btn approve">[OK] APPROVE</button>\n                </form>\n                <form action="/veto" method="post" style="display: inline;">\n                    <button type="submit" class="btn veto">[X] VETO</button>\n                </form>\n\n                <p><small>Timestamp: {ctx.timestamp.isoformat()}</small></p>\n            </body>\n            </html>\n            """
+            risk_html = "".join(f"<li>{r}</li>" for r in ctx.risk_factors)
+            modified_html = "".join(f"<li>{m}</li>" for m in ctx.modified_items[:10])
+            signals_html = "".join(f"<li>{s}</li>" for s in ctx.signals)
+            recs_html = "".join(f"<li>{r}</li>" for r in ctx.recommendations)
+            html = f"""\n            <!DOCTYPE html>\n            <html>\n            <head>\n                <title>L5+ Intervention Required</title>\n                <style>\n                    body {{ font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }}\n                    .warning {{ background: #fff3cd; border: 1px solid #ffc107; padding: 15px; border-radius: 5px; }}\n                    .risk {{ background: #f8d7da; border: 1px solid #f5c6cb; padding: 10px; border-radius: 5px; margin: 10px 0; }}\n                    .btn {{ padding: 15px 30px; font-size: 18px; margin: 10px; cursor: pointer; border: none; border-radius: 5px; }}\n                    .approve {{ background: #28a745; color: white; }}\n                    .veto {{ background: #dc3545; color: white; }}\n                    .info {{ background: #e7f3ff; padding: 10px; border-radius: 5px; margin: 10px 0; }}\n                    ul {{ margin: 5px 0; }}\n                </style>\n            </head>\n            <body>\n                <h1>[ALERT] Human Intervention Required</h1>\n\n                <div class="warning">\n                    <h2>Workflow: {ctx.workflow_id}</h2>\n                    <p><strong>Cycle:</strong> {ctx.cycle}</p>\n                    <p><strong>Reason:</strong> {ctx.reason}</p>\n                    <p><strong>Quality Score:</strong> {ctx.quality_score or "N/A"}</p>\n                </div>\n\n                <div class="risk">\n                    <h3>[!] Risk Factors</h3>\n                    <ul>{risk_html or "<li>None specified</li>"}</ul>\n                </div>\n\n                <div class="info">\n                    <h3>📝 Modified Items ({len(ctx.modified_items)})</h3>\n                    <ul>{modified_html or "<li>None</li>"}</ul>\n                </div>\n\n                <div class="info">\n                    <h3>📡 Active Signals</h3>\n                    <ul>{signals_html or "<li>None</li>"}</ul>\n                </div>\n\n                <div class="info">\n                    <h3>💡 Recommendations</h3>\n                    <ul>{recs_html or "<li>None</li>"}</ul>\n                </div>\n\n                <h2>Decision</h2>\n                <form action="/approve" method="post" style="display: inline;">\n                    <button type="submit" class="btn approve">[OK] APPROVE</button>\n                </form>\n                <form action="/veto" method="post" style="display: inline;">\n                    <button type="submit" class="btn veto">[X] VETO</button>\n                </form>\n\n                <p><small>Timestamp: {ctx.timestamp.isoformat()}</small></p>\n            </body>\n            </html>\n            """
             return HTMLResponse(content=html)
 
-        @self._app.post('/approve')
+        @self._app.post("/approve")
         async def approve():
             """Approve the pending intervention."""
-            self.decision = 'approved'
-            self.decision_reason = 'Human approved via UI'
+            self.decision = "approved"
+            self.decision_reason = "Human approved via UI"
             self.approval_event.set()
-            return HTMLResponse(content='<h1>[OK] Approved</h1><p>Workflow will continue.</p>', status_code=200)
+            return HTMLResponse(
+                content="<h1>[OK] Approved</h1><p>Workflow will continue.</p>", status_code=200
+            )
 
-        @self._app.post('/veto')
+        @self._app.post("/veto")
         async def veto():
             """Veto the pending intervention."""
-            self.decision = 'vetoed'
-            self.decision_reason = 'Human vetoed via UI'
+            self.decision = "vetoed"
+            self.decision_reason = "Human vetoed via UI"
             self.approval_event.set()
-            return HTMLResponse(content='<h1>[X] Vetoed</h1><p>Workflow will abort.</p>', status_code=200)
+            return HTMLResponse(
+                content="<h1>[X] Vetoed</h1><p>Workflow will abort.</p>", status_code=200
+            )
 
-        @self._app.get('/status')
+        @self._app.get("/status")
         async def status():
             """Get current intervention status."""
-            return JSONResponse({'pending': self.current_context is not None, 'context': self.current_context.to_dict() if self.current_context else None, 'decision': self.decision})
+            return JSONResponse(
+                {
+                    "pending": self.current_context is not None,
+                    "context": self.current_context.to_dict() if self.current_context else None,
+                    "decision": self.decision,
+                }
+            )
 
-        @self._app.post('/api/approve')
-        async def api_approve(reason: str='API approval'):
+        @self._app.post("/api/approve")
+        async def api_approve(reason: str = "API approval"):
             """API endpoint for programmatic approval."""
-            self.decision = 'approved'
+            self.decision = "approved"
             self.decision_reason = reason
             self.approval_event.set()
-            return {'status': 'approved', 'reason': reason}
+            return {"status": "approved", "reason": reason}
 
-        @self._app.post('/api/veto')
-        async def api_veto(reason: str='API veto'):
+        @self._app.post("/api/veto")
+        async def api_veto(reason: str = "API veto"):
             """API endpoint for programmatic veto."""
-            self.decision = 'vetoed'
+            self.decision = "vetoed"
             self.decision_reason = reason
             self.approval_event.set()
-            return {'status': 'vetoed', 'reason': reason}
+            return {"status": "vetoed", "reason": reason}
 
     async def start_server(self) -> None:
         """Start the intervention server in background."""
         if not FASTAPI_AVAILABLE:
-            Logger.warning('FastAPI not available - server not started')
+            Logger.warning("FastAPI not available - server not started")
             return
-        config: Any = uvicorn.Config(self._app, host=self.host, port=self.port, log_level='warning')
+        config: Any = uvicorn.Config(self._app, host=self.host, port=self.port, log_level="warning")
         server: Any = uvicorn.Server(config)
         self._server_task = asyncio.create_task(server.serve())
-        Logger.info(f'🌐 Intervention server started at http://{self.host}:{self.port}')
+        Logger.info(f"🌐 Intervention server started at http://{self.host}:{self.port}")
 
     async def stop_server(self) -> None:
         """Stop the intervention server."""
@@ -160,9 +192,11 @@ class InterventionServer:
             except asyncio.CancelledError:
                 pass
             self._server_task = None
-            Logger.info('Intervention server stopped')
+            Logger.info("Intervention server stopped")
 
-    async def request_intervention(self, context: InterventionContext, timeout: float | None=None) -> bool:
+    async def request_intervention(
+        self, context: InterventionContext, timeout: float | None = None
+    ) -> bool:
         """
         Request human intervention and wait for decision.
 
@@ -176,19 +210,19 @@ class InterventionServer:
         self.current_context = context
         self.decision = None
         self.approval_event.clear()
-        Logger.warning(f'[ALERT] INTERVENTION REQUIRED: {context.reason}')
-        Logger.warning(f'   Approval URL: http://{self.host}:{self.port}')
+        Logger.warning(f"[ALERT] INTERVENTION REQUIRED: {context.reason}")
+        Logger.warning(f"   Approval URL: http://{self.host}:{self.port}")
         try:
             if timeout:
                 await asyncio.wait_for(self.approval_event.wait(), timeout=timeout)
             else:
                 await self.approval_event.wait()
-            approved: Any = self.decision == 'approved'
-            Logger.info(f'Intervention decision: {self.decision} - {self.decision_reason}')
+            approved: Any = self.decision == "approved"
+            Logger.info(f"Intervention decision: {self.decision} - {self.decision_reason}")
             return approved
         except asyncio.TimeoutError:
-            Logger.warning('Intervention timeout - defaulting to veto')
-            self.decision = 'timeout'
+            Logger.warning("Intervention timeout - defaulting to veto")
+            self.decision = "timeout"
             return False
         finally:
             self.current_context = None
@@ -207,31 +241,47 @@ class InterventionServer:
         try:
             instructions: Any = self.instructions_path.read_text().strip()
             if instructions:
-                Logger.info(f'Telepathy instructions received: {instructions[:100]}...')
+                Logger.info(f"Telepathy instructions received: {instructions[:100]}...")
                 return instructions
         except Exception as e:
-            Logger.error(f'Failed to read telepathy file: {e}')
+            Logger.error(f"Failed to read telepathy file: {e}")
         return None
 
     def parse_telepathy_commands(self, instructions: str) -> dict[str, Any]:
         """Parse telepathy instructions for commands."""
-        commands: Any = {'stop': False, 'pause': False, 'skip_files': [], 'force_test': False, 'custom': []}
+        commands: Any = {
+            "stop": False,
+            "pause": False,
+            "skip_files": [],
+            "force_test": False,
+            "custom": [],
+        }
         instructions_lower: Any = instructions.lower()
-        if 'stop' in instructions_lower or 'abort' in instructions_lower:
-            commands['stop'] = True
-        if 'pause' in instructions_lower:
-            commands['pause'] = True
-        if 'test' in instructions_lower:
-            commands['force_test'] = True
-        for line in instructions.split('\n'):
-            if line.strip().startswith('skip:'):
-                pattern: Any = line.split(':', 1)[1].strip()
-                commands['skip_files'].append(pattern)
-            elif line.strip() and (not any(cmd in line.lower() for cmd in ['stop', 'pause', 'test', 'skip'])):
-                commands['custom'].append(line.strip())
+        if "stop" in instructions_lower or "abort" in instructions_lower:
+            commands["stop"] = True
+        if "pause" in instructions_lower:
+            commands["pause"] = True
+        if "test" in instructions_lower:
+            commands["force_test"] = True
+        for line in instructions.split("\n"):
+            if line.strip().startswith("skip:"):
+                pattern: Any = line.split(":", 1)[1].strip()
+                commands["skip_files"].append(pattern)
+            elif line.strip() and (
+                not any(cmd in line.lower() for cmd in ["stop", "pause", "test", "skip"])
+            ):
+                commands["custom"].append(line.strip())
         return commands
 
-def check_intervention_required(cycle: int, modified_count: int, signals: list[str], quality_score: float | None=None, high_risk_threshold: int=3, signal_threshold: int=5) -> tuple[bool, list[str]]:
+
+def check_intervention_required(
+    cycle: int,
+    modified_count: int,
+    signals: list[str],
+    quality_score: float | None = None,
+    high_risk_threshold: int = 3,
+    signal_threshold: int = 5,
+) -> tuple[bool, list[str]]:
     """
     Check if human intervention is required based on Canon Validator thresholds.
 
@@ -247,29 +297,37 @@ def check_intervention_required(cycle: int, modified_count: int, signals: list[s
         Tuple of (intervention_required, risk_factors)
     """
     risk_factors: Any = []
-    high_risk_signals: Any = ['HIGH_RISK', 'CRITICAL_FAIL', 'SECURE_REBOOT', 'VETOED']
+    high_risk_signals: Any = ["HIGH_RISK", "CRITICAL_FAIL", "SECURE_REBOOT", "VETOED"]
     if any(s in signals for s in high_risk_signals):
-        risk_factors.append(f'High-risk signals present: {[s for s in signals if s in high_risk_signals]}')
+        risk_factors.append(
+            f"High-risk signals present: {[s for s in signals if s in high_risk_signals]}"
+        )
     if modified_count > high_risk_threshold:
-        risk_factors.append(f'Many modifications ({modified_count} > {high_risk_threshold})')
+        risk_factors.append(f"Many modifications ({modified_count} > {high_risk_threshold})")
     if len(signals) > signal_threshold:
-        risk_factors.append(f'Many signals ({len(signals)} > {signal_threshold})')
+        risk_factors.append(f"Many signals ({len(signals)} > {signal_threshold})")
     if cycle >= 3 and modified_count > 0:
-        risk_factors.append(f'Late cycle ({cycle}) with pending modifications')
+        risk_factors.append(f"Late cycle ({cycle}) with pending modifications")
     if quality_score is not None and quality_score < 0.5:
-        risk_factors.append(f'Low quality score ({quality_score:.2f})')
+        risk_factors.append(f"Low quality score ({quality_score:.2f})")
     intervention_required: Any = len(risk_factors) > 0
     return (intervention_required, risk_factors)
+
+
 _intervention_server: InterventionServer | None = None
 
-def get_intervention_server(host: str='127.0.0.1', port: int=8080) -> InterventionServer:
+
+def get_intervention_server(host: str = "127.0.0.1", port: int = 8080) -> InterventionServer:
     """Get or create the global InterventionServer instance."""
     global _intervention_server
     if _intervention_server is None:
         _intervention_server = InterventionServer(host=host, port=port)
     return _intervention_server
 
-async def start_intervention_server(host: str='127.0.0.1', port: int=8080) -> InterventionServer:
+
+async def start_intervention_server(
+    host: str = "127.0.0.1", port: int = 8080
+) -> InterventionServer:
     """Start the global intervention server."""
     server: Any = get_intervention_server(host, port)
     await server.start_server()

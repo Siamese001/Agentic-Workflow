@@ -29,26 +29,26 @@ class _LegacyNamingAgent(SubAtomicAgent):
         """
         Executes the naming convention check.
         """
-        print(f'\n[>>>] {self.agent.name} ACTIVATED: Naming Convention Check...')
+        print(f"\n[>>>] {self.agent.name} ACTIVATED: Naming Convention Check...")
         passed, details = self.check_key_47_naming_conventions()
         self.agent.ctx.report(self.agent.name, 47, passed, details)
 
     def _is_invalid_function_name(self, name: str) -> bool:
         """Helper to check if a function name violates PEP 8 snake_case."""
-        return not re.match('^[a-z_][a-z0-9_]*$', name)
+        return not re.match("^[a-z_][a-z0-9_]*$", name)
 
     def _is_invalid_class_name(self, name: str) -> bool:
         """Helper to check if a class name violates PEP 8 PascalCase."""
-        return not re.match('^[A-Z][a-zA-Z0-9]*$', name)
+        return not re.match("^[A-Z][a-zA-Z0-9]*$", name)
 
     def _find_naming_convention_violations_in_tree(self, tree: ast.AST, fp: str) -> list[str]:
         """Helper to find naming convention violations in an AST tree."""
         file_violations = []
         for node in ast.walk(tree):
             if isinstance(node, ast.FunctionDef) and self._is_invalid_function_name(node.name):
-                file_violations.append(f'{fp}:{node.lineno} function {node.name}')
+                file_violations.append(f"{fp}:{node.lineno} function {node.name}")
             elif isinstance(node, ast.ClassDef) and self._is_invalid_class_name(node.name):
-                file_violations.append(f'{fp}:{node.lineno} class {node.name}')
+                file_violations.append(f"{fp}:{node.lineno} class {node.name}")
         return file_violations
 
     def check_key_47_naming_conventions(self) -> tuple[bool, list[str]]:
@@ -59,12 +59,13 @@ class _LegacyNamingAgent(SubAtomicAgent):
         violations: Any = []
         for fp in self.agent.ctx.python_files:
             try:
-                with open(fp, encoding='utf-8') as f:
+                with open(fp, encoding="utf-8") as f:
                     tree: Any = ast.parse(f.read())
                 violations.extend(self._find_naming_convention_violations_in_tree(tree, fp))
             except Exception:
                 continue
         return (len(violations) == 0, violations)
+
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()

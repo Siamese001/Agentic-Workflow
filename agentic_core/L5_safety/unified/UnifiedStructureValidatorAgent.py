@@ -15,6 +15,7 @@ Features:
 - Registry integration (validate agents are properly declared)
 - Cognitive contract validation
 """
+
 from __future__ import annotations
 
 import ast
@@ -37,14 +38,15 @@ Logger = logging.getLogger(__name__)
 
 class StructureViolationType(Enum):
     """Types of structure violations."""
-    GRAVITY = auto()          # Layer violation (L3 importing L5)
-    DUPLICATE = auto()        # Duplicate agent/file
-    ORPHAN = auto()           # Orphaned agent (not in registry)
-    REGISTRY = auto()         # Registry compliance issue
-    CONTRACT = auto()         # Cognitive contract violation
-    HIERARCHY = auto()        # Hierarchy violation
-    NAMING = auto()           # Naming convention violation
-    LOCATION = auto()         # File in wrong location
+
+    GRAVITY = auto()  # Layer violation (L3 importing L5)
+    DUPLICATE = auto()  # Duplicate agent/file
+    ORPHAN = auto()  # Orphaned agent (not in registry)
+    REGISTRY = auto()  # Registry compliance issue
+    CONTRACT = auto()  # Cognitive contract violation
+    HIERARCHY = auto()  # Hierarchy violation
+    NAMING = auto()  # Naming convention violation
+    LOCATION = auto()  # File in wrong location
 
 
 # Layer hierarchy - lower number = lower layer
@@ -76,6 +78,7 @@ GRAVITY_RULES = {
 @dataclass
 class StructureViolation:
     """Represents a structure violation."""
+
     violation_type: StructureViolationType
     message: str
     file_path: Path | None = None
@@ -93,6 +96,7 @@ class StructureViolation:
 @dataclass
 class StructureReport:
     """Report of structure validation results."""
+
     violations: list[StructureViolation] = field(default_factory=list)
     agents_found: int = 0
     agents_registered: int = 0
@@ -113,6 +117,7 @@ class StructureReport:
 @dataclass
 class StructureConfig:
     """Configuration for structure validation."""
+
     check_gravity: bool = True
     check_duplicates: bool = True
     check_orphans: bool = True
@@ -197,16 +202,18 @@ class GravityVisitor(ast.NodeVisitor):
                 if "utils" in import_path.lower():
                     continue
 
-                self.violations.append(StructureViolation(
-                    violation_type=StructureViolationType.GRAVITY,
-                    message=f"Layer violation: {self.source_layer} cannot import from {target_layer}",
-                    file_path=self.file_path,
-                    source_layer=self.source_layer,
-                    target_layer=target_layer,
-                    severity="error",
-                    rule_id="GRAVITY-001",
-                    suggestion="Move shared code to a lower layer or use dependency injection",
-                ))
+                self.violations.append(
+                    StructureViolation(
+                        violation_type=StructureViolationType.GRAVITY,
+                        message=f"Layer violation: {self.source_layer} cannot import from {target_layer}",
+                        file_path=self.file_path,
+                        source_layer=self.source_layer,
+                        target_layer=target_layer,
+                        severity="error",
+                        rule_id="GRAVITY-001",
+                        suggestion="Move shared code to a lower layer or use dependency injection",
+                    )
+                )
 
         return self.violations
 
@@ -292,12 +299,14 @@ class UnifiedStructureValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHard
             try:
                 source_code = file_path.read_text(encoding="utf-8")
             except Exception as e:
-                return [StructureViolation(
-                    violation_type=StructureViolationType.GRAVITY,
-                    message=f"Could not read file: {e}",
-                    file_path=file_path,
-                    severity="error",
-                )]
+                return [
+                    StructureViolation(
+                        violation_type=StructureViolationType.GRAVITY,
+                        message=f"Could not read file: {e}",
+                        file_path=file_path,
+                        severity="error",
+                    )
+                ]
 
         try:
             tree = ast.parse(source_code)
@@ -330,9 +339,9 @@ class UnifiedStructureValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHard
         cache = FileCache.get_instance(directory)
         all_py_files = cache.get_python_files()
         # Filter by pattern (e.g., *Agent.py)
-        pattern_suffix = pattern.replace('**/', '').replace('*', '')
+        pattern_suffix = pattern.replace("**/", "").replace("*", "")
         for file_path in all_py_files:
-            if not file_path.name.endswith(pattern_suffix.lstrip('*')):
+            if not file_path.name.endswith(pattern_suffix.lstrip("*")):
                 continue
             # Skip archives and tests
             if "archive" in str(file_path).lower() or "test" in str(file_path).lower():
@@ -345,14 +354,16 @@ class UnifiedStructureValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHard
 
         for agent_name, locations in agent_locations.items():
             if len(locations) > 1:
-                violations.append(StructureViolation(
-                    violation_type=StructureViolationType.DUPLICATE,
-                    message=f"Duplicate agent '{agent_name}' found in {len(locations)} locations",
-                    file_path=locations[0],
-                    severity="warning",
-                    rule_id="DUP-001",
-                    suggestion=f"Consolidate duplicates: {[str(p) for p in locations]}",
-                ))
+                violations.append(
+                    StructureViolation(
+                        violation_type=StructureViolationType.DUPLICATE,
+                        message=f"Duplicate agent '{agent_name}' found in {len(locations)} locations",
+                        file_path=locations[0],
+                        severity="warning",
+                        rule_id="DUP-001",
+                        suggestion=f"Consolidate duplicates: {[str(p) for p in locations]}",
+                    )
+                )
 
         return violations
 
@@ -382,7 +393,7 @@ class UnifiedStructureValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHard
         cache = FileCache.get_instance(directory)
         all_py_files = cache.get_python_files()
         for file_path in all_py_files:
-            if not file_path.name.endswith('Agent.py'):
+            if not file_path.name.endswith("Agent.py"):
                 continue
             # Skip archives and tests
             if "archive" in str(file_path).lower() or "test" in str(file_path).lower():
@@ -390,14 +401,16 @@ class UnifiedStructureValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHard
 
             agent_name = file_path.stem
             if agent_name not in registered_agents:
-                violations.append(StructureViolation(
-                    violation_type=StructureViolationType.ORPHAN,
-                    message=f"Orphaned agent '{agent_name}' not found in registry",
-                    file_path=file_path,
-                    severity="warning",
-                    rule_id="ORPHAN-001",
-                    suggestion="Add agent to registry or archive if deprecated",
-                ))
+                violations.append(
+                    StructureViolation(
+                        violation_type=StructureViolationType.ORPHAN,
+                        message=f"Orphaned agent '{agent_name}' not found in registry",
+                        file_path=file_path,
+                        severity="warning",
+                        rule_id="ORPHAN-001",
+                        suggestion="Add agent to registry or archive if deprecated",
+                    )
+                )
 
         return violations
 
@@ -421,14 +434,16 @@ class UnifiedStructureValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHard
         # Check file name matches class name
         expected_filename = f"{agent_name}.py"
         if agent_path.name != expected_filename:
-            violations.append(StructureViolation(
-                violation_type=StructureViolationType.REGISTRY,
-                message=f"Filename '{agent_path.name}' does not match agent name '{agent_name}'",
-                file_path=agent_path,
-                severity="warning",
-                rule_id="REG-001",
-                suggestion=f"Rename file to {expected_filename}",
-            ))
+            violations.append(
+                StructureViolation(
+                    violation_type=StructureViolationType.REGISTRY,
+                    message=f"Filename '{agent_path.name}' does not match agent name '{agent_name}'",
+                    file_path=agent_path,
+                    severity="warning",
+                    rule_id="REG-001",
+                    suggestion=f"Rename file to {expected_filename}",
+                )
+            )
 
         return violations
 
@@ -477,7 +492,7 @@ class UnifiedStructureValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHard
 
         # Count agents - use FileCache for I/O efficiency
         cache = FileCache.get_instance(directory)
-        agent_files = [f for f in cache.get_python_files() if f.name.endswith('Agent.py')]
+        agent_files = [f for f in cache.get_python_files() if f.name.endswith("Agent.py")]
         report.agents_found = len([f for f in agent_files if "archive" not in str(f).lower()])
 
         report.violations = all_violations
@@ -515,6 +530,7 @@ class UnifiedStructureValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHard
 # =============================================================================
 # BACKWARD COMPATIBILITY FACTORY METHODS (Migration Complete)
 # =============================================================================
+
 
 def create_legacy_gravity_validator(**kwargs: Any) -> UnifiedStructureValidatorAgent:
     """Factory for backward compatibility with GravityValidatorAgent."""

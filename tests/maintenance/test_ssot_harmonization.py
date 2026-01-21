@@ -40,6 +40,7 @@ def test_fail(test_id: str, msg: str):
 # Test 1: GLOBAL_EXCLUDED_DIRS exists and contains required entries
 # ============================================================================
 
+
 def test_global_excluded_dirs():
     """Verify GLOBAL_EXCLUDED_DIRS is properly defined."""
     print("\n" + "=" * 60)
@@ -50,8 +51,15 @@ def test_global_excluded_dirs():
         from agentic_core.L5_safety.validators.structure_blueprint import GLOBAL_EXCLUDED_DIRS
 
         required_entries = [
-            '__pycache__', '.pytest_cache', '.git', '.venv', 'venv',
-            'node_modules', 'archives', '.sovereign_healing_backup', 'tests'
+            "__pycache__",
+            ".pytest_cache",
+            ".git",
+            ".venv",
+            "venv",
+            "node_modules",
+            "archives",
+            ".sovereign_healing_backup",
+            "tests",
         ]
 
         for entry in required_entries:
@@ -68,6 +76,7 @@ def test_global_excluded_dirs():
 # Test 2: is_path_allowed handles subdirectories correctly
 # ============================================================================
 
+
 def test_is_path_allowed():
     """Verify is_path_allowed correctly handles nested paths."""
     print("\n" + "=" * 60)
@@ -79,26 +88,29 @@ def test_is_path_allowed():
 
         # These paths should ALL be allowed (no false positives)
         valid_paths = [
-            'agentic_core/utils/sovereign_index.py',
-            'agentic_core/utils/terminal_colors.py',
-            'agentic_core/L2_execution/ToolRegistry/L2ExecutionBaseAgent.py',
-            'agentic_core/L5_safety/validators/LocationAgent.py',
-            'agentic_core/config/blueprint_sovereign/structure_blueprint.py',
-            'agentic_core/L3_orchestration/UnifiedOrchestratorAgent.py',
-            'apps_rg/engines/resume_engine.py',
-            'apps_lic/engines/outreach_engine.py',
+            "agentic_core/utils/sovereign_index.py",
+            "agentic_core/utils/terminal_colors.py",
+            "agentic_core/L2_execution/ToolRegistry/L2ExecutionBaseAgent.py",
+            "agentic_core/L5_safety/validators/LocationAgent.py",
+            "agentic_core/config/blueprint_sovereign/structure_blueprint.py",
+            "agentic_core/L3_orchestration/UnifiedOrchestratorAgent.py",
+            "apps_rg/engines/resume_engine.py",
+            "apps_lic/engines/outreach_engine.py",
         ]
 
         for path in valid_paths:
             if is_path_allowed(path):
                 test_pass(f"VALID_{path.split('/')[-1]}", f"'{path}' correctly allowed")
             else:
-                test_fail(f"VALID_{path.split('/')[-1]}", f"'{path}' INCORRECTLY rejected (FALSE POSITIVE)")
+                test_fail(
+                    f"VALID_{path.split('/')[-1]}",
+                    f"'{path}' INCORRECTLY rejected (FALSE POSITIVE)",
+                )
 
         # These paths should be rejected (invalid roots)
         invalid_paths = [
-            'random_folder/file.py',
-            'unknown_root/subdir/file.py',
+            "random_folder/file.py",
+            "unknown_root/subdir/file.py",
         ]
 
         for path in invalid_paths:
@@ -115,6 +127,7 @@ def test_is_path_allowed():
 # Test 3: SovereignIndex uses SSOT
 # ============================================================================
 
+
 def test_sovereign_index_ssot():
     """Verify SovereignIndex imports from SSOT."""
     print("\n" + "=" * 60)
@@ -126,14 +139,17 @@ def test_sovereign_index_ssot():
         test_fail("FILE", "sovereign_index.py not found")
         return
 
-    content = index_path.read_text(encoding='utf-8')
+    content = index_path.read_text(encoding="utf-8")
 
-    if 'from agentic_core.L5_safety.validators.structure_blueprint import GLOBAL_EXCLUDED_DIRS' in content:
+    if (
+        "from agentic_core.L5_safety.validators.structure_blueprint import GLOBAL_EXCLUDED_DIRS"
+        in content
+    ):
         test_pass("IMPORT", "Imports GLOBAL_EXCLUDED_DIRS from SSOT")
     else:
         test_fail("IMPORT", "Does NOT import GLOBAL_EXCLUDED_DIRS from SSOT")
 
-    if '_SSOT_EXCLUSIONS_AVAILABLE' in content:
+    if "_SSOT_EXCLUSIONS_AVAILABLE" in content:
         test_pass("FALLBACK", "Has fallback mechanism for SSOT unavailability")
     else:
         test_fail("FALLBACK", "No fallback mechanism")
@@ -142,6 +158,7 @@ def test_sovereign_index_ssot():
 # ============================================================================
 # Test 4: HygieneGuardianAgent uses SSOT
 # ============================================================================
+
 
 def test_hygiene_guardian_ssot():
     """Verify HygieneGuardianAgent imports from SSOT."""
@@ -154,14 +171,14 @@ def test_hygiene_guardian_ssot():
         test_fail("FILE", "HygieneGuardianAgent.py not found")
         return
 
-    content = agent_path.read_text(encoding='utf-8')
+    content = agent_path.read_text(encoding="utf-8")
 
-    if 'GLOBAL_EXCLUDED_DIRS' in content:
+    if "GLOBAL_EXCLUDED_DIRS" in content:
         test_pass("IMPORT", "References GLOBAL_EXCLUDED_DIRS")
     else:
         test_fail("IMPORT", "Does NOT reference GLOBAL_EXCLUDED_DIRS")
 
-    if 'SKIP_DIRS = set(GLOBAL_EXCLUDED_DIRS)' in content:
+    if "SKIP_DIRS = set(GLOBAL_EXCLUDED_DIRS)" in content:
         test_pass("USAGE", "SKIP_DIRS uses GLOBAL_EXCLUDED_DIRS")
     else:
         test_fail("USAGE", "SKIP_DIRS does NOT use GLOBAL_EXCLUDED_DIRS")
@@ -170,6 +187,7 @@ def test_hygiene_guardian_ssot():
 # ============================================================================
 # Test 5: DuplicateCodeDetectorAgent uses SSOT
 # ============================================================================
+
 
 def test_duplicate_detector_ssot():
     """Verify DuplicateCodeDetectorAgent imports from SSOT."""
@@ -182,14 +200,14 @@ def test_duplicate_detector_ssot():
         test_fail("FILE", "DuplicateCodeDetectorAgent.py not found")
         return
 
-    content = agent_path.read_text(encoding='utf-8')
+    content = agent_path.read_text(encoding="utf-8")
 
-    if 'GLOBAL_EXCLUDED_DIRS' in content:
+    if "GLOBAL_EXCLUDED_DIRS" in content:
         test_pass("IMPORT", "References GLOBAL_EXCLUDED_DIRS")
     else:
         test_fail("IMPORT", "Does NOT reference GLOBAL_EXCLUDED_DIRS")
 
-    if 'EXCLUDE_DIRS = set(GLOBAL_EXCLUDED_DIRS)' in content:
+    if "EXCLUDE_DIRS = set(GLOBAL_EXCLUDED_DIRS)" in content:
         test_pass("USAGE", "EXCLUDE_DIRS uses GLOBAL_EXCLUDED_DIRS")
     else:
         test_fail("USAGE", "EXCLUDE_DIRS does NOT use GLOBAL_EXCLUDED_DIRS")
@@ -198,6 +216,7 @@ def test_duplicate_detector_ssot():
 # ============================================================================
 # Test 6: LocationAgent uses is_path_allowed
 # ============================================================================
+
 
 def test_location_agent_ssot():
     """Verify LocationAgent uses is_path_allowed for validation."""
@@ -210,14 +229,14 @@ def test_location_agent_ssot():
         test_fail("FILE", "LocationAgent.py not found")
         return
 
-    content = agent_path.read_text(encoding='utf-8')
+    content = agent_path.read_text(encoding="utf-8")
 
-    if 'is_path_allowed' in content:
+    if "is_path_allowed" in content:
         test_pass("IMPORT", "References is_path_allowed")
     else:
         test_fail("IMPORT", "Does NOT reference is_path_allowed")
 
-    if '_validate_root_whitelist' in content and 'is_path_allowed' in content:
+    if "_validate_root_whitelist" in content and "is_path_allowed" in content:
         test_pass("USAGE", "_validate_root_whitelist uses is_path_allowed")
     else:
         test_fail("USAGE", "_validate_root_whitelist does NOT use is_path_allowed")
@@ -226,6 +245,7 @@ def test_location_agent_ssot():
 # ============================================================================
 # Main Execution
 # ============================================================================
+
 
 def main():
     print("=" * 60)

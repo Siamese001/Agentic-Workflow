@@ -9,6 +9,7 @@ Verifies:
 
 Opportunity #3: rglob Scan Proliferation - Phase 6 Hardening
 """
+
 import shutil
 import sys
 import tempfile
@@ -42,7 +43,9 @@ class TestScanGuardBlocksBackups:
             assert len(result) == 0, "Dangerous directory scan should return empty list"
 
             # Should issue RuntimeWarning
-            runtime_warnings = [warning for warning in w if issubclass(warning.category, RuntimeWarning)]
+            runtime_warnings = [
+                warning for warning in w if issubclass(warning.category, RuntimeWarning)
+            ]
             assert len(runtime_warnings) > 0, "Should issue RuntimeWarning for dangerous directory"
             assert "BLOCKED" in str(runtime_warnings[0].message)
 
@@ -56,7 +59,9 @@ class TestScanGuardBlocksBackups:
 
             assert len(result) == 0, "healing_backups scan should return empty list"
 
-            runtime_warnings = [warning for warning in w if issubclass(warning.category, RuntimeWarning)]
+            runtime_warnings = [
+                warning for warning in w if issubclass(warning.category, RuntimeWarning)
+            ]
             assert len(runtime_warnings) > 0, "Should issue RuntimeWarning"
 
     def test_blocks_git_directory(self):
@@ -69,7 +74,9 @@ class TestScanGuardBlocksBackups:
 
             assert len(result) == 0, ".git scan should return empty list"
 
-            runtime_warnings = [warning for warning in w if issubclass(warning.category, RuntimeWarning)]
+            runtime_warnings = [
+                warning for warning in w if issubclass(warning.category, RuntimeWarning)
+            ]
             assert len(runtime_warnings) > 0, "Should issue RuntimeWarning"
 
     def test_blocks_pycache(self):
@@ -82,7 +89,9 @@ class TestScanGuardBlocksBackups:
 
             assert len(result) == 0, "__pycache__ scan should return empty list"
 
-            runtime_warnings = [warning for warning in w if issubclass(warning.category, RuntimeWarning)]
+            runtime_warnings = [
+                warning for warning in w if issubclass(warning.category, RuntimeWarning)
+            ]
             assert len(runtime_warnings) > 0, "Should issue RuntimeWarning"
 
     def test_allows_safe_directories(self):
@@ -102,11 +111,19 @@ class TestScanGuardBlocksBackups:
                 assert len(result) == 1, "Safe directory scan should find files"
 
                 # Should only have DeprecationWarning, not RuntimeWarning
-                runtime_warnings = [warning for warning in w if issubclass(warning.category, RuntimeWarning)]
-                assert len(runtime_warnings) == 0, "Safe directory should not trigger RuntimeWarning"
+                runtime_warnings = [
+                    warning for warning in w if issubclass(warning.category, RuntimeWarning)
+                ]
+                assert len(runtime_warnings) == 0, (
+                    "Safe directory should not trigger RuntimeWarning"
+                )
 
-                deprecation_warnings = [warning for warning in w if issubclass(warning.category, DeprecationWarning)]
-                assert len(deprecation_warnings) > 0, "Should still issue DeprecationWarning for rglob usage"
+                deprecation_warnings = [
+                    warning for warning in w if issubclass(warning.category, DeprecationWarning)
+                ]
+                assert len(deprecation_warnings) > 0, (
+                    "Should still issue DeprecationWarning for rglob usage"
+                )
         finally:
             shutil.rmtree(temp_dir)
 
@@ -125,9 +142,13 @@ class TestScanGuardDeprecationWarnings:
                 warnings.simplefilter("always")
                 _ = list(guarded_rglob(temp_dir, "*.py"))
 
-                deprecation_warnings = [warning for warning in w if issubclass(warning.category, DeprecationWarning)]
+                deprecation_warnings = [
+                    warning for warning in w if issubclass(warning.category, DeprecationWarning)
+                ]
                 assert len(deprecation_warnings) > 0, "Should issue DeprecationWarning"
-                assert "FileCache" in str(deprecation_warnings[0].message), "Should mention FileCache"
+                assert "FileCache" in str(deprecation_warnings[0].message), (
+                    "Should mention FileCache"
+                )
         finally:
             shutil.rmtree(temp_dir)
 
@@ -139,7 +160,9 @@ class TestScanGuardDeprecationWarnings:
                 warnings.simplefilter("always")
                 _ = list(guarded_rglob(temp_dir, "*.py"))
 
-                deprecation_warnings = [warning for warning in w if issubclass(warning.category, DeprecationWarning)]
+                deprecation_warnings = [
+                    warning for warning in w if issubclass(warning.category, DeprecationWarning)
+                ]
                 message = str(deprecation_warnings[0].message)
                 assert "file_cache" in message.lower(), "Should reference file_cache module"
         finally:
@@ -154,23 +177,23 @@ class TestDangerousDirectoriesConstant:
 
     def test_contains_sovereign_healing_backup(self):
         """Verify .sovereign_healing_backup is in DANGEROUS_DIRECTORIES."""
-        assert '.sovereign_healing_backup' in DANGEROUS_DIRECTORIES
+        assert ".sovereign_healing_backup" in DANGEROUS_DIRECTORIES
 
     def test_contains_healing_backups(self):
         """Verify healing_backups is in DANGEROUS_DIRECTORIES."""
-        assert 'healing_backups' in DANGEROUS_DIRECTORIES
+        assert "healing_backups" in DANGEROUS_DIRECTORIES
 
     def test_contains_git(self):
         """Verify .git is in DANGEROUS_DIRECTORIES."""
-        assert '.git' in DANGEROUS_DIRECTORIES
+        assert ".git" in DANGEROUS_DIRECTORIES
 
     def test_contains_pycache(self):
         """Verify __pycache__ is in DANGEROUS_DIRECTORIES."""
-        assert '__pycache__' in DANGEROUS_DIRECTORIES
+        assert "__pycache__" in DANGEROUS_DIRECTORIES
 
     def test_contains_node_modules(self):
         """Verify node_modules is in DANGEROUS_DIRECTORIES."""
-        assert 'node_modules' in DANGEROUS_DIRECTORIES
+        assert "node_modules" in DANGEROUS_DIRECTORIES
 
 
 if __name__ == "__main__":

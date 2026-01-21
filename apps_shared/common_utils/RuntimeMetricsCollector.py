@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class Metric:
     """A single metric."""
+
     name: str
     value: float
     labels: dict[str, str] = field(default_factory=dict)

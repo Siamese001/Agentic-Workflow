@@ -25,6 +25,7 @@ Exit Codes:
     2 - Server startup failed
     3 - Playwright not installed or not functional (MANDATORY FAILURE)
 """
+
 import argparse
 import atexit
 import json
@@ -39,8 +40,8 @@ from pathlib import Path
 # Windows UTF-8 support
 if sys.platform.startswith("win"):
     os.system("chcp 65001 >nul 2>&1")
-    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
-    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 # Setup paths
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -74,20 +75,21 @@ atexit.register(cleanup_server)
 def is_port_in_use(port: int) -> bool:
     """Check if a port is in use."""
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        return s.connect_ex(('localhost', port)) == 0
+        return s.connect_ex(("localhost", port)) == 0
 
 
 def kill_existing_servers():
     """Kill any existing servers on the dashboard port."""
     try:
         import psutil
+
         killed = 0
-        for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
+        for proc in psutil.process_iter(["pid", "name", "cmdline"]):
             try:
-                cmdline = proc.info.get('cmdline', [])
-                if cmdline and 'python' in proc.info['name'].lower():
-                    cmdline_str = ' '.join(cmdline)
-                    if 'http.server' in cmdline_str and str(SERVER_PORT) in cmdline_str:
+                cmdline = proc.info.get("cmdline", [])
+                if cmdline and "python" in proc.info["name"].lower():
+                    cmdline_str = " ".join(cmdline)
+                    if "http.server" in cmdline_str and str(SERVER_PORT) in cmdline_str:
                         proc.kill()
                         killed += 1
             except (psutil.NoSuchProcess, psutil.AccessDenied):
@@ -117,7 +119,7 @@ def start_server() -> bool:
     for i in range(max_wait):
         if not is_port_in_use(SERVER_PORT):
             break
-        print(f"   Waiting for port {SERVER_PORT} to be free... ({i+1}/{max_wait})")
+        print(f"   Waiting for port {SERVER_PORT} to be free... ({i + 1}/{max_wait})")
         time.sleep(1)
 
     if is_port_in_use(SERVER_PORT):
@@ -131,7 +133,7 @@ def start_server() -> bool:
             cwd=str(DASHBOARD_DIR),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            creationflags=subprocess.CREATE_NEW_PROCESS_GROUP if sys.platform == "win32" else 0
+            creationflags=subprocess.CREATE_NEW_PROCESS_GROUP if sys.platform == "win32" else 0,
         )
 
         # Wait for server to start
@@ -154,6 +156,7 @@ def check_playwright_installed() -> bool:
     """Check if Playwright is installed."""
     try:
         from playwright.sync_api import sync_playwright
+
         return True
     except ImportError:
         return False
@@ -173,7 +176,7 @@ def run_data_tests() -> tuple[int, int, list[str]]:
     discovery_path = PROJECT_ROOT / "agent_discovery_full.json"
     if discovery_path.exists():
         try:
-            with open(discovery_path, encoding='utf-8') as f:
+            with open(discovery_path, encoding="utf-8") as f:
                 agents = json.load(f)
             if len(agents) > 0:
                 print(f"   ✅ Test 1: agent_discovery_full.json has {len(agents)} agents")
@@ -211,8 +214,8 @@ def run_data_tests() -> tuple[int, int, list[str]]:
     data_path = DASHBOARD_DIR / "data" / "dashboard_data.js"
     if data_path.exists():
         try:
-            content = data_path.read_text(encoding='utf-8')
-            if 'window.dashboardData' in content and 'TOTAL' in content:
+            content = data_path.read_text(encoding="utf-8")
+            if "window.dashboardData" in content and "TOTAL" in content:
                 print(f"   ✅ Test 3: dashboard_data.js valid ({len(content):,} bytes)")
                 passed += 1
             else:
@@ -261,7 +264,7 @@ def run_data_tests() -> tuple[int, int, list[str]]:
     for js_path, patterns in js_functions_to_check.items():
         full_path = DASHBOARD_DIR / js_path
         if full_path.exists():
-            content = full_path.read_text(encoding='utf-8')
+            content = full_path.read_text(encoding="utf-8")
             for pattern in patterns:
                 # Check for function definition or object property
                 if pattern not in content:
@@ -339,13 +342,10 @@ def run_playwright_tests(headless: bool = True) -> tuple[int, int, list[str]]:
         with sync_playwright() as p:
             print(f"   Launching browser (headless={headless})...")
             browser = p.chromium.launch(
-                headless=headless,
-                args=['--disable-cache', '--disable-application-cache']
+                headless=headless, args=["--disable-cache", "--disable-application-cache"]
             )
 
-            context = browser.new_context(
-                viewport={'width': 1920, 'height': 1080}
-            )
+            context = browser.new_context(viewport={"width": 1920, "height": 1080})
             page = context.new_page()
 
             # Track JavaScript errors
@@ -372,14 +372,14 @@ def run_playwright_tests(headless: bool = True) -> tuple[int, int, list[str]]:
             # Test 7: Tables rendered visually
             try:
                 # First check if tables exist in DOM (even if not fully visible due to JS errors)
-                table_count = page.locator('table').count()
+                table_count = page.locator("table").count()
                 if table_count > 0:
                     print(f"   ✅ Test 7: {table_count} table(s) found in DOM")
                     passed += 1
                 else:
                     # Try waiting for table to appear
-                    page.wait_for_selector('table', timeout=5000)
-                    table_count = page.locator('table').count()
+                    page.wait_for_selector("table", timeout=5000)
+                    table_count = page.locator("table").count()
                     if table_count > 0:
                         print(f"   ✅ Test 7: {table_count} table(s) rendered visually")
                         passed += 1
@@ -389,9 +389,11 @@ def run_playwright_tests(headless: bool = True) -> tuple[int, int, list[str]]:
                         errors.append("No tables rendered visually")
             except Exception as e:
                 # Tables might exist but not be "visible" due to JS errors
-                table_count = page.locator('table').count()
+                table_count = page.locator("table").count()
                 if table_count > 0:
-                    print(f"   ⚠️  Test 7: {table_count} table(s) in DOM (visibility check failed: {str(e)[:50]})")
+                    print(
+                        f"   ⚠️  Test 7: {table_count} table(s) in DOM (visibility check failed: {str(e)[:50]})"
+                    )
                     passed += 1  # Tables exist, just visibility check failed
                 else:
                     print(f"   ❌ Test 7: Table visual check failed: {e}")
@@ -400,7 +402,7 @@ def run_playwright_tests(headless: bool = True) -> tuple[int, int, list[str]]:
 
             # Test 8: TOTAL row visible in browser
             try:
-                total_visible = page.locator('text=TOTAL').first.is_visible()
+                total_visible = page.locator("text=TOTAL").first.is_visible()
                 if total_visible:
                     print("   ✅ Test 8: TOTAL row visible in browser")
                     passed += 1
@@ -417,9 +419,9 @@ def run_playwright_tests(headless: bool = True) -> tuple[int, int, list[str]]:
             try:
                 # Look for L6 or L5 territory names which should be visible
                 territory_visible = (
-                    page.locator('text=L6_observability').count() > 0 or
-                    page.locator('text=L5_safety').count() > 0 or
-                    page.locator('text=Observability').count() > 0
+                    page.locator("text=L6_observability").count() > 0
+                    or page.locator("text=L5_safety").count() > 0
+                    or page.locator("text=Observability").count() > 0
                 )
                 if territory_visible:
                     print("   ✅ Test 9: Territory rows visible in browser")
@@ -427,7 +429,7 @@ def run_playwright_tests(headless: bool = True) -> tuple[int, int, list[str]]:
                 else:
                     print("   ⚠️  Test 9: Territory rows not found (checking alternative)")
                     # Try checking for any table row content
-                    rows = page.locator('table tr').count()
+                    rows = page.locator("table tr").count()
                     if rows > 2:
                         print(f"   ✅ Test 9: Found {rows} table rows")
                         passed += 1
@@ -478,7 +480,7 @@ def regenerate_if_stale() -> bool:
     data_age = time.time() - data_path.stat().st_mtime
 
     if discovery_age > 3600:  # > 1 hour old
-        print(f"   ⚠️  Discovery is {discovery_age/3600:.1f} hours old - regenerating...")
+        print(f"   ⚠️  Discovery is {discovery_age / 3600:.1f} hours old - regenerating...")
         return run_regeneration()
 
     if data_age > discovery_age + 60:  # Data older than discovery
@@ -506,7 +508,7 @@ def run_regeneration() -> bool:
             cwd=str(PROJECT_ROOT),
             capture_output=True,
             text=True,
-            timeout=120
+            timeout=120,
         )
 
         if result.returncode == 0:
@@ -523,14 +525,15 @@ def run_regeneration() -> bool:
 def main():
     parser = argparse.ArgumentParser(
         description="Hardened Dashboard E2E Test Suite",
-        formatter_class=argparse.RawDescriptionHelpFormatter
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    parser.add_argument("--skip-regenerate", action="store_true",
-                        help="Skip auto-regeneration check")
-    parser.add_argument("--headless", action="store_true", default=True,
-                        help="Run Playwright headless (default)")
-    parser.add_argument("--headed", action="store_true",
-                        help="Run Playwright with visible browser")
+    parser.add_argument(
+        "--skip-regenerate", action="store_true", help="Skip auto-regeneration check"
+    )
+    parser.add_argument(
+        "--headless", action="store_true", default=True, help="Run Playwright headless (default)"
+    )
+    parser.add_argument("--headed", action="store_true", help="Run Playwright with visible browser")
 
     args = parser.parse_args()
     headless = not args.headed

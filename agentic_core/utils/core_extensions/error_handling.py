@@ -33,8 +33,9 @@ def _perform_single_attempt(func: Callable, *args, **kwargs) -> tuple[bool, Any,
         return False, None, e
 
 
-def _execute_with_retries_internal(func: Callable, max_retries: int, base_delay: float,
-                                   *args, **kwargs) -> tuple[bool, Any, Exception | None]:
+def _execute_with_retries_internal(
+    func: Callable, max_retries: int, base_delay: float, *args, **kwargs
+) -> tuple[bool, Any, Exception | None]:
     """
     Helper function to execute a function with retries and exponential backoff.
     Returns exceptions instead of raising them to allow the wrapper to handle the final raise.
@@ -50,7 +51,7 @@ def _execute_with_retries_internal(func: Callable, max_retries: int, base_delay:
             return False, None, exception
 
         # Otherwise, delay and retry
-        delay = base_delay * (2 ** attempt)
+        delay = base_delay * (2**attempt)
         time.sleep(delay)
 
     # This line is only reachable if max_retries is 0
@@ -69,8 +70,8 @@ def retry_with_backoff(func: Callable, max_retries: int = 3, base_delay: float =
     Returns:
         Wrapped function with retry logic
     """
-    def wrapper(*args, **kwargs):
 
+    def wrapper(*args, **kwargs):
         # Delegate the actual retry logic to the helper function
         success, result, exception = _execute_with_retries_internal(
             func, max_retries, base_delay, *args, **kwargs

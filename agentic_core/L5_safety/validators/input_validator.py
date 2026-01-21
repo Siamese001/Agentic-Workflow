@@ -36,14 +36,16 @@ class InputValidator:
     def sanitize_string(self, text: str) -> str:
         """Sanitize a string input."""
         # Remove potentially dangerous characters
-        sanitized = re.sub(r'[<>"\']', '', text)
+        sanitized = re.sub(r'[<>"\']', "", text)
         return sanitized.strip()
 
     def validate_type(self, value: Any, expected_type: type) -> bool:
         """Validate that value is of expected type."""
         return isinstance(value, expected_type)
 
-    def validate_range(self, value: int | float, min_val: float | None = None, max_val: float | None = None) -> bool:
+    def validate_range(
+        self, value: int | float, min_val: float | None = None, max_val: float | None = None
+    ) -> bool:
         """Validate that value is within range."""
         if min_val is not None and value < min_val:
             return False
@@ -51,7 +53,9 @@ class InputValidator:
             return False
         return True
 
-    def validate_length(self, value: str | list, min_len: int | None = None, max_len: int | None = None) -> bool:
+    def validate_length(
+        self, value: str | list, min_len: int | None = None, max_len: int | None = None
+    ) -> bool:
         """Validate that value length is within bounds."""
         length = len(value)
         if min_len is not None and length < min_len:
@@ -67,4 +71,4 @@ def validate_input(data: Any, schema: dict[str, Any]) -> bool:
     return validator.validate(data)
 
 
-__all__ = ['InputValidator', 'validate_input']
+__all__ = ["InputValidator", "validate_input"]

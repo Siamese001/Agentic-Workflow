@@ -14,6 +14,7 @@ Usage:
     python scripts/test_unified_state_management.py --drift-test
     python scripts/test_unified_state_management.py --registry-test
 """
+
 from __future__ import annotations
 
 import argparse
@@ -164,7 +165,7 @@ def test_drift_detection() -> dict[str, Any]:
 
             # Manually modify the file WITHOUT updating manifest
             modified_data = {"modified": True, "value": 999}
-            with open(file_path, 'w') as f:
+            with open(file_path, "w") as f:
                 json.dump(modified_data, f)
             results["file_modified"] = True
 
@@ -214,7 +215,7 @@ def test_ghost_detection() -> dict[str, Any]:
             ghost_path = manager.memory_root / "state" / "ghost_file.json"
             ghost_path.parent.mkdir(parents=True, exist_ok=True)
 
-            with open(ghost_path, 'w') as f:
+            with open(ghost_path, "w") as f:
                 json.dump({"ghost": True}, f)
             results["ghost_file_created"] = True
 
@@ -223,7 +224,9 @@ def test_ghost_detection() -> dict[str, Any]:
 
             # Verify ghost was detected
             ghost_rel_path = str(ghost_path.relative_to(manager.memory_root))
-            if ghost_rel_path in report.ghost_files or any("ghost_file" in g for g in report.ghost_files):
+            if ghost_rel_path in report.ghost_files or any(
+                "ghost_file" in g for g in report.ghost_files
+            ):
                 results["ghost_detected"] = True
             else:
                 results["status"] = "FAIL"
@@ -263,7 +266,9 @@ def test_registry_synchronization() -> dict[str, Any]:
             notifications = []
 
             def registry_callback(key: str, action: str):
-                notifications.append({"key": key, "action": action, "timestamp": datetime.now().isoformat()})
+                notifications.append(
+                    {"key": key, "action": action, "timestamp": datetime.now().isoformat()}
+                )
 
             # Register callback
             manager.register_callback(registry_callback)
@@ -346,7 +351,10 @@ def test_cleanup_with_retention() -> dict[str, Any]:
             # Verify old entries were removed
             remaining_keys = list(manager._manifest.keys())
 
-            if "retention_test_0" not in remaining_keys and "retention_test_1" not in remaining_keys:
+            if (
+                "retention_test_0" not in remaining_keys
+                and "retention_test_1" not in remaining_keys
+            ):
                 if "retention_test_2" in remaining_keys:
                     results["correct_retention"] = True
                 else:
@@ -364,26 +372,28 @@ def test_cleanup_with_retention() -> dict[str, Any]:
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Test UnifiedStateManagementAgent')
-    parser.add_argument('--self-test', action='store_true', help='Run only self-tests')
-    parser.add_argument('--atomic-test', action='store_true', help='Run only atomic transaction test')
-    parser.add_argument('--drift-test', action='store_true', help='Run only drift detection test')
-    parser.add_argument('--registry-test', action='store_true', help='Run only registry sync test')
-    parser.add_argument('--output-dir', type=str, default='test_results', help='Output directory')
+    parser = argparse.ArgumentParser(description="Test UnifiedStateManagementAgent")
+    parser.add_argument("--self-test", action="store_true", help="Run only self-tests")
+    parser.add_argument(
+        "--atomic-test", action="store_true", help="Run only atomic transaction test"
+    )
+    parser.add_argument("--drift-test", action="store_true", help="Run only drift detection test")
+    parser.add_argument("--registry-test", action="store_true", help="Run only registry sync test")
+    parser.add_argument("--output-dir", type=str, default="test_results", help="Output directory")
     args = parser.parse_args()
 
     output_dir = PROJECT_ROOT / args.output_dir
     output_dir.mkdir(exist_ok=True)
 
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
     print("=" * 60)
     print("UnifiedStateManagementAgent Test Suite (Phase 5)")
     print("=" * 60)
 
     results = {
-        'timestamp': timestamp,
-        'tests': {},
+        "timestamp": timestamp,
+        "tests": {},
     }
 
     all_passed = True
@@ -394,15 +404,15 @@ def main():
         print("\n[1/6] Running self-tests...")
         try:
             self_test_results = run_self_tests()
-            results['tests']['self_tests'] = self_test_results
-            passed = self_test_results.get('passed', 0)
-            failed = self_test_results.get('failed', 0)
+            results["tests"]["self_tests"] = self_test_results
+            passed = self_test_results.get("passed", 0)
+            failed = self_test_results.get("failed", 0)
             print(f"  ✓ Self-tests: {passed} passed, {failed} failed")
             if failed > 0:
                 all_passed = False
         except Exception as e:
             print(f"  ✗ Self-tests failed: {e}")
-            results['tests']['self_tests'] = {'error': str(e)}
+            results["tests"]["self_tests"] = {"error": str(e)}
             all_passed = False
 
     # Atomic transaction test
@@ -410,9 +420,9 @@ def main():
         print("\n[2/6] Running atomic state transaction test...")
         try:
             atomic_results = test_atomic_state_transaction()
-            results['tests']['atomic_transaction'] = atomic_results
+            results["tests"]["atomic_transaction"] = atomic_results
 
-            if atomic_results.get('status') == 'PASS':
+            if atomic_results.get("status") == "PASS":
                 print("  ✓ Atomic transaction PASSED")
                 print(f"    States created: {atomic_results.get('states_created')}")
                 print(f"    Consistency verified: {atomic_results.get('consistency_verified')}")
@@ -421,7 +431,7 @@ def main():
                 all_passed = False
         except Exception as e:
             print(f"  ✗ Atomic transaction test failed: {e}")
-            results['tests']['atomic_transaction'] = {'error': str(e)}
+            results["tests"]["atomic_transaction"] = {"error": str(e)}
             all_passed = False
 
     # Drift detection test
@@ -429,9 +439,9 @@ def main():
         print("\n[3/6] Running drift detection test...")
         try:
             drift_results = test_drift_detection()
-            results['tests']['drift_detection'] = drift_results
+            results["tests"]["drift_detection"] = drift_results
 
-            if drift_results.get('status') == 'PASS':
+            if drift_results.get("status") == "PASS":
                 print("  ✓ Drift detection PASSED")
                 print(f"    File modified: {drift_results.get('file_modified')}")
                 print(f"    Drift detected: {drift_results.get('drift_detected')}")
@@ -440,7 +450,7 @@ def main():
                 all_passed = False
         except Exception as e:
             print(f"  ✗ Drift detection test failed: {e}")
-            results['tests']['drift_detection'] = {'error': str(e)}
+            results["tests"]["drift_detection"] = {"error": str(e)}
             all_passed = False
 
     # Ghost detection test
@@ -448,9 +458,9 @@ def main():
         print("\n[4/6] Running ghost file detection test...")
         try:
             ghost_results = test_ghost_detection()
-            results['tests']['ghost_detection'] = ghost_results
+            results["tests"]["ghost_detection"] = ghost_results
 
-            if ghost_results.get('status') == 'PASS':
+            if ghost_results.get("status") == "PASS":
                 print("  ✓ Ghost detection PASSED")
                 print(f"    Ghost file created: {ghost_results.get('ghost_file_created')}")
                 print(f"    Ghost detected: {ghost_results.get('ghost_detected')}")
@@ -459,7 +469,7 @@ def main():
                 all_passed = False
         except Exception as e:
             print(f"  ✗ Ghost detection test failed: {e}")
-            results['tests']['ghost_detection'] = {'error': str(e)}
+            results["tests"]["ghost_detection"] = {"error": str(e)}
             all_passed = False
 
     # Registry synchronization test
@@ -467,19 +477,21 @@ def main():
         print("\n[5/6] Running registry synchronization test...")
         try:
             registry_results = test_registry_synchronization()
-            results['tests']['registry_sync'] = registry_results
+            results["tests"]["registry_sync"] = registry_results
 
-            if registry_results.get('status') == 'PASS':
+            if registry_results.get("status") == "PASS":
                 print("  ✓ Registry synchronization PASSED")
                 print(f"    Callback registered: {registry_results.get('callback_registered')}")
                 print(f"    Callback notified: {registry_results.get('callback_notified')}")
                 print(f"    Notifications: {len(registry_results.get('notifications', []))}")
             else:
-                print(f"  ✗ Registry synchronization FAILED: {registry_results.get('error', 'Unknown')}")
+                print(
+                    f"  ✗ Registry synchronization FAILED: {registry_results.get('error', 'Unknown')}"
+                )
                 all_passed = False
         except Exception as e:
             print(f"  ✗ Registry synchronization test failed: {e}")
-            results['tests']['registry_sync'] = {'error': str(e)}
+            results["tests"]["registry_sync"] = {"error": str(e)}
             all_passed = False
 
     # Cleanup with retention test
@@ -487,23 +499,25 @@ def main():
         print("\n[6/6] Running cleanup with retention test...")
         try:
             cleanup_results = test_cleanup_with_retention()
-            results['tests']['cleanup_retention'] = cleanup_results
+            results["tests"]["cleanup_retention"] = cleanup_results
 
-            if cleanup_results.get('status') == 'PASS':
+            if cleanup_results.get("status") == "PASS":
                 print("  ✓ Cleanup with retention PASSED")
                 print(f"    States created: {cleanup_results.get('states_created')}")
                 print(f"    Correct retention: {cleanup_results.get('correct_retention')}")
             else:
-                print(f"  ✗ Cleanup with retention FAILED: {cleanup_results.get('error', 'Unknown')}")
+                print(
+                    f"  ✗ Cleanup with retention FAILED: {cleanup_results.get('error', 'Unknown')}"
+                )
                 all_passed = False
         except Exception as e:
             print(f"  ✗ Cleanup with retention test failed: {e}")
-            results['tests']['cleanup_retention'] = {'error': str(e)}
+            results["tests"]["cleanup_retention"] = {"error": str(e)}
             all_passed = False
 
     # Save results
-    output_file = output_dir / f'unified_state_management_test_{timestamp}.json'
-    with open(output_file, 'w', encoding='utf-8') as f:
+    output_file = output_dir / f"unified_state_management_test_{timestamp}.json"
+    with open(output_file, "w", encoding="utf-8") as f:
         json.dump(results, f, indent=2, default=str)
 
     print(f"\n{'=' * 60}")
@@ -517,5 +531,5 @@ def main():
         return 1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

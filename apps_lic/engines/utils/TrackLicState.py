@@ -159,9 +159,7 @@ class LICStateManager:
             if stored_checkpoint:
                 current_checksum = self._calculate_checksum(filepath)
                 if stored_checkpoint.checksum != current_checksum:
-                    raise ValueError(
-                        f"Checksum mismatch for {filename}: file may be corrupted"
-                    )
+                    raise ValueError(f"Checksum mismatch for {filename}: file may be corrupted")
 
         with open(filepath, encoding="utf-8") as f:
             data = json.load(f)
@@ -317,9 +315,7 @@ class StateValidator:
         for required_hop in required_hops:
             if not self.state_manager.state_exists(required_hop):
                 result.is_valid = False
-                result.errors.append(
-                    f"Required HOP {required_hop} not completed before {hop_id}"
-                )
+                result.errors.append(f"Required HOP {required_hop} not completed before {hop_id}")
 
         return result
 

@@ -87,7 +87,7 @@ def run_tests():
     test_result(
         "Baseline thresholds are reasonable",
         MINIMUM_AGENT_COUNT >= 100 and MINIMUM_AGENT_COUNT <= 300,
-        f"MINIMUM_AGENT_COUNT={MINIMUM_AGENT_COUNT} (should be 100-300)"
+        f"MINIMUM_AGENT_COUNT={MINIMUM_AGENT_COUNT} (should be 100-300)",
     )
 
     # =========================================================================
@@ -96,7 +96,7 @@ def run_tests():
     test_result(
         "MAX_AGENT_DROP_PERCENT allows variance",
         MAX_AGENT_DROP_PERCENT >= 5 and MAX_AGENT_DROP_PERCENT <= 25,
-        f"MAX_AGENT_DROP_PERCENT={MAX_AGENT_DROP_PERCENT}% (should be 5-25%)"
+        f"MAX_AGENT_DROP_PERCENT={MAX_AGENT_DROP_PERCENT}% (should be 5-25%)",
     )
 
     # =========================================================================
@@ -105,7 +105,7 @@ def run_tests():
     test_result(
         "EXPECTED_AGENT_COUNT is realistic",
         EXPECTED_AGENT_COUNT >= 150 and EXPECTED_AGENT_COUNT <= 400,
-        f"EXPECTED_AGENT_COUNT={EXPECTED_AGENT_COUNT} (should be 150-400)"
+        f"EXPECTED_AGENT_COUNT={EXPECTED_AGENT_COUNT} (should be 150-400)",
     )
 
     # =========================================================================
@@ -113,13 +113,14 @@ def run_tests():
     # =========================================================================
     # Phase 6.7: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_python_files
+
     all_py_files_1 = sorted(get_python_files(PROJECT_ROOT))
     all_py_files_2 = sorted(get_python_files(PROJECT_ROOT))
 
     test_result(
         "File ordering is deterministic",
         all_py_files_1 == all_py_files_2,
-        f"Two sorted rglob() calls produce identical ordering ({len(all_py_files_1)} files)"
+        f"Two sorted rglob() calls produce identical ordering ({len(all_py_files_1)} files)",
     )
 
     # =========================================================================
@@ -128,18 +129,18 @@ def run_tests():
     test_result(
         "EXCLUDED_DIRS is a set",
         isinstance(EXCLUDED_DIRS, set),
-        f"EXCLUDED_DIRS has {len(EXCLUDED_DIRS)} entries"
+        f"EXCLUDED_DIRS has {len(EXCLUDED_DIRS)} entries",
     )
 
     # =========================================================================
     # TEST 6: Exclusion patterns include critical directories
     # =========================================================================
-    critical_excludes = {'__pycache__', '.git', '.venv', 'venv'}
+    critical_excludes = {"__pycache__", ".git", ".venv", "venv"}
     has_critical = critical_excludes.issubset(EXCLUDED_DIRS)
     test_result(
         "Critical directories are excluded",
         has_critical,
-        f"Has {critical_excludes & EXCLUDED_DIRS} of {critical_excludes}"
+        f"Has {critical_excludes & EXCLUDED_DIRS} of {critical_excludes}",
     )
 
     # =========================================================================
@@ -155,7 +156,7 @@ def run_tests():
     test_result(
         "should_exclude_path works correctly",
         all_correct,
-        f"Tested {len(test_cases)} path patterns"
+        f"Tested {len(test_cases)} path patterns",
     )
 
     # =========================================================================
@@ -172,7 +173,7 @@ def run_tests():
     test_result(
         "Mixin exception for *_agent.py files",
         not mixin_agent_excluded and regular_mixin_excluded,
-        f"mixin_agent.py excluded={mixin_agent_excluded}, healer_mixin.py excluded={regular_mixin_excluded}"
+        f"mixin_agent.py excluded={mixin_agent_excluded}, healer_mixin.py excluded={regular_mixin_excluded}",
     )
 
     # =========================================================================
@@ -189,31 +190,31 @@ def run_tests():
     test_result(
         "Discovery count is consistent across runs",
         count_1 == count_2,
-        f"Run 1: {count_1} agents, Run 2: {count_2} agents"
+        f"Run 1: {count_1} agents, Run 2: {count_2} agents",
     )
 
     # =========================================================================
     # TEST 10: Agent names are identical across runs
     # =========================================================================
-    names_1 = set(a['class_name'] for a in agents_1)
-    names_2 = set(a['class_name'] for a in agents_2)
+    names_1 = set(a["class_name"] for a in agents_1)
+    names_2 = set(a["class_name"] for a in agents_2)
 
     test_result(
         "Agent names are identical across runs",
         names_1 == names_2,
-        f"Both runs found {len(names_1)} unique agent names"
+        f"Both runs found {len(names_1)} unique agent names",
     )
 
     # =========================================================================
     # TEST 11: Agent paths are identical across runs
     # =========================================================================
-    paths_1 = set(a['path'] for a in agents_1)
-    paths_2 = set(a['path'] for a in agents_2)
+    paths_1 = set(a["path"] for a in agents_1)
+    paths_2 = set(a["path"] for a in agents_2)
 
     test_result(
         "Agent paths are identical across runs",
         paths_1 == paths_2,
-        f"Both runs found {len(paths_1)} unique paths"
+        f"Both runs found {len(paths_1)} unique paths",
     )
 
     # =========================================================================
@@ -222,7 +223,7 @@ def run_tests():
     test_result(
         "Discovery count above minimum threshold",
         count_1 >= MINIMUM_AGENT_COUNT,
-        f"Found {count_1} agents (minimum: {MINIMUM_AGENT_COUNT})"
+        f"Found {count_1} agents (minimum: {MINIMUM_AGENT_COUNT})",
     )
 
     # =========================================================================
@@ -232,34 +233,29 @@ def run_tests():
     test_result(
         "validate_agent_count accepts current count",
         is_valid,
-        f"Validation passed for {count_1} agents" if is_valid else f"Errors: {errors}"
+        f"Validation passed for {count_1} agents" if is_valid else f"Errors: {errors}",
     )
 
     # =========================================================================
     # TEST 14: No duplicate agents in discovery
     # =========================================================================
-    agent_keys = [(a['class_name'], a['path']) for a in agents_1]
+    agent_keys = [(a["class_name"], a["path"]) for a in agents_1]
     unique_keys = set(agent_keys)
 
     test_result(
         "No duplicate agents in discovery",
         len(agent_keys) == len(unique_keys),
-        f"Total: {len(agent_keys)}, Unique: {len(unique_keys)}"
+        f"Total: {len(agent_keys)}, Unique: {len(unique_keys)}",
     )
 
     # =========================================================================
     # TEST 15: All agents have required fields
     # =========================================================================
-    required_fields = {'class_name', 'path', 'layer'}
-    all_have_fields = all(
-        all(field in a for field in required_fields)
-        for a in agents_1
-    )
+    required_fields = {"class_name", "path", "layer"}
+    all_have_fields = all(all(field in a for field in required_fields) for a in agents_1)
 
     test_result(
-        "All agents have required fields",
-        all_have_fields,
-        f"Required fields: {required_fields}"
+        "All agents have required fields", all_have_fields, f"Required fields: {required_fields}"
     )
 
     # =========================================================================
@@ -272,7 +268,7 @@ def run_tests():
         if should_exclude_file(py_file):
             continue
         try:
-            source = py_file.read_text(encoding='utf-8', errors='replace')
+            source = py_file.read_text(encoding="utf-8", errors="replace")
             tree = safe_parse(source, py_file)
             if tree:
                 build_inheritance_map(tree)
@@ -288,7 +284,7 @@ def run_tests():
         if should_exclude_file(py_file):
             continue
         try:
-            source = py_file.read_text(encoding='utf-8', errors='replace')
+            source = py_file.read_text(encoding="utf-8", errors="replace")
             tree = safe_parse(source, py_file)
             if tree:
                 build_inheritance_map(tree)
@@ -300,7 +296,7 @@ def run_tests():
     test_result(
         "Inheritance map is built consistently",
         map_size_1 == map_size_2,
-        f"Build 1: {map_size_1} classes, Build 2: {map_size_2} classes"
+        f"Build 1: {map_size_1} classes, Build 2: {map_size_2} classes",
     )
 
     # =========================================================================
@@ -308,7 +304,7 @@ def run_tests():
     # =========================================================================
     layer_counts = {}
     for a in agents_1:
-        layer = a.get('layer', 'Unknown')
+        layer = a.get("layer", "Unknown")
         layer_counts[layer] = layer_counts.get(layer, 0) + 1
 
     # Should have agents in multiple layers
@@ -317,34 +313,34 @@ def run_tests():
     test_result(
         "Agents distributed across multiple layers",
         has_multiple_layers,
-        f"Layers: {dict(sorted(layer_counts.items()))}"
+        f"Layers: {dict(sorted(layer_counts.items()))}",
     )
 
     # =========================================================================
     # TEST 18: No 'Unknown' layer agents (or very few)
     # =========================================================================
-    unknown_count = layer_counts.get('Unknown', 0)
+    unknown_count = layer_counts.get("Unknown", 0)
     unknown_pct = (unknown_count / count_1 * 100) if count_1 > 0 else 0
 
     test_result(
         "Few or no 'Unknown' layer agents",
         unknown_pct < 10,
-        f"Unknown: {unknown_count} ({unknown_pct:.1f}%)"
+        f"Unknown: {unknown_count} ({unknown_pct:.1f}%)",
     )
 
     # =========================================================================
     # TEST 19: Content hash is deterministic
     # =========================================================================
-    content_str_1 = json.dumps(sorted(agents_1, key=lambda x: x['class_name']), sort_keys=True)
+    content_str_1 = json.dumps(sorted(agents_1, key=lambda x: x["class_name"]), sort_keys=True)
     content_hash_1 = hashlib.sha256(content_str_1.encode()).hexdigest()
 
-    content_str_2 = json.dumps(sorted(agents_2, key=lambda x: x['class_name']), sort_keys=True)
+    content_str_2 = json.dumps(sorted(agents_2, key=lambda x: x["class_name"]), sort_keys=True)
     content_hash_2 = hashlib.sha256(content_str_2.encode()).hexdigest()
 
     test_result(
         "Content hash is deterministic",
         content_hash_1 == content_hash_2,
-        f"Hash: {content_hash_1[:16]}..."
+        f"Hash: {content_hash_1[:16]}...",
     )
 
     # =========================================================================
@@ -353,9 +349,9 @@ def run_tests():
     # Check if any agents have class names that don't match their filename
     mismatched = []
     for a in agents_1:
-        path = Path(a['path'])
+        path = Path(a["path"])
         filename_stem = path.stem
-        class_name = a['class_name']
+        class_name = a["class_name"]
         if class_name != filename_stem:
             mismatched.append((class_name, filename_stem))
 
@@ -364,7 +360,7 @@ def run_tests():
     test_result(
         "Relaxed 1:1 enforcement allows mismatched names",
         True,  # This test documents the behavior
-        f"Found {len(mismatched)} agents with class/filename mismatch (allowed)"
+        f"Found {len(mismatched)} agents with class/filename mismatch (allowed)",
     )
 
     # =========================================================================
@@ -372,9 +368,7 @@ def run_tests():
     # =========================================================================
     variance = abs(count_1 - count_2)
     test_result(
-        "Zero variance between consecutive runs",
-        variance == 0,
-        f"Variance: {variance} agents"
+        "Zero variance between consecutive runs", variance == 0, f"Variance: {variance} agents"
     )
 
     # =========================================================================
@@ -387,29 +381,29 @@ def run_tests():
     test_result(
         "Discovery completes in reasonable time",
         duration < 60,  # Should complete in under 60 seconds
-        f"Duration: {duration:.2f}s"
+        f"Duration: {duration:.2f}s",
     )
 
     # =========================================================================
     # TEST 23: All agent class names end with 'Agent'
     # =========================================================================
-    non_agent_suffix = [a['class_name'] for a in agents_1 if not a['class_name'].endswith('Agent')]
+    non_agent_suffix = [a["class_name"] for a in agents_1 if not a["class_name"].endswith("Agent")]
 
     test_result(
         "All agent class names end with 'Agent'",
         len(non_agent_suffix) == 0,
-        f"Non-compliant: {non_agent_suffix[:5]}..." if non_agent_suffix else "All compliant"
+        f"Non-compliant: {non_agent_suffix[:5]}..." if non_agent_suffix else "All compliant",
     )
 
     # =========================================================================
     # TEST 24: No mixin classes in discovery
     # =========================================================================
-    mixin_classes = [a['class_name'] for a in agents_1 if 'Mixin' in a['class_name']]
+    mixin_classes = [a["class_name"] for a in agents_1 if "Mixin" in a["class_name"]]
 
     test_result(
         "No mixin classes in discovery",
         len(mixin_classes) == 0,
-        f"Mixins found: {mixin_classes}" if mixin_classes else "No mixins"
+        f"Mixins found: {mixin_classes}" if mixin_classes else "No mixins",
     )
 
     # =========================================================================
@@ -421,7 +415,7 @@ def run_tests():
     test_result(
         "Sorted file list is stable",
         files_sorted_1 == files_sorted_2,
-        f"Both lists have {len(files_sorted_1)} files in same order"
+        f"Both lists have {len(files_sorted_1)} files in same order",
     )
 
     # =========================================================================
@@ -443,5 +437,5 @@ def run_tests():
     return 0 if FAILED == 0 else 1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(run_tests())

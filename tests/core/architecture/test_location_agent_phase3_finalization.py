@@ -9,6 +9,7 @@ Test Cases:
 
 These tests ensure the SRP fission is complete and stable.
 """
+
 import sys
 from pathlib import Path
 
@@ -30,11 +31,11 @@ class TestSpecialistMethodParity:
         from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
 
         required_methods = [
-            'validate_sovereign_roots',
-            'validate_file_location',
-            '_validate_forbidden_patterns',
-            '_validate_root_whitelist',
-            '_validate_depth_requirements',
+            "validate_sovereign_roots",
+            "validate_file_location",
+            "_validate_forbidden_patterns",
+            "_validate_root_whitelist",
+            "_validate_depth_requirements",
         ]
 
         for method in required_methods:
@@ -45,12 +46,12 @@ class TestSpecialistMethodParity:
         from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
 
         required_methods = [
-            'heal_repository',
-            '_init_backup_dir',
-            '_backup_file',
-            'safe_create_directory',
-            'safe_move',
-            'safe_delete',
+            "heal_repository",
+            "_init_backup_dir",
+            "_backup_file",
+            "safe_create_directory",
+            "safe_move",
+            "safe_delete",
         ]
 
         for method in required_methods:
@@ -62,9 +63,9 @@ class TestSpecialistMethodParity:
 
         # Key methods that should still exist on monolith
         key_methods = [
-            '_validate_depth_requirements',
-            '_heal_depth_violation',
-            'validate_file_location',
+            "_validate_depth_requirements",
+            "_heal_depth_violation",
+            "validate_file_location",
         ]
 
         for method in key_methods:
@@ -83,6 +84,7 @@ class TestL5ImportCycles:
             from agentic_core.L5_safety.validators.LocationValidatorAgent import (
                 LocationValidatorAgent,
             )
+
             assert LocationValidatorAgent is not None
         except ImportError as e:
             pytest.fail(f"Circular import detected in LocationValidatorAgent: {e}")
@@ -91,6 +93,7 @@ class TestL5ImportCycles:
         """Verify LocationHealerAgent imports without circular import errors."""
         try:
             from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
+
             assert LocationHealerAgent is not None
         except ImportError as e:
             pytest.fail(f"Circular import detected in LocationHealerAgent: {e}")
@@ -99,6 +102,7 @@ class TestL5ImportCycles:
         """Verify GravityLeakDetector imports without circular import errors."""
         try:
             from agentic_core.L5_safety.validators.GravityLeakDetector import GravityLeakDetector
+
             assert GravityLeakDetector is not None
         except ImportError as e:
             pytest.fail(f"Circular import detected in GravityLeakDetector: {e}")
@@ -110,6 +114,7 @@ class TestL5ImportCycles:
                 ARCHIVE_SUBFOLDERS,
                 HEALING_STRATEGY_MAP,
             )
+
             assert ARCHIVE_SUBFOLDERS is not None
             assert HEALING_STRATEGY_MAP is not None
         except ImportError as e:
@@ -149,7 +154,7 @@ class TestCIPytestCollection:
             cwd=str(PROJECT_ROOT),
             capture_output=True,
             text=True,
-            timeout=60
+            timeout=60,
         )
 
         # Parse output for test count
@@ -157,7 +162,8 @@ class TestCIPytestCollection:
 
         # Look for "X tests collected" pattern
         import re
-        match = re.search(r'(\d+) tests? collected', output)
+
+        match = re.search(r"(\d+) tests? collected", output)
 
         if match:
             test_count = int(match.group(1))
@@ -175,7 +181,7 @@ class TestCIPytestCollection:
             cwd=str(PROJECT_ROOT),
             capture_output=True,
             text=True,
-            timeout=60
+            timeout=60,
         )
 
         output = result.stdout + result.stderr
@@ -206,6 +212,7 @@ class TestL1CognitionHardening:
             from agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent import (
                 L1CognitionBaseAgent,
             )
+
             assert L1CognitionBaseAgent is not None
         except ImportError as e:
             pytest.fail(f"L1CognitionBaseAgent import failed: {e}")
@@ -221,11 +228,13 @@ class TestL1CognitionHardening:
         # Get field info
         fields = {f.name: f for f in dataclasses.fields(L1CognitionBaseAgent)}
 
-        assert 'VERIFICATION_REGISTRY' in fields, "VERIFICATION_REGISTRY field not found"
-        field = fields['VERIFICATION_REGISTRY']
+        assert "VERIFICATION_REGISTRY" in fields, "VERIFICATION_REGISTRY field not found"
+        field = fields["VERIFICATION_REGISTRY"]
 
         # Verify it uses default_factory (not mutable default)
-        assert field.default_factory is not dataclasses.MISSING, "VERIFICATION_REGISTRY should use default_factory"
+        assert field.default_factory is not dataclasses.MISSING, (
+            "VERIFICATION_REGISTRY should use default_factory"
+        )
 
 
 if __name__ == "__main__":

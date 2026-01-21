@@ -15,6 +15,7 @@ from state_manager_LIC import StateManager
 # HOP-1: PROFILE ANALYSIS AGENT
 # ============================================================================
 
+
 class HOP1_ProfileAnalysisAgent:
     """
     v13.0: HOP-1 - Profile Analysis with state-based I/O
@@ -48,12 +49,12 @@ class HOP1_ProfileAnalysisAgent:
         Returns:
             Path to output state file
         """
-        print(f"\n{'='*80}")
+        print(f"\n{'=' * 80}")
         print("HOP-1: PROFILE ANALYSIS")
-        print(f"{'='*80}\n")
+        print(f"{'=' * 80}\n")
 
         # Extract profile data
-        title = mission.recipient_profile.get('title', '').lower()
+        title = mission.recipient_profile.get("title", "").lower()
 
         # Classify archetype using config-based rules
         archetype = None
@@ -90,8 +91,8 @@ class HOP1_ProfileAnalysisAgent:
             "key_indicators": key_indicators,
             "needs_manual_override": needs_manual_override,
             "recipient_title": title,
-            "recipient_name": mission.recipient_profile.get('name', ''),
-            "recipient_company": mission.recipient_profile.get('company', '')
+            "recipient_name": mission.recipient_profile.get("name", ""),
+            "recipient_company": mission.recipient_profile.get("company", ""),
         }
 
         # Write to state
@@ -108,6 +109,7 @@ class HOP1_ProfileAnalysisAgent:
 # ============================================================================
 # HOP-3: SENDER GROUNDING AGENT
 # ============================================================================
+
 
 class HOP3_SenderGroundingAgent:
     """
@@ -140,16 +142,16 @@ class HOP3_SenderGroundingAgent:
         Returns:
             Path to output state file
         """
-        print(f"\n{'='*80}")
+        print(f"\n{'=' * 80}")
         print("HOP-3: SENDER GROUNDING EXTRACTION")
-        print(f"{'='*80}\n")
+        print(f"{'=' * 80}\n")
 
         grounding = {
             "team_members": [],
             "products": [],
             "case_studies": [],
             "quantifiable_achievements": [],
-            "raw_evidence": {}
+            "raw_evidence": {},
         }
 
         # Load sender knowledge base
@@ -200,7 +202,7 @@ class HOP3_SenderGroundingAgent:
         # Write to state
         output_state = {
             "sender_grounding": grounding,
-            "source_files_loaded": [f for f in self.source_files if os.path.exists(f)]
+            "source_files_loaded": [f for f in self.source_files if os.path.exists(f)],
         }
 
         output_path = state_mgr.write_state("HOP-3", output_state)
@@ -217,6 +219,7 @@ class HOP3_SenderGroundingAgent:
 # ============================================================================
 # HOP-4: ROUTING AGENT
 # ============================================================================
+
 
 class HOP4_RoutingAgent:
     """
@@ -249,9 +252,9 @@ class HOP4_RoutingAgent:
         Returns:
             Path to output state file
         """
-        print(f"\n{'='*80}")
+        print(f"\n{'=' * 80}")
         print("HOP-4: ROUTING DECISION")
-        print(f"{'='*80}\n")
+        print(f"{'=' * 80}\n")
 
         # Read HOP-1 state
         profile_state = state_mgr.read_state("HOP-1")
@@ -309,7 +312,7 @@ class HOP4_RoutingAgent:
             "constraints": constraints,
             "reasoning": "\n".join(reasoning),
             "connection_status": connection_status,
-            "prior_message_count": prior_message_count
+            "prior_message_count": prior_message_count,
         }
 
         # Write to state
@@ -327,6 +330,7 @@ class HOP4_RoutingAgent:
 # ============================================================================
 # HOP-7: GATE DECISION AGENT
 # ============================================================================
+
 
 class HOP7_GateDecisionAgent:
     """
@@ -373,9 +377,9 @@ class HOP7_GateDecisionAgent:
             FactualGapError: If factual failure detected (triggers S6->S2 loop)
             ValueError: If creative failure detected (halts workflow)
         """
-        print(f"\n{'='*80}")
+        print(f"\n{'=' * 80}")
         print("HOP-7: GATE DECISION")
-        print(f"{'='*80}\n")
+        print(f"{'=' * 80}\n")
 
         # Read HOP-6 validation results
         validation_state = state_mgr.read_state("HOP-6")
@@ -392,7 +396,7 @@ class HOP7_GateDecisionAgent:
                 "decision": decision,
                 "reasoning": reasoning,
                 "factual_loop_count": self.factual_loop_count,
-                "creative_retry_count": self.creative_retry_count
+                "creative_retry_count": self.creative_retry_count,
             }
 
             output_path = state_mgr.write_state("HOP-7", output_state)
@@ -404,7 +408,8 @@ class HOP7_GateDecisionAgent:
 
         # Validation failed - classify failures
         critical_failures = [
-            r for r in validation_results
+            r
+            for r in validation_results
             if r.get("severity") in ["CRITICAL", "HIGH"] and not r.get("passed", True)
         ]
 
@@ -417,7 +422,7 @@ class HOP7_GateDecisionAgent:
                 "decision": decision,
                 "reasoning": reasoning,
                 "factual_loop_count": self.factual_loop_count,
-                "creative_retry_count": self.creative_retry_count
+                "creative_retry_count": self.creative_retry_count,
             }
 
             output_path = state_mgr.write_state("HOP-7", output_state)
@@ -444,7 +449,7 @@ class HOP7_GateDecisionAgent:
                     "decision": decision,
                     "reasoning": reasoning,
                     "factual_loop_count": self.factual_loop_count,
-                    "failure_message": failure_message
+                    "failure_message": failure_message,
                 }
 
                 output_path = state_mgr.write_state("HOP-7", output_state)
@@ -462,7 +467,7 @@ class HOP7_GateDecisionAgent:
                 "reasoning": reasoning,
                 "factual_loop_count": self.factual_loop_count,
                 "failure_message": failure_message,
-                "action": "LOOP_TO_HOP2"
+                "action": "LOOP_TO_HOP2",
             }
 
             output_path = state_mgr.write_state("HOP-7", output_state)
@@ -483,7 +488,7 @@ class HOP7_GateDecisionAgent:
                     "decision": decision,
                     "reasoning": reasoning,
                     "creative_retry_count": self.creative_retry_count,
-                    "failure_message": failure_message
+                    "failure_message": failure_message,
                 }
 
                 output_path = state_mgr.write_state("HOP-7", output_state)
@@ -501,7 +506,7 @@ class HOP7_GateDecisionAgent:
                 "reasoning": reasoning,
                 "creative_retry_count": self.creative_retry_count,
                 "failure_message": failure_message,
-                "action": "RETRY_HOP5"
+                "action": "RETRY_HOP5",
             }
 
             output_path = state_mgr.write_state("HOP-7", output_state)
@@ -511,10 +516,7 @@ class HOP7_GateDecisionAgent:
             # Return path - orchestrator will handle retry
             return output_path
 
-    def _classify_failure(
-        self,
-        failures: list[dict[str, Any]]
-    ) -> Tuple[FailureClassifier, str]:
+    def _classify_failure(self, failures: list[dict[str, Any]]) -> Tuple[FailureClassifier, str]:
         """
         Classify failure type to determine retry strategy
 
@@ -529,20 +531,30 @@ class HOP7_GateDecisionAgent:
 
             # Check if this is a factual failure rule
             if rule_id in self.factual_failure_rules:
-                return FailureClassifier.FACTUAL_FAILURE, f"({rule_id}) {failure.get('message', '')}"
+                return (
+                    FailureClassifier.FACTUAL_FAILURE,
+                    f"({rule_id}) {failure.get('message', '')}",
+                )
 
             # Check details for override
             details = failure.get("details", {})
             if details.get("failure_classifier") == "FACTUAL_FAILURE":
-                return FailureClassifier.FACTUAL_FAILURE, f"({rule_id}) {failure.get('message', '')}"
+                return (
+                    FailureClassifier.FACTUAL_FAILURE,
+                    f"({rule_id}) {failure.get('message', '')}",
+                )
 
         # Default to creative failure
-        return FailureClassifier.CREATIVE_FAILURE, f"({failures[0].get('rule_id', '')}) {failures[0].get('message', '')}"
+        return (
+            FailureClassifier.CREATIVE_FAILURE,
+            f"({failures[0].get('rule_id', '')}) {failures[0].get('message', '')}",
+        )
 
 
 # ============================================================================
 # HOP ORCHESTRATOR EXAMPLE
 # ============================================================================
+
 
 class HOPOrchestrator:
     """
@@ -567,7 +579,7 @@ class HOPOrchestrator:
             "HOP-1": HOP1_ProfileAnalysisAgent(config),
             "HOP-3": HOP3_SenderGroundingAgent(config),
             "HOP-4": HOP4_RoutingAgent(config),
-            "HOP-7": HOP7_GateDecisionAgent(config)
+            "HOP-7": HOP7_GateDecisionAgent(config),
         }
 
     def execute_workflow(self, mission: OutreachMission) -> dict[str, Any]:
@@ -580,10 +592,10 @@ class HOPOrchestrator:
         Returns:
             Workflow result dictionary
         """
-        print(f"\n{'='*80}")
+        print(f"\n{'=' * 80}")
         print("HOP WORKFLOW ORCHESTRATOR v13.0")
         print(f"Mission ID: {mission.mission_id}")
-        print(f"{'='*80}")
+        print(f"{'=' * 80}")
 
         # Initialize state manager
         state_mgr = StateManager(mission_id=mission.mission_id)
@@ -625,16 +637,16 @@ class HOPOrchestrator:
         # Get workflow progress
         progress = state_mgr.get_workflow_progress()
 
-        print(f"\n{'='*80}")
+        print(f"\n{'=' * 80}")
         print("WORKFLOW COMPLETE")
         print(f"Completed HOPs: {', '.join(progress['completed_hops'])}")
-        print(f"{'='*80}\n")
+        print(f"{'=' * 80}\n")
 
         return {
             "mission_id": mission.mission_id,
             "status": "partial_demo",
-            "completed_hops": progress['completed_hops'],
-            "state_files": progress['state_files']
+            "completed_hops": progress["completed_hops"],
+            "state_files": progress["state_files"],
         }
 
 
@@ -654,19 +666,16 @@ def test_hop_agents():
         sender_profile={
             "name": "Amit Ayer",
             "title": "Chief AI Officer",
-            "company": "Unify Consulting"
+            "company": "Unify Consulting",
         },
         recipient_profile={
             "name": "Sarah Johnson",
             "title": "VP of Engineering",
-            "company": "Tech Giants Corp"
+            "company": "Tech Giants Corp",
         },
-        job_description={
-            "title": "Head of AI Platform",
-            "company": "Tech Giants Corp"
-        },
+        job_description={"title": "Head of AI Platform", "company": "Tech Giants Corp"},
         connection_status="not_connected",
-        prior_message_count=0
+        prior_message_count=0,
     )
 
     # Execute workflow

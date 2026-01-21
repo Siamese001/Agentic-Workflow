@@ -21,6 +21,7 @@ class ActionRequest:
         timeout: Optional timeout in seconds
         retry_count: Number of retries on failure
     """
+
     action_type: str = "tool_call"
     tool_name: str = ""
     parameters: dict[str, Any] = field(default_factory=dict)
@@ -52,6 +53,7 @@ class ActionResult:
         execution_time: Time taken in seconds
         metadata: Additional result metadata
     """
+
     success: bool = False
     output: Any | None = None
     error: str | None = None
@@ -80,6 +82,7 @@ class PlanningRequest:
         max_steps: Maximum number of steps to plan
         constraints: Any constraints on the plan
     """
+
     Task: str = ""
     context: dict[str, Any] = field(default_factory=dict)
     max_steps: int = 10
@@ -107,6 +110,7 @@ class PlanningResult:
         confidence: Confidence score (0.0 to 1.0)
         alternatives: Alternative plans considered
     """
+
     success: bool = False
     plan: list[dict[str, Any]] = field(default_factory=list)
     reasoning_trace: list[str] = field(default_factory=list)

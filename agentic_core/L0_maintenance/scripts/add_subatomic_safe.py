@@ -3,6 +3,7 @@
 Safely add SubatomicTestingMixin to agents without tests.
 This version handles multi-line class definitions and validates syntax.
 """
+
 import ast
 import json
 import re
@@ -13,16 +14,16 @@ project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 # Load agents without tests
-with open(project_root / "agent_discovery_full.json", encoding='utf-8') as f:
+with open(project_root / "agent_discovery_full.json", encoding="utf-8") as f:
     agents = json.load(f)
 
-no_tests = [a for a in agents if not a.get('has_tests', False)]
+no_tests = [a for a in agents if not a.get("has_tests", False)]
 print(f"Found {len(no_tests)} agents without tests\n")
 
 # Process in batches by territory for easier review
 territories = {}
 for agent in no_tests:
-    territory = agent.get('territory', 'Unknown')
+    territory = agent.get("territory", "Unknown")
     if territory not in territories:
         territories[territory] = []
     territories[territory].append(agent)
@@ -31,28 +32,28 @@ modified = []
 errors = []
 
 for territory, ags in sorted(territories.items()):
-    print(f"\n{'='*70}")
+    print(f"\n{'=' * 70}")
     print(f"Territory: {territory} ({len(ags)} agents)")
-    print('='*70)
+    print("=" * 70)
 
     for agent in ags:
-        agent_path = project_root / agent['path']
-        class_name = agent['class_name']
+        agent_path = project_root / agent["path"]
+        class_name = agent["class_name"]
 
         if not agent_path.exists():
             errors.append(f"{class_name}: File not found")
             continue
 
         try:
-            content = agent_path.read_text(encoding='utf-8')
+            content = agent_path.read_text(encoding="utf-8")
 
             # Check if already has SubatomicTestingMixin
-            if 'SubatomicTestingMixin' in content:
+            if "SubatomicTestingMixin" in content:
                 print(f"  ⏭️  {class_name}: Already has SubatomicTestingMixin")
                 continue
 
             # Check if already has test_self method
-            if re.search(r'def\s+test_self\s*\(', content):
+            if re.search(r"def\s+test_self\s*\(", content):
                 print(f"  ⏭️  {class_name}: Already has test_self method")
                 continue
 
@@ -65,7 +66,7 @@ for territory, ags in sorted(territories.items()):
                 continue
 
             # Find class definition (handles multi-line)
-            class_pattern = rf'class\s+{re.escape(class_name)}\s*\([^)]*\):'
+            class_pattern = rf"class\s+{re.escape(class_name)}\s*\([^)]*\):"
             match = re.search(class_pattern, content, re.DOTALL)
 
             if not match:
@@ -77,29 +78,39 @@ for territory, ags in sorted(territories.items()):
 
             # Add SubatomicTestingMixin to inheritance
             # Find the opening parenthesis
-            paren_start = class_def.find('(')
-            paren_end = class_def.rfind(')')
+            paren_start = class_def.find("(")
+            paren_end = class_def.rfind(")")
 
             if paren_start == -1 or paren_end == -1:
                 errors.append(f"{class_name}: Invalid class definition")
                 continue
 
-            current_inheritance = class_def[paren_start+1:paren_end].strip()
+            current_inheritance = class_def[paren_start + 1 : paren_end].strip()
             new_inheritance = f"SubatomicTestingMixin, {current_inheritance}"
-            new_class_def = class_def[:paren_start+1] + new_inheritance + class_def[paren_end:]
+            new_class_def = class_def[: paren_start + 1] + new_inheritance + class_def[paren_end:]
 
             # Replace in content
             new_content = content.replace(class_def, new_class_def)
 
             # Add import if not present
-            if 'from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin' not in new_content:
+            if (
+                "from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin"
+                not in new_content
+            ):
                 # Find last import line
-                import_lines = [i for i, line in enumerate(new_content.split('\n')) if line.startswith(('import ', 'from '))]
+                import_lines = [
+                    i
+                    for i, line in enumerate(new_content.split("\n"))
+                    if line.startswith(("import ", "from "))
+                ]
                 if import_lines:
-                    lines = new_content.split('\n')
+                    lines = new_content.split("\n")
                     insert_idx = import_lines[-1] + 1
-                    lines.insert(insert_idx, "from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin")
-                    new_content = '\n'.join(lines)
+                    lines.insert(
+                        insert_idx,
+                        "from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin",
+                    )
+                    new_content = "\n".join(lines)
 
             # Validate new syntax
             try:
@@ -110,7 +121,7 @@ for territory, ags in sorted(territories.items()):
                 continue
 
             # Write changes
-            agent_path.write_text(new_content, encoding='utf-8')
+            agent_path.write_text(new_content, encoding="utf-8")
             modified.append(class_name)
             print(f"  ✅ {class_name}")
 
@@ -118,9 +129,9 @@ for territory, ags in sorted(territories.items()):
             errors.append(f"{class_name}: {str(e)}")
             print(f"  ❌ {class_name}: {str(e)[:50]}")
 
-print(f"\n{'='*70}")
+print(f"\n{'=' * 70}")
 print("SUMMARY")
-print('='*70)
+print("=" * 70)
 print(f"Modified: {len(modified)}")
 print(f"Errors: {len(errors)}")
 

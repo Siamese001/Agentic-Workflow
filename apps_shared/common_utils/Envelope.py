@@ -18,11 +18,12 @@ from pydantic.generics import GenericModel
 logger = logging.getLogger(__name__)
 
 # Type variables for generic envelope
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 class PipelineStageStatus(str, Enum):
     """Status of pipeline stage execution."""
+
     PENDING = "PENDING"
     SUCCESS = "SUCCESS"
     FAILED = "FAILED"
@@ -32,6 +33,7 @@ class PipelineStageStatus(str, Enum):
 
 class PayloadType(str, Enum):
     """Types of payloads supported by the envelope."""
+
     RESUME_DATA = "resume_data"
     OUTREACH_DATA = "outreach_data"
     RAW_TEXT = "raw_text"
@@ -41,6 +43,7 @@ class PayloadType(str, Enum):
 
 class PayloadBase(BaseModel):
     """Base class for all payload types."""
+
     payload_type: PayloadType
     content_hash: str = Field(default_factory=lambda: "")
 
@@ -50,71 +53,79 @@ class PayloadBase(BaseModel):
 
 class ResumeData(PayloadBase):
     """Resume-specific payload data."""
+
     payload_type: PayloadType = PayloadType.RESUME_DATA
     sections: dict[str, Any] = Field(default_factory=dict)
     target_role: str | None = None
     experience_years: int | None = None
     skills: list[str] = Field(default_factory=list)
 
-    @validator('content_hash', pre=True, always=True)
+    @validator("content_hash", pre=True, always=True)
     def generate_hash(cls, v, values):
         """Generate content hash from sections."""
-        if 'sections' in values and values['sections']:
-            content = json.dumps(values['sections'], sort_keys=True)
+        if "sections" in values and values["sections"]:
+            content = json.dumps(values["sections"], sort_keys=True)
             return hashlib.sha256(content.encode()).hexdigest()[:16]
         return v
 
 
 class OutreachData(PayloadBase):
     """Outreach-specific payload data."""
+
     payload_type: PayloadType = PayloadType.OUTREACH_DATA
     recipient_info: dict[str, Any] = Field(default_factory=dict)
     sender_info: dict[str, Any] = Field(default_factory=dict)
     campaign_context: dict[str, Any] = Field(default_factory=dict)
     personalization_points: list[str] = Field(default_factory=list)
 
-    @validator('content_hash', pre=True, always=True)
+    @validator("content_hash", pre=True, always=True)
     def generate_hash(cls, v, values):
         """Generate content hash from recipient and context."""
-        if 'recipient_info' in values or 'campaign_context' in values:
-            content = json.dumps({
-                'recipient': values.get('recipient_info', {}),
-                'campaign': values.get('campaign_context', {})
-            }, sort_keys=True)
+        if "recipient_info" in values or "campaign_context" in values:
+            content = json.dumps(
+                {
+                    "recipient": values.get("recipient_info", {}),
+                    "campaign": values.get("campaign_context", {}),
+                },
+                sort_keys=True,
+            )
             return hashlib.sha256(content.encode()).hexdigest()[:16]
         return v
 
 
 class RawText(PayloadBase):
     """Raw text payload."""
+
     payload_type: PayloadType = PayloadType.RAW_TEXT
     text: str
     metadata: dict[str, Any] = Field(default_factory=dict)
 
-    @validator('content_hash', pre=True, always=True)
+    @validator("content_hash", pre=True, always=True)
     def generate_hash(cls, v, values):
         """Generate hash from text content."""
-        if 'text' in values and values['text']:
-            return hashlib.sha256(values['text'].encode()).hexdigest()[:16]
+        if "text" in values and values["text"]:
+            return hashlib.sha256(values["text"].encode()).hexdigest()[:16]
         return v
 
 
 class DictData(PayloadBase):
     """Generic dictionary payload."""
+
     payload_type: PayloadType = PayloadType.DICT_DATA
     data: dict[str, Any]
 
-    @validator('content_hash', pre=True, always=True)
+    @validator("content_hash", pre=True, always=True)
     def generate_hash(cls, v, values):
         """Generate hash from data."""
-        if 'data' in values and values['data']:
-            content = json.dumps(values['data'], sort_keys=True)
+        if "data" in values and values["data"]:
+            content = json.dumps(values["data"], sort_keys=True)
             return hashlib.sha256(content.encode()).hexdigest()[:16]
         return v
 
 
 class ErrorPayload(PayloadBase):
     """Error payload for failed stages."""
+
     payload_type: PayloadType = PayloadType.ERROR_PAYLOAD
     error_type: str
     error_message: str
@@ -124,6 +135,7 @@ class ErrorPayload(PayloadBase):
 
 class StageResult(BaseModel):
     """Result of a pipeline stage execution."""
+
     stage_name: str
     status: PipelineStageStatus
     duration_ms: float
@@ -132,7 +144,7 @@ class StageResult(BaseModel):
     retry_count: int = 0
     metadata: dict[str, Any] = Field(default_factory=dict)
 
-    @validator('output_hash', pre=True, always=True)
+    @validator("output_hash", pre=True, always=True)
     def generate_output_hash(cls, v, values):
         """Generate hash of stage output for verification."""
         # In practice, this would be computed from actual output
@@ -186,7 +198,7 @@ class SignalEnvelope(GenericModel, Generic[T]):
             stage_name=stage_name,
             status=PipelineStageStatus.PENDING,
             duration_ms=0.0,
-            output_hash=""
+            output_hash="",
         )
         self.history.append(result)
         self._touch()
@@ -196,7 +208,7 @@ class SignalEnvelope(GenericModel, Generic[T]):
         stage_name: str,
         duration_ms: float,
         output_hash: str | None = None,
-        metadata: dict[str, Any] | None = None
+        metadata: dict[str, Any] | None = None,
     ) -> None:
         """Mark a stage as successfully completed.
 
@@ -213,28 +225,28 @@ class SignalEnvelope(GenericModel, Generic[T]):
                     stage_name=stage_name,
                     status=PipelineStageStatus.SUCCESS,
                     duration_ms=duration_ms,
-                    output_hash=output_hash or hashlib.sha256(f"{stage_name}:{duration_ms}".encode()).hexdigest()[:16],
-                    metadata=metadata or {}
+                    output_hash=output_hash
+                    or hashlib.sha256(f"{stage_name}:{duration_ms}".encode()).hexdigest()[:16],
+                    metadata=metadata or {},
                 )
                 break
         else:
             # Add new result
-            self.history.append(StageResult(
-                stage_name=stage_name,
-                status=PipelineStageStatus.SUCCESS,
-                duration_ms=duration_ms,
-                output_hash=output_hash or hashlib.sha256(f"{stage_name}:{duration_ms}".encode()).hexdigest()[:16],
-                metadata=metadata or {}
-            ))
+            self.history.append(
+                StageResult(
+                    stage_name=stage_name,
+                    status=PipelineStageStatus.SUCCESS,
+                    duration_ms=duration_ms,
+                    output_hash=output_hash
+                    or hashlib.sha256(f"{stage_name}:{duration_ms}".encode()).hexdigest()[:16],
+                    metadata=metadata or {},
+                )
+            )
 
         self._touch()
 
     def mark_stage_failed(
-        self,
-        stage_name: str,
-        error_message: str,
-        duration_ms: float = 0.0,
-        retry_count: int = 0
+        self, stage_name: str, error_message: str, duration_ms: float = 0.0, retry_count: int = 0
     ) -> None:
         """Mark a stage as failed.
 
@@ -253,19 +265,21 @@ class SignalEnvelope(GenericModel, Generic[T]):
                     duration_ms=duration_ms,
                     output_hash="",
                     error_message=error_message,
-                    retry_count=retry_count
+                    retry_count=retry_count,
                 )
                 break
         else:
             # Add new result
-            self.history.append(StageResult(
-                stage_name=stage_name,
-                status=PipelineStageStatus.FAILED,
-                duration_ms=duration_ms,
-                output_hash="",
-                error_message=error_message,
-                retry_count=retry_count
-            ))
+            self.history.append(
+                StageResult(
+                    stage_name=stage_name,
+                    status=PipelineStageStatus.FAILED,
+                    duration_ms=duration_ms,
+                    output_hash="",
+                    error_message=error_message,
+                    retry_count=retry_count,
+                )
+            )
 
         self.has_errors = True
         self.error_count += 1
@@ -286,18 +300,20 @@ class SignalEnvelope(GenericModel, Generic[T]):
                     status=PipelineStageStatus.SKIPPED,
                     duration_ms=0.0,
                     output_hash="",
-                    metadata={"reason": reason} if reason else {}
+                    metadata={"reason": reason} if reason else {},
                 )
                 break
         else:
             # Add new result
-            self.history.append(StageResult(
-                stage_name=stage_name,
-                status=PipelineStageStatus.SKIPPED,
-                duration_ms=0.0,
-                output_hash="",
-                metadata={"reason": reason} if reason else {}
-            ))
+            self.history.append(
+                StageResult(
+                    stage_name=stage_name,
+                    status=PipelineStageStatus.SKIPPED,
+                    duration_ms=0.0,
+                    output_hash="",
+                    metadata={"reason": reason} if reason else {},
+                )
+            )
 
         self._touch()
 
@@ -372,11 +388,11 @@ class SignalEnvelope(GenericModel, Generic[T]):
             "parent_trace_id": self.parent_trace_id,
             "created_at": self.created_at.isoformat(),
             "updated_at": self.updated_at.isoformat(),
-            "payload": self.payload.dict() if hasattr(self.payload, 'dict') else self.payload,
+            "payload": self.payload.dict() if hasattr(self.payload, "dict") else self.payload,
             "history": [r.dict() for r in self.history],
             "metadata": self.metadata,
             "has_errors": self.has_errors,
-            "error_count": self.error_count
+            "error_count": self.error_count,
         }
 
     @classmethod
@@ -416,13 +432,15 @@ class SignalEnvelope(GenericModel, Generic[T]):
             history=history,
             metadata=data.get("metadata", {}),
             has_errors=data.get("has_errors", False),
-            error_count=data.get("error_count", 0)
+            error_count=data.get("error_count", 0),
         )
 
         return envelope
 
     @classmethod
-    def from_legacy_dict(cls, data: dict[str, Any], metadata: dict[str, str] | None = None) -> "SignalEnvelope":
+    def from_legacy_dict(
+        cls, data: dict[str, Any], metadata: dict[str, str] | None = None
+    ) -> "SignalEnvelope":
         """Create envelope from legacy dict format for backward compatibility.
 
         Args:
@@ -442,10 +460,7 @@ class SignalEnvelope(GenericModel, Generic[T]):
         else:
             payload = DictData(data=data)
 
-        return cls(
-            payload=payload,
-            metadata=metadata or {}
-        )
+        return cls(payload=payload, metadata=metadata or {})
 
 
 class EnvelopeFactory:
@@ -456,7 +471,7 @@ class EnvelopeFactory:
         data: Any,
         metadata: dict[str, str] | None = None,
         trace_id: str | None = None,
-        parent_trace_id: str | None = None
+        parent_trace_id: str | None = None,
     ) -> SignalEnvelope:
         """Create a new signal envelope.
 
@@ -495,7 +510,7 @@ class EnvelopeFactory:
             payload=payload,
             metadata=metadata or {},
             trace_id=trace_id or str(uuid.uuid4()),
-            parent_trace_id=parent_trace_id
+            parent_trace_id=parent_trace_id,
         )
 
         logger.debug(f"Created envelope {envelope.id} with payload type {payload.payload_type}")

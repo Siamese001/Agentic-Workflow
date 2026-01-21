@@ -13,6 +13,7 @@ Usage:
     python scripts/phase4_batch2_index_switch.py --dry-run
     python scripts/phase4_batch2_index_switch.py --execute
 """
+
 from __future__ import annotations
 
 import argparse
@@ -40,10 +41,7 @@ EXCLUDED_DIRS = {
 }
 
 # Pattern to match rglob("*.py") or rglob('*.py')
-RGLOB_PATTERN = re.compile(
-    r'(\w+)\.rglob\(["\'](\*\.py)["\']\)',
-    re.MULTILINE
-)
+RGLOB_PATTERN = re.compile(r'(\w+)\.rglob\(["\'](\*\.py)["\']\)', re.MULTILINE)
 
 SOVEREIGN_INDEX_IMPORT = "from agentic_core.utils.sovereign_index import SovereignIndex"
 
@@ -72,7 +70,7 @@ def already_has_sovereign_import(content: str) -> bool:
 
 def find_import_insertion_point(content: str) -> int:
     """Find the best line to insert the import statement."""
-    lines = content.split('\n')
+    lines = content.split("\n")
     last_import_line = 0
     in_docstring = False
     docstring_char = None
@@ -94,7 +92,7 @@ def find_import_insertion_point(content: str) -> int:
             continue
 
         # Track imports
-        if stripped.startswith('import ') or stripped.startswith('from '):
+        if stripped.startswith("import ") or stripped.startswith("from "):
             last_import_line = i
 
     return last_import_line
@@ -134,7 +132,7 @@ def process_file(file_path: Path, dry_run: bool = True) -> dict:
     }
 
     try:
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
     except Exception as e:
         result["skipped"] = True
         result["reason"] = f"Read error: {e}"
@@ -151,9 +149,9 @@ def process_file(file_path: Path, dry_run: bool = True) -> dict:
     # Add import if missing
     if not already_has_sovereign_import(content):
         insert_line = find_import_insertion_point(content)
-        lines = modified_content.split('\n')
+        lines = modified_content.split("\n")
         lines.insert(insert_line + 1, SOVEREIGN_INDEX_IMPORT)
-        modified_content = '\n'.join(lines)
+        modified_content = "\n".join(lines)
         result["import_added"] = True
 
     # Replace rglob patterns
@@ -163,7 +161,7 @@ def process_file(file_path: Path, dry_run: bool = True) -> dict:
     # Write if not dry run and changes were made
     if not dry_run and (result["import_added"] or replacements > 0):
         try:
-            file_path.write_text(modified_content, encoding='utf-8')
+            file_path.write_text(modified_content, encoding="utf-8")
         except Exception as e:
             result["skipped"] = True
             result["reason"] = f"Write error: {e}"
@@ -172,7 +170,9 @@ def process_file(file_path: Path, dry_run: bool = True) -> dict:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Phase 4 Batch 2: Replace rglob with SovereignIndex")
+    parser = argparse.ArgumentParser(
+        description="Phase 4 Batch 2: Replace rglob with SovereignIndex"
+    )
     parser.add_argument("--dry-run", action="store_true", help="Show what would be changed")
     parser.add_argument("--execute", action="store_true", help="Actually modify files")
     args = parser.parse_args()

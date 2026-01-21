@@ -13,6 +13,7 @@ Usage:
 Author: Cascade
 Date: January 19, 2026
 """
+
 import argparse
 import json
 import os
@@ -32,7 +33,14 @@ def get_windsurf_config_path() -> Path:
         appdata = os.environ.get("APPDATA", "")
         return Path(appdata) / "Windsurf" / "config" / "mcp_config.json"
     elif sys.platform == "darwin":
-        return Path.home() / "Library" / "Application Support" / "Windsurf" / "config" / "mcp_config.json"
+        return (
+            Path.home()
+            / "Library"
+            / "Application Support"
+            / "Windsurf"
+            / "config"
+            / "mcp_config.json"
+        )
     else:
         return Path.home() / ".config" / "windsurf" / "mcp_config.json"
 
@@ -41,6 +49,7 @@ def load_sovereign_registry() -> dict[str, Any]:
     """Load the SOVEREIGN_MCP_REGISTRY from mcp_registry.py."""
     try:
         from agentic_core.L2_execution.mcp.mcp_registry import SOVEREIGN_MCP_REGISTRY
+
         return SOVEREIGN_MCP_REGISTRY
     except ImportError as e:
         print(f"❌ ERROR: Could not import SOVEREIGN_MCP_REGISTRY: {e}")
@@ -87,7 +96,7 @@ def convert_registry_to_windsurf_format(registry: dict[str, Any]) -> dict[str, A
         server_config = {
             "command": config.command,
             "args": list(config.args),
-            "env": dict(config.env) if config.env else {}
+            "env": dict(config.env) if config.env else {},
         }
 
         mcp_servers[windsurf_name] = server_config
@@ -114,9 +123,7 @@ def get_preserved_servers() -> list[str]:
 
 
 def merge_configs(
-    current_config: dict[str, Any],
-    registry_servers: dict[str, Any],
-    preserve_local: bool = True
+    current_config: dict[str, Any], registry_servers: dict[str, Any], preserve_local: bool = True
 ) -> dict[str, Any]:
     """
     Merge registry servers into current config.
@@ -146,8 +153,7 @@ def merge_configs(
 
 
 def compute_diff(
-    current_config: dict[str, Any],
-    new_config: dict[str, Any]
+    current_config: dict[str, Any], new_config: dict[str, Any]
 ) -> dict[str, list[str]]:
     """Compute the difference between current and new configs."""
     current_servers = set(current_config.get("mcpServers", {}).keys())
@@ -168,15 +174,15 @@ def compute_diff(
         "added": sorted(added),
         "removed": sorted(removed),
         "modified": sorted(modified),
-        "unchanged": sorted((current_servers & new_servers) - set(modified))
+        "unchanged": sorted((current_servers & new_servers) - set(modified)),
     }
 
 
 def print_diff(diff: dict[str, list[str]], new_config: dict[str, Any]) -> None:
     """Print a human-readable diff."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("MCP CONFIGURATION SYNC DIFF")
-    print("="*60)
+    print("=" * 60)
 
     if diff["added"]:
         print(f"\n✅ ADDED ({len(diff['added'])}):")
@@ -203,9 +209,9 @@ def print_diff(diff: dict[str, list[str]], new_config: dict[str, Any]) -> None:
             print(f"     {name}")
 
     total_changes = len(diff["added"]) + len(diff["removed"]) + len(diff["modified"])
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print(f"SUMMARY: {total_changes} change(s) detected")
-    print("="*60)
+    print("=" * 60)
 
 
 def backup_config(config_path: Path) -> Path | None:
@@ -231,10 +237,7 @@ def apply_config(config_path: Path, new_config: dict[str, Any]) -> bool:
         config_path.parent.mkdir(parents=True, exist_ok=True)
 
         # Write with pretty formatting
-        config_path.write_text(
-            json.dumps(new_config, indent=2) + "\n",
-            encoding="utf-8"
-        )
+        config_path.write_text(json.dumps(new_config, indent=2) + "\n", encoding="utf-8")
         return True
     except Exception as e:
         print(f"❌ ERROR: Could not write config: {e}")
@@ -274,33 +277,22 @@ def main():
     parser = argparse.ArgumentParser(
         description="Sync SOVEREIGN_MCP_REGISTRY to Windsurf mcp_config.json"
     )
+    parser.add_argument("--apply", action="store_true", help="Apply changes (default is dry-run)")
     parser.add_argument(
-        "--apply",
-        action="store_true",
-        help="Apply changes (default is dry-run)"
+        "--verify", action="store_true", help="Only verify sync status, don't show diff"
     )
     parser.add_argument(
-        "--verify",
-        action="store_true",
-        help="Only verify sync status, don't show diff"
+        "--no-backup", action="store_true", help="Skip creating backup before applying"
     )
     parser.add_argument(
-        "--no-backup",
-        action="store_true",
-        help="Skip creating backup before applying"
-    )
-    parser.add_argument(
-        "--config-path",
-        type=Path,
-        default=None,
-        help="Override Windsurf config path"
+        "--config-path", type=Path, default=None, help="Override Windsurf config path"
     )
 
     args = parser.parse_args()
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("MCP CONFIGURATION SYNC")
-    print("="*60)
+    print("=" * 60)
     print(f"Timestamp: {datetime.now().isoformat()}")
 
     # Determine config path
@@ -343,9 +335,9 @@ def main():
         sys.exit(0)
 
     # Apply changes
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("APPLYING CHANGES")
-    print("="*60)
+    print("=" * 60)
 
     # Backup
     if not args.no_backup:
@@ -356,9 +348,9 @@ def main():
     # Apply
     if apply_config(config_path, new_config):
         print(f"   ✅ Config written to: {config_path}")
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("✅ SYNC COMPLETE")
-        print("="*60)
+        print("=" * 60)
         print("\n⚠️  ACTION REQUIRED: Restart Windsurf/Cascade to activate changes")
         sys.exit(0)
     else:

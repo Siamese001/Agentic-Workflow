@@ -34,7 +34,7 @@ def _get_gravity_validator():
     return module.GravityValidator
 
 # Use: GravityValidator = _get_gravity_validator() when needed
-"""
+""",
     },
     "filesystem_mcp_client.py": {
         "old_import": "from agentic_core.L3_orchestration.workflow_engines",
@@ -44,7 +44,7 @@ def _get_workflow_engine():
     import importlib
     module = importlib.import_module('agentic_core.L3_orchestration.workflow_engines')
     return module
-"""
+""",
     },
     "gitkraken_mcp_client.py": {
         "old_import": "from agentic_core.L3_orchestration.workflow_engines",
@@ -54,7 +54,7 @@ def _get_workflow_engine():
     import importlib
     module = importlib.import_module('agentic_core.L3_orchestration.workflow_engines')
     return module
-"""
+""",
     },
     "healing_vector_healing_strategy.py": {
         "old_import": "from agentic_core.L4_state.semantic_memory.pinecone",
@@ -64,7 +64,7 @@ def _get_pinecone_client():
     import importlib
     module = importlib.import_module('agentic_core.L4_state.semantic_memory.pinecone')
     return module
-"""
+""",
     },
     "l1_health_benchmark.py": {
         "old_import": "from agentic_core.L1_cognition.cognitive_node.CognitiveNode",
@@ -74,7 +74,7 @@ def _get_cognitive_node():
     import importlib
     module = importlib.import_module('agentic_core.L1_cognition.cognitive_node.CognitiveNode')
     return module.CognitiveNode
-"""
+""",
     },
     "BootstrapAgent.py": {
         "old_import": "from agentic_core.L2_execution.ToolRegistry.Toolsmith",
@@ -84,7 +84,7 @@ def _get_toolsmith():
     import importlib
     module = importlib.import_module('agentic_core.L2_execution.ToolRegistry.Toolsmith')
     return module.Toolsmith
-"""
+""",
     },
     "auditors_guard_ddd_alignment.py": {
         "old_import": "from agentic_core.L1_cognition.P2_domain.sovereign",
@@ -94,9 +94,10 @@ def _get_sovereign_domain():
     import importlib
     module = importlib.import_module('agentic_core.L1_cognition.P2_domain.sovereign')
     return module
-"""
-    }
+""",
+    },
 }
+
 
 def refactor_file(file_path: Path, old_import: str, new_code: str) -> bool:
     """
@@ -106,7 +107,7 @@ def refactor_file(file_path: Path, old_import: str, new_code: str) -> bool:
         True if file was modified, False otherwise
     """
     try:
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
 
         # Check if old import exists
         if old_import not in content:
@@ -115,11 +116,11 @@ def refactor_file(file_path: Path, old_import: str, new_code: str) -> bool:
         # Comment out old import and add new dynamic loader
         new_content = content.replace(
             old_import,
-            f"# {old_import}  # Refactored to dynamic import to avoid upward dependency\n{new_code}"
+            f"# {old_import}  # Refactored to dynamic import to avoid upward dependency\n{new_code}",
         )
 
         # Write back
-        file_path.write_text(new_content, encoding='utf-8')
+        file_path.write_text(new_content, encoding="utf-8")
 
         print(f"✅ Fixed: {file_path.name}")
         return True
@@ -127,6 +128,7 @@ def refactor_file(file_path: Path, old_import: str, new_code: str) -> bool:
     except Exception as e:
         print(f"❌ Error processing {file_path.name}: {e}")
         return False
+
 
 def main():
     """Apply surgical refactoring to L0 files."""
@@ -174,6 +176,7 @@ def main():
         print("  3. Test affected functionality")
 
     return 0
+
 
 if __name__ == "__main__":
     exit(main())

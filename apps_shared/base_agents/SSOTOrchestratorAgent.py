@@ -55,8 +55,7 @@ def get_orchestrator(mode: str = "unified", **kwargs) -> IOrchestratorAgent:
 
     if mode not in valid_modes:
         raise ValueError(
-            f"Unknown orchestrator mode: '{mode}'. "
-            f"Available modes: {sorted(valid_modes)}"
+            f"Unknown orchestrator mode: '{mode}'. Available modes: {sorted(valid_modes)}"
         )
 
     # Create new instance with specified mode
@@ -77,12 +76,13 @@ class SSOTOrchestratorAgent:
 
     This class is a deprecated alias that will be removed in a future version.
     """
+
     def __new__(cls, *args, **kwargs):
         warnings.warn(
             "SSOTOrchestratorAgent is deprecated. Use UnifiedOrchestratorAgent instead. "
             "Import via: from agentic_core.L3_orchestration.UnifiedOrchestratorAgent import UnifiedOrchestratorAgent",
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         return get_orchestrator("unified")
 
@@ -93,12 +93,13 @@ class HealingOrchestratorAgent:
 
     This class is a deprecated alias that will be removed in a future version.
     """
+
     def __new__(cls, *args, **kwargs):
         warnings.warn(
             "HealingOrchestratorAgent is deprecated. Use UnifiedOrchestratorAgent instead. "
             "Import via: from agentic_core.L3_orchestration.UnifiedOrchestratorAgent import UnifiedOrchestratorAgent",
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         return get_orchestrator("unified")
 
@@ -109,11 +110,12 @@ class ConsolidatedOrchestratorAgent:
 
     This class is a deprecated alias that will be removed in a future version.
     """
+
     def __new__(cls, *args, **kwargs):
         warnings.warn(
             "ConsolidatedOrchestratorAgent is deprecated. Use UnifiedOrchestratorAgent instead. "
             "Import via: from agentic_core.L3_orchestration.UnifiedOrchestratorAgent import UnifiedOrchestratorAgent",
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         return get_orchestrator("unified")

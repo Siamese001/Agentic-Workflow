@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 
 class PruningStrategy(Enum):
     """Strategies for pruning context data."""
+
     LRU = "lru"  # Least Recently Used
     FIFO = "fifo"  # First In, First Out
     SIZE_BASED = "size_based"  # Remove largest items first
@@ -31,6 +32,7 @@ class PruningStrategy(Enum):
 @dataclass
 class MemoryLimits:
     """Configuration for memory limits."""
+
     max_context_size: int = 10 * 1024 * 1024  # 10MB
     max_context_items: int = 1000
     max_string_length: int = 10000
@@ -43,6 +45,7 @@ class MemoryLimits:
 @dataclass
 class ContextItem:
     """Item in context with metadata."""
+
     key: str
     value: Any
     size_bytes: int
@@ -74,7 +77,7 @@ class MemoryManager:
             "item_count": 0,
             "pruned_count": 0,
             "gc_count": 0,
-            "memory_violations": 0
+            "memory_violations": 0,
         }
 
         # Memory monitoring
@@ -99,9 +102,7 @@ class MemoryManager:
 
         self._monitoring = True
         self._monitor_thread = threading.Thread(
-            target=self._monitor_loop,
-            args=(interval_seconds,),
-            daemon=True
+            target=self._monitor_loop, args=(interval_seconds,), daemon=True
         )
         self._monitor_thread.start()
         logger.info(f"Started memory monitoring for {self.name}")
@@ -114,11 +115,7 @@ class MemoryManager:
         logger.info(f"Stopped memory monitoring for {self.name}")
 
     def add_context(
-        self,
-        key: str,
-        value: Any,
-        priority: int = 0,
-        max_size: int | None = None
+        self, key: str, value: Any, priority: int = 0, max_size: int | None = None
     ) -> bool:
         """Add an item to context with size limits.
 
@@ -152,7 +149,7 @@ class MemoryManager:
                 value=sanitized_value,
                 size_bytes=size_bytes,
                 last_accessed=time.time(),
-                priority=priority
+                priority=priority,
             )
 
             self._context[key] = item
@@ -204,9 +201,7 @@ class MemoryManager:
             return False
 
     def prune_context(
-        self,
-        strategy: PruningStrategy = PruningStrategy.LRU,
-        target_size: int | None = None
+        self, strategy: PruningStrategy = PruningStrategy.LRU, target_size: int | None = None
     ) -> int:
         """Prune context items based on strategy.
 
@@ -226,7 +221,7 @@ class MemoryManager:
 
             if strategy == PruningStrategy.LRU:
                 # Remove oldest items
-                while (self._stats["total_size"] > target and self._context):
+                while self._stats["total_size"] > target and self._context:
                     key, item = self._context.popitem(last=False)
                     self._stats["total_size"] -= item.size_bytes
                     self._stats["item_count"] -= 1
@@ -234,7 +229,7 @@ class MemoryManager:
 
             elif strategy == PruningStrategy.FIFO:
                 # Same as LRU for OrderedDict
-                while (self._stats["total_size"] > target and self._context):
+                while self._stats["total_size"] > target and self._context:
                     key, item = self._context.popitem(last=False)
                     self._stats["total_size"] -= item.size_bytes
                     self._stats["item_count"] -= 1
@@ -316,12 +311,14 @@ class MemoryManager:
             Size in bytes
         """
         if isinstance(value, str):
-            return len(value.encode('utf-8'))
+            return len(value.encode("utf-8"))
         elif isinstance(value, (list, tuple)):
             return sum(self._calculate_size(v) for v in value) + 64  # Overhead
         elif isinstance(value, dict):
-            return sum(self._calculate_size(k) + self._calculate_size(v)
-                      for k, v in value.items()) + 64  # Overhead
+            return (
+                sum(self._calculate_size(k) + self._calculate_size(v) for k, v in value.items())
+                + 64
+            )  # Overhead
         else:
             return sys.getsizeof(value)
 
@@ -332,14 +329,19 @@ class MemoryManager:
             required_size: Size of item to add
         """
         # Check item count limit
-        while (self._stats["item_count"] >= self.limits.max_context_items and
-               self._context):
-            self.prune_context(PruningStrategy.LRU, target_size=self.limits.max_context_size - required_size)
+        while self._stats["item_count"] >= self.limits.max_context_items and self._context:
+            self.prune_context(
+                PruningStrategy.LRU, target_size=self.limits.max_context_size - required_size
+            )
 
         # Check size limit
-        while (self._stats["total_size"] + required_size > self.limits.max_context_size and
-               self._context):
-            self.prune_context(PruningStrategy.LRU, target_size=self.limits.max_context_size - required_size)
+        while (
+            self._stats["total_size"] + required_size > self.limits.max_context_size
+            and self._context
+        ):
+            self.prune_context(
+                PruningStrategy.LRU, target_size=self.limits.max_context_size - required_size
+            )
 
     def _check_memory_limits(self) -> None:
         """Check if process memory limits are exceeded."""
@@ -349,12 +351,13 @@ class MemoryManager:
 
             if memory_mb > self.limits.max_memory_mb:
                 self._stats["memory_violations"] += 1
-                logger.warning(f"Memory limit exceeded: {memory_mb:.1f}MB > {self.limits.max_memory_mb}MB")
+                logger.warning(
+                    f"Memory limit exceeded: {memory_mb:.1f}MB > {self.limits.max_memory_mb}MB"
+                )
 
                 # Aggressive pruning
                 self.prune_context(
-                    PruningStrategy.SIZE_BASED,
-                    target_size=int(self.limits.max_context_size * 0.5)
+                    PruningStrategy.SIZE_BASED, target_size=int(self.limits.max_context_size * 0.5)
                 )
 
                 # Force garbage collection
@@ -419,16 +422,16 @@ class MemoryManager:
         report = f"""
 Memory Manager Report: {self.name}
 ========================================
-Context Items: {stats['item_count']}
-Context Size: {stats['total_size'] / 1024 / 1024:.2f} MB
-Items Pruned: {stats['pruned_count']}
-GC Runs: {stats['gc_count']}
-Memory Violations: {stats['memory_violations']}
-Process Memory: {stats.get('process_memory_mb', 0):.2f} MB
-Memory Percent: {stats.get('process_memory_percent', 0):.1f}%
+Context Items: {stats["item_count"]}
+Context Size: {stats["total_size"] / 1024 / 1024:.2f} MB
+Items Pruned: {stats["pruned_count"]}
+GC Runs: {stats["gc_count"]}
+Memory Violations: {stats["memory_violations"]}
+Process Memory: {stats.get("process_memory_mb", 0):.2f} MB
+Memory Percent: {stats.get("process_memory_percent", 0):.1f}%
 """
 
-        if 'traced_memory_mb' in stats:
+        if "traced_memory_mb" in stats:
             report += f"Traced Memory: {stats['traced_memory_mb']:.2f} MB\n"
             report += f"Peak Memory: {stats['peak_memory_mb']:.2f} MB\n"
 
@@ -475,12 +478,14 @@ def memory_bound(manager: MemoryManager, max_memory_mb: float):
         manager: Memory manager to use
         max_memory_mb: Maximum memory for operation
     """
-    initial_memory = manager.get_stats().get('process_memory_mb', 0)
+    initial_memory = manager.get_stats().get("process_memory_mb", 0)
 
     try:
         yield
     finally:
-        current_memory = manager.get_stats().get('process_memory_mb', 0)
+        current_memory = manager.get_stats().get("process_memory_mb", 0)
         if current_memory - initial_memory > max_memory_mb:
-            logger.warning(f"Operation exceeded memory bound: {current_memory - initial_memory:.1f}MB")
+            logger.warning(
+                f"Operation exceeded memory bound: {current_memory - initial_memory:.1f}MB"
+            )
             manager.prune_context(PruningStrategy.SIZE_BASED)

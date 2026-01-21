@@ -14,6 +14,7 @@ from models_LIC import OutreachMission
 
 __version__ = "12.0"
 
+
 def load_mission_input(filename: str = "mission_input_LIC.json") -> dict[str, Any]:
     """
     Loads the mission input JSON file.
@@ -44,6 +45,7 @@ def load_mission_input(filename: str = "mission_input_LIC.json") -> dict[str, An
         print(f"Line {e.lineno}, column {e.colno}: {e.msg}")
         sys.exit(1)
 
+
 def validate_mission_input(input_data: dict[str, Any]) -> bool:
     """
     Validate that mission input contains all required fields.
@@ -70,7 +72,9 @@ def validate_mission_input(input_data: dict[str, Any]) -> bool:
 
     # Validate recipient_profile
     recipient_required = ["name", "title", "company"]
-    recipient_missing = [key for key in recipient_required if key not in input_data["recipient_profile"]]
+    recipient_missing = [
+        key for key in recipient_required if key not in input_data["recipient_profile"]
+    ]
     if recipient_missing:
         print(f"FATAL: recipient_profile missing required fields: {', '.join(recipient_missing)}")
         return False
@@ -84,6 +88,7 @@ def validate_mission_input(input_data: dict[str, Any]) -> bool:
 
     return True
 
+
 def create_orchestrator():
     """
     Create orchestrator instance.
@@ -96,6 +101,7 @@ def create_orchestrator():
     """
     try:
         from workflow_LIC import WorkflowOrchestrator
+
         return WorkflowOrchestrator()
     except ImportError as e:
         print(f"FATAL: Could not import WorkflowOrchestrator: {e}")
@@ -107,62 +113,70 @@ def create_orchestrator():
         print("- utils_LIC.py")
         sys.exit(1)
 
+
 def print_header():
     """Print workflow execution header"""
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print(f"LIC v{__version__} - LinkedIn Outreach Orchestrator")
     print("Strategic Alignment Engine with Live API Integration")
-    print("="*80)
+    print("=" * 80)
+
 
 def print_mission_summary(mission: OutreachMission):
     """Print mission details"""
-    print(f"\n{'='*80}")
+    print(f"\n{'=' * 80}")
     print("MISSION DETAILS")
-    print(f"{'='*80}\n")
+    print(f"{'=' * 80}\n")
     print(f"Mission ID:   {mission.mission_id}")
-    print(f"Sender:       {mission.sender_profile.get('name', 'N/A')} - {mission.sender_profile.get('title', 'N/A')}")
+    print(
+        f"Sender:       {mission.sender_profile.get('name', 'N/A')} - {mission.sender_profile.get('title', 'N/A')}"
+    )
     print(f"Company:      {mission.sender_profile.get('company', 'N/A')}")
-    print(f"\nRecipient:    {mission.recipient_profile.get('name', 'N/A')} - {mission.recipient_profile.get('title', 'N/A')}")
+    print(
+        f"\nRecipient:    {mission.recipient_profile.get('name', 'N/A')} - {mission.recipient_profile.get('title', 'N/A')}"
+    )
     print(f"Company:      {mission.recipient_profile.get('company', 'N/A')}")
     print(f"Status:       {mission.connection_status}")
     print(f"\nTarget Role:  {mission.job_description.get('title', 'N/A')}")
     print(f"Company:      {mission.job_description.get('company', 'N/A')}")
     print(f"Location:     {mission.job_description.get('location', 'N/A')}")
 
+
 def print_results(result: dict[str, Any]):
     """Print workflow execution results"""
-    print(f"\n{'='*80}")
+    print(f"\n{'=' * 80}")
     print("WORKFLOW RESULTS")
-    print(f"{'='*80}\n")
+    print(f"{'=' * 80}\n")
     print(f"Status: {result['status'].upper()}")
 
-    if result['status'] == 'success':
+    if result["status"] == "success":
         print(f"Production Ready: {'✓ YES' if result['production_ready'] else '✗ NO'}")
         print(f"Workflow Time: {result['workflow_time']:.2f}s")
         print(f"Route: {result.get('route', 'N/A')}")
         print(f"Archetype: {result.get('archetype', 'N/A')}")
 
         print("\nQA Summary:")
-        qa = result['qa_summary']
+        qa = result["qa_summary"]
         print(f"  Critical Issues: {qa['critical_issues']}")
         print(f"  High Issues:     {qa['high_issues']}")
         print(f"  Medium Issues:   {qa['errors']}")
         print(f"  Warnings:        {qa['warnings']}")
 
-        if result['production_ready']:
-            print(f"\n{'='*80}")
+        if result["production_ready"]:
+            print(f"\n{'=' * 80}")
             print(f"GENERATED MESSAGE ({result['word_count']} words)")
-            print(f"{'='*80}\n")
-            print(result['message'])
-            print(f"\n{'='*80}")
+            print(f"{'=' * 80}\n")
+            print(result["message"])
+            print(f"\n{'=' * 80}")
         else:
             print("\n⚠️  Message generated but failed QA validation")
             print("Review QA report for details:")
-            print(result.get('qa_report', 'No QA report available'))
+            print(result.get("qa_report", "No QA report available"))
     else:
         print(f"\n❌ ERROR: {result.get('error', 'Unknown error')}")
-        if 'error_details' in result:
+        if "error_details" in result:
             print(f"\nDetails: {result['error_details']}")
+
 
 async def main():
     """
@@ -201,7 +215,7 @@ async def main():
         recipient_profile=recipient_profile,
         job_description=job_description,
         connection_status=recipient_profile.get("connection_status", "not_connected"),
-        prior_message_count=recipient_profile.get("prior_message_count", 0)
+        prior_message_count=recipient_profile.get("prior_message_count", 0),
     )
 
     print_mission_summary(mission)
@@ -216,9 +230,9 @@ async def main():
         sys.exit(1)
 
     # Execute workflow
-    print(f"\n{'='*80}")
+    print(f"\n{'=' * 80}")
     print("EXECUTING WORKFLOW")
-    print(f"{'='*80}\n")
+    print(f"{'=' * 80}\n")
     print("⏳ Running agentic workflow (this may take 1-3 minutes)...\n")
 
     try:
@@ -229,6 +243,7 @@ async def main():
     except Exception as e:
         print(f"\n\n❌ Workflow failed with exception: {e}")
         import traceback
+
         print("\nStack trace:")
         traceback.print_exc()
         sys.exit(1)
@@ -239,13 +254,14 @@ async def main():
     # Save result to file
     output_file = f"output_{mission.mission_id[:8]}.json"
     try:
-        with open(output_file, 'w') as f:
+        with open(output_file, "w") as f:
             json.dump(result, f, indent=2, default=str)
         print(f"\n💾 Full results saved to: {output_file}")
     except OSError as e:
         print(f"\n⚠️  Could not save results to file: {e}")
 
     return result
+
 
 if __name__ == "__main__":
     """
@@ -280,7 +296,7 @@ if __name__ == "__main__":
         result = asyncio.run(main())
 
         # Exit with appropriate code
-        if result['status'] == 'success' and result['production_ready']:
+        if result["status"] == "success" and result["production_ready"]:
             sys.exit(0)
         else:
             sys.exit(1)

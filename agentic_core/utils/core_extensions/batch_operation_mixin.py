@@ -21,10 +21,9 @@ class BatchOperationMixin:
         super().__init__(**kwargs)
         self._bo_logger = logging.getLogger(self.__class__.__name__)
 
-    async def batch_execute(self,
-                            tasks: list[Coroutine],
-                            max_workers: int = 5,
-                            sequential: bool = False) -> list[Any]:
+    async def batch_execute(
+        self, tasks: list[Coroutine], max_workers: int = 5, sequential: bool = False
+    ) -> list[Any]:
         # Hardened: overall batch timeout + better failure classification
         """
         Executes a collection of tasks with controlled concurrency.

@@ -34,9 +34,7 @@ def get_resilient_router() -> HardenedRouter:
     if _router_instance is None:
         logger.info("Initializing resilient router with default configurations")
         _router_instance = HardenedRouter(configs=None)  # Uses DEFAULT_ROUTING_CONFIGS
-        logger.info(
-            f"Router initialized with tiers: {list(_router_instance.configs.keys())}"
-        )
+        logger.info(f"Router initialized with tiers: {list(_router_instance.configs.keys())}")
 
     return _router_instance
 

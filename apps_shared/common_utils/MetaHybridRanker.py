@@ -47,7 +47,7 @@ def test_fuse_and_rank_applies_council_weights() -> None:
         selected_id="preferred candidate",
         scores={"preferred candidate": 1.0},
         ties=[],
-        reason="Test vote for preferred candidate"
+        reason="Test vote for preferred candidate",
     )
 
     lex = [

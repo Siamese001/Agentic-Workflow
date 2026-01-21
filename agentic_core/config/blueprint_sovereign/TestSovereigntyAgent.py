@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: guardrail
@@ -39,6 +38,7 @@ from agentic_core.utils.security import safe_execute
 
 class SovereignSeverity(Enum):
     """Sovereign event Severity levels."""
+
     INFO = "INFO"
     ERROR = "ERROR"
     WARNING = "WARNING"
@@ -49,7 +49,9 @@ class SovereignSeverity(Enum):
 class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMixin):
     """L5 specialist — advanced sovereign testing."""
 
-    def __init__(self, ctx: any | None = None, *args: any, _allow_mock: bool = True, **kwargs: any) -> None:
+    def __init__(
+        self, ctx: any | None = None, *args: any, _allow_mock: bool = True, **kwargs: any
+    ) -> None:
         """Initialize TestSovereigntyAgent.
 
         Args:
@@ -63,6 +65,7 @@ class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMix
         if ctx is None:
             if _allow_mock:
                 from unittest.mock import MagicMock
+
                 ctx = MagicMock()
             else:
                 raise ValueError("ctx is required when _allow_mock=False")
@@ -84,18 +87,13 @@ class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMix
 
         self._emit_event(SovereignSeverity.INFO, "TEST_SOVEREIGNTY_INITIATED", {"type": test_type})
 
-        results = {
-            "passed": True,
-            "coverage": 0.0,
-            TESTS_DIR: [],
-            "output": ""
-        }
+        results = {"passed": True, "coverage": 0.0, TESTS_DIR: [], "output": ""}
 
         # If Artifact provided, write to temp for testing
         temp_path = None
         if Artifact:
             temp_path = self.repo_root / "temp_test_artifact.py"
-            temp_path.write_text(Artifact, encoding='utf-8')
+            temp_path.write_text(Artifact, encoding="utf-8")
 
         try:
             if test_type == "full_repo":
@@ -108,7 +106,9 @@ class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMix
             # CRITIQUE: Integrated self-tests
             critique = self._run_integrated_self_tests()
             if not critique["all_passed"]:
-                self._emit_event(SovereignSeverity.ERROR, "TEST_SOVEREIGNTY_CRITIQUE_FAILED", critique)
+                self._emit_event(
+                    SovereignSeverity.ERROR, "TEST_SOVEREIGNTY_CRITIQUE_FAILED", critique
+                )
                 results["passed"] = False
                 results[TESTS_DIR].append({"name": "self_critique", "passed": False})
         finally:
@@ -118,7 +118,7 @@ class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMix
         self._emit_event(
             SovereignSeverity.INFO if results["passed"] else SovereignSeverity.ERROR,
             "TEST_SOVEREIGNTY_RESULT",
-            {"passed": results["passed"], "coverage": results["coverage"]}
+            {"passed": results["passed"], "coverage": results["coverage"]},
         )
 
         return results
@@ -131,7 +131,7 @@ class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMix
                 capture_output=True,
                 timeout=120,
                 cwd=self.repo_root,
-                check=False
+                check=False,
             )
 
             output = result.stdout.decode()
@@ -142,14 +142,14 @@ class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMix
                 "passed": passed,
                 "coverage": coverage,
                 TESTS_DIR: [{"name": "pytest_cov", "passed": result.returncode == 0}],
-                "output": output[:2000]
+                "output": output[:2000],
             }
         except Exception as e:
             return {
                 "passed": False,
                 "coverage": 0.0,
                 TESTS_DIR: [{"name": "pytest_cov", "passed": False, "error": str(e)}],
-                "output": str(e)
+                "output": str(e),
             }
 
     def _run_basic_tests(self) -> dict:
@@ -160,7 +160,7 @@ class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMix
                 capture_output=True,
                 timeout=60,
                 cwd=self.repo_root,
-                check=False
+                check=False,
             )
 
             passed = result.returncode == 0
@@ -168,14 +168,14 @@ class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMix
                 "passed": passed,
                 "coverage": 0.0,
                 TESTS_DIR: [{"name": "pytest_basic", "passed": passed}],
-                "output": result.stdout.decode()[:1000]
+                "output": result.stdout.decode()[:1000],
             }
         except Exception as e:
             return {
                 "passed": False,
                 "coverage": 0.0,
                 TESTS_DIR: [{"name": "pytest_basic", "passed": False, "error": str(e)}],
-                "output": str(e)
+                "output": str(e),
             }
 
     def _run_targeted_tests(self, request: dict) -> dict:
@@ -187,7 +187,7 @@ class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMix
                 capture_output=True,
                 timeout=60,
                 cwd=self.repo_root,
-                check=False
+                check=False,
             )
 
             passed = result.returncode == 0
@@ -195,14 +195,14 @@ class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMix
                 "passed": passed,
                 "coverage": 0.0,
                 TESTS_DIR: [{"name": f"pytest_{target}", "passed": passed}],
-                "output": result.stdout.decode()[:1000]
+                "output": result.stdout.decode()[:1000],
             }
         except Exception as e:
             return {
                 "passed": False,
                 "coverage": 0.0,
                 TESTS_DIR: [{"name": f"pytest_{target}", "passed": False, "error": str(e)}],
-                "output": str(e)
+                "output": str(e),
             }
 
     def _parse_coverage(self, output: str) -> float:
@@ -237,14 +237,23 @@ class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMix
         all_passed = all(t["passed"] for t in tests)
         return {TESTS_DIR: tests, "all_passed": all_passed}
 
-    def _emit_event(self, Severity: SovereignSeverity, event_type: str, payload: dict | None = None) -> None:
+    def _emit_event(
+        self, Severity: SovereignSeverity, event_type: str, payload: dict | None = None
+    ) -> None:
         """Telemetry for observability."""
         print(f"[SOVEREIGN EVENT] {Severity.value} | {event_type}")
         if payload:
             print(f"  Payload: {payload}")
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L5 safety agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -267,6 +276,7 @@ class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMix
         super().heal_repository()
 
         return TestSovereigntyAgent()
+
 
 def create_test_sovereignty(ctx=None) -> Any:
     """Brief description of functionality and purpose."""

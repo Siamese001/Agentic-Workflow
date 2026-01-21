@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: memory
@@ -44,7 +43,13 @@ class SovereignRagOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
     Adapts parameters based on performance with persistent configuration.
     """
 
-    def __init__(self, retriever: Any | None = None, QueryPlanner: Any | None = None, guardrail: Any | None = None, engine: Any | None = None) -> None:
+    def __init__(
+        self,
+        retriever: Any | None = None,
+        QueryPlanner: Any | None = None,
+        guardrail: Any | None = None,
+        engine: Any | None = None,
+    ) -> None:
         """
         Initialize sovereign RAG orchestrator.
 
@@ -55,7 +60,9 @@ class SovereignRagOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
             engine: Optional engine instance
         """
         self.query_history: list[Any] = []
-        self.config_path: Path = Path('agentic_core/L4_state/ValidationContext/.sovereign_config.json')
+        self.config_path: Path = Path(
+            "agentic_core/L4_state/ValidationContext/.sovereign_config.json"
+        )
         self._load_sovereign_config()
         self.threshold_adaptation_rate: float = 0.02
         self.performance_window: int = 50
@@ -74,9 +81,9 @@ class SovereignRagOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
         """
         if self.config_path.exists():
             config = json.loads(self.config_path.read_text())
-            self.faithfulness_threshold = config.get('faithfulness_threshold', 0.88)
-            self.max_hops = config.get('max_hops', 3)
-            self.base_top_k = config.get('base_top_k', 12)
+            self.faithfulness_threshold = config.get("faithfulness_threshold", 0.88)
+            self.max_hops = config.get("max_hops", 3)
+            self.base_top_k = config.get("base_top_k", 12)
         else:
             self.faithfulness_threshold = 0.88
             self.max_hops = 3
@@ -89,9 +96,19 @@ class SovereignRagOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
         Persists learned configuration to disk.
         """
         self.config_path.parent.mkdir(parents=True, exist_ok=True)
-        self.config_path.write_text(json.dumps({'faithfulness_threshold': self.faithfulness_threshold, 'max_hops': self.max_hops, 'base_top_k': self.base_top_k}))
+        self.config_path.write_text(
+            json.dumps(
+                {
+                    "faithfulness_threshold": self.faithfulness_threshold,
+                    "max_hops": self.max_hops,
+                    "base_top_k": self.base_top_k,
+                }
+            )
+        )
 
-    async def red_team_critique(self, answer: str, documents: list[Any], query: str) -> dict[str, Any]:
+    async def red_team_critique(
+        self, answer: str, documents: list[Any], query: str
+    ) -> dict[str, Any]:
         """
         L5: Red team critique for faithfulness validation.
 
@@ -110,14 +127,25 @@ class SovereignRagOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
             """Parse critique."""
             try:
                 from agentic_core.L1_cognition.thought_engine.QueryPlanner import QueryPlanner
+
                 planner_helper = QueryPlanner()
                 cleaned = planner_helper._clean_json_response(raw)
                 return json.loads(cleaned)
             except:
-                return {'faithfulness_score': 0.0, 'improvement_suggestion': 'Critical parsing error. Retry retrieval.'}
+                return {
+                    "faithfulness_score": 0.0,
+                    "improvement_suggestion": "Critical parsing error. Retry retrieval.",
+                }
+
         return _parse_critique(response)
 
-    async def sovereign_retrieve(self, query: str, top_k: int | None=None, filters: dict | None=None, mission_context: dict | None=None) -> dict[str, Any]:
+    async def sovereign_retrieve(
+        self,
+        query: str,
+        top_k: int | None = None,
+        filters: dict | None = None,
+        mission_context: dict | None = None,
+    ) -> dict[str, Any]:
         """
         Main retrieval method with multi-hop expansion and self-optimization
         """
@@ -129,7 +157,10 @@ class SovereignRagOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
             base_queries: Any = await self.QueryPlanner.decompose_query(current_query)
             all_queries: Any = []
             async with asyncio.TaskGroup() as tg:
-                tasks: Any = [tg.create_task(self.QueryPlanner.multi_query_generation(bq)) for bq in base_queries]
+                tasks: Any = [
+                    tg.create_task(self.QueryPlanner.multi_query_generation(bq))
+                    for bq in base_queries
+                ]
             for t in tasks:
                 all_queries.extend(t.result())
             all_queries: Any = list(dict.fromkeys(all_queries))
@@ -141,7 +172,13 @@ class SovereignRagOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
             if len(all_documents) >= top_k:
                 break
         final_docs: Any = await self.guardrail.rerank_documents(all_documents, query, top_k=top_k)
-        result: Any = {'query': query, 'documents': final_docs, 'faithfulness': 0.85, 'top_k': top_k, 'hops': hop + 1}
+        result: Any = {
+            "query": query,
+            "documents": final_docs,
+            "faithfulness": 0.85,
+            "top_k": top_k,
+            "hops": hop + 1,
+        }
         self.query_history.append(result)
         if len(self.query_history) >= self.performance_window:
             await self.adapt_parameters(result)
@@ -149,27 +186,31 @@ class SovereignRagOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
 
     async def adapt_parameters(self, result: dict) -> Any:
         """Self-optimization: adjust thresholds with dampen and persistence"""
-        recent: Any = self.query_history[-self.performance_window:]
-        faithfulness_scores: Any = [r.get('faithfulness', 0.0) for r in recent]
+        recent: Any = self.query_history[-self.performance_window :]
+        faithfulness_scores: Any = [r.get("faithfulness", 0.0) for r in recent]
         avg_faithfulness: Any = sum(faithfulness_scores) / len(faithfulness_scores)
         if avg_faithfulness > 0.94:
-            self.faithfulness_threshold = min(0.95, self.faithfulness_threshold + self.threshold_adaptation_rate)
+            self.faithfulness_threshold = min(
+                0.95, self.faithfulness_threshold + self.threshold_adaptation_rate
+            )
             self._save_sovereign_config()
-            print(f'   [SELF-OPT] Raising threshold to {self.faithfulness_threshold:.3f}')
+            print(f"   [SELF-OPT] Raising threshold to {self.faithfulness_threshold:.3f}")
         elif avg_faithfulness < 0.85:
-            self.faithfulness_threshold = max(0.7, self.faithfulness_threshold - self.threshold_adaptation_rate)
+            self.faithfulness_threshold = max(
+                0.7, self.faithfulness_threshold - self.threshold_adaptation_rate
+            )
             self._save_sovereign_config()
-            print(f'   [SELF-OPT] Lowering threshold to {self.faithfulness_threshold:.3f}')
+            print(f"   [SELF-OPT] Lowering threshold to {self.faithfulness_threshold:.3f}")
         if avg_faithfulness > 0.92 and self.base_top_k > 8:
             self.base_top_k -= 1
             self._save_sovereign_config()
-            print(f'   [SELF-OPT] Reducing top_k to {self.base_top_k}')
+            print(f"   [SELF-OPT] Reducing top_k to {self.base_top_k}")
         elif avg_faithfulness < 0.82 and self.base_top_k < 20:
             self.base_top_k += 1
             self._save_sovereign_config()
-            print(f'   [SELF-OPT] Increasing top_k to {self.base_top_k}')
+            print(f"   [SELF-OPT] Increasing top_k to {self.base_top_k}")
 
-    async def multi_hop_retrieve(self, query: str, max_hops: int | None=None) -> dict[str, Any]:
+    async def multi_hop_retrieve(self, query: str, max_hops: int | None = None) -> dict[str, Any]:
         """
         Multi-hop retrieval with iterative refinement
         """
@@ -179,24 +220,48 @@ class SovereignRagOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
         current_query: Any = query
         for hop in range(max_hops):
             result: Any = await self.sovereign_retrieve(current_query)
-            all_documents.extend(result.get('documents', []))
-            if result.get('faithfulness', 0.0) >= self.faithfulness_threshold:
+            all_documents.extend(result.get("documents", []))
+            if result.get("faithfulness", 0.0) >= self.faithfulness_threshold:
                 break
-            current_query: Any = f'Refined: {current_query}'
-        return {'query': query, 'documents': all_documents, 'hops': hop + 1, 'faithfulness': result.get('faithfulness', 0.0)}
+            current_query: Any = f"Refined: {current_query}"
+        return {
+            "query": query,
+            "documents": all_documents,
+            "hops": hop + 1,
+            "faithfulness": result.get("faithfulness", 0.0),
+        }
 
     def get_config(self) -> dict[str, Any]:
         """Get current configuration"""
-        return {'faithfulness_threshold': self.faithfulness_threshold, 'max_hops': self.max_hops, 'base_top_k': self.base_top_k, 'threshold_adaptation_rate': self.threshold_adaptation_rate, 'performance_window': self.performance_window}
+        return {
+            "faithfulness_threshold": self.faithfulness_threshold,
+            "max_hops": self.max_hops,
+            "base_top_k": self.base_top_k,
+            "threshold_adaptation_rate": self.threshold_adaptation_rate,
+            "performance_window": self.performance_window,
+        }
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L3 orchestration/workflow_engines - operational only."""
         if _call_path is None:
             _call_path = set()
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
-        super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+        super().heal_repository(
+            dry_run=dry_run,
+            execute=execute,
+            depth=depth,
+            max_depth=max_depth,
+            _call_path=_call_path,
+        )
 
         agent_name = "SovereignRagOrchestratorAgent"
         if agent_name in _call_path:

@@ -56,20 +56,15 @@ class InfrastructureUpgradesOrchestrator:
         """Setup event subscriptions for component coordination."""
         # Subscribe to content generation events for fact checking
         await self.infrastructure.event_bus.subscribe(
-            "events.content_generated",
-            self._handle_content_generated
+            "events.content_generated", self._handle_content_generated
         )
 
         # Subscribe to cache events
-        await self.infrastructure.event_bus.subscribe(
-            "events.cache_miss",
-            self._handle_cache_miss
-        )
+        await self.infrastructure.event_bus.subscribe("events.cache_miss", self._handle_cache_miss)
 
         # Subscribe to tone violations
         await self.infrastructure.event_bus.subscribe(
-            "events.tone_violation",
-            self._handle_tone_violation
+            "events.tone_violation", self._handle_tone_violation
         )
 
         logger.info("Setup infrastructure upgrades event subscriptions")
@@ -99,10 +94,10 @@ class InfrastructureUpgradesOrchestrator:
                             source_component="InfrastructureUpgradesOrchestrator",
                             payload={
                                 "violations": [v.dict() for v in violations],
-                                "content_length": len(content)
+                                "content_length": len(content),
                             },
-                            causation_id=event.id
-                        )
+                            causation_id=event.id,
+                        ),
                     )
 
         except Exception as e:
@@ -159,7 +154,8 @@ class InfrastructureUpgradesOrchestrator:
         """
         # Split content into sentences/claims
         import re
-        sentences = re.split(r'[.!?]+', content)
+
+        sentences = re.split(r"[.!?]+", content)
         sentences = [s.strip() for s in sentences if s.strip()]
 
         violations = []
@@ -181,9 +177,11 @@ class InfrastructureUpgradesOrchestrator:
                         payload={
                             "claim": sentence,
                             "correction": result.correction_suggestion,
-                            "verified_value": result.verified_fact.value if result.verified_fact else None
-                        }
-                    )
+                            "verified_value": result.verified_fact.value
+                            if result.verified_fact
+                            else None,
+                        },
+                    ),
                 )
 
         return violations
@@ -196,7 +194,7 @@ class InfrastructureUpgradesOrchestrator:
         verify_facts: bool = True,
         enforce_tone: bool = True,
         use_cache: bool = True,
-        trace_id: str | None = None
+        trace_id: str | None = None,
     ) -> dict[str, Any]:
         """Generate content with all infrastructure upgrades.
 
@@ -218,6 +216,7 @@ class InfrastructureUpgradesOrchestrator:
         # Generate trace ID if not provided
         if not trace_id:
             import uuid
+
             trace_id = str(uuid.uuid4())
 
         # Check cache first
@@ -232,8 +231,8 @@ class InfrastructureUpgradesOrchestrator:
                         type=EventType.AGENT_THINKING,
                         trace_id=trace_id,
                         source_component="InfrastructureUpgradesOrchestrator",
-                        payload={"cache_key": cache_key}
-                    )
+                        payload={"cache_key": cache_key},
+                    ),
                 )
 
                 return cached_result
@@ -248,18 +247,15 @@ class InfrastructureUpgradesOrchestrator:
                 payload={
                     "task_type": task_type.value,
                     "verify_facts": verify_facts,
-                    "enforce_tone": enforce_tone
-                }
-            )
+                    "enforce_tone": enforce_tone,
+                },
+            ),
         )
 
         try:
             # Generate base content
             result = await self.infrastructure.execute_with_infrastructure(
-                task_type,
-                prompt,
-                complexity_score=5,
-                trace_id=trace_id
+                task_type, prompt, complexity_score=5, trace_id=trace_id
             )
 
             content = result["result"]
@@ -279,9 +275,9 @@ class InfrastructureUpgradesOrchestrator:
                             source_component="InfrastructureUpgradesOrchestrator",
                             payload={
                                 "violations": [v.dict() for v in tone_violations],
-                                "tone_voice": tone_voice.value
-                            }
-                        )
+                                "tone_voice": tone_voice.value,
+                            },
+                        ),
                     )
 
             # Verify facts if requested
@@ -296,7 +292,7 @@ class InfrastructureUpgradesOrchestrator:
                     cache_key,
                     result,
                     text_for_embedding=prompt,
-                    source_engine="InfrastructureUpgrades"
+                    source_engine="InfrastructureUpgrades",
                 )
 
             # Publish completion
@@ -310,9 +306,9 @@ class InfrastructureUpgradesOrchestrator:
                         "content_length": len(content),
                         "tone_violations": len(tone_violations),
                         "fact_violations": len(fact_violations),
-                        "cached": use_cache
-                    }
-                )
+                        "cached": use_cache,
+                    },
+                ),
             )
 
             return {
@@ -324,12 +320,12 @@ class InfrastructureUpgradesOrchestrator:
                     "execution_time": result["execution_time"],
                     "tone_violations": len(tone_violations),
                     "fact_violations": len(fact_violations),
-                    "cached": use_cache
+                    "cached": use_cache,
                 },
                 "violations": {
                     "tone": [v.dict() for v in tone_violations],
-                    "facts": [v.dict() for v in fact_violations]
-                }
+                    "facts": [v.dict() for v in fact_violations],
+                },
             }
 
         except Exception as e:
@@ -341,8 +337,8 @@ class InfrastructureUpgradesOrchestrator:
                     trace_id=trace_id,
                     source_component="InfrastructureUpgradesOrchestrator",
                     payload={"error": str(e)},
-                    causation_id=trace_id
-                )
+                    causation_id=trace_id,
+                ),
             )
 
             raise
@@ -370,7 +366,7 @@ class InfrastructureUpgradesOrchestrator:
             "global_cache": self.global_cache.get_stats() if self.global_cache else {},
             "tone_enforcer": {
                 "profiles_loaded": len(self.tone_enforcer.profiles) if self.tone_enforcer else 0
-            }
+            },
         }
 
 
@@ -389,6 +385,7 @@ async def get_infrastructure_upgrades_orchestrator() -> InfrastructureUpgradesOr
 
     if _orchestrator_lock is None:
         import asyncio
+
         _orchestrator_lock = asyncio.Lock()
 
     async with _orchestrator_lock:
@@ -406,7 +403,7 @@ async def generate_with_consistency(
     tone_voice: ToneVoice | None = None,
     verify_facts: bool = True,
     enforce_tone: bool = True,
-    trace_id: str | None = None
+    trace_id: str | None = None,
 ) -> dict[str, Any]:
     """Generate content with consistency checks.
 
@@ -423,13 +420,7 @@ async def generate_with_consistency(
     """
     orchestrator = await get_infrastructure_upgrades_orchestrator()
     return await orchestrator.generate_with_upgrades(
-        task_type,
-        prompt,
-        tone_voice,
-        verify_facts,
-        enforce_tone,
-        True,
-        trace_id
+        task_type, prompt, tone_voice, verify_facts, enforce_tone, True, trace_id
     )
 
 
@@ -446,7 +437,8 @@ async def verify_claims(content: str) -> list[VerificationResult]:
 
     # Split into claims
     import re
-    sentences = re.split(r'[.!?]+', content)
+
+    sentences = re.split(r"[.!?]+", content)
     sentences = [s.strip() for s in sentences if s.strip()]
 
     results = []

@@ -124,14 +124,18 @@ class TestPromptIntegration:
         prompt = create_l1_planner_prompt("Test", "test", "test")
 
         # Add required layers for L1
-        prompt.add_layer(LayerContent(
-            layer=InstructionalLayer.REASONING_MODE,
-            content="analytical",
-        ))
-        prompt.add_layer(LayerContent(
-            layer=InstructionalLayer.DOMAIN_KNOWLEDGE,
-            content="test knowledge",
-        ))
+        prompt.add_layer(
+            LayerContent(
+                layer=InstructionalLayer.REASONING_MODE,
+                content="analytical",
+            )
+        )
+        prompt.add_layer(
+            LayerContent(
+                layer=InstructionalLayer.DOMAIN_KNOWLEDGE,
+                content="test knowledge",
+            )
+        )
 
         issues = validate_v6_prompt(prompt)
         assert len(issues) == 0
@@ -141,10 +145,12 @@ class TestPromptIntegration:
         prompt = create_l2_executor_prompt("Test", "test", ["execute"])
 
         # L2 already has ERROR_RECOVERY, add PROCEDURAL_MEMORY
-        prompt.add_layer(LayerContent(
-            layer=InstructionalLayer.PROCEDURAL_MEMORY,
-            content="test procedure",
-        ))
+        prompt.add_layer(
+            LayerContent(
+                layer=InstructionalLayer.PROCEDURAL_MEMORY,
+                content="test procedure",
+            )
+        )
 
         issues = validate_v6_prompt(prompt)
         assert len(issues) == 0
@@ -155,10 +161,7 @@ class TestManyShotExamples:
 
     def test_examples_have_valid_structure(self) -> None:
         """Test that all examples have valid structure."""
-        all_examples = (
-            STRATEGY_PLANNING_EXAMPLES +
-            RAG_PLANNING_EXAMPLES
-        )
+        all_examples = STRATEGY_PLANNING_EXAMPLES + RAG_PLANNING_EXAMPLES
 
         for example in all_examples:
             assert example.example_id
@@ -236,8 +239,8 @@ class TestPromptQuality:
 
         for prompt in prompts:
             # Should have proper section headers
-            lines = prompt.split('\n')
-            section_lines = [line for line in lines if line.isupper() and ':' in line]
+            lines = prompt.split("\n")
+            section_lines = [line for line in lines if line.isupper() and ":" in line]
             assert len(section_lines) >= 3  # At least 3 sections
 
 

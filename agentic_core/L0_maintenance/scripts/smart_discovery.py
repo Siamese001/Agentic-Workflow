@@ -11,6 +11,7 @@ Usage:
     python scripts/smart_discovery.py --check      # Just check if stale
     python scripts/smart_discovery.py --force      # Force full scan
 """
+
 import hashlib
 import json
 import logging
@@ -35,11 +36,20 @@ STALENESS_THRESHOLD = timedelta(hours=1)
 
 # Shared exclude logic with discovery
 ARCHIVES_DIR = "archives"
-EXCLUDED_DIRS = {'__pycache__', '.git', ARCHIVES_DIR, '.sovereign_healing_backup', 'node_modules', '.venv'}
+EXCLUDED_DIRS = {
+    "__pycache__",
+    ".git",
+    ARCHIVES_DIR,
+    ".sovereign_healing_backup",
+    "node_modules",
+    ".venv",
+}
+
 
 def should_exclude_path(path: Path) -> bool:
     """Return True if path should be excluded from scanning/hashing."""
     return any(excluded in path.parts for excluded in EXCLUDED_DIRS)
+
 
 # Proper logging
 logging.basicConfig(
@@ -54,6 +64,7 @@ def _scan_python_files() -> list[Path]:
     """Return list of all non-excluded .py files."""
     # Phase 6.7: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_python_files
+
     return list(get_python_files(PROJECT_ROOT))
 
 
@@ -99,7 +110,7 @@ def is_discovery_stale() -> tuple[bool, str]:
     # Check JSON age
     age = datetime.now() - json_mtime
     if age > STALENESS_THRESHOLD:
-        return True, f"JSON too old ({age.total_seconds()/3600:.1f}h > 1h)"
+        return True, f"JSON too old ({age.total_seconds() / 3600:.1f}h > 1h)"
 
     # Check if any source files are newer than JSON
     latest_source = get_latest_source_mtime()
@@ -178,7 +189,7 @@ def run_discovery(force: bool = False) -> int:
             capture_output=True,
             text=True,
             timeout=300,  # 5 min max
-            check=False
+            check=False,
         )
         elapsed = time.time() - start
         if result.returncode == 0:

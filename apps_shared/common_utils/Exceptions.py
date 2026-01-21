@@ -21,7 +21,7 @@ class CanonError(Exception):
         return {
             "error_type": self.__class__.__name__,
             "message": self.message,
-            "context": self.context
+            "context": self.context,
         }
 
 
@@ -39,7 +39,7 @@ class CanonViolationError(CanonError):
         violation_type: str,
         agent_id: str | None = None,
         pattern_id: str | None = None,
-        context: dict[str, Any] | None = None
+        context: dict[str, Any] | None = None,
     ):
         super().__init__(message, context)
         self.violation_type = violation_type
@@ -48,11 +48,13 @@ class CanonViolationError(CanonError):
 
     def to_dict(self) -> dict[str, Any]:
         result = super().to_dict()
-        result.update({
-            "violation_type": self.violation_type,
-            "agent_id": self.agent_id,
-            "pattern_id": self.pattern_id
-        })
+        result.update(
+            {
+                "violation_type": self.violation_type,
+                "agent_id": self.agent_id,
+                "pattern_id": self.pattern_id,
+            }
+        )
         return result
 
 
@@ -70,7 +72,7 @@ class MemorySyncError(CanonError):
         operation: str,
         backend: str,  # "redis" or "qdrant"
         retry_count: int = 0,
-        context: dict[str, Any] | None = None
+        context: dict[str, Any] | None = None,
     ):
         super().__init__(message, context)
         self.operation = operation
@@ -79,11 +81,9 @@ class MemorySyncError(CanonError):
 
     def to_dict(self) -> dict[str, Any]:
         result = super().to_dict()
-        result.update({
-            "operation": self.operation,
-            "backend": self.backend,
-            "retry_count": self.retry_count
-        })
+        result.update(
+            {"operation": self.operation, "backend": self.backend, "retry_count": self.retry_count}
+        )
         return result
 
 
@@ -95,20 +95,13 @@ class SwarmInitializationError(CanonError):
     from becoming operational.
     """
 
-    def __init__(
-        self,
-        message: str,
-        failed_component: str,
-        context: dict[str, Any] | None = None
-    ):
+    def __init__(self, message: str, failed_component: str, context: dict[str, Any] | None = None):
         super().__init__(message, context)
         self.failed_component = failed_component
 
     def to_dict(self) -> dict[str, Any]:
         result = super().to_dict()
-        result.update({
-            "failed_component": self.failed_component
-        })
+        result.update({"failed_component": self.failed_component})
         return result
 
 
@@ -125,7 +118,7 @@ class AgentExecutionError(CanonError):
         agent_id: str,
         task: str,
         retry_count: int = 0,
-        context: dict[str, Any] | None = None
+        context: dict[str, Any] | None = None,
     ):
         super().__init__(message, context)
         self.agent_id = agent_id
@@ -134,11 +127,9 @@ class AgentExecutionError(CanonError):
 
     def to_dict(self) -> dict[str, Any]:
         result = super().to_dict()
-        result.update({
-            "agent_id": self.agent_id,
-            "task": self.task,
-            "retry_count": self.retry_count
-        })
+        result.update(
+            {"agent_id": self.agent_id, "task": self.task, "retry_count": self.retry_count}
+        )
         return result
 
 
@@ -155,7 +146,7 @@ class CanonTokenError(CanonError):
         message: str,
         token: str | None = None,
         issuer: str | None = None,
-        context: dict[str, Any] | None = None
+        context: dict[str, Any] | None = None,
     ):
         super().__init__(message, context)
         self.token = token
@@ -163,10 +154,7 @@ class CanonTokenError(CanonError):
 
     def to_dict(self) -> dict[str, Any]:
         result = super().to_dict()
-        result.update({
-            "token": self.token,
-            "issuer": self.issuer
-        })
+        result.update({"token": self.token, "issuer": self.issuer})
         return result
 
 
@@ -177,5 +165,5 @@ CANON_EXCEPTIONS = (
     MemorySyncError,
     SwarmInitializationError,
     AgentExecutionError,
-    CanonTokenError
+    CanonTokenError,
 )

@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, prompt, state, workflow
@@ -34,11 +33,14 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
 @dataclass
-class NeuralAutoImmuneAgent(SubatomicTestingMixin, AutonomyMixin,
+class NeuralAutoImmuneAgent(
+    SubatomicTestingMixin,
+    AutonomyMixin,
     AdaptiveExecutionMixin,
     SelfDiagnosisMixin,
     HealerMixin,
-    MCPHardenedMixin):
+    MCPHardenedMixin,
+):
     """
     Sovereign auto-immune response — isolates territories after repeated breaches.
     Now hardened with predictive, proactive, adaptive, and self-learning capabilities.
@@ -65,23 +67,31 @@ class NeuralAutoImmuneAgent(SubatomicTestingMixin, AutonomyMixin,
         ]
 
         try:
-            self.redis = redis.Redis(host=os.getenv('REDIS_HOST', 'localhost'), port=int(os.getenv('REDIS_PORT', 6379)), decode_responses=True)
+            self.redis = redis.Redis(
+                host=os.getenv("REDIS_HOST", "localhost"),
+                port=int(os.getenv("REDIS_PORT", 6379)),
+                decode_responses=True,
+            )
             self.redis.ping()
         except Exception as e:
-            self.Logger.warning(f'Redis connection failed ({e}), using in-memory cache')
+            self.Logger.warning(f"Redis connection failed ({e}), using in-memory cache")
             self.redis = None
             self._memory_cache = {}
-        self.breach_threshold = int(os.getenv('IMMUNE_BREACH_THRESHOLD', '5'))
-        self.window_minutes = int(os.getenv('IMMUNE_WINDOW_MINUTES', '30'))
-        self.lockdown_prefix = 'l5_immune_lockdown:'
+        self.breach_threshold = int(os.getenv("IMMUNE_BREACH_THRESHOLD", "5"))
+        self.window_minutes = int(os.getenv("IMMUNE_WINDOW_MINUTES", "30"))
+        self.lockdown_prefix = "l5_immune_lockdown:"
 
     def detect_repeated_breaches(self) -> dict:
         """Scan L5 cache for high-frequency violations."""
         try:
             if self.redis:
-                keys: Any = self.redis.keys('l5_policy:*') + self.redis.keys('l5_gravity:*')
+                keys: Any = self.redis.keys("l5_policy:*") + self.redis.keys("l5_gravity:*")
             else:
-                keys: Any = [k for k in self._memory_cache.keys() if k.startswith('l5_policy:') or k.startswith('l5_gravity:')]
+                keys: Any = [
+                    k
+                    for k in self._memory_cache.keys()
+                    if k.startswith("l5_policy:") or k.startswith("l5_gravity:")
+                ]
             breaches: Any = defaultdict(list)
             cutoff: Any = datetime.now() - timedelta(minutes=self.window_minutes)
             for key in keys:
@@ -92,25 +102,31 @@ class NeuralAutoImmuneAgent(SubatomicTestingMixin, AutonomyMixin,
                 if not cached:
                     continue
                 Verdict: Any = json.loads(cached)
-                if not Verdict.get('compliant', True):
-                    ts: Any = datetime.fromisoformat(Verdict.get('timestamp', datetime.now().isoformat()))
+                if not Verdict.get("compliant", True):
+                    ts: Any = datetime.fromisoformat(
+                        Verdict.get("timestamp", datetime.now().isoformat())
+                    )
                     if ts > cutoff:
-                        t: Any = Verdict.get('territory', 'unknown')
-                        a: Any = Verdict.get('source_agent', 'unknown')
-                        breaches[f'{t}:{a}'].append(Verdict)
+                        t: Any = Verdict.get("territory", "unknown")
+                        a: Any = Verdict.get("source_agent", "unknown")
+                        breaches[f"{t}:{a}"].append(Verdict)
             lockdowns: Any = {}
             for source_id, events in breaches.items():
                 if len(events) >= self.breach_threshold:
-                    lockdown_key: Any = f'{self.lockdown_prefix}{source_id}'
-                    info: Any = {'count': len(events), 'locked_at': datetime.now().isoformat(), 'reason': 'Repeated structural/policy breaches'}
+                    lockdown_key: Any = f"{self.lockdown_prefix}{source_id}"
+                    info: Any = {
+                        "count": len(events),
+                        "locked_at": datetime.now().isoformat(),
+                        "reason": "Repeated structural/policy breaches",
+                    }
                     if self.redis:
                         self.redis.set(lockdown_key, json.dumps(info), ex=604800)
                     else:
                         self._memory_cache[lockdown_key] = info
                     lockdowns[source_id] = info
-            return {'status': 'success', 'lockdowns': lockdowns}
+            return {"status": "success", "lockdowns": lockdowns}
         except Exception as e:
-            return {'status': 'error', 'message': str(e)}
+            return {"status": "error", "message": str(e)}
 
     # === Predictive Analysis – High Priority Enhancement ===
     async def predict_imminent_breaches(self) -> list[dict[str, Any]]:
@@ -143,16 +159,15 @@ class NeuralAutoImmuneAgent(SubatomicTestingMixin, AutonomyMixin,
                     "change_count_24h": change_count,
                     "predicted_breach_type": predicted_type,
                     "historical_success_rate": self.experience_buffer.predict_success_probability(
-                        action="immune_intervention",
-                        target=str(file_path)
+                        action="immune_intervention", target=str(file_path)
                     ),
                     "Recommendation": "Pre-emptive validation and monitoring",
                     "preventive_actions": [
                         "Run GuardianOrchestratorAgent on this file",
                         "Execute ScriptToAgentClassifierAgent",
-                        "Consider temporary write protection during review"
+                        "Consider temporary write protection during review",
                     ],
-                    "justification": f"High churn ({change_count} changes) + historical risk pattern"
+                    "justification": f"High churn ({change_count} changes) + historical risk pattern",
                 }
                 predictions.append(prediction)
                 self.Logger.warning(f"Predicted breach risk: {file_path} ({risk_score:.0%})")
@@ -175,8 +190,7 @@ class NeuralAutoImmuneAgent(SubatomicTestingMixin, AutonomyMixin,
 
         # Historical factor
         historical_rate = self.experience_buffer.predict_success_probability(
-            action="immune_intervention",
-            target=str(file_path)
+            action="immune_intervention", target=str(file_path)
         )
         historical_risk = 1.0 - historical_rate
 
@@ -231,18 +245,24 @@ class NeuralAutoImmuneAgent(SubatomicTestingMixin, AutonomyMixin,
         report["predicted_imminent_breaches"] = predictions
 
         if predictions:
-            print(f"\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\n[🔮 PREDICTIVE IMMUNE ALERT] {len(predictions)} high-risk files identified")
+            print(
+                f"\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\n[🔮 PREDICTIVE IMMUNE ALERT] {len(predictions)} high-risk files identified"
+            )
             for p in predictions[:5]:
-                print(f"   → {p['file']} | {p['risk_score']:.0%} risk | {p['predicted_breach_type']}")
+                print(
+                    f"   → {p['file']} | {p['risk_score']:.0%} risk | {p['predicted_breach_type']}"
+                )
 
         # Record execution outcome
-        self.experience_buffer.record({
-            "action": "immune_cycle",
-            "mode": "standard",
-            "breaches_detected": len(report["detected_breaches"].get("lockdowns", {})),
-            "predictions_made": len(predictions),
-            "success": bool(report["detected_breaches"].get("lockdowns")) or bool(predictions),
-        })
+        self.experience_buffer.record(
+            {
+                "action": "immune_cycle",
+                "mode": "standard",
+                "breaches_detected": len(report["detected_breaches"].get("lockdowns", {})),
+                "predictions_made": len(predictions),
+                "success": bool(report["detected_breaches"].get("lockdowns")) or bool(predictions),
+            }
+        )
 
         return report
 
@@ -261,12 +281,14 @@ class NeuralAutoImmuneAgent(SubatomicTestingMixin, AutonomyMixin,
             report = await self._execute_standard(ctx, **context)
 
         # Legacy context reporting (if ctx has report method)
-        if hasattr(ctx, 'report'):
-            detected = report.get('detected_breaches', {})
-            if detected.get('lockdowns'):
-                ctx.report('AutoImmune', 0, False, f"Lockdowns: {list(detected['lockdowns'].keys())}")
+        if hasattr(ctx, "report"):
+            detected = report.get("detected_breaches", {})
+            if detected.get("lockdowns"):
+                ctx.report(
+                    "AutoImmune", 0, False, f"Lockdowns: {list(detected['lockdowns'].keys())}"
+                )
             else:
-                ctx.report('AutoImmune', 1, True, 'No repeated breaches detected.')
+                ctx.report("AutoImmune", 1, True, "No repeated breaches detected.")
 
         return report
 
@@ -281,13 +303,20 @@ class NeuralAutoImmuneAgent(SubatomicTestingMixin, AutonomyMixin,
                 return {
                     "reason": "elevated_breach_rate_detected",
                     "avg_breaches": avg_breaches,
-                    "action": "trigger_immune_scan"
+                    "action": "trigger_immune_scan",
                 }
         return None
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L5 safety agent - operational only."""
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository()

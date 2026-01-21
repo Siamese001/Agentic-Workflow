@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, orchestrator, prompt, workflow
@@ -45,8 +44,8 @@ class AgentRegistryValidatorAgent(MCPHardenedMixin, HealerMixin):
 
     def _run_self_tests(self) -> bool:
         """Phase 1: Self-testing for L3 compliance."""
-        assert hasattr(self, 'project_root'), "Missing project_root"
-        assert hasattr(self, 'missing_agents'), "Missing missing_agents"
+        assert hasattr(self, "project_root"), "Missing project_root"
+        assert hasattr(self, "missing_agents"), "Missing missing_agents"
         return True
 
     def validate_agent_exists(self, agent_name: str, search_paths: list[str]) -> tuple[bool, str]:
@@ -92,27 +91,30 @@ class AgentRegistryValidatorAgent(MCPHardenedMixin, HealerMixin):
                 exists, location = self.validate_agent_exists(agent_name, search_paths)
 
                 if exists:
-                    self.found_agents.append({
-                        'name': agent_name,
-                        'key': key,
-                        'location': location
-                    })
+                    self.found_agents.append({"name": agent_name, "key": key, "location": location})
                 else:
-                    self.missing_agents.append({
-                        'name': agent_name,
-                        'key': key,
-                        'searched': search_paths
-                    })
+                    self.missing_agents.append(
+                        {"name": agent_name, "key": key, "searched": search_paths}
+                    )
 
         return {
-            'total_agents': sum(len(agents) for agents in registry.values()),
+            "total_agents": sum(len(agents) for agents in registry.values()),
             "found_agents": self.found_agents,
             "total_expected": total_expected,
-            "coverage_percent": (len(self.found_agents) / total_expected * 100) if total_expected > 0 else 0
+            "coverage_percent": (len(self.found_agents) / total_expected * 100)
+            if total_expected > 0
+            else 0,
         }
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L3 orchestration agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -147,19 +149,22 @@ class AgentRegistryValidatorAgent(MCPHardenedMixin, HealerMixin):
 
         # Convert CamelCase to snake_case
         def camel_to_snake(name):
-            s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
-            return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+            s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
+            return re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
 
         module_name = camel_to_snake(agent_name)
 
         # Map keys to layer directories
         layer_map = {
-            12: ['agentic_core.L3_orchestration.P1_core', 'agentic_core.L3_orchestration.S3_vitality'],
-            13: ['agentic_core.L4_state.P1_core', 'agentic_core.L4_state.S1_memory'],
-            19: ['agentic_core.L5_safety.P1_core', 'agentic_core.L5_safety.validators']
+            12: [
+                "agentic_core.L3_orchestration.P1_core",
+                "agentic_core.L3_orchestration.S3_vitality",
+            ],
+            13: ["agentic_core.L4_state.P1_core", "agentic_core.L4_state.S1_memory"],
+            19: ["agentic_core.L5_safety.P1_core", "agentic_core.L5_safety.validators"],
         }
 
-        base_paths = layer_map.get(key, ['agentic_core.runtime.shared'])
+        base_paths = layer_map.get(key, ["agentic_core.runtime.shared"])
         return [f"{base}.{module_name}" for base in base_paths]
 
     def run_validation(self, registry: dict[int, list[str]]) -> bool:
@@ -174,7 +179,7 @@ class AgentRegistryValidatorAgent(MCPHardenedMixin, HealerMixin):
         """
         results = self.validate_registry(registry)
 
-        if results['Missing'] > 0:
+        if results["Missing"] > 0:
             Logger.warning(f"Missing {results['Missing']} agents from registry")
             for agent in self.missing_agents:
                 Logger.warning(f"  - {agent['name']} (Key {agent['key']})")

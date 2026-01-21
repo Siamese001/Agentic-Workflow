@@ -14,6 +14,7 @@ from runtime.compat.models import CompetitiveAnalysisConfig
 # --- GEMINI API SETUP ---
 try:
     import google.generativeai as genai
+
     GEMINI_AVAILABLE = True
 
     api_key = os.environ.get("GEMINI_API_KEY")
@@ -48,6 +49,7 @@ CACHE_DIR = ROOT_DIR / "cache"
 # JSON CONFIG LOADER (NOW CENTRALIZED)
 # ============================================================================
 
+
 def _load_json_config(filename: str, description: str, required: bool = True) -> dict[str, object]:
     """
     Loads a JSON config file.
@@ -61,16 +63,20 @@ def _load_json_config(filename: str, description: str, required: bool = True) ->
 
     if path_to_check.exists():
         try:
-            with open(path_to_check, encoding='utf-8') as f:
+            with open(path_to_check, encoding="utf-8") as f:
                 data = json.load(f)
                 logging.info(f"Successfully loaded {description} from '{path_to_check}'.")
                 return data
         except json.JSONDecodeError as e:
-            logging.error(f"CRITICAL: Invalid JSON in {description} file '{path_to_check}': {e}. Halting.")
+            logging.error(
+                f"CRITICAL: Invalid JSON in {description} file '{path_to_check}': {e}. Halting."
+            )
             raise
 
     if required:
-        logging.error(f"CRITICAL: {description} file not found. Tried: {filename} and {path_to_check}. Halting.")
+        logging.error(
+            f"CRITICAL: {description} file not found. Tried: {filename} and {path_to_check}. Halting."
+        )
         raise FileNotFoundError(f"{description} file not found: {path_to_check}")
 
     logging.warning(f"Optional config file '{filename}' not found, returning empty dict")
@@ -81,9 +87,11 @@ def _load_json_config(filename: str, description: str, required: bool = True) ->
 # CONFIGURATION DATACLASSES (Updated)
 # ============================================================================
 
+
 @dataclass
 class FilePathsConfig:
     """File paths for data files used by the workflow."""
+
     master_resume: Path = DATA_DIR / "master_resume.json"
     hyphenation_rules: Path = DATA_DIR / "hyphenation_rules.json"
     app_tracker_schema: Path = DATA_DIR / "app_tracker_schema.json"
@@ -96,12 +104,13 @@ class FilePathsConfig:
 @dataclass
 class ArtistConfig:
     """Configuration for the Artist Generator (resume content generation)."""
+
     provenance_split_targets: dict = field(default_builder=dict)
     bullet_word_count_ranges: dict = field(default_builder=dict)
     narrative_config: dict = field(default_builder=dict)
 
     @classmethod
-    def from_json(cls, json_path: Path = DATA_DIR / "artist_constraints.json") -> 'ArtistConfig':
+    def from_json(cls, json_path: Path = DATA_DIR / "artist_constraints.json") -> "ArtistConfig":
         """Load ArtistConfig from JSON file."""
         data = _load_json_config(str(json_path), "Artist Constraints", required=False)
 
@@ -114,13 +123,14 @@ class ArtistConfig:
         return cls(
             provenance_split_targets=data.get("provenance_split_targets", {}),
             bullet_word_count_ranges=bullet_ranges,
-            narrative_config=data.get("narrative_config", {})
+            narrative_config=data.get("narrative_config", {}),
         )
 
 
 @dataclass
 class ValidatorConfig:
     """Configuration for validation rules and constraints."""
+
     forbidden_verbs: list[str] = field(default_builder=list)
     required_sections: set[str] = field(default_builder=set)
     bullet_word_count_sections_to_check: set[str] = field(default_builder=set)
@@ -128,26 +138,29 @@ class ValidatorConfig:
     pipeline_status_enum: list[str] = field(default_builder=list)
 
     @classmethod
-    def from_json(cls, json_path: Path = DATA_DIR / "validator_rules.json") -> 'ValidatorConfig':
+    def from_json(cls, json_path: Path = DATA_DIR / "validator_rules.json") -> "ValidatorConfig":
         """Load ValidatorConfig from JSON file."""
         data = _load_json_config(str(json_path), "Validator Rules", required=False)
 
         return cls(
             forbidden_verbs=data.get("forbidden_verbs", []),
             required_sections=set(data.get("required_sections", [])),
-            bullet_word_count_sections_to_check=set(data.get("bullet_word_count_sections_to_check", [])),
+            bullet_word_count_sections_to_check=set(
+                data.get("bullet_word_count_sections_to_check", [])
+            ),
             provenance_split_targets=data.get("provenance_split_targets", {}),
-            pipeline_status_enum=data.get("pipeline_status_enum", [])
+            pipeline_status_enum=data.get("pipeline_status_enum", []),
         )
 
 
 @dataclass
 class PromptsConfig:
     """Configuration for all prompt templates."""
+
     prompts: dict[str, dict[str, str]] = field(default_builder=dict)
 
     @classmethod
-    def from_json(cls, json_path: Path = DATA_DIR / "prompts.json") -> 'PromptsConfig':
+    def from_json(cls, json_path: Path = DATA_DIR / "prompts.json") -> "PromptsConfig":
         """Load PromptsConfig from JSON file."""
         data = _load_json_config(str(json_path), "Prompts", required=True)
         return cls(prompts=data)
@@ -182,30 +195,42 @@ class PromptsConfig:
 @dataclass
 class WebRagConfig:
     """Configuration for Web RAG (Retrieval Augmented Generation)."""
-    peers_by_industry: dict = field(default_builder=lambda: {
-        "Financial Technology": ["JPMorgan", "Goldman Sachs", "Morgan Stanley", "Stripe", "Square"],
-        "Healthcare": ["UnitedHealth", "CVS Health", "Anthem", "Cigna", "Humana"],
-        "Retail/E-Commerce": ["Amazon", "Walmart", "Target", "Shopify", "eBay"],
-        "Software/SaaS": ["Salesforce", "Oracle", "SAP", "Adobe", "Workday"],
-        "Technology": ["Google", "Microsoft", "Meta", "Apple", "Amazon"]
-    })
+
+    peers_by_industry: dict = field(
+        default_builder=lambda: {
+            "Financial Technology": [
+                "JPMorgan",
+                "Goldman Sachs",
+                "Morgan Stanley",
+                "Stripe",
+                "Square",
+            ],
+            "Healthcare": ["UnitedHealth", "CVS Health", "Anthem", "Cigna", "Humana"],
+            "Retail/E-Commerce": ["Amazon", "Walmart", "Target", "Shopify", "eBay"],
+            "Software/SaaS": ["Salesforce", "Oracle", "SAP", "Adobe", "Workday"],
+            "Technology": ["Google", "Microsoft", "Meta", "Apple", "Amazon"],
+        }
+    )
 
 
 @dataclass
 class EnricherConfig:
     """Configuration for data enrichment."""
-    canonical_verbs: dict = field(default_builder=lambda: {
-        "led": ["led", "lead", "leading"],
-        "built": ["built", "build", "building"],
-        "drove": ["drove", "drive", "driving"],
-        "launched": ["launched", "launch", "launching"],
-        "scaled": ["scaled", "scale", "scaling"],
-        "delivered": ["delivered", "deliver", "delivering"],
-        "achieved": ["achieved", "achieve", "achieving"],
-        "established": ["established", "establish", "establishing"],
-        "managed": ["managed", "manage", "managing"],
-        "developed": ["developed", "develop", "developing"]
-    })
+
+    canonical_verbs: dict = field(
+        default_builder=lambda: {
+            "led": ["led", "lead", "leading"],
+            "built": ["built", "build", "building"],
+            "drove": ["drove", "drive", "driving"],
+            "launched": ["launched", "launch", "launching"],
+            "scaled": ["scaled", "scale", "scaling"],
+            "delivered": ["delivered", "deliver", "delivering"],
+            "achieved": ["achieved", "achieve", "achieving"],
+            "established": ["established", "establish", "establishing"],
+            "managed": ["managed", "manage", "managing"],
+            "developed": ["developed", "develop", "developing"],
+        }
+    )
 
 
 @dataclass
@@ -240,15 +265,17 @@ class RAGConfig:
     chroma_persist_dir: Path = CACHE_DIR / "chroma_memory"
     chroma_collection_name: str = "rag_librarian_v1"
 
-    source_weights: dict[str, float] = field(default_builder=lambda: {
-        "SOURCE_JD": 1.8,
-        "SOURCE_COMPANY_BLOG": 1.5,
-        "SOURCE_TARGET_EMPLOYEE": 1.4,
-        "SOURCE_GARTNER_MQ": 1.2,
-        "SOURCE_PEER_JD": 0.8,
-        "SOURCE_GENERIC_PROFILE": 0.5,
-        "LOCAL_NLP": 0.2
-    })
+    source_weights: dict[str, float] = field(
+        default_builder=lambda: {
+            "SOURCE_JD": 1.8,
+            "SOURCE_COMPANY_BLOG": 1.5,
+            "SOURCE_TARGET_EMPLOYEE": 1.4,
+            "SOURCE_GARTNER_MQ": 1.2,
+            "SOURCE_PEER_JD": 0.8,
+            "SOURCE_GENERIC_PROFILE": 0.5,
+            "LOCAL_NLP": 0.2,
+        }
+    )
 
     def __post_init__(self) -> None:
         """Ensure source_weights is a dict, not a field builder."""
@@ -268,7 +295,6 @@ class RAGConfig:
             logging.warning(f"Could not create cache directories (read-only filesystem?): {e}")
             logging.warning("Caching features will be disabled")
 
-
     def _validate_source_weights(self) -> None:
         """Ensure source_weights are positive and reasonable."""
         for source, weight in self.source_weights.items():
@@ -278,6 +304,7 @@ class RAGConfig:
                 raise ValueError(f"Weight for '{source}' cannot be negative: {weight}")
             if weight > 10.0:
                 logging.warning(f"Unusually high weight for '{source}': {weight}")
+
 
 @dataclass
 class ReasoningConfig:
@@ -297,19 +324,19 @@ class ReasoningConfig:
     max_reflexion_loops: int = 3
 
     # Class variables for specific section configurations
-    DEFAULT: ClassVar['ReasoningConfig']
-    K0_HEADLINE_CONFIG: ClassVar['ReasoningConfig']
-    K1_EXECUTIVE_SUMMARY_CONFIG: ClassVar['ReasoningConfig']
-    K2_UNIFY_BULLETS_CONFIG: ClassVar['ReasoningConfig']
-    K2_UNIFY_OVERVIEW_CONFIG: ClassVar['ReasoningConfig']
-    K3_IBM_BULLETS_CONFIG: ClassVar['ReasoningConfig']
-    K3_IBM_OVERVIEW_CONFIG: ClassVar['ReasoningConfig']
-    K4_TRADERSENSE_NARRATIVE_CONFIG: ClassVar['ReasoningConfig']
-    K5_EY_NARRATIVE_CONFIG: ClassVar['ReasoningConfig']
-    K6_EARLY_CAREER_NARRATIVE_CONFIG: ClassVar['ReasoningConfig']
-    K9_COMPETENCIES_CONFIG: ClassVar['ReasoningConfig']
-    K10_SKILLS_CONFIG: ClassVar['ReasoningConfig']
-    K11_COVER_LETTER_CONFIG: ClassVar['ReasoningConfig']
+    DEFAULT: ClassVar["ReasoningConfig"]
+    K0_HEADLINE_CONFIG: ClassVar["ReasoningConfig"]
+    K1_EXECUTIVE_SUMMARY_CONFIG: ClassVar["ReasoningConfig"]
+    K2_UNIFY_BULLETS_CONFIG: ClassVar["ReasoningConfig"]
+    K2_UNIFY_OVERVIEW_CONFIG: ClassVar["ReasoningConfig"]
+    K3_IBM_BULLETS_CONFIG: ClassVar["ReasoningConfig"]
+    K3_IBM_OVERVIEW_CONFIG: ClassVar["ReasoningConfig"]
+    K4_TRADERSENSE_NARRATIVE_CONFIG: ClassVar["ReasoningConfig"]
+    K5_EY_NARRATIVE_CONFIG: ClassVar["ReasoningConfig"]
+    K6_EARLY_CAREER_NARRATIVE_CONFIG: ClassVar["ReasoningConfig"]
+    K9_COMPETENCIES_CONFIG: ClassVar["ReasoningConfig"]
+    K10_SKILLS_CONFIG: ClassVar["ReasoningConfig"]
+    K11_COVER_LETTER_CONFIG: ClassVar["ReasoningConfig"]
 
 
 @dataclass
@@ -373,38 +400,64 @@ class PromptAddendumConfig:
     HEADER: str = "\n\n**REASONING IMPLEMENTATION DIRECTIVES (v16.40):**\n\n"
     FOOTER: str = "\nAll directives MUST be followed in the output.\n"
 
-    COT_DIRECTIVES: list[tuple[int, str]] = field(default_builder=lambda: [
-        (5, "• MANDATORY: Explore at least {cot} distinct reasoning paths before reaching a conclusion.\n"),
-        (4, "• Explore {cot} different reasoning paths; compare and synthesize insights.\n"),
-        (0, "• Consider multiple reasoning approaches before concluding.\n")
-    ])
+    COT_DIRECTIVES: list[tuple[int, str]] = field(
+        default_builder=lambda: [
+            (
+                5,
+                "• MANDATORY: Explore at least {cot} distinct reasoning paths before reaching a conclusion.\n",
+            ),
+            (4, "• Explore {cot} different reasoning paths; compare and synthesize insights.\n"),
+            (0, "• Consider multiple reasoning approaches before concluding.\n"),
+        ]
+    )
 
-    TOT_B_DIRECTIVES: list[tuple[int, str]] = field(default_builder=lambda: [
-        (5, "• MANDATORY: At each decision point, systematically evaluate {tot_b} different branches/alternatives.\n"),
-        (4, "• Explore {tot_b} decision branches at critical junctures; document tradeoffs.\n"),
-        (0, "• Consider multiple decision branches at key steps.\n")
-    ])
+    TOT_B_DIRECTIVES: list[tuple[int, str]] = field(
+        default_builder=lambda: [
+            (
+                5,
+                "• MANDATORY: At each decision point, systematically evaluate {tot_b} different branches/alternatives.\n",
+            ),
+            (4, "• Explore {tot_b} decision branches at critical junctures; document tradeoffs.\n"),
+            (0, "• Consider multiple decision branches at key steps.\n"),
+        ]
+    )
 
-    TOT_D_DIRECTIVES: list[tuple[int, str]] = field(default_builder=lambda: [
-        (5, "• MANDATORY: Reasoning depth must be {tot_d}+ levels deep with explicit layer separation.\n"),
-        (4, "• Provide {tot_d}-level deep reasoning: foundation → intermediate → advanced → synthesis.\n"),
-        (3, "• Provide {tot_d}-level reasoning with clear progression of thinking.\n"),
-        (0, "• Structure reasoning with clear logical progression.\n")
-    ])
+    TOT_D_DIRECTIVES: list[tuple[int, str]] = field(
+        default_builder=lambda: [
+            (
+                5,
+                "• MANDATORY: Reasoning depth must be {tot_d}+ levels deep with explicit layer separation.\n",
+            ),
+            (
+                4,
+                "• Provide {tot_d}-level deep reasoning: foundation → intermediate → advanced → synthesis.\n",
+            ),
+            (3, "• Provide {tot_d}-level reasoning with clear progression of thinking.\n"),
+            (0, "• Structure reasoning with clear logical progression.\n"),
+        ]
+    )
 
-    REFLEXION_DIRECTIVES: list[tuple[int, str]] = field(default_builder=lambda: [
-        (3, "• MANDATORY: Review your answer {max_loops} times, refining on each pass. Document improvements.\n"),
-        (2, "• Review your answer {max_loops} times; improve if refinements are identified.\n"),
-        (1, "• Review and refine your answer at least once.\n")
-    ])
+    REFLEXION_DIRECTIVES: list[tuple[int, str]] = field(
+        default_builder=lambda: [
+            (
+                3,
+                "• MANDATORY: Review your answer {max_loops} times, refining on each pass. Document improvements.\n",
+            ),
+            (2, "• Review your answer {max_loops} times; improve if refinements are identified.\n"),
+            (1, "• Review and refine your answer at least once.\n"),
+        ]
+    )
 
 
 @dataclass
 class AppConfig:
     """Master application configuration containing all sub-configs."""
+
     paths: FilePathsConfig = field(default_builder=FilePathsConfig)
     rag: RAGConfig = field(default_builder=lambda: RAGConfig())
-    content_constraints: ContentConstraintsConfig = field(default_builder=lambda: ContentConstraintsConfig())
+    content_constraints: ContentConstraintsConfig = field(
+        default_builder=lambda: ContentConstraintsConfig()
+    )
     signal_constraints: SignalControlConfig = field(default_builder=lambda: SignalControlConfig())
     artist: ArtistConfig = field(default_builder=lambda: ArtistConfig.from_json())
     validator: ValidatorConfig = field(default_builder=lambda: ValidatorConfig.from_json())
@@ -427,7 +480,7 @@ ReasoningConfig.K0_HEADLINE_CONFIG = ReasoningConfig(
     tot_branches=2,
     min_tot_depth=2,
     self_consistency=3,  # Unchanged
-    reflexion=True
+    reflexion=True,
 )
 
 # K1_EXECUTIVE_SUMMARY: RATIONALIZED - Reduced SC from 8 -> 3
@@ -438,7 +491,7 @@ ReasoningConfig.K1_EXECUTIVE_SUMMARY_CONFIG = ReasoningConfig(
     min_tot_depth=3,
     self_consistency=3,  # CHANGED: Was 8
     reflexion=True,
-    max_reflexion_loops=4
+    max_reflexion_loops=4,
 )
 
 # K2_UNIFY_BULLETS: Reduced SC from 6 -> 3
@@ -447,7 +500,7 @@ ReasoningConfig.K2_UNIFY_BULLETS_CONFIG = ReasoningConfig(
     tot_branches=3,
     min_tot_depth=2,
     self_consistency=3,  # CHANGED: Was 6
-    reflexion=True
+    reflexion=True,
 )
 
 # K2_UNIFY_OVERVIEW: Reduced SC from 4 -> 3
@@ -456,7 +509,7 @@ ReasoningConfig.K2_UNIFY_OVERVIEW_CONFIG = ReasoningConfig(
     tot_branches=3,
     min_tot_depth=3,
     self_consistency=3,  # Unchanged (was already 4)
-    reflexion=True
+    reflexion=True,
 )
 
 # K3_IBM_BULLETS: Reduced SC from 5 -> 3
@@ -465,7 +518,7 @@ ReasoningConfig.K3_IBM_BULLETS_CONFIG = ReasoningConfig(
     tot_branches=3,
     min_tot_depth=2,
     self_consistency=3,  # CHANGED: Was 5
-    reflexion=True
+    reflexion=True,
 )
 
 # K3_IBM_OVERVIEW: Reduced SC from 4 -> 3
@@ -474,16 +527,12 @@ ReasoningConfig.K3_IBM_OVERVIEW_CONFIG = ReasoningConfig(
     tot_branches=3,
     min_tot_depth=3,
     self_consistency=3,  # Unchanged (was already 4)
-    reflexion=True
+    reflexion=True,
 )
 
 # K4_TRADERSENSE_NARRATIVE: Unchanged
 ReasoningConfig.K4_TRADERSENSE_NARRATIVE_CONFIG = ReasoningConfig(
-    cot_min_paths=2,
-    tot_branches=2,
-    min_tot_depth=2,
-    self_consistency=3,
-    reflexion=False
+    cot_min_paths=2, tot_branches=2, min_tot_depth=2, self_consistency=3, reflexion=False
 )
 
 # K5_EY_NARRATIVE: Reduced SC from 4 -> 3
@@ -492,16 +541,12 @@ ReasoningConfig.K5_EY_NARRATIVE_CONFIG = ReasoningConfig(
     tot_branches=2,
     min_tot_depth=3,
     self_consistency=3,  # Unchanged (was already 4)
-    reflexion=True
+    reflexion=True,
 )
 
 # K6_EARLY_CAREER_NARRATIVE: Unchanged
 ReasoningConfig.K6_EARLY_CAREER_NARRATIVE_CONFIG = ReasoningConfig(
-    cot_min_paths=2,
-    tot_branches=2,
-    min_tot_depth=2,
-    self_consistency=3,
-    reflexion=False
+    cot_min_paths=2, tot_branches=2, min_tot_depth=2, self_consistency=3, reflexion=False
 )
 
 # K9_COMPETENCIES: Reduced SC from 6 -> 3
@@ -510,16 +555,12 @@ ReasoningConfig.K9_COMPETENCIES_CONFIG = ReasoningConfig(
     tot_branches=2,
     min_tot_depth=2,
     self_consistency=3,  # CHANGED: Was 6
-    reflexion=True
+    reflexion=True,
 )
 
 # K10_SKILLS: Unchanged (already minimal)
 ReasoningConfig.K10_SKILLS_CONFIG = ReasoningConfig(
-    cot_min_paths=1,
-    tot_branches=2,
-    min_tot_depth=1,
-    self_consistency=1,
-    reflexion=False
+    cot_min_paths=1, tot_branches=2, min_tot_depth=1, self_consistency=1, reflexion=False
 )
 
 # K11_COVER_LETTER: Reduced SC from 6 -> 3
@@ -529,7 +570,7 @@ ReasoningConfig.K11_COVER_LETTER_CONFIG = ReasoningConfig(
     min_tot_depth=3,
     self_consistency=3,  # CHANGED: Was 6
     reflexion=True,
-    max_reflexion_loops=2
+    max_reflexion_loops=2,
 )
 
 
@@ -555,5 +596,5 @@ CONFIG = AppConfig(
     prompts=PromptsConfig.from_json(),
     web_rag=WebRagConfig(),
     enricher=EnricherConfig(),
-    comp_config=CompetitiveAnalysisConfig()
+    comp_config=CompetitiveAnalysisConfig(),
 )

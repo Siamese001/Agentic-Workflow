@@ -6,6 +6,7 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 Proactively identifies and executes outreach tasks with predictive handoff.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -83,10 +84,14 @@ class OutreachProactiveAgent(SubatomicTestingMixin, OutreachAgent, MCPHardenedMi
                 leads_processed=len(self.ctx.leads),
             )
 
-        self.record_result(True, f"Executed {len(auto_tasks)} tasks, {len(tasks) - len(auto_tasks)} pending")
+        self.record_result(
+            True, f"Executed {len(auto_tasks)} tasks, {len(tasks) - len(auto_tasks)} pending"
+        )
         print(f"   [{self.name}] ✅ Proactive analysis complete")
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs: Any) -> dict[str, Any]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs: Any
+    ) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 

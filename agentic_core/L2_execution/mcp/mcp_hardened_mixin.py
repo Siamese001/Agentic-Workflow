@@ -8,7 +8,7 @@ warnings.warn(
     "MCPHardenedMixin is now inherited via SovereignBaseAgent (Root Injection Pattern). "
     "Do not add MCPHardenedMixin to agent inheritance lists directly.",
     DeprecationWarning,
-    stacklevel=2
+    stacklevel=2,
 )
 
 """
@@ -47,9 +47,12 @@ try:
         InstructionalInjectionMixin,
     )
 except ImportError:
+
     class InstructionalInjectionMixin:
         """Stub for healing resilience."""
+
         pass
+
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -57,6 +60,7 @@ Logger: Any = logging.getLogger(__name__)
 @dataclass
 class MCPAuditEntry:
     """Audit entry for MCP call."""
+
     timestamp: float
     tool_name: str
     args_hash: str
@@ -69,6 +73,7 @@ class MCPAuditEntry:
 @dataclass
 class MCPValidationResult:
     """Result of MCP response validation."""
+
     valid: bool
     reasons: list[str] = field(default_factory=list)
     sanitized_output: Any = None
@@ -105,13 +110,28 @@ class MCPHardenedMixin(InstructionalInjectionMixin):
 
     # Tool whitelist - tools allowed to be called
     TOOL_WHITELIST: set[str] = {
-        "read_file", "write_file", "edit", "run_command",
-        "grep_search", "find_by_name", "list_dir",
-        "git_status", "git_commit", "git_push", "git_pull",
-        "redis_get", "redis_set", "redis_delete",
-        "pinecone_query", "pinecone_upsert",
-        "http_get", "http_post", "http_put", "http_delete",
-        "brave_search", "fetch_url",
+        "read_file",
+        "write_file",
+        "edit",
+        "run_command",
+        "grep_search",
+        "find_by_name",
+        "list_dir",
+        "git_status",
+        "git_commit",
+        "git_push",
+        "git_pull",
+        "redis_get",
+        "redis_set",
+        "redis_delete",
+        "pinecone_query",
+        "pinecone_upsert",
+        "http_get",
+        "http_post",
+        "http_put",
+        "http_delete",
+        "brave_search",
+        "fetch_url",
     }
 
     # Dangerous patterns to detect in responses
@@ -217,9 +237,7 @@ class MCPHardenedMixin(InstructionalInjectionMixin):
                 )
 
             if attempt < self.MAX_RETRIES - 1:
-                delay: float = min(
-                    self.BASE_DELAY * (2**attempt), self.MAX_DELAY
-                )
+                delay: float = min(self.BASE_DELAY * (2**attempt), self.MAX_DELAY)
                 Logger.warning(
                     f"[MCP] {operation} attempt {attempt + 1} failed, "
                     f"retrying in {delay:.1f}s: {last_error}"
@@ -231,9 +249,7 @@ class MCPHardenedMixin(InstructionalInjectionMixin):
             f"MCP {operation} failed after {self.MAX_RETRIES} attempts: {last_error}"
         )
 
-    def _emit_sovereign_event(
-        self, event_type: str, data: dict[str, Any]
-    ) -> None:
+    def _emit_sovereign_event(self, event_type: str, data: dict[str, Any]) -> None:
         """
         Emit telemetry event for observability.
 
@@ -307,6 +323,7 @@ class MCPHardenedMixin(InstructionalInjectionMixin):
 
         if ssl_enabled:
             import ssl as ssl_module
+
             ssl_context = ssl_module.create_default_context()
 
             # Load custom certs if provided
@@ -314,20 +331,19 @@ class MCPHardenedMixin(InstructionalInjectionMixin):
             if cert_path:
                 ssl_context.load_verify_locations(cert_path)
 
-            pool_kwargs.update({
-                "ssl": True,
-                "ssl_cert_reqs": "required",
-                "ssl_check_hostname": True,
-            })
+            pool_kwargs.update(
+                {
+                    "ssl": True,
+                    "ssl_cert_reqs": "required",
+                    "ssl_check_hostname": True,
+                }
+            )
 
         pool = ConnectionPool.from_url(redis_url, **pool_kwargs)
         return Redis(connection_pool=pool)
 
     def get_neo4j_driver(
-        self,
-        uri: str | None = None,
-        username: str | None = None,
-        password: str | None = None
+        self, uri: str | None = None, username: str | None = None, password: str | None = None
     ):
         """
         Get hardened Neo4j driver with SSL enforcement and connection pooling.
@@ -396,18 +412,18 @@ class MCPHardenedMixin(InstructionalInjectionMixin):
         # 1. Validate tool name against whitelist
         if not self._validate_tool_name(tool_name):
             self._mcp_failure_count += 1
-            self.audit_mcp_call(tool_name, args, "BLOCKED", caller, {
-                "reason": "Tool not in whitelist"
-            })
+            self.audit_mcp_call(
+                tool_name, args, "BLOCKED", caller, {"reason": "Tool not in whitelist"}
+            )
             raise ValueError(f"Tool '{tool_name}' not in whitelist")
 
         # 2. Validate arguments
         validation_errors = self._validate_args(tool_name, args)
         if validation_errors:
             self._mcp_failure_count += 1
-            self.audit_mcp_call(tool_name, args, "INVALID_ARGS", caller, {
-                "errors": validation_errors
-            })
+            self.audit_mcp_call(
+                tool_name, args, "INVALID_ARGS", caller, {"errors": validation_errors}
+            )
             raise ValueError(f"Invalid arguments: {validation_errors}")
 
         # 3. Execute call with hardened wrapper
@@ -416,10 +432,9 @@ class MCPHardenedMixin(InstructionalInjectionMixin):
         except Exception as e:
             self._mcp_failure_count += 1
             duration_ms = (time.time() - start_time) * 1000
-            self.audit_mcp_call(tool_name, args, "FAILED", caller, {
-                "error": str(e),
-                "duration_ms": duration_ms
-            })
+            self.audit_mcp_call(
+                tool_name, args, "FAILED", caller, {"error": str(e), "duration_ms": duration_ms}
+            )
             raise
 
         # 4. Validate response
@@ -428,19 +443,20 @@ class MCPHardenedMixin(InstructionalInjectionMixin):
             if not validation.valid:
                 self._mcp_failure_count += 1
                 duration_ms = (time.time() - start_time) * 1000
-                self.audit_mcp_call(tool_name, args, "INVALID_RESPONSE", caller, {
-                    "reasons": validation.reasons,
-                    "duration_ms": duration_ms
-                })
+                self.audit_mcp_call(
+                    tool_name,
+                    args,
+                    "INVALID_RESPONSE",
+                    caller,
+                    {"reasons": validation.reasons, "duration_ms": duration_ms},
+                )
                 raise ValueError(f"Response validation failed: {validation.reasons}")
             result = validation.sanitized_output
 
         # 5. Log audit trail
         self._mcp_success_count += 1
         duration_ms = (time.time() - start_time) * 1000
-        self.audit_mcp_call(tool_name, args, "SUCCESS", caller, {
-            "duration_ms": duration_ms
-        })
+        self.audit_mcp_call(tool_name, args, "SUCCESS", caller, {"duration_ms": duration_ms})
 
         return result
 
@@ -501,10 +517,7 @@ class MCPHardenedMixin(InstructionalInjectionMixin):
         return errors
 
     async def _execute_sandboxed(
-        self,
-        tool_name: str,
-        args: dict[str, Any],
-        timeout: float | None = None
+        self, tool_name: str, args: dict[str, Any], timeout: float | None = None
     ) -> Any:
         """
         Execute tool call in sandboxed environment.
@@ -561,7 +574,9 @@ class MCPHardenedMixin(InstructionalInjectionMixin):
         # 2. Check response size
         response_str = str(response)
         if len(response_str) > self.MAX_RESPONSE_SIZE:
-            reasons.append(f"Response exceeds size limit: {len(response_str)} > {self.MAX_RESPONSE_SIZE}")
+            reasons.append(
+                f"Response exceeds size limit: {len(response_str)} > {self.MAX_RESPONSE_SIZE}"
+            )
 
         # 3. Check response depth for nested structures
         depth = self._get_depth(response)
@@ -572,9 +587,7 @@ class MCPHardenedMixin(InstructionalInjectionMixin):
         sanitized = self._sanitize_response(response)
 
         return MCPValidationResult(
-            valid=len(reasons) == 0,
-            reasons=reasons,
-            sanitized_output=sanitized
+            valid=len(reasons) == 0, reasons=reasons, sanitized_output=sanitized
         )
 
     def mcp_validate(self, response: Any) -> MCPValidationResult:
@@ -625,7 +638,7 @@ class MCPHardenedMixin(InstructionalInjectionMixin):
         args: dict[str, Any],
         result_status: str,
         caller: str,
-        metadata: dict[str, Any] | None = None
+        metadata: dict[str, Any] | None = None,
     ) -> None:
         """
         Log MCP call for audit trail.
@@ -648,18 +661,21 @@ class MCPHardenedMixin(InstructionalInjectionMixin):
             result_status=result_status,
             duration_ms=metadata.get("duration_ms", 0) if metadata else 0,
             caller=caller,
-            metadata=metadata or {}
+            metadata=metadata or {},
         )
 
         self._mcp_audit_log.append(entry)
 
         # Emit event for observability
-        self._emit_sovereign_event("MCP_AUDIT", {
-            "tool": tool_name,
-            "status": result_status,
-            "caller": caller,
-            "duration_ms": entry.duration_ms
-        })
+        self._emit_sovereign_event(
+            "MCP_AUDIT",
+            {
+                "tool": tool_name,
+                "status": result_status,
+                "caller": caller,
+                "duration_ms": entry.duration_ms,
+            },
+        )
 
         # Alert on anomalies
         if result_status in ("BLOCKED", "INVALID_RESPONSE"):
@@ -675,6 +691,8 @@ class MCPHardenedMixin(InstructionalInjectionMixin):
             "total_calls": self._mcp_call_count,
             "successful_calls": self._mcp_success_count,
             "failed_calls": self._mcp_failure_count,
-            "success_rate": (self._mcp_success_count / self._mcp_call_count * 100) if self._mcp_call_count > 0 else 0,
-            "audit_log_size": len(self._mcp_audit_log)
+            "success_rate": (self._mcp_success_count / self._mcp_call_count * 100)
+            if self._mcp_call_count > 0
+            else 0,
+            "audit_log_size": len(self._mcp_audit_log),
         }

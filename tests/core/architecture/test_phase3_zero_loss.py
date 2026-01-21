@@ -14,6 +14,7 @@ Author: Cascade
 Date: January 19, 2026
 Phase: 3 - BaseAgent Standardization & Mixin Root Injection
 """
+
 import sys
 from pathlib import Path
 
@@ -29,9 +30,9 @@ def test_tc9_mro_integrity():
     Verify that a sample L2 agent's __mro__ correctly follows the path:
     Agent -> L2ExecutionBaseAgent -> SovereignBaseAgent -> InfrastructureMixin -> object
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-9: MRO Integrity")
-    print("="*60)
+    print("=" * 60)
 
     from agentic_core.L2_execution.ToolRegistry.L2ExecutionBaseAgent import L2ExecutionBaseAgent
     from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
@@ -44,12 +45,7 @@ def test_tc9_mro_integrity():
     print(f"L2ExecutionBaseAgent MRO: {mro_names}")
 
     # Verify key classes are in MRO in correct order
-    required_order = [
-        'L2ExecutionBaseAgent',
-        'SovereignBaseAgent',
-        'InfrastructureMixin',
-        'object'
-    ]
+    required_order = ["L2ExecutionBaseAgent", "SovereignBaseAgent", "InfrastructureMixin", "object"]
 
     # Find positions of required classes
     positions = {}
@@ -85,9 +81,9 @@ def test_tc10_inheritance_continuity():
     Instantiated agents must still have access to heal_repository
     (verifying Mixin root injection).
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-10: Inheritance Continuity")
-    print("="*60)
+    print("=" * 60)
 
     from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
@@ -98,7 +94,7 @@ def test_tc10_inheritance_continuity():
     agent = TestL2Agent()
 
     # Verify heal_repository is accessible
-    if not hasattr(agent, 'heal_repository'):
+    if not hasattr(agent, "heal_repository"):
         print("❌ FAIL: Agent should have heal_repository method")
         return False
 
@@ -107,21 +103,21 @@ def test_tc10_inheritance_continuity():
         return False
 
     # Verify HealerMixin methods are accessible
-    healer_methods = ['heal', '_normalize_result', 'reset_healing_budget']
+    healer_methods = ["heal", "_normalize_result", "reset_healing_budget"]
     for method in healer_methods:
         if not hasattr(agent, method):
             print(f"❌ FAIL: Agent should have {method} from HealerMixin")
             return False
 
     # Verify InfrastructureMixin methods are accessible
-    infra_methods = ['verify_state', 'get_infrastructure_status']
+    infra_methods = ["verify_state", "get_infrastructure_status"]
     for method in infra_methods:
         if not hasattr(agent, method):
             print(f"❌ FAIL: Agent should have {method} from InfrastructureMixin")
             return False
 
     # Verify _infra_initialized flag is set
-    if not getattr(agent, '_infra_initialized', False):
+    if not getattr(agent, "_infra_initialized", False):
         print("❌ FAIL: _infra_initialized should be True after initialization")
         return False
 
@@ -140,23 +136,23 @@ def test_tc11_method_preservation():
     Verify that methods previously held in CanonBaseAgent are callable
     on the new L2ExecutionBaseAgent.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-11: Method Preservation")
-    print("="*60)
+    print("=" * 60)
 
     from agentic_core.L2_execution.ToolRegistry.L2ExecutionBaseAgent import L2ExecutionBaseAgent
 
     # Methods that should be present (from Canon/ExecutionCanon bases)
     required_methods = [
-        'execute',  # Abstract method
-        'can_run',  # From SubAtomicAgent
-        'run_with_broadcast',  # From SubAtomicAgent
-        'check_negative_constraints',  # From CanonBaseAgent
-        'get_validation_keys',  # From CanonBaseAgent
-        'heal_repository',  # From HealerMixin via SovereignBaseAgent
-        'act',  # L2-specific tool execution
-        'act_async',  # L2-specific async tool execution
-        'cluster_errors',  # L2-specific error clustering
+        "execute",  # Abstract method
+        "can_run",  # From SubAtomicAgent
+        "run_with_broadcast",  # From SubAtomicAgent
+        "check_negative_constraints",  # From CanonBaseAgent
+        "get_validation_keys",  # From CanonBaseAgent
+        "heal_repository",  # From HealerMixin via SovereignBaseAgent
+        "act",  # L2-specific tool execution
+        "act_async",  # L2-specific async tool execution
+        "cluster_errors",  # L2-specific error clustering
     ]
 
     missing_methods = []
@@ -189,16 +185,19 @@ def test_tc12_import_stability():
     Ensure that the canonical base classes can be imported without errors.
     Also verify that the 8 canonical BaseAgent files exist.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-12: Import Stability")
-    print("="*60)
+    print("=" * 60)
 
     # Canonical BaseAgent files that should exist
     canonical_bases = [
         ("L0MaintenanceBaseAgent", "agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent"),
         ("L1CognitionBaseAgent", "agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent"),
         ("L2ExecutionBaseAgent", "agentic_core.L2_execution.ToolRegistry.L2ExecutionBaseAgent"),
-        ("L3OrchestrationBaseAgent", "agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent"),
+        (
+            "L3OrchestrationBaseAgent",
+            "agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent",
+        ),
         ("L4StateBaseAgent", "agentic_core.L4_state.ValidationContext.L4StateBaseAgent"),
         ("L5SafetyBaseAgent", "agentic_core.L5_safety.validators.L5SafetyBaseAgent"),
         ("L6ObservabilityBaseAgent", "agentic_core.L6_observability.L6ObservabilityBaseAgent"),
@@ -211,7 +210,7 @@ def test_tc12_import_stability():
     for class_name, module_path in canonical_bases:
         try:
             # Dynamic import
-            parts = module_path.rsplit('.', 1)
+            parts = module_path.rsplit(".", 1)
             if len(parts) == 2:
                 module_name, attr_name = parts
                 module = __import__(module_name, fromlist=[attr_name])
@@ -245,9 +244,9 @@ def test_base_agent_count():
     """
     Bonus Test: Verify exactly 8 BaseAgent files exist in agentic_core.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("BONUS: BaseAgent File Count")
-    print("="*60)
+    print("=" * 60)
 
     from agentic_core.utils.ssot_discovery import get_python_files
 
@@ -269,9 +268,9 @@ def test_base_agent_count():
 
 def main():
     """Run all Phase 3 Zero-Loss test cases."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("PHASE 3 ZERO-LOSS VERIFICATION TEST SUITE")
-    print("="*70)
+    print("=" * 70)
     print(f"Project Root: {PROJECT_ROOT}")
 
     tests = [
@@ -290,13 +289,14 @@ def main():
         except Exception as e:
             print(f"\n❌ EXCEPTION in {test_name}: {e}")
             import traceback
+
             traceback.print_exc()
             results.append((test_name, False))
 
     # Summary
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST SUMMARY")
-    print("="*70)
+    print("=" * 70)
 
     passed_count = sum(1 for _, passed in results if passed)
     total_count = len(results)
@@ -309,7 +309,7 @@ def main():
         status = "✅ PASS" if passed else "❌ FAIL"
         print(f"{status}: {test_name}")
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print(f"CORE TESTS: {core_passed}/4 passed")
     print(f"TOTAL: {passed_count}/{total_count} tests passed")
 

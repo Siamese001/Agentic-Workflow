@@ -7,6 +7,7 @@ Tests verify that:
 - Cleanup logic removes oldest directories
 - File backup operations work correctly
 """
+
 import sys
 from pathlib import Path
 
@@ -22,9 +23,7 @@ def test_get_backup_dir_structure(tmp_path):
     """Verify directory structure matches SSOT: archives/healing_backups/<category>"""
     # Act
     backup_dir = BackupManager.get_backup_dir(
-        category="unit_test",
-        project_root=tmp_path,
-        timestamped=False
+        category="unit_test", project_root=tmp_path, timestamped=False
     )
 
     # Assert
@@ -37,9 +36,7 @@ def test_get_backup_dir_timestamped(tmp_path):
     """Verify timestamped subdirectories are created."""
     # Act
     backup_dir = BackupManager.get_backup_dir(
-        category="unit_test",
-        project_root=tmp_path,
-        timestamped=True
+        category="unit_test", project_root=tmp_path, timestamped=True
     )
 
     # Assert - use Path parts for cross-platform compatibility
@@ -60,9 +57,7 @@ def test_cleanup_old_backups(tmp_path):
 
     # Act: Keep only last 2
     removed = BackupManager.cleanup_old_backups(
-        category="cleanup_test",
-        keep_last_n=2,
-        project_root=tmp_path
+        category="cleanup_test", keep_last_n=2, project_root=tmp_path
     )
 
     # Assert
@@ -83,9 +78,7 @@ def test_backup_file(tmp_path):
 
     # Act
     backup_path = BackupManager.backup_file(
-        target_file=test_file,
-        category="file_test",
-        project_root=tmp_path
+        target_file=test_file, category="file_test", project_root=tmp_path
     )
 
     # Assert - use Path parts for cross-platform compatibility
@@ -102,9 +95,7 @@ def test_backup_file_nonexistent(tmp_path):
     """Verify backup returns None for nonexistent files."""
     # Act
     result = BackupManager.backup_file(
-        target_file=tmp_path / "nonexistent.txt",
-        category="file_test",
-        project_root=tmp_path
+        target_file=tmp_path / "nonexistent.txt", category="file_test", project_root=tmp_path
     )
 
     # Assert
@@ -119,10 +110,7 @@ def test_list_backups(tmp_path):
         d.mkdir(parents=True)
 
     # Act
-    backups = BackupManager.list_backups(
-        category="list_test",
-        project_root=tmp_path
-    )
+    backups = BackupManager.list_backups(category="list_test", project_root=tmp_path)
 
     # Assert
     assert len(backups) == 3
@@ -134,10 +122,7 @@ def test_list_backups(tmp_path):
 def test_list_backups_empty_category(tmp_path):
     """Verify listing nonexistent category returns empty list."""
     # Act
-    backups = BackupManager.list_backups(
-        category="nonexistent",
-        project_root=tmp_path
-    )
+    backups = BackupManager.list_backups(category="nonexistent", project_root=tmp_path)
 
     # Assert
     assert backups == []
@@ -150,9 +135,7 @@ def test_restore_backup_file(tmp_path):
     original.write_text("original content")
 
     backup = BackupManager.backup_file(
-        target_file=original,
-        category="restore_test",
-        project_root=tmp_path
+        target_file=original, category="restore_test", project_root=tmp_path
     )
     original.unlink()
 

@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 
 class ExecutionType(Enum):
     """Types of tool execution."""
+
     SYNC = "sync"
     ASYNC = "async"
     STREAMING = "streaming"
@@ -27,6 +28,7 @@ class ExecutionType(Enum):
 
 class ToolStatus(Enum):
     """Status of tools."""
+
     ACTIVE = "active"
     INACTIVE = "inactive"
     ERROR = "error"
@@ -36,6 +38,7 @@ class ToolStatus(Enum):
 @dataclass
 class ToolDefinition:
     """Definition of an observability tool."""
+
     tool_id: str
     name: str
     version: str
@@ -49,6 +52,7 @@ class ToolDefinition:
 @dataclass
 class ToolExecutionRequest:
     """Request for tool execution."""
+
     execution_id: str
     tool_id: str
     command: str
@@ -62,6 +66,7 @@ class ToolExecutionRequest:
 @dataclass
 class ToolExecutionConfig:
     """Configuration for tool execution."""
+
     default_timeout: float = 30.0
     max_retries: int = 3
     enable_health_checks: bool = True
@@ -73,6 +78,7 @@ class ToolExecutionConfig:
 @dataclass
 class ToolExecutionResult:
     """Result of tool execution."""
+
     execution_id: str
     tool_id: str
     command: str
@@ -99,8 +105,7 @@ class ObservabilityToolExecutor:
         self._active_executions: dict[str, dict[str, Any]] = {}
         self._initialize_tools()
 
-    def register_tool(self, tool_def: ToolDefinition,
-                     implementation: Callable) -> None:
+    def register_tool(self, tool_def: ToolDefinition, implementation: Callable) -> None:
         """Register an observability tool.
 
         Args:
@@ -133,7 +138,7 @@ class ObservabilityToolExecutor:
                     request.tool_id,
                     request.command,
                     f"Tool not registered: {request.tool_id}",
-                    start_time
+                    start_time,
                 )
 
             if self._tool_status[request.tool_id] != ToolStatus.ACTIVE:
@@ -142,7 +147,7 @@ class ObservabilityToolExecutor:
                     request.tool_id,
                     request.command,
                     f"Tool not active: {self._tool_status[request.tool_id].value}",
-                    start_time
+                    start_time,
                 )
 
             # Track execution
@@ -171,11 +176,7 @@ class ObservabilityToolExecutor:
         except Exception as e:
             self.logger.error(f"Tool execution failed: {str(e)}")
             return self._create_error_result(
-                request.execution_id,
-                request.tool_id,
-                request.command,
-                str(e),
-                start_time
+                request.execution_id, request.tool_id, request.command, str(e), start_time
             )
 
     def execute_tool_stream(self, request: ToolExecutionRequest) -> object:
@@ -198,7 +199,9 @@ class ObservabilityToolExecutor:
         for chunk in implementation(request.command, request.parameters, stream=True):
             yield chunk
 
-    def execute_tools_batch(self, requests: list[ToolExecutionRequest]) -> list[ToolExecutionResult]:
+    def execute_tools_batch(
+        self, requests: list[ToolExecutionRequest]
+    ) -> list[ToolExecutionResult]:
         """Execute multiple tools.
 
         Args:
@@ -311,7 +314,7 @@ class ObservabilityToolExecutor:
             output=output,
             exit_code=exit_code,
             stdout=stdout,
-            stderr=stderr
+            stderr=stderr,
         )
 
     def _execute_async(self, request: ToolExecutionRequest) -> ToolExecutionResult:
@@ -327,7 +330,7 @@ class ObservabilityToolExecutor:
             command=request.command,
             success=True,
             output=output,
-            exit_code=0
+            exit_code=0,
         )
 
     def _execute_streaming(self, request: ToolExecutionRequest) -> ToolExecutionResult:
@@ -339,7 +342,7 @@ class ObservabilityToolExecutor:
             command=request.command,
             success=True,
             output={"status": "streaming_active"},
-            exit_code=0
+            exit_code=0,
         )
 
     def _execute_batch(self, request: ToolExecutionRequest) -> ToolExecutionResult:
@@ -369,7 +372,7 @@ class ObservabilityToolExecutor:
             command=request.command,
             success=total_exit_code == 0,
             output=results,
-            exit_code=total_exit_code
+            exit_code=total_exit_code,
         )
 
     def _track_execution_start(self, request: ToolExecutionRequest) -> None:
@@ -380,11 +383,12 @@ class ObservabilityToolExecutor:
             "execution_type": request.execution_type.value,
             "start_time": time.time(),
             "status": "running",
-            "cancelled": False
+            "cancelled": False,
         }
 
-    def _track_execution_complete(self, request: ToolExecutionRequest,
-                                 result: ToolExecutionResult) -> None:
+    def _track_execution_complete(
+        self, request: ToolExecutionRequest, result: ToolExecutionResult
+    ) -> None:
         """Track execution completion."""
         if request.execution_id in self._active_executions:
             execution = self._active_executions[request.execution_id]
@@ -392,8 +396,9 @@ class ObservabilityToolExecutor:
             execution["status"] = "completed" if result.success else "failed"
             execution["execution_time"] = result.execution_time
 
-    def _create_error_result(self, execution_id: str, tool_id: str,
-                            command: str, error: str, start_time: float) -> ToolExecutionResult:
+    def _create_error_result(
+        self, execution_id: str, tool_id: str, command: str, error: str, start_time: float
+    ) -> ToolExecutionResult:
         """Create error result."""
         return ToolExecutionResult(
             execution_id=execution_id,
@@ -402,7 +407,7 @@ class ObservabilityToolExecutor:
             success=False,
             error=error,
             exit_code=1,
-            execution_time=time.time() - start_time
+            execution_time=time.time() - start_time,
         )
 
     def _initialize_tools(self) -> None:
@@ -414,30 +419,33 @@ class ObservabilityToolExecutor:
             version="1.0",
             description="Collects and processes log data",
             execution_type=ExecutionType.SYNC,
-            capabilities=["collect", "filter", "parse"]
+            capabilities=["collect", "filter", "parse"],
         )
 
-        def _log_collector_impl(command: str, params: dict[str, Any], **kwargs: object) -> dict[str, Any]:
+        def _log_collector_impl(
+            command: str, params: dict[str, Any], **kwargs: object
+        ) -> dict[str, Any]:
             if command == "collect":
                 return {
                     "stdout": "Collected 100 log entries",
                     "exit_code": 0,
                     "logs": [
-                        {"timestamp": datetime.utcnow().isoformat(), "level": "info", "message": "Sample log"}
-                    ]
+                        {
+                            "timestamp": datetime.utcnow().isoformat(),
+                            "level": "info",
+                            "message": "Sample log",
+                        }
+                    ],
                 }
             elif command == "filter":
                 level = params.get("level", "info")
                 return {
                     "stdout": f"Filtered logs by level: {level}",
                     "exit_code": 0,
-                    "filtered_count": 50
+                    "filtered_count": 50,
                 }
             else:
-                return {
-                    "stderr": f"Unknown command: {command}",
-                    "exit_code": 1
-                }
+                return {"stderr": f"Unknown command: {command}", "exit_code": 1}
 
         # Metric collector tool
         metric_tool = ToolDefinition(
@@ -446,31 +454,26 @@ class ObservabilityToolExecutor:
             version="1.0",
             description="Collects system and application metrics",
             execution_type=ExecutionType.SYNC,
-            capabilities=["collect", "aggregate", "query"]
+            capabilities=["collect", "aggregate", "query"],
         )
 
-        def _metric_collector_impl(command: str, params: dict[str, Any], **kwargs: object) -> dict[str, Any]:
+        def _metric_collector_impl(
+            command: str, params: dict[str, Any], **kwargs: object
+        ) -> dict[str, Any]:
             if command == "collect":
                 return {
                     "stdout": "Collected system metrics",
                     "exit_code": 0,
-                    "metrics": {
-                        "cpu": 45.2,
-                        "memory": 67.8,
-                        "disk": 23.5
-                    }
+                    "metrics": {"cpu": 45.2, "memory": 67.8, "disk": 23.5},
                 }
             elif command == "aggregate":
                 return {
                     "stdout": "Aggregated metrics over time window",
                     "exit_code": 0,
-                    "aggregated": {"avg_cpu": 42.1, "max_memory": 78.9}
+                    "aggregated": {"avg_cpu": 42.1, "max_memory": 78.9},
                 }
             else:
-                return {
-                    "stderr": f"Unknown command: {command}",
-                    "exit_code": 1
-                }
+                return {"stderr": f"Unknown command: {command}", "exit_code": 1}
 
         # Trace analyzer tool
         trace_tool = ToolDefinition(
@@ -479,10 +482,12 @@ class ObservabilityToolExecutor:
             version="1.0",
             description="Analyzes distributed trace data",
             execution_type=ExecutionType.ASYNC,
-            capabilities=["analyze", "correlate", "visualize"]
+            capabilities=["analyze", "correlate", "visualize"],
         )
 
-        def _trace_analyzer_impl(command: str, params: dict[str, Any], **kwargs: object) -> dict[str, Any]:
+        def _trace_analyzer_impl(
+            command: str, params: dict[str, Any], **kwargs: object
+        ) -> dict[str, Any]:
             trace_id = params.get("trace_id", "default")
             return {
                 "stdout": f"Analyzed trace: {trace_id}",
@@ -491,8 +496,8 @@ class ObservabilityToolExecutor:
                     "trace_id": trace_id,
                     "span_count": 10,
                     "total_duration": 0.5,
-                    "errors": 0
-                }
+                    "errors": 0,
+                },
             }
 
         # Register built-in tools
@@ -506,14 +511,14 @@ def create_observability_tool_executor(
     default_timeout: float = 30.0,
     max_retries: int = 3,
     enable_health_checks: bool = True,
-    **kwargs: object
+    **kwargs: object,
 ) -> ObservabilityToolExecutor:
     """Create a configured observability tool executor."""
     config = ToolExecutionConfig(
         default_timeout=default_timeout,
         max_retries=max_retries,
         enable_health_checks=enable_health_checks,
-        **kwargs
+        **kwargs,
     )
     return ObservabilityToolExecutor(config)
 
@@ -525,7 +530,7 @@ def tool_use_observability_execution(
     parameters: dict[str, Any],
     execution_id: str | None = None,
     execution_type: str = "sync",
-    timeout: float = 30.0
+    timeout: float = 30.0,
 ) -> dict[str, Any]:
     """Execute observability tool.
 
@@ -548,7 +553,7 @@ def tool_use_observability_execution(
         command=command,
         parameters=parameters,
         execution_type=ExecutionType(execution_type),
-        timeout=timeout
+        timeout=timeout,
     )
 
     result = executor.execute_tool(request)
@@ -565,5 +570,5 @@ def tool_use_observability_execution(
         "metrics": result.metrics,
         "error": result.error,
         "warnings": result.warnings,
-        "execution_time": result.execution_time
+        "execution_time": result.execution_time,
     }

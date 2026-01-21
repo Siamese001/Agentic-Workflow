@@ -3,6 +3,7 @@
 Detailed RCA for Strategic Health Tab - Critical Data Delay
 Diagnoses why Observations, Actions, Table 1, and Table 2 are not loading.
 """
+
 import http.server
 import socketserver
 import threading
@@ -12,6 +13,7 @@ from pathlib import Path
 from playwright.sync_api import sync_playwright
 
 project_root = Path(__file__).parent.parent
+
 
 def diagnose_strategic_health():
     """Deep inspection of Strategic Health tab components."""
@@ -23,6 +25,7 @@ def diagnose_strategic_health():
     class Handler(http.server.SimpleHTTPRequestHandler):
         def __init__(self, *args, **kwargs):
             super().__init__(*args, directory=str(dashboard_dir), **kwargs)
+
         def log_message(self, format, *args):
             pass  # Quiet
 
@@ -54,9 +57,9 @@ def diagnose_strategic_health():
         print("[WAITING] For dashboard to initialize...")
         time.sleep(5)
 
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("RCA: STRATEGIC HEALTH TAB DIAGNOSIS")
-        print("="*80)
+        print("=" * 80)
 
         # 1. Check all data variables
         print("\n1. DATA VARIABLES STATUS:")
@@ -87,13 +90,13 @@ def diagnose_strategic_health():
         """)
 
         for var_name, info in data_check.items():
-            status = "✅" if info.get('exists') else "❌"
+            status = "✅" if info.get("exists") else "❌"
             details = []
-            if 'isArray' in info:
+            if "isArray" in info:
                 details.append(f"isArray={info['isArray']}")
-            if 'length' in info:
+            if "length" in info:
                 details.append(f"length={info['length']}")
-            if 'type' in info:
+            if "type" in info:
                 details.append(f"type={info['type']}")
             print(f"   {status} {var_name}: exists={info['exists']} {', '.join(details)}")
 
@@ -125,12 +128,12 @@ def diagnose_strategic_health():
         """)
 
         for table_name, info in table_check.items():
-            status = "✅" if info['tableExists'] and info['rowCount'] > 0 else "❌"
+            status = "✅" if info["tableExists"] and info["rowCount"] > 0 else "❌"
             print(f"   {status} {table_name}:")
             print(f"      Container exists: {info['containerExists']}")
             print(f"      Table exists: {info['tableExists']}")
             print(f"      Row count: {info['rowCount']}")
-            if info['rowCount'] == 0:
+            if info["rowCount"] == 0:
                 print(f"      innerHTML preview: {info['innerHTML'][:100]}...")
 
         # 3. Check Observations and Recommendations sections
@@ -162,11 +165,11 @@ def diagnose_strategic_health():
         """)
 
         for section_name, info in obs_check.items():
-            status = "✅" if info['hasContent'] else "❌"
+            status = "✅" if info["hasContent"] else "❌"
             print(f"   {status} {section_name}:")
             print(f"      Container exists: {info['exists']}")
             print(f"      Has content: {info['hasContent']}")
-            if not info['hasContent']:
+            if not info["hasContent"]:
                 print(f"      innerHTML: {info['innerHTML'][:100]}...")
 
         # 4. Check render functions
@@ -212,31 +215,33 @@ def diagnose_strategic_health():
         print("   Saved: rca_strategic_health.png")
 
         # Analysis
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("ROOT CAUSE ANALYSIS")
-        print("="*80)
+        print("=" * 80)
 
         issues = []
 
-        if not data_check['dashboardData']['exists']:
+        if not data_check["dashboardData"]["exists"]:
             issues.append("CRITICAL: dashboardData not loaded - Table 1 & 2 cannot render")
-        elif data_check['dashboardData']['length'] == 0:
+        elif data_check["dashboardData"]["length"] == 0:
             issues.append("CRITICAL: dashboardData is empty - Table 1 & 2 have no data")
 
-        if not data_check['observations']['exists']:
+        if not data_check["observations"]["exists"]:
             issues.append("CRITICAL: observations variable not loaded - Observations section empty")
-        elif data_check['observations']['length'] == 0:
+        elif data_check["observations"]["length"] == 0:
             issues.append("WARNING: observations array is empty")
 
-        if not data_check['recommendations']['exists']:
+        if not data_check["recommendations"]["exists"]:
             issues.append("CRITICAL: recommendations variable not loaded - Actions section empty")
-        elif data_check['recommendations']['length'] == 0:
+        elif data_check["recommendations"]["length"] == 0:
             issues.append("WARNING: recommendations array is empty")
 
-        if not table_check['table1']['tableExists']:
-            issues.append("CRITICAL: Table 1 not rendered - renderTerritorySummaryTable may have failed")
+        if not table_check["table1"]["tableExists"]:
+            issues.append(
+                "CRITICAL: Table 1 not rendered - renderTerritorySummaryTable may have failed"
+            )
 
-        if not table_check['table2']['tableExists']:
+        if not table_check["table2"]["tableExists"]:
             issues.append("CRITICAL: Table 2 not rendered - renderCodeQualityTable may have failed")
 
         if issues:
@@ -248,6 +253,7 @@ def diagnose_strategic_health():
 
         input("\nPress Enter to close browser...")
         browser.close()
+
 
 if __name__ == "__main__":
     diagnose_strategic_health()

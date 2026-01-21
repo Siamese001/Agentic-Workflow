@@ -54,12 +54,14 @@ class PerceptionNode:
             "intent": intent,
             "relevant_memory": relevant_memory,
             "input_type": raw_input.get("type", "text"),
-            "confidence": self._estimate_confidence(query, intent)
+            "confidence": self._estimate_confidence(query, intent),
         }
 
         return perceived
 
-    async def process_async(self, raw_input: dict[str, Any], context: dict[str, Any]) -> dict[str, Any]:
+    async def process_async(
+        self, raw_input: dict[str, Any], context: dict[str, Any]
+    ) -> dict[str, Any]:
         """
         Asynchronous input processing.
 
@@ -82,7 +84,7 @@ class PerceptionNode:
             "intent": intent,
             "relevant_memory": relevant_memory,
             "input_type": raw_input.get("type", "text"),
-            "confidence": self._estimate_confidence(query, intent)
+            "confidence": self._estimate_confidence(query, intent),
         }
 
         return perceived
@@ -124,7 +126,9 @@ class PerceptionNode:
         else:
             return "general"
 
-    def _retrieve_relevant_memory(self, query: str, context: dict[str, Any]) -> list[dict[str, Any]]:
+    def _retrieve_relevant_memory(
+        self, query: str, context: dict[str, Any]
+    ) -> list[dict[str, Any]]:
         """
         Retrieve relevant memory for query.
 
@@ -169,7 +173,4 @@ class PerceptionNode:
 
     def get_statistics(self) -> dict[str, Any]:
         """Get perception statistics."""
-        return {
-            "inputs_processed": self.inputs_processed,
-            "cache_size": len(self.cache)
-        }
+        return {"inputs_processed": self.inputs_processed, "cache_size": len(self.cache)}

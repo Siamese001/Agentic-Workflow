@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, orchestrator, prompt, state, workflow
@@ -9,7 +8,7 @@ from __future__ import annotations
 import ast
 import importlib  # AUTO-INJECTED BY GRAVITY HEALER
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
 import json
 import logging
@@ -21,7 +20,7 @@ except ImportError:
 try:
     from db_manager import HybridDatabaseManager
 except ImportError:
-    HybridDatabaseManager = type('HybridDatabaseManager', (), {})
+    HybridDatabaseManager = type("HybridDatabaseManager", (), {})
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -30,11 +29,11 @@ from typing import Any
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
 
-
 @dataclass
 # NAMING FIXED: CanonEntry → CanonEntry
 class CanonEntry:
     """Local Canon Entry type - moved from schemas to fix gravity Violation."""
+
     id: str
     code_snippet: str
     ast_structure: str
@@ -67,7 +66,7 @@ Logger = logging.getLogger(__name__)
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # GRAVITY FIXED (Upward Leak): from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
-_mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_mixin')
+_mod = importlib.import_module("agentic_core.L5_safety.guardrails.mcp_hardened_mixin")
 MCPHardenedMixin = _mod.MCPHardenedMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
@@ -94,7 +93,7 @@ class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         redis_host: str = "localhost",
         redis_port: int = 6379,
         qdrant_host: str = "localhost",
-        qdrant_port: int = 6333
+        qdrant_port: int = 6333,
     ) -> None:
         """
         Initialize the Canon Validator with hybrid cache.
@@ -110,22 +109,22 @@ class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             redis_host=redis_host,
             redis_port=redis_port,
             qdrant_host=qdrant_host,
-            qdrant_port=qdrant_port
+            qdrant_port=qdrant_port,
         )
 
         self.gatekeeper = get_gatekeeper()
 
         self.promotion_threshold = 3
         self.failure_threshold = 5
-        self._mcp_audit('init')
+        self._mcp_audit("init")
 
         Logger.info("CanonValidatorAgent initialized with hybrid cache")
 
     def _run_self_tests(self) -> bool:
         """Phase 1: Self-testing for L1 compliance."""
         super()._run_self_tests()
-        assert hasattr(self, 'db_manager'), "Missing db_manager"
-        assert hasattr(self, 'gatekeeper'), "Missing gatekeeper"
+        assert hasattr(self, "db_manager"), "Missing db_manager"
+        assert hasattr(self, "gatekeeper"), "Missing gatekeeper"
         return True
 
     def _perform_healing(self, anomaly: AnomalyReport) -> bool:
@@ -183,9 +182,7 @@ class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             Logger.error(f"Error generating embedding for CanonEntry: {e}")
 
         entry_metadata = metadata or {}
-        entry_metadata.update({
-            "embedding_generated_at": datetime.now(timezone.utc).isoformat()
-        })
+        entry_metadata.update({"embedding_generated_at": datetime.now(timezone.utc).isoformat()})
 
         # Generate a unique ID for the entry using uuid.uuid4()
         # This ensures uniqueness and consistency across runs/processes.
@@ -196,9 +193,12 @@ class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             code_snippet=code,
             embedding=embedding,
             ast_structure=ast_representation,
-            metadata=entry_metadata
+            metadata=entry_metadata,
         )
-    def check_and_learn(self, new_code: str, context: dict[str, Any] | None = None) -> dict[str, Any]:
+
+    def check_and_learn(
+        self, new_code: str, context: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Check code against the Canon and learn from results.
 
@@ -218,11 +218,13 @@ class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         """
         # Generate entry for new code
         metadata = context or {}
-        metadata.update({
-            "canon_rule_id": metadata.get("canon_rule_id", "validation"),
-            "project_context": metadata.get("project_context", "validation"),
-            "validation_timestamp": datetime.now(timezone.utc).isoformat()
-        })
+        metadata.update(
+            {
+                "canon_rule_id": metadata.get("canon_rule_id", "validation"),
+                "project_context": metadata.get("project_context", "validation"),
+                "validation_timestamp": datetime.now(timezone.utc).isoformat(),
+            }
+        )
 
         new_entry = self._generate_entry(new_code, metadata)
 
@@ -232,7 +234,7 @@ class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             query_vector=new_entry.embedding,
             l1_threshold=0.9,
             l2_threshold=0.7,
-            filter_failures=True
+            filter_failures=True,
         )
 
         # Initialize default result
@@ -281,7 +283,9 @@ class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             return error_dict["error"]
         return None
 
-    def _handle_ast_parsing_errors(self, new_ast_str: str, existing_ast_str: str) -> dict[str, Any] | None:
+    def _handle_ast_parsing_errors(
+        self, new_ast_str: str, existing_ast_str: str
+    ) -> dict[str, Any] | None:
         """
         Checks for AST parsing errors in new and existing AST strings.
         Returns a validation result dictionary if an error is found, otherwise None.
@@ -292,7 +296,7 @@ class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
                 "is_match": False,
                 "is_valid": False,
                 "confidence": 0.0,
-                "Recommendation": f"Syntax error in new code: {new_ast_error}"
+                "Recommendation": f"Syntax error in new code: {new_ast_error}",
             }
 
         existing_ast_error = self._extract_ast_error_message(existing_ast_str)
@@ -301,13 +305,12 @@ class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
                 "is_match": False,
                 "is_valid": False,
                 "confidence": 0.0,
-                "Recommendation": f"Reference pattern has syntax error: {existing_ast_error}"
+                "Recommendation": f"Reference pattern has syntax error: {existing_ast_error}",
             }
         return None
+
     def _validate_ast_match(
-        self,
-        new_entry: CanonEntry,
-        existing_entry: CanonEntry
+        self, new_entry: CanonEntry, existing_entry: CanonEntry
     ) -> dict[str, Any]:
         """
         Validate AST structures between two entries.
@@ -333,7 +336,9 @@ class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
         # Calculate AST similarity using the original code snippets
         # FIX: Pass code_snippet instead of ast_dump_str to _calculate_ast_similarity
-        similarity = self._calculate_ast_similarity(new_entry.code_snippet, existing_entry.code_snippet)
+        similarity = self._calculate_ast_similarity(
+            new_entry.code_snippet, existing_entry.code_snippet
+        )
 
         # Check if existing pattern is successful
         success_rate = existing_entry.get_success_rate()
@@ -345,9 +350,9 @@ class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
         return {
             "is_match": similarity > 0.7,  # Indicates if ASTs are structurally similar
-            "is_valid": is_valid,          # Indicates if the pattern is considered valid based on history
+            "is_valid": is_valid,  # Indicates if the pattern is considered valid based on history
             "confidence": similarity,
-            "Recommendation": self._generate_recommendation(similarity, success_rate)
+            "Recommendation": self._generate_recommendation(similarity, success_rate),
         }
 
     def _get_ast_node_types_from_tree(self, tree: ast.AST) -> set[str]:
@@ -413,7 +418,7 @@ class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             "matched_pattern": None,
             "source": "no_match",
             "ast_match": False,
-            "Recommendation": "Code appears to be new and valid"
+            "Recommendation": "Code appears to be new and valid",
         }
 
     def _process_l1_match(self, new_entry: CanonEntry, best_match: CanonEntry) -> dict[str, Any]:
@@ -426,7 +431,7 @@ class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             "ast_match": validation["is_match"],
             "confidence": validation["confidence"],
             "is_valid": validation["is_valid"],
-            "Recommendation": validation["Recommendation"]
+            "Recommendation": validation["Recommendation"],
         }
 
         Logger.info(f"L1 match found: {best_match.id}. Is valid: {validation['is_valid']}")
@@ -442,7 +447,7 @@ class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             "ast_match": validation["is_match"],
             "confidence": validation["confidence"],
             "is_valid": validation["is_valid"],
-            "Recommendation": validation["Recommendation"]
+            "Recommendation": validation["Recommendation"],
         }
 
         Logger.info(f"L2 match found: {best_match.id}. Is valid: {validation['is_valid']}")
@@ -461,22 +466,30 @@ class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     def _handle_failure_outcome(self, entry: CanonEntry) -> None:
         """Helper to handle failure outcome for an entry."""
         entry.update_failure()
-        Logger.info(f"Recorded failure for pattern {entry.id}. Failure count: {entry.failure_count}")
+        Logger.info(
+            f"Recorded failure for pattern {entry.id}. Failure count: {entry.failure_count}"
+        )
 
         # If too many failures, consider blocking or further action
         if entry.failure_count >= self.failure_threshold:
-            Logger.warning(f"Pattern {entry.id} exceeded failure threshold ({self.failure_threshold}).")
+            Logger.warning(
+                f"Pattern {entry.id} exceeded failure threshold ({self.failure_threshold})."
+            )
 
     def _handle_success_outcome(self, entry: CanonEntry) -> None:
         """Helper to handle success outcome for an entry."""
         entry.update_success()
-        Logger.info(f"Recorded success for pattern {entry.id}. Success count: {entry.success_count}")
+        Logger.info(
+            f"Recorded success for pattern {entry.id}. Success count: {entry.success_count}"
+        )
 
         # Check for promotion to L2 (Qdrant) if it meets the threshold
         # This implies moving it from L1 (Redis) to L2 (Qdrant) or updating its status in L2.
         if entry.success_count >= self.promotion_threshold:
-            self.db_manager.promote_to_l2(entry) # This method name is still ambiguous.
-            Logger.info(f"Pattern {entry.id} promoted to L2 (Qdrant) due to success threshold ({self.promotion_threshold}).")
+            self.db_manager.promote_to_l2(entry)  # This method name is still ambiguous.
+            Logger.info(
+                f"Pattern {entry.id} promoted to L2 (Qdrant) due to success threshold ({self.promotion_threshold})."
+            )
 
     def update_learning(self, entry_id: str, outcome: str, error_trace: str | None = None) -> None:
         """
@@ -504,7 +517,9 @@ class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         elif outcome.upper() == "SUCCESS":
             self._handle_success_outcome(entry)
         else:
-            Logger.warning(f"Unknown outcome '{outcome}' for entry {entry_id}. No update performed.")
+            Logger.warning(
+                f"Unknown outcome '{outcome}' for entry {entry_id}. No update performed."
+            )
             return
 
         # Update the entry in Redis (L1)
@@ -515,11 +530,13 @@ class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         stats = self.db_manager.get_stats()
 
         # Add additional learning metrics
-        stats.update({
-            "promotion_threshold": self.promotion_threshold,
-            "failure_threshold": self.failure_threshold,
-            "learning_active": True
-        })
+        stats.update(
+            {
+                "promotion_threshold": self.promotion_threshold,
+                "failure_threshold": self.failure_threshold,
+                "learning_active": True,
+            }
+        )
 
         return stats
 
@@ -535,14 +552,11 @@ class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             "success_rate": result.get_success_rate(),
             "project": result.metadata.get("project_context", "unknown"),
             "last_validated": result.metadata.get("last_validated"),
-            "is_golden": result.metadata.get("is_golden_pattern", False)
+            "is_golden": result.metadata.get("is_golden_pattern", False),
         }
 
     def search_similar_patterns(
-        self,
-        code: str,
-        max_results: int = 10,
-        include_failures: bool = False
+        self, code: str, max_results: int = 10, include_failures: bool = False
     ) -> list[dict[str, Any]]:
         """
         Search for similar patterns in the Canon.
@@ -564,17 +578,18 @@ class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             query_vector=query_entry.embedding,
             l1_threshold=0.9,
             l2_threshold=0.7,
-            filter_failures=not include_failures
+            filter_failures=not include_failures,
         )
 
         # Combine and format results, prioritizing L1 results
         all_results = l1_results + l2_results
 
         formatted: list[dict[str, Any]] = []
-        for result in all_results[:max_results]: # Take up to max_results from combined list
+        for result in all_results[:max_results]:  # Take up to max_results from combined list
             formatted.append(self._format_search_result(result))
 
         return formatted
+
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()

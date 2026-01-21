@@ -6,6 +6,7 @@ Tests for dashboard live runtime meta-learning and telemetry.
 
 Migrated from: agentic_core/observability/test_phase1_phase2_telemetry.py
 """
+
 import sys
 from pathlib import Path
 
@@ -22,8 +23,12 @@ class TestRuntimeStateSchema:
     def test_runtime_state_has_basic_fields(self):
         """Verify runtime state schema has basic required fields."""
         required_fields = [
-            'timestamp', 'agent_count', 'active_agents',
-            'meta_learning', 'redis', 'pinecone'
+            "timestamp",
+            "agent_count",
+            "active_agents",
+            "meta_learning",
+            "redis",
+            "pinecone",
         ]
         # This is a schema validation test - actual implementation would check the schema
         assert len(required_fields) == 6
@@ -31,16 +36,22 @@ class TestRuntimeStateSchema:
     def test_meta_learning_section_structure(self):
         """Verify meta-learning section has required structure."""
         meta_learning_fields = [
-            'strategy_weights', 'experience_count', 'pattern_count',
-            'last_update', 'active_strategies'
+            "strategy_weights",
+            "experience_count",
+            "pattern_count",
+            "last_update",
+            "active_strategies",
         ]
         assert len(meta_learning_fields) == 5
 
     def test_redis_section_structure(self):
         """Verify Redis section has required structure."""
         redis_fields = [
-            'connected', 'operations_count', 'cache_hits',
-            'cache_misses', 'last_operation'
+            "connected",
+            "operations_count",
+            "cache_hits",
+            "cache_misses",
+            "last_operation",
         ]
         assert len(redis_fields) == 5
 

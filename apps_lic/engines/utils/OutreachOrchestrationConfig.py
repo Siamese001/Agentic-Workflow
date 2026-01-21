@@ -13,6 +13,7 @@ from enum import Enum
 
 class Route(str, Enum):
     """Message delivery routes."""
+
     INMAIL = "INMAIL"
     CONNECTION_REQ = "CONNECTION_REQ"
     EMAIL = "EMAIL"
@@ -23,6 +24,7 @@ class Route(str, Enum):
 
 class Archetype(str, Enum):
     """Recipient archetypes for personalization."""
+
     C_LEVEL = "C_LEVEL"
     EXECUTIVE = "EXECUTIVE"
     SENIOR_TA = "SENIOR_TA"
@@ -31,6 +33,7 @@ class Archetype(str, Enum):
 
 class ValidationSeverity(str, Enum):
     """Validation result Severity levels."""
+
     CRITICAL = "CRITICAL"
     HIGH = "HIGH"
     MEDIUM = "MEDIUM"
@@ -40,6 +43,7 @@ class ValidationSeverity(str, Enum):
 @dataclass
 class CharLimitConstraint:
     """Character limit constraint for a Route."""
+
     min: int | None = None
     max: int | None = None
 
@@ -55,6 +59,7 @@ class CharLimitConstraint:
 @dataclass
 class WordLimitConstraint:
     """Word limit constraint for a Route."""
+
     min: int | None = None
     max: int | None = None
 
@@ -70,6 +75,7 @@ class WordLimitConstraint:
 @dataclass
 class RouteConfig:
     """Configuration for a message Route."""
+
     Route: Route
     char_limit: CharLimitConstraint | None = None
     word_limit: WordLimitConstraint | None = None
@@ -85,6 +91,7 @@ class RouteConfig:
 @dataclass
 class ArchetypeConfig:
     """Configuration for recipient Archetype."""
+
     Archetype: Archetype
     temperature: float = 0.7
     rag_enabled: bool = True
@@ -100,6 +107,7 @@ class ArchetypeConfig:
 @dataclass
 class ValidationRule:
     """Validation rule configuration."""
+
     rule_id: str
     name: str
     phase: str
@@ -282,25 +290,54 @@ ARCHETYPE_CONFIGS = {
 # Archetype Classification Tokens (from LinkedInCanonical v2.90)
 ARCHETYPE_TOKENS = {
     "C_LEVEL": [
-        "CEO", "Chief Executive Officer", "President", "COO", "CTO", "CIO",
-        "CFO", "CDO", "CRO", "CXO", "Chief", "CEO direct report"
+        "CEO",
+        "Chief Executive Officer",
+        "President",
+        "COO",
+        "CTO",
+        "CIO",
+        "CFO",
+        "CDO",
+        "CRO",
+        "CXO",
+        "Chief",
+        "CEO direct report",
     ],
     "EXECUTIVE": [
-        "EVP", "SVP", "VP", "Head of", "GM", "General Manager",
-        "Executive", "GTM Leader", "Vice President"
+        "EVP",
+        "SVP",
+        "VP",
+        "Head of",
+        "GM",
+        "General Manager",
+        "Executive",
+        "GTM Leader",
+        "Vice President",
     ],
     "SENIOR_TA": [
-        "Talent Acquisition", "TA", "Recruiter", "Sourcer",
-        "Talent Partner", "Global Talent Partner", "Recruiting"
+        "Talent Acquisition",
+        "TA",
+        "Recruiter",
+        "Sourcer",
+        "Talent Partner",
+        "Global Talent Partner",
+        "Recruiting",
     ],
-    "RECRUITER": [
-        "Recruiter", "Talent Acquisition Specialist", "Sourcing Specialist"
-    ],
+    "RECRUITER": ["Recruiter", "Talent Acquisition Specialist", "Sourcing Specialist"],
 }
 
 # CXO Precedence Rule (from LinkedInCanonical v2.90)
 CXO_PRECEDENCE_TOKENS = [
-    "CEO", "CXO", "CRO", "President", "COO", "CTO", "CIO", "CFO", "CDO", "Chief"
+    "CEO",
+    "CXO",
+    "CRO",
+    "President",
+    "COO",
+    "CTO",
+    "CIO",
+    "CFO",
+    "CDO",
+    "Chief",
 ]
 
 # Validation Rules (from v10.10 and v11.9)
@@ -459,8 +496,14 @@ VALIDATION_RULES = [
 
 # Forbidden Words and Phrases (from v11.9)
 FORBIDDEN_VERBS = [
-    "spearheaded", "leveraged", "drove", "drive", "synergized",
-    "utilized", "facilitated", "orchestrated"
+    "spearheaded",
+    "leveraged",
+    "drove",
+    "drive",
+    "synergized",
+    "utilized",
+    "facilitated",
+    "orchestrated",
 ]
 
 FORBIDDEN_FILLER_PHRASES = [

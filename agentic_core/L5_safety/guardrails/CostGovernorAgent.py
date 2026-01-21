@@ -29,6 +29,7 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 class BudgetExceededError(Exception):
     """Raised when LLM spending exceeds the configured budget limit."""
+
     pass
 
 
@@ -58,7 +59,7 @@ class CostGovernorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                 - budget_limit: Maximum allowed spend in dollars (default: 10.0)
         """
         self.config: dict[str, Any] = config
-        self.limit: float = config.get('budget_limit', 10.0)
+        self.limit: float = config.get("budget_limit", 10.0)
         self.spend: float = 0.0
 
     def track(self, model: str, input_tokens: int, output_tokens: int) -> float:
@@ -77,10 +78,10 @@ class CostGovernorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         """
         cost: float = (input_tokens + output_tokens) * 2e-05
         self.spend += cost
-        logging.info(f'Governor: Current Spend ${self.spend:.4f} / Limit ${self.limit:.2f}')
+        logging.info(f"Governor: Current Spend ${self.spend:.4f} / Limit ${self.limit:.2f}")
         if self.spend > self.limit:
             raise BudgetExceededError(
-                f'BUDGET EXCEEDED: ${self.spend:.2f} exceeds limit of ${self.limit:.2f}'
+                f"BUDGET EXCEEDED: ${self.spend:.2f} exceeds limit of ${self.limit:.2f}"
             )
         return cost
 
@@ -92,7 +93,7 @@ class CostGovernorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: set[str] | None = None
+        _call_path: set[str] | None = None,
     ) -> dict[str, int]:
         """Execute L5 safety healing operations.
 
