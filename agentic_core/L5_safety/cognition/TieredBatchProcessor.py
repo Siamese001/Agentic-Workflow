@@ -1,14 +1,14 @@
 """
-[PHASE 15] Tiered Batch Processor - Smart Hybrid Disposition.
+[PHASE 15/17] Tiered Batch Processor - Smart Hybrid Disposition.
 
 Implements a tiered approach to violation processing:
 - Tier 1: High-confidence heuristics (>=0.75) - auto-execute immediately
 - Tier 2: Low-confidence files (<0.75) - route to LLM Gemini
-- Meta-learning: Cache decisions in Redis/Pinecone for future reference
+- Phase 17: Semantic Meta-Learning with Redis/Pinecone caching
 
 This dramatically reduces LLM API calls while maintaining intelligent triage.
 
-[SSOT] Integrates with CognitiveDispositionAgent and semantic cache.
+[SSOT] Integrates with CognitiveDispositionAgent and SemanticCacheManager.
 """
 from __future__ import annotations
 
@@ -72,9 +72,8 @@ class TieredBatchProcessor:
             "errors": 0,
         }
         
-        # Semantic cache clients (lazy-loaded)
-        self._redis_client = None
-        self._pinecone_index = None
+        # Phase 17: Semantic Cache Manager (lazy-loaded)
+        self._semantic_cache = None
         
         Logger.info(f"[TIERED] Initialized with threshold: {heuristic_threshold:.0%}")
     
@@ -98,23 +97,34 @@ class TieredBatchProcessor:
         except Exception as e:
             Logger.error(f"[TIERED] Checkpoint save failed: {e}")
     
-    def _get_redis_client(self):
-        """Lazy-load Redis client for semantic caching."""
-        if self._redis_client is None and self.use_semantic_cache:
+    def _get_semantic_cache(self):
+        """
+        [PHASE 17] Lazy-load SemanticCacheManager.
+        
+        Returns:
+            SemanticCacheManager instance or None
+        """
+        if self._semantic_cache is None and self.use_semantic_cache:
             try:
-                import redis
-                redis_url = os.environ.get("REDIS_URL", "redis://localhost:6379")
-                self._redis_client = redis.from_url(redis_url)
-                self._redis_client.ping()
-                Logger.info("[TIERED] Redis connected for semantic cache")
+                from agentic_core.L5_safety.cognition.SemanticCacheManager import (
+                    SemanticCacheManager,
+                )
+                self._semantic_cache = SemanticCacheManager(
+                    api_key=self.agent.api_key,
+                )
+                Logger.info("[TIERED] SemanticCacheManager initialized")
             except Exception as e:
-                Logger.warning(f"[TIERED] Redis not available: {e}")
-                self._redis_client = None
-        return self._redis_client
+                Logger.warning(f"[TIERED] SemanticCacheManager unavailable: {e}")
+                self._semantic_cache = None
+        return self._semantic_cache
     
     def _check_semantic_cache(self, file_path: str, violation_type: str) -> Optional[dict]:
         """
-        Check Redis for cached disposition decision.
+        [PHASE 17] Check semantic cache for cached disposition decision.
+        
+        Uses dual-layer caching:
+        1. Redis: Exact content hash matching
+        2. Pinecone: Semantic similarity matching
         
         Args:
             file_path: Path to file
@@ -123,19 +133,14 @@ class TieredBatchProcessor:
         Returns:
             Cached decision dict or None
         """
-        redis = self._get_redis_client()
-        if not redis:
+        cache = self._get_semantic_cache()
+        if not cache:
             return None
         
         try:
-            # Create cache key from file pattern
-            file_name = Path(file_path).name
-            cache_key = f"cognitive:disposition:{violation_type}:{file_name}"
-            
-            cached = redis.get(cache_key)
-            if cached:
-                Logger.debug(f"[TIERED] Cache hit: {file_name}")
-                return json.loads(cached)
+            # Read file content for cache lookup
+            content = self.agent._read_file_safe(Path(file_path))
+            return cache.get_cached_decision(content, violation_type)
         except Exception as e:
             Logger.debug(f"[TIERED] Cache check failed: {e}")
         
@@ -143,24 +148,24 @@ class TieredBatchProcessor:
     
     def _store_semantic_cache(self, file_path: str, violation_type: str, decision: dict) -> None:
         """
-        Store disposition decision in Redis cache.
+        [PHASE 17] Store disposition decision in semantic cache.
+        
+        Stores in both Redis (exact) and Pinecone (semantic) for meta-learning.
         
         Args:
             file_path: Path to file
             violation_type: Type of violation
             decision: Decision dict to cache
         """
-        redis = self._get_redis_client()
-        if not redis:
+        cache = self._get_semantic_cache()
+        if not cache:
             return
         
         try:
-            file_name = Path(file_path).name
-            cache_key = f"cognitive:disposition:{violation_type}:{file_name}"
-            
-            # Cache for 24 hours
-            redis.setex(cache_key, 86400, json.dumps(decision))
-            Logger.debug(f"[TIERED] Cached: {file_name}")
+            # Only cache high-confidence decisions for meta-learning
+            if decision.get("confidence", 0) >= 0.8:
+                content = self.agent._read_file_safe(Path(file_path))
+                cache.cache_decision(content, violation_type, decision)
         except Exception as e:
             Logger.debug(f"[TIERED] Cache store failed: {e}")
     
