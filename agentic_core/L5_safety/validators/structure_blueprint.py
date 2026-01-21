@@ -59,7 +59,7 @@ SOVEREIGN_REGISTRY: Any = {
         ],
     },
     "apps_shared": {
-        "depth": 3,
+        "depth": 2,
         "subfolders": [
             "base_definitions",
             "common_utils",
@@ -84,14 +84,8 @@ SOVEREIGN_REGISTRY: Any = {
             "e2e",
             "functional",
             "fixtures",
-            "automation",
-            "core",
-            "data",
-            "performance",
-            "security",
-            "autogen",
-            "utils",
         ],
+        "purpose": "Test suites organized by test type",
     },
     "scripts": {"depth": 1, "subfolders": [], "purpose": "Standalone utility scripts"},
     ".sovereign_healing_backup": {
@@ -281,6 +275,24 @@ L4_APPROVED_FOLDERS: set[str] = {
     "agentic_core/schemas/models",  # 42 files - added per SSOT review
     "agentic_core/utils/core_extensions",
     "agentic_core/config/blueprint_sovereign",  # 20 files - added per SSOT review
+}
+
+# ============================================================================
+# SCRIPTS PLACEMENT RULES - Semantic Boundary Enforcement
+# ============================================================================
+# Distinguishes root scripts/ (standalone utilities) from L0_maintenance/scripts/
+# (sovereign system scripts). Uses AST import analysis, NOT line counts.
+SCRIPTS_PLACEMENT_RULES: dict[str, dict[str, Any]] = {
+    "root_scripts": {
+        "description": "Standalone utilities (setup, pip, env) with NO core dependencies.",
+        "forbidden_imports": ["agentic_core"],
+        "allowed_depth": 1,
+    },
+    "l0_maintenance_scripts": {
+        "description": "System maintenance, healing, and sovereign agents.",
+        "required_capabilities": ["core_access"],
+        "preferred_location": "agentic_core/L0_maintenance/scripts",
+    },
 }
 
 CORE_SUBFOLDER_MAP: Any = {
@@ -958,6 +970,17 @@ _STATIC_ROOT_PROTECTED_FILES: frozenset[str] = frozenset(
         ".env",
         "windsurfrules.md",
         ".gitignore",
+        ".pre-commit-config.yaml",
+        ".coverage",
+        "pytest.ini",
+        ".python-version",
+        ".schema_violations_tracking.yaml",
+        ".secrets.baseline",
+        "archives_restoration_manifest.json",
+        "audit_residual_rglob_results.json",
+        "git.code-workspace",
+        "current_test_status.txt",
+        "mission_audit.csv",
     }
 )
 
@@ -1024,7 +1047,7 @@ FORBIDDEN_ROOT_FOLDERS: frozenset[str] = frozenset(
     {"legacy_code", "legacy_engines", "legacy_resume_gen", "old_core"}
 )
 TESTS_ROOT_FILE_WHITELIST: frozenset[str] = frozenset(
-    {"conftest.py", "sovereign_smoke_test.py", "test_autonomous_improvements.py"}
+    {"conftest.py", "pytest.ini", "sovereign_smoke_test.py", "test_autonomous_improvements.py"}
 )
 AUTONOMOUS_AGENT_WHITELIST: frozenset[str] = frozenset(
     {

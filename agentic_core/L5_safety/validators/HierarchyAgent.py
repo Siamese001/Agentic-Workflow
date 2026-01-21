@@ -76,7 +76,13 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
        - Archives orphaned files from forbidden locations
     """
 
-    def __init__(self, project_root: Path, healing_enabled: bool = True, ctx: Any = None) -> None:
+    def __init__(
+        self,
+        project_root: Path,
+        healing_enabled: bool = True,
+        ctx: Any = None,
+        auto_approve: bool = False,
+    ) -> None:
         """
         Initialize the unified hierarchy agent.
 
@@ -84,6 +90,7 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             project_root: Absolute path to the project root
             healing_enabled: Whether healing operations are enabled (dry-run if False)
             ctx: Optional context for reporting
+            auto_approve: If True, bypasses interactive user confirmation for moves
         """
         self.project_root = project_root.resolve()
         self.healing_enabled = healing_enabled
@@ -93,10 +100,15 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         self.archive_root = project_root / "archives" / "hierarchy_violations"
         self._skip_all_moves = False  # Flag to skip all move prompts
         self._approve_all_moves = False  # Flag to approve all move prompts
+        self._auto_approve = auto_approve  # Safety latch for CI/automated enforcement
 
         # Initialize ArchivalGatekeeper for safe file operations
         self.gatekeeper = ArchivalGatekeeper.get_instance(self.project_root)
         self.agent_name = "HierarchyAgent"
+
+        # Configure gatekeeper based on auto_approve setting
+        if auto_approve:
+            self.gatekeeper.set_require_approval(False)
 
         if healing_enabled:
             self.archive_root.mkdir(parents=True, exist_ok=True)
@@ -117,11 +129,18 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         if self._approve_all_moves:
             return True
 
+        # Check Sovereign Override (auto_approve from heal_hierarchy)
+        if self._auto_approve:
+            Logger.info(f"[HierarchyAgent] Auto-approving move: {source.name} -> {target}")
+            return True
+
         # Check if we're in a non-interactive environment
         import sys
 
         if not sys.stdin.isatty():
-            Logger.warning(f"[HierarchyAgent] Non-interactive mode - skipping move: {source.name}")
+            Logger.warning(
+                f"[HierarchyAgent] Non-interactive session & auto_approve=False. Skipping move: {source.name}"
+            )
             return False
 
         try:
@@ -238,23 +257,60 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
     def relocate_misplaced_files(self) -> dict[str, Any]:
         """
-        Relocate files from non-approved L1/L2 folders to approved locations.
+        Relocate files from all Sovereign Roots to approved locations.
 
         Detection-First: Always scans and counts violations, only heals if healing_enabled=True.
 
         Returns:
-            Dict with counts of relocated files, removed folders, and violations found
+            Dict with counts of relocated files, removed folders, violations found, and roots processed
         """
-        results = {"files_relocated": 0, "folders_removed": 0, "violations_found": 0, "errors": []}
+        results = {
+            "files_relocated": 0,
+            "folders_removed": 0,
+            "violations_found": 0,
+            "errors": [],
+            "roots_processed": [],
+        }
 
-        Logger.info("HierarchyAgent: Auditing misplaced files across sovereign layers...")
+        # Universal Scope: Iterate through all roots defined in SOVEREIGN_REGISTRY
+        target_roots = [r for r in SOVEREIGN_REGISTRY.keys() if (self.project_root / r).exists()]
 
-        # Approved L2 Layers (e.g., L5_safety)
+        Logger.info(
+            f"HierarchyAgent: Auditing {len(target_roots)} sovereign territories: {target_roots}"
+        )
+
+        for root_name in target_roots:
+            root_path = self.project_root / root_name
+            results["roots_processed"].append(root_name)
+
+            # Dispatch based on root type
+            if root_name == "agentic_core":
+                self._enforce_agentic_core_structure(root_path, results)
+            elif root_name.startswith("apps_"):
+                self._enforce_apps_structure(root_path, results)
+            elif root_name == "tests":
+                self._enforce_tests_structure(root_path, results)
+
+        if results["violations_found"] > 0:
+            Logger.info(
+                f"HierarchyAgent: [RELOCATION] Found {results['violations_found']} misplaced files"
+            )
+            if self.healing_enabled:
+                Logger.info(
+                    f"HierarchyAgent: [RELOCATION] {results['files_relocated']} files relocated, {results['folders_removed']} folders removed"
+                )
+                # Universal Cleanup: Trigger recursive empty dir removal for all processed roots
+                for root_name in results.get("roots_processed", []):
+                    root_path = self.project_root / root_name
+                    self._remove_empty_dirs(root_path)
+
+        return results
+
+    def _enforce_agentic_core_structure(
+        self, agentic_core_path: Path, results: dict[str, Any]
+    ) -> None:
+        """Enforce strictly defined L2 structure for agentic_core."""
         approved_layers_l2 = set(SOVEREIGN_REGISTRY.get("agentic_core", {}).get("subfolders", []))
-
-        agentic_core_path = self.project_root / "agentic_core"
-        if not agentic_core_path.exists():
-            return results
 
         # Phase 1: Find all non-approved Layer (L2) folders
         actual_layers_l2 = {
@@ -273,16 +329,85 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         for layer_l2_name in approved_layers_l2:
             self._relocate_l3_territory_files(agentic_core_path, layer_l2_name, results)
 
-        if results["violations_found"] > 0:
-            Logger.info(
-                f"HierarchyAgent: [RELOCATION] Found {results['violations_found']} misplaced files"
-            )
-            if self.healing_enabled:
-                Logger.info(
-                    f"HierarchyAgent: [RELOCATION] {results['files_relocated']} files relocated, {results['folders_removed']} folders removed"
+    def _enforce_apps_structure(self, root_path: Path, results: dict[str, Any]) -> None:
+        """Flatten files in apps_*/subfolder/subsubfolder/ to match target depth."""
+        root_key = root_path.name
+        target_depth = SOVEREIGN_REGISTRY.get(root_key, {}).get("depth", 2)
+
+        # Use existing depth enforcement logic but specifically for apps scope
+        # This will trigger _heal_depth_violation which handles flattening
+        from agentic_core.utils.ssot_discovery import get_python_files
+
+        for py_file in get_python_files(root_path):
+            rel = py_file.relative_to(self.project_root)
+            current_depth = len(rel.parts) - 1
+
+            if current_depth > target_depth:
+                results["violations_found"] += 1
+                Logger.warning(
+                    f"   [!] DEPTH DRIFT: {rel} is depth {current_depth}, expected {target_depth}"
+                )
+                if self.healing_enabled:
+                    archived = self._heal_depth_violation(py_file, rel, current_depth, target_depth)
+                    if archived:
+                        results["files_relocated"] += 1
+
+    def _enforce_tests_structure(self, root_path: Path, results: dict[str, Any]) -> None:
+        """Categorize test files into unit, integration, e2e, functional, or fixtures."""
+        # Use rglob directly since we specifically want test files
+        approved_subfolders = {"unit", "integration", "e2e", "functional", "fixtures"}
+
+        # Get all .py files in tests directory
+        py_files = list(root_path.rglob("*.py"))
+
+        for py_file in py_files:
+            rel = py_file.relative_to(root_path)
+
+            # Skip files already in approved subfolders
+            if len(rel.parts) > 1 and rel.parts[0] in approved_subfolders:
+                continue
+
+            # Skip whitelisted root files (conftest.py, pytest.ini)
+            if len(rel.parts) == 1:
+                from agentic_core.L5_safety.validators.structure_blueprint import (
+                    TESTS_ROOT_FILE_WHITELIST,
                 )
 
-        return results
+                if py_file.name in TESTS_ROOT_FILE_WHITELIST:
+                    continue
+
+            # Determine target category
+            name = py_file.name.lower()
+            if "fixture" in name or "conftest" in name:
+                category = "fixtures"
+            elif "_e2e" in name or "e2e" in name:
+                category = "e2e"
+            elif "_integration" in name or "integration" in name:
+                category = "integration"
+            elif "_functional" in name or "functional" in name:
+                category = "functional"
+            else:
+                category = "unit"  # Default
+
+            target_dir = root_path / category
+            target_dir.mkdir(parents=True, exist_ok=True)
+            dest = target_dir / py_file.name
+
+            if not dest.exists():
+                results["violations_found"] += 1
+                Logger.warning(f"   [!] UNCATEGORIZED TEST: {rel} -> {category}/")
+                if self.healing_enabled:
+                    if self._prompt_user_for_move_approval(
+                        py_file, dest, f"Categorize test as '{category}'"
+                    ):
+                        gk_result = self.gatekeeper.safe_move(
+                            py_file, dest, self.agent_name, f"Test categorization: {category}"
+                        )
+                        if gk_result.success:
+                            results["files_relocated"] += 1
+                            Logger.info(f"      [✓] CATEGORIZED: {py_file.name} -> {category}/")
+            else:
+                Logger.warning(f"      [!] SKIP (exists): {py_file.name} in {category}/")
 
     def _relocate_l2_layer_files(
         self,
@@ -523,7 +648,7 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             depth = len(rel.parts) - 1  # Subtract 1 because file itself is not a level
 
             # [SSOT FIX] Check if this is a variable-depth subfolder (exempt from strict depth check)
-            if root_key == "agentic_core" and len(rel.parts) > 1:
+            if len(rel.parts) > 1:
                 subfolder = rel.parts[1]
                 if subfolder in VARIABLE_DEPTH_SUBFOLDERS:
                     # Allow any depth >= 2 for variable-depth subfolders
@@ -672,10 +797,19 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             return False
 
     def _enforce_apps_depth(self) -> int:
-        """Enforce apps_* depth rule using generic handler."""
-        return self._enforce_depth_for_root(
-            "apps_rg", lambda r: r.startswith("apps_"), "apps_depth", "APPS"
-        )
+        """Enforce apps_* depth rule using generic handler for each apps folder."""
+        total_violations = 0
+        # Check each apps_* folder with its own depth requirement
+        for apps_key in ["apps_rg", "apps_lic", "apps_shared"]:
+            if apps_key in SOVEREIGN_REGISTRY:
+                violations = self._enforce_depth_for_root(
+                    apps_key,
+                    lambda r, key=apps_key: r == key,
+                    "apps_depth",
+                    f"APPS_{apps_key.upper()}",
+                )
+                total_violations += violations
+        return total_violations
 
     def _enforce_tests_depth(self) -> int:
         """Enforce tests depth rule using generic handler."""
@@ -847,6 +981,10 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                 elif len(parts) == 1:
                     violations_found += 1
                     Logger.warning(f"      [⚠]  ORPHANED ROOT FILE: {file_path.name}")
+                elif parts and parts[0] not in allowed_roots:
+                    # File is in a non-SSOT root folder (e.g., rogue_folder/)
+                    violations_found += 1
+                    Logger.warning(f"      [⚠]  ORPHANED IN NON-SSOT ROOT '{parts[0]}': {rel_path}")
                 else:
                     continue
 
@@ -934,6 +1072,7 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         purge_orphans: bool = True,
         execute: bool = False,
         dry_run: bool = True,
+        auto_approve: bool = False,
         **kwargs,
     ) -> dict[str, Any]:
         """
@@ -944,10 +1083,20 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             relocate_files: Relocate files from non-approved folders
             enforce_depth: Enforce depth rules and archive violations
             purge_orphans: Purge orphaned files
+            auto_approve: If True, bypasses interactive user confirmation for moves.
+                          USE WITH CAUTION - intended for CI/automated enforcement.
 
         Returns:
             Comprehensive results dictionary
         """
+        # Set auto-approve mode if requested and not in dry-run
+        if auto_approve and not dry_run:
+            Logger.warning(
+                "[HierarchyAgent] SOVEREIGN MODE ACTIVE: Auto-approving all structural changes."
+            )
+            self._auto_approve = True
+        else:
+            self._auto_approve = False
         print("=" * 80)
         print(f"HIERARCHY AGENT - {'DRY RUN' if not self.healing_enabled else 'ACTIVE'}")
         print("=" * 80)
