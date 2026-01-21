@@ -35,7 +35,7 @@ def run_code_deduplication_check() -> tuple[bool, str]:
         print("AGENT VALIDATION: Code Deduplication")
         print("=" * 70)
         
-        agent = CodeDeduplicationAgent(project_root=project_root)
+        agent = CodeDeduplicationAgent()
         
         # Scan for duplicates
         python_files = list(project_root.rglob("*.py"))
