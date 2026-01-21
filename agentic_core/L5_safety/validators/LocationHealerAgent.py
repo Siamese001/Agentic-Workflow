@@ -529,6 +529,233 @@ class LocationHealerAgent(SovereignBaseAgent):
         else:
             return {"action_taken": "SKIPPED: Could not parse target territory"}
     
+    def _heal_void_violation(
+        self, file_path: Path, msg: str, dry_run: bool,
+        affected_paths: List[Path], import_touched_paths: List[Path]
+    ) -> Dict[str, Any]:
+        """
+        Heal VOID VIOLATION by proper relocation - NOT archiving.
+        
+        CRITICAL FLOW (in order of preference):
+        1. Relocate to best matching existing subfolder
+        2. Propose creating a new subfolder (with user approval)
+        3. Update SSOT after successful operation
+        4. Archive ONLY as absolute last resort (with explicit user approval)
+        
+        This prevents aggressive archiving of files that simply aren't in SSOT yet.
+        """
+        import sys
+        
+        result = {
+            "applied": False,
+            "action_taken": "",
+            "error": None,
+        }
+        
+        try:
+            rel_path = file_path.relative_to(self.project_root)
+            parts = rel_path.parts
+            
+            if len(parts) < 2:
+                # Root-level file - different handling
+                result["action_taken"] = "SKIPPED: Root-level file requires manual review"
+                return result
+            
+            root_folder = parts[0]  # e.g., "agentic_core"
+            unknown_subfolder = parts[1]  # e.g., "unified"
+            
+            # Get existing subfolders from SSOT
+            existing_subfolders = SOVEREIGN_REGISTRY.get(root_folder, {}).get("subfolders", [])
+            
+            if dry_run:
+                result["applied"] = True
+                result["action_taken"] = f"PREVIEW: Would handle void violation for '{unknown_subfolder}' in '{root_folder}'"
+                result["options"] = {
+                    "1_relocate": f"Move to existing subfolder (choose from: {existing_subfolders[:5]}...)",
+                    "2_create": f"Create new subfolder '{unknown_subfolder}' and update SSOT",
+                    "3_archive": "Archive as last resort"
+                }
+                return result
+            
+            # Interactive mode check
+            if not sys.stdin.isatty():
+                Logger.warning(f"[LocationHealerAgent] Non-interactive mode - skipping void violation: {file_path.name}")
+                result["action_taken"] = "SKIPPED: Non-interactive mode"
+                return result
+            
+            # Present options to user
+            print(f"\n{'='*70}")
+            print(f"VOID VIOLATION - SUBFOLDER NOT IN SSOT")
+            print(f"{'='*70}")
+            print(f"File:      {rel_path}")
+            print(f"Subfolder: '{unknown_subfolder}' is not in SOVEREIGN_REGISTRY['{root_folder}']['subfolders']")
+            print(f"Reason:    {msg}")
+            print(f"{'='*70}")
+            print(f"\nOPTIONS:")
+            print(f"  [1] RELOCATE - Move to an existing approved subfolder")
+            print(f"  [2] CREATE   - Add '{unknown_subfolder}' as a new approved subfolder (updates SSOT)")
+            print(f"  [3] ARCHIVE  - Archive to void_violations/ (last resort)")
+            print(f"  [4] SKIP     - Skip this file (no action)")
+            print(f"{'='*70}")
+            
+            try:
+                choice = input("Choose option [1/2/3/4]: ").strip()
+            except (EOFError, KeyboardInterrupt):
+                print("\nCancelled by user")
+                result["action_taken"] = "SKIPPED: Cancelled by user"
+                return result
+            
+            if choice == "1":
+                # OPTION 1: Relocate to existing subfolder
+                return self._relocate_to_existing_subfolder(
+                    file_path, root_folder, existing_subfolders, 
+                    dry_run, affected_paths, import_touched_paths
+                )
+            
+            elif choice == "2":
+                # OPTION 2: Create new subfolder and update SSOT
+                return self._create_new_subfolder_and_update_ssot(
+                    file_path, root_folder, unknown_subfolder,
+                    dry_run, affected_paths
+                )
+            
+            elif choice == "3":
+                # OPTION 3: Archive (last resort)
+                archives_root = self.project_root / "archives"
+                return self._heal_via_archiving(
+                    file_path, msg, archives_root, dry_run, affected_paths
+                )
+            
+            else:
+                # OPTION 4: Skip
+                result["action_taken"] = "SKIPPED: User chose to skip"
+                return result
+                
+        except Exception as e:
+            result["error"] = str(e)
+            Logger.error(f"[LocationHealerAgent] Void violation healing failed: {e}")
+            
+        return result
+    
+    def _relocate_to_existing_subfolder(
+        self, file_path: Path, root_folder: str, existing_subfolders: List[str],
+        dry_run: bool, affected_paths: List[Path], import_touched_paths: List[Path]
+    ) -> Dict[str, Any]:
+        """Relocate file to an existing approved subfolder."""
+        import sys
+        
+        result = {"applied": False, "action_taken": "", "error": None}
+        
+        if not existing_subfolders:
+            result["action_taken"] = "SKIPPED: No existing subfolders to relocate to"
+            return result
+        
+        # Show available subfolders
+        print(f"\nAvailable subfolders in '{root_folder}':")
+        for i, sf in enumerate(existing_subfolders, 1):
+            print(f"  [{i}] {sf}")
+        
+        try:
+            choice = input(f"Choose subfolder [1-{len(existing_subfolders)}]: ").strip()
+            idx = int(choice) - 1
+            if 0 <= idx < len(existing_subfolders):
+                target_subfolder = existing_subfolders[idx]
+                target_path = self.project_root / root_folder / target_subfolder / file_path.name
+                
+                move_result = self.safe_move(file_path, target_path, dry_run=dry_run)
+                if move_result.get("applied") and not dry_run:
+                    affected_paths.extend([file_path, target_path])
+                    if "import_files_touched" in move_result:
+                        for rel in move_result["import_files_touched"]:
+                            import_touched_paths.append(self.project_root / rel)
+                return move_result
+            else:
+                result["action_taken"] = "SKIPPED: Invalid subfolder choice"
+        except (ValueError, EOFError, KeyboardInterrupt):
+            result["action_taken"] = "SKIPPED: Invalid input or cancelled"
+        
+        return result
+    
+    def _create_new_subfolder_and_update_ssot(
+        self, file_path: Path, root_folder: str, new_subfolder: str,
+        dry_run: bool, affected_paths: List[Path]
+    ) -> Dict[str, Any]:
+        """Create a new subfolder and update SOVEREIGN_REGISTRY in structure_blueprint.py."""
+        import sys
+        
+        result = {"applied": False, "action_taken": "", "error": None}
+        
+        print(f"\nCreating new subfolder '{new_subfolder}' in '{root_folder}'...")
+        print(f"This will update SOVEREIGN_REGISTRY in structure_blueprint.py")
+        
+        try:
+            confirm = input("Confirm? [y/n]: ").strip().lower()
+            if confirm != 'y':
+                result["action_taken"] = "SKIPPED: User declined subfolder creation"
+                return result
+        except (EOFError, KeyboardInterrupt):
+            result["action_taken"] = "SKIPPED: Cancelled by user"
+            return result
+        
+        try:
+            # Step 1: Update SOVEREIGN_REGISTRY in structure_blueprint.py
+            blueprint_path = self.project_root / "agentic_core" / "L5_safety" / "validators" / "structure_blueprint.py"
+            
+            if not blueprint_path.exists():
+                result["error"] = "structure_blueprint.py not found"
+                return result
+            
+            content = blueprint_path.read_text(encoding="utf-8")
+            
+            # Find the subfolders list for this root_folder and add the new subfolder
+            # Pattern: 'root_folder': {..., 'subfolders': [...], ...}
+            import re
+            
+            # Look for the subfolders list for this root
+            pattern = rf"('{root_folder}':\s*\{{\s*[^}}]*'subfolders':\s*\[)([^\]]*?)(\])"
+            match = re.search(pattern, content, re.DOTALL)
+            
+            if match:
+                before = match.group(1)
+                subfolders_content = match.group(2)
+                after = match.group(3)
+                
+                # Check if already present
+                if f"'{new_subfolder}'" in subfolders_content:
+                    result["action_taken"] = f"SKIPPED: '{new_subfolder}' already in SSOT (may need cache refresh)"
+                    return result
+                
+                # Add new subfolder
+                if subfolders_content.strip():
+                    new_subfolders_content = subfolders_content.rstrip() + f", '{new_subfolder}'"
+                else:
+                    new_subfolders_content = f"'{new_subfolder}'"
+                
+                new_content = content[:match.start()] + before + new_subfolders_content + after + content[match.end():]
+                
+                # Backup and write
+                self._backup_file(blueprint_path)
+                blueprint_path.write_text(new_content, encoding="utf-8")
+                
+                Logger.info(f"[LocationHealerAgent] Updated SSOT: Added '{new_subfolder}' to {root_folder}/subfolders")
+                
+                result["applied"] = True
+                result["action_taken"] = f"SSOT UPDATED: Added '{new_subfolder}' to SOVEREIGN_REGISTRY['{root_folder}']['subfolders']"
+                result["ssot_updated"] = True
+                result["new_subfolder"] = new_subfolder
+                
+                # The file is now in a valid location - no move needed
+                affected_paths.append(blueprint_path)
+                
+            else:
+                result["error"] = f"Could not find subfolders list for '{root_folder}' in structure_blueprint.py"
+                
+        except Exception as e:
+            result["error"] = str(e)
+            Logger.error(f"[LocationHealerAgent] SSOT update failed: {e}")
+        
+        return result
+
     def _heal_depth_violation(
         self, file_path: Path, msg: str, dry_run: bool,
         affected_paths: List[Path], import_touched_paths: List[Path]

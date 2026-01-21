@@ -78,7 +78,7 @@ def _get_imports():
 
     # GRAVITY FIX: Removed all scripts.CanonValidatorAgent imports
     # These agents need to be moved to agentic_core or refactored
-    ArchitectureGovernor = None  # Keys 40, 41, 50 + syntax fix
+    from agentic_core.L5_safety.validators.GovernanceAgent import GovernanceAgent as ArchitectureGovernor  # Keys 40, 41, 50 + syntax fix
     CodeStyleGuardian = None  # Keys 10-16, 21, 47 + auto-fix whitespace/tabs/newlines
     DependencySentinelAgent = None  # Keys 7, 8, 9, 14, 44 + autoflake/isort
     HygieneGuardian = None  # Key 45 + auto-delete generative artifacts
@@ -101,7 +101,7 @@ def _get_imports():
         'approval_event': approval_event,
         'FASTAPI_AVAILABLE': FASTAPI_AVAILABLE,
         # All agents for zero capability loss
-        'ArchitectureGovernor': None,
+        'ArchitectureGovernor': ArchitectureGovernor,
         'CodeStyleGuardian': None,
         'ConcurrencyGuardianAgent': None,
         'DependencySentinelAgent': None,

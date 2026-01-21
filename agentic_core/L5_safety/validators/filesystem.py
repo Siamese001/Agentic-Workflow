@@ -278,6 +278,27 @@ def move_file(
             f"Destination exists: {args.destination}. Set overwrite=True to replace."
         )
     
+    # SSOT COMPLIANCE: All moves require user approval
+    import sys
+    if sys.stdin.isatty():
+        print(f"\n{'='*60}")
+        print(f"MOVE APPROVAL REQUIRED")
+        print(f"{'='*60}")
+        print(f"Source: {source_path}")
+        print(f"Target: {dest_path}")
+        print(f"Reason: Filesystem move operation")
+        print(f"{'='*60}")
+        try:
+            response = input("Approve? [y/n]: ").strip().lower()
+            if response != 'y':
+                raise PermissionError("Move declined by user")
+        except (EOFError, KeyboardInterrupt):
+            raise PermissionError("Move cancelled by user")
+    else:
+        # Non-interactive mode - log warning but allow (caller should handle)
+        import logging
+        logging.getLogger(__name__).warning(f"Non-interactive mode - proceeding with move: {source_path.name}")
+    
     dest_path.parent.mkdir(parents=True, exist_ok=True)
     shutil.move(str(source_path), str(dest_path))
 

@@ -17,11 +17,14 @@ ARCHIVE_SUBFOLDERS: Dict[str, str] = {
 DEFAULT_ARCHIVE_SUBFOLDER: str = "location_violations"
 
 # Healing strategy mapping (violation type → method name)
+# CRITICAL: VOID VIOLATION must be handled BEFORE falling back to archiving
+# The correct flow is: relocate → propose new subfolder → update SSOT → archive (last resort)
 HEALING_STRATEGY_MAP: Dict[str, str] = {
     "BROKEN BACKUP": "_heal_broken_backup",
     "APP-SPECIFIC IN CORE": "_heal_app_specific_violation",
     "TERRITORY MISMATCH": "_heal_territory_mismatch",
     "DEEP VIOLATION": "_heal_depth_violation",
+    "VOID VIOLATION": "_heal_void_violation",  # NEW: Handle void violations properly
 }
 
 # Default app healing target subfolder
