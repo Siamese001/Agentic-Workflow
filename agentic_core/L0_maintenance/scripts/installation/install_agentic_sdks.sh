@@ -15,7 +15,7 @@ echo "=============================================="
 pip install --upgrade --no-cache-dir --force-reinstall \
     "openai>=1.50.0" \
     "anthropic>=0.34.0" \
-    "google-generativeai>=0.8.0" \
+    "google-genai>=1.0.0" \
     "mistralai>=1.2.0" \
     "cohere>=5.11.0" \
     "groq>=0.11.0" \
@@ -68,7 +68,7 @@ def check(name, import_path):
 # Core LLM Providers (5)
 check('openai', 'openai')
 check('anthropic', 'anthropic')
-check('google-generativeai', 'google.generativeai')
+check('google-genai', 'google.genai')
 check('mistralai', 'mistralai')
 check('cohere', 'cohere')
 

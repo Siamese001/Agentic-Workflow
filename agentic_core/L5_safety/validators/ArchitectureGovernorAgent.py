@@ -46,6 +46,8 @@ from agentic_core.utils.core_extensions.decorators import standard_heal
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
+# [PHASE 24] Integrate L0 Maintenance Capability
+from agentic_core.L5_safety.unified.SSOTFolderCleanupAgent import SSOTFolderCleanupAgent
 
 Logger = logging.getLogger(__name__)
 
@@ -254,12 +256,41 @@ class ArchitectureGovernorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerM
                 for root_name in roots_scanned:
                     self._cleanup_empty_dirs(self.project_root / root_name)
 
+            # [PHASE 24] Sub-routine: SSOT Folder Cleanup
+            # Delegate physical reorganization to the specialized L5 agent
+            ssot_moves = 0
+            ssot_imports_updated = 0
+            try:
+                Logger.info(f"[{agent_name}] Initiating SSOT Folder Cleanup (dry_run={dry_run})...")
+                janitor = SSOTFolderCleanupAgent(
+                    project_root=self.project_root,
+                    dry_run=dry_run
+                )
+                
+                # Execute cleanup (or preview)
+                cleanup_stats = janitor.cleanup_repository()
+                
+                # Merge statistics
+                ssot_moves = cleanup_stats.get("files_moved", 0)
+                ssot_imports_updated = cleanup_stats.get("imports_updated", 0)
+                violations_fixed += ssot_moves
+                
+                if cleanup_stats.get("errors", 0) > 0:
+                    Logger.warning(
+                        f"[{agent_name}] SSOT Cleanup reported errors: {cleanup_stats['errors']}"
+                    )
+                    
+            except Exception as e:
+                Logger.error(f"[{agent_name}] SSOT Cleanup Sub-routine failed: {e}")
+
             return {
                 "violations_found": violations_found,
                 "violations_fixed": violations_fixed,
                 "roots_scanned": roots_scanned,
                 "status": "PASS" if violations_found == 0 else "FAIL",
                 "deduplication_audit": dedup_results,
+                "ssot_moves": ssot_moves,
+                "ssot_imports_updated": ssot_imports_updated,
             }
         finally:
             _call_path.discard(agent_name)
@@ -292,7 +323,10 @@ class ArchitectureGovernorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerM
 
     def validate_layer_boundaries(self, file_path: Path) -> tuple[bool, str]:
         """
-        Validate that file respects layer boundaries (L0-L6).
+        [PHASE 22] Validate that file respects layer boundaries (L0-L6) using Cognitive Triage.
+
+        Integrates CognitiveDispositionAgent for intelligent violation analysis.
+        Falls back to structural checks if cognitive triage is unavailable.
 
         Args:
             file_path: Path to file to validate
@@ -308,15 +342,56 @@ class ArchitectureGovernorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerM
             if len(parts) > 1 and parts[0] == "agentic_core":
                 if len(parts) > 2 and parts[1] in LAYER_DIRS:
                     return (True, f"Valid layer structure: {parts[1]}")
-                return (False, f"Invalid layer: {parts[1] if len(parts) > 1 else 'unknown'}")
+                # Invalid layer - invoke Cognitive Triage
+                return self._cognitive_triage_validation(file_path, "ORPHAN")
 
             # Check other sovereign territories
             if parts[0] in SOVEREIGN_REGISTRY:
                 return (True, f"Valid sovereign territory: {parts[0]}")
 
-            return (False, f"File outside sovereign territories: {parts[0]}")
+            # File outside sovereign territories - invoke Cognitive Triage
+            return self._cognitive_triage_validation(file_path, "ORPHAN")
+
         except ValueError:
             return (False, "File outside project root")
+
+    def _cognitive_triage_validation(
+        self,
+        file_path: Path,
+        violation_type: str,
+    ) -> tuple[bool, str]:
+        """
+        [PHASE 22] Invoke CognitiveDispositionAgent for intelligent violation analysis.
+
+        Args:
+            file_path: Path to the file with potential violation
+            violation_type: Type of violation (ORPHAN, GRAVITY, etc.)
+
+        Returns:
+            Tuple of (is_valid, reason) with cognitive triage recommendation
+        """
+        try:
+            cognitive = self._get_cognitive_agent()
+            decision = cognitive.analyze_violation(file_path, violation_type)
+
+            if decision.action == "IGNORE":
+                return (True, f"False positive identified by Cognitive Triage: {decision.reason}")
+
+            # Build detailed reason with recommendation
+            reason = (
+                f"Structural violation: {decision.reason}. "
+                f"Recommended Action: {decision.action}"
+            )
+            if decision.target_path:
+                reason += f" to {decision.target_path}"
+            reason += f" (confidence: {decision.confidence:.2f})"
+
+            return (False, reason)
+
+        except Exception as e:
+            # Fallback to simple structural check if cognitive triage fails
+            Logger.warning(f"Cognitive triage failed, using fallback: {e}")
+            return (False, f"File outside sovereign territories (cognitive triage unavailable)")
 
     def validate_architectural_patterns(self, file_path: Path) -> dict[str, Any]:
         """

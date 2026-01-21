@@ -1,5 +1,5 @@
 """
-[PHASE 20+] Meta-Learning Mixin - The DNA of Collective Intelligence.
+[PHASE 20+/21] Meta-Learning Mixin - The DNA of Collective Intelligence.
 
 The genetic trait that enables any agent to access the Hive Mind.
 Integrates with L4_state/memory for persistence and Knowledge Graph for reasoning.
@@ -9,12 +9,14 @@ MANDATORY: All core agents should inherit this for collective learning.
 Storage Layer Roles:
 - Pinecone (via SemanticCacheManager): Raw semantic search of past experiences
 - Memory MCP (via KnowledgeGraphBridge): Architectural Truths and synthesized facts
+- Graph Memory Bridge (Phase 21): Entity registration and MASTERED_TASK relations
 
 Hardening Features:
 - Circuit Breaker (_lobotomized): Graceful degradation when Hive Mind unavailable
 - Thread-Safe Initialization: RLock prevents race conditions during singleton load
 - Serialization Guard: Protects primary workflow from learning failures
 - Knowledge Graph Integration: Entity-driven discovery and cross-agent learning
+- DNA Mapping (Phase 21): Agents register as entities, promoted memories create relations
 
 Usage:
     class MyAgent(MetaLearningMixin, SovereignBaseAgent):
@@ -24,7 +26,7 @@ Usage:
                 execution_fn=lambda: self._do_work(task)
             )
 
-[SSOT] Integrates with L4_state/memory/SemanticCacheManager and KnowledgeGraphBridge.
+[SSOT] Integrates with L4_state/memory/SemanticCacheManager, KnowledgeGraphBridge, and GraphMemoryBridge.
 """
 from __future__ import annotations
 
@@ -65,10 +67,14 @@ class MetaLearningMixin:
     _lobotomized = False  # Circuit breaker state
     _kg_bridge = None  # Knowledge Graph Bridge singleton
     _kg_lock = threading.RLock()  # Thread safety for KG initialization
+    _graph_bridge = None  # Graph Memory Bridge singleton (Phase 21)
+    _graph_lock = threading.RLock()  # Thread safety for Graph Bridge initialization
     
     def __init__(self, *args, **kwargs):
         """
         DNA Activation: Connect to Hive Mind and Knowledge Graph on instantiation.
+        
+        Phase 21: Also registers agent as entity in Graph Memory Bridge.
         """
         # Lazy-load the Hive Mind singleton
         self._ensure_memory_connection()
@@ -76,8 +82,14 @@ class MetaLearningMixin:
         # Lazy-load the Knowledge Graph Bridge
         self._ensure_kg_connection()
         
+        # Lazy-load the Graph Memory Bridge (Phase 21)
+        self._ensure_graph_bridge_connection()
+        
         # Auto-discover context from Knowledge Graph
         self._discovered_context = self._discover_agent_context()
+        
+        # Phase 21: Register this agent as an entity in the Graph Memory Bridge
+        self._register_agent_entity()
         
         super().__init__(*args, **kwargs)
     
@@ -138,6 +150,46 @@ class MetaLearningMixin:
                         Logger.warning(
                             f"[{self.__class__.__name__}] Knowledge Graph unavailable: {e}"
                         )
+    
+    def _ensure_graph_bridge_connection(self) -> None:
+        """
+        [PHASE 21] Ensure connection to the Graph Memory Bridge (thread-safe).
+        
+        Resilient Mode: If unavailable, logs warning but doesn't crash.
+        """
+        if MetaLearningMixin._graph_bridge is None:
+            with MetaLearningMixin._graph_lock:
+                if MetaLearningMixin._graph_bridge is None:
+                    try:
+                        from agentic_core.L4_state.memory.GraphMemoryBridge import (
+                            GraphMemoryBridge,
+                        )
+                        MetaLearningMixin._graph_bridge = GraphMemoryBridge.get_instance()
+                        Logger.debug(f"[{self.__class__.__name__}] Connected to Graph Memory Bridge")
+                    except Exception as e:
+                        # Graph bridge is optional - don't crash, just log
+                        Logger.warning(
+                            f"[{self.__class__.__name__}] Graph Memory Bridge unavailable: {e}"
+                        )
+    
+    def _register_agent_entity(self) -> None:
+        """
+        [PHASE 21] Register this agent as an entity in the Graph Memory Bridge.
+        
+        Called automatically on agent __init__.
+        Idempotent: Will not create duplicate entities.
+        """
+        if MetaLearningMixin._graph_bridge is None:
+            return
+        
+        try:
+            MetaLearningMixin._graph_bridge.create_agent_entity(
+                agent_name=self.__class__.__name__,
+                agent_type="Agent",
+                observations=[f"Agent {self.__class__.__name__} initialized"],
+            )
+        except Exception as e:
+            Logger.warning(f"[{self._namespace}] Agent entity registration failed: {e}")
     
     def _discover_agent_context(self) -> dict[str, Any]:
         """
@@ -456,6 +508,103 @@ class MetaLearningMixin:
         except Exception as e:
             Logger.warning(f"[{self._namespace}] Observation recording failed: {e}")
     
+    def learn_with_feedback(
+        self,
+        context: str,
+        result: dict[str, Any],
+        feedback_score: float,
+    ) -> bool:
+        """
+        [PHASE 21] Learn with explicit feedback score for DNA promotion.
+        
+        When feedback_score >= 0.8 (promotion threshold), the memory is:
+        1. Promoted to Long-Term DNA (Pinecone)
+        2. A MASTERED_TASK relation is created in the Graph Memory Bridge
+        
+        Args:
+            context: The context string
+            result: The result to store
+            feedback_score: Feedback score (0.0 to 1.0)
+        
+        Returns:
+            True if promoted to DNA, False otherwise
+        """
+        # Circuit breaker check
+        if MetaLearningMixin._lobotomized or MetaLearningMixin._memory is None:
+            return False
+        
+        try:
+            # Store in working memory with feedback score
+            MetaLearningMixin._memory.learn(context, self._namespace, result, feedback_score)
+            
+            # Check if this qualifies for promotion (>= 0.8)
+            promotion_threshold = getattr(
+                MetaLearningMixin._memory, 'promotion_threshold', 0.8
+            )
+            
+            if feedback_score >= promotion_threshold:
+                # Promote to Long-Term DNA
+                promoted = MetaLearningMixin._memory.promote_to_long_term(
+                    context, self._namespace, result, feedback_score
+                )
+                
+                if promoted:
+                    # Phase 21: Create MASTERED_TASK relation in Graph Memory Bridge
+                    # CRITICAL: Sanitize context before writing to Graph to prevent PII leaks
+                    # We reuse the sanitizer from the memory instance if available
+                    sanitized_context = context
+                    if hasattr(MetaLearningMixin._memory, 'sanitizer'):
+                        sanitized_context = MetaLearningMixin._memory.sanitizer.sanitize(context)
+                    
+                    self._create_mastered_task_relation(sanitized_context, feedback_score)
+                    Logger.info(
+                        f"[{self._namespace}] DNA PROMOTION: Memory promoted with "
+                        f"feedback_score={feedback_score:.2f}"
+                    )
+                    return True
+            
+            return False
+            
+        except Exception as e:
+            Logger.warning(f"[{self._namespace}] Learn with feedback failed: {e}")
+            return False
+    
+    def _create_mastered_task_relation(
+        self,
+        context: str,
+        feedback_score: float,
+    ) -> None:
+        """
+        [PHASE 21] Create MASTERED_TASK relation when memory is promoted.
+        
+        Args:
+            context: The task context (will be hashed for entity name)
+            feedback_score: The feedback score that triggered promotion
+        """
+        if MetaLearningMixin._graph_bridge is None:
+            return
+        
+        try:
+            MetaLearningMixin._graph_bridge.create_mastered_task_relation(
+                agent_name=self.__class__.__name__,
+                task_description=context,
+                feedback_score=feedback_score,
+            )
+        except Exception as e:
+            Logger.warning(f"[{self._namespace}] MASTERED_TASK relation creation failed: {e}")
+    
+    def get_graph_stats(self) -> Optional[dict[str, Any]]:
+        """
+        [PHASE 21] Get statistics from the Graph Memory Bridge.
+        """
+        if MetaLearningMixin._graph_bridge is None:
+            return None
+        
+        try:
+            return MetaLearningMixin._graph_bridge.get_statistics()
+        except Exception:
+            return None
+    
     @classmethod
     def reset_lobotomy(cls) -> None:
         """
@@ -474,3 +623,11 @@ class MetaLearningMixin:
         """
         cls._kg_bridge = None
         Logger.info("[MetaLearningMixin] Knowledge Graph Bridge reset")
+    
+    @classmethod
+    def reset_graph_bridge(cls) -> None:
+        """
+        [PHASE 21] Reset the Graph Memory Bridge (for testing only).
+        """
+        cls._graph_bridge = None
+        Logger.info("[MetaLearningMixin] Graph Memory Bridge reset")

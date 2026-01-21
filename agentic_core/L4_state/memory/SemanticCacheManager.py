@@ -36,42 +36,135 @@ class CriticalInfrastructureError(Exception):
 
 class PIISanitizer:
     """
-    PII Sanitizer stub for content sanitization before embedding.
+    [PHASE 21] Production-Grade PII Sanitizer for content sanitization before embedding.
     
-    Currently a pass-through implementation. Future versions will:
-    - Detect and redact PII (emails, phone numbers, SSNs, etc.)
-    - Mask sensitive data patterns
-    - Apply configurable sanitization rules
+    Detects and redacts:
+    - Email addresses
+    - IPv4 and IPv6 addresses
+    - API keys (OpenAI sk-*, Anthropic sk-ant-*, generic patterns)
+    - AWS access keys
+    - Credit card numbers (basic pattern)
+    - Phone numbers (US format)
+    - SSN patterns
+    
+    All detected PII is replaced with [REDACTED_<TYPE>] placeholders.
     """
     
-    @staticmethod
-    def sanitize(content: str) -> str:
+    import re
+    
+    # Compiled regex patterns for PII detection
+    PATTERNS = {
+        # Email addresses
+        "EMAIL": re.compile(
+            r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b',
+            re.IGNORECASE
+        ),
+        # IPv4 addresses
+        "IPV4": re.compile(
+            r'\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}'
+            r'(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b'
+        ),
+        # IPv6 addresses (simplified pattern)
+        "IPV6": re.compile(
+            r'\b(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}\b|'
+            r'\b(?:[0-9a-fA-F]{1,4}:){1,7}:\b|'
+            r'\b(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}\b|'
+            r'\b::(?:[0-9a-fA-F]{1,4}:){0,5}[0-9a-fA-F]{1,4}\b'
+        ),
+        # OpenAI API keys (sk-...)
+        "OPENAI_KEY": re.compile(
+            r'\bsk-[a-zA-Z0-9]{20,}\b'
+        ),
+        # Anthropic API keys (sk-ant-...)
+        "ANTHROPIC_KEY": re.compile(
+            r'\bsk-ant-[a-zA-Z0-9-]{20,}\b'
+        ),
+        # Generic API keys (api_key=, apikey=, key=)
+        "GENERIC_API_KEY": re.compile(
+            r'(?:api[_-]?key|apikey|secret[_-]?key|access[_-]?token)\s*[=:]\s*["\']?([a-zA-Z0-9_-]{20,})["\']?',
+            re.IGNORECASE
+        ),
+        # AWS Access Key IDs
+        "AWS_KEY": re.compile(
+            r'\b(?:AKIA|ABIA|ACCA|ASIA)[A-Z0-9]{16}\b'
+        ),
+        # Credit card numbers (basic pattern - 13-19 digits with optional separators)
+        "CREDIT_CARD": re.compile(
+            r'\b(?:\d{4}[- ]?){3,4}\d{1,4}\b'
+        ),
+        # US Phone numbers
+        "PHONE_US": re.compile(
+            r'\b(?:\+1[- ]?)?(?:\([0-9]{3}\)|[0-9]{3})[- ]?[0-9]{3}[- ]?[0-9]{4}\b'
+        ),
+        # Social Security Numbers
+        "SSN": re.compile(
+            r'\b[0-9]{3}[- ]?[0-9]{2}[- ]?[0-9]{4}\b'
+        ),
+    }
+    
+    @classmethod
+    def sanitize(cls, content: str) -> str:
         """
-        Sanitize content before embedding/storage.
+        Sanitize content by redacting all detected PII.
         
         Args:
             content: Raw content string
         
         Returns:
-            Sanitized content (currently pass-through)
+            Sanitized content with PII replaced by [REDACTED_<TYPE>] placeholders
         """
-        # TODO: Implement PII detection and redaction
-        # For now, this is a pass-through stub
-        return content
+        if not content:
+            return content
+        
+        sanitized = content
+        
+        for pii_type, pattern in cls.PATTERNS.items():
+            sanitized = pattern.sub(f"[REDACTED_{pii_type}]", sanitized)
+        
+        return sanitized
     
-    @staticmethod
-    def is_safe(content: str) -> bool:
+    @classmethod
+    def is_safe(cls, content: str) -> bool:
         """
-        Check if content is safe to store.
+        Check if content contains any detectable PII.
         
         Args:
             content: Content to check
         
         Returns:
-            True if safe (currently always True)
+            True if no PII detected, False otherwise
         """
-        # TODO: Implement PII detection
+        if not content:
+            return True
+        
+        for pattern in cls.PATTERNS.values():
+            if pattern.search(content):
+                return False
+        
         return True
+    
+    @classmethod
+    def detect_pii(cls, content: str) -> dict[str, list[str]]:
+        """
+        Detect and return all PII found in content.
+        
+        Args:
+            content: Content to scan
+        
+        Returns:
+            Dictionary mapping PII type to list of matches found
+        """
+        if not content:
+            return {}
+        
+        findings = {}
+        
+        for pii_type, pattern in cls.PATTERNS.items():
+            matches = pattern.findall(content)
+            if matches:
+                findings[pii_type] = matches
+        
+        return findings
 
 
 class SemanticCacheManager:
@@ -321,21 +414,36 @@ class SemanticCacheManager:
         return hashlib.sha256(key.encode()).hexdigest()
     
     def _get_embedding(self, text: str) -> Optional[list[float]]:
-        """Generate embedding vector for semantic matching."""
+        """
+        Generate embedding vector for semantic matching.
+        
+        Includes retry logic for transient API failures.
+        """
         client = self._get_embedding_client()
         if not client:
             return None
         
-        try:
-            truncated = text[:2000]
-            result = client.models.embed_content(
-                model="text-embedding-004",
-                contents=truncated,
-            )
-            return result.embeddings[0].values
-        except Exception as e:
-            Logger.debug(f"[HiveMind] Embedding failed: {e}")
-            return None
+        truncated = text[:2000]
+        max_retries = 3
+        
+        for attempt in range(max_retries):
+            try:
+                result = client.models.embed_content(
+                    model="text-embedding-004",
+                    contents=truncated,
+                )
+                return result.embeddings[0].values
+            except Exception as e:
+                is_last_attempt = attempt == max_retries - 1
+                log_level = logging.WARNING if is_last_attempt else logging.DEBUG
+                Logger.log(
+                    log_level, 
+                    f"[HiveMind] Embedding failed (attempt {attempt+1}/{max_retries}): {e}"
+                )
+                if not is_last_attempt:
+                    time.sleep(1 * (attempt + 1))  # Simple backoff
+                    
+        return None
     
     def recall(
         self,

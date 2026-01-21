@@ -29,7 +29,7 @@ DEFAULT_PROVIDER_MODULES: dict[str, str] = {
     "pinecone": "pinecone",
     "openai": "openai",
     "anthropic": "anthropic",
-    "google": "google.generativeai",
+    "google": "google.genai",  # Migrated from deprecated google.generativeai
     "http": "httpx",
 }
 

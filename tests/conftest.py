@@ -79,9 +79,11 @@ def mock_llm_calls(monkeypatch):
     """
     Global LLM Mock: Prevents actual API calls to Gemini, OpenAI, etc.
     Returns deterministic responses for testing.
+    
+    Updated 2026-01-21: Migrated from deprecated google.generativeai to google.genai
     """
     try:
-        import google.generativeai as genai
+        from google import genai
 
         class MockGenerativeModel:
             def __init__(self, *args, **kwargs):
@@ -96,7 +98,25 @@ def mock_llm_calls(monkeypatch):
 
                 return MockResponse()
 
-        monkeypatch.setattr(genai, "GenerativeModel", MockGenerativeModel)
+        # Mock the new google.genai Client
+        class MockClient:
+            def __init__(self, *args, **kwargs):
+                self.models = MockModels()
+        
+        class MockModels:
+            def generate_content(self, *args, **kwargs):
+                class MockResponse:
+                    text = "Mock LLM response for testing"
+                return MockResponse()
+            
+            def embed_content(self, *args, **kwargs):
+                class MockEmbedding:
+                    values = [0.1] * 768
+                class MockResult:
+                    embeddings = [MockEmbedding()]
+                return MockResult()
+
+        monkeypatch.setattr(genai, "Client", MockClient)
     except ImportError:
         pass
 

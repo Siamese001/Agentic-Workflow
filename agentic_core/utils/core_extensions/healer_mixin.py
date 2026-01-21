@@ -21,6 +21,12 @@ Phase 1 Enhancement (Jan 19, 2026):
 SSOT Consolidation (Jan 20, 2026):
 - Moved from L5_safety/validators/ to utils/core_extensions/ as the single source of truth
 - All other locations now re-export from this module with deprecation warnings
+
+Phase 23 Enhancement (Jan 21, 2026):
+- Healing Budget Per-Violation-Type Per-File (granular budget tracking)
+- If a file has a syntax error, fixing it shouldn't prevent fixing a logic error later
+- Budget is now tracked per (file_path, violation_type) tuple
+
 """
 
 from __future__ import annotations
@@ -90,9 +96,10 @@ class HealerMixin(InstructionalInjectionMixin):
     # Default ON - opt-out only where justified
     _healing_enabled: bool = True
 
-    # Healing budget tracking
+    # Healing budget tracking (Phase 23: Per-Violation-Type Per-File)
     _healing_count: int = 0
     _max_healing_per_session: int = 50
+    _max_healing_per_violation_type_per_file: int = 3  # Phase 23: Granular budget
 
     def __init__(self, **kwargs):
         """
@@ -108,6 +115,10 @@ class HealerMixin(InstructionalInjectionMixin):
         self._healer_cache_ttl = 300  # 5min suppression (configurable)
         self._healer_max_depth = 5
         self._healer_current_depth = 0
+        
+        # Phase 23: Per-Violation-Type Per-File budget tracking
+        # Key: (file_path, violation_type) -> count
+        self._healer_granular_budget: dict[tuple[str, str], int] = {}
 
     def heal(self, violation: dict[str, Any], anomaly: AnomalyReport | None = None) -> bool:
         """
@@ -148,9 +159,22 @@ class HealerMixin(InstructionalInjectionMixin):
                 )
             return success
 
-        # Budget check
+        # Budget check (global session limit)
         if self._healing_count >= self._max_healing_per_session:
-            Logger.warning(f"[HEALING] {self.__class__.__name__}: Budget exhausted")
+            Logger.warning(f"[HEALING] {self.__class__.__name__}: Session budget exhausted")
+            return False
+
+        # Phase 23: Per-Violation-Type Per-File budget check
+        file_path_str = str(violation.get("path", ""))
+        violation_type = violation.get("violation_type", "UNKNOWN")
+        granular_key = (file_path_str, violation_type)
+        
+        current_granular_count = self._healer_granular_budget.get(granular_key, 0)
+        if current_granular_count >= self._max_healing_per_violation_type_per_file:
+            Logger.warning(
+                f"[HEALING] {self.__class__.__name__}: Granular budget exhausted for "
+                f"{violation_type} in {file_path_str} ({current_granular_count} attempts)"
+            )
             return False
 
         self._healer_current_depth += 1
@@ -209,6 +233,8 @@ class HealerMixin(InstructionalInjectionMixin):
                     if self._run_self_tests():
                         self._log_healing_success(violation)
                         self._healing_count += 1
+                        # Phase 23: Increment granular budget
+                        self._healer_granular_budget[granular_key] = current_granular_count + 1
                         return True
                 except AssertionError:
                     pass  # Self-test failed, rollback
@@ -216,6 +242,8 @@ class HealerMixin(InstructionalInjectionMixin):
                 # No self-tests, assume success
                 self._log_healing_success(violation)
                 self._healing_count += 1
+                # Phase 23: Increment granular budget
+                self._healer_granular_budget[granular_key] = current_granular_count + 1
                 return True
 
             # Rollback on failed verify
@@ -323,6 +351,36 @@ class HealerMixin(InstructionalInjectionMixin):
     def reset_healing_budget(self) -> None:
         """Reset healing budget for new session."""
         self._healing_count = 0
+        # Phase 23: Also reset granular budget
+        self._healer_granular_budget = {}
+    
+    def reset_granular_budget_for_file(self, file_path: str) -> None:
+        """
+        [Phase 23] Reset granular budget for a specific file.
+        
+        Useful when a file has been significantly modified and
+        previous healing attempts should not count against new attempts.
+        
+        Args:
+            file_path: Path to the file to reset budget for
+        """
+        keys_to_remove = [k for k in self._healer_granular_budget if k[0] == file_path]
+        for key in keys_to_remove:
+            del self._healer_granular_budget[key]
+        Logger.debug(f"[HEALING] Reset granular budget for {file_path}")
+    
+    def get_granular_budget_stats(self) -> dict[str, Any]:
+        """
+        [Phase 23] Get granular budget statistics.
+        
+        Returns:
+            Dictionary with budget usage per file and violation type
+        """
+        return {
+            "total_entries": len(self._healer_granular_budget),
+            "budget_usage": dict(self._healer_granular_budget),
+            "max_per_violation_type_per_file": self._max_healing_per_violation_type_per_file,
+        }
 
     def _normalize_result(self, result: dict[str, Any]) -> HealResult:
         """
