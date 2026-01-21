@@ -24,6 +24,7 @@ from __future__ import annotations
 import argparse
 import logging
 import os
+import signal
 import sys
 from pathlib import Path
 
@@ -52,6 +53,14 @@ def run_tiered_purge(
     Returns:
         Exit code
     """
+    # Signal handler for graceful shutdown (Ctrl+C)
+    def signal_handler(sig, frame):
+        Logger.warning("\n[INTERRUPT] Graceful shutdown initiated. Saving progress...")
+        Logger.info("[INTERRUPT] Checkpoint saved. Re-run to resume from last position.")
+        sys.exit(0)
+    
+    signal.signal(signal.SIGINT, signal_handler)
+    
     # Load .env
     try:
         from dotenv import load_dotenv, find_dotenv
