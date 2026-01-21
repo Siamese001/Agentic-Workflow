@@ -1,12 +1,13 @@
 """
-[PHASE 11/12/14] Cognitive Disposition Agent - AI-Powered Architectural Triage.
+[PHASE 11/12/14/16] Cognitive Disposition Agent - AI-Powered Architectural Triage.
 
-Uses LLM API (Gemini) to analyze structural violations and determine intelligent resolutions.
+Uses NEW SDK (google.genai) to analyze structural violations and determine intelligent resolutions.
 This agent provides "Intelligent Triage" for files flagged by the ArchitectureGovernorAgent.
 
 Phase 11: Heuristic-based analysis
 Phase 12: Gemini LLM integration with JSON enforcement
 Phase 14: Environment loading with python-dotenv
+Phase 16: Migration to google.genai SDK (deprecated google-generativeai)
 
 Responsibilities:
 - Analyze ORPHAN violations and recommend proper SSOT locations
@@ -118,7 +119,7 @@ class CognitiveDispositionAgent:
         else:
             Logger.info("[COGNITIVE] API key configured successfully")
         
-        self._llm_model = None  # Lazy-loaded Gemini model
+        self._client = None  # Lazy-loaded google.genai Client (Phase 16)
         
         # Layer mapping for SSOT compliance
         self.layer_map = {
@@ -325,26 +326,25 @@ class CognitiveDispositionAgent:
             metadata={"original_path": str(file_path)},
         )
     
-    def _get_llm_model(self):
+    def _get_client(self):
         """
-        Lazy-load the Gemini model.
+        [PHASE 16] Lazy-load the google.genai Client.
         
         Returns:
-            GenerativeModel instance or None if not configured
+            google.genai.Client instance or None if not configured
         """
-        if self._llm_model is None and self.api_key:
+        if self._client is None and self.api_key:
             try:
-                import google.generativeai as genai
-                genai.configure(api_key=self.api_key)
-                self._llm_model = genai.GenerativeModel("gemini-1.5-flash")
-                Logger.info("[COGNITIVE] Gemini model initialized")
+                from google import genai
+                self._client = genai.Client(api_key=self.api_key)
+                Logger.info("[COGNITIVE] google.genai Client initialized")
             except ImportError:
-                Logger.warning("[COGNITIVE] google-generativeai not installed")
+                Logger.warning("[COGNITIVE] google-genai not installed")
                 return None
             except Exception as e:
-                Logger.error(f"[COGNITIVE] Failed to initialize Gemini: {e}")
+                Logger.error(f"[COGNITIVE] Failed to initialize google.genai: {e}")
                 return None
-        return self._llm_model
+        return self._client
 
     def _generate_llm_decision(
         self,
@@ -353,9 +353,9 @@ class CognitiveDispositionAgent:
         context: dict[str, Any],
     ) -> DispositionDecision:
         """
-        [PHASE 12] Generate disposition decision using Gemini LLM.
+        [PHASE 16] Generate disposition decision using google.genai SDK.
         
-        Constructs a strict JSON-enforcing prompt and parses the response.
+        Uses response_mime_type='application/json' for strict JSON enforcement.
         
         Args:
             file_path: Path to the file with violation
@@ -366,13 +366,16 @@ class CognitiveDispositionAgent:
             DispositionDecision from LLM analysis
         """
         try:
-            model = self._get_llm_model()
-            if model is None:
+            client = self._get_client()
+            if client is None:
                 return DispositionDecision(
                     action="MANUAL_REVIEW",
-                    reason="LLM not available (missing API key or library)",
+                    reason="google.genai client not available",
                     confidence=0.0,
                 )
+            
+            # Get model from environment
+            model_name = os.environ.get("GEMINI_MODEL", "gemini-2.0-flash")
             
             # Read file content safely
             content = self._read_file_safe(file_path)
@@ -380,10 +383,18 @@ class CognitiveDispositionAgent:
             # Build strict JSON-enforcing prompt
             prompt = self._build_strict_json_prompt(file_path, violation_type, content, context)
             
-            Logger.info(f"[COGNITIVE] Calling Gemini for {file_path.name}...")
+            Logger.info(f"[COGNITIVE] Calling Gemini ({model_name}) for {file_path.name}...")
             
-            # Call LLM
-            response = model.generate_content(prompt)
+            # Phase 16: Use new SDK with JSON response mode
+            from google.genai import types
+            
+            response = client.models.generate_content(
+                model=model_name,
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    response_mime_type="application/json",
+                ),
+            )
             
             # Parse JSON response
             return self._parse_llm_json_response(response.text)
