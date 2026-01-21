@@ -28,6 +28,7 @@ Logger = logging.getLogger(__name__)
 
 class WorkflowType(Enum):
     """Types of predefined workflows."""
+
     RESUME_GENERATION = "resume_generation"
     MESSAGE_OUTREACH = "message_outreach"
     CONTENT_CREATION = "content_creation"
@@ -38,11 +39,14 @@ class WorkflowType(Enum):
 @dataclass
 class WorkflowBlueprint:
     """Blueprint for a workflow graph."""
+
     name: str
     description: str
     roles: list[AgentRole]
     edges: list[tuple[AgentRole, AgentRole]]
-    mutation_hooks: dict[AgentRole, list[tuple[MutationAction, AgentRole]]] = field(default_factory=dict)
+    mutation_hooks: dict[AgentRole, list[tuple[MutationAction, AgentRole]]] = field(
+        default_factory=dict
+    )
     parallel_groups: list[list[AgentRole]] = field(default_factory=list)
 
 
@@ -76,19 +80,19 @@ class SubatomicOrchestrator:
                 AgentRole.CONTEXT_GATHERER,
                 AgentRole.STRATEGIC_PLANNER,
                 AgentRole.RESUME_BUILDER,
-                AgentRole.QUALITY_CRITIC
+                AgentRole.QUALITY_CRITIC,
             ],
             edges=[
                 (AgentRole.CONTEXT_GATHERER, AgentRole.STRATEGIC_PLANNER),
                 (AgentRole.STRATEGIC_PLANNER, AgentRole.RESUME_BUILDER),
-                (AgentRole.RESUME_BUILDER, AgentRole.QUALITY_CRITIC)
+                (AgentRole.RESUME_BUILDER, AgentRole.QUALITY_CRITIC),
             ],
             mutation_hooks={
                 AgentRole.QUALITY_CRITIC: [
                     (MutationAction.SPAWN_PREDECESSOR, AgentRole.CONTEXT_GATHERER),
-                    (MutationAction.SPAWN_PREDECESSOR, AgentRole.FACT_CHECKER)
+                    (MutationAction.SPAWN_PREDECESSOR, AgentRole.FACT_CHECKER),
                 ]
-            }
+            },
         )
 
         # Message Outreach Workflow
@@ -100,19 +104,19 @@ class SubatomicOrchestrator:
                 AgentRole.STRATEGIC_PLANNER,
                 AgentRole.MESSAGE_CRAFTER,
                 AgentRole.QUALITY_CRITIC,
-                AgentRole.PROTOCOL_ENFORCER
+                AgentRole.PROTOCOL_ENFORCER,
             ],
             edges=[
                 (AgentRole.CONTEXT_GATHERER, AgentRole.STRATEGIC_PLANNER),
                 (AgentRole.STRATEGIC_PLANNER, AgentRole.MESSAGE_CRAFTER),
                 (AgentRole.MESSAGE_CRAFTER, AgentRole.QUALITY_CRITIC),
-                (AgentRole.QUALITY_CRITIC, AgentRole.PROTOCOL_ENFORCER)
+                (AgentRole.QUALITY_CRITIC, AgentRole.PROTOCOL_ENFORCER),
             ],
             mutation_hooks={
                 AgentRole.QUALITY_CRITIC: [
                     (MutationAction.SPAWN_PREDECESSOR, AgentRole.PERSONALIZER)
                 ]
-            }
+            },
         )
 
         # Content Creation Workflow
@@ -123,23 +127,17 @@ class SubatomicOrchestrator:
                 AgentRole.CONTEXT_GATHERER,
                 AgentRole.STRATEGIC_PLANNER,
                 AgentRole.CONTENT_DRAFTER,
-                AgentRole.QUALITY_CRITIC
+                AgentRole.QUALITY_CRITIC,
             ],
             edges=[
                 (AgentRole.CONTEXT_GATHERER, AgentRole.STRATEGIC_PLANNER),
                 (AgentRole.STRATEGIC_PLANNER, AgentRole.CONTENT_DRAFTER),
-                (AgentRole.CONTENT_DRAFTER, AgentRole.QUALITY_CRITIC)
+                (AgentRole.CONTENT_DRAFTER, AgentRole.QUALITY_CRITIC),
             ],
-            parallel_groups=[
-                [AgentRole.CONTEXT_GATHERER, AgentRole.INSIGHT_ANALYZER]
-            ]
+            parallel_groups=[[AgentRole.CONTEXT_GATHERER, AgentRole.INSIGHT_ANALYZER]],
         )
 
-    def build_standard_pipeline(
-        self,
-        WorkflowType: WorkflowType,
-        **kwargs
-    ) -> nx.DiGraph:
+    def build_standard_pipeline(self, WorkflowType: WorkflowType, **kwargs) -> nx.DiGraph:
         """Build a standard workflow pipeline.
 
         Args:
@@ -167,10 +165,7 @@ class SubatomicOrchestrator:
         return self._build_from_blueprint(blueprint, **kwargs)
 
     def build_custom_pipeline(
-        self,
-        roles: list[AgentRole],
-        edges: list[tuple[AgentRole, AgentRole]],
-        **kwargs
+        self, roles: list[AgentRole], edges: list[tuple[AgentRole, AgentRole]], **kwargs
     ) -> nx.DiGraph:
         """Build a custom workflow pipeline.
 
@@ -187,7 +182,7 @@ class SubatomicOrchestrator:
             name="Custom Workflow",
             description="User-defined custom workflow",
             roles=roles,
-            edges=edges
+            edges=edges,
         )
 
         return self._build_from_blueprint(blueprint, **kwargs)
@@ -219,7 +214,7 @@ class SubatomicOrchestrator:
                 role=role,
                 hop_function=hop_function,
                 context=kwargs.get("context", {}),
-                enable_prompt_injection=kwargs.get("enable_injections", True)
+                enable_prompt_injection=kwargs.get("enable_injections", True),
             )
 
             # Set DAG manager for mutation support
@@ -272,7 +267,7 @@ class SubatomicOrchestrator:
                 "role": role.value,
                 "status": "completed",
                 "output": f"Mock output from {role.value}",
-                "timestamp": datetime.now().isoformat()
+                "timestamp": datetime.now().isoformat(),
             }
 
             # Add role-specific mock data
@@ -280,7 +275,11 @@ class SubatomicOrchestrator:
                 result["research_data"] = {"sources": ["source1", "source2"]}
             elif role == AgentRole.STRATEGIC_PLANNER:
                 result["strategy"] = {"approach": "analytical", "framework": "standard"}
-            elif role in [AgentRole.CONTENT_DRAFTER, AgentRole.RESUME_BUILDER, AgentRole.MESSAGE_CRAFTER]:
+            elif role in [
+                AgentRole.CONTENT_DRAFTER,
+                AgentRole.RESUME_BUILDER,
+                AgentRole.MESSAGE_CRAFTER,
+            ]:
                 result["content"] = {"draft": "Generated content draft", "word_count": 500}
             elif role == AgentRole.QUALITY_CRITIC:
                 result["quality_score"] = 0.85
@@ -291,10 +290,7 @@ class SubatomicOrchestrator:
         return mock_hop_function
 
     async def execute_graph(
-        self,
-        graph: nx.DiGraph,
-        initial_inputs: dict[str, Any],
-        **kwargs
+        self, graph: nx.DiGraph, initial_inputs: dict[str, Any], **kwargs
     ) -> dict[str, Any]:
         """Execute a workflow graph.
 
@@ -321,7 +317,7 @@ class SubatomicOrchestrator:
             "status": "running",
             "completed_nodes": set(),
             "failed_nodes": set(),
-            "results": {}
+            "results": {},
         }
 
         try:
@@ -354,7 +350,7 @@ class SubatomicOrchestrator:
                         execution_state["failed_nodes"].add(node)
 
                         # Handle failure - check for mutations
-                        if hasattr(node, 'context') and "mutation_hooks" in node.context:
+                        if hasattr(node, "context") and "mutation_hooks" in node.context:
                             await self._handle_node_failure(node, result, graph)
                     else:
                         Logger.info(f"Node {node.config.hop_id} completed")
@@ -390,9 +386,7 @@ class SubatomicOrchestrator:
         return execution_state
 
     def _get_ready_nodes(
-        self,
-        graph: nx.DiGraph,
-        completed_nodes: set[SubatomicHop]
+        self, graph: nx.DiGraph, completed_nodes: set[SubatomicHop]
     ) -> list[SubatomicHop]:
         """Get nodes that are ready to execute.
 
@@ -421,7 +415,7 @@ class SubatomicOrchestrator:
         graph: nx.DiGraph,
         node: SubatomicHop,
         results: dict[SubatomicHop, Any],
-        initial_inputs: dict[str, Any]
+        initial_inputs: dict[str, Any],
     ) -> dict[str, Any]:
         """Get inputs for a node.
 
@@ -444,11 +438,7 @@ class SubatomicOrchestrator:
 
         return inputs
 
-    async def _execute_node(
-        self,
-        node: SubatomicHop,
-        inputs: dict[str, Any]
-    ) -> Any:
+    async def _execute_node(self, node: SubatomicHop, inputs: dict[str, Any]) -> Any:
         """Execute a single node.
 
         Args:
@@ -467,10 +457,7 @@ class SubatomicOrchestrator:
             raise
 
     async def _handle_node_failure(
-        self,
-        node: SubatomicHop,
-        error: Exception,
-        graph: nx.DiGraph
+        self, node: SubatomicHop, error: Exception, graph: nx.DiGraph
     ) -> None:
         """Handle node failure with potential mutations.
 
@@ -493,7 +480,7 @@ class SubatomicOrchestrator:
                     target_hop_id=node.config.hop_id,
                     hop_function=role.value,
                     reason=f"Node failed: {str(error)}",
-                    requester_hop_id=node.config.hop_id
+                    requester_hop_id=node.config.hop_id,
                 )
 
                 # Apply mutation
@@ -532,7 +519,7 @@ class SubatomicOrchestrator:
             "failed": failed,
             "success_rate": completed / total if total > 0 else 0,
             "average_duration": avg_duration,
-            "active_graphs": len(self.active_graphs)
+            "active_graphs": len(self.active_graphs),
         }
 
 
@@ -569,22 +556,15 @@ async def execute_resume_workflow(profile_data: dict[str, Any], **kwargs) -> dic
 
     # Build the workflow
     graph = orchestrator.build_standard_pipeline(
-        WorkflowType.RESUME_GENERATION,
-        context={"profile": profile_data},
-        **kwargs
+        WorkflowType.RESUME_GENERATION, context={"profile": profile_data}, **kwargs
     )
 
     # Execute the workflow
-    return await orchestrator.execute_graph(
-        graph,
-        initial_inputs={"profile": profile_data}
-    )
+    return await orchestrator.execute_graph(graph, initial_inputs={"profile": profile_data})
 
 
 async def execute_message_workflow(
-    recipient_data: dict[str, Any],
-    message_type: str,
-    **kwargs
+    recipient_data: dict[str, Any], message_type: str, **kwargs
 ) -> dict[str, Any]:
     """Execute the message outreach workflow.
 
@@ -602,11 +582,10 @@ async def execute_message_workflow(
     graph = orchestrator.build_standard_pipeline(
         WorkflowType.MESSAGE_OUTREACH,
         context={"recipient": recipient_data, "type": message_type},
-        **kwargs
+        **kwargs,
     )
 
     # Execute the workflow
     return await orchestrator.execute_graph(
-        graph,
-        initial_inputs={"recipient": recipient_data, "type": message_type}
+        graph, initial_inputs={"recipient": recipient_data, "type": message_type}
     )

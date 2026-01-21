@@ -11,6 +11,7 @@ Comprehensive tests for:
 Usage:
     python scripts/test_phase7_documentation.py
 """
+
 import sys
 from pathlib import Path
 
@@ -44,6 +45,7 @@ def record_test(name: str, passed: bool, details: str = "", skipped: bool = Fals
 # SECTION 1: USER DOCUMENTATION TESTS
 # =============================================================================
 
+
 def test_user_doc_exists():
     """Test 1.1: User documentation file exists."""
     print("\n" + "=" * 70)
@@ -55,7 +57,7 @@ def test_user_doc_exists():
     record_test("DASHBOARD_META_LEARNING_GUIDE.md exists", doc_file.exists())
 
     if doc_file.exists():
-        content = doc_file.read_text(encoding='utf-8')
+        content = doc_file.read_text(encoding="utf-8")
         record_test("File is not empty", len(content) > 1000, f"Size: {len(content)} bytes")
         return content
     return ""
@@ -133,6 +135,7 @@ def test_user_doc_commands(content: str):
 # SECTION 2: DEVELOPER DOCUMENTATION TESTS
 # =============================================================================
 
+
 def test_dev_doc_exists():
     """Test 2.1: Developer documentation file exists."""
     print("\n" + "=" * 70)
@@ -144,7 +147,7 @@ def test_dev_doc_exists():
     record_test("META_LEARNING_TELEMETRY_API.md exists", doc_file.exists())
 
     if doc_file.exists():
-        content = doc_file.read_text(encoding='utf-8')
+        content = doc_file.read_text(encoding="utf-8")
         record_test("File is not empty", len(content) > 1000, f"Size: {len(content)} bytes")
         return content
     return ""
@@ -247,6 +250,7 @@ def test_dev_doc_code_examples(content: str):
 # SECTION 3: DEPLOYMENT CONFIGURATION TESTS
 # =============================================================================
 
+
 def test_deployment_scripts():
     """Test 3.1: Deployment scripts exist and are valid."""
     print("\n" + "=" * 70)
@@ -259,7 +263,7 @@ def test_deployment_scripts():
     record_test("start_runtime_api.py exists", start_script.exists())
 
     if start_script.exists():
-        content = start_script.read_text(encoding='utf-8')
+        content = start_script.read_text(encoding="utf-8")
         record_test("Script has argparse", "argparse" in content)
         record_test("Script has uvicorn", "uvicorn" in content)
         record_test("Script has main function", "def main()" in content)
@@ -273,6 +277,7 @@ def test_api_module():
 
     try:
         from agentic_core.L6_observability.api.runtime_api import app
+
         record_test("runtime_api.py is importable", True)
         record_test("FastAPI app exists", app is not None)
     except ImportError as e:
@@ -308,21 +313,33 @@ def test_runtime_state_schema():
         # ARCHIVED: canon_validator import removed # _runtime_state
 
         required_fields = [
-            "status", "start_time", "end_time", "current_agent", "current_layer",
-            "agents_order", "total_agents", "completed_agents", "events",
-            "meta_learning", "redis", "pinecone", "execution_timeline"
+            "status",
+            "start_time",
+            "end_time",
+            "current_agent",
+            "current_layer",
+            "agents_order",
+            "total_agents",
+            "completed_agents",
+            "events",
+            "meta_learning",
+            "redis",
+            "pinecone",
+            "execution_timeline",
         ]
 
         for field in required_fields:
             record_test(f"Runtime state has '{field}'", field in _runtime_state)
 
         # Check nested structures
-        record_test("meta_learning has strategy_weights",
-                   "strategy_weights" in _runtime_state.get("meta_learning", {}))
-        record_test("redis has operations",
-                   "operations" in _runtime_state.get("redis", {}))
-        record_test("pinecone has vectors_stored",
-                   "vectors_stored" in _runtime_state.get("pinecone", {}))
+        record_test(
+            "meta_learning has strategy_weights",
+            "strategy_weights" in _runtime_state.get("meta_learning", {}),
+        )
+        record_test("redis has operations", "operations" in _runtime_state.get("redis", {}))
+        record_test(
+            "pinecone has vectors_stored", "vectors_stored" in _runtime_state.get("pinecone", {})
+        )
 
     except ImportError as e:
         record_test("Import runtime state", False, str(e))
@@ -331,6 +348,7 @@ def test_runtime_state_schema():
 # =============================================================================
 # SECTION 4: DOCUMENTATION CROSS-REFERENCE TESTS
 # =============================================================================
+
 
 def test_doc_cross_references():
     """Test 4.1: Documentation files reference each other."""
@@ -343,16 +361,14 @@ def test_doc_cross_references():
     dev_doc = project_root / "docs" / "META_LEARNING_TELEMETRY_API.md"
 
     if user_doc.exists():
-        user_content = user_doc.read_text(encoding='utf-8')
-        record_test("User doc references dev doc",
-                   "META_LEARNING_TELEMETRY_API" in user_content)
+        user_content = user_doc.read_text(encoding="utf-8")
+        record_test("User doc references dev doc", "META_LEARNING_TELEMETRY_API" in user_content)
     else:
         record_test("User doc references dev doc", False, "User doc not found")
 
     if dev_doc.exists():
-        dev_content = dev_doc.read_text(encoding='utf-8')
-        record_test("Dev doc references user doc",
-                   "DASHBOARD_META_LEARNING_GUIDE" in dev_content)
+        dev_content = dev_doc.read_text(encoding="utf-8")
+        record_test("Dev doc references user doc", "DASHBOARD_META_LEARNING_GUIDE" in dev_content)
     else:
         record_test("Dev doc references user doc", False, "Dev doc not found")
 
@@ -368,7 +384,7 @@ def test_doc_version_info():
 
     for name, path in docs:
         if path.exists():
-            content = path.read_text(encoding='utf-8')
+            content = path.read_text(encoding="utf-8")
             has_version = "Version" in content or "version" in content
             has_date = "2026" in content or "Updated" in content
             record_test(f"{name} has version info", has_version)
@@ -388,11 +404,13 @@ def test_doc_table_of_contents():
 
     for name, path in docs:
         if path.exists():
-            content = path.read_text(encoding='utf-8')
+            content = path.read_text(encoding="utf-8")
             has_toc = "Table of Contents" in content or "## Contents" in content
             has_links = content.count("](#") >= 3  # Internal links
             record_test(f"{name} has table of contents", has_toc)
-            record_test(f"{name} has internal links", has_links, f"Found {content.count('](#')} links")
+            record_test(
+                f"{name} has internal links", has_links, f"Found {content.count('](#')} links"
+            )
         else:
             record_test(f"{name} has table of contents", False, "File not found")
 
@@ -400,6 +418,7 @@ def test_doc_table_of_contents():
 # =============================================================================
 # SECTION 5: API DOCUMENTATION ACCURACY TESTS
 # =============================================================================
+
 
 def test_api_doc_accuracy():
     """Test 5.1: API documentation matches actual endpoints."""
@@ -429,17 +448,22 @@ def test_api_doc_accuracy():
 
         for endpoint, expected_status in documented_endpoints:
             response = client.get(endpoint)
-            record_test(f"{endpoint} returns {expected_status}",
-                       response.status_code == expected_status,
-                       f"Got {response.status_code}")
+            record_test(
+                f"{endpoint} returns {expected_status}",
+                response.status_code == expected_status,
+                f"Got {response.status_code}",
+            )
 
         # Test POST endpoint
-        response = client.post("/api/meta-learning/experience", json={
-            "thought_type": "cot", "reward": 0.9, "state": {}, "outcome": {}
-        })
-        record_test("POST /api/meta-learning/experience works",
-                   response.status_code == 200,
-                   f"Got {response.status_code}")
+        response = client.post(
+            "/api/meta-learning/experience",
+            json={"thought_type": "cot", "reward": 0.9, "state": {}, "outcome": {}},
+        )
+        record_test(
+            "POST /api/meta-learning/experience works",
+            response.status_code == 200,
+            f"Got {response.status_code}",
+        )
 
     except ImportError as e:
         record_test("API endpoint accuracy", False, str(e))
@@ -480,6 +504,7 @@ def test_response_schema_accuracy():
 # =============================================================================
 # MAIN
 # =============================================================================
+
 
 def main():
     """Run all Phase 7 documentation tests."""

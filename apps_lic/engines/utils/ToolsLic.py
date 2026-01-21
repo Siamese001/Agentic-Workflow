@@ -30,7 +30,7 @@ class CodeInterpreterTool:
             "extract_keywords": self.extract_keywords,
             "calculate_overlap": self.calculate_overlap,
             "rank_by_metric": self.rank_by_metric,
-            "validate_structure": self.validate_structure
+            "validate_structure": self.validate_structure,
         }
 
         print("[CodeInterpreter] Initialized with safe function registry")
@@ -50,7 +50,9 @@ class CodeInterpreterTool:
             ValueError: If function not registered
         """
         if function_name not in self.functions:
-            raise ValueError(f"Function '{function_name}' not registered. Available: {list(self.functions.keys())}")
+            raise ValueError(
+                f"Function '{function_name}' not registered. Available: {list(self.functions.keys())}"
+            )
 
         func = self.functions[function_name]
 
@@ -58,12 +60,7 @@ class CodeInterpreterTool:
 
         return func(**kwargs)
 
-    def run_similarity_check(
-        self,
-        text1: str,
-        text2: str,
-        method: str = "cosine"
-    ) -> float:
+    def run_similarity_check(self, text1: str, text2: str, method: str = "cosine") -> float:
         """
         Calculate similarity between two texts
 
@@ -100,10 +97,7 @@ class CodeInterpreterTool:
             raise ValueError(f"Unknown similarity method: {method}")
 
     def run_scoring_competition(
-        self,
-        candidates: list[str],
-        strategic_brief: str,
-        criteria: dict[str, float] | None = None
+        self, candidates: list[str], strategic_brief: str, criteria: dict[str, float] | None = None
     ) -> list[dict[str, Any]]:
         """
         Score N candidate messages against strategic brief
@@ -121,11 +115,7 @@ class CodeInterpreterTool:
             List of scored candidates, sorted by score (highest first)
         """
         if criteria is None:
-            criteria = {
-                "strategic_alignment": 0.5,
-                "keyword_density": 0.3,
-                "readability": 0.2
-            }
+            criteria = {"strategic_alignment": 0.5, "keyword_density": 0.3, "readability": 0.2}
 
         print(f"[CodeInterpreter] Scoring {len(candidates)} candidates")
 
@@ -136,9 +126,7 @@ class CodeInterpreterTool:
 
             # 1. Strategic alignment (cosine similarity to brief)
             scores["strategic_alignment"] = self.run_similarity_check(
-                candidate,
-                strategic_brief,
-                method="cosine"
+                candidate, strategic_brief, method="cosine"
             )
 
             # 2. Keyword density (how many strategic keywords present)
@@ -146,7 +134,9 @@ class CodeInterpreterTool:
             candidate_words = set(candidate.lower().split())
 
             keyword_matches = sum(1 for kw in brief_keywords if kw in candidate_words)
-            scores["keyword_density"] = keyword_matches / len(brief_keywords) if brief_keywords else 0.0
+            scores["keyword_density"] = (
+                keyword_matches / len(brief_keywords) if brief_keywords else 0.0
+            )
 
             # 3. Readability (word count in target range, sentence length)
             scores["readability"] = self._calculate_readability(candidate)
@@ -158,26 +148,25 @@ class CodeInterpreterTool:
                 if criterion in scores
             )
 
-            scored.append({
-                "candidate_index": i,
-                "candidate_text": candidate,
-                "scores": scores,
-                "total_score": total_score
-            })
+            scored.append(
+                {
+                    "candidate_index": i,
+                    "candidate_text": candidate,
+                    "scores": scores,
+                    "total_score": total_score,
+                }
+            )
 
         # Sort by total score (highest first)
         scored.sort(key=lambda x: x["total_score"], reverse=True)
 
-        print(f"[CodeInterpreter] Winner: candidate {scored[0]['candidate_index']} (score: {scored[0]['total_score']:.3f})")
+        print(
+            f"[CodeInterpreter] Winner: candidate {scored[0]['candidate_index']} (score: {scored[0]['total_score']:.3f})"
+        )
 
         return scored
 
-    def extract_keywords(
-        self,
-        text: str,
-        top_n: int = 10,
-        min_length: int = 4
-    ) -> list[str]:
+    def extract_keywords(self, text: str, top_n: int = 10, min_length: int = 4) -> list[str]:
         """
         Extract top keywords from text using TF-IDF
 
@@ -191,7 +180,8 @@ class CodeInterpreterTool:
         """
         # Remove common stop words and short words
         words = [
-            w.lower() for w in text.split()
+            w.lower()
+            for w in text.split()
             if len(w) >= min_length and w.lower() not in self._get_stopwords()
         ]
 
@@ -200,15 +190,13 @@ class CodeInterpreterTool:
 
         # Simple frequency-based extraction
         from collections import Counter
+
         word_counts = Counter(words)
 
         return [word for word, count in word_counts.most_common(top_n)]
 
     def calculate_overlap(
-        self,
-        text: str,
-        keyword_set: list[str],
-        min_word_length: int = 4
+        self, text: str, keyword_set: list[str], min_word_length: int = 4
     ) -> dict[str, Any]:
         """
         Calculate keyword overlap between text and keyword set
@@ -223,9 +211,7 @@ class CodeInterpreterTool:
         """
         # Extract words from text
         text_words = set(
-            w.lower().strip('.,!?;:')
-            for w in text.split()
-            if len(w) >= min_word_length
+            w.lower().strip(".,!?;:") for w in text.split() if len(w) >= min_word_length
         )
 
         # Convert keyword set to lowercase
@@ -243,14 +229,11 @@ class CodeInterpreterTool:
             "overlap_ratio": overlap_ratio,  # % of keywords found in text
             "coverage_ratio": coverage_ratio,  # % of text words that are keywords
             "total_keywords": len(keywords),
-            "total_words": len(text_words)
+            "total_words": len(text_words),
         }
 
     def rank_by_metric(
-        self,
-        items: list[dict[str, Any]],
-        metric_key: str,
-        descending: bool = True
+        self, items: list[dict[str, Any]], metric_key: str, descending: bool = True
     ) -> list[dict[str, Any]]:
         """
         Rank items by a metric value
@@ -263,11 +246,7 @@ class CodeInterpreterTool:
         Returns:
             Sorted list of items
         """
-        sorted_items = sorted(
-            items,
-            key=lambda x: x.get(metric_key, 0),
-            reverse=descending
-        )
+        sorted_items = sorted(items, key=lambda x: x.get(metric_key, 0), reverse=descending)
 
         return sorted_items
 
@@ -275,7 +254,7 @@ class CodeInterpreterTool:
         self,
         text: str,
         expected_sections: list[str],
-        section_patterns: dict[str, str] | None = None
+        section_patterns: dict[str, str] | None = None,
     ) -> dict[str, Any]:
         """
         Validate message structure against expected sections
@@ -292,7 +271,7 @@ class CodeInterpreterTool:
             "valid": True,
             "found_sections": [],
             "missing_sections": [],
-            "section_analysis": {}
+            "section_analysis": {},
         }
 
         if section_patterns is None:
@@ -312,13 +291,11 @@ class CodeInterpreterTool:
                 results["found_sections"].append(section)
                 results["section_analysis"][section] = {
                     "found": True,
-                    "match_count": len(matches) if pattern else 1
+                    "match_count": len(matches) if pattern else 1,
                 }
             else:
                 results["missing_sections"].append(section)
-                results["section_analysis"][section] = {
-                    "found": False
-                }
+                results["section_analysis"][section] = {"found": False}
                 results["valid"] = False
 
         return results
@@ -348,7 +325,7 @@ class CodeInterpreterTool:
             word_count_score = 0.5
 
         # Sentence length
-        sentences = re.split(r'[.!?]+', text)
+        sentences = re.split(r"[.!?]+", text)
         sentences = [s.strip() for s in sentences if s.strip()]
 
         if sentences:
@@ -377,31 +354,59 @@ class CodeInterpreterTool:
             diversity_score = 0.6
 
         # Weighted average
-        readability = (
-            word_count_score * 0.4 +
-            sentence_score * 0.3 +
-            diversity_score * 0.3
-        )
+        readability = word_count_score * 0.4 + sentence_score * 0.3 + diversity_score * 0.3
 
         return readability
 
     def _get_stopwords(self) -> set:
         """Get common English stop words"""
         return {
-            'a', 'an', 'and', 'are', 'as', 'at', 'be', 'by', 'for', 'from',
-            'has', 'he', 'in', 'is', 'it', 'its', 'of', 'on', 'that', 'the',
-            'to', 'was', 'will', 'with', 'this', 'but', 'they', 'have',
-            'had', 'what', 'when', 'where', 'who', 'which', 'why', 'how'
+            "a",
+            "an",
+            "and",
+            "are",
+            "as",
+            "at",
+            "be",
+            "by",
+            "for",
+            "from",
+            "has",
+            "he",
+            "in",
+            "is",
+            "it",
+            "its",
+            "of",
+            "on",
+            "that",
+            "the",
+            "to",
+            "was",
+            "will",
+            "with",
+            "this",
+            "but",
+            "they",
+            "have",
+            "had",
+            "what",
+            "when",
+            "where",
+            "who",
+            "which",
+            "why",
+            "how",
         }
 
     def _get_default_section_patterns(self) -> dict[str, str]:
         """Get default regex patterns for message sections"""
         return {
-            "greeting": r'^(Hi|Hello|Dear|Good morning|Good afternoon)',
-            "opening": r'(I\'m reaching out|I wanted to connect|Following up)',
-            "body": r'.{100,}',  # At least 100 chars
-            "cta": r'(Would you|Could we|I\'d welcome|Would you be open)',
-            "signature": r'(Best regards|Sincerely|Thanks|Best)'
+            "greeting": r"^(Hi|Hello|Dear|Good morning|Good afternoon)",
+            "opening": r"(I\'m reaching out|I wanted to connect|Following up)",
+            "body": r".{100,}",  # At least 100 chars
+            "cta": r"(Would you|Could we|I\'d welcome|Would you be open)",
+            "signature": r"(Best regards|Sincerely|Thanks|Best)",
         }
 
 
@@ -413,9 +418,7 @@ class ValidationToolkit:
 
     @staticmethod
     def check_word_count_range(
-        text: str,
-        target: int,
-        tolerance: float = 0.15
+        text: str, target: int, tolerance: float = 0.15
     ) -> tuple[bool, dict[str, Any]]:
         """
         Check if text is within word count range
@@ -442,15 +445,14 @@ class ValidationToolkit:
             "max_words": max_words,
             "tolerance": tolerance,
             "is_valid": is_valid,
-            "deviation": word_count - target
+            "deviation": word_count - target,
         }
 
         return is_valid, details
 
     @staticmethod
     def check_forbidden_patterns(
-        text: str,
-        forbidden_patterns: list[str]
+        text: str, forbidden_patterns: list[str]
     ) -> tuple[bool, list[str]]:
         """
         Check for forbidden patterns in text
@@ -475,9 +477,7 @@ class ValidationToolkit:
 
     @staticmethod
     def check_required_keywords(
-        text: str,
-        required_keywords: list[str],
-        min_count: int = 1
+        text: str, required_keywords: list[str], min_count: int = 1
     ) -> tuple[bool, dict[str, int]]:
         """
         Check if required keywords appear in text
@@ -549,13 +549,11 @@ def test_code_interpreter():
     candidates = [
         "I'm reaching out about AI platform opportunities. My background in scalability and cloud can help your enterprise adoption goals.",
         "Hello! Wanted to connect about potential collaboration on technology projects in the industry.",
-        "Given your focus on AI platform scalability and cloud migration, I believe my experience with enterprise adoption could add value to your initiatives."
+        "Given your focus on AI platform scalability and cloud migration, I believe my experience with enterprise adoption could add value to your initiatives.",
     ]
 
     results = tool.execute(
-        "run_scoring_competition",
-        candidates=candidates,
-        strategic_brief=strategic_brief
+        "run_scoring_competition", candidates=candidates, strategic_brief=strategic_brief
     )
 
     for i, result in enumerate(results):
@@ -569,22 +567,14 @@ def test_code_interpreter():
     # Test 3: Keyword extraction
     print("\n--- Test 3: Keyword Extraction ---")
 
-    keywords = tool.execute(
-        "extract_keywords",
-        text=strategic_brief,
-        top_n=5
-    )
+    keywords = tool.execute("extract_keywords", text=strategic_brief, top_n=5)
 
     print(f"Top keywords: {keywords}")
 
     # Test 4: Overlap calculation
     print("\n--- Test 4: Overlap Calculation ---")
 
-    overlap = tool.execute(
-        "calculate_overlap",
-        text=candidates[0],
-        keyword_set=keywords
-    )
+    overlap = tool.execute("calculate_overlap", text=candidates[0], keyword_set=keywords)
 
     print(f"Overlap count: {overlap['overlap_count']}")
     print(f"Overlap ratio: {overlap['overlap_ratio']:.3f}")
@@ -605,24 +595,25 @@ def test_validation_toolkit():
     text = "This is a test message with exactly twenty words to check if the word count validation works correctly."
 
     is_valid, details = ValidationToolkit.check_word_count_range(
-        text=text,
-        target=20,
-        tolerance=0.15
+        text=text, target=20, tolerance=0.15
     )
 
     print(f"Valid: {is_valid}")
-    print(f"Word count: {details['word_count']} (target: {details['target']}, range: {details['min_words']}-{details['max_words']})")
+    print(
+        f"Word count: {details['word_count']} (target: {details['target']}, range: {details['min_words']}-{details['max_words']})"
+    )
 
     # Test 2: Forbidden patterns
     print("\n--- Test 2: Forbidden Patterns ---")
 
-    text_with_forbidden = "I hope this finds you well. I wanted to reach out and leverage our synergy."
+    text_with_forbidden = (
+        "I hope this finds you well. I wanted to reach out and leverage our synergy."
+    )
 
-    forbidden = [r'\bi hope\b', r'\bwanted to\b', r'\bleverage\b']
+    forbidden = [r"\bi hope\b", r"\bwanted to\b", r"\bleverage\b"]
 
     is_clean, violations = ValidationToolkit.check_forbidden_patterns(
-        text=text_with_forbidden,
-        forbidden_patterns=forbidden
+        text=text_with_forbidden, forbidden_patterns=forbidden
     )
 
     print(f"Clean: {is_clean}")
@@ -634,9 +625,7 @@ def test_validation_toolkit():
     text_with_keywords = "Our AI platform helps with cloud migration and enterprise adoption."
 
     all_present, counts = ValidationToolkit.check_required_keywords(
-        text=text_with_keywords,
-        required_keywords=["platform", "cloud", "enterprise"],
-        min_count=1
+        text=text_with_keywords, required_keywords=["platform", "cloud", "enterprise"], min_count=1
     )
 
     print(f"All present: {all_present}")

@@ -8,6 +8,7 @@ SSOT Consolidation (Jan 20, 2026):
 All file I/O operations should use these utilities instead of
 raw open()/write() calls.
 """
+
 import logging
 import os
 import shutil
@@ -60,10 +61,7 @@ def safe_read_file(path: str | Path, encoding: str = "utf-8") -> str | None:
 
 
 def safe_write_file(
-    path: str | Path,
-    content: str,
-    encoding: str = "utf-8",
-    make_dirs: bool = True
+    path: str | Path, content: str, encoding: str = "utf-8", make_dirs: bool = True
 ) -> bool:
     """
     Safely write content to a file using an atomic write pattern.
@@ -125,11 +123,7 @@ def safe_delete_file(path: str | Path) -> bool:
         return False
 
 
-def safe_copy_file(
-    src: str | Path,
-    dst: str | Path,
-    make_dirs: bool = True
-) -> bool:
+def safe_copy_file(src: str | Path, dst: str | Path, make_dirs: bool = True) -> bool:
     """
     Safely copy a file from source to destination.
 
@@ -159,11 +153,7 @@ def safe_copy_file(
         return False
 
 
-def safe_move_file(
-    src: str | Path,
-    dst: str | Path,
-    make_dirs: bool = True
-) -> bool:
+def safe_move_file(src: str | Path, dst: str | Path, make_dirs: bool = True) -> bool:
     """
     Safely move a file from source to destination.
 

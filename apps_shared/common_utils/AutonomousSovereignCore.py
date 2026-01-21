@@ -15,7 +15,6 @@ from watchdog.observers import Observer
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
 
-
 # NAMING FIXED: TerritoryWatcher → TerritoryWatcher
 class TerritoryWatcher(FileSystemEventHandler):
     """Watches the entire territory for changes and feeds L3 Orchestration Executive"""
@@ -29,8 +28,7 @@ class TerritoryWatcher(FileSystemEventHandler):
             return
         # Thread-safe handoff to the L3 Executive Queue
         self.core.loop.call_soon_threadsafe(
-            self.core.event_queue.put_nowait,
-            {"path": event.src_path, "type": "modify"}
+            self.core.event_queue.put_nowait, {"path": event.src_path, "type": "modify"}
         )
 
 
@@ -54,6 +52,7 @@ class AutonomousSovereignCore:
         from agentic_core.L3_orchestration.workflow_engines.SelfRecoveringOrchestratorAgent import (
             create_self_recovering_orchestrator,
         )
+
         # GRAVITY FIXED: Dynamic imports for autonomous components
         try:
             from agentic_core.L4_state.validation_context.autonomous_checkpoint_manager import (
@@ -111,20 +110,19 @@ class AutonomousSovereignCore:
                 # Priority 1: L5 Safety Review
                 if "safety" in path or "guardrail" in path:
                     detection = await self.l5_safety.detect_threats(
-                        Path(path).read_text(encoding='utf-8', errors='ignore')
+                        Path(path).read_text(encoding="utf-8", errors="ignore")
                     )
                     if detection.detected:
                         print(f"   [L5] Threat detected: {detection.ThreatLevel}")
 
                 # Priority 2: L4 Checkpoint
                 await self.l4_checkpoint.auto_checkpoint_if_needed(
-                    state={"event": event["type"], "path": path},
-                    files_to_track=[path]
+                    state={"event": event["type"], "path": path}, files_to_track=[path]
                 )
 
                 # Priority 3: L2 Resource Refresh
                 status = self.l2_resource.get_resource_status()
-                if status['global_budget_remaining'] < 10:
+                if status["global_budget_remaining"] < 10:
                     print(f"   [L2] Low resource budget: {status['global_budget_remaining']}")
 
             except Exception as e:

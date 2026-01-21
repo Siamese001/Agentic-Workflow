@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: memory, orchestrator, prompt, workflow
@@ -70,9 +69,9 @@ class HOP6ValidationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         Validates the generated draft against configured rules including
         placeholder checks, tone validation, and compliance requirements.
         """
-        print(f"\n{'='*80}")
+        print(f"\n{'=' * 80}")
         print("HOP-6: VALIDATION AGENT")
-        print(f"{'='*80}\n")
+        print(f"{'=' * 80}\n")
 
         generation = state_mgr.read_state("HOP-5")
         research = state_mgr.read_state("HOP-2")
@@ -85,9 +84,15 @@ class HOP6ValidationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
         validation_results = self._validate_draft(text, draft, research, grounding)
 
-        critical_issues = sum(1 for r in validation_results if r["Severity"] == "CRITICAL" and not r["passed"])
-        high_issues = sum(1 for r in validation_results if r["Severity"] == "HIGH" and not r["passed"])
-        medium_issues = sum(1 for r in validation_results if r["Severity"] == "MEDIUM" and not r["passed"])
+        critical_issues = sum(
+            1 for r in validation_results if r["Severity"] == "CRITICAL" and not r["passed"]
+        )
+        high_issues = sum(
+            1 for r in validation_results if r["Severity"] == "HIGH" and not r["passed"]
+        )
+        medium_issues = sum(
+            1 for r in validation_results if r["Severity"] == "MEDIUM" and not r["passed"]
+        )
 
         passed = critical_issues == 0 and high_issues == 0
 
@@ -97,7 +102,7 @@ class HOP6ValidationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             "critical_issues": critical_issues,
             "high_issues": high_issues,
             "medium_issues": medium_issues,
-            "total_rules_checked": len(validation_results)
+            "total_rules_checked": len(validation_results),
         }
 
         output_path = state_mgr.write_state("HOP-6", output_state)
@@ -113,7 +118,9 @@ class HOP6ValidationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
         return output_path
 
-    def _validate_draft(self, text: str, draft: dict[str, Any], research: dict[str, Any], grounding: dict[str, Any]) -> list[dict[str, Any]]:
+    def _validate_draft(
+        self, text: str, draft: dict[str, Any], research: dict[str, Any], grounding: dict[str, Any]
+    ) -> list[dict[str, Any]]:
         """
         Run all validation rules from config.
 
@@ -132,80 +139,97 @@ class HOP6ValidationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         patterns = self.rules["content_cleanliness_rules"]["placeholder_patterns"]["patterns"]
         for pattern in patterns:
             if re.search(pattern, text):
-                results.append({
-                    "passed": False,
-                    "Severity": "CRITICAL",
-                    "rule_id": "LIC-QA-PLACEHOLDERS",
-                    "message": f"Placeholder detected: {pattern}"
-                })
+                results.append(
+                    {
+                        "passed": False,
+                        "Severity": "CRITICAL",
+                        "rule_id": "LIC-QA-PLACEHOLDERS",
+                        "message": f"Placeholder detected: {pattern}",
+                    }
+                )
                 break
 
         # 2. Forbidden verbs (MEDIUM)
         forbidden_verbs = self.rules["content_cleanliness_rules"]["forbidden_verbs"]["list"]
         is_clean, violations = self.toolkit.check_forbidden_patterns(
-            text=text,
-            forbidden_patterns=[f"(?i)\\b{v}\\b" for v in forbidden_verbs]
+            text=text, forbidden_patterns=[f"(?i)\\b{v}\\b" for v in forbidden_verbs]
         )
 
         if not is_clean:
-            results.append({
-                "passed": False,
-                "Severity": "MEDIUM",
-                "rule_id": "LIC-QA-FORBIDDEN-VERBS",
-                "message": f"Forbidden verbs detected: {violations[:3]}"
-            })
+            results.append(
+                {
+                    "passed": False,
+                    "Severity": "MEDIUM",
+                    "rule_id": "LIC-QA-FORBIDDEN-VERBS",
+                    "message": f"Forbidden verbs detected: {violations[:3]}",
+                }
+            )
 
         # 3. Filler phrases (MEDIUM)
         filler_patterns = self.rules["content_cleanliness_rules"]["filler_patterns"]["patterns"]
-        is_clean, violations = self.toolkit.check_forbidden_patterns(text=text, forbidden_patterns=filler_patterns)
+        is_clean, violations = self.toolkit.check_forbidden_patterns(
+            text=text, forbidden_patterns=filler_patterns
+        )
 
         if not is_clean:
-            results.append({
-                "passed": False,
-                "Severity": "MEDIUM",
-                "rule_id": "LIC-QA-FILLERS",
-                "message": f"Filler phrases detected: {violations[:3]}"
-            })
+            results.append(
+                {
+                    "passed": False,
+                    "Severity": "MEDIUM",
+                    "rule_id": "LIC-QA-FILLERS",
+                    "message": f"Filler phrases detected: {violations[:3]}",
+                }
+            )
 
         # 4. Word count validation (HIGH)
         target = draft.get("word_count_target", 200)
-        is_valid, details = self.toolkit.check_word_count_range(text=text, target=target, tolerance=0.15)
+        is_valid, details = self.toolkit.check_word_count_range(
+            text=text, target=target, tolerance=0.15
+        )
 
         if not is_valid:
-            results.append({
-                "passed": False,
-                "Severity": "HIGH",
-                "rule_id": "LIC-QA-WORD-COUNT",
-                "message": f"Word count {details['word_count']} outside range {details['min_words']}-{details['max_words']}"
-            })
+            results.append(
+                {
+                    "passed": False,
+                    "Severity": "HIGH",
+                    "rule_id": "LIC-QA-WORD-COUNT",
+                    "message": f"Word count {details['word_count']} outside range {details['min_words']}-{details['max_words']}",
+                }
+            )
 
         # 5. ASCII only (HIGH)
         is_ascii, non_ascii = self.toolkit.check_ascii_only(text)
 
         if not is_ascii:
-            results.append({
-                "passed": False,
-                "Severity": "HIGH",
-                "rule_id": "LIC-QA-055",
-                "message": f"Non-ASCII characters detected: {non_ascii[:3]}"
-            })
+            results.append(
+                {
+                    "passed": False,
+                    "Severity": "HIGH",
+                    "rule_id": "LIC-QA-055",
+                    "message": f"Non-ASCII characters detected: {non_ascii[:3]}",
+                }
+            )
 
         # 6. Strategic alignment (CRITICAL)
         strategic_brief = research.get("strategic_brief", "")
         if strategic_brief:
             min_overlap = self.rules["strategic_alignment_validation"]["min_keyword_overlap"]
-            brief_words = set(w.lower().strip('.,!?;:') for w in strategic_brief.split() if len(w) > 4)
-            message_words = set(w.lower().strip('.,!?;:') for w in text.split() if len(w) > 4)
+            brief_words = set(
+                w.lower().strip(".,!?;:") for w in strategic_brief.split() if len(w) > 4
+            )
+            message_words = set(w.lower().strip(".,!?;:") for w in text.split() if len(w) > 4)
             overlap = brief_words & message_words
 
             if len(overlap) < min_overlap:
-                results.append({
-                    "passed": False,
-                    "Severity": "CRITICAL",
-                    "rule_id": "LIC-QA-201",
-                    "message": f"Strategic alignment failure: Only {len(overlap)} keyword overlap (need {min_overlap}+)",
-                    "details": {"failure_classifier": "FACTUAL_FAILURE"}
-                })
+                results.append(
+                    {
+                        "passed": False,
+                        "Severity": "CRITICAL",
+                        "rule_id": "LIC-QA-201",
+                        "message": f"Strategic alignment failure: Only {len(overlap)} keyword overlap (need {min_overlap}+)",
+                        "details": {"failure_classifier": "FACTUAL_FAILURE"},
+                    }
+                )
 
         # 7. Sender grounding validation (CRITICAL)
         sender_grounding_data = grounding.get("sender_grounding", {})
@@ -216,29 +240,35 @@ class HOP6ValidationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
         has_team_claim = any(kw in text_lower for kw in team_keywords)
         if has_team_claim and not sender_grounding_data.get("team_members"):
-            results.append({
-                "passed": False,
-                "Severity": "CRITICAL",
-                "rule_id": "LIC-QA-105-TEAM",
-                "message": "Team claims without whitelist"
-            })
+            results.append(
+                {
+                    "passed": False,
+                    "Severity": "CRITICAL",
+                    "rule_id": "LIC-QA-105-TEAM",
+                    "message": "Team claims without whitelist",
+                }
+            )
 
         has_product_claim = any(kw in text_lower for kw in product_keywords)
         if has_product_claim and not sender_grounding_data.get("products"):
-            results.append({
-                "passed": False,
-                "Severity": "CRITICAL",
-                "rule_id": "LIC-QA-105-PRODUCT",
-                "message": "Product claims without whitelist"
-            })
+            results.append(
+                {
+                    "passed": False,
+                    "Severity": "CRITICAL",
+                    "rule_id": "LIC-QA-105-PRODUCT",
+                    "message": "Product claims without whitelist",
+                }
+            )
 
         if not results:
-            results.append({
-                "passed": True,
-                "Severity": "INFO",
-                "rule_id": "ALL-CHECKS",
-                "message": "All validation checks passed"
-            })
+            results.append(
+                {
+                    "passed": True,
+                    "Severity": "INFO",
+                    "rule_id": "ALL-CHECKS",
+                    "message": "All validation checks passed",
+                }
+            )
 
         return results
 
@@ -284,7 +314,7 @@ class HOP6ValidationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             if not self.toolkit:
                 Logger.warning("Validation toolkit missing — basic validation only")
                 return
-            if not hasattr(self.toolkit, 'validate'):
+            if not hasattr(self.toolkit, "validate"):
                 Logger.error("Toolkit missing validate method — disabling")
                 self.toolkit = None
         except Exception as e:

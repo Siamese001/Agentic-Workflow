@@ -129,9 +129,9 @@ class ToTStrategistAgent(BaseAgent):
         vote_client = self.get_model_client("strategy_model_simple")
         vote_prompt_template = self.prompt_manager.get_template("strategy_tot_vote")
 
-        branches_json = json.dumps([
-            {"id": b["branch_id"], "plan": b["strategy"].model_dump()} for b in branches
-        ])
+        branches_json = json.dumps(
+            [{"id": b["branch_id"], "plan": b["strategy"].model_dump()} for b in branches]
+        )
 
         vote_prompt = await _format_prompt_with_defaults(
             vote_prompt_template,
@@ -161,9 +161,7 @@ class ToTStrategistAgent(BaseAgent):
         )
 
         if error:
-            self.log_error(
-                f"Strategy vote validation failed: {error}. Defaulting to first branch."
-            )
+            self.log_error(f"Strategy vote validation failed: {error}. Defaulting to first branch.")
             selected_strategy = branches[0]["strategy"]
         else:
             self.log_info(

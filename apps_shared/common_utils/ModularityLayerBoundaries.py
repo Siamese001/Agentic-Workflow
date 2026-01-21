@@ -49,7 +49,10 @@ def _parse_import_from_runtime_utils(path: Path) -> list[str]:
 
     imports: list[str] = []
     for node in ast.walk(tree):
-        if isinstance(node, ast.ImportFrom) and node.module in ("runtime_utils", "runtime.runtime_utils"):
+        if isinstance(node, ast.ImportFrom) and node.module in (
+            "runtime_utils",
+            "runtime.runtime_utils",
+        ):
             for alias in node.names:
                 imports.append(alias.name)
     return imports
@@ -60,7 +63,9 @@ def test_core_does_not_call_runtime_utils_invoke_model() -> None:
     forbidden = {"invoke_model", "runtime_utils.invoke_model"}
     for path in _iter_core_files():
         calls = set(_parse_calls(path))
-        assert not (calls & forbidden), f"{path} calls forbidden runtime_utils.invoke_model: {calls & forbidden}"
+        assert not (calls & forbidden), (
+            f"{path} calls forbidden runtime_utils.invoke_model: {calls & forbidden}"
+        )
 
 
 def test_core_does_not_from_import_invoke_model() -> None:

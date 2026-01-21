@@ -20,6 +20,7 @@ from pathlib import Path
 @dataclass
 class AgentInfo:
     """Information about a discovered agent class."""
+
     name: str
     file_path: str
     layer: str
@@ -65,7 +66,9 @@ class ASTNormalizer(ast.NodeTransformer):
 
         # Sort methods alphabetically
         methods = [n for n in new_body if isinstance(n, ast.FunctionDef | ast.AsyncFunctionDef)]
-        non_methods = [n for n in new_body if not isinstance(n, ast.FunctionDef | ast.AsyncFunctionDef)]
+        non_methods = [
+            n for n in new_body if not isinstance(n, ast.FunctionDef | ast.AsyncFunctionDef)
+        ]
 
         methods.sort(key=lambda m: m.name)
 
@@ -82,7 +85,7 @@ class ASTNormalizer(ast.NodeTransformer):
         # Canonicalize parameters
         new_args = []
         for i, arg in enumerate(node.args.args):
-            if arg.arg == 'self':
+            if arg.arg == "self":
                 new_args.append(arg)
             else:
                 canonical_name = f"param{i}"
@@ -114,7 +117,7 @@ class ASTNormalizer(ast.NodeTransformer):
 
         new_args = []
         for i, arg in enumerate(node.args.args):
-            if arg.arg == 'self':
+            if arg.arg == "self":
                 new_args.append(arg)
             else:
                 canonical_name = f"param{i}"
@@ -165,23 +168,23 @@ class ASTNormalizer(ast.NodeTransformer):
 def extract_layer(file_path: str) -> str:
     """Extract layer designation from file path."""
     path_lower = file_path.lower()
-    if '/l0_' in path_lower or '\\l0_' in path_lower:
-        return 'L0'
-    elif '/l1_' in path_lower or '\\l1_' in path_lower:
-        return 'L1'
-    elif '/l2_' in path_lower or '\\l2_' in path_lower:
-        return 'L2'
-    elif '/l3_' in path_lower or '\\l3_' in path_lower:
-        return 'L3'
-    elif '/l4_' in path_lower or '\\l4_' in path_lower:
-        return 'L4'
-    elif '/l5_' in path_lower or '\\l5_' in path_lower:
-        return 'L5'
-    elif '/observability/' in path_lower or '\\observability\\' in path_lower:
-        return 'OBS'
-    elif '/utils/' in path_lower or '\\utils\\' in path_lower:
-        return 'UTIL'
-    return 'UNKNOWN'
+    if "/l0_" in path_lower or "\\l0_" in path_lower:
+        return "L0"
+    elif "/l1_" in path_lower or "\\l1_" in path_lower:
+        return "L1"
+    elif "/l2_" in path_lower or "\\l2_" in path_lower:
+        return "L2"
+    elif "/l3_" in path_lower or "\\l3_" in path_lower:
+        return "L3"
+    elif "/l4_" in path_lower or "\\l4_" in path_lower:
+        return "L4"
+    elif "/l5_" in path_lower or "\\l5_" in path_lower:
+        return "L5"
+    elif "/observability/" in path_lower or "\\observability\\" in path_lower:
+        return "OBS"
+    elif "/utils/" in path_lower or "\\utils\\" in path_lower:
+        return "UTIL"
+    return "UNKNOWN"
 
 
 def find_agent_classes(base_path: str) -> list[AgentInfo]:
@@ -190,8 +193,8 @@ def find_agent_classes(base_path: str) -> list[AgentInfo]:
     base = Path(base_path)
 
     # Pattern for PascalCase Agent classes - must be XxxAgent format
-    agent_pattern = re.compile(r'^class\s+([A-Z][a-zA-Z0-9]*Agent)\s*[\(:]', re.MULTILINE)
-    not_agent_pattern = re.compile(r'#\s*NOT_AN_AGENT')
+    agent_pattern = re.compile(r"^class\s+([A-Z][a-zA-Z0-9]*Agent)\s*[\(:]", re.MULTILINE)
+    not_agent_pattern = re.compile(r"#\s*NOT_AN_AGENT")
 
     # Also search apps directories
     search_paths = [base]
@@ -208,12 +211,13 @@ def find_agent_classes(base_path: str) -> list[AgentInfo]:
     for search_base in search_paths:
         # Operation Zero: Use ssot_discovery instead of rglob
         from agentic_core.utils.ssot_discovery import get_python_files
+
         for py_file in get_python_files(search_base):
-            if '.venv' in str(py_file):
+            if ".venv" in str(py_file):
                 continue
 
             try:
-                content = py_file.read_text(encoding='utf-8', errors='ignore')
+                content = py_file.read_text(encoding="utf-8", errors="ignore")
 
                 # Check for NOT_AN_AGENT marker
                 if not_agent_pattern.search(content):
@@ -222,7 +226,7 @@ def find_agent_classes(base_path: str) -> list[AgentInfo]:
                 matches = agent_pattern.finditer(content)
                 for match in matches:
                     class_name = match.group(1)
-                    line_number = content[:match.start()].count('\n') + 1
+                    line_number = content[: match.start()].count("\n") + 1
 
                     # Parse to get method count
                     try:
@@ -236,24 +240,28 @@ def find_agent_classes(base_path: str) -> list[AgentInfo]:
                                         method_count += 1
                                         method_names.append(item.name)
 
-                        agents.append(AgentInfo(
-                            name=class_name,
-                            file_path=str(py_file),
-                            layer=extract_layer(str(py_file)),
-                            line_number=line_number,
-                            method_count=method_count,
-                            method_names=method_names
-                        ))
+                        agents.append(
+                            AgentInfo(
+                                name=class_name,
+                                file_path=str(py_file),
+                                layer=extract_layer(str(py_file)),
+                                line_number=line_number,
+                                method_count=method_count,
+                                method_names=method_names,
+                            )
+                        )
                     except SyntaxError:
                         # Still record the agent even if parsing fails
-                        agents.append(AgentInfo(
-                            name=class_name,
-                            file_path=str(py_file),
-                            layer=extract_layer(str(py_file)),
-                            line_number=line_number,
-                            method_count=0,
-                            method_names=[]
-                        ))
+                        agents.append(
+                            AgentInfo(
+                                name=class_name,
+                                file_path=str(py_file),
+                                layer=extract_layer(str(py_file)),
+                                line_number=line_number,
+                                method_count=0,
+                                method_names=[],
+                            )
+                        )
             except Exception as e:
                 print(f"Error reading {py_file}: {e}")
 
@@ -263,7 +271,7 @@ def find_agent_classes(base_path: str) -> list[AgentInfo]:
 def generate_fingerprint(file_path: str, class_name: str) -> tuple[str, str]:
     """Generate SHA256 fingerprint for a class using normalized AST."""
     try:
-        content = Path(file_path).read_text(encoding='utf-8', errors='ignore')
+        content = Path(file_path).read_text(encoding="utf-8", errors="ignore")
         tree = ast.parse(content)
 
         # Find the target class
@@ -357,10 +365,12 @@ def analyze_redundancy(base_path: str) -> dict:
     # Phase 4: Near-duplicate analysis
     print("PHASE 4: Analyzing Near-Duplicates (>90% similarity)...")
     near_duplicates = []
-    agents_with_ast = [a for a in agents if a.normalized_ast and not a.fingerprint.startswith("ERROR")]
+    agents_with_ast = [
+        a for a in agents if a.normalized_ast and not a.fingerprint.startswith("ERROR")
+    ]
 
     for i, agent1 in enumerate(agents_with_ast):
-        for agent2 in agents_with_ast[i+1:]:
+        for agent2 in agents_with_ast[i + 1 :]:
             if agent1.fingerprint != agent2.fingerprint:
                 similarity = calculate_similarity(agent1.normalized_ast, agent2.normalized_ast)
                 if similarity >= 0.90:
@@ -374,7 +384,7 @@ def analyze_redundancy(base_path: str) -> dict:
         "total_agents": len(agents),
         "agents": agents,
         "exact_duplicates": exact_duplicates,
-        "near_duplicates": near_duplicates
+        "near_duplicates": near_duplicates,
     }
 
 
@@ -389,12 +399,18 @@ def print_report(results: dict):
     print("┌" + "─" * 78 + "┐")
     print("│ {:^76} │".format("AGENT FINGERPRINT REGISTRY"))
     print("├" + "─" * 40 + "┬" + "─" * 6 + "┬" + "─" * 8 + "┬" + "─" * 20 + "┤")
-    print("│ {:^38} │ {:^4} │ {:^6} │ {:^18} │".format("Agent Name", "Layer", "Methods", "Fingerprint"))
+    print(
+        "│ {:^38} │ {:^4} │ {:^6} │ {:^18} │".format(
+            "Agent Name", "Layer", "Methods", "Fingerprint"
+        )
+    )
     print("├" + "─" * 40 + "┼" + "─" * 6 + "┼" + "─" * 8 + "┼" + "─" * 20 + "┤")
 
     for agent in sorted(results["agents"], key=lambda a: (a.layer, a.name)):
         fp_display = agent.fingerprint[:16] if len(agent.fingerprint) >= 16 else agent.fingerprint
-        print(f"│ {agent.name[:38]:38} │ {agent.layer:^4} │ {agent.method_count:^6} │ {fp_display:18} │")
+        print(
+            f"│ {agent.name[:38]:38} │ {agent.layer:^4} │ {agent.method_count:^6} │ {fp_display:18} │"
+        )
 
     print("└" + "─" * 40 + "┴" + "─" * 6 + "┴" + "─" * 8 + "┴" + "─" * 20 + "┘")
     print()
@@ -415,7 +431,7 @@ def print_report(results: dict):
                 print(f"    Layer: {agent.layer}, Methods: {agent.method_count}")
 
             # Recommendation
-            l5_agents = [a for a in agents if a.layer == 'L5']
+            l5_agents = [a for a in agents if a.layer == "L5"]
             if l5_agents:
                 keep = l5_agents[0]
             else:
@@ -480,7 +496,7 @@ if __name__ == "__main__":
                 "layer": a.layer,
                 "method_count": a.method_count,
                 "fingerprint": a.fingerprint,
-                "methods": a.method_names
+                "methods": a.method_names,
             }
             for a in results["agents"]
         ],
@@ -491,7 +507,7 @@ if __name__ == "__main__":
         "near_duplicates": [
             {"agent1": a1.name, "agent2": a2.name, "similarity": s}
             for a1, a2, s in results["near_duplicates"]
-        ]
+        ],
     }
     report_path.write_text(json.dumps(json_data, indent=2))
     print(f"\nJSON report saved to: {report_path}")

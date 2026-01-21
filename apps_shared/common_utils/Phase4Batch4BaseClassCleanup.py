@@ -14,6 +14,7 @@ This script:
 3. Removes unused mixin imports
 4. Self-verifies syntax before writing
 """
+
 from __future__ import annotations
 
 import argparse
@@ -63,7 +64,9 @@ class BaseClassVisitor(ast.NodeVisitor):
 
     def __init__(self):
         self.last_import_line = 0
-        self.classes_with_redundant_mixins: list[tuple[int, str, list[str]]] = []  # (line, class_name, redundant_bases)
+        self.classes_with_redundant_mixins: list[
+            tuple[int, str, list[str]]
+        ] = []  # (line, class_name, redundant_bases)
         self.mixin_imports: dict = {}  # mixin_name -> (line, module)
 
     def visit_ImportFrom(self, node: ast.ImportFrom):
@@ -122,7 +125,7 @@ def process_file(file_path: Path, dry_run: bool = True) -> dict:
     }
 
     try:
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
     except Exception as e:
         result["skipped"] = True
         result["reason"] = f"Read error: {e}"
@@ -160,8 +163,8 @@ def process_file(file_path: Path, dry_run: bool = True) -> dict:
             # Pattern: class Foo(SovereignBaseAgent, HealerMixin, ...):
             # or: class Foo(HealerMixin, SovereignBaseAgent, ...):
             patterns = [
-                (rf',\s*{mixin}', ''),  # Remove ", HealerMixin"
-                (rf'{mixin}\s*,\s*', ''),  # Remove "HealerMixin, "
+                (rf",\s*{mixin}", ""),  # Remove ", HealerMixin"
+                (rf"{mixin}\s*,\s*", ""),  # Remove "HealerMixin, "
             ]
 
             for pattern, replacement in patterns:
@@ -172,12 +175,14 @@ def process_file(file_path: Path, dry_run: bool = True) -> dict:
     # Remove unused mixin imports
     for mixin, (import_line, module) in visitor.mixin_imports.items():
         # Check if mixin is still used in the modified content
-        if mixin not in modified_content.split('class ')[0]:  # Only check before class definitions
+        if mixin not in modified_content.split("class ")[0]:  # Only check before class definitions
             # Try to remove the import line
             # This is conservative - only removes if it's a single import
-            single_import_pattern = rf'^from\s+\S+\s+import\s+{mixin}\s*$'
+            single_import_pattern = rf"^from\s+\S+\s+import\s+{mixin}\s*$"
             if re.search(single_import_pattern, modified_content, re.MULTILINE):
-                modified_content = re.sub(single_import_pattern + r'\n?', '', modified_content, flags=re.MULTILINE)
+                modified_content = re.sub(
+                    single_import_pattern + r"\n?", "", modified_content, flags=re.MULTILINE
+                )
                 result["imports_removed"] += 1
 
     # Skip if no actual changes
@@ -197,7 +202,7 @@ def process_file(file_path: Path, dry_run: bool = True) -> dict:
     # Write
     if not dry_run:
         try:
-            file_path.write_text(modified_content, encoding='utf-8')
+            file_path.write_text(modified_content, encoding="utf-8")
         except Exception as e:
             result["skipped"] = True
             result["reason"] = f"Write error: {e}"
@@ -239,7 +244,9 @@ def main():
 
         if result["skipped"]:
             stats["files_skipped"] += 1
-            if "No redundant" not in str(result["reason"]) and "No SovereignBaseAgent" not in str(result["reason"]):
+            if "No redundant" not in str(result["reason"]) and "No SovereignBaseAgent" not in str(
+                result["reason"]
+            ):
                 print(f"  [SKIP] {file_path.name}: {result['reason']}")
             continue
 
@@ -261,6 +268,7 @@ def main():
     print(f"  Classes cleaned:   {stats['classes_cleaned']}")
     print(f"  Imports removed:   {stats['imports_removed']}")
     print(f"  Files skipped:     {stats['files_skipped']}")
+
 
 if __name__ == "__main__":
     main()

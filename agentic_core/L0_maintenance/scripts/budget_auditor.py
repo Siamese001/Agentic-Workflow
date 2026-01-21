@@ -2,6 +2,7 @@
 Budget Auditor - Token usage tracking and cost enforcement.
 Extracted from BudgetManagerAgent.py for single responsibility.
 """
+
 from __future__ import annotations
 
 
@@ -44,7 +45,7 @@ class BudgetAuditor:
             True if within budget, False if exceeded
         """
         if self.spent > self.limit:
-            print(f'💸 BUDGET EXCEEDED (${self.spent:.4f} / ${self.limit}). Halting Intelligence.')
+            print(f"💸 BUDGET EXCEEDED (${self.spent:.4f} / ${self.limit}). Halting Intelligence.")
             return False
         return True
 
@@ -55,8 +56,8 @@ class BudgetAuditor:
             Formatted status string with spending and token counts
         """
         return (
-            f'${self.spent:.4f} / ${self.limit} '
-            f'({self.input_tokens:.0f} in, {self.output_tokens:.0f} out)'
+            f"${self.spent:.4f} / ${self.limit} "
+            f"({self.input_tokens:.0f} in, {self.output_tokens:.0f} out)"
         )
 
     def get_metrics(self) -> dict[str, float]:
@@ -67,12 +68,12 @@ class BudgetAuditor:
         """
         utilization = (self.spent / self.limit * 100) if self.limit > 0 else 0
         return {
-            'spent_usd': self.spent,
-            'limit_usd': self.limit,
-            'utilization_pct': utilization,
-            'input_tokens': self.input_tokens,
-            'output_tokens': self.output_tokens,
-            'total_tokens': self.input_tokens + self.output_tokens
+            "spent_usd": self.spent,
+            "limit_usd": self.limit,
+            "utilization_pct": utilization,
+            "input_tokens": self.input_tokens,
+            "output_tokens": self.output_tokens,
+            "total_tokens": self.input_tokens + self.output_tokens,
         }
 
     def reset(self) -> None:

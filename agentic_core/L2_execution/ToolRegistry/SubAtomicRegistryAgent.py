@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, workflow
@@ -45,6 +44,7 @@ Logger = logging.getLogger(__name__)
 # Maps legacy micro-agent keys to consolidated unified handlers.
 # This ensures backward compatibility for dynamic agent instantiation.
 
+
 def _get_unified_agent_mapping() -> dict[str, type]:
     """
     Lazy-load unified agent mapping to avoid circular imports.
@@ -79,19 +79,16 @@ def _get_unified_agent_mapping() -> dict[str, type]:
         "DangerousBuiltinsValidatorAgent": UnifiedASTValidatorAgent,
         "DebuggerValidator": UnifiedASTValidatorAgent,
         "DebuggerValidatorAgent": UnifiedASTValidatorAgent,
-
         # Phase 2: L5 Hygiene Validator Consolidation
         "HygieneGuardian": UnifiedStructureValidatorAgent,
         "HygieneGuardianAgent": UnifiedStructureValidatorAgent,
         "HygieneValidator": UnifiedStructureValidatorAgent,
         "HygieneValidatorAgent": UnifiedStructureValidatorAgent,
-
         # Phase 3: L4 Checkpoint Manager Consolidation
         "CheckpointManager": UnifiedCheckpointManagerAgent,
         "CheckpointManagerAgent": UnifiedCheckpointManagerAgent,
         "AutonomousCheckpointManager": UnifiedCheckpointManagerAgent,
         "AutonomousCheckpointManagerAgent": UnifiedCheckpointManagerAgent,
-
         # Phase 4: L5 Code Standards Enforcer Consolidation
         "BaseClassEnforcer": UnifiedCodeEnforcerAgent,
         "BaseClassEnforcerAgent": UnifiedCodeEnforcerAgent,
@@ -99,7 +96,6 @@ def _get_unified_agent_mapping() -> dict[str, type]:
         "PatternEnforcerAgent": UnifiedCodeEnforcerAgent,
         "TypeHintEnforcement": UnifiedCodeEnforcerAgent,
         "TypeHintEnforcementAgent": UnifiedCodeEnforcerAgent,
-
         # Phase 5: L4 State Management Consolidation
         "ManifestManager": UnifiedStateManagementAgent,
         "ManifestManagerAgent": UnifiedStateManagementAgent,
@@ -133,19 +129,16 @@ def _get_phase3_manager_enforcer_mapping() -> dict[str, type]:
         "BudgetManagerAgent": UnifiedResourceManagerAgent,
         "ProactiveResourceManagerAgent": UnifiedResourceManagerAgent,
         "FallbackManagerAgent": UnifiedResourceManagerAgent,
-
         # Security Managers -> UnifiedSecurityManagerAgent
         "AgentPermissionManagerAgent": UnifiedSecurityManagerAgent,
         "SecureCheckpointManagerAgent": UnifiedSecurityManagerAgent,
         "SecureConfigManagerAgent": UnifiedSecurityManagerAgent,
-
         # Code Enforcers -> UnifiedCodeEnforcerAgent
         "CodeSSOTEnforcerAgent": UnifiedCodeEnforcerAgent,
         "UnifiedCodeEnforcerAgent": UnifiedCodeEnforcerAgent,
         "PatternEnforcerAgent": UnifiedCodeEnforcerAgent,
         "TypeEnforcerAgent": UnifiedCodeEnforcerAgent,
         "PythonFileSovereigntyEnforcerAgent": UnifiedCodeEnforcerAgent,
-
         # Structure Enforcers -> UnifiedStructureEnforcerAgent
         "GravityEnforcerAgent": UnifiedStructureEnforcerAgent,
         "HierarchyEnforcerAgent": UnifiedStructureEnforcerAgent,
@@ -180,31 +173,26 @@ def _get_phase4_detector_healer_router_executor_mapping() -> dict[str, type]:
         "DriftDetectorAgent": UnifiedCodeDetectorAgent,
         "MethodChangeDetectorAgent": UnifiedCodeDetectorAgent,
         "MemoryLeakDetectorAgent": UnifiedCodeDetectorAgent,
-
         # Safety Detectors -> UnifiedSafetyDetectorAgent
         "BiasDetectorAgent": UnifiedSafetyDetectorAgent,
         "HallucinationDetectorAgent": UnifiedSafetyDetectorAgent,
         "PromptInjectionDetectorAgent": UnifiedSafetyDetectorAgent,
-
         # Code Healers -> UnifiedCodeHealerAgent
         "CanonHealerAgent": UnifiedCodeHealerAgent,
         "ImportHealerAgent": UnifiedCodeHealerAgent,
         "StructuralHealerAgent": UnifiedCodeHealerAgent,
-
         # Structure Healers -> UnifiedStructureHealerAgent
         "GravityHealerAgent": UnifiedStructureHealerAgent,
         "HierarchyHealerAgent": UnifiedStructureHealerAgent,
         "NamingLawHealerAgent": UnifiedStructureHealerAgent,
         "TerritoryHealerAgent": UnifiedStructureHealerAgent,
         "BlueprintHierarchyHealerAgent": UnifiedStructureHealerAgent,
-
         # Routers -> UnifiedModelRouterAgent
         "ModelRouterAgent": UnifiedModelRouterAgent,
         "DynamicModelRouterAgent": UnifiedModelRouterAgent,
         "MultiProviderRouterAgent": UnifiedModelRouterAgent,
         "ReasoningRouterAgent": UnifiedModelRouterAgent,
         "McpRouterAgent": UnifiedModelRouterAgent,
-
         # Executors -> UnifiedSafetyExecutorAgent
         "IntegrityGateExecutorAgent": UnifiedSafetyExecutorAgent,
         "L5IntegrityGateExecutorAgent": UnifiedSafetyExecutorAgent,
@@ -232,14 +220,12 @@ def _get_phase2_validator_mapping() -> dict[str, type]:
         "CanonValidatorAgent": UnifiedCodeValidatorAgent,
         "AsyncBlockingValidatorAgent": UnifiedCodeValidatorAgent,
         "PrintStatementValidatorAgent": UnifiedCodeValidatorAgent,
-
         # Unified Structure Validator (L5) - Gravity/Hygiene/Registry
         "GravityValidatorAgent": UnifiedStructureValidatorAgent,
         "HygieneValidatorAgent": UnifiedStructureValidatorAgent,
         "UnifiedStructureValidatorAgent": UnifiedStructureValidatorAgent,
         "AgentRegistryValidatorAgent": UnifiedStructureValidatorAgent,
         "CognitiveContractValidatorAgent": UnifiedStructureValidatorAgent,
-
         # App Content Validator (Apps) - Contact/Content/Diversity
         "ContactValidatorAgent": AppContentValidatorAgent,
         "ContentCleanlinessValidatorAgent": AppContentValidatorAgent,
@@ -271,7 +257,9 @@ def get_unified_agent_class(agent_id: str) -> type:
     try:
         validator_mapping = _get_phase2_validator_mapping()
         if agent_id in validator_mapping:
-            Logger.info(f"Registry: Mapping legacy validator '{agent_id}' to Unified Class (Phase 2).")
+            Logger.info(
+                f"Registry: Mapping legacy validator '{agent_id}' to Unified Class (Phase 2)."
+            )
             return validator_mapping[agent_id]
     except ImportError as e:
         Logger.warning(f"Phase 2 validator mapping not available: {e}")
@@ -280,7 +268,9 @@ def get_unified_agent_class(agent_id: str) -> type:
     try:
         phase3_mapping = _get_phase3_manager_enforcer_mapping()
         if agent_id in phase3_mapping:
-            Logger.info(f"Registry: Mapping legacy manager/enforcer '{agent_id}' to Unified Class (Phase 3).")
+            Logger.info(
+                f"Registry: Mapping legacy manager/enforcer '{agent_id}' to Unified Class (Phase 3)."
+            )
             return phase3_mapping[agent_id]
     except ImportError as e:
         Logger.warning(f"Phase 3 manager/enforcer mapping not available: {e}")
@@ -289,7 +279,9 @@ def get_unified_agent_class(agent_id: str) -> type:
     try:
         phase4_mapping = _get_phase4_detector_healer_router_executor_mapping()
         if agent_id in phase4_mapping:
-            Logger.info(f"Registry: Mapping legacy detector/healer/router/executor '{agent_id}' to Unified Class (Phase 4).")
+            Logger.info(
+                f"Registry: Mapping legacy detector/healer/router/executor '{agent_id}' to Unified Class (Phase 4)."
+            )
             return phase4_mapping[agent_id]
     except ImportError as e:
         Logger.warning(f"Phase 4 detector/healer/router/executor mapping not available: {e}")
@@ -313,6 +305,7 @@ class SubAtomicRegistryAgent(HealerMixin, MCPHardenedMixin):
     Sovereign method registry — live, hybrid-indexed, eternal.
     Now with Redis sovereign caching for instant method discovery.
     """
+
     def __init__(self, project_root: Path) -> None:
         """Initialize the instance."""
         self.root = project_root
@@ -326,8 +319,8 @@ class SubAtomicRegistryAgent(HealerMixin, MCPHardenedMixin):
 
     def _run_self_tests(self) -> bool:
         """Phase 1: Self-testing for L4 compliance."""
-        assert hasattr(self, 'root'), "Missing root"
-        assert hasattr(self, 'pinecone'), "Missing pinecone"
+        assert hasattr(self, "root"), "Missing root"
+        assert hasattr(self, "pinecone"), "Missing pinecone"
         return True
 
     def extract_methods(self) -> list[dict]:
@@ -335,8 +328,10 @@ class SubAtomicRegistryAgent(HealerMixin, MCPHardenedMixin):
         methods = []
         # Phase 6.8: Use ssot_discovery instead of rglob
         from agentic_core.utils.ssot_discovery import get_python_files
+
         for py_file in get_python_files(self.root):
-            if "archives" in str(py_file): continue
+            if "archives" in str(py_file):
+                continue
             try:
                 tree = ast.parse(py_file.read_text())
                 for node in ast.walk(tree):
@@ -344,16 +339,19 @@ class SubAtomicRegistryAgent(HealerMixin, MCPHardenedMixin):
                         # Enhanced metadata extraction
                         doc = ast.get_docstring(node) or "No docstring provided."
                         source_lines = ast.get_source_segment(open(py_file).read(), node) or ""
-                        methods.append({
-                            "id": f"{py_file.stem}_{node.name}",
-                            "path": str(py_file),
-                            "method": node.name,
-                            "docstring": doc,
-                            "source_snippet": f"Method: {node.name}\nimport logging\n\nLogger = logging.getLogger(__name__)\nDoc: {doc}\nSource: {source_lines[:200]}...",
-                            "line_number": node.lineno,
-                            "is_async": isinstance(node, ast.AsyncFunctionDef)
-                        })
-            except Exception: continue
+                        methods.append(
+                            {
+                                "id": f"{py_file.stem}_{node.name}",
+                                "path": str(py_file),
+                                "method": node.name,
+                                "docstring": doc,
+                                "source_snippet": f"Method: {node.name}\nimport logging\n\nLogger = logging.getLogger(__name__)\nDoc: {doc}\nSource: {source_lines[:200]}...",
+                                "line_number": node.lineno,
+                                "is_async": isinstance(node, ast.AsyncFunctionDef),
+                            }
+                        )
+            except Exception:
+                continue
         return methods
 
     def rebuild_registry(self) -> Any:
@@ -364,17 +362,14 @@ class SubAtomicRegistryAgent(HealerMixin, MCPHardenedMixin):
         for m in methods:
             emb = self.pinecone.get_embedding(m["source_snippet"])
             vec_id = m["id"]
-            vectors.append({
-                "id": vec_id,
-                "values": emb,
-                "metadata": m
-            })
+            vectors.append({"id": vec_id, "values": emb, "metadata": m})
 
             # [CACHE WARM] Store method metadata in Redis for instant lookup
             cache_key = f"method_meta:{vec_id}"
             try:
                 self.redis.set(cache_key, json.dumps(m), ex=86400)  # 24h
-            except Exception: pass
+            except Exception:
+                pass
 
         if vectors:
             self.method_index.upsert(vectors=vectors)
@@ -388,20 +383,22 @@ class SubAtomicRegistryAgent(HealerMixin, MCPHardenedMixin):
             if cached:
                 print(f"   [CACHE HIT] Method search for '{Task[:30]}...'")
                 return json.loads(cached)
-        except Exception: pass
+        except Exception:
+            pass
 
         results = self.pinecone.hybrid_search(
             query_text=Task,
             keywords=[w for w in self.pinecone.CANON_SIGNALS if w in Task.lower()],
             top_k=top_k,
-            min_score=0.88
+            min_score=0.88,
         )
 
         # [CACHE WARM] Store successful search results
         try:
             if results:
                 self.redis.set(cache_key, json.dumps(results), ex=3600)  # 1h
-        except Exception: pass
+        except Exception:
+            pass
 
         return results
 
@@ -411,7 +408,7 @@ class SubAtomicRegistryAgent(HealerMixin, MCPHardenedMixin):
         if not matches:
             raise ValueError(f"No method found for Task: {task_description}")
 
-        meta = matches[0]['metadata']
+        meta = matches[0]["metadata"]
         print(f"   [EXECUTE] Invoking {meta['method']} from {Path(meta['path']).name}")
         # Dynamic import and execution logic would go here
         return meta
@@ -420,12 +417,12 @@ class SubAtomicRegistryAgent(HealerMixin, MCPHardenedMixin):
         """Dynamically invoke a method by metadata"""
         try:
             # Import the module
-            module_path = Path(method_meta['path']).relative_to(self.root)
-            module_name = str(module_path).replace(os.sep, '.')[:-3]
+            module_path = Path(method_meta["path"]).relative_to(self.root)
+            module_name = str(module_path).replace(os.sep, ".")[:-3]
             module = importlib.import_module(module_name)
 
             # Get the method
-            method = getattr(module, method_meta['method'])
+            method = getattr(module, method_meta["method"])
 
             # Execute it
             if inspect.iscoroutinefunction(method):
@@ -445,7 +442,14 @@ class SubAtomicRegistryAgent(HealerMixin, MCPHardenedMixin):
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L4 state agent - operational only."""
         if _call_path is None:
             # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)

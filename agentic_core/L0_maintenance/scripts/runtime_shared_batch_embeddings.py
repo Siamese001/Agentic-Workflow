@@ -15,6 +15,7 @@ import numpy as np
 
 Logger: Any = logging.getLogger(__name__)
 
+
 class BatchEmbeddingService:
     """Service for parallel batch embedding generation.
 
@@ -22,7 +23,7 @@ class BatchEmbeddingService:
     Keeps workers low to prevent context switching overhead.
     """
 
-    def __init__(self, batch_size: int=32, max_workers: int=4):
+    def __init__(self, batch_size: int = 32, max_workers: int = 4):
         """Initialize the batch embedding service.
 
         Args:
@@ -31,9 +32,13 @@ class BatchEmbeddingService:
         """
         self.batch_size = batch_size
         self.executor = ThreadPoolExecutor(max_workers=max_workers)
-        Logger.info(f'Initialized BatchEmbeddingService: batch_size={batch_size}, max_workers={max_workers}')
+        Logger.info(
+            f"Initialized BatchEmbeddingService: batch_size={batch_size}, max_workers={max_workers}"
+        )
 
-    async def embed_batch(self, texts: list[str], model_func: Callable[[list[str]], list[np.ndarray]]) -> list[np.ndarray]:
+    async def embed_batch(
+        self, texts: list[str], model_func: Callable[[list[str]], list[np.ndarray]]
+    ) -> list[np.ndarray]:
         """Embed a list of texts in parallel batches.
 
         Args:
@@ -51,22 +56,30 @@ class BatchEmbeddingService:
             ... )
         """
         if not texts:
-            Logger.warning('Empty text list provided to embed_batch')
+            Logger.warning("Empty text list provided to embed_batch")
             return []
-        batches: Any = [texts[i:i + self.batch_size] for i in range(0, len(texts), self.batch_size)]
-        Logger.debug(f'Processing {len(texts)} texts in {len(batches)} batches of size {self.batch_size}')
+        batches: Any = [
+            texts[i : i + self.batch_size] for i in range(0, len(texts), self.batch_size)
+        ]
+        Logger.debug(
+            f"Processing {len(texts)} texts in {len(batches)} batches of size {self.batch_size}"
+        )
         loop: Any = asyncio.get_event_loop()
         tasks: Any = [loop.run_in_executor(self.executor, model_func, batch) for batch in batches]
         try:
             results: Any = await asyncio.gather(*tasks)
             embeddings: Any = [emb for batch_result in results for emb in batch_result]
-            Logger.info(f'Successfully generated {len(embeddings)} embeddings from {len(texts)} texts')
+            Logger.info(
+                f"Successfully generated {len(embeddings)} embeddings from {len(texts)} texts"
+            )
             return embeddings
         except Exception as e:
-            Logger.error(f'Failed to generate embeddings: {e}')
+            Logger.error(f"Failed to generate embeddings: {e}")
             raise
 
-    async def embed_single(self, text: str, model_func: Callable[[list[str]], list[np.ndarray]]) -> np.ndarray:
+    async def embed_single(
+        self, text: str, model_func: Callable[[list[str]], list[np.ndarray]]
+    ) -> np.ndarray:
         """Embed a single text (convenience method).
 
         Args:
@@ -81,7 +94,7 @@ class BatchEmbeddingService:
 
     def shutdown(self) -> Any:
         """Shutdown the thread pool executor."""
-        Logger.info('Shutting down BatchEmbeddingService executor')
+        Logger.info("Shutting down BatchEmbeddingService executor")
         self.executor.shutdown(wait=True)
 
     def __enter__(self):
@@ -92,7 +105,10 @@ class BatchEmbeddingService:
         """Context manager exit."""
         self.shutdown()
 
-def create_batch_embedding_service(batch_size: int=32, max_workers: int=4) -> BatchEmbeddingService:
+
+def create_batch_embedding_service(
+    batch_size: int = 32, max_workers: int = 4
+) -> BatchEmbeddingService:
     """Create a BatchEmbeddingService instance.
 
     Args:

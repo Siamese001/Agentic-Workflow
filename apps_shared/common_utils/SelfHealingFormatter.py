@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 
 class RepairStrategy(str, Enum):
     """Types of repair strategies."""
+
     JSON_REPAIR = "json_repair"
     MARKDOWN_STRIP = "markdown_strip"
     REGEX_EXTRACT = "regex_extract"
@@ -34,6 +35,7 @@ class RepairStrategy(str, Enum):
 @dataclass
 class RepairResult:
     """Result of a repair attempt."""
+
     success: bool
     repaired_data: Any
     strategy_used: RepairStrategy | None = None
@@ -50,7 +52,7 @@ class FormatRepair(ABC):
         self,
         broken_content: str,
         target_schema: BaseModel | None = None,
-        context: dict[str, Any] | None = None
+        context: dict[str, Any] | None = None,
     ) -> RepairResult:
         """Repair broken content.
 
@@ -79,23 +81,23 @@ class JSONRepairStrategy(FormatRepair):
         # Common JSON error patterns
         self.error_patterns = [
             # Missing quotes around keys
-            (r'(\w+):', r'"\1":'),
+            (r"(\w+):", r'"\1":'),
             # Trailing commas
-            (r',\s*}', '}'),
-            (r',\s*\]', ']'),
+            (r",\s*}", "}"),
+            (r",\s*\]", "]"),
             # Single quotes
             (r"'([^']*)'", r'"\1"'),
             # Missing closing braces
-            (r'}\s*$', '}'),
+            (r"}\s*$", "}"),
             # Escape unescaped quotes in strings
-            (r'(?<!\\)"', r'\\"')
+            (r'(?<!\\)"', r'\\"'),
         ]
 
     async def repair(
         self,
         broken_content: str,
         target_schema: BaseModel | None = None,
-        context: dict[str, Any] | None = None
+        context: dict[str, Any] | None = None,
     ) -> RepairResult:
         """Repair JSON content.
 
@@ -117,7 +119,7 @@ class JSONRepairStrategy(FormatRepair):
                 success=True,
                 repaired_data=data,
                 strategy_used=self.strategy_name,
-                attempts=attempts
+                attempts=attempts,
             )
         except json.JSONDecodeError as e:
             original_error = str(e)
@@ -135,7 +137,7 @@ class JSONRepairStrategy(FormatRepair):
                     repaired_data=data,
                     strategy_used=self.strategy_name,
                     attempts=attempts,
-                    original_error=original_error
+                    original_error=original_error,
                 )
             except json.JSONDecodeError:
                 continue
@@ -151,7 +153,7 @@ class JSONRepairStrategy(FormatRepair):
                 repaired_data=data,
                 strategy_used=self.strategy_name,
                 attempts=attempts,
-                original_error=original_error
+                original_error=original_error,
             )
         except json.JSONDecodeError as e:
             return RepairResult(
@@ -160,7 +162,7 @@ class JSONRepairStrategy(FormatRepair):
                 strategy_used=self.strategy_name,
                 error_message=str(e),
                 original_error=original_error,
-                attempts=attempts
+                attempts=attempts,
             )
 
     def _aggressive_repair(self, content: str) -> str:
@@ -173,19 +175,19 @@ class JSONRepairStrategy(FormatRepair):
             Repaired content
         """
         # Remove all non-JSON characters
-        cleaned = re.sub(r'[^\x00-\x7F]', '', content)
+        cleaned = re.sub(r"[^\x00-\x7F]", "", content)
 
         # Balance braces
-        open_braces = cleaned.count('{')
-        close_braces = cleaned.count('}')
+        open_braces = cleaned.count("{")
+        close_braces = cleaned.count("}")
         if open_braces > close_braces:
-            cleaned += '}' * (open_braces - close_braces)
+            cleaned += "}" * (open_braces - close_braces)
 
         # Balance brackets
-        open_brackets = cleaned.count('[')
-        close_brackets = cleaned.count(']')
+        open_brackets = cleaned.count("[")
+        close_brackets = cleaned.count("]")
         if open_brackets > close_brackets:
-            cleaned += ']' * (open_brackets - close_brackets)
+            cleaned += "]" * (open_brackets - close_brackets)
 
         return cleaned
 
@@ -202,17 +204,17 @@ class MarkdownStripStrategy(FormatRepair):
         """Initialize markdown strip strategy."""
         # Markdown code block patterns
         self.patterns = [
-            r'```json\s*(.*?)\s*```',
-            r'```JSON\s*(.*?)\s*```',
-            r'```\s*(.*?)\s*```',
-            r'`([^`]*)`'
+            r"```json\s*(.*?)\s*```",
+            r"```JSON\s*(.*?)\s*```",
+            r"```\s*(.*?)\s*```",
+            r"`([^`]*)`",
         ]
 
     async def repair(
         self,
         broken_content: str,
         target_schema: BaseModel | None = None,
-        context: dict[str, Any] | None = None
+        context: dict[str, Any] | None = None,
     ) -> RepairResult:
         """Strip markdown from content.
 
@@ -232,7 +234,7 @@ class MarkdownStripStrategy(FormatRepair):
                     success=True,
                     repaired_data=stripped,
                     strategy_used=self.strategy_name,
-                    attempts=1
+                    attempts=1,
                 )
 
         # No markdown found
@@ -241,7 +243,7 @@ class MarkdownStripStrategy(FormatRepair):
             repaired_data=broken_content,
             strategy_used=self.strategy_name,
             error_message="No markdown wrappers found",
-            attempts=1
+            attempts=1,
         )
 
     @property
@@ -257,18 +259,18 @@ class RegexExtractStrategy(FormatRepair):
         """Initialize regex extract strategy."""
         # Common extraction patterns
         self.patterns = {
-            'json_object': r'\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}',
-            'json_array': r'\[[^\[\]]*(?:\[[^\[\]]*\][^\[\]]*)*\]',
-            'email': r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b',
-            'phone': r'\b\d{3}[-.]?\d{3}[-.]?\d{4}\b',
-            'url': r'https?://[^\s<>"{}|\\^`[\]]+'
+            "json_object": r"\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}",
+            "json_array": r"\[[^\[\]]*(?:\[[^\[\]]*\][^\[\]]*)*\]",
+            "email": r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b",
+            "phone": r"\b\d{3}[-.]?\d{3}[-.]?\d{4}\b",
+            "url": r'https?://[^\s<>"{}|\\^`[\]]+',
         }
 
     async def repair(
         self,
         broken_content: str,
         target_schema: BaseModel | None = None,
-        context: dict[str, Any] | None = None
+        context: dict[str, Any] | None = None,
     ) -> RepairResult:
         """Extract data using regex.
 
@@ -281,7 +283,7 @@ class RegexExtractStrategy(FormatRepair):
             Repair result
         """
         # Try JSON patterns first
-        for pattern_name in ['json_object', 'json_array']:
+        for pattern_name in ["json_object", "json_array"]:
             pattern = self.patterns[pattern_name]
             matches = re.findall(pattern, broken_content, re.DOTALL)
 
@@ -293,7 +295,7 @@ class RegexExtractStrategy(FormatRepair):
                         repaired_data=data,
                         strategy_used=self.strategy_name,
                         attempts=1,
-                        error_message=f"Extracted using {pattern_name} pattern"
+                        error_message=f"Extracted using {pattern_name} pattern",
                     )
                 except json.JSONDecodeError:
                     continue
@@ -301,7 +303,7 @@ class RegexExtractStrategy(FormatRepair):
         # Try other patterns
         extracted = {}
         for name, pattern in self.patterns.items():
-            if name in ['json_object', 'json_array']:
+            if name in ["json_object", "json_array"]:
                 continue
             matches = re.findall(pattern, broken_content)
             if matches:
@@ -309,10 +311,7 @@ class RegexExtractStrategy(FormatRepair):
 
         if extracted:
             return RepairResult(
-                success=True,
-                repaired_data=extracted,
-                strategy_used=self.strategy_name,
-                attempts=1
+                success=True, repaired_data=extracted, strategy_used=self.strategy_name, attempts=1
             )
 
         return RepairResult(
@@ -320,7 +319,7 @@ class RegexExtractStrategy(FormatRepair):
             repaired_data=broken_content,
             strategy_used=self.strategy_name,
             error_message="No structured data found",
-            attempts=1
+            attempts=1,
         )
 
     @property
@@ -336,7 +335,7 @@ class SchemaFillStrategy(FormatRepair):
         self,
         broken_content: str,
         target_schema: BaseModel | None = None,
-        context: dict[str, Any] | None = None
+        context: dict[str, Any] | None = None,
     ) -> RepairResult:
         """Fill missing schema fields.
 
@@ -354,7 +353,7 @@ class SchemaFillStrategy(FormatRepair):
                 repaired_data=broken_content,
                 strategy_used=self.strategy_name,
                 error_message="No target schema provided",
-                attempts=1
+                attempts=1,
             )
 
         try:
@@ -374,10 +373,7 @@ class SchemaFillStrategy(FormatRepair):
             validated = target_schema(**filled)
 
             return RepairResult(
-                success=True,
-                repaired_data=validated,
-                strategy_used=self.strategy_name,
-                attempts=1
+                success=True, repaired_data=validated, strategy_used=self.strategy_name, attempts=1
             )
 
         except (ValidationError, Exception) as e:
@@ -386,7 +382,7 @@ class SchemaFillStrategy(FormatRepair):
                 repaired_data=broken_content,
                 strategy_used=self.strategy_name,
                 error_message=str(e),
-                attempts=1
+                attempts=1,
             )
 
     def _fill_missing_fields(self, data: dict, schema: BaseModel) -> dict:
@@ -412,15 +408,15 @@ class SchemaFillStrategy(FormatRepair):
                 else:
                     # Safe defaults based on type
                     field_type = str(field_info.type_)
-                    if 'list' in field_type:
+                    if "list" in field_type:
                         filled[field_name] = []
-                    elif 'dict' in field_type:
+                    elif "dict" in field_type:
                         filled[field_name] = {}
-                    elif 'str' in field_type:
+                    elif "str" in field_type:
                         filled[field_name] = ""
-                    elif 'int' in field_type or 'float' in field_type:
+                    elif "int" in field_type or "float" in field_type:
                         filled[field_name] = 0
-                    elif 'bool' in field_type:
+                    elif "bool" in field_type:
                         filled[field_name] = False
 
         return filled
@@ -438,7 +434,7 @@ class FallbackTextStrategy(FormatRepair):
         self,
         broken_content: str,
         target_schema: BaseModel | None = None,
-        context: dict[str, Any] | None = None
+        context: dict[str, Any] | None = None,
     ) -> RepairResult:
         """Provide text fallback.
 
@@ -454,7 +450,7 @@ class FallbackTextStrategy(FormatRepair):
         cleaned = broken_content.strip()
 
         # Remove any non-printable characters
-        cleaned = re.sub(r'[^\x20-\x7E\n\r\t]', '', cleaned)
+        cleaned = re.sub(r"[^\x20-\x7E\n\r\t]", "", cleaned)
 
         # Limit length
         if len(cleaned) > 1000:
@@ -465,7 +461,7 @@ class FallbackTextStrategy(FormatRepair):
             "raw_content": cleaned,
             "fallback_used": True,
             "timestamp": datetime.utcnow().isoformat(),
-            "original_error": "Formatting failed, using text fallback"
+            "original_error": "Formatting failed, using text fallback",
         }
 
         return RepairResult(
@@ -473,7 +469,7 @@ class FallbackTextStrategy(FormatRepair):
             repaired_data=fallback,
             strategy_used=self.strategy_name,
             attempts=1,
-            error_message="Using text fallback"
+            error_message="Using text fallback",
         )
 
     @property
@@ -495,7 +491,7 @@ class SelfHealingFormatter:
             JSONRepairStrategy(),
             RegexExtractStrategy(),
             SchemaFillStrategy(),
-            FallbackTextStrategy()
+            FallbackTextStrategy(),
         ]
 
         # Statistics
@@ -503,7 +499,7 @@ class SelfHealingFormatter:
             "total_formats": 0,
             "successful_formats": 0,
             "repairs_needed": 0,
-            "strategy_usage": {s.strategy_name.value: 0 for s in self.repair_strategies}
+            "strategy_usage": {s.strategy_name.value: 0 for s in self.repair_strategies},
         }
 
         logger.info("Initialized SelfHealingFormatter")
@@ -514,7 +510,7 @@ class SelfHealingFormatter:
         format_type: FormatType | str,
         engine_type: EngineType | None = None,
         config: dict[str, Any] | None = None,
-        target_schema: BaseModel | None = None
+        target_schema: BaseModel | None = None,
     ) -> FormatResult:
         """Format data with automatic healing.
 
@@ -539,10 +535,7 @@ class SelfHealingFormatter:
         except Exception as e:
             logger.warning(f"Standard formatting failed: {e}")
             result = FormatResult(
-                data=data,
-                format_type=str(format_type),
-                success=False,
-                errors=[str(e)]
+                data=data, format_type=str(format_type), success=False, errors=[str(e)]
             )
 
         # Apply healing strategies
@@ -554,7 +547,7 @@ class SelfHealingFormatter:
                 repair_result = await strategy.repair(
                     content_str,
                     target_schema,
-                    {"format_type": format_type, "engine_type": engine_type}
+                    {"format_type": format_type, "engine_type": engine_type},
                 )
 
                 if repair_result.success:
@@ -563,20 +556,19 @@ class SelfHealingFormatter:
                     # Try formatting with repaired data
                     try:
                         healed_result = self.base_formatter.format(
-                            repair_result.repaired_data,
-                            format_type,
-                            engine_type,
-                            config
+                            repair_result.repaired_data, format_type, engine_type, config
                         )
 
                         if healed_result.success:
                             # Add healing metadata
-                            healed_result.metadata.update({
-                                "healed": True,
-                                "repair_strategy": strategy.strategy_name.value,
-                                "repair_attempts": repair_result.attempts,
-                                "original_error": repair_result.original_error
-                            })
+                            healed_result.metadata.update(
+                                {
+                                    "healed": True,
+                                    "repair_strategy": strategy.strategy_name.value,
+                                    "repair_attempts": repair_result.attempts,
+                                    "original_error": repair_result.original_error,
+                                }
+                            )
 
                             self._stats["successful_formats"] += 1
                             logger.info(f"Successfully healed using {strategy.strategy_name.value}")
@@ -600,12 +592,8 @@ class SelfHealingFormatter:
             data=fallback_result.repaired_data,
             format_type="fallback",
             success=True,
-            metadata={
-                "healed": True,
-                "repair_strategy": "fallback",
-                "all_strategies_failed": True
-            },
-            errors=result.errors
+            metadata={"healed": True, "repair_strategy": "fallback", "all_strategies_failed": True},
+            errors=result.errors,
         )
 
     def get_stats(self) -> dict[str, Any]:
@@ -629,7 +617,7 @@ class SelfHealingFormatter:
             "total_formats": 0,
             "successful_formats": 0,
             "repairs_needed": 0,
-            "strategy_usage": {s.strategy_name.value: 0 for s in self.repair_strategies}
+            "strategy_usage": {s.strategy_name.value: 0 for s in self.repair_strategies},
         }
 
 
@@ -655,7 +643,7 @@ async def format_with_healing(
     format_type: FormatType | str,
     engine_type: EngineType | None = None,
     config: dict[str, Any] | None = None,
-    target_schema: BaseModel | None = None
+    target_schema: BaseModel | None = None,
 ) -> FormatResult:
     """Format data with self-healing.
 

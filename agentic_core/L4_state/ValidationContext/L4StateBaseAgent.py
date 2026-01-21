@@ -55,6 +55,7 @@ from agentic_core.utils.security import safe_execute
 
 class L4SovereignSeverity(Enum):
     """Sovereign event Severity levels for L4 subatomic testing."""
+
     INFO = "INFO"
     WARNING = "WARNING"
     ERROR = "ERROR"
@@ -64,6 +65,7 @@ class L4SovereignSeverity(Enum):
 @dataclass
 class StateViolation:
     """Structured violation for state healing."""
+
     is_valid: bool
     message: str
     state_key: str | None = None
@@ -111,8 +113,9 @@ class L4SubatomicTestingMixin(MCPHardenedMixin):
                     checkpoint = self.create_checkpoint(test_state)
                     if checkpoint:
                         recovered = self.recover_from_checkpoint(checkpoint)
-                        assert recovered == test_state, \
+                        assert recovered == test_state, (
                             f"{class_name}: Checkpoint corruption - recovered state != original"
+                        )
                 except NotImplementedError:
                     pass  # Method exists but not implemented - OK for base class
                 except Exception:
@@ -126,8 +129,9 @@ class L4SubatomicTestingMixin(MCPHardenedMixin):
                 original = self.state.get(test_key)
 
                 self.state[test_key] = test_value
-                assert self.state.get(test_key) == test_value, \
+                assert self.state.get(test_key) == test_value, (
                     f"{class_name}: State write/read failed"
+                )
 
                 # Cleanup
                 if original is None:
@@ -137,6 +141,7 @@ class L4SubatomicTestingMixin(MCPHardenedMixin):
         except AssertionError as e:
             # Proactive healing: create anomaly and attempt heal
             from agentic_core.schemas.models.anomaly_report import AnomalyReport, AnomalySeverity
+
             anomaly = AnomalyReport(
                 type="self_test_failure",
                 severity=AnomalySeverity.MEDIUM,
@@ -153,7 +158,9 @@ class L4SubatomicTestingMixin(MCPHardenedMixin):
 
         return True
 
-    async def run_l4_subatomic_critique(self, Artifact: dict, artifact_type: str, context: dict) -> dict:
+    async def run_l4_subatomic_critique(
+        self, Artifact: dict, artifact_type: str, context: dict
+    ) -> dict:
         """L4 CRITIQUE hop: Basic state testing + delegation on failure.
 
         Args:
@@ -171,25 +178,31 @@ class L4SubatomicTestingMixin(MCPHardenedMixin):
         test_result = self._run_state_sandbox_tests(tests, Artifact)
 
         if test_result["passed"]:
-            self._emit_l4_event(L4SovereignSeverity.INFO, "L4_CRITIQUE_PASSED", {
-                "artifact_type": artifact_type,
-                "tests_run": len(test_result.get(TESTS_DIR, []))
-            })
+            self._emit_l4_event(
+                L4SovereignSeverity.INFO,
+                "L4_CRITIQUE_PASSED",
+                {"artifact_type": artifact_type, "tests_run": len(test_result.get(TESTS_DIR, []))},
+            )
             return test_result
 
         # Step 3: On failure, delegate to TestSovereigntyAgent
-        self._emit_l4_event(L4SovereignSeverity.WARNING, "L4_BASIC_TESTS_FAILED", {
-            "artifact_type": artifact_type,
-            "reason": test_result.get("error", "unknown")
-        })
+        self._emit_l4_event(
+            L4SovereignSeverity.WARNING,
+            "L4_BASIC_TESTS_FAILED",
+            {"artifact_type": artifact_type, "reason": test_result.get("error", "unknown")},
+        )
 
         advanced_result = await self._delegate_to_l5_specialist(Artifact, artifact_type, context)
 
         if not advanced_result["passed"]:
-            self._emit_l4_event(L4SovereignSeverity.ERROR, "L4_CRITIQUE_FAILED", {
-                "artifact_type": artifact_type,
-                "specialist_coverage": advanced_result.get("coverage", 0)
-            })
+            self._emit_l4_event(
+                L4SovereignSeverity.ERROR,
+                "L4_CRITIQUE_FAILED",
+                {
+                    "artifact_type": artifact_type,
+                    "specialist_coverage": advanced_result.get("coverage", 0),
+                },
+            )
 
         return advanced_result
 
@@ -208,7 +221,7 @@ class L4SubatomicTestingMixin(MCPHardenedMixin):
         """L4 Example 1: Unit tests for state update consistency/idempotency."""
         update_json = json.dumps(update) if isinstance(update, dict) else str(update)
         # Escape for embedding in f-string
-        escaped_update = update_json.replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n')
+        escaped_update = update_json.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n")
         return f'''
 import json
 import pytest
@@ -256,7 +269,7 @@ def test_no_conflicting_keys():
         """L4 Example 2: Test memory retrieval accuracy/relevance."""
         retrieval_json = json.dumps(retrieval) if isinstance(retrieval, dict) else str(retrieval)
         # Escape for embedding in f-string
-        escaped_json = retrieval_json.replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n')
+        escaped_json = retrieval_json.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n")
         return f'''
 import json
 import pytest
@@ -306,7 +319,9 @@ def test_relevance_scores_valid():
         """L4 Example 3: Test reflection summary quality/consistency."""
         summary_json = json.dumps(summary) if isinstance(summary, dict) else str(summary)
         # Escape for embedding in f-string
-        escaped_summary = summary_json.replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n')
+        escaped_summary = (
+            summary_json.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n")
+        )
         return f'''
 import json
 import pytest
@@ -351,9 +366,13 @@ def test_balanced_sentiment():
 
     def _generate_generic_state_tests(self, Artifact: dict, context: dict) -> str:
         """Fallback tests for unknown state types."""
-        artifact_str = json.dumps(Artifact)[:500] if isinstance(Artifact, dict) else str(Artifact)[:500]
+        artifact_str = (
+            json.dumps(Artifact)[:500] if isinstance(Artifact, dict) else str(Artifact)[:500]
+        )
         # Escape for embedding in f-string
-        escaped_artifact = artifact_str.replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n')
+        escaped_artifact = (
+            artifact_str.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n")
+        )
         return f'''
 import pytest
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
@@ -388,14 +407,14 @@ def test_artifact_exists():
         """Run state tests in sandboxed subprocess."""
         try:
             temp_test = Path.cwd() / "temp_l4_test.py"
-            temp_test.write_text(tests, encoding='utf-8')
+            temp_test.write_text(tests, encoding="utf-8")
 
             result = safe_execute(
                 ["pytest", str(temp_test), "-q", "--tb=short"],
                 capture_output=True,
                 timeout=30,
                 check=False,
-                cwd=Path.cwd()
+                cwd=Path.cwd(),
             )
 
             if temp_test.exists():
@@ -406,31 +425,32 @@ def test_artifact_exists():
                 "passed": passed,
                 TESTS_DIR: [{"name": "state_tests", "passed": passed}],
                 "output": result.stdout.decode()[:500],
-                "error": result.stderr.decode()[:200] if not passed else None
+                "error": result.stderr.decode()[:200] if not passed else None,
             }
         except subprocess.TimeoutExpired:
             return {"passed": False, "error": "Test timeout (30s)", TESTS_DIR: []}
         except Exception as e:
             return {"passed": False, "error": str(e), TESTS_DIR: []}
 
-    async def _delegate_to_l5_specialist(self, Artifact: dict, artifact_type: str, context: dict) -> dict:
+    async def _delegate_to_l5_specialist(
+        self, Artifact: dict, artifact_type: str, context: dict
+    ) -> dict:
         """Delegate to TestSovereigntyAgent for advanced state testing."""
         try:
-
             specialist = TestSovereigntyAgent()
             artifact_str = json.dumps(Artifact) if isinstance(Artifact, dict) else str(Artifact)
-            result = await specialist.execute({
-                "Artifact": artifact_str,
-                "type": "state_regression",
-                "coverage_target": 95
-            })
+            result = await specialist.execute(
+                {"Artifact": artifact_str, "type": "state_regression", "coverage_target": 95}
+            )
             return result
         except ImportError:
             return {"passed": False, "error": "TestSovereigntyAgent not available", TESTS_DIR: []}
         except Exception as e:
             return {"passed": False, "error": str(e), TESTS_DIR: []}
 
-    def _emit_l4_event(self, Severity: L4SovereignSeverity, event_type: str, payload: dict | None = None) -> None:
+    def _emit_l4_event(
+        self, Severity: L4SovereignSeverity, event_type: str, payload: dict | None = None
+    ) -> None:
         """Emit L4 subatomic testing event for observability."""
         print(f"[SUBATOMIC L4] {Severity.value} | {event_type}")
         if payload:
@@ -438,7 +458,9 @@ def test_artifact_exists():
 
 
 @dataclass
-class L4StateBaseAgent(L4SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent):
+class L4StateBaseAgent(
+    L4SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent
+):
     """Base class for L4 State agents with subatomic testing.
 
     MRO HARDENING:
@@ -491,15 +513,15 @@ class L4StateBaseAgent(L4SubatomicTestingMixin, RedisCacheMixin, PineconeVectorM
         recent = self.short_term_buffer[-10:] if self.short_term_buffer else []
         for item in recent:
             item_copy = dict(item)
-            item_copy['source'] = 'short_term'
-            item_copy['recency_score'] = 0.8  # Recent items get high base score
+            item_copy["source"] = "short_term"
+            item_copy["recency_score"] = 0.8  # Recent items get high base score
             results.append(item_copy)
 
         # Step 2: Get semantic matches from vector store if available
         semantic_results = self._semantic_search(query, k=k)
         for item in semantic_results:
-            item_copy = dict(item) if isinstance(item, dict) else {'content': str(item)}
-            item_copy['source'] = 'semantic'
+            item_copy = dict(item) if isinstance(item, dict) else {"content": str(item)}
+            item_copy["source"] = "semantic"
             results.append(item_copy)
 
         # Step 3: Rerank combined results
@@ -519,12 +541,14 @@ class L4StateBaseAgent(L4SubatomicTestingMixin, RedisCacheMixin, PineconeVectorM
         """
         try:
             # Step 1: Add to short-term buffer
-            self.short_term_buffer.append({
-                'text': interaction.get('text', str(interaction)),
-                'timestamp': interaction.get('timestamp', self._get_timestamp()),
-                'metadata': interaction.get('metadata', {}),
-                'type': interaction.get('type', 'interaction')
-            })
+            self.short_term_buffer.append(
+                {
+                    "text": interaction.get("text", str(interaction)),
+                    "timestamp": interaction.get("timestamp", self._get_timestamp()),
+                    "metadata": interaction.get("metadata", {}),
+                    "type": interaction.get("type", "interaction"),
+                }
+            )
 
             # Step 2: Compress if buffer exceeds max size
             if len(self.short_term_buffer) > self.short_term_max_size:
@@ -559,14 +583,14 @@ class L4StateBaseAgent(L4SubatomicTestingMixin, RedisCacheMixin, PineconeVectorM
             ).hexdigest()[:16]
 
             checkpoint = {
-                'id': checkpoint_id,
-                'state': state,
-                'timestamp': self._get_timestamp(),
-                'agent': self.__class__.__name__
+                "id": checkpoint_id,
+                "state": state,
+                "timestamp": self._get_timestamp(),
+                "agent": self.__class__.__name__,
             }
 
             # Store checkpoint (subclasses can override storage mechanism)
-            if not hasattr(self, '_checkpoints'):
+            if not hasattr(self, "_checkpoints"):
                 self._checkpoints = {}
             self._checkpoints[checkpoint_id] = checkpoint
 
@@ -587,12 +611,12 @@ class L4StateBaseAgent(L4SubatomicTestingMixin, RedisCacheMixin, PineconeVectorM
             Recovered state dict, or None if not found
         """
         try:
-            if not hasattr(self, '_checkpoints') or checkpoint_id not in self._checkpoints:
+            if not hasattr(self, "_checkpoints") or checkpoint_id not in self._checkpoints:
                 self.log_warning(f"Checkpoint not found: {checkpoint_id}")
                 return None
 
             checkpoint = self._checkpoints[checkpoint_id]
-            recovered_state = checkpoint.get('state', {})
+            recovered_state = checkpoint.get("state", {})
 
             self.log_info(f"Recovered from checkpoint: {checkpoint_id}")
             return recovered_state
@@ -620,7 +644,7 @@ class L4StateBaseAgent(L4SubatomicTestingMixin, RedisCacheMixin, PineconeVectorM
         # Simple relevance scoring based on text overlap
         query_lower = query.lower()
         for result in results:
-            text = str(result.get('text', result.get('content', ''))).lower()
+            text = str(result.get("text", result.get("content", ""))).lower()
 
             # Calculate overlap score
             query_words = set(query_lower.split())
@@ -628,11 +652,13 @@ class L4StateBaseAgent(L4SubatomicTestingMixin, RedisCacheMixin, PineconeVectorM
             overlap = len(query_words & text_words)
 
             # Combine with existing scores
-            base_score = result.get('score', result.get('recency_score', 0.5))
-            result['relevance_score'] = base_score * 0.6 + (overlap / max(1, len(query_words))) * 0.4
+            base_score = result.get("score", result.get("recency_score", 0.5))
+            result["relevance_score"] = (
+                base_score * 0.6 + (overlap / max(1, len(query_words))) * 0.4
+            )
 
         # Sort by relevance and return top N
-        sorted_results = sorted(results, key=lambda x: x.get('relevance_score', 0), reverse=True)
+        sorted_results = sorted(results, key=lambda x: x.get("relevance_score", 0), reverse=True)
         return sorted_results[:top_n]
 
     def _summarize_and_archive(self) -> None:
@@ -641,15 +667,15 @@ class L4StateBaseAgent(L4SubatomicTestingMixin, RedisCacheMixin, PineconeVectorM
             return
 
         # Archive oldest half
-        to_archive = self.short_term_buffer[:self.short_term_max_size // 2]
-        self.short_term_buffer = self.short_term_buffer[self.short_term_max_size // 2:]
+        to_archive = self.short_term_buffer[: self.short_term_max_size // 2]
+        self.short_term_buffer = self.short_term_buffer[self.short_term_max_size // 2 :]
 
         # Create summary (placeholder - subclasses can use LLM)
         summary = {
-            'text': f"Archived {len(to_archive)} interactions",
-            'type': 'archive_summary',
-            'item_count': len(to_archive),
-            'timestamp': self._get_timestamp()
+            "text": f"Archived {len(to_archive)} interactions",
+            "type": "archive_summary",
+            "item_count": len(to_archive),
+            "timestamp": self._get_timestamp(),
         }
 
         self._persist_to_vector_store(summary)
@@ -658,6 +684,7 @@ class L4StateBaseAgent(L4SubatomicTestingMixin, RedisCacheMixin, PineconeVectorM
     def _get_timestamp(self) -> str:
         """Get current ISO timestamp."""
         from datetime import timezone
+
         return datetime.now(timezone.utc).isoformat()
 
     async def update_state(self, Task: dict) -> dict:
@@ -674,13 +701,13 @@ class L4StateBaseAgent(L4SubatomicTestingMixin, RedisCacheMixin, PineconeVectorM
         result = await self.update_state(Task)
 
         # CRITIQUE: Run L4 subatomic tests
-        Artifact = result.get("state_update", result.get("retrieval", result.get("reflection", result)))
+        Artifact = result.get(
+            "state_update", result.get("retrieval", result.get("reflection", result))
+        )
         artifact_type = result.get("artifact_type", "state_update")
 
         critique_result = await self.run_l4_subatomic_critique(
-            Artifact=Artifact,
-            artifact_type=artifact_type,
-            context=Task
+            Artifact=Artifact, artifact_type=artifact_type, context=Task
         )
 
         if not critique_result["passed"]:
@@ -730,10 +757,7 @@ class L4StateBaseAgent(L4SubatomicTestingMixin, RedisCacheMixin, PineconeVectorM
         return report
 
     def cleanup_violations(
-        self,
-        violations: list[StateViolation],
-        dry_run: bool = True,
-        max_actions: int = 50
+        self, violations: list[StateViolation], dry_run: bool = True, max_actions: int = 50
     ) -> list[dict[str, Any]]:
         """
         GOLD STANDARD: Cleanup state violations with state recovery.
@@ -762,10 +786,16 @@ class L4StateBaseAgent(L4SubatomicTestingMixin, RedisCacheMixin, PineconeVectorM
 
             try:
                 if "INCONSISTENT" in violation.message.upper():
-                    action["action_taken"] = "PREVIEW: Would recover state" if dry_run else "State recovery scheduled"
+                    action["action_taken"] = (
+                        "PREVIEW: Would recover state" if dry_run else "State recovery scheduled"
+                    )
                     action["applied"] = not dry_run
                 elif "CHECKPOINT" in violation.message.upper():
-                    action["action_taken"] = "PREVIEW: Would restore checkpoint" if dry_run else "Checkpoint restore scheduled"
+                    action["action_taken"] = (
+                        "PREVIEW: Would restore checkpoint"
+                        if dry_run
+                        else "Checkpoint restore scheduled"
+                    )
                     action["applied"] = not dry_run
 
             except Exception as e:
@@ -800,19 +830,21 @@ class L4StateBaseAgent(L4SubatomicTestingMixin, RedisCacheMixin, PineconeVectorM
         # Check state consistency
         try:
             if hasattr(self, "state") and not isinstance(self.state, dict):
-                all_violations.append(StateViolation(
-                    is_valid=False,
-                    message="STATE_INCONSISTENT: State is not a dictionary",
-                    severity=5
-                ))
+                all_violations.append(
+                    StateViolation(
+                        is_valid=False,
+                        message="STATE_INCONSISTENT: State is not a dictionary",
+                        severity=5,
+                    )
+                )
         except Exception as e:
-            all_violations.append(StateViolation(
-                is_valid=False,
-                message=f"STATE_ERROR: {e}",
-                severity=5
-            ))
+            all_violations.append(
+                StateViolation(is_valid=False, message=f"STATE_ERROR: {e}", severity=5)
+            )
 
-        cleanup_results = self.cleanup_violations(all_violations, dry_run=dry_run) if all_violations else []
+        cleanup_results = (
+            self.cleanup_violations(all_violations, dry_run=dry_run) if all_violations else []
+        )
         batch_summary = cleanup_results[0].get("batch_post_heal", {}) if cleanup_results else {}
 
         return {
@@ -824,7 +856,14 @@ class L4StateBaseAgent(L4SubatomicTestingMixin, RedisCacheMixin, PineconeVectorM
         }
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L4 state agent - operational only."""
         if _call_path is None:
             # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)

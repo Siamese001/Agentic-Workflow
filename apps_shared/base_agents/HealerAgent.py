@@ -32,8 +32,10 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 class CanonBaseAgentInterface(Protocol):
     """Protocol for CanonBaseAgent interface compatibility."""
+
     ctx: Any
     name: str
+
     def smart_fix(self, file_path: str, violation_key: int) -> bool: ...
 
 
@@ -60,10 +62,7 @@ class HealerAgent(SubatomicTestingMixin, HealerMixin):
     """
 
     def heal_repository(
-        self,
-        dry_run: bool = True,
-        execute: bool = False,
-        **kwargs: Any
+        self, dry_run: bool = True, execute: bool = False, **kwargs: Any
     ) -> dict[str, int]:
         """
         Execute autonomous healing for Canon Key 51 compliance.
@@ -95,9 +94,7 @@ class HealerAgent(SubatomicTestingMixin, HealerMixin):
         self.Logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
 
     async def execute(
-        self,
-        goal: str | None = None,
-        context: dict[str, Any] | None = None
+        self, goal: str | None = None, context: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Execute healing operations.
@@ -152,7 +149,9 @@ class HealerAgent(SubatomicTestingMixin, HealerMixin):
         except SyntaxError as e:
             return True, e
         except (FileNotFoundError, UnicodeDecodeError) as e:
-            print(f"Warning: Could not read or decode {file_path} for healing: {e}", file=sys.stderr)
+            print(
+                f"Warning: Could not read or decode {file_path} for healing: {e}", file=sys.stderr
+            )
             return True, SyntaxError(f"File unreadable/undecodable: {e}")
 
     def _is_file_excluded(self, file_path: str) -> bool:
@@ -164,7 +163,7 @@ class HealerAgent(SubatomicTestingMixin, HealerMixin):
         Returns:
             True if file should be excluded.
         """
-        excluded_patterns = ['__pycache__', '.git', 'venv', '.venv', 'node_modules']
+        excluded_patterns = ["__pycache__", ".git", "venv", ".venv", "node_modules"]
         return any(pattern in file_path for pattern in excluded_patterns)
 
     def _scan_for_syntax_errors(self) -> list[tuple[str, SyntaxError | None]]:
@@ -192,8 +191,8 @@ class HealerAgent(SubatomicTestingMixin, HealerMixin):
         Returns:
             True if fix was successful.
         """
-        lineno = getattr(error, 'lineno', 'unknown')
-        msg = getattr(error, 'msg', str(error))
+        lineno = getattr(error, "lineno", "unknown")
+        msg = getattr(error, "msg", str(error))
         print(f"      [SCAN] Fixing {file_path}:{lineno} – {msg}")
         return await self.smart_fix(file_path, 48)
 
@@ -216,7 +215,7 @@ class HealerAgent(SubatomicTestingMixin, HealerMixin):
         Scans for syntax errors and attempts LLM-based fixes with retry.
         Reports results to validation context.
         """
-        max_rounds = int(os.getenv('MAX_HEALING_ROUNDS', '3'))
+        max_rounds = int(os.getenv("MAX_HEALING_ROUNDS", "3"))
         print(f"\n[>>>] {self.name} ACTIVATED: Investigating Failures...")
 
         round_num = 0

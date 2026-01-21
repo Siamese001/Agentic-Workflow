@@ -28,14 +28,19 @@ from typing import Any
 from services.configuration import ConfigurationService
 
 Logger: Any = logging.getLogger(__name__)
-module_version: Any = '1.0.0'
-module_author: Any = 'Agentic-Workflow Team'
+module_version: Any = "1.0.0"
+module_author: Any = "Agentic-Workflow Team"
 __all__ = []
+
 
 def _initialize_module() -> None:
     """Initialize module with required setup."""
-    ConfigurationService().Logger.debug(f'Initializing Pick Best Refinement module v{ConfigurationService().MODULE_VERSION}')
+    ConfigurationService().Logger.debug(
+        f"Initializing Pick Best Refinement module v{ConfigurationService().MODULE_VERSION}"
+    )
+
+
 _initialize_module()
 __version__ = ConfigurationService().MODULE_VERSION
 __author__ = ConfigurationService().MODULE_AUTHOR
-__docformat__ = 'restructuredtext en'
+__docformat__ = "restructuredtext en"

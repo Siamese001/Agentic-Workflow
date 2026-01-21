@@ -11,7 +11,9 @@ def _make_agent(agent_cls: type, card: AgentCard | None = None) -> object:
     routing = RoutingPolicy()
     sandbox = SandboxConfig()
     if card is not None:
-        return agent_cls(routing_policy=routing, sandbox=sandbox, agent_card=card, meta_profile=None)
+        return agent_cls(
+            routing_policy=routing, sandbox=sandbox, agent_card=card, meta_profile=None
+        )
     return agent_cls(routing_policy=routing, sandbox=sandbox, meta_profile=None)
 
 

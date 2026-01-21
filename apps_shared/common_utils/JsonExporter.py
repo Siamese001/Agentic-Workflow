@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class ExportResult:
     """Result of export operation."""
+
     success: bool
     items_exported: int
     destination: str
@@ -53,17 +54,12 @@ class JsonExporter(BaseExporter):
                     json.dump(items, f, default=str, indent=2)
 
             return ExportResult(
-                success=True,
-                items_exported=len(items),
-                destination=self.destination
+                success=True, items_exported=len(items), destination=self.destination
             )
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
             logger.error(f"Export failed: {e}")
             return ExportResult(
-                success=False,
-                items_exported=0,
-                destination=self.destination,
-                errors=[str(e)]
+                success=False, items_exported=0, destination=self.destination, errors=[str(e)]
             )
 
 

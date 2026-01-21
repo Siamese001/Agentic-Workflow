@@ -8,6 +8,7 @@ This script:
 3. Adds docstrings to undocumented classes/functions
 4. Updates agent_discovery_full.json with new percentages
 """
+
 import ast
 import json
 import re
@@ -34,12 +35,12 @@ class TypeDocFixer(ast.NodeTransformer):
 def add_type_hints_to_function(source: str, func_name: str) -> str:
     """Add basic type hints to a function if missing."""
     # Pattern to match function definitions without return type
-    pattern = rf'(def\s+{re.escape(func_name)}\s*\([^)]*\))\s*:'
+    pattern = rf"(def\s+{re.escape(func_name)}\s*\([^)]*\))\s*:"
 
     def add_return_type(match):
         sig = match.group(1)
-        if '->' not in sig:
-            return f'{sig} -> Any:'
+        if "->" not in sig:
+            return f"{sig} -> Any:"
         return match.group(0)
 
     return re.sub(pattern, add_return_type, source)
@@ -53,7 +54,9 @@ def add_docstring_to_class(source: str, class_name: str) -> str:
     def add_docstring(match):
         class_def = match.group(1)
         indent = match.group(2)
-        docstring = f'{class_def}\n{indent}"""{class_name} agent for autonomous operations."""\n{indent}'
+        docstring = (
+            f'{class_def}\n{indent}"""{class_name} agent for autonomous operations."""\n{indent}'
+        )
         return docstring
 
     return re.sub(pattern, add_docstring, source)
@@ -83,7 +86,7 @@ def fix_agent_file(file_path: Path) -> tuple[int, int]:
         return 0, 0
 
     try:
-        source = file_path.read_text(encoding='utf-8')
+        source = file_path.read_text(encoding="utf-8")
         original_source = source
 
         # Parse AST
@@ -98,8 +101,11 @@ def fix_agent_file(file_path: Path) -> tuple[int, int]:
         for node in ast.walk(tree):
             # Fix class docstrings
             if isinstance(node, ast.ClassDef):
-                if not (node.body and isinstance(node.body[0], ast.Expr) and
-                        isinstance(node.body[0].value, ast.Str | ast.Constant)):
+                if not (
+                    node.body
+                    and isinstance(node.body[0], ast.Expr)
+                    and isinstance(node.body[0].value, ast.Str | ast.Constant)
+                ):
                     new_source = add_docstring_to_class(source, node.name)
                     if new_source != source:
                         source = new_source
@@ -108,16 +114,19 @@ def fix_agent_file(file_path: Path) -> tuple[int, int]:
             # Fix function type hints and docstrings
             if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
                 # Check for missing return type annotation
-                if node.returns is None and not node.name.startswith('_'):
+                if node.returns is None and not node.name.startswith("_"):
                     new_source = add_type_hints_to_function(source, node.name)
                     if new_source != source:
                         source = new_source
                         types_added += 1
 
                 # Check for missing docstring
-                if not (node.body and isinstance(node.body[0], ast.Expr) and
-                        isinstance(node.body[0].value, ast.Str | ast.Constant)):
-                    if not node.name.startswith('_'):
+                if not (
+                    node.body
+                    and isinstance(node.body[0], ast.Expr)
+                    and isinstance(node.body[0].value, ast.Str | ast.Constant)
+                ):
+                    if not node.name.startswith("_"):
                         new_source = add_docstring_to_function(source, node.name)
                         if new_source != source:
                             source = new_source
@@ -126,27 +135,22 @@ def fix_agent_file(file_path: Path) -> tuple[int, int]:
         # Write back if changed
         if source != original_source:
             # Add Any import if needed
-            if 'Any' in source and 'from typing import' in source:
-                if 'Any' not in source.split('from typing import')[1].split('\n')[0]:
-                    source = re.sub(
-                        r'(from typing import [^\n]+)',
-                        r'\1, Any',
-                        source,
-                        count=1
-                    )
-            elif 'Any' in source and 'from typing import' not in source:
+            if "Any" in source and "from typing import" in source:
+                if "Any" not in source.split("from typing import")[1].split("\n")[0]:
+                    source = re.sub(r"(from typing import [^\n]+)", r"\1, Any", source, count=1)
+            elif "Any" in source and "from typing import" not in source:
                 # Add typing import at top
-                lines = source.split('\n')
+                lines = source.split("\n")
                 import_idx = 0
                 for i, line in enumerate(lines):
-                    if line.startswith('import ') or line.startswith('from '):
+                    if line.startswith("import ") or line.startswith("from "):
                         import_idx = i + 1
-                    elif line.strip() and not line.startswith('#') and not line.startswith('"""'):
+                    elif line.strip() and not line.startswith("#") and not line.startswith('"""'):
                         break
-                lines.insert(import_idx, 'from typing import Any')
-                source = '\n'.join(lines)
+                lines.insert(import_idx, "from typing import Any")
+                source = "\n".join(lines)
 
-            file_path.write_text(source, encoding='utf-8')
+            file_path.write_text(source, encoding="utf-8")
 
         return types_added, docstrings_added
 
@@ -161,13 +165,13 @@ def main():
     print("=" * 70)
 
     # Load agent discovery
-    discovery_path = PROJECT_ROOT / 'agent_discovery_full.json'
-    with open(discovery_path, encoding='utf-8') as f:
+    discovery_path = PROJECT_ROOT / "agent_discovery_full.json"
+    with open(discovery_path, encoding="utf-8") as f:
         agents = json.load(f)
 
     # Find agents needing fixes
-    low_typed = [a for a in agents if a.get('typed_pct', 100) < 100]
-    low_doc = [a for a in agents if a.get('documented_pct', 100) < 100]
+    low_typed = [a for a in agents if a.get("typed_pct", 100) < 100]
+    low_doc = [a for a in agents if a.get("documented_pct", 100) < 100]
 
     print(f"\nAgents with Typed < 100%: {len(low_typed)}")
     print(f"Agents with Documented < 100%: {len(low_doc)}")
@@ -175,7 +179,7 @@ def main():
     # Combine unique agents needing fixes
     agents_to_fix = {}
     for a in low_typed + low_doc:
-        agents_to_fix[a['path']] = a
+        agents_to_fix[a["path"]] = a
 
     print(f"\nTotal unique agents to fix: {len(agents_to_fix)}")
 
@@ -187,7 +191,7 @@ def main():
         file_path = PROJECT_ROOT / path
         if not file_path.exists():
             # Try with agentic_core prefix
-            file_path = PROJECT_ROOT / 'agentic_core' / path
+            file_path = PROJECT_ROOT / "agentic_core" / path
         if not file_path.exists():
             continue
 

@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 
 class CacheEntry(BaseModel):
     """Cache entry with metadata."""
+
     key_hash: str
     value: Any
     embedding: list[float] = Field(default_factory=list)
@@ -125,7 +126,7 @@ class L1MemoryCache:
             "max_size": self.max_size,
             "hits": self._hits,
             "misses": self._misses,
-            "hit_rate": hit_rate
+            "hit_rate": hit_rate,
         }
 
 
@@ -180,10 +181,7 @@ class L2VectorStore:
             self.embeddings = self.embeddings[1:]
 
     def search(
-        self,
-        query_embedding: list[float],
-        threshold: float = 0.92,
-        max_results: int = 5
+        self, query_embedding: list[float], threshold: float = 0.92, max_results: int = 5
     ) -> list[tuple[CacheEntry, float]]:
         """Search for semantically similar entries.
 
@@ -249,7 +247,7 @@ class L2VectorStore:
             "hits": self._hits,
             "misses": self._misses,
             "hit_rate": hit_rate,
-            "embedding_dim": self.embeddings.shape[1] if self.embeddings.shape[0] > 0 else 0
+            "embedding_dim": self.embeddings.shape[1] if self.embeddings.shape[0] > 0 else 0,
         }
 
 
@@ -273,6 +271,7 @@ class SimpleEmbedder:
         if self._model is None:
             try:
                 from sentence_transformers import SentenceTransformer
+
                 self._model = SentenceTransformer(self.model_name)
                 logger.info(f"Loaded embedding model: {self.model_name}")
             except ImportError:
@@ -298,14 +297,14 @@ class SimpleEmbedder:
             # Convert to numeric vector
             embedding = []
             for i in range(0, len(hash_hex), 2):
-                val = int(hash_hex[i:i+2], 16) / 255.0 - 0.5
+                val = int(hash_hex[i : i + 2], 16) / 255.0 - 0.5
                 embedding.append(val)
 
             # Pad to correct dimension
             while len(embedding) < self._embedding_dim:
                 embedding.append(0.0)
 
-            return embedding[:self._embedding_dim]
+            return embedding[: self._embedding_dim]
 
         # Generate real embedding
         embedding = self._model.encode(text, convert_to_numpy=True)
@@ -315,12 +314,7 @@ class SimpleEmbedder:
 class GlobalCache:
     """Global semantic cache with L1/L2 storage."""
 
-    def __init__(
-        self,
-        l1_size: int = 1000,
-        l2_size: int = 10000,
-        semantic_threshold: float = 0.92
-    ):
+    def __init__(self, l1_size: int = 1000, l2_size: int = 10000, semantic_threshold: float = 0.92):
         """Initialize global cache.
 
         Args:
@@ -334,14 +328,11 @@ class GlobalCache:
         self.semantic_threshold = semantic_threshold
 
         # Statistics
-        self._stats = {
-            "total_requests": 0,
-            "l1_hits": 0,
-            "l2_hits": 0,
-            "total_misses": 0
-        }
+        self._stats = {"total_requests": 0, "l1_hits": 0, "l2_hits": 0, "total_misses": 0}
 
-        logger.info(f"Initialized GlobalCache (L1: {l1_size}, L2: {l2_size}, threshold: {semantic_threshold})")
+        logger.info(
+            f"Initialized GlobalCache (L1: {l1_size}, L2: {l2_size}, threshold: {semantic_threshold})"
+        )
 
     def get(self, key: str) -> Any | None:
         """Get value by exact key.
@@ -377,10 +368,7 @@ class GlobalCache:
         return None
 
     def get_semantic(
-        self,
-        query_text: str,
-        threshold: float | None = None,
-        max_results: int = 1
+        self, query_text: str, threshold: float | None = None, max_results: int = 1
     ) -> list[Any]:
         """Get values by semantic similarity.
 
@@ -423,7 +411,7 @@ class GlobalCache:
         value: Any,
         text_for_embedding: str | None = None,
         ttl: int = 3600,
-        source_engine: str = "UNKNOWN"
+        source_engine: str = "UNKNOWN",
     ) -> None:
         """Put value in cache.
 
@@ -448,7 +436,7 @@ class GlobalCache:
             value=value,
             embedding=embedding,
             ttl=ttl,
-            source_engine=source_engine
+            source_engine=source_engine,
         )
 
         # Store in L1
@@ -473,12 +461,7 @@ class GlobalCache:
         """Clear all cache entries."""
         self.l1.clear()
         self.l2.clear()
-        self._stats = {
-            "total_requests": 0,
-            "l1_hits": 0,
-            "l2_hits": 0,
-            "total_misses": 0
-        }
+        self._stats = {"total_requests": 0, "l1_hits": 0, "l2_hits": 0, "total_misses": 0}
         logger.info("Cleared global cache")
 
     def cleanup_expired(self) -> int:
@@ -521,9 +504,9 @@ class GlobalCache:
 
         # Calculate overall hit rate
         if stats["total_requests"] > 0:
-            stats["overall_hit_rate"] = (
-                (stats["l1_hits"] + stats["l2_hits"]) / stats["total_requests"]
-            )
+            stats["overall_hit_rate"] = (stats["l1_hits"] + stats["l2_hits"]) / stats[
+                "total_requests"
+            ]
         else:
             stats["overall_hit_rate"] = 0.0
 
@@ -551,7 +534,7 @@ def cached(
     key_func: callable | None = None,
     ttl: int = 3600,
     semantic: bool = False,
-    threshold: float = 0.92
+    threshold: float = 0.92,
 ):
     """Decorator for caching function results.
 
@@ -564,6 +547,7 @@ def cached(
     Returns:
         Decorated function
     """
+
     def decorator(func):
         async def async_wrapper(*args, **kwargs):
             cache = get_global_cache()
@@ -596,7 +580,7 @@ def cached(
                     result,
                     text_for_embedding=str(args[0]) if args else key,
                     ttl=ttl,
-                    source_engine=func.__module__
+                    source_engine=func.__module__,
                 )
             else:
                 cache.put(key, result, ttl=ttl, source_engine=func.__module__)
@@ -604,6 +588,7 @@ def cached(
             return result
 
         return async_wrapper
+
     return decorator
 
 
@@ -626,7 +611,7 @@ def cache_put(
     value: Any,
     text_for_embedding: str | None = None,
     ttl: int = 3600,
-    source_engine: str = "UNKNOWN"
+    source_engine: str = "UNKNOWN",
 ) -> None:
     """Put value in global cache.
 
@@ -642,9 +627,7 @@ def cache_put(
 
 
 def cache_search_semantic(
-    query_text: str,
-    threshold: float | None = None,
-    max_results: int = 1
+    query_text: str, threshold: float | None = None, max_results: int = 1
 ) -> list[Any]:
     """Search cache semantically.
 

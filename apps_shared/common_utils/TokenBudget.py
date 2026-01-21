@@ -30,6 +30,7 @@ class BudgetExceededError(Exception):
 @dataclass
 class TokenBudgetConfig:
     """Token budget configuration."""
+
     max_prompt_tokens: int = 100000
     max_completion_tokens: int = 50000
     max_total_tokens: int = 150000
@@ -122,7 +123,7 @@ class TokenBudget:
                     "projected_total": projected_total,
                     "max_total": self.config.max_total_tokens,
                     "utilization": projected_total / self.config.max_total_tokens,
-                }
+                },
             )
 
     def record_usage(
@@ -149,7 +150,7 @@ class TokenBudget:
                     "completion_tokens": completion_tokens,
                     "total_tokens": self._total_tokens,
                     "request_count": self._request_count,
-                }
+                },
             )
 
         if self.config.enforce_limits:
@@ -195,7 +196,8 @@ class TokenBudget:
             "max_completion_tokens": self.config.max_completion_tokens,
             "max_total_tokens": self.config.max_total_tokens,
             "prompt_utilization": self._prompt_tokens / max(1, self.config.max_prompt_tokens),
-            "completion_utilization": self._completion_tokens / max(1, self.config.max_completion_tokens),
+            "completion_utilization": self._completion_tokens
+            / max(1, self.config.max_completion_tokens),
             "total_utilization": self._total_tokens / max(1, self.config.max_total_tokens),
         }
 

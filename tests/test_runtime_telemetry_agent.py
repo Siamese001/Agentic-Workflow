@@ -9,17 +9,19 @@ from pathlib import Path
 
 
 # Setup mock for MCPHardenedMixin
-class MockMixin: pass
-mock_module = type(sys)('mock')
+class MockMixin:
+    pass
+
+
+mock_module = type(sys)("mock")
 mock_module.MCPHardenedMixin = MockMixin
-sys.modules['agentic_core.utils.core_extensions.mcp_hardened_mixin'] = mock_module
+sys.modules["agentic_core.utils.core_extensions.mcp_hardened_mixin"] = mock_module
 
 # Direct import
 import importlib.util
 
 spec = importlib.util.spec_from_file_location(
-    'RuntimeTelemetryAgent',
-    Path('agentic_core/L6_observability/agents/RuntimeTelemetryAgent.py')
+    "RuntimeTelemetryAgent", Path("agentic_core/L6_observability/agents/RuntimeTelemetryAgent.py")
 )
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
@@ -41,11 +43,11 @@ def test_benchmark_startup():
     agent, duration = telemetry.benchmark_startup(MockAgent)
 
     print(f"Agent class: {agent.__class__.__name__}")
-    print(f"Duration: {duration*1000:.3f} ms")
+    print(f"Duration: {duration * 1000:.3f} ms")
 
     assert agent is not None
-    assert duration >= 0.05, f"Expected >= 50ms, got {duration*1000:.3f}ms"
-    assert 'MockAgent' in telemetry.metrics
+    assert duration >= 0.05, f"Expected >= 50ms, got {duration * 1000:.3f}ms"
+    assert "MockAgent" in telemetry.metrics
 
     print("\n✅ TEST 1 PASSED: Benchmark startup working")
 
@@ -67,9 +69,9 @@ def test_overhead_audit_optimal():
     print(f"Status: {report['status']}")
     print(f"Breached: {report['breach']}")
 
-    assert report['ratio'] < 2.0
-    assert report['status'] == "✅ OPTIMAL"
-    assert report['breach'] is False
+    assert report["ratio"] < 2.0
+    assert report["status"] == "✅ OPTIMAL"
+    assert report["breach"] is False
 
     print("\n✅ TEST 2 PASSED: Optimal overhead detected correctly")
 
@@ -91,9 +93,9 @@ def test_overhead_audit_critical():
     print(f"Status: {report['status']}")
     print(f"Breached: {report['breach']}")
 
-    assert report['ratio'] > 2.0
-    assert "CRITICAL" in report['status']
-    assert report['breach'] is True
+    assert report["ratio"] > 2.0
+    assert "CRITICAL" in report["status"]
+    assert report["breach"] is True
 
     print("\n✅ TEST 3 PASSED: Critical overhead detected correctly")
 
@@ -121,8 +123,8 @@ def test_report_generation():
     telemetry.report_performance()
 
     assert len(telemetry.metrics) == 2
-    assert 'FastAgent' in telemetry.metrics
-    assert 'SlowAgent' in telemetry.metrics
+    assert "FastAgent" in telemetry.metrics
+    assert "SlowAgent" in telemetry.metrics
 
     print("\n✅ TEST 4 PASSED: Report generated successfully")
 
@@ -151,9 +153,9 @@ def test_multiple_agents_benchmark():
     for agent_class in [Agent1, Agent2, Agent3]:
         _, duration = telemetry.benchmark_startup(agent_class)
         total_time += duration
-        print(f"  {agent_class.__name__}: {duration*1000:.3f}ms")
+        print(f"  {agent_class.__name__}: {duration * 1000:.3f}ms")
 
-    print(f"\nTotal startup time: {total_time*1000:.3f}ms")
+    print(f"\nTotal startup time: {total_time * 1000:.3f}ms")
     print(f"Agents benchmarked: {len(telemetry.metrics)}")
 
     assert len(telemetry.metrics) == 3
@@ -177,7 +179,7 @@ def test_zero_baseline_handling():
     print("Current: 50ms")
     print(f"Ratio: {report['ratio']}x")
 
-    assert report['ratio'] == 0  # Should handle gracefully
+    assert report["ratio"] == 0  # Should handle gracefully
 
     print("\n✅ TEST 6 PASSED: Zero baseline handled gracefully")
 

@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
 """Extract potential JavaScript errors from dashboard HTML."""
+
 import re
 from pathlib import Path
 
 dashboard_path = Path("reports/autonomy_dashboard.html")
-html = dashboard_path.read_text(encoding='utf-8')
+html = dashboard_path.read_text(encoding="utf-8")
 
 print("=" * 80)
 print("DASHBOARD JAVASCRIPT ERROR ANALYSIS")
 print("=" * 80)
 
 # Extract all script content
-scripts = re.findall(r'<script[^>]*>(.*?)</script>', html, re.DOTALL)
+scripts = re.findall(r"<script[^>]*>(.*?)</script>", html, re.DOTALL)
 print(f"\nFound {len(scripts)} script blocks")
 
 # Check for common issues
@@ -19,17 +20,19 @@ issues = []
 
 # 1. Check for undefined variables
 for i, script in enumerate(scripts, 1):
-    lines = script.split('\n')
+    lines = script.split("\n")
     for line_num, line in enumerate(lines, 1):
         # Look for variable usage before declaration
-        if re.search(r'\b(dashboardData|recommendationsData|gaugeData|lastUpdatedStr)\b', line):
-            if 'const' not in line and '=' not in line:
-                issues.append(f"Script {i}, Line {line_num}: Possible use before declaration: {line.strip()[:80]}")
+        if re.search(r"\b(dashboardData|recommendationsData|gaugeData|lastUpdatedStr)\b", line):
+            if "const" not in line and "=" not in line:
+                issues.append(
+                    f"Script {i}, Line {line_num}: Possible use before declaration: {line.strip()[:80]}"
+                )
 
 # 2. Check for missing function definitions
-required_functions = ['loadData', 'renderGauges', 'renderRiskMatrix', 'setupDrillDowns']
+required_functions = ["loadData", "renderGauges", "renderRiskMatrix", "setupDrillDowns"]
 for func in required_functions:
-    pattern = f'function {func}'
+    pattern = f"function {func}"
     if pattern not in html:
         issues.append(f"Missing function definition: {func}")
     else:
@@ -54,23 +57,23 @@ else:
     print("\n✓ All referenced DOM elements exist")
 
 # 4. Check for syntax errors in data injection
-data_vars = ['dashboardData', 'recommendationsData', 'gaugeData', 'lastUpdatedStr']
+data_vars = ["dashboardData", "recommendationsData", "gaugeData", "lastUpdatedStr"]
 for var in data_vars:
-    pattern = f'const {var} = '
+    pattern = f"const {var} = "
     if pattern in html:
         # Extract the value
-        match = re.search(f'const {var} = (.+?);', html, re.DOTALL)
+        match = re.search(f"const {var} = (.+?);", html, re.DOTALL)
         if match:
             value = match.group(1).strip()
-            if var in ['dashboardData', 'recommendationsData']:
-                if value == '[]':
+            if var in ["dashboardData", "recommendationsData"]:
+                if value == "[]":
                     issues.append(f"{var} is empty array")
-                elif not value.startswith('['):
+                elif not value.startswith("["):
                     issues.append(f"{var} doesn't start with array bracket")
-            elif var == 'gaugeData':
-                if value == '{}':
+            elif var == "gaugeData":
+                if value == "{}":
                     issues.append(f"{var} is empty object")
-                elif not value.startswith('{'):
+                elif not value.startswith("{"):
                     issues.append(f"{var} doesn't start with object brace")
         else:
             issues.append(f"Could not parse {var} value")
@@ -78,13 +81,13 @@ for var in data_vars:
         issues.append(f"Missing declaration: const {var}")
 
 # 5. Check Plotly initialization
-if '__plotlyReady' in html:
+if "__plotlyReady" in html:
     print("\n✓ Plotly loader present")
-    if 'loadScript' in html:
+    if "loadScript" in html:
         print("✓ loadScript function defined")
-    if 'plotly.min.js' in html:
+    if "plotly.min.js" in html:
         print("✓ Local Plotly fallback configured")
-    if 'cdnjs.cloudflare.com/ajax/libs/plotly' in html:
+    if "cdnjs.cloudflare.com/ajax/libs/plotly" in html:
         print("✓ CDN Plotly fallback configured")
 else:
     issues.append("Missing Plotly loader")

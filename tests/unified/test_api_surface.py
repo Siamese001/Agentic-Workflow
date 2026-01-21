@@ -6,6 +6,7 @@ Tests verify that:
 - Config constants are accessible via clean imports
 - Facade pattern works correctly
 """
+
 import inspect
 import sys
 from pathlib import Path
@@ -73,7 +74,7 @@ def test_config_sovereign_registry_keys():
     """Verify SOVEREIGN_REGISTRY contains expected keys."""
     from agentic_core.config import SOVEREIGN_REGISTRY
 
-    expected_keys = ['agentic_core', 'apps_rg', 'apps_lic', 'apps_shared', 'tests']
+    expected_keys = ["agentic_core", "apps_rg", "apps_lic", "apps_shared", "tests"]
     for key in expected_keys:
         assert key in SOVEREIGN_REGISTRY, f"Missing key: {key}"
 
@@ -83,8 +84,8 @@ def test_config_healing_config():
     from agentic_core.config import HEALING_CONFIG
 
     assert isinstance(HEALING_CONFIG, dict)
-    assert 'max_rounds' in HEALING_CONFIG
-    assert 'global_budget' in HEALING_CONFIG
+    assert "max_rounds" in HEALING_CONFIG
+    assert "global_budget" in HEALING_CONFIG
 
 
 def test_config_active_canon_keys():

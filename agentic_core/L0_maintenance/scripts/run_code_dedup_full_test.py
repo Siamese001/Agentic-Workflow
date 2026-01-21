@@ -2,6 +2,7 @@
 Comprehensive test runner for CodeDeduplicationAgent with healing and validation.
 Runs all phases: self-tests, duplicate detection, filename checks, and validation.
 """
+
 import sys
 from pathlib import Path
 
@@ -13,7 +14,9 @@ sys.path.insert(0, str(project_root))
 
 class TestContext:
     """Mock context for agent execution."""
+
     RUN_SPRAWL_SURGERY = False  # Dry-run mode (no actual file modifications)
+
 
 def run_comprehensive_tests():
     """Execute full test suite for CodeDeduplicationAgent."""
@@ -42,11 +45,15 @@ def run_comprehensive_tests():
     print("\n[3/5] Scanning for code block duplicates...")
     # Phase 6.9 Sub-50: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_python_files
-    python_files = [str(f) for f in get_python_files(project_root)
-                   if f.is_file()
-                   and ARCHIVES_DIR not in str(f)
-                   and ".venv" not in str(f)
-                   and "__pycache__" not in str(f)]
+
+    python_files = [
+        str(f)
+        for f in get_python_files(project_root)
+        if f.is_file()
+        and ARCHIVES_DIR not in str(f)
+        and ".venv" not in str(f)
+        and "__pycache__" not in str(f)
+    ]
 
     print(f"  Scanning {len(python_files)} Python files...")
     agent.scan_for_duplicates(python_files)
@@ -149,7 +156,7 @@ def run_comprehensive_tests():
     validations.append(("Filename scan", True))
 
     # Validation 6: New fuzzy matching method exists
-    validations.append(("Fuzzy matching method", hasattr(agent, '_block_similarity')))
+    validations.append(("Fuzzy matching method", hasattr(agent, "_block_similarity")))
 
     # Validation 7: Threshold increased to 98%
     validations.append(("Conservative threshold (98%)", agent.threshold >= 0.98))
@@ -161,7 +168,9 @@ def run_comprehensive_tests():
         status = "✓" if result else "✗"
         print(f"  {status} {name}")
 
-    print(f"\nValidation Pass Rate: {passed_validations}/{total_validations} ({passed_validations/total_validations*100:.1f}%)")
+    print(
+        f"\nValidation Pass Rate: {passed_validations}/{total_validations} ({passed_validations / total_validations * 100:.1f}%)"
+    )
 
     if passed_validations == total_validations:
         print("\n" + "=" * 80)
@@ -173,6 +182,7 @@ def run_comprehensive_tests():
         print(f"❌ {total_validations - passed_validations} VALIDATION(S) FAILED")
         print("=" * 80)
         return False
+
 
 if __name__ == "__main__":
     success = run_comprehensive_tests()

@@ -12,33 +12,36 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 )
 
 
-def repair_test_syntax(test_dir: Any=TESTS_DIR) -> Any:
+def repair_test_syntax(test_dir: Any = TESTS_DIR) -> Any:
     """Brief description of functionality and purpose."""
     files_fixed: Any = 0
     # Phase 6.8: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_python_files
+
     for path in get_python_files(pathlib.Path(test_dir)):
         try:
-            lines: Any = path.read_text(encoding='utf-8').splitlines()
+            lines: Any = path.read_text(encoding="utf-8").splitlines()
             new_lines: Any = []
             changed: Any = False
-            if lines and lines[0].startswith('```'):
-                lines: Any = [l for l in lines if not l.startswith('```')]
+            if lines and lines[0].startswith("```"):
+                lines: Any = [l for l in lines if not l.startswith("```")]
                 changed: Any = True
             i: Any = 0
             while i < len(lines):
                 line: Any = lines[i]
                 new_lines.append(line)
-                if line.strip().startswith('except ') and line.strip().endswith(':'):
+                if line.strip().startswith("except ") and line.strip().endswith(":"):
                     if i + 1 < len(lines):
                         next_line: Any = lines[i + 1]
-                        if next_line.strip() and (not next_line.startswith((' ', '\t'))):
+                        if next_line.strip() and (not next_line.startswith((" ", "\t"))):
                             indent: Any = len(line) - len(line.lstrip())
-                            proper_indent: Any = ' ' * (indent + 4)
+                            proper_indent: Any = " " * (indent + 4)
                             j: Any = i + 1
                             while j < len(lines):
                                 following_line: Any = lines[j]
-                                if following_line.strip() and (not following_line.startswith((' ', '\t'))):
+                                if following_line.strip() and (
+                                    not following_line.startswith((" ", "\t"))
+                                ):
                                     new_lines.append(proper_indent + following_line.lstrip())
                                     changed: Any = True
                                     j += 1
@@ -47,12 +50,14 @@ def repair_test_syntax(test_dir: Any=TESTS_DIR) -> Any:
                             i: Any = j - 1
                 i += 1
             if changed:
-                path.write_text('\n'.join(new_lines), encoding='utf-8')
+                path.write_text("\n".join(new_lines), encoding="utf-8")
                 files_fixed += 1
-                print(f'[FIXED] Syntax repair in {path}')
+                print(f"[FIXED] Syntax repair in {path}")
         except Exception as e:
-            print(f'[ERROR] Failed to process {path}: {e}')
+            print(f"[ERROR] Failed to process {path}: {e}")
     return files_fixed
-if __name__ == '__main__':
+
+
+if __name__ == "__main__":
     count: Any = repair_test_syntax()
-    print(f'\nTotal files repaired: {count}')
+    print(f"\nTotal files repaired: {count}")

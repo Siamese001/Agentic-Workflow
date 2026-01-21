@@ -65,54 +65,56 @@ repos:
         exclude: ^(tests/|scripts/|stubs/)
 
   # ============================================================================
-  # TIER 2: Project-Specific Safety Checks
+  # TIER 2: Project-Specific Safety Checks (Windows-Compatible)
   # ============================================================================
   - repo: local
     hooks:
       - id: check-agent-duplicates
         name: Check for Agent Duplicate Filenames
-        entry: python scripts/maintenance/check_duplicate_filenames.py
-        language: system
+        entry: python
+        args: [scripts/maintenance/check_duplicate_filenames.py]
+        language: python
         pass_filenames: false
         always_run: true
-        stages: [pre-commit]
 
       - id: check-deprecated-imports
         name: Check for Deprecated Agent Imports
-        entry: pytest tests/infrastructure/test_agent_consolidation_hardening.py::TestConsolidationStaticAnalysis -v --tb=short
-        language: system
+        entry: pytest
+        args: [tests/infrastructure/test_agent_consolidation_hardening.py::TestConsolidationStaticAnalysis, -v, --tb=short]
+        language: python
+        additional_dependencies: [pytest]
         pass_filenames: false
         always_run: true
-        stages: [pre-commit]
 
       - id: check-heal-schema-compliance
         name: Check @standard_heal Schema Compliance
-        entry: python scripts/maintenance/check_heal_schema_compliance.py --strict
-        language: system
+        entry: python
+        args: [scripts/maintenance/check_heal_schema_compliance.py, --strict]
+        language: python
         pass_filenames: false
         always_run: true
-        stages: [pre-commit]
 
       - id: check-protected-files
         name: Gatekeeper Protection (Block ArchivalGatekeeper.py changes)
-        entry: python scripts/maintenance/check_protected_files.py
-        language: system
+        entry: python
+        args: [scripts/maintenance/check_protected_files.py]
+        language: python
         pass_filenames: false
         always_run: true
-        stages: [pre-commit]
 
       - id: gatekeeper-security-lock
         name: Gatekeeper Security Lock (Requires [SECURITY-OVERRIDE])
-        entry: python scripts/security/gatekeeper_lock.py
-        language: system
+        entry: python
+        args: [scripts/security/gatekeeper_lock.py]
+        language: python
         pass_filenames: false
         always_run: true
-        stages: [pre-commit]
 
       - id: test-hygiene-consolidation
         name: Test Hygiene Consolidation (Survivor Agent Protection)
-        entry: pytest tests/L5_safety/test_hygiene_consolidation.py -v --tb=short
-        language: system
+        entry: pytest
+        args: [tests/L5_safety/test_hygiene_consolidation.py, -v, --tb=short]
+        language: python
+        additional_dependencies: [pytest]
         pass_filenames: false
         always_run: true
-        stages: [pre-commit]

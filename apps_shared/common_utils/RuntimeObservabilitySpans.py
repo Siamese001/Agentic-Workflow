@@ -42,7 +42,7 @@ def start_span(name: str, ctx: dict[str, object] | None = None) -> dict[str, obj
 def end_span(span_record: dict[str, object]) -> None:
     """Close a previously-started span; no-op if unknown."""
 
-#     from archives.legacy_root_folders.runtime.observability.collectors import span_stack  # DEPRECATED: Archive import removed to protect archives from validation edits
+    #     from archives.legacy_root_folders.runtime.observability.collectors import span_stack  # DEPRECATED: Archive import removed to protect archives from validation edits
 
     if span_record not in span_stack():
         return

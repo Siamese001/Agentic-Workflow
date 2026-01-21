@@ -9,6 +9,7 @@ Test Cases:
 
 These tests ensure the 715-test baseline is maintained.
 """
+
 import sys
 from pathlib import Path
 
@@ -28,6 +29,7 @@ class TestGravityLeakDetectionConsistency:
     def test_gravity_detector_instantiates(self):
         """Verify GravityLeakDetector can be instantiated."""
         from agentic_core.L5_safety.validators.GravityLeakDetector import GravityLeakDetector
+
         detector = GravityLeakDetector(project_root=PROJECT_ROOT)
         assert detector is not None
 
@@ -51,13 +53,14 @@ class TestGravityLeakDetectionConsistency:
         """Verify GravityLeakDetector has expected detection methods."""
 
         expected_attributes = [
-            'CORE_TERRITORY_KEYWORDS',
-            'APP_RG_AST_TERMS',
-            'APP_LIC_AST_TERMS',
+            "CORE_TERRITORY_KEYWORDS",
+            "APP_RG_AST_TERMS",
+            "APP_LIC_AST_TERMS",
         ]
 
         # Check module-level constants exist
         import agentic_core.L5_safety.validators.GravityLeakDetector as gld_module
+
         for attr in expected_attributes:
             assert hasattr(gld_module, attr), f"Missing gravity constant: {attr}"
 
@@ -73,9 +76,9 @@ class TestGravityLeakDetectionConsistency:
         assert location_utils is not None
 
         # Verify shared utility functions exist
-        assert hasattr(location_utils, 'is_path_compliant')
-        assert hasattr(location_utils, 'is_excepted_from_key')
-        assert hasattr(location_utils, 'compute_module_path')
+        assert hasattr(location_utils, "is_path_compliant")
+        assert hasattr(location_utils, "is_excepted_from_key")
+        assert hasattr(location_utils, "compute_module_path")
 
 
 class TestNoCircularLocationImports:
@@ -133,10 +136,17 @@ class TestNoCircularLocationImports:
                 LocationValidatorAgent,
             )
 
-            assert all([
-                LocationAgent, GravityLeakDetector, LocationHealerAgent,
-                LocationValidatorAgent, structure_blueprint, location_constants, location_utils
-            ])
+            assert all(
+                [
+                    LocationAgent,
+                    GravityLeakDetector,
+                    LocationHealerAgent,
+                    LocationValidatorAgent,
+                    structure_blueprint,
+                    location_constants,
+                    location_utils,
+                ]
+            )
 
         except ImportError as e:
             pytest.fail(f"Order-dependent circular import: {e}")
@@ -178,13 +188,13 @@ class TestCICollectionEnforcement:
             cwd=str(PROJECT_ROOT),
             capture_output=True,
             text=True,
-            timeout=120
+            timeout=120,
         )
 
         output = result.stdout + result.stderr
 
         # Parse test count
-        match = re.search(r'(\d+) tests? collected', output)
+        match = re.search(r"(\d+) tests? collected", output)
 
         if match:
             test_count = int(match.group(1))
@@ -202,7 +212,7 @@ class TestCICollectionEnforcement:
             cwd=str(PROJECT_ROOT),
             capture_output=True,
             text=True,
-            timeout=120
+            timeout=120,
         )
 
         output = result.stdout + result.stderr
@@ -220,7 +230,7 @@ class TestCICollectionEnforcement:
             if error in output:
                 # Extract context around error
                 idx = output.find(error)
-                context = output[max(0, idx-100):idx+200]
+                context = output[max(0, idx - 100) : idx + 200]
                 pytest.fail(f"Collection error detected: {error}\nContext: {context}")
 
     def test_no_test_count_regression(self):
@@ -235,22 +245,26 @@ class TestCICollectionEnforcement:
             cwd=str(PROJECT_ROOT),
             capture_output=True,
             text=True,
-            timeout=120
+            timeout=120,
         )
 
         output = result.stdout + result.stderr
-        match = re.search(r'(\d+) tests? collected', output)
+        match = re.search(r"(\d+) tests? collected", output)
 
         if match:
             current_count = int(match.group(1))
             regression = BASELINE_COUNT - current_count
 
             if regression > 0:
-                pytest.fail(f"Test count regressed by {regression}: {current_count} < {BASELINE_COUNT}")
+                pytest.fail(
+                    f"Test count regressed by {regression}: {current_count} < {BASELINE_COUNT}"
+                )
 
             # Log improvement if any
             if current_count > BASELINE_COUNT:
-                print(f"✅ Test count improved: {current_count} (+{current_count - BASELINE_COUNT})")
+                print(
+                    f"✅ Test count improved: {current_count} (+{current_count - BASELINE_COUNT})"
+                )
 
 
 class TestUtilityFunctionAlignment:
@@ -261,11 +275,11 @@ class TestUtilityFunctionAlignment:
         from agentic_core.L5_safety.validators import location_utils
 
         expected_exports = [
-            'normalize_location_path',
-            'get_agent_files',
-            'compute_module_path',
-            'is_path_compliant',
-            'is_excepted_from_key',
+            "normalize_location_path",
+            "get_agent_files",
+            "compute_module_path",
+            "is_path_compliant",
+            "is_excepted_from_key",
         ]
 
         for func_name in expected_exports:
@@ -277,11 +291,11 @@ class TestUtilityFunctionAlignment:
         from agentic_core.L5_safety.validators import location_constants
 
         expected_exports = [
-            'ARCHIVE_SUBFOLDERS',
-            'DEFAULT_ARCHIVE_SUBFOLDER',
-            'HEALING_STRATEGY_MAP',
-            'DEFAULT_APP_HEALING_TARGET',
-            'VIOLATION_THRESHOLDS',
+            "ARCHIVE_SUBFOLDERS",
+            "DEFAULT_ARCHIVE_SUBFOLDER",
+            "HEALING_STRATEGY_MAP",
+            "DEFAULT_APP_HEALING_TARGET",
+            "VIOLATION_THRESHOLDS",
         ]
 
         for const_name in expected_exports:

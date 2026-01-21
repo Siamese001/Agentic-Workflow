@@ -1,4 +1,5 @@
 """Comprehensive fix for ALL heal_repository methods across the entire codebase."""
+
 import ast
 from pathlib import Path
 
@@ -10,13 +11,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 PROJECT_ROOT = Path(__file__).parent.parent
 
 # Directories to scan for agent files
-SCAN_DIRS = [
-    AGENTIC_CORE_DIR,
-    APPS_LIC_DIR,
-    APPS_RG_DIR,
-    APPS_SHARED_DIR,
-    TESTS_DIR
-]
+SCAN_DIRS = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, TESTS_DIR]
 
 
 def has_super_heal_call(func_node: ast.FunctionDef) -> bool:
@@ -25,7 +20,10 @@ def has_super_heal_call(func_node: ast.FunctionDef) -> bool:
         if isinstance(node, ast.Call):
             if isinstance(node.func, ast.Attribute) and node.func.attr == "heal_repository":
                 if isinstance(node.func.value, ast.Call):
-                    if isinstance(node.func.value.func, ast.Name) and node.func.value.func.id == "super":
+                    if (
+                        isinstance(node.func.value.func, ast.Name)
+                        and node.func.value.func.id == "super"
+                    ):
                         return True
     return False
 
@@ -36,7 +34,7 @@ def find_heal_methods_in_file(filepath: Path) -> list[tuple[ast.FunctionDef, boo
     Returns: List of (func_node, is_class_method, line_number)
     """
     try:
-        content = filepath.read_text(encoding='utf-8', errors='ignore')
+        content = filepath.read_text(encoding="utf-8", errors="ignore")
         tree = ast.parse(content)
     except (SyntaxError, UnicodeDecodeError):
         return []
@@ -47,7 +45,7 @@ def find_heal_methods_in_file(filepath: Path) -> list[tuple[ast.FunctionDef, boo
     for node in ast.walk(tree):
         if isinstance(node, ast.FunctionDef) and node.name == "heal_repository":
             # Check if it's a class method (has 'self' as first arg)
-            is_method = bool(node.args.args and node.args.args[0].arg == 'self')
+            is_method = bool(node.args.args and node.args.args[0].arg == "self")
             has_super = has_super_heal_call(node)
             results.append((node, is_method, node.lineno, has_super))
 
@@ -56,8 +54,8 @@ def find_heal_methods_in_file(filepath: Path) -> list[tuple[ast.FunctionDef, boo
 
 def add_super_call_to_method(filepath: Path, func_node: ast.FunctionDef) -> bool:
     """Add super().heal_repository() call to a method."""
-    content = filepath.read_text(encoding='utf-8')
-    lines = content.split('\n')
+    content = filepath.read_text(encoding="utf-8")
+    lines = content.split("\n")
 
     if not func_node.body:
         return False
@@ -65,9 +63,8 @@ def add_super_call_to_method(filepath: Path, func_node: ast.FunctionDef) -> bool
     first_stmt = func_node.body[0]
 
     # Check if first statement is a docstring
-    is_docstring = (
-        isinstance(first_stmt, ast.Expr) and
-        isinstance(first_stmt.value, ast.Constant | ast.Str)
+    is_docstring = isinstance(first_stmt, ast.Expr) and isinstance(
+        first_stmt.value, ast.Constant | ast.Str
     )
 
     if is_docstring and len(func_node.body) > 1:
@@ -82,18 +79,18 @@ def add_super_call_to_method(filepath: Path, func_node: ast.FunctionDef) -> bool
 
     # Calculate indentation
     indent = len(ref_line) - len(ref_line.lstrip())
-    indent_str = ' ' * indent
+    indent_str = " " * indent
 
     # Build args from function signature (excluding self)
-    args = [arg.arg for arg in func_node.args.args if arg.arg != 'self']
-    args_str = ', '.join(args)
+    args = [arg.arg for arg in func_node.args.args if arg.arg != "self"]
+    args_str = ", ".join(args)
 
     # Create super call
     super_call = f"{indent_str}super().heal_repository({args_str})"
 
     # Insert
     lines.insert(insert_line, super_call)
-    new_content = '\n'.join(lines)
+    new_content = "\n".join(lines)
 
     # Verify syntax
     try:
@@ -101,7 +98,7 @@ def add_super_call_to_method(filepath: Path, func_node: ast.FunctionDef) -> bool
     except SyntaxError:
         return False
 
-    filepath.write_text(new_content, encoding='utf-8')
+    filepath.write_text(new_content, encoding="utf-8")
     return True
 
 
@@ -112,6 +109,7 @@ def main():
     all_files = []
     # Phase 6.8: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_python_files
+
     for scan_dir in SCAN_DIRS:
         dir_path = PROJECT_ROOT / scan_dir
         if dir_path.exists():
@@ -147,7 +145,11 @@ def main():
     print(f"  Standalone functions: {standalone_functions}")
 
     if methods_with_super + standalone_functions > 0:
-        current_pct = methods_with_super / (methods_with_super + methods_without_super) * 100 if (methods_with_super + methods_without_super) > 0 else 0
+        current_pct = (
+            methods_with_super / (methods_with_super + methods_without_super) * 100
+            if (methods_with_super + methods_without_super) > 0
+            else 0
+        )
         print(f"\nCurrent class method invocation: {current_pct:.1f}%")
 
     # Fix methods without super()
@@ -168,7 +170,11 @@ def main():
         print(f"\nFixed {fixed}/{methods_without_super} methods")
 
         # Recalculate
-        new_pct = (methods_with_super + fixed) / (methods_with_super + methods_without_super) * 100 if (methods_with_super + methods_without_super) > 0 else 0
+        new_pct = (
+            (methods_with_super + fixed) / (methods_with_super + methods_without_super) * 100
+            if (methods_with_super + methods_without_super) > 0
+            else 0
+        )
         print(f"New class method invocation: {new_pct:.1f}%")
     else:
         print("\n✓ All class methods already have super().heal_repository() calls!")

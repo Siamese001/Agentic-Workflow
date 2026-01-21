@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, validator, workflow
@@ -19,13 +18,13 @@ from typing import Any
 
 # GRAVITY VIOLATION: from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
 # GRAVITY FIXED (Upward Leak): from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
-_mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_mixin')
+_mod = importlib.import_module("agentic_core.L5_safety.guardrails.mcp_hardened_mixin")
 MCPHardenedMixin = _mod.MCPHardenedMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-EXCLUDED_DIRS = {'__pycache__', '.git', 'node_modules', 'venv', '.venv'}
+EXCLUDED_DIRS = {"__pycache__", ".git", "node_modules", "venv", ".venv"}
 
 
 # Legacy class removed - use GenerativeGuardAgent instead
@@ -38,8 +37,9 @@ class GenerativeGuardDeprecatedAgent(HealerMixin, CanonBaseAgentInterface, MCPHa
     Name updated to PascalCase with 'Agent' suffix for registry visibility.
     """
 
-
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -85,7 +85,7 @@ class GenerativeGuardDeprecatedAgent(HealerMixin, CanonBaseAgentInterface, MCPHa
         print(f"\n[>>>] {self.name} ACTIVATED: Checking Generative Policy...")
         violations = []
 
-        project_root = getattr(self.ctx, 'project_root', '.')
+        project_root = getattr(self.ctx, "project_root", ".")
 
         for root, dirs, files in os.walk(project_root):
             dirs[:] = [d for d in dirs if d not in EXCLUDED_DIRS]

@@ -4,6 +4,7 @@ Cache metrics module for L6 observability.
 
 Provides cache performance metrics collection and reporting.
 """
+
 import logging
 import time
 from typing import Any

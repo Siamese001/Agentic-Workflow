@@ -1,6 +1,7 @@
 """
 safety.py - shared Module
 """
+
 import logging
 from dataclasses import dataclass, field
 
@@ -10,6 +11,7 @@ Logger = logging.getLogger(__name__)
 @dataclass
 class Result:
     """Operation result."""
+
     success: bool
     data: object = None
     metadata: dict[str, object] = field(default_factory=dict)

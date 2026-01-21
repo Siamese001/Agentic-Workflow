@@ -20,12 +20,13 @@ Identifies code quality issues:
 1. Dead Code: Orphaned files that are never imported.
 2. Duplication: Files with identical content.
 """
+
 import warnings
 
 warnings.warn(
     "HygieneValidatorAgent (gravity) is deprecated. Use UnifiedHygieneValidatorAgent instead.",
     DeprecationWarning,
-    stacklevel=2
+    stacklevel=2,
 )
 
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
@@ -109,6 +110,7 @@ class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
             from agentic_core.L0_maintenance.bases.l0_delegation_testing_mixin import (
                 L0DelegationTestingMixin,
             )
+
             mixin = L0DelegationTestingMixin()
             if not mixin._delegate_tests_safe():
                 print(f"WARNING: {self.__class__.__name__} delegated tests soft-failed")
@@ -125,9 +127,7 @@ class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
         for root, dirs, files in os.walk(self.root_path):
             # Skip virtual environments and cache directories
             dirs[:] = [
-                d
-                for d in dirs
-                if d not in {"venv", ".venv", ".git", "__pycache__", "node_modules"}
+                d for d in dirs if d not in {"venv", ".venv", ".git", "__pycache__", "node_modules"}
             ]
 
             for file in files:
@@ -220,9 +220,7 @@ class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
                 # Filter out __init__.py files (they're often legitimately empty/similar)
                 non_init_paths = [p for p in paths if not p.endswith("__init__.py")]
                 if len(non_init_paths) > 1:
-                    violations.append(
-                        f"DUPLICATION: Exact duplicate files found: {non_init_paths}"
-                    )
+                    violations.append(f"DUPLICATION: Exact duplicate files found: {non_init_paths}")
         return violations
 
     def _should_skip_file(self, file: str) -> bool:
@@ -305,7 +303,9 @@ class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
             results[TESTS_DIR].append({"name": "test_instantiation", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results[TESTS_DIR].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
+            results[TESTS_DIR].append(
+                {"name": "test_instantiation", "status": "failed", "error": str(e)}
+            )
         return results
 
     def heal_repository(self) -> dict[str, int]:

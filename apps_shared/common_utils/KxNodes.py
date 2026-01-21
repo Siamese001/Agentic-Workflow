@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 class KNodeType(str, Enum):
     """K.X node type classification."""
+
     RESUME_HEADER = "resume_header"
     RESUME_SECTION = "resume_section"
     OUTREACH_ROUTING = "outreach_routing"
@@ -26,6 +27,7 @@ class KNodeType(str, Enum):
 
 class ReasoningStrategy(str, Enum):
     """Reasoning strategy for K.X node execution."""
+
     COT = "chain_of_thought"
     TOT = "tree_of_thought"
     HYBRID_COT_TOT = "hybrid_cot_tot"
@@ -37,6 +39,7 @@ class ReasoningStrategy(str, Enum):
 @dataclass
 class RAGConfig:
     """RAG configuration for K.X node."""
+
     enabled: bool = True
     min_retrievers: int = 3
     max_retrievers: int = 6
@@ -61,6 +64,7 @@ class RAGConfig:
 @dataclass
 class DecodingParams:
     """Decoding parameters for LLM generation."""
+
     temperature: float = 0.7
     top_p: float = 0.9
     top_k: int = 40
@@ -72,6 +76,7 @@ class DecodingParams:
 @dataclass
 class KNodeConfig:
     """Configuration for a K.X knowledge extraction node."""
+
     node_id: str
     element: str
     node_type: KNodeType
@@ -144,7 +149,7 @@ RESUME_KX_NODES = {
             "grounding_check",
             "hallucination_check",
             "voice_tense_check",
-            "word_count_range"
+            "word_count_range",
         ],
         metadata={"section": "summary", "required": True, "priority": "high"},
     ),
@@ -175,7 +180,7 @@ RESUME_KX_NODES = {
             "bullet_provenance_check",
             "hallucination_check",
             "redundancy_check",
-            "punctuation_check"
+            "punctuation_check",
         ],
         metadata={"section": "experience", "company": "Unify", "min_bullets": 3},
     ),
@@ -324,11 +329,7 @@ OUTREACH_KX_NODES = {
         beam_width=3,
         max_chars=800,
         structure_template="greeting + personalized opener + value proposition + transition",
-        validation_rules=[
-            "resume_fact_verification",
-            "temporal_accuracy",
-            "synthesis_phase_check"
-        ],
+        validation_rules=["resume_fact_verification", "temporal_accuracy", "synthesis_phase_check"],
         metadata={"regeneration_supported": True},
     ),
     "K.4_Value_Proposition": KNodeConfig(
@@ -378,7 +379,7 @@ OUTREACH_KX_NODES = {
             "final_checks",
             "character_limit",
             "professional_tone",
-            "no_hallucinations"
+            "no_hallucinations",
         ],
         metadata={"assembly_phase": True, "blocking_validation": True},
     ),
@@ -394,11 +395,7 @@ OUTREACH_CONNECTION_REQ_NODES = {
         reasoning_strategy=ReasoningStrategy.COT,
         rag_config=RAGConfig(enabled=False),
         decoding_params=DecodingParams(
-            temperature=0.25,
-            top_p=0.9,
-            top_k=40,
-            min_p=0.04,
-            repetition_penalty=1.1
+            temperature=0.25, top_p=0.9, top_k=40, min_p=0.04, repetition_penalty=1.1
         ),
         beam_width=2,
         self_consistency_runs=1,
@@ -407,7 +404,7 @@ OUTREACH_CONNECTION_REQ_NODES = {
         validation_rules=["character_limit_strict"],
         metadata={
             "mode": "compressed",
-            "anti_pattern": "RAG disabled due to 330 char space constraint"
+            "anti_pattern": "RAG disabled due to 330 char space constraint",
         },
     ),
     "CONNECTION_REQ_K.5_MICRO": KNodeConfig(
@@ -417,11 +414,7 @@ OUTREACH_CONNECTION_REQ_NODES = {
         reasoning_strategy=ReasoningStrategy.COT,
         rag_config=RAGConfig(enabled=False),
         decoding_params=DecodingParams(
-            temperature=0.2,
-            top_p=0.88,
-            top_k=30,
-            min_p=0.03,
-            repetition_penalty=1.05
+            temperature=0.2, top_p=0.88, top_k=30, min_p=0.03, repetition_penalty=1.05
         ),
         beam_width=1,
         self_consistency_runs=1,
@@ -430,7 +423,7 @@ OUTREACH_CONNECTION_REQ_NODES = {
         validation_rules=["micro_cta_format"],
         metadata={
             "mode": "micro",
-            "examples": ["Let's connect", "Connect?", "Happy to chat", "Let's link up"]
+            "examples": ["Let's connect", "Connect?", "Happy to chat", "Let's link up"],
         },
     ),
 }
@@ -458,9 +451,7 @@ class KXNodeRegistry:
         return self._resume_nodes.get(node_key)
 
     def get_outreach_node(
-        self,
-        node_key: str,
-        connection_request: bool = False
+        self, node_key: str, connection_request: bool = False
     ) -> KNodeConfig | None:
         """Get outreach engine K.X node configuration.
 
@@ -501,16 +492,10 @@ class KXNodeRegistry:
             Dictionary of matching nodes
         """
         all_nodes = {**self._resume_nodes, **self._outreach_nodes}
-        return {
-            key: config for key, config in all_nodes.items()
-            if config.node_type == node_type
-        }
+        return {key: config for key, config in all_nodes.items() if config.node_type == node_type}
 
     def register_custom_node(
-        self,
-        node_key: str,
-        config: KNodeConfig,
-        engine: str = "resume"
+        self, node_key: str, config: KNodeConfig, engine: str = "resume"
     ) -> None:
         """Register a custom K.X node.
 
@@ -560,10 +545,7 @@ def get_resume_kx_node(node_key: str) -> KNodeConfig | None:
     return registry.get_resume_node(node_key)
 
 
-def get_outreach_kx_node(
-    node_key: str,
-    connection_request: bool = False
-) -> KNodeConfig | None:
+def get_outreach_kx_node(node_key: str, connection_request: bool = False) -> KNodeConfig | None:
     """Get outreach engine K.X node configuration.
 
     Args:

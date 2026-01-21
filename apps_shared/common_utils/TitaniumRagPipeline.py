@@ -56,25 +56,19 @@ class TitaniumRAGPipeline:
         # Phase 1 components
         gate: AdaptiveRetrievalGate | None = None,
         compressor: ContextualCompressor | None = None,
-
         # Phase 2 components
         decomposer: QueryDecomposer | None = None,
         scorer: HybridScorer | None = None,
-
         # Phase 3 components
         reranker: LateInteractionReranker | None = None,
         cache: ContrastiveSemanticCache | None = None,
-
         # Security layer
         input_guardrail: InputGuardrail | None = None,
-
         # CRAG layer
         retrieval_grader: RetrievalGrader | None = None,
         web_search_fallback: WebSearchFallback | None = None,
-
         # GraphRAG layer
         graphrag_fusion: GraphRAGFusion | None = None,
-
         # Configuration
         enable_compression: bool = True,
         enable_decomposition: bool = True,
@@ -84,7 +78,7 @@ class TitaniumRAGPipeline:
         enable_crag: bool = True,
         enable_graphrag: bool = True,
         max_retrieved_docs: int = 50,
-        top_k_final: int = 5
+        top_k_final: int = 5,
     ):
         """Initialize the Titanium RAG Pipeline.
 
@@ -118,16 +112,24 @@ class TitaniumRAGPipeline:
         self.cache = cache or ContrastiveSemanticCache()
 
         # Initialize security layer
-        self.input_guardrail = input_guardrail or (get_input_guardrail() if enable_security else None)
+        self.input_guardrail = input_guardrail or (
+            get_input_guardrail() if enable_security else None
+        )
         self.enable_security = enable_security and self.input_guardrail is not None
 
         # Initialize CRAG layer
-        self.retrieval_grader = retrieval_grader or (get_retrieval_grader() if enable_crag else None)
-        self.web_search_fallback = web_search_fallback or (get_web_search_fallback() if enable_crag else None)
+        self.retrieval_grader = retrieval_grader or (
+            get_retrieval_grader() if enable_crag else None
+        )
+        self.web_search_fallback = web_search_fallback or (
+            get_web_search_fallback() if enable_crag else None
+        )
         self.enable_crag = enable_crag and self.retrieval_grader is not None
 
         # Initialize GraphRAG layer
-        self.graphrag_fusion = graphrag_fusion or (get_graphrag_fusion() if enable_graphrag else None)
+        self.graphrag_fusion = graphrag_fusion or (
+            get_graphrag_fusion() if enable_graphrag else None
+        )
         self.enable_graphrag = enable_graphrag and self.graphrag_fusion is not None
 
         # Configuration
@@ -152,20 +154,17 @@ class TitaniumRAGPipeline:
             "crag_fallbacks": 0,
             "crag_passes": 0,
             "graphrag_queries": 0,
-            "graphrag_fallbacks": 0
+            "graphrag_fallbacks": 0,
         }
 
-        logger.info(f"Initialized TitaniumRAGPipeline with all 3 phases + "
-                   f"Security Layer: {self.enable_security} + "
-                   f"CRAG Layer: {self.enable_crag} + "
-                   f"GraphRAG Layer: {self.enable_graphrag}")
+        logger.info(
+            f"Initialized TitaniumRAGPipeline with all 3 phases + "
+            f"Security Layer: {self.enable_security} + "
+            f"CRAG Layer: {self.enable_crag} + "
+            f"GraphRAG Layer: {self.enable_graphrag}"
+        )
 
-    async def query(
-        self,
-        query: str,
-        retrieval_function: callable,
-        **kwargs
-    ) -> dict[str, Any]:
+    async def query(self, query: str, retrieval_function: callable, **kwargs) -> dict[str, Any]:
         """Execute a complete RAG pipeline query.
 
         Args:
@@ -184,7 +183,7 @@ class TitaniumRAGPipeline:
         # Security Layer: Input validation (Phase 0 - Outermost)
         # ----------------------------------------------------
         if self.enable_security and self.input_guardrail:
-            guard_result = self.input_guardrail.scan(query, user_id=kwargs.get('user_id'))
+            guard_result = self.input_guardrail.scan(query, user_id=kwargs.get("user_id"))
 
             # Handle security actions
             if guard_result.action == GuardAction.BLOCK:
@@ -198,8 +197,8 @@ class TitaniumRAGPipeline:
                         "security_action": "BLOCKED",
                         "security_reason": guard_result.reason,
                         "security_confidence": guard_result.confidence,
-                        "processing_time": time.time() - start_time
-                    }
+                        "processing_time": time.time() - start_time,
+                    },
                 }
             elif guard_result.action == GuardAction.WARN:
                 self.stats["security_warnings"] += 1
@@ -228,8 +227,8 @@ class TitaniumRAGPipeline:
                     "decomposed": False,
                     "compressed": False,
                     "reranked": False,
-                    "processing_time": time.time() - start_time
-                }
+                    "processing_time": time.time() - start_time,
+                },
             }
 
         # 2. Check semantic cache
@@ -249,8 +248,8 @@ class TitaniumRAGPipeline:
                         "decomposed": False,
                         "compressed": False,
                         "reranked": False,
-                        "processing_time": time.time() - start_time
-                    }
+                        "processing_time": time.time() - start_time,
+                    },
                 }
 
         # Phase 2: Reasoning Layer
@@ -272,16 +271,12 @@ class TitaniumRAGPipeline:
         for sub_query in queries_to_process:
             # Retrieve dense and sparse results
             dense_results, sparse_results = await retrieval_function(
-                sub_query,
-                max_docs=self.max_retrieved_docs,
-                **kwargs
+                sub_query, max_docs=self.max_retrieved_docs, **kwargs
             )
 
             # Score with dynamic alpha
             scored = self.scorer.score_documents(
-                dense_results=dense_results,
-                sparse_results=sparse_results,
-                query=sub_query
+                dense_results=dense_results, sparse_results=sparse_results, query=sub_query
             )
 
             all_retrieved.extend(scored)
@@ -295,7 +290,7 @@ class TitaniumRAGPipeline:
                 unique_docs.append(doc)
 
         unique_docs.sort(key=lambda x: x.final_score, reverse=True)
-        retrieved_docs = unique_docs[:self.max_retrieved_docs]
+        retrieved_docs = unique_docs[: self.max_retrieved_docs]
 
         logger.info(f"Retrieved {len(retrieved_docs)} unique documents")
 
@@ -305,11 +300,11 @@ class TitaniumRAGPipeline:
             # Extract document texts for grading
             doc_texts = []
             for doc in retrieved_docs:
-                if hasattr(doc, 'metadata') and 'text' in doc.metadata:
-                    doc_texts.append(doc.metadata['text'])
-                elif hasattr(doc, 'text'):
+                if hasattr(doc, "metadata") and "text" in doc.metadata:
+                    doc_texts.append(doc.metadata["text"])
+                elif hasattr(doc, "text"):
                     doc_texts.append(doc.text)
-                elif hasattr(doc, 'content'):
+                elif hasattr(doc, "content"):
                     doc_texts.append(doc.content)
                 else:
                     doc_texts.append(f"Document {doc.doc_id}")
@@ -328,18 +323,22 @@ class TitaniumRAGPipeline:
 
                     # Create documents from web results
                     web_docs = []
-                    for i, result in enumerate(web_results.get('results', [])):
-                        web_doc = type('WebDocument', (), {
-                            'doc_id': f"web_{i}",
-                            'text': result.get('snippet', ''),
-                            'metadata': {
-                                'text': result.get('snippet', ''),
-                                'source': result.get('url', ''),
-                                'title': result.get('title', ''),
-                                'from_web': True
+                    for i, result in enumerate(web_results.get("results", [])):
+                        web_doc = type(
+                            "WebDocument",
+                            (),
+                            {
+                                "doc_id": f"web_{i}",
+                                "text": result.get("snippet", ""),
+                                "metadata": {
+                                    "text": result.get("snippet", ""),
+                                    "source": result.get("url", ""),
+                                    "title": result.get("title", ""),
+                                    "from_web": True,
+                                },
+                                "final_score": 1.0 - (i * 0.1),  # Simple ranking
                             },
-                            'final_score': 1.0 - (i * 0.1)  # Simple ranking
-                        })()
+                        )()
                         web_docs.append(web_doc)
 
                     # Use web results instead of retrieved docs
@@ -354,8 +353,8 @@ class TitaniumRAGPipeline:
                             "crag_reason": grade.reasoning,
                             "crag_relevance_ratio": grade.relevance_ratio,
                             "web_results_count": len(web_docs),
-                            "processing_time": time.time() - start_time
-                        }
+                            "processing_time": time.time() - start_time,
+                        },
                     }
             elif grade.status == GradeStatus.PASS:
                 self.stats["crag_passes"] += 1
@@ -373,18 +372,20 @@ class TitaniumRAGPipeline:
                     results = []
                     for doc in retrieved_docs[:k]:
                         text = ""
-                        if hasattr(doc, 'metadata') and 'text' in doc.metadata:
-                            text = doc.metadata['text']
-                        elif hasattr(doc, 'text'):
+                        if hasattr(doc, "metadata") and "text" in doc.metadata:
+                            text = doc.metadata["text"]
+                        elif hasattr(doc, "text"):
                             text = doc.text
-                        elif hasattr(doc, 'content'):
+                        elif hasattr(doc, "content"):
                             text = doc.content
 
-                        results.append({
-                            'text': text,
-                            'doc_id': doc.doc_id,
-                            'score': getattr(doc, 'final_score', 0.0)
-                        })
+                        results.append(
+                            {
+                                "text": text,
+                                "doc_id": doc.doc_id,
+                                "score": getattr(doc, "final_score", 0.0),
+                            }
+                        )
                     return results
 
                 # Configure GraphRAG with vector retriever
@@ -392,8 +393,7 @@ class TitaniumRAGPipeline:
 
                 # Execute GraphRAG fusion
                 fusion_result = await self.graphrag_fusion.query(
-                    query,
-                    max_results=self.top_k_final
+                    query, max_results=self.top_k_final
                 )
 
                 self.stats["graphrag_queries"] += 1
@@ -403,40 +403,50 @@ class TitaniumRAGPipeline:
 
                 # Add vector results
                 for i, result in enumerate(fusion_result.vector_results):
-                    fused_doc = type('FusedDocument', (), {
-                        'doc_id': f"vector_{i}",
-                        'text': result.get('text', ''),
-                        'metadata': {
-                            'text': result.get('text', ''),
-                            'source': 'vector_search',
-                            'score': result.get('score', 0.0)
+                    fused_doc = type(
+                        "FusedDocument",
+                        (),
+                        {
+                            "doc_id": f"vector_{i}",
+                            "text": result.get("text", ""),
+                            "metadata": {
+                                "text": result.get("text", ""),
+                                "source": "vector_search",
+                                "score": result.get("score", 0.0),
+                            },
+                            "final_score": result.get("score", 0.0),
                         },
-                        'final_score': result.get('score', 0.0)
-                    })()
+                    )()
                     fused_docs.append(fused_doc)
 
                 # Add graph results as structured context
                 if fusion_result.graph_results and fusion_result.graph_results.entities:
                     graph_text = fusion_result.fused_context
-                    graph_doc = type('GraphDocument', (), {
-                        'doc_id': "graph_context",
-                        'text': graph_text,
-                        'metadata': {
-                            'text': graph_text,
-                            'source': 'graph_search',
-                            'entities': fusion_result.graph_results.entities,
-                            'relationships': fusion_result.graph_results.relationships,
-                            'confidence': fusion_result.graph_results.confidence
+                    graph_doc = type(
+                        "GraphDocument",
+                        (),
+                        {
+                            "doc_id": "graph_context",
+                            "text": graph_text,
+                            "metadata": {
+                                "text": graph_text,
+                                "source": "graph_search",
+                                "entities": fusion_result.graph_results.entities,
+                                "relationships": fusion_result.graph_results.relationships,
+                                "confidence": fusion_result.graph_results.confidence,
+                            },
+                            "final_score": fusion_result.confidence,
                         },
-                        'final_score': fusion_result.confidence
-                    })()
+                    )()
                     fused_docs.append(graph_doc)
 
                 # Use fused results
                 retrieved_docs = fused_docs
 
-                logger.info(f"GraphRAG fusion completed - Vector: {len(fusion_result.vector_results)}, "
-                           f"Graph entities: {len(fusion_result.graph_results.entities)}")
+                logger.info(
+                    f"GraphRAG fusion completed - Vector: {len(fusion_result.vector_results)}, "
+                    f"Graph entities: {len(fusion_result.graph_results.entities)}"
+                )
 
             except Exception as e:
                 self.stats["graphrag_fallbacks"] += 1
@@ -452,11 +462,11 @@ class TitaniumRAGPipeline:
             doc_texts = []
             for doc in retrieved_docs:
                 # Try multiple fields for document text
-                if hasattr(doc, 'metadata') and 'text' in doc.metadata:
-                    doc_texts.append(doc.metadata['text'])
-                elif hasattr(doc, 'text'):
+                if hasattr(doc, "metadata") and "text" in doc.metadata:
+                    doc_texts.append(doc.metadata["text"])
+                elif hasattr(doc, "text"):
                     doc_texts.append(doc.text)
-                elif hasattr(doc, 'content'):
+                elif hasattr(doc, "content"):
                     doc_texts.append(doc.content)
                 else:
                     # Fallback: use doc_id as placeholder
@@ -464,20 +474,18 @@ class TitaniumRAGPipeline:
 
             # Rerank
             reranked_texts = self.reranker.rerank(
-                query=query,
-                documents=doc_texts,
-                top_k=self.top_k_final
+                query=query, documents=doc_texts, top_k=self.top_k_final
             )
 
             # Map back to documents by text matching
             text_to_doc = {}
             for doc in retrieved_docs:
                 doc_text = None
-                if hasattr(doc, 'metadata') and 'text' in doc.metadata:
-                    doc_text = doc.metadata['text']
-                elif hasattr(doc, 'text'):
+                if hasattr(doc, "metadata") and "text" in doc.metadata:
+                    doc_text = doc.metadata["text"]
+                elif hasattr(doc, "text"):
                     doc_text = doc.text
-                elif hasattr(doc, 'content'):
+                elif hasattr(doc, "content"):
                     doc_text = doc.content
 
                 if doc_text and doc_text not in text_to_doc:
@@ -500,16 +508,13 @@ class TitaniumRAGPipeline:
             self.stats["rerankings"] += 1
             logger.info(f"Reranked to {len(final_docs)} documents")
         else:
-            final_docs = retrieved_docs[:self.top_k_final]
+            final_docs = retrieved_docs[: self.top_k_final]
 
         # 6. Compress context if needed
         compressed_context = None
         if self.enable_compression and final_docs:
             doc_texts = [doc.metadata.get("text", "") for doc in final_docs]
-            compression_result = self.compressor.compress(
-                chunks=doc_texts,
-                query=query
-            )
+            compression_result = self.compressor.compress(chunks=doc_texts, query=query)
             compressed_context = compression_result.compressed_text
             self.stats["compressions"] += 1
             logger.info(f"Compressed context: {compression_result.compression_ratio:.2f} ratio")
@@ -538,15 +543,12 @@ class TitaniumRAGPipeline:
                 "compressed": bool(compressed_context),
                 "reranked": self.enable_reranking and len(retrieved_docs) > self.top_k_final,
                 "processing_time": processing_time,
-                "stats": self.get_stats()
-            }
+                "stats": self.get_stats(),
+            },
         }
 
     def _generate_response(
-        self,
-        query: str,
-        documents: list[Any],
-        compressed_context: str | None = None
+        self, query: str, documents: list[Any], compressed_context: str | None = None
     ) -> str:
         """Generate response from retrieved documents.
 
@@ -583,13 +585,15 @@ class TitaniumRAGPipeline:
             stats["compression_rate"] = self.stats["compressions"] / total
             stats["reranking_rate"] = self.stats["rerankings"] / total
         else:
-            stats.update({
-                "gate_block_rate": 0.0,
-                "cache_hit_rate": 0.0,
-                "decomposition_rate": 0.0,
-                "compression_rate": 0.0,
-                "reranking_rate": 0.0
-            })
+            stats.update(
+                {
+                    "gate_block_rate": 0.0,
+                    "cache_hit_rate": 0.0,
+                    "decomposition_rate": 0.0,
+                    "compression_rate": 0.0,
+                    "reranking_rate": 0.0,
+                }
+            )
 
         return stats
 
@@ -603,28 +607,25 @@ class TitaniumRAGPipeline:
             "phase_1_precision": {
                 "gate_available": True,
                 "compressor_available": True,
-                "compression_enabled": self.enable_compression
+                "compression_enabled": self.enable_compression,
             },
             "phase_2_reasoning": {
                 "decomposer_available": True,
                 "scorer_available": True,
                 "decomposition_enabled": self.enable_decomposition,
-                "dynamic_alpha_enabled": self.scorer.dynamic_alpha
+                "dynamic_alpha_enabled": self.scorer.dynamic_alpha,
             },
             "phase_3_sota": {
                 "reranker_available": self.reranker.is_available,
                 "cache_available": self.cache.is_available,
                 "reranking_enabled": self.enable_reranking,
-                "caching_enabled": self.enable_caching
-            }
+                "caching_enabled": self.enable_caching,
+            },
         }
 
 
 # Convenience function for quick setup
-def create_titanium_pipeline(
-    enable_all: bool = True,
-    **kwargs
-) -> TitaniumRAGPipeline:
+def create_titanium_pipeline(enable_all: bool = True, **kwargs) -> TitaniumRAGPipeline:
     """Create a Titanium RAG Pipeline with default configuration.
 
     Args:
@@ -640,7 +641,7 @@ def create_titanium_pipeline(
             enable_decomposition=True,
             enable_reranking=True,
             enable_caching=True,
-            **kwargs
+            **kwargs,
         )
     else:
         return TitaniumRAGPipeline(**kwargs)

@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, validator, workflow
@@ -57,16 +56,16 @@ class HOP3SenderGroundingAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMi
         Returns:
             Path to output state file
         """
-        print(f"\nimport logging\n\nLogger = logging.getLogger(__name__)\n{'='*80}")
+        print(f"\nimport logging\n\nLogger = logging.getLogger(__name__)\n{'=' * 80}")
         print("HOP-3: SENDER GROUNDING EXTRACTION")
-        print(f"{'='*80}\n")
+        print(f"{'=' * 80}\n")
 
         grounding = {
             "team_members": [],
             "products": [],
             "case_studies": [],
             "quantifiable_achievements": [],
-            "raw_evidence": {}
+            "raw_evidence": {},
         }
 
         # Load sender knowledge base
@@ -118,7 +117,7 @@ class HOP3SenderGroundingAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMi
         try:
             output_state = {
                 "sender_grounding": grounding,
-                "source_files_loaded": [f for f in self.source_files if os.path.exists(f)]
+                "source_files_loaded": [f for f in self.source_files if os.path.exists(f)],
             }
 
             output_path = state_mgr.write_state("HOP-3", output_state)
@@ -140,10 +139,23 @@ class HOP3SenderGroundingAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMi
         return output_path
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set = None,
+    ) -> dict[str, int]:
         """Operational agent - invoke shared healing chain."""
         if _call_path is None:
             _call_path = set()
-        super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+        super().heal_repository(
+            dry_run=dry_run,
+            execute=execute,
+            depth=depth,
+            max_depth=max_depth,
+            _call_path=_call_path,
+        )
         print(f"[{self.__class__.__name__}] Operational agent - healing chain invoked")
         return {"skipped": 1}

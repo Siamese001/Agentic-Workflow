@@ -36,7 +36,11 @@ class TieredExecutionTester:
 
     def run_validator(self, mode="dry-run", expect_abort=False):
         """Run canon_validator and capture results."""
-        cmd = [sys.executable, str(self.project_root / "canon_validator_agentic_v2_thin.py"), "--heal"]
+        cmd = [
+            sys.executable,
+            str(self.project_root / "canon_validator_agentic_v2_thin.py"),
+            "--heal",
+        ]
         if mode == "execute":
             cmd.append("--execute-heal")
 
@@ -46,14 +50,14 @@ class TieredExecutionTester:
             capture_output=True,
             text=True,
             timeout=600,
-            check=False
+            check=False,
         )
 
         return {
             "returncode": result.returncode,
             "stdout": result.stdout,
             "stderr": result.stderr,
-            "aborted": "MISSION ABORTED" in result.stdout
+            "aborted": "MISSION ABORTED" in result.stdout,
         }
 
     def load_runtime_state(self):
@@ -62,7 +66,7 @@ class TieredExecutionTester:
             return None
 
         try:
-            with open(self.runtime_state_path, encoding='utf-8') as f:
+            with open(self.runtime_state_path, encoding="utf-8") as f:
                 return json.load(f)
         except Exception as e:
             print(f"   [!] Failed to load runtime_state.json: {e}")
@@ -74,12 +78,14 @@ class TieredExecutionTester:
         Manually move a core agent to an illegal directory, run validator in execute mode,
         verify mission aborts after Tier 1 if LocationAgent cannot fix it.
         """
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("TEST 1: Structural Abortion Verification")
-        print("="*70)
+        print("=" * 70)
 
         # Find NamingAgent.py
-        naming_agent_path = self.project_root / "agentic_core" / "utils" / "core_extensions" / "NamingAgent.py"
+        naming_agent_path = (
+            self.project_root / "agentic_core" / "utils" / "core_extensions" / "NamingAgent.py"
+        )
         if not naming_agent_path.exists():
             print("   ⚠️  SKIP: NamingAgent.py not found at expected location")
             return False
@@ -87,7 +93,10 @@ class TieredExecutionTester:
         # Create illegal directory and move agent there
         illegal_dir = self.project_root / "ILLEGAL_AGENT_LOCATION"
         illegal_dir.mkdir(exist_ok=True)
-        backup_path = naming_agent_path.parent / f"NamingAgent.backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}.py"
+        backup_path = (
+            naming_agent_path.parent
+            / f"NamingAgent.backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}.py"
+        )
         moved_path = illegal_dir / "NamingAgent.py"
 
         try:
@@ -140,9 +149,9 @@ class TieredExecutionTester:
         Verify that mandatory agents (LocationAgent, NamingAgent, etc.) only appear
         in Tier 1/2 and are filtered out of Tier 3 Discovery Roster.
         """
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("TEST 2: Roster Deduplication Check")
-        print("="*70)
+        print("=" * 70)
 
         # Run validator in dry-run mode
         print("   ✓ Running validator in DRY-RUN mode...")
@@ -196,9 +205,9 @@ class TieredExecutionTester:
         Verify that runtime_state.json records 4 distinct execution blocks with
         correct start/end timestamps and success status.
         """
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("TEST 3: Execution Timeline Integrity")
-        print("="*70)
+        print("=" * 70)
 
         # Run validator in dry-run mode
         print("   ✓ Running validator in DRY-RUN mode...")
@@ -218,11 +227,22 @@ class TieredExecutionTester:
             return False
 
         # Verify each tier has required fields
-        required_fields = ["tier", "name", "start", "end", "agents", "fixes", "violations", "success"]
+        required_fields = [
+            "tier",
+            "name",
+            "start",
+            "end",
+            "agents",
+            "fixes",
+            "violations",
+            "success",
+        ]
         for tier_data in timeline:
             missing = [f for f in required_fields if f not in tier_data]
             if missing:
-                print(f"   ❌ TEST 3 FAILED: Tier {tier_data.get('tier', '?')} missing fields: {missing}")
+                print(
+                    f"   ❌ TEST 3 FAILED: Tier {tier_data.get('tier', '?')} missing fields: {missing}"
+                )
                 return False
 
             # Verify timestamps are valid ISO format
@@ -231,16 +251,25 @@ class TieredExecutionTester:
                 end_time = datetime.fromisoformat(tier_data["end"])
 
                 if end_time < start_time:
-                    print(f"   ❌ TEST 3 FAILED: Tier {tier_data['tier']} end time before start time")
+                    print(
+                        f"   ❌ TEST 3 FAILED: Tier {tier_data['tier']} end time before start time"
+                    )
                     return False
             except Exception as e:
-                print(f"   ❌ TEST 3 FAILED: Invalid timestamp format in Tier {tier_data.get('tier', '?')}: {e}")
+                print(
+                    f"   ❌ TEST 3 FAILED: Invalid timestamp format in Tier {tier_data.get('tier', '?')}: {e}"
+                )
                 return False
 
         print("   ✅ TEST 3 PASSED: Execution timeline integrity verified")
         for tier_data in timeline:
-            duration = (datetime.fromisoformat(tier_data["end"]) - datetime.fromisoformat(tier_data["start"])).total_seconds()
-            print(f"      Tier {tier_data['tier']} ({tier_data['name']}): {len(tier_data['agents'])} agents, {duration:.2f}s, success={tier_data['success']}")
+            duration = (
+                datetime.fromisoformat(tier_data["end"])
+                - datetime.fromisoformat(tier_data["start"])
+            ).total_seconds()
+            print(
+                f"      Tier {tier_data['tier']} ({tier_data['name']}): {len(tier_data['agents'])} agents, {duration:.2f}s, success={tier_data['success']}"
+            )
 
         return True
 
@@ -250,9 +279,9 @@ class TieredExecutionTester:
         Run validator in clean repository with execute mode, confirm Tier 1 passes
         with 0 violations and mission transitions to Tier 2 and Tier 3.
         """
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("TEST 4: Stability Gate Passthrough")
-        print("="*70)
+        print("=" * 70)
 
         # Run validator in execute mode on clean repo
         print("   ✓ Running validator in EXECUTE mode on clean repository...")
@@ -284,7 +313,9 @@ class TieredExecutionTester:
 
         # Verify all 4 tiers executed
         if len(state["execution_timeline"]) != 4:
-            print(f"   ❌ TEST 4 FAILED: Expected 4 tiers, found {len(state['execution_timeline'])}")
+            print(
+                f"   ❌ TEST 4 FAILED: Expected 4 tiers, found {len(state['execution_timeline'])}"
+            )
             return False
 
         print("   ✅ TEST 4 PASSED: Stability gate passthrough successful")
@@ -299,9 +330,9 @@ class TieredExecutionTester:
         Verify that AutonomyGuardian in Tier 4 correctly reports violations
         found in Tier 3. Introduce a test violation and verify it's reported.
         """
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("TEST 5: Tier 4 Reporting Accuracy")
-        print("="*70)
+        print("=" * 70)
 
         # Run validator in dry-run mode
         print("   ✓ Running validator in DRY-RUN mode...")
@@ -343,9 +374,9 @@ class TieredExecutionTester:
 
     def run_all_tests(self):
         """Run all 5 test cases and report results."""
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("TIERED EXECUTION FLOW TEST SUITE")
-        print("="*70)
+        print("=" * 70)
         print(f"Project Root: {self.project_root}")
         print(f"Runtime State: {self.runtime_state_path}")
 
@@ -365,13 +396,14 @@ class TieredExecutionTester:
             except Exception as e:
                 print(f"\n   ❌ TEST FAILED WITH EXCEPTION: {e}")
                 import traceback
+
                 traceback.print_exc()
                 results.append((test_name, False))
 
         # Summary
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("TEST SUMMARY")
-        print("="*70)
+        print("=" * 70)
 
         passed_count = sum(1 for _, passed in results if passed)
         total_count = len(results)

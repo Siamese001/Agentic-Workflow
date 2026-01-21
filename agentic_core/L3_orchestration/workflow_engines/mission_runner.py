@@ -32,6 +32,7 @@ Logger = logging.getLogger(__name__)
 try:
     from watchdog.events import FileSystemEventHandler
     from watchdog.observers import Observer
+
     WATCHDOG_AVAILABLE = True
 except ImportError:
     WATCHDOG_AVAILABLE = False
@@ -40,6 +41,7 @@ except ImportError:
 # L5 Live Reasoning Stream: WebSockets
 try:
     import websockets
+
     WEBSOCKETS_AVAILABLE = True
 except ImportError:
     WEBSOCKETS_AVAILABLE = False
@@ -48,6 +50,7 @@ except ImportError:
 # L5 Multi-Repository: GitPython
 try:
     from git import Repo
+
     GITPYTHON_AVAILABLE = True
 except ImportError:
     GITPYTHON_AVAILABLE = False
@@ -82,34 +85,35 @@ def _get_imports():
     # These agents need to be moved to agentic_core or refactored
 
     return {
-        'ValidationContext': None,
-        'CanonSwarmScheduler': CanonSwarmScheduler,
-        'start_intervention_server': start_intervention_server,
-        'approval_event': approval_event,
-        'FASTAPI_AVAILABLE': FASTAPI_AVAILABLE,
+        "ValidationContext": None,
+        "CanonSwarmScheduler": CanonSwarmScheduler,
+        "start_intervention_server": start_intervention_server,
+        "approval_event": approval_event,
+        "FASTAPI_AVAILABLE": FASTAPI_AVAILABLE,
         # All agents for zero capability loss
-        'ArchitectureGovernor': ArchitectureGovernor,
-        'CodeStyleGuardian': None,
-        'ConcurrencyGuardianAgent': None,
-        'DependencySentinelAgent': None,
-        'GitAgent': None,
-        'Historian': None,
-        'HygieneGuardian': None,
-        'NamingEnforcer': None,
-        'TypeEnforcer': None,
-        'PatternEnforcerAgent': None,
-        'StructuralEngineer': None,
-        'SafetyInspectorAgent': None,
-        'TestPilot': None,
-        'ReflectionAgent': None,
-        'StrategicPlannerAgent': None,
-        'WatchmanHandler': WatchmanHandler,
+        "ArchitectureGovernor": ArchitectureGovernor,
+        "CodeStyleGuardian": None,
+        "ConcurrencyGuardianAgent": None,
+        "DependencySentinelAgent": None,
+        "GitAgent": None,
+        "Historian": None,
+        "HygieneGuardian": None,
+        "NamingEnforcer": None,
+        "TypeEnforcer": None,
+        "PatternEnforcerAgent": None,
+        "StructuralEngineer": None,
+        "SafetyInspectorAgent": None,
+        "TestPilot": None,
+        "ReflectionAgent": None,
+        "StrategicPlannerAgent": None,
+        "WatchmanHandler": WatchmanHandler,
     }
 
 
 # ==============================================================================
 # DAEMON MODE (L5 Watchman)
 # ==============================================================================
+
 
 def run_daemon_mode():
     """
@@ -123,7 +127,7 @@ def run_daemon_mode():
         sys.exit(1)
 
     imports = _get_imports()
-    WatchmanHandler = imports['WatchmanHandler']
+    WatchmanHandler = imports["WatchmanHandler"]
 
     print("=" * 60)
     print("[START] THE WATCHMAN: L5 Autonomous Mode Active")
@@ -141,17 +145,15 @@ def run_daemon_mode():
 
     # Wrap handler to work with watchdog's FileSystemEventHandler
     class WatchdogAdapter(FileSystemEventHandler):
-
         def __init__(self, watchman_handler):
             self.watchman = watchman_handler
 
         def on_modified(self, event):
-
             self.watchman.on_modified(event)
 
     adapter = WatchdogAdapter(handler)
     observer = Observer()
-    observer.schedule(adapter, path='.', recursive=True)
+    observer.schedule(adapter, path=".", recursive=True)
     observer.start()
 
     try:
@@ -169,6 +171,7 @@ def run_daemon_mode():
 # SURGICAL MODE
 # ==============================================================================
 
+
 def run_surgical_mode(target_file: str):
     """
     Surgical mode: Target a specific file for validation.
@@ -180,7 +183,7 @@ def run_surgical_mode(target_file: str):
         target_file: Path to the file to validate
     """
     imports = _get_imports()
-    CanonSwarmScheduler = imports['CanonSwarmScheduler']
+    CanonSwarmScheduler = imports["CanonSwarmScheduler"]
 
     print(f"🎯 SURGICAL MODE: Targeting {target_file}")
     scheduler = CanonSwarmScheduler()
@@ -191,6 +194,7 @@ def run_surgical_mode(target_file: str):
 # ==============================================================================
 # STANDARD MODE (L4)
 # ==============================================================================
+
 
 def run_standard_mode():
     """
@@ -206,26 +210,26 @@ def run_standard_mode():
     """
     imports = _get_imports()
 
-    ValidationContext = imports['ValidationContext']
-    start_intervention_server = imports['start_intervention_server']
-    approval_event = imports['approval_event']
-    FASTAPI_AVAILABLE = imports['FASTAPI_AVAILABLE']
+    ValidationContext = imports["ValidationContext"]
+    start_intervention_server = imports["start_intervention_server"]
+    approval_event = imports["approval_event"]
+    FASTAPI_AVAILABLE = imports["FASTAPI_AVAILABLE"]
     # ALL agents for zero capability loss
-    ArchitectureGovernor = imports['ArchitectureGovernor']
-    CodeStyleGuardian = imports['CodeStyleGuardian']
-    ConcurrencyGuardianAgent = imports['ConcurrencyGuardianAgent']
-    DependencySentinelAgent = imports['DependencySentinelAgent']
-    GitAgent = imports['GitAgent']
-    Historian = imports['Historian']
-    HygieneGuardian = imports['HygieneGuardian']
-    NamingEnforcer = imports['NamingEnforcer']
-    TypeEnforcer = imports['TypeEnforcer']
-    PatternEnforcerAgent = imports['PatternEnforcerAgent']
-    StructuralEngineer = imports['StructuralEngineer']
-    SafetyInspectorAgent = imports['SafetyInspectorAgent']
-    TestPilot = imports['TestPilot']
-    imports['ReflectionAgent']
-    imports['StrategicPlannerAgent']
+    ArchitectureGovernor = imports["ArchitectureGovernor"]
+    CodeStyleGuardian = imports["CodeStyleGuardian"]
+    ConcurrencyGuardianAgent = imports["ConcurrencyGuardianAgent"]
+    DependencySentinelAgent = imports["DependencySentinelAgent"]
+    GitAgent = imports["GitAgent"]
+    Historian = imports["Historian"]
+    HygieneGuardian = imports["HygieneGuardian"]
+    NamingEnforcer = imports["NamingEnforcer"]
+    TypeEnforcer = imports["TypeEnforcer"]
+    PatternEnforcerAgent = imports["PatternEnforcerAgent"]
+    StructuralEngineer = imports["StructuralEngineer"]
+    SafetyInspectorAgent = imports["SafetyInspectorAgent"]
+    TestPilot = imports["TestPilot"]
+    imports["ReflectionAgent"]
+    imports["StrategicPlannerAgent"]
 
     try:
         ctx = ValidationContext()
@@ -268,17 +272,20 @@ def run_standard_mode():
     ]
 
     # Enable MUTATION MODE for self-healing - agents will fix issues, not just report
-    ctx.instructions.append("[SYSTEM] MUTATION MODE: Agents should fix violations, not just report them.")
+    ctx.instructions.append(
+        "[SYSTEM] MUTATION MODE: Agents should fix violations, not just report them."
+    )
 
     async def run_mission():
-
         MAX_CYCLES = 5
         cycle = 0
 
         # LEVEL 6: Create healing branch on start (GitOps)
         branch_name = f"healing/auto_{int(time.time())}"
         try:
-            safe_git_execute(["checkout", "-b", branch_name], repo_root=Path.cwd(), timeout=10, check=False)
+            safe_git_execute(
+                ["checkout", "-b", branch_name], repo_root=Path.cwd(), timeout=10, check=False
+            )
             print(f"   [GIT] GitOps: Created healing branch '{branch_name}'")
         except Exception:
             print("   [!] GitOps: Could not create branch (may not be in git repo)")
@@ -291,13 +298,17 @@ def run_standard_mode():
             ctx.modified_files.clear()
 
             # Build agenda based on cycle and signals
-            agenda = _build_agenda(cycle, ctx, agents, GitAgent, StrategicPlannerAgent, ReflectionAgent)
+            agenda = _build_agenda(
+                cycle, ctx, agents, GitAgent, StrategicPlannerAgent, ReflectionAgent
+            )
 
             # Deduplicate agenda
             final_agenda = _deduplicate_agenda(agenda)
 
             # L5 Human-in-the-Loop intervention check
-            if await _check_intervention(cycle, ctx, FASTAPI_AVAILABLE, start_intervention_server, approval_event):
+            if await _check_intervention(
+                cycle, ctx, FASTAPI_AVAILABLE, start_intervention_server, approval_event
+            ):
                 break
 
             # Execute agents
@@ -338,7 +349,6 @@ def _start_websocket_server(ctx):
     import threading
 
     async def ws_handler(websocket):
-
         ctx.websocket_clients.add(websocket)
         try:
             await websocket.wait_closed()
@@ -346,13 +356,11 @@ def _start_websocket_server(ctx):
             ctx.websocket_clients.discard(websocket)
 
     async def start_ws_server():
-
         async with websockets.serve(ws_handler, "127.0.0.1", 8765):
             print("   📡 L5: Live reasoning stream at ws://127.0.0.1:8765")
             await asyncio.Future()
 
     def run_ws_server():
-
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         loop.run_until_complete(start_ws_server())
@@ -361,7 +369,9 @@ def _start_websocket_server(ctx):
     ws_thread.start()
 
 
-def _build_agenda(cycle: int, ctx, agents: list, GitAgent, StrategicPlannerAgent, ReflectionAgent) -> list:
+def _build_agenda(
+    cycle: int, ctx, agents: list, GitAgent, StrategicPlannerAgent, ReflectionAgent
+) -> list:
     """Build the agent execution agenda based on cycle and signals."""
     agenda = [GitAgent(ctx)]
 
@@ -382,7 +392,9 @@ def _build_agenda(cycle: int, ctx, agents: list, GitAgent, StrategicPlannerAgent
             print("      -> Priority: Dependency Resolution")
 
         if ctx.modified_files:
-            agenda.extend([a for a in agents if a.name in ["SafetyInspectorAgent", "CodeStyleGuardian"]])
+            agenda.extend(
+                [a for a in agents if a.name in ["SafetyInspectorAgent", "CodeStyleGuardian"]]
+            )
             print("      -> Priority: Safety/Style check on modified files")
 
             impact_zone = set()
@@ -391,7 +403,9 @@ def _build_agenda(cycle: int, ctx, agents: list, GitAgent, StrategicPlannerAgent
                 impact_zone.update(deps)
 
             if impact_zone:
-                print(f"      ☢️ BLAST RADIUS: {len(impact_zone)} dependent files added to verification scope.")
+                print(
+                    f"      ☢️ BLAST RADIUS: {len(impact_zone)} dependent files added to verification scope."
+                )
                 ctx.impact_zone = impact_zone
 
         if "SYNTAX_ERROR" in str(ctx.signals):
@@ -417,12 +431,15 @@ def _deduplicate_agenda(agenda: list) -> list:
     return final_agenda
 
 
-async def _check_intervention(cycle: int, ctx, FASTAPI_AVAILABLE: bool,
-                              start_intervention_server, approval_event) -> bool:
+async def _check_intervention(
+    cycle: int, ctx, FASTAPI_AVAILABLE: bool, start_intervention_server, approval_event
+) -> bool:
     """Check if human intervention is required and handle it."""
     high_risk = (
-        cycle >= 3 and len(ctx.modified_files) > 8
-        or "TEST_FAILURE" in ctx.signals and cycle > 2
+        cycle >= 3
+        and len(ctx.modified_files) > 8
+        or "TEST_FAILURE" in ctx.signals
+        and cycle > 2
         or len(ctx.signals) > 5
     )
 
@@ -460,18 +477,22 @@ def _handle_max_cycles_reached(ctx):
 
 def _remote_sync(ctx, branch_name: str):
     """Sync to remote repository on mission completion."""
-    if GITPYTHON_AVAILABLE and hasattr(ctx, 'signal_convergence') and getattr(ctx.signal_convergence, 'reached', False):
+    if (
+        GITPYTHON_AVAILABLE
+        and hasattr(ctx, "signal_convergence")
+        and getattr(ctx.signal_convergence, "reached", False)
+    ):
         remote_url = os.getenv("CANON_REMOTE_REPO")
         if remote_url:
             try:
-                repo = Repo('.')
+                repo = Repo(".")
                 try:
-                    origin = repo.remote('origin')
+                    origin = repo.remote("origin")
                 except ValueError:
-                    origin = repo.create_remote('origin', remote_url)
+                    origin = repo.create_remote("origin", remote_url)
 
                 print(f"   ☁️ L5: Pushing healing branch to remote {remote_url}")
-                push_info = origin.push(refspec=f'HEAD:refs/heads/{branch_name}')[0]
+                push_info = origin.push(refspec=f"HEAD:refs/heads/{branch_name}")[0]
                 if push_info.flags & push_info.ERROR:
                     print(f"   [X] Push failed: {push_info.summary}")
                 else:

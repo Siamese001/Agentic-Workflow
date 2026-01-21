@@ -57,7 +57,9 @@ class MessageDiversityValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, He
             max_idx = int(np.argmax(similarities))
 
             is_diverse = max_similarity < self.MIN_DIVERSITY_THRESHOLD
-            most_similar = self.message_history[max_idx] if max_idx < len(self.message_history) else ""
+            most_similar = (
+                self.message_history[max_idx] if max_idx < len(self.message_history) else ""
+            )
 
             return is_diverse, max_similarity, most_similar
 

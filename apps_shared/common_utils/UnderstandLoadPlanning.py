@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 class RequestType(Enum):
     """Types of observability requests."""
+
     METRIC_QUERY = "metric_query"
     LOG_SEARCH = "log_search"
     TRACE_LOOKUP = "trace_lookup"
@@ -25,6 +26,7 @@ class RequestType(Enum):
 
 class DataSource(Enum):
     """Data sources for observability."""
+
     PROMETHEUS = "prometheus"
     ELASTICSEARCH = "elasticsearch"
     JAEGER = "jaeger"
@@ -35,6 +37,7 @@ class DataSource(Enum):
 
 class AggregationType(Enum):
     """Types of aggregations."""
+
     SUM = "sum"
     AVG = "avg"
     MIN = "min"
@@ -46,6 +49,7 @@ class AggregationType(Enum):
 @dataclass
 class MetricDefinition:
     """Definition of a metric to be loaded."""
+
     name: str
     query: str
     labels: dict[str, str] = field(default_factory=dict)
@@ -57,6 +61,7 @@ class MetricDefinition:
 @dataclass
 class LogQuery:
     """Definition of a log search query."""
+
     index: str
     query: str
     filters: dict[str, Any] = field(default_factory=dict)
@@ -69,6 +74,7 @@ class LogQuery:
 @dataclass
 class TraceQuery:
     """Definition of a trace lookup query."""
+
     service: str | None = None
     operation: str | None = None
     trace_id: str | None = None
@@ -80,6 +86,7 @@ class TraceQuery:
 @dataclass
 class ObservabilityLoadPlan:
     """Complete plan for observability data loading."""
+
     id: str
     name: str
     request_type: RequestType
@@ -97,6 +104,7 @@ class ObservabilityLoadPlan:
 @dataclass
 class ObservabilityLoadConfig:
     """Configuration for observability load planning."""
+
     enable_metrics: bool = True
     enable_logs: bool = True
     enable_traces: bool = True
@@ -109,6 +117,7 @@ class ObservabilityLoadConfig:
 @dataclass
 class ObservabilityLoadResult:
     """Result of observability load planning."""
+
     success: bool
     load_plan: ObservabilityLoadPlan | None = None
     estimated_data_points: int = 0
@@ -137,7 +146,9 @@ class ObservabilityLoadPlanner:
         Returns:
             ObservabilityLoadResult: Complete planning result with load plan
         """
-        self.logger.info(f"Starting observability load planning for: {load_request.get('plan_name', 'unknown')}")
+        self.logger.info(
+            f"Starting observability load planning for: {load_request.get('plan_name', 'unknown')}"
+        )
 
         try:
             # Validate input request
@@ -150,27 +161,19 @@ class ObservabilityLoadPlanner:
             data_source = self._parse_data_source(load_request)
 
             # Parse metrics if enabled
-            metrics = (
-                self._parse_metrics(load_request)
-                if self.config.enable_metrics else []
-            )
+            metrics = self._parse_metrics(load_request) if self.config.enable_metrics else []
 
             # Parse log queries if enabled
-            log_queries = (
-                self._parse_log_queries(load_request)
-                if self.config.enable_logs else []
-            )
+            log_queries = self._parse_log_queries(load_request) if self.config.enable_logs else []
 
             # Parse trace queries if enabled
             trace_queries = (
-                self._parse_trace_queries(load_request)
-                if self.config.enable_traces else []
+                self._parse_trace_queries(load_request) if self.config.enable_traces else []
             )
 
             # Create load plan
             load_plan = self._create_load_plan(
-                load_request, request_type, data_source,
-                metrics, log_queries, trace_queries
+                load_request, request_type, data_source, metrics, log_queries, trace_queries
             )
 
             # Estimate data points
@@ -197,8 +200,8 @@ class ObservabilityLoadPlanner:
                     "plan_name": load_request.get("plan_name"),
                     "request_type": request_type.value,
                     "data_source": data_source.value,
-                    "planner": "ObservabilityLoadPlanner"
-                }
+                    "planner": "ObservabilityLoadPlanner",
+                },
             )
 
             self.logger.info(
@@ -214,8 +217,8 @@ class ObservabilityLoadPlanner:
                 errors=[str(e)],
                 metadata={
                     "failed_at": datetime.utcnow().isoformat(),
-                    "planner": "ObservabilityLoadPlanner"
-                }
+                    "planner": "ObservabilityLoadPlanner",
+                },
             )
 
     def _validate_request(self, request: dict[str, Any]) -> None:
@@ -236,7 +239,7 @@ class ObservabilityLoadPlanner:
             "log_search": RequestType.LOG_SEARCH,
             "trace_lookup": RequestType.TRACE_LOOKUP,
             "aggregation": RequestType.AGGREGATION,
-            "anomaly_detection": RequestType.ANOMALY_DETECTION
+            "anomaly_detection": RequestType.ANOMALY_DETECTION,
         }
 
         request_type_str = request.get("request_type", "metric_query")
@@ -250,7 +253,7 @@ class ObservabilityLoadPlanner:
             "jaeger": DataSource.JAEGER,
             "zipkin": DataSource.ZIPKIN,
             "grafana": DataSource.GRAFANA,
-            "datadog": DataSource.DATADOG
+            "datadog": DataSource.DATADOG,
         }
 
         source_str = request.get("data_source", "prometheus")
@@ -272,11 +275,10 @@ class ObservabilityLoadPlanner:
                         "min": AggregationType.MIN,
                         "max": AggregationType.MAX,
                         "count": AggregationType.COUNT,
-                        "percentile": AggregationType.PERCENTILE
+                        "percentile": AggregationType.PERCENTILE,
                     }
                     aggregation = agg_mapping.get(
-                        raw_metric.get("aggregation"),
-                        AggregationType.AVG
+                        raw_metric.get("aggregation"), AggregationType.AVG
                     )
 
                 metric = MetricDefinition(
@@ -285,7 +287,7 @@ class ObservabilityLoadPlanner:
                     labels=raw_metric.get("labels", {}),
                     aggregation=aggregation,
                     time_range=raw_metric.get("time_range", self.config.default_time_range),
-                    step=raw_metric.get("step", 60)
+                    step=raw_metric.get("step", 60),
                 )
                 metrics.append(metric)
 
@@ -312,7 +314,7 @@ class ObservabilityLoadPlanner:
                     time_range=raw_query.get("time_range", self.config.default_time_range),
                     size=raw_query.get("size", 1000),
                     sort_field=raw_query.get("sort_field", "@timestamp"),
-                    sort_order=raw_query.get("sort_order", "desc")
+                    sort_order=raw_query.get("sort_order", "desc"),
                 )
                 queries.append(query)
 
@@ -338,7 +340,7 @@ class ObservabilityLoadPlanner:
                     trace_id=raw_query.get("trace_id"),
                     tags=raw_query.get("tags", {}),
                     time_range=raw_query.get("time_range", self.config.default_time_range),
-                    limit=raw_query.get("limit", 100)
+                    limit=raw_query.get("limit", 100),
                 )
                 queries.append(query)
 
@@ -358,7 +360,7 @@ class ObservabilityLoadPlanner:
         data_source: DataSource,
         metrics: list[MetricDefinition],
         log_queries: list[LogQuery],
-        trace_queries: list[TraceQuery]
+        trace_queries: list[TraceQuery],
     ) -> ObservabilityLoadPlan:
         """Create observability load plan from parsed components."""
         return ObservabilityLoadPlan(
@@ -373,7 +375,7 @@ class ObservabilityLoadPlanner:
             cache_ttl=request.get("cache_ttl", 300),
             enable_sampling=request.get("enable_sampling", False),
             sample_rate=request.get("sample_rate", 1.0),
-            metadata=request.get("metadata", {})
+            metadata=request.get("metadata", {}),
         )
 
     def _estimate_data_points(self, plan: ObservabilityLoadPlan) -> int:
@@ -453,14 +455,14 @@ def create_observability_load_planner(
     enable_metrics: bool = True,
     enable_logs: bool = True,
     enable_traces: bool = True,
-    **kwargs: object
+    **kwargs: object,
 ) -> ObservabilityLoadPlanner:
     """Create a configured observability load planner."""
     config = ObservabilityLoadConfig(
         enable_metrics=enable_metrics,
         enable_logs=enable_logs,
         enable_traces=enable_traces,
-        **kwargs
+        **kwargs,
     )
     return ObservabilityLoadPlanner(config)
 
@@ -473,7 +475,7 @@ def plan_observability_load(
     metrics: list[dict[str, Any]] | None = None,
     log_queries: list[dict[str, Any]] | None = None,
     trace_queries: list[dict[str, Any]] | None = None,
-    config: dict[str, Any] | None = None
+    config: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Plan observability data load from simple parameters.
 
@@ -496,7 +498,7 @@ def plan_observability_load(
         "data_source": data_source,
         "metrics": metrics or [],
         "log_queries": log_queries or [],
-        "trace_queries": trace_queries or []
+        "trace_queries": trace_queries or [],
     }
 
     # Create planner and execute
@@ -519,7 +521,7 @@ def plan_observability_load(
                     "labels": m.labels,
                     "aggregation": m.aggregation.value if m.aggregation else None,
                     "time_range": m.time_range,
-                    "step": m.step
+                    "step": m.step,
                 }
                 for m in result.load_plan.metrics
             ],
@@ -531,7 +533,7 @@ def plan_observability_load(
                     "time_range": q.time_range,
                     "size": q.size,
                     "sort_field": q.sort_field,
-                    "sort_order": q.sort_order
+                    "sort_order": q.sort_order,
                 }
                 for q in result.load_plan.log_queries
             ],
@@ -542,7 +544,7 @@ def plan_observability_load(
                     "trace_id": q.trace_id,
                     "tags": q.tags,
                     "time_range": q.time_range,
-                    "limit": q.limit
+                    "limit": q.limit,
                 }
                 for q in result.load_plan.trace_queries
             ],
@@ -550,15 +552,17 @@ def plan_observability_load(
             "cache_ttl": result.load_plan.cache_ttl,
             "enable_sampling": result.load_plan.enable_sampling,
             "sample_rate": result.load_plan.sample_rate,
-            "metadata": result.load_plan.metadata
-        } if result.load_plan else None,
+            "metadata": result.load_plan.metadata,
+        }
+        if result.load_plan
+        else None,
         "estimated_data_points": result.estimated_data_points,
         "query_count": result.query_count,
         "load_time_estimate": result.load_time_estimate,
         "memory_estimate": result.memory_estimate,
         "warnings": result.warnings,
         "errors": result.errors,
-        "metadata": result.metadata
+        "metadata": result.metadata,
     }
 
 
@@ -588,7 +592,7 @@ class LoadDataPlanningPlanImpl(LoadDataPlanningPlanProcessor):
             success=True,
             data={"processed": True, "input": input_data},
             safety_validated=True,
-            timestamp=self._get_timestamp()
+            timestamp=self._get_timestamp(),
         )
 
         self.logger.info(f"Successfully processed: {result.success}")
@@ -598,7 +602,13 @@ class LoadDataPlanningPlanImpl(LoadDataPlanningPlanProcessor):
         """L5 Safety validation with fail-closed behavior"""
         try:
             # Check for dangerous patterns
-            dangerous_patterns = ["<script>", "javascript:", "ast.literal_eval(", "pass  # exec disabled: ", "__import__"]
+            dangerous_patterns = [
+                "<script>",
+                "javascript:",
+                "ast.literal_eval(",
+                "pass  # exec disabled: ",
+                "__import__",
+            ]
             data_str = str(data).lower()
             for pattern in dangerous_patterns:
                 if pattern in data_str:
@@ -627,11 +637,15 @@ class LoadDataPlanningPlanImpl(LoadDataPlanningPlanProcessor):
     def _get_timestamp(self) -> str:
         """Get current timestamp for L5 observability"""
         from datetime import datetime
+
         return datetime.utcnow().isoformat()
+
 
 class SecurityError(Exception):
     """L5 Security exception for fail-closed behavior"""
+
     ...
+
 
 # L5 Interface compliance
 class LoadDataPlanningPlanInterface:
@@ -649,10 +663,11 @@ class LoadDataPlanningPlanInterface:
                 "data": result.data,
                 "errors": result.errors,
                 "safety_validated": result.safety_validated,
-                "timestamp": result.timestamp
+                "timestamp": result.timestamp,
             }
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
             raise SecurityError(f"Execution failed: {e}")
+
 
 # L5 builder
 class LoadDataPlanningPlanFactory:
@@ -664,6 +679,7 @@ class LoadDataPlanningPlanFactory:
         constraints = LoadDataPlanningPlanConstraints(safety_level=safety_level)
         engine = LoadDataPlanningPlanImpl(constraints)
         return LoadDataPlanningPlanInterface(engine)
+
 
 # L5 Main execution point
 def load_data_planning(input_data: dict[str, object]) -> dict[str, object]:
@@ -682,6 +698,7 @@ def load_data_planning(input_data: dict[str, object]) -> dict[str, object]:
     builder = LoadDataPlanningPlanFactory()
     engine = builder.create_processor()
     return engine.execute(input_data)
+
 
 if __name__ == "__main__":
     # L5 Test execution

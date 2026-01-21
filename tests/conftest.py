@@ -1,6 +1,6 @@
 import sys
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
 import builtins
 import os
@@ -17,17 +17,19 @@ stubs_path = project_root / "stubs"
 # ============================================================================
 # GLOBAL ARCHIVES QUARANTINE - System-wide exclusion of archives/ directory
 # ============================================================================
-QUARANTINED_DIRS = frozenset({
-    'archives',
-    '.sovereign_healing_backup',
-    '__pycache__',
-    '.git',
-    '.venv',
-    'venv',
-    'node_modules',
-    'dist',
-    'build',
-})
+QUARANTINED_DIRS = frozenset(
+    {
+        "archives",
+        ".sovereign_healing_backup",
+        "__pycache__",
+        ".git",
+        ".venv",
+        "venv",
+        "node_modules",
+        "dist",
+        "build",
+    }
+)
 
 
 def is_quarantined_path(path: Path) -> bool:
@@ -45,9 +47,9 @@ def filter_quarantined_paths(paths):
 def quarantine_filter():
     """Provides quarantine filter functions for tests that scan files."""
     return {
-        'is_quarantined': is_quarantined_path,
-        'filter_paths': filter_quarantined_paths,
-        'quarantined_dirs': QUARANTINED_DIRS,
+        "is_quarantined": is_quarantined_path,
+        "filter_paths": filter_quarantined_paths,
+        "quarantined_dirs": QUARANTINED_DIRS,
     }
 
 
@@ -55,19 +57,22 @@ def quarantine_filter():
 sys.path.insert(0, str(project_root))
 sys.path.insert(1, str(stubs_path))
 
+
 @pytest.fixture(autouse=True)
 def stub_environment_warning():
     """Warns the user that the system is running in a Sovereign Stubbed state."""
     warnings.warn(
         "\n[SOVEREIGNTY ALERT] Tests are running with Import Stubs. \n"
         "Collection is unblocked, but runtime behavior is simulated.",
-        UserWarning
+        UserWarning,
     )
+
 
 @pytest.fixture
 def disable_path_shield():
     """Marker fixture to disable path_shield for specific tests."""
     pass
+
 
 @pytest.fixture(autouse=True)
 def mock_llm_calls(monkeypatch):
@@ -85,13 +90,16 @@ def mock_llm_calls(monkeypatch):
             def generate_content(self, *args, **kwargs):
                 class MockResponse:
                     text = "Mock LLM response for testing"
+
                     def __iter__(self):
                         yield self
+
                 return MockResponse()
 
         monkeypatch.setattr(genai, "GenerativeModel", MockGenerativeModel)
     except ImportError:
         pass
+
 
 @pytest.fixture(autouse=True)
 def mock_mcp_tools(monkeypatch):
@@ -99,12 +107,14 @@ def mock_mcp_tools(monkeypatch):
     Global MCP Tool Mock: Prevents actual tool executions.
     Returns safe stub responses.
     """
+
     # Mock common MCP tool patterns
     def mock_tool_execute(*args, **kwargs):
         return {"status": "mocked", "result": "stub_data"}
 
     # This will be expanded as we identify specific MCP tool patterns
     pass
+
 
 @pytest.fixture(autouse=True)
 def path_shield(request, monkeypatch):
@@ -119,13 +129,34 @@ def path_shield(request, monkeypatch):
     import json
 
     fixture_keywords = [
-        "fixture", "sample", "mock", "data", "test_data",
-        "golden", "config", "mission", "resume", "context",
-        ".json", ".yaml", ".yml", ".ini", ".pdf", ".txt"
+        "fixture",
+        "sample",
+        "mock",
+        "data",
+        "test_data",
+        "golden",
+        "config",
+        "mission",
+        "resume",
+        "context",
+        ".json",
+        ".yaml",
+        ".yml",
+        ".ini",
+        ".pdf",
+        ".txt",
     ]
 
     # Exclusion patterns for real test files that should not be mocked
-    exclusion_patterns = ["live_stream.jsonl", "tmp", "temp", "checkpoint", "test.py", "patterns.json", "rules.json"]
+    exclusion_patterns = [
+        "live_stream.jsonl",
+        "tmp",
+        "temp",
+        "checkpoint",
+        "test.py",
+        "patterns.json",
+        "rules.json",
+    ]
 
     # Save original functions before patching
     original_exists = os.path.exists
@@ -133,7 +164,6 @@ def path_shield(request, monkeypatch):
     original_open = builtins.open
 
     def mock_exists(path):
-
         path_str = str(path).lower()
         # Exclude real test files from mocking
         if any(excl in path_str for excl in exclusion_patterns):
@@ -141,18 +171,19 @@ def path_shield(request, monkeypatch):
         return any(kw in path_str for kw in fixture_keywords)
 
     def mock_open_wrapper(file, *args, **kwargs):
-
         file_str = str(file).lower()
         # Exclude real test files from path shield
         if any(excl in file_str for excl in exclusion_patterns):
             return original_open(file, *args, **kwargs)
         if any(kw in file_str for kw in fixture_keywords):
             # Deterministic stub data to satisfy L4/L5 parsing
-            stub_data = json.dumps({
-                "sovereign_status": "path_shield_active",
-                "content": "placeholder_data",
-                "objective": "stub_objective"
-            })
+            stub_data = json.dumps(
+                {
+                    "sovereign_status": "path_shield_active",
+                    "content": "placeholder_data",
+                    "objective": "stub_objective",
+                }
+            )
             return mock_open(read_data=stub_data)(file, *args, **kwargs)
         return original_open(file, *args, **kwargs)
 
@@ -163,13 +194,20 @@ def path_shield(request, monkeypatch):
     # Pathlib interception
     monkeypatch.setattr(Path, "exists", lambda self: mock_exists(self))
 
+
 def pytest_configure(config):
     """Register custom markers for the sovereign suite."""
-    config.addinivalue_line("markers", "sovereign: marks tests as part of the core sovereignty suite")
+    config.addinivalue_line(
+        "markers", "sovereign: marks tests as part of the core sovereignty suite"
+    )
     config.addinivalue_line("markers", "unit: Unit tests for individual components")
-    config.addinivalue_line("markers", "integration: Integration tests for zero-loss merge and transactional sovereignty")
+    config.addinivalue_line(
+        "markers",
+        "integration: Integration tests for zero-loss merge and transactional sovereignty",
+    )
     config.addinivalue_line("markers", "e2e: End-to-end workflow tests")
     config.addinivalue_line("markers", "slow: Tests that take significant time to execute")
+
 
 def pytest_collection_modifyitems(items):
     """
@@ -178,7 +216,11 @@ def pytest_collection_modifyitems(items):
     """
     for item in items:
         # Detect keywords that imply external connectivity or live data requirements
-        is_live = any(kw in item.nodeid.lower() for kw in ["live", "external", "integration_real", "network"])
+        is_live = any(
+            kw in item.nodeid.lower() for kw in ["live", "external", "integration_real", "network"]
+        )
 
         if is_live:
-            item.add_marker(pytest.mark.skip(reason="Live external dependency - skipped in stub mode"))
+            item.add_marker(
+                pytest.mark.skip(reason="Live external dependency - skipped in stub mode")
+            )

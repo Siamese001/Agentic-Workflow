@@ -5,6 +5,7 @@ Archive Duplicate Test Files
 Identifies test files with the same name in different directories
 and archives the duplicates to preserve SSOT.
 """
+
 import shutil
 from datetime import datetime
 from pathlib import Path
@@ -21,17 +22,18 @@ def main():
     seen = {}
     # Phase 6.9: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_python_files
+
     for py_file in get_python_files(test_dir):
-        if py_file.name.startswith('test_'):
+        if py_file.name.startswith("test_"):
             seen.setdefault(py_file.name, []).append(py_file)
 
     # Identify duplicates (files with same name in different locations)
     duplicates = [files[1:] for files in seen.values() if len(files) > 1]
     duplicate_count = sum(len(d) for d in duplicates)
 
-    print(f"\n{'='*80}")
+    print(f"\n{'=' * 80}")
     print("DUPLICATE TEST FILE ARCHIVAL")
-    print(f"{'='*80}")
+    print(f"{'=' * 80}")
     print(f"Found {duplicate_count} duplicate test files")
 
     if duplicate_count == 0:
@@ -59,15 +61,17 @@ def main():
             except Exception as e:
                 print(f"❌ Failed to archive {dup}: {e}")
 
-    print(f"\n{'='*80}")
+    print(f"\n{'=' * 80}")
     print("ARCHIVAL COMPLETE")
-    print(f"{'='*80}")
+    print(f"{'=' * 80}")
     print(f"Archived: {archived} files")
     print(f"Location: {archive_dir}")
-    print(f"{'='*80}")
+    print(f"{'=' * 80}")
 
     return 0
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     import sys
+
     sys.exit(main())

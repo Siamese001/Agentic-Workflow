@@ -14,6 +14,7 @@ from models_LIC import Archetype, CircuitBreakerOpenError, CircuitState
 # NEW v11.6: CIRCUIT BREAKER (FEATURE 4.1)
 # ============================================================================
 
+
 class CircuitBreaker:
     """
     Circuit breaker for API calls - prevents cascade failures
@@ -29,11 +30,7 @@ class CircuitBreaker:
     A successful request in HALF_OPEN closes the circuit.
     """
 
-    def __init__(
-        self,
-        failure_threshold: int = 3,
-        timeout_seconds: int = 60
-    ):
+    def __init__(self, failure_threshold: int = 3, timeout_seconds: int = 60):
         """
         Initialize circuit breaker.
 
@@ -65,7 +62,9 @@ class CircuitBreaker:
         """
         if self.state == CircuitState.OPEN:
             # Check if timeout expired
-            if self.last_failure_time and datetime.now() - self.last_failure_time > timedelta(seconds=self.timeout_seconds):
+            if self.last_failure_time and datetime.now() - self.last_failure_time > timedelta(
+                seconds=self.timeout_seconds
+            ):
                 self.state = CircuitState.HALF_OPEN
                 self.failure_count = 0
                 print("[CircuitBreaker] Transitioning to HALF_OPEN for recovery test")
@@ -98,9 +97,11 @@ class CircuitBreaker:
 
             raise
 
+
 # ============================================================================
 # NEW v11.6: CONTEXT MANAGER (GAP 7.1-7.3)
 # ============================================================================
+
 
 class ContextManager:
     """
@@ -117,13 +118,13 @@ class ContextManager:
     """
 
     SECTION_PRIORITIES = {
-        "job_description": 100,      # Highest - never truncate
+        "job_description": 100,  # Highest - never truncate
         "recipient_profile": 90,
         "company_context": 80,
         "sender_profile": 70,
         "rag_recent": 60,
         "rag_historical": 40,
-        "examples": 30,              # Lowest - truncate first
+        "examples": 30,  # Lowest - truncate first
     }
 
     MAX_CONTEXT_TOKENS = 180000  # Conservative estimate for Gemini 1.5 Pro
@@ -131,9 +132,7 @@ class ContextManager:
 
     @classmethod
     def truncate_intelligently(
-        cls,
-        context_sections: dict[str, str],
-        max_tokens: int = MAX_CONTEXT_TOKENS
+        cls, context_sections: dict[str, str], max_tokens: int = MAX_CONTEXT_TOKENS
     ) -> dict[str, str]:
         """
         Truncate context sections by priority if exceeding token limit.
@@ -152,13 +151,15 @@ class ContextManager:
         if estimated_tokens <= max_tokens:
             return context_sections
 
-        print(f"[ContextManager] Context exceeds limit ({estimated_tokens} > {max_tokens} tokens), truncating...")
+        print(
+            f"[ContextManager] Context exceeds limit ({estimated_tokens} > {max_tokens} tokens), truncating..."
+        )
 
         # Sort sections by priority (highest first)
         sorted_sections = sorted(
             context_sections.items(),
             key=lambda x: cls.SECTION_PRIORITIES.get(x[0], 50),
-            reverse=True
+            reverse=True,
         )
 
         truncated = {}
@@ -203,13 +204,17 @@ class ContextManager:
         is_overflow = estimated_tokens > cls.MAX_CONTEXT_TOKENS
 
         if is_overflow:
-            print(f"[ContextManager] WARNING: Context overflow detected ({estimated_tokens} tokens)")
+            print(
+                f"[ContextManager] WARNING: Context overflow detected ({estimated_tokens} tokens)"
+            )
 
         return is_overflow, estimated_tokens
+
 
 # ============================================================================
 # NEW v11.6: ADAPTIVE TEMPERATURE CONTROLLER (FEATURE 2.2)
 # ============================================================================
+
 
 class AdaptiveTemperatureController:
     """
@@ -231,7 +236,7 @@ class AdaptiveTemperatureController:
         Archetype.C_LEVEL: 0.45,
         Archetype.EXECUTIVE: 0.50,
         Archetype.SENIOR_TA: 0.55,
-        Archetype.RECRUITER: 0.65
+        Archetype.RECRUITER: 0.65,
     }
     ESCALATION_STEP = 0.15
     MAX_TEMPERATURE = 0.95
@@ -241,12 +246,7 @@ class AdaptiveTemperatureController:
         self.attempt_history: dict[str, list[float]] = defaultdict(list)
         self.success_temperatures: dict[str, float] = {}
 
-    def get_temperature(
-        self,
-        component: str,
-        archetype: Archetype,
-        attempt: int
-    ) -> float:
+    def get_temperature(self, component: str, archetype: Archetype, attempt: int) -> float:
         """
         Get temperature for this generation attempt.
 
@@ -259,26 +259,20 @@ class AdaptiveTemperatureController:
             Temperature value for LLM generation
         """
         base_temp = self.BASE_TEMPERATURES[archetype]
-        escalated_temp = min(
-            self.MAX_TEMPERATURE,
-            base_temp + (attempt - 1) * self.ESCALATION_STEP
-        )
+        escalated_temp = min(self.MAX_TEMPERATURE, base_temp + (attempt - 1) * self.ESCALATION_STEP)
 
         # Track history
         key = f"{archetype.value}_{component}"
         self.attempt_history[key].append(escalated_temp)
 
         if attempt > 1:
-            print(f"[TempController] Escalating temperature for {component}: {escalated_temp:.2f} (attempt {attempt})")
+            print(
+                f"[TempController] Escalating temperature for {component}: {escalated_temp:.2f} (attempt {attempt})"
+            )
 
         return escalated_temp
 
-    def record_success(
-        self,
-        component: str,
-        archetype: Archetype,
-        temperature: float
-    ):
+    def record_success(self, component: str, archetype: Archetype, temperature: float):
         """
         Record which temperature succeeded for learning.
 
@@ -307,9 +301,11 @@ class AdaptiveTemperatureController:
             return self.success_temperatures[key]
         return None
 
+
 # ============================================================================
 # TEXT PROCESSING UTILITIES
 # ============================================================================
+
 
 class TextProcessor:
     """Utility functions for text processing and analysis"""
@@ -352,7 +348,7 @@ class TextProcessor:
             List of sentences
         """
         # Simple sentence splitting on period, exclamation, question mark
-        sentences = re.split(r'[.!?]+', text)
+        sentences = re.split(r"[.!?]+", text)
         return [s.strip() for s in sentences if s.strip()]
 
     @staticmethod
@@ -366,7 +362,7 @@ class TextProcessor:
         Returns:
             List of metrics (percentages, multipliers, large numbers)
         """
-        metric_pattern = r'\b\d+%|\b\d+x\b|\b\d+\s*(million|billion|thousand|k)\b'
+        metric_pattern = r"\b\d+%|\b\d+x\b|\b\d+\s*(million|billion|thousand|k)\b"
         return re.findall(metric_pattern, text, re.IGNORECASE)
 
     @staticmethod
@@ -381,7 +377,7 @@ class TextProcessor:
             Cleaned text
         """
         # Replace multiple spaces with single space
-        text = re.sub(r'\s+', ' ', text)
+        text = re.sub(r"\s+", " ", text)
         # Remove leading/trailing whitespace
         return text.strip()
 
@@ -400,11 +396,13 @@ class TextProcessor:
         """
         if len(text) <= max_chars:
             return text
-        return text[:max_chars - len(suffix)] + suffix
+        return text[: max_chars - len(suffix)] + suffix
+
 
 # ============================================================================
 # VALIDATION HELPERS
 # ============================================================================
+
 
 class ValidationHelper:
     """Helper functions for validation logic"""
@@ -462,13 +460,13 @@ class ValidationHelper:
             List of placeholder patterns found
         """
         patterns = [
-            r'\[.*?\]',      # [PLACEHOLDER]
-            r'\{.*?\}',      # {PLACEHOLDER}
-            r'<.*?>',        # <PLACEHOLDER>
-            r'\bPLACEHOLDER\b',
-            r'\bTODO\b',
-            r'\bXXX\b',
-            r'\bFIXME\b'
+            r"\[.*?\]",  # [PLACEHOLDER]
+            r"\{.*?\}",  # {PLACEHOLDER}
+            r"<.*?>",  # <PLACEHOLDER>
+            r"\bPLACEHOLDER\b",
+            r"\bTODO\b",
+            r"\bXXX\b",
+            r"\bFIXME\b",
         ]
 
         found = []
@@ -490,11 +488,14 @@ class ValidationHelper:
             Hexadecimal checksum string
         """
         import hashlib
+
         return hashlib.md5(text.encode()).hexdigest()[:16]
+
 
 # ============================================================================
 # TIMING UTILITIES
 # ============================================================================
+
 
 class Timer:
     """Simple timer for measuring execution time"""

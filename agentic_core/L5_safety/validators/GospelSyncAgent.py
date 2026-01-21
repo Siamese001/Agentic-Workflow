@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt, state, workflow
@@ -36,8 +35,9 @@ class GospelSyncAgent(L0MaintenanceBaseAgent):
     Inherits from L0MaintenanceBaseAgent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
     """
 
-
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -77,7 +77,7 @@ class GospelSyncAgent(L0MaintenanceBaseAgent):
         return {
             "heresy": self.heresy,
             "missing": self.missing,
-            "synchronized": len(self.heresy) == 0 and len(self.missing) == 0
+            "synchronized": len(self.heresy) == 0 and len(self.missing) == 0,
         }
 
     def _get_canonical_files(self) -> set[str]:
@@ -115,9 +115,9 @@ class GospelSyncAgent(L0MaintenanceBaseAgent):
             print("✅ GOSPEL SYNC: Filesystem is in 100% synchronization with the Blueprint.")
             return
 
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print(" SOVEREIGN SSOT SYNC REPORT")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
 
         if self.missing:
             print(f"❌ MISSING CANON ({len(self.missing)}):")
@@ -128,7 +128,7 @@ class GospelSyncAgent(L0MaintenanceBaseAgent):
             print(f"\n☢️  HERETICAL FILES ({len(self.heresy)}):")
             for h in self.heresy:
                 print(f"   [!] {h}")
-        print(f"{'='*60}\n")
+        print(f"{'=' * 60}\n")
 
 
 if __name__ == "__main__":
@@ -137,4 +137,5 @@ if __name__ == "__main__":
     agent.report_drift()
 
     import sys
+
     sys.exit(0 if results["synchronized"] else 1)

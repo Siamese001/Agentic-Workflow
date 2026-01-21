@@ -28,6 +28,7 @@ Logger = logging.getLogger(__name__)
 
 class CanonBaseAgentInterface(Protocol):
     """Protocol for CanonBaseAgent interface compatibility."""
+
     ctx: Any
     name: str
     python_files: list[str]
@@ -87,11 +88,29 @@ class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
         """
         Executes all defined pattern checks and reports violations.
         """
-        print(f'\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\n[>>>] {self.agent.name} ACTIVATED: Pattern Enforcement...')
-        keys: Any = [(26, self.check_key_26_no_mutable_defaults), (27, self.check_key_27_prefer_str_join), (28, self.check_key_28_no_bare_except), (29, self.check_key_29_no_assert_in_prod), (30, self.check_key_30_prefer_fstrings), (31, self.check_key_31_no_complex_comprehensions), (32, self.check_key_32_no_dict_keys_check), (33, self.check_key_33_no_float_equality), (34, self.check_key_34_use_is_for_none), (36, self.check_key_36_no_shadowed_builtins), (37, self.check_key_37_no_redundant_self), (38, self.check_key_38_prefer_comprehensions), (39, self.check_key_39_no_useless_return)]
+        print(
+            f"\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\n[>>>] {self.agent.name} ACTIVATED: Pattern Enforcement..."
+        )
+        keys: Any = [
+            (26, self.check_key_26_no_mutable_defaults),
+            (27, self.check_key_27_prefer_str_join),
+            (28, self.check_key_28_no_bare_except),
+            (29, self.check_key_29_no_assert_in_prod),
+            (30, self.check_key_30_prefer_fstrings),
+            (31, self.check_key_31_no_complex_comprehensions),
+            (32, self.check_key_32_no_dict_keys_check),
+            (33, self.check_key_33_no_float_equality),
+            (34, self.check_key_34_use_is_for_none),
+            (36, self.check_key_36_no_shadowed_builtins),
+            (37, self.check_key_37_no_redundant_self),
+            (38, self.check_key_38_prefer_comprehensions),
+            (39, self.check_key_39_no_useless_return),
+        ]
         self._execute_pattern_checks(keys)
 
-    def _execute_pattern_checks(self, keys: list[tuple[int, Callable[[], tuple[bool, list[str]]]]]) -> None:
+    def _execute_pattern_checks(
+        self, keys: list[tuple[int, Callable[[], tuple[bool, list[str]]]]]
+    ) -> None:
         """
         Execute pattern checks and report violations.
 
@@ -113,14 +132,14 @@ class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
             Parsed AST or None if parsing failed.
         """
         try:
-            with open(filepath, encoding='utf-8') as f:
+            with open(filepath, encoding="utf-8") as f:
                 return ast.parse(f.read(), filename=filepath)
         except FileNotFoundError:
-            Logger.warning(f'File not found: {filepath}')
+            Logger.warning(f"File not found: {filepath}")
         except SyntaxError as e:
-            Logger.error(f'Syntax error in {filepath}: {e}')
+            Logger.error(f"Syntax error in {filepath}: {e}")
         except Exception as e:
-            Logger.error(f'Error parsing AST for {filepath}: {e}')
+            Logger.error(f"Error parsing AST for {filepath}: {e}")
         return None
 
     def _read_file_lines(self, filepath: str) -> list[str] | None:
@@ -134,18 +153,18 @@ class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
             List of lines or None if reading failed.
         """
         try:
-            with open(filepath, encoding='utf-8') as f:
+            with open(filepath, encoding="utf-8") as f:
                 return f.readlines()
         except FileNotFoundError:
-            Logger.warning(f'File not found: {filepath}')
+            Logger.warning(f"File not found: {filepath}")
         except Exception as e:
-            Logger.error(f'Error reading lines from {filepath}: {e}')
+            Logger.error(f"Error reading lines from {filepath}: {e}")
         return None
 
     def _check_ast_pattern(
         self,
         node_filter: Callable[[ast.AST], bool],
-        violation_formatter: Callable[[str, ast.AST], str | None]
+        violation_formatter: Callable[[str, ast.AST], str | None],
     ) -> tuple[bool, list[str]]:
         """Generic AST pattern checker to reduce code duplication.
 
@@ -170,6 +189,7 @@ class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
 
     def check_key_26_no_mutable_defaults(self) -> tuple[bool, list[str]]:
         """Check for mutable default arguments in function definitions."""
+
         def check_node(node: ast.AST) -> bool:
             return isinstance(node, ast.FunctionDef)
 
@@ -194,9 +214,13 @@ class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
             lines: Any = self._read_file_lines(fp)
             if lines:
                 for i, line in enumerate(lines, 1):
-                    if re.search('\\s*\\+\\s*["\\\']', line) or re.search('["\\\']\\s*\\+\\s*', line):
-                        if not re.search('^\\s*#', line) and (not re.search('\\b\\d+\\s*\\+\\s*["\\\']', line)):
-                            violations.append(f'{fp}:{i}')
+                    if re.search("\\s*\\+\\s*[\"\\']", line) or re.search(
+                        "[\"\\']\\s*\\+\\s*", line
+                    ):
+                        if not re.search("^\\s*#", line) and (
+                            not re.search("\\b\\d+\\s*\\+\\s*[\"\\']", line)
+                        ):
+                            violations.append(f"{fp}:{i}")
         return (len(violations) == 0, violations)
 
     def check_key_28_no_bare_except(self) -> tuple[bool, list[str]]:
@@ -210,7 +234,7 @@ class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
                 for node in ast.walk(tree):
                     if isinstance(node, ast.ExceptHandler):
                         if node.type is None:
-                            violations.append(f'{fp}:{node.lineno}')
+                            violations.append(f"{fp}:{node.lineno}")
         return (len(violations) == 0, violations)
 
     def check_key_29_no_assert_in_prod(self) -> tuple[bool, list[str]]:
@@ -223,7 +247,7 @@ class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
             if tree:
                 for node in ast.walk(tree):
                     if isinstance(node, ast.Assert):
-                        violations.append(f'{fp}:{node.lineno}')
+                        violations.append(f"{fp}:{node.lineno}")
         return (len(violations) == 0, violations)
 
     def check_key_30_prefer_fstrings(self) -> tuple[bool, list[str]]:
@@ -236,8 +260,8 @@ class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
             lines: Any = self._read_file_lines(fp)
             if lines:
                 for i, line in enumerate(lines, 1):
-                    if re.search('\\.format\\(|%\\s*\\(', line):
-                        violations.append(f'{fp}:{i}')
+                    if re.search("\\.format\\(|%\\s*\\(", line):
+                        violations.append(f"{fp}:{i}")
         return (len(violations) == 0, violations)
 
     def check_key_31_no_complex_comprehensions(self) -> tuple[bool, list[str]]:
@@ -265,8 +289,11 @@ class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
                     if isinstance(node, ast.Compare):
                         if any(isinstance(op, ast.Eq) for op in node.ops):
                             operands: Any = [node.left] + node.comparators
-                            if any(isinstance(val, ast.Constant) and isinstance(val.value, float) for val in operands):
-                                violations.append(f'{fp}:{node.lineno}')
+                            if any(
+                                isinstance(val, ast.Constant) and isinstance(val.value, float)
+                                for val in operands
+                            ):
+                                violations.append(f"{fp}:{node.lineno}")
         return (len(violations) == 0, violations)
 
     def check_key_34_use_is_for_none(self) -> tuple[bool, list[str]]:
@@ -279,9 +306,12 @@ class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
             if tree:
                 for node in ast.walk(tree):
                     if isinstance(node, ast.Compare):
-                        if any(isinstance(comp, ast.Constant) and comp.value is None for comp in node.comparators):
+                        if any(
+                            isinstance(comp, ast.Constant) and comp.value is None
+                            for comp in node.comparators
+                        ):
                             if not all(isinstance(op, (ast.Is, ast.IsNot)) for op in node.ops):
-                                violations.append(f'{fp}:{node.lineno}')
+                                violations.append(f"{fp}:{node.lineno}")
         return (len(violations) == 0, violations)
 
     def check_key_36_no_shadowed_builtins(self) -> tuple[bool, list[str]]:
@@ -289,7 +319,20 @@ class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
         Checks for function parameters that shadow Python's built-in names.
         """
         violations: Any = []
-        builtins: Any = {'list', 'dict', 'set', 'str', 'int', 'float', 'bool', 'type', 'id', 'input', 'open', 'print'}
+        builtins: Any = {
+            "list",
+            "dict",
+            "set",
+            "str",
+            "int",
+            "float",
+            "bool",
+            "type",
+            "id",
+            "input",
+            "open",
+            "print",
+        }
         for fp in self.agent.ctx.python_files:
             tree: Any = self._parse_file_ast(fp)
             if tree:
@@ -297,7 +340,9 @@ class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
                     if isinstance(node, ast.FunctionDef):
                         for arg in node.args.args:
                             if arg.arg in builtins:
-                                violations.append(f"{fp}:{node.lineno} function '{node.name}' parameter '{arg.arg}'")
+                                violations.append(
+                                    f"{fp}:{node.lineno} function '{node.name}' parameter '{arg.arg}'"
+                                )
         return (len(violations) == 0, violations)
 
     def check_key_37_no_redundant_self(self) -> tuple[bool, list[str]]:
@@ -325,7 +370,9 @@ class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
                     if isinstance(node, ast.FunctionDef):
                         if node.body and isinstance(node.body[-1], ast.Return):
                             if node.body[-1].value is None:
-                                violations.append(f"{fp}:{node.body[-1].lineno} in function '{node.name}'")
+                                violations.append(
+                                    f"{fp}:{node.body[-1].lineno} in function '{node.name}'"
+                                )
         return (len(violations) == 0, violations)
 
     def heal_repository(self) -> dict:

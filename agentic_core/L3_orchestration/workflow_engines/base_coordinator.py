@@ -18,6 +18,7 @@ from .execution_strategy import ExecutionStatus, WorkflowContext, WorkflowResult
 @dataclass
 class CoordinatorCapability:
     """Describes a coordinator capability."""
+
     name: str
     description: str
     workflow_types: list[str]
@@ -107,7 +108,7 @@ class WorkflowCoordinator(ABC):
             return WorkflowResult(
                 workflow_id=context.workflow_id,
                 status=ExecutionStatus.FAILED,
-                error=f"Coordinator {self.name} failed: {str(e)}"
+                error=f"Coordinator {self.name} failed: {str(e)}",
             )
         finally:
             self.total_time += time.time() - start_time
@@ -120,9 +121,11 @@ class WorkflowCoordinator(ABC):
             "coordinations": self.coordinations,
             "successes": self.successes,
             "failures": self.failures,
-            "success_rate": (self.successes / self.coordinations * 100) if self.coordinations > 0 else 0,
+            "success_rate": (self.successes / self.coordinations * 100)
+            if self.coordinations > 0
+            else 0,
             "total_time": self.total_time,
-            "avg_time": (self.total_time / self.coordinations) if self.coordinations > 0 else 0
+            "avg_time": (self.total_time / self.coordinations) if self.coordinations > 0 else 0,
         }
 
     def enable(self) -> None:
@@ -174,7 +177,7 @@ class CoordinatorRegistry:
         return {
             "total_coordinators": len(self.coordinators),
             "enabled_coordinators": len([c for c in self.coordinators.values() if c.enabled]),
-            "coordinators": {name: c.get_statistics() for name, c in self.coordinators.items()}
+            "coordinators": {name: c.get_statistics() for name, c in self.coordinators.items()},
         }
 
 

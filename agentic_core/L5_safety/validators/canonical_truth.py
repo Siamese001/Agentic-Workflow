@@ -33,11 +33,11 @@ from pathlib import Path
 # Weighted formula for health score calculation
 # Total must sum to 1.0 (100%)
 HEALTH_WEIGHTS: dict[str, float] = {
-    "heal_capability": 0.30,   # 30% - Ability to self-heal
-    "invocation": 0.10,        # 10% - Invocation status
-    "test_coverage": 0.25,     # 25% - Test coverage
-    "observability": 0.20,     # 20% - Observability metrics
-    "complexity": 0.15         # 15% - Complexity health
+    "heal_capability": 0.30,  # 30% - Ability to self-heal
+    "invocation": 0.10,  # 10% - Invocation status
+    "test_coverage": 0.25,  # 25% - Test coverage
+    "observability": 0.20,  # 20% - Observability metrics
+    "complexity": 0.15,  # 15% - Complexity health
 }
 
 # Validation: Ensure weights sum to 1.0
@@ -45,11 +45,7 @@ assert abs(sum(HEALTH_WEIGHTS.values()) - 1.0) < 0.0001, "Health weights must su
 
 
 def calculate_health_score(
-    heal_cap: float,
-    invoc: float,
-    test_cov: float,
-    obs: float,
-    comp_health: float
+    heal_cap: float, invoc: float, test_cov: float, obs: float, comp_health: float
 ) -> float:
     """
     Sovereign SSOT for health score calculation.
@@ -83,18 +79,18 @@ def calculate_health_score(
         ("invoc", invoc),
         ("test_cov", test_cov),
         ("obs", obs),
-        ("comp_health", comp_health)
+        ("comp_health", comp_health),
     ]:
         if not (0.0 <= value <= 100.0):
             raise ValueError(f"{name} must be between 0.0 and 100.0, got {value}")
 
     # Calculate weighted sum
     raw_score = (
-        heal_cap * HEALTH_WEIGHTS["heal_capability"] +
-        invoc * HEALTH_WEIGHTS["invocation"] +
-        test_cov * HEALTH_WEIGHTS["test_coverage"] +
-        obs * HEALTH_WEIGHTS["observability"] +
-        comp_health * HEALTH_WEIGHTS["complexity"]
+        heal_cap * HEALTH_WEIGHTS["heal_capability"]
+        + invoc * HEALTH_WEIGHTS["invocation"]
+        + test_cov * HEALTH_WEIGHTS["test_coverage"]
+        + obs * HEALTH_WEIGHTS["observability"]
+        + comp_health * HEALTH_WEIGHTS["complexity"]
     )
 
     # Round to 4 decimal places to prevent floating point mismatches
@@ -118,7 +114,7 @@ LAYER_MARKERS: dict[str, str] = {
     "apps_lic": "Apps",
     "apps_shared": "Apps",
     "utils": "utils",
-    "tests": "tests"
+    "tests": "tests",
 }
 
 
@@ -160,12 +156,12 @@ def get_canonical_layer(file_path: str | Path) -> str:
 
     # Priority 2: Pattern-based detection (e.g., /L5/ or /L5_)
     # Split path and look for L[0-6] patterns
-    parts = path_str.split('/')
+    parts = path_str.split("/")
     for part in parts:
         # Check if part starts with L followed by a digit
-        if len(part) >= 2 and part[0] in ('L', 'l') and part[1].isdigit():
+        if len(part) >= 2 and part[0] in ("L", "l") and part[1].isdigit():
             digit = part[1]
-            if digit in '0123456':
+            if digit in "0123456":
                 return f"L{digit}"
 
     # No match found
@@ -176,12 +172,9 @@ def get_canonical_layer(file_path: str | Path) -> str:
 # VALIDATION FUNCTIONS
 # ============================================================================
 
+
 def validate_health_components(
-    heal_cap: float,
-    invoc: float,
-    test_cov: float,
-    obs: float,
-    comp_health: float
+    heal_cap: float, invoc: float, test_cov: float, obs: float, comp_health: float
 ) -> bool:
     """
     Validate that all health components are in valid range [0.0, 100.0].
@@ -217,23 +210,63 @@ def get_health_weights() -> dict[str, float]:
 # Category patterns for agent classification
 # Priority order matters - first match wins
 AGENT_CATEGORY_PATTERNS: dict[str, list] = {
-    "Validator": [r"Validator", r"Validation", r"Enforcer", r"Compliance", r"Check", r"Verify", r"Audit"],
+    "Validator": [
+        r"Validator",
+        r"Validation",
+        r"Enforcer",
+        r"Compliance",
+        r"Check",
+        r"Verify",
+        r"Audit",
+    ],
     "Healer": [r"Healer", r"Healing", r"Recovery", r"Repair", r"Fix", r"Reconcile", r"Restore"],
-    "Guardian": [r"Guardian", r"Guard", r"Safety", r"Security", r"Protect", r"Defense", r"Sentinel"],
-    "Orchestrator": [r"Orchestrator", r"Orchestration", r"Workflow", r"Engine", r"Coordinator", r"Router", r"Conductor", r"Exerciser", r"System"],
+    "Guardian": [
+        r"Guardian",
+        r"Guard",
+        r"Safety",
+        r"Security",
+        r"Protect",
+        r"Defense",
+        r"Sentinel",
+    ],
+    "Orchestrator": [
+        r"Orchestrator",
+        r"Orchestration",
+        r"Workflow",
+        r"Engine",
+        r"Coordinator",
+        r"Router",
+        r"Conductor",
+        r"Exerciser",
+        r"System",
+    ],
     "Analyzer": [r"Analyzer", r"Analysis", r"Detector", r"Detection", r"Hunter", r"Finder"],
-    "Governor": [r"Governor", r"Governance", r"Architect", r"Architecture", r"Hierarchy", r"Location", r"Territory"],
+    "Governor": [
+        r"Governor",
+        r"Governance",
+        r"Architect",
+        r"Architecture",
+        r"Hierarchy",
+        r"Location",
+        r"Territory",
+    ],
     "Monitor": [r"Monitor", r"Monitoring", r"Metric", r"Telemetry", r"Trace", r"Logger", r"Report"],
-    "Cognition": [r"Thinker", r"Reasoning", r"Brain", r"Cognitive", r"Thought", r"Intent", r"Planning"],
+    "Cognition": [
+        r"Thinker",
+        r"Reasoning",
+        r"Brain",
+        r"Cognitive",
+        r"Thought",
+        r"Intent",
+        r"Planning",
+    ],
     "Executor": [r"Executor", r"Execution", r"Tool", r"Action", r"Handler"],
     "State": [r"State", r"Memory", r"Cache", r"Store", r"Ledger", r"Context"],
 }
 
 
 def categorize_agent(
-    class_name: str,
-    base_classes: list | None = None,
-    docstring: str | None = None
+    class_name: str, base_classes: list | None = None, docstring: str | None = None
 ) -> str:
     """
     Sovereign SSOT for agent categorization.
@@ -302,7 +335,7 @@ __all__ = [
     "get_agent_categories",
     "HEALTH_WEIGHTS",
     "LAYER_MARKERS",
-    "AGENT_CATEGORY_PATTERNS"
+    "AGENT_CATEGORY_PATTERNS",
 ]
 
 __version__ = "1.1.0"

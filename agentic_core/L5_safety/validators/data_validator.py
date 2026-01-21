@@ -28,23 +28,24 @@ from collections import defaultdict
 from pathlib import Path
 
 # Load agent discovery
-discovery_path = Path('agent_discovery_full.json')
+discovery_path = Path("agent_discovery_full.json")
 if not discovery_path.exists():
     print("❌ agent_discovery_full.json not found")
     sys.exit(1)
 
 data = json.load(open(discovery_path))
 
-LAYERS = ['L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6']
+LAYERS = ["L0", "L1", "L2", "L3", "L4", "L5", "L6"]
 CANONICAL_BASE_AGENTS = {
-    'L0': 'L0MaintenanceBaseAgent',
-    'L1': 'L1CognitionBaseAgent',
-    'L2': 'L2Agent',
-    'L3': 'L3Agent',
-    'L4': 'L4Agent',
-    'L5': 'L5Agent',
-    'L6': 'L6ObservabilityBaseAgent'
+    "L0": "L0MaintenanceBaseAgent",
+    "L1": "L1CognitionBaseAgent",
+    "L2": "L2Agent",
+    "L3": "L3Agent",
+    "L4": "L4Agent",
+    "L5": "L5Agent",
+    "L6": "L6ObservabilityBaseAgent",
 }
+
 
 class DataValidator:
     """Comprehensive data validator."""
@@ -81,13 +82,13 @@ class DataValidator:
         base_agents_by_layer = defaultdict(list)
 
         for agent in self.data:
-            class_name = agent.get('class_name', '')
-            layer = agent.get('layer', '')
+            class_name = agent.get("class_name", "")
+            layer = agent.get("layer", "")
 
             is_base = (
-                'BaseAgent' in class_name or
-                class_name in CANONICAL_BASE_AGENTS.values() or
-                'base_class' in agent.get('path', '').lower()
+                "BaseAgent" in class_name
+                or class_name in CANONICAL_BASE_AGENTS.values()
+                or "base_class" in agent.get("path", "").lower()
             )
 
             if is_base and layer:
@@ -103,10 +104,14 @@ class DataValidator:
             if len(agents) == 0:
                 self.warnings.append(f"{layer}: No base agent (expected {canonical})")
             elif len(agents) == 1:
-                if agents[0]['class_name'] != canonical:
-                    self.warnings.append(f"{layer}: Found {agents[0]['class_name']}, expected {canonical}")
+                if agents[0]["class_name"] != canonical:
+                    self.warnings.append(
+                        f"{layer}: Found {agents[0]['class_name']}, expected {canonical}"
+                    )
             else:
-                self.errors.append(f"{layer}: Multiple base agents ({len(agents)}) - {[a['class_name'] for a in agents]}")
+                self.errors.append(
+                    f"{layer}: Multiple base agents ({len(agents)}) - {[a['class_name'] for a in agents]}"
+                )
                 issues_found = True
 
         if issues_found:
@@ -122,8 +127,8 @@ class DataValidator:
 
         mismatches = []
         for agent in self.data:
-            layer = agent.get('layer', '')
-            path = agent.get('path', '')
+            layer = agent.get("layer", "")
+            path = agent.get("path", "")
 
             if not layer or not path:
                 continue
@@ -132,7 +137,7 @@ class DataValidator:
             layer_prefix = layer[:2] if len(layer) >= 2 else layer
             if layer_prefix in LAYERS:
                 expected_dir = f"{layer_prefix.lower()}_"
-                if expected_dir not in path.lower() and 'apps' not in path.lower():
+                if expected_dir not in path.lower() and "apps" not in path.lower():
                     mismatches.append(f"{agent['class_name']}: layer={layer} but path={path}")
 
         if mismatches:
@@ -149,7 +154,7 @@ class DataValidator:
         print("📋 Check 3: Path Integrity")
         print("-" * 80)
 
-        paths = [agent.get('path', '') for agent in self.data]
+        paths = [agent.get("path", "") for agent in self.data]
 
         # Check for duplicates
         path_counts = defaultdict(int)
@@ -176,24 +181,24 @@ class DataValidator:
         metric_issues = []
 
         for agent in self.data:
-            name = agent.get('class_name', 'Unknown')
+            name = agent.get("class_name", "Unknown")
 
             # Check percentages are 0-100
-            for field in ['typed_pct', 'documented_pct', 'test_coverage']:
+            for field in ["typed_pct", "documented_pct", "test_coverage"]:
                 value = agent.get(field, 0)
                 if value < 0 or value > 100:
                     metric_issues.append(f"{name}: {field}={value}% (invalid range)")
 
             # Check complexity is reasonable (typically 1-50)
-            cc = agent.get('cyclomatic_complexity', 0)
+            cc = agent.get("cyclomatic_complexity", 0)
             if cc > 100:
                 metric_issues.append(f"{name}: cyclomatic_complexity={cc} (suspiciously high)")
 
             # Check LOC is reasonable
-            loc = agent.get('loc', 0)
+            loc = agent.get("loc", 0)
             if loc > 10000:
                 metric_issues.append(f"{name}: loc={loc} (suspiciously high)")
-            elif loc < 10 and agent.get('has_healing'):
+            elif loc < 10 and agent.get("has_healing"):
                 self.warnings.append(f"{name}: loc={loc} (suspiciously low for healing agent)")
 
         if metric_issues:
@@ -213,19 +218,21 @@ class DataValidator:
         inheritance_issues = []
 
         for agent in self.data:
-            name = agent.get('class_name', 'Unknown')
-            inheritance = agent.get('inheritance', [])
-            layer = agent.get('layer', '')
+            name = agent.get("class_name", "Unknown")
+            inheritance = agent.get("inheritance", [])
+            layer = agent.get("layer", "")
 
             if not inheritance:
                 continue
 
             # Check for common bad patterns
-            if 'object' in inheritance and len(inheritance) > 1:
+            if "object" in inheritance and len(inheritance) > 1:
                 inheritance_issues.append(f"{name}: Inherits from 'object' + others (redundant)")
 
             # Check layer-specific base classes
-            if layer.startswith('L5') and not any(base in str(inheritance) for base in ['L5', 'Safety', 'HealerMixin']):
+            if layer.startswith("L5") and not any(
+                base in str(inheritance) for base in ["L5", "Safety", "HealerMixin"]
+            ):
                 self.warnings.append(f"{name}: L5 agent without L5/Safety base class")
 
         if inheritance_issues:
@@ -243,10 +250,10 @@ class DataValidator:
         naming_issues = []
 
         for agent in self.data:
-            name = agent.get('class_name', '')
+            name = agent.get("class_name", "")
 
             # Should end with "Agent"
-            if not name.endswith('Agent'):
+            if not name.endswith("Agent"):
                 naming_issues.append(f"{name}: Does not end with 'Agent'")
 
             # Should be PascalCase
@@ -254,7 +261,14 @@ class DataValidator:
                 naming_issues.append(f"{name}: Does not start with uppercase")
 
             # Should not have underscores (use PascalCase)
-            if '_' in name and name not in ['L0MaintenanceBaseAgent', 'L1CognitionBaseAgent', 'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent']:
+            if "_" in name and name not in [
+                "L0MaintenanceBaseAgent",
+                "L1CognitionBaseAgent",
+                "L2Agent",
+                "L3Agent",
+                "L4Agent",
+                "L5Agent",
+            ]:
                 self.warnings.append(f"{name}: Contains underscore (prefer PascalCase)")
 
         if naming_issues:
@@ -271,7 +285,7 @@ class DataValidator:
         print("📋 Check 7: Data Completeness")
         print("-" * 80)
 
-        required_fields = ['class_name', 'path', 'layer']
+        required_fields = ["class_name", "path", "layer"]
         incomplete = []
 
         for agent in self.data:
@@ -316,6 +330,7 @@ class DataValidator:
             print(f"   {len(self.data)} agents validated successfully")
             print()
 
+
 def main():
     """Main entry point."""
     validator = DataValidator(data)
@@ -333,6 +348,7 @@ def main():
     print("=" * 80)
     print("Dashboard data is ready for generation.")
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

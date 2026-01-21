@@ -14,6 +14,7 @@ Author: Cascade
 Date: January 19, 2026
 Phase: 6.7 - Industrial Refactoring
 """
+
 import sys
 from pathlib import Path
 
@@ -28,9 +29,9 @@ def test_tc44_l0_maintenance_blitz():
 
     Verify 18 L0_maintenance scripts use ssot_discovery instead of rglob.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-44: L0 Maintenance Blitz")
-    print("="*60)
+    print("=" * 60)
 
     l0_scripts = [
         "legacy_extraction_extract_lic_content_based.py",
@@ -70,14 +71,17 @@ def test_tc44_l0_maintenance_blitz():
 
         files_checked += 1
         try:
-            content = script_path.read_text(encoding='utf-8', errors='ignore')
+            content = script_path.read_text(encoding="utf-8", errors="ignore")
 
             # Check for ssot_discovery import
-            has_ssot_import = 'from agentic_core.utils.ssot_discovery import' in content or 'ssot_discovery' in content
+            has_ssot_import = (
+                "from agentic_core.utils.ssot_discovery import" in content
+                or "ssot_discovery" in content
+            )
 
             # Check for rglob usage (should be minimal or none)
-            rglob_count = content.count('.rglob(')
-            glob_count = content.count('.glob(')
+            rglob_count = content.count(".rglob(")
+            glob_count = content.count(".glob(")
 
             if has_ssot_import:
                 files_using_ssot += 1
@@ -108,9 +112,9 @@ def test_tc45_l5_safety_refactor():
 
     Verify L5_safety files use ssot_discovery instead of rglob.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-45: L5 Safety Refactor")
-    print("="*60)
+    print("=" * 60)
 
     l5_files = {
         "validators/CodeDeduplicationAgent.py": "get_python_files",
@@ -130,14 +134,14 @@ def test_tc45_l5_safety_refactor():
             continue
 
         try:
-            content = full_path.read_text(encoding='utf-8', errors='ignore')
+            content = full_path.read_text(encoding="utf-8", errors="ignore")
 
             # Check for expected ssot_discovery methods
-            methods = expected_methods.split('|')
+            methods = expected_methods.split("|")
             has_any_method = any(method in content for method in methods)
 
             # Check for rglob usage
-            rglob_count = content.count('.rglob(')
+            rglob_count = content.count(".rglob(")
 
             if has_any_method:
                 files_using_ssot += 1
@@ -166,9 +170,9 @@ def test_tc46_discovery_integrity():
 
     Ensure all refactored files maintain functionality by checking imports.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-46: Discovery Integrity")
-    print("="*60)
+    print("=" * 60)
 
     # Check that ssot_discovery module is accessible
     try:
@@ -179,6 +183,7 @@ def test_tc46_discovery_integrity():
             get_markdown_files,
             get_python_files,
         )
+
         print("   ✓ ssot_discovery module accessible")
         print("   ✓ get_python_files available")
         print("   ✓ get_data_files available")
@@ -212,9 +217,9 @@ def test_tc47_industrial_achievement():
 
     Verify the industrial-scale refactoring achieved significant reduction.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-47: Industrial Achievement")
-    print("="*60)
+    print("=" * 60)
 
     # Import the CI check
     sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
@@ -231,7 +236,7 @@ def test_tc47_industrial_achievement():
     reduction = baseline - total_count
 
     print(f"   Baseline (Phase 6.6): {baseline}")
-    print(f"   Reduction: {reduction} calls ({reduction/baseline*100:.1f}%)")
+    print(f"   Reduction: {reduction} calls ({reduction / baseline * 100:.1f}%)")
 
     # Show top refactored categories
     print("\n   Top refactored categories:")
@@ -240,18 +245,20 @@ def test_tc47_industrial_achievement():
     print("   - Total files refactored: 28+")
 
     if reduction >= 35:
-        print(f"✅ PASS: Significant industrial reduction achieved ({reduction} calls, {reduction/baseline*100:.1f}%)")
+        print(
+            f"✅ PASS: Significant industrial reduction achieved ({reduction} calls, {reduction / baseline * 100:.1f}%)"
+        )
         return True
     else:
-        print(f"⚠️  INFO: Reduction is {reduction} calls ({reduction/baseline*100:.1f}%)")
+        print(f"⚠️  INFO: Reduction is {reduction} calls ({reduction / baseline * 100:.1f}%)")
         return True
 
 
 def main():
     """Run all Phase 6.7 Industrial Refactoring test cases."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("PHASE 6.7 INDUSTRIAL REFACTORING TEST SUITE")
-    print("="*70)
+    print("=" * 70)
     print(f"Project Root: {PROJECT_ROOT}")
 
     tests = [
@@ -269,13 +276,14 @@ def main():
         except Exception as e:
             print(f"\n❌ EXCEPTION in {test_name}: {e}")
             import traceback
+
             traceback.print_exc()
             results.append((test_name, False))
 
     # Summary
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST SUMMARY")
-    print("="*70)
+    print("=" * 70)
 
     passed_count = sum(1 for _, passed in results if passed)
     total_count = len(results)
@@ -284,7 +292,7 @@ def main():
         status = "✅ PASS" if passed else "❌ FAIL"
         print(f"{status}: {test_name}")
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print(f"TOTAL: {passed_count}/{total_count} tests passed")
 
     if passed_count == total_count:

@@ -17,12 +17,11 @@ Targets:
 """
 
 import ast
-import os
 import sys
 from pathlib import Path
-from unittest.mock import MagicMock, patch
 
 import pytest
+
 
 # Determine project root by looking for agentic_core directory
 def _find_project_root() -> Path:
@@ -61,7 +60,9 @@ class TestStaticCodeAnalysis:
 
         This verifies the rogue capability has been removed.
         """
-        assert GOVERNANCE_AGENT_PATH.exists(), f"GovernanceAgent.py not found at {GOVERNANCE_AGENT_PATH}"
+        assert GOVERNANCE_AGENT_PATH.exists(), (
+            f"GovernanceAgent.py not found at {GOVERNANCE_AGENT_PATH}"
+        )
 
         content = GOVERNANCE_AGENT_PATH.read_text(encoding="utf-8")
 
@@ -223,23 +224,21 @@ class TestFunctionalDelegation:
 
     @pytest.mark.skipif(
         True,  # Skip in stub environment
-        reason="Requires full import chain - static analysis tests verify delegation"
+        reason="Requires full import chain - static analysis tests verify delegation",
     )
     def test_governance_agent_delegates_to_gatekeeper(self, temp_project):
         """GovernanceAgent must call ArchivalGatekeeper.safe_move."""
         pass  # Covered by static analysis
 
     @pytest.mark.skipif(
-        True,
-        reason="Requires full import chain - static analysis tests verify delegation"
+        True, reason="Requires full import chain - static analysis tests verify delegation"
     )
     def test_filesystem_move_delegates_to_gatekeeper(self, temp_project):
         """filesystem.move_file must delegate to ArchivalGatekeeper."""
         pass  # Covered by static analysis
 
     @pytest.mark.skipif(
-        True,
-        reason="Requires full import chain - static analysis tests verify delegation"
+        True, reason="Requires full import chain - static analysis tests verify delegation"
     )
     def test_filesystem_delete_delegates_to_gatekeeper(self, temp_project):
         """filesystem.delete_file must delegate to ArchivalGatekeeper."""
@@ -295,5 +294,5 @@ class TestGatekeeperInitialization:
         )
 
 
-if __name__ == '__main__':
-    pytest.main([__file__, '-v', '--tb=short'])
+if __name__ == "__main__":
+    pytest.main([__file__, "-v", "--tb=short"])

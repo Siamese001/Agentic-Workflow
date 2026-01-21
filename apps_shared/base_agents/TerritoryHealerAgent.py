@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: memory, orchestrator, prompt, workflow
@@ -51,7 +50,9 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
         )
 
         self.key_folders = CANON_KEY_TO_FOLDER_MAP
-        self.key_positive_signals = CANON_SIGNALS_MK2  # Legacy bridge – migrate to CANON_SIGNALS_MK2
+        self.key_positive_signals = (
+            CANON_SIGNALS_MK2  # Legacy bridge – migrate to CANON_SIGNALS_MK2
+        )
         # Flatten all mapped paths for fast check
         self.all_mapped_paths = {p for ps in self.key_folders.values() for p in ps}
 
@@ -65,17 +66,17 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
         # [EXHAUSTIVE COVERAGE] Key-specific stray signals (what doesn't belong)
         self.key_stray_signals = {
             11: {"script", "tool", "cli", "operational", "backup"},  # L1_cognition: no ops
-            12: {"test", "fixture", "mock"},                         # L3_orchestration: no tests
-            13: {"heal", "fix", "prune"},                            # L4_state: no healing
-            15: {"strategy", "reasoning", "planner"},                # Domain agents: no core cognition
-            17: {"agent", "manager", "engine", "healer"},            # tests/: no production agents
-            19: {"script", "test", "heal"},                          # L5_safety: no ops/tests/healing
+            12: {"test", "fixture", "mock"},  # L3_orchestration: no tests
+            13: {"heal", "fix", "prune"},  # L4_state: no healing
+            15: {"strategy", "reasoning", "planner"},  # Domain agents: no core cognition
+            17: {"agent", "manager", "engine", "healer"},  # tests/: no production agents
+            19: {"script", "test", "heal"},  # L5_safety: no ops/tests/healing
         }
 
     def _run_self_tests(self) -> bool:
         """Phase 1: Self-testing for L3 compliance."""
-        assert hasattr(self, 'root'), "Missing root"
-        assert hasattr(self, 'ctx'), "Missing ctx"
+        assert hasattr(self, "root"), "Missing root"
+        assert hasattr(self, "ctx"), "Missing ctx"
         return True
 
     def check_depth_precision(self, file_path: Path) -> dict | None:
@@ -89,7 +90,9 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
             parts = rel_path.parts
             depth = len(parts)
 
-            agentic_core_exact_depth = SOVEREIGN_REGISTRY["agentic_core"]["depth"]  # Legacy bridge – migrate to SOVEREIGN_REGISTRY
+            agentic_core_exact_depth = SOVEREIGN_REGISTRY["agentic_core"][
+                "depth"
+            ]  # Legacy bridge – migrate to SOVEREIGN_REGISTRY
             if parts[0] == "agentic_core" and depth != agentic_core_exact_depth:
                 return self._suggest_precision_move(file_path, agentic_core_exact_depth)
 
@@ -114,7 +117,7 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
                 "action": "move",
                 "source": str(file_path),
                 "target": str(target_path),
-                "reason": f"Depth precision: agentic_core requires depth {target_depth}, found {len(parts)}"
+                "reason": f"Depth precision: agentic_core requires depth {target_depth}, found {len(parts)}",
             }
         elif parts[0] == "agentic_core" and len(parts) > 4:
             # Need to flatten - move to appropriate L4 location
@@ -123,12 +126,14 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
                 "action": "move",
                 "source": str(file_path),
                 "target": str(target_path),
-                "reason": f"Depth precision: agentic_core requires depth {target_depth}, found {len(parts)}"
+                "reason": f"Depth precision: agentic_core requires depth {target_depth}, found {len(parts)}",
             }
 
         return None
 
-    def is_stray_in_territory(self, rel_path: str, content_lower: str, stem_lower: str) -> dict | None:
+    def is_stray_in_territory(
+        self, rel_path: str, content_lower: str, stem_lower: str
+    ) -> dict | None:
         """
         Check if file is stray WITHIN its current key territory.
         Uses DOUBLE-LOCK: negative signals (what doesn't belong) + positive signals (what does belong).
@@ -148,7 +153,9 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
         has_negative = any(word in stem_lower or word in content_lower for word in stray_words)
 
         positive_words = self.key_positive_signals.get(current_territory, set())
-        positive_score = sum(1 for word in positive_words if word in stem_lower or word in content_lower)
+        positive_score = sum(
+            1 for word in positive_words if word in stem_lower or word in content_lower
+        )
 
         # Sovereign rule: Strong positive (>=3) stays. Negative or weak positive (<2) moves.
         if positive_score >= 3:
@@ -174,10 +181,12 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
             "action": "deprecate",
             "source": str(self.root / rel_path),
             "target": str(archive_dir / Path(rel_path).name),
-            "reason": f"Unknown territory — no positive signals (confidence {positive_score})"
+            "reason": f"Unknown territory — no positive signals (confidence {positive_score})",
         }
 
-    def _suggest_move(self, content_lower: str, rel_path: str, current_territory: int) -> dict | None:
+    def _suggest_move(
+        self, content_lower: str, rel_path: str, current_territory: int
+    ) -> dict | None:
         """
         Suggest better territory via semantic guidance.
         """
@@ -197,7 +206,7 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
                 "action": "move",
                 "source": str(self.root / rel_path),
                 "target": str(target),
-                "reason": f"Stray in Key {current_territory}: '{Path(rel_path).name}' belongs in Key {target_key} ({target_folder})"
+                "reason": f"Stray in Key {current_territory}: '{Path(rel_path).name}' belongs in Key {target_key} ({target_folder})",
             }
         return None
 
@@ -225,24 +234,28 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
 
             # Read file content for semantic analysis
             try:
-                content = py_file.read_text(encoding='utf-8', errors='ignore')
+                content = py_file.read_text(encoding="utf-8", errors="ignore")
                 content_lower = content.lower()
                 stem_lower = py_file.stem.lower()
             except:
                 continue
 
             # Check if file is in unmapped territory (root stray)
-            is_mapped = any(rel_str.startswith(p + "/") or rel_str == p for p in self.all_mapped_paths)
+            is_mapped = any(
+                rel_str.startswith(p + "/") or rel_str == p for p in self.all_mapped_paths
+            )
 
             if not is_mapped:
                 # Archive root strays
                 archive_path = self.root_archive / rel.name
-                moves.append({
-                    "action": "deprecate",
-                    "source": str(py_file),
-                    "target": str(archive_path),
-                    "reason": f"Root stray archived: '{rel.name}'"
-                })
+                moves.append(
+                    {
+                        "action": "deprecate",
+                        "source": str(py_file),
+                        "target": str(archive_path),
+                        "reason": f"Root stray archived: '{rel.name}'",
+                    }
+                )
                 continue
 
             # Stray WITHIN key territories
@@ -253,7 +266,14 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
         return moves
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L3 orchestration agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -278,7 +298,9 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
         Main execution entry point.
         Finds and executes all territory violations with cache purging.
         """
-        print("\nimport logging\n\nLogger = logging.getLogger(__name__)\n   [*] TerritoryHealerAgent: Scanning for intra-territory strays...")
+        print(
+            "\nimport logging\n\nLogger = logging.getLogger(__name__)\n   [*] TerritoryHealerAgent: Scanning for intra-territory strays..."
+        )
 
         stray_actions = self.find_all_stray()
 
@@ -302,6 +324,7 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
             from agentic_core.L2_execution.ToolRegistry.RedisSovereignAgent import (
                 RedisSovereignAgent,
             )
+
             redis_agent = RedisSovereignAgent(self.root)
             pinecone_agent = PineconeSovereignAgent(self.root)
         except Exception:
@@ -320,6 +343,7 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
 
             # Move the file
             import shutil
+
             shutil.move(source_path, target_path)
             print(f"   [MOVED] {source_path.name} → {target_path.parent}")
 

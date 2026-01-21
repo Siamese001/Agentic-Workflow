@@ -13,16 +13,18 @@ import pytest
 project_root = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(project_root))
 
+
 @pytest.mark.skip(reason="L1 module not yet implemented")
 def test_l1_imports() -> None:
     """Verify all L1 modules import successfully."""
     try:
-#         import archives.legacy_resume_gen.Agentic-Workflow-10_9.l1  # INVALID: Cannot import from path with hyphens
+        #         import archives.legacy_resume_gen.Agentic-Workflow-10_9.l1  # INVALID: Cannot import from path with hyphens
         assert l1 is not None
 
     except Exception:
         pass
         raise
+
 
 @pytest.mark.skip(reason="L1 strategy planning not yet implemented")
 def test_l1_strategy_planning_imports() -> None:
@@ -30,8 +32,13 @@ def test_l1_strategy_planning_imports() -> None:
     try:
         # from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.strategy_planning import StrategyPlan, DraftPlan, LatentThinkingPlan, plan_strategy, plan_draft, generate_latent_thinking_plan  # DEPRECATED: Archive import removed to protect archives from validation edits
         from typing import Any  # Placeholder import
+
         StrategyPlan, DraftPlan, LatentThinkingPlan = Any, Any, Any
-        plan_strategy, plan_draft, generate_latent_thinking_plan = lambda: None, lambda: None, lambda: None
+        plan_strategy, plan_draft, generate_latent_thinking_plan = (
+            lambda: None,
+            lambda: None,
+            lambda: None,
+        )
         assert StrategyPlan is not None
         assert DraftPlan is not None
         assert LatentThinkingPlan is not None
@@ -43,6 +50,7 @@ def test_l1_strategy_planning_imports() -> None:
         pass
         raise
 
+
 @pytest.mark.skip(reason="L1 RAG planning not yet implemented")
 def test_l1_rag_planning_imports() -> None:
     """Verify RAG planning module imports."""
@@ -51,6 +59,7 @@ def test_l1_rag_planning_imports() -> None:
         #     RAGReasoningPlan, HydePlan, plan_rag_reasoning, plan_hyde_query
         # )
         from typing import Any  # Placeholder import
+
         RAGReasoningPlan, HydePlan = Any, Any
         plan_rag_reasoning, plan_hyde_query = lambda: None, lambda: None
         assert RAGReasoningPlan is not None
@@ -62,17 +71,19 @@ def test_l1_rag_planning_imports() -> None:
         pass
         raise
 
+
 @pytest.mark.skip(reason="L1 QA planning not yet implemented")
 def test_l1_qa_planning_imports() -> None:
     """Verify QA planning module imports."""
     try:
-#         from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.qa_planning import (  # DEPRECATED: Archive import removed to protect archives from validation edits
-#             SemanticQAPlan,
-#             CouncilPlan,
-#             plan_semantic_qa,
-#             plan_council_review,
-#         )
+        #         from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.qa_planning import (  # DEPRECATED: Archive import removed to protect archives from validation edits
+        #             SemanticQAPlan,
+        #             CouncilPlan,
+        #             plan_semantic_qa,
+        #             plan_council_review,
+        #         )
         from typing import Any
+
         SemanticQAPlan, CouncilPlan = Any, Any
         plan_semantic_qa, plan_council_review = lambda: None, lambda: None
         assert SemanticQAPlan is not None
@@ -84,15 +95,17 @@ def test_l1_qa_planning_imports() -> None:
         pass
         raise
 
+
 @pytest.mark.skip(reason="L1 safety planning not yet implemented")
 def test_l1_safety_planning_imports() -> None:
     """Verify safety planning module imports."""
     try:
-#         from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.safety_planning import (  # DEPRECATED: Archive import removed to protect archives from validation edits
-#             SafetyPlan,
-#             plan_safety_review,
-#         )
+        #         from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.safety_planning import (  # DEPRECATED: Archive import removed to protect archives from validation edits
+        #             SafetyPlan,
+        #             plan_safety_review,
+        #         )
         from typing import Any
+
         SafetyPlan = Any
         plan_safety_review = lambda: None
         assert SafetyPlan is not None
@@ -102,12 +115,14 @@ def test_l1_safety_planning_imports() -> None:
         pass
         raise
 
+
 @pytest.mark.skip(reason="Cognitive agents module not yet implemented")
 def test_cognitive_agents_imports() -> None:
     """Verify cognitive agents import successfully."""
     try:
-#         from archives.legacy_root_folders.meta.cognitive_agents import StrategyLLMAgent, DraftingGuild, SemanticQAAgent, ConstitutionalSafetyAgent, HYDEQueryAgent, QACouncilAgent  # DEPRECATED: Archive import removed to protect archives from validation edits
+        #         from archives.legacy_root_folders.meta.cognitive_agents import StrategyLLMAgent, DraftingGuild, SemanticQAAgent, ConstitutionalSafetyAgent, HYDEQueryAgent, QACouncilAgent  # DEPRECATED: Archive import removed to protect archives from validation edits
         from typing import Any
+
         StrategyLLMAgent = Any
         DraftingGuild = Any
         SemanticQAAgent = Any
@@ -125,14 +140,15 @@ def test_cognitive_agents_imports() -> None:
         pass
         raise
 
+
 @pytest.mark.skip(reason="L2 module not yet implemented")
 def test_l2_imports() -> None:
     """Verify L2 module imports successfully."""
     try:
-#         import archives.legacy_resume_gen.Agentic-Workflow-10_9.l2  # INVALID: Cannot import from path with hyphens
+        #         import archives.legacy_resume_gen.Agentic-Workflow-10_9.l2  # INVALID: Cannot import from path with hyphens
         assert l2 is not None
-        assert hasattr(l2, 'run_l2')
-        assert hasattr(l2, 'execute_workflow_plans')
+        assert hasattr(l2, "run_l2")
+        assert hasattr(l2, "execute_workflow_plans")
         assert callable(l2.run_l2)
         assert callable(l2.execute_workflow_plans)
 
@@ -140,35 +156,45 @@ def test_l2_imports() -> None:
         pass
         raise
 
+
 @pytest.mark.skip(reason="L1/L2 modules not yet implemented")
 def test_no_circular_dependencies() -> None:
     """Verify no circular dependencies exist."""
     try:
         # Import in order: models -> l1 -> cognitive_agents -> l2
-#         import archives.legacy_root_folders.core.models.models  # DEPRECATED: Archive import removed to protect archives from validation edits
-#         import archives.legacy_resume_gen.Agentic-Workflow-10_9.l1  # INVALID: Cannot import from path with hyphens
-#         import archives.legacy_root_folders.meta.cognitive_agents  # DEPRECATED: Archive import removed to protect archives from validation edits
-#         import archives.legacy_resume_gen.Agentic-Workflow-10_9.l2  # INVALID: Cannot import from path with hyphens
+        #         import archives.legacy_root_folders.core.models.models  # DEPRECATED: Archive import removed to protect archives from validation edits
+        #         import archives.legacy_resume_gen.Agentic-Workflow-10_9.l1  # INVALID: Cannot import from path with hyphens
+        #         import archives.legacy_root_folders.meta.cognitive_agents  # DEPRECATED: Archive import removed to protect archives from validation edits
+        #         import archives.legacy_resume_gen.Agentic-Workflow-10_9.l2  # INVALID: Cannot import from path with hyphens
         pass
 
     except Exception:
         pass
         raise
 
+
 @pytest.mark.skip(reason="L1 planning modules not yet implemented")
 def test_l1_planning_is_pure() -> None:
     """Verify L1 planning functions are pure (no execution)."""
     try:
-#         import archives.legacy_resume_gen.Agentic-Workflow-10_9.l1  # INVALID: Cannot import from path with hyphens
-#         from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.strategy_planning import StrategyPlan, DraftPlan  # DEPRECATED: Archive import removed to protect archives from validation edits
-#         from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.rag_planning import RAGReasoningPlan, HydePlan  # DEPRECATED: Archive import removed to protect archives from validation edits
-#         from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.qa_planning import SemanticQAPlan, CouncilPlan  # DEPRECATED: Archive import removed to protect archives from validation edits
-#         from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.safety_planning import SafetyPlan  # DEPRECATED: Archive import removed to protect archives from validation edits
+        #         import archives.legacy_resume_gen.Agentic-Workflow-10_9.l1  # INVALID: Cannot import from path with hyphens
+        #         from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.strategy_planning import StrategyPlan, DraftPlan  # DEPRECATED: Archive import removed to protect archives from validation edits
+        #         from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.rag_planning import RAGReasoningPlan, HydePlan  # DEPRECATED: Archive import removed to protect archives from validation edits
+        #         from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.qa_planning import SemanticQAPlan, CouncilPlan  # DEPRECATED: Archive import removed to protect archives from validation edits
+        #         from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.safety_planning import SafetyPlan  # DEPRECATED: Archive import removed to protect archives from validation edits
 
         # All L1 plan dataclasses should be frozen
         import dataclasses
 
-        for plan_class in [StrategyPlan, DraftPlan, RAGReasoningPlan, HydePlan, SemanticQAPlan, CouncilPlan, SafetyPlan]:
+        for plan_class in [
+            StrategyPlan,
+            DraftPlan,
+            RAGReasoningPlan,
+            HydePlan,
+            SemanticQAPlan,
+            CouncilPlan,
+            SafetyPlan,
+        ]:
             if dataclasses.is_dataclass(plan_class):
                 # Check if frozen
                 if not plan_class.__dataclass_fields__:
@@ -179,6 +205,7 @@ def test_l1_planning_is_pure() -> None:
     except Exception:
         pass
         raise
+
 
 def run_all_tests() -> None:
     """Run all Phase A verification tests."""
@@ -197,7 +224,6 @@ def run_all_tests() -> None:
 
     results = []
     for name, test_func in tests:
-
         result = test_func()
         results.append((name, result))
 
@@ -209,11 +235,10 @@ def run_all_tests() -> None:
         symbol = "✓" if result else "✗"
 
     if passed == total:
-
         return True
     else:
-
         return False
+
 
 if __name__ == "__main__":
     success = run_all_tests()

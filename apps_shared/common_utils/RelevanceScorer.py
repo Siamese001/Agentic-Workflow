@@ -14,6 +14,7 @@ Logger = logging.getLogger(__name__)
 
 class RelevanceMethod(Enum):
     """Methods for calculating relevance."""
+
     KEYWORD_OVERLAP = "keyword_overlap"
     SEMANTIC_SIMILARITY = "semantic_similarity"
     RECENCY = "recency"
@@ -23,6 +24,7 @@ class RelevanceMethod(Enum):
 @dataclass
 class RelevanceScore:
     """Relevance score for a context chunk."""
+
     chunk_id: str
     score: float
     method: RelevanceMethod
@@ -85,8 +87,8 @@ class RelevanceScorer:
                         "keyword": self.keyword_weight,
                         "semantic": self.semantic_weight,
                         "recency": self.recency_weight,
-                    }
-                }
+                    },
+                },
             )
 
     def score_chunk(
@@ -121,9 +123,9 @@ class RelevanceScorer:
         # Calculate final score
         if self.method == RelevanceMethod.HYBRID:
             score = (
-                components.get("keyword", 0.0) * self.keyword_weight +
-                components.get("semantic", 0.0) * self.semantic_weight +
-                components.get("recency", 0.0) * self.recency_weight
+                components.get("keyword", 0.0) * self.keyword_weight
+                + components.get("semantic", 0.0) * self.semantic_weight
+                + components.get("recency", 0.0) * self.recency_weight
             )
         else:
             score = list(components.values())[0] if components else 0.0
@@ -169,7 +171,7 @@ class RelevanceScorer:
                 extra={
                     "chunk_count": len(chunks),
                     "top_score": scores[0].score if scores else 0.0,
-                }
+                },
             )
 
         return scores
@@ -209,10 +211,11 @@ class RelevanceScorer:
         Returns:
             Similarity score (0.0-1.0)
         """
+
         # Character trigram similarity
         def get_trigrams(text: str) -> set:
             text = text.lower()
-            return {text[i:i+3] for i in range(len(text) - 2)}
+            return {text[i : i + 3] for i in range(len(text) - 2)}
 
         content_trigrams = get_trigrams(content)
         query_trigrams = get_trigrams(query)

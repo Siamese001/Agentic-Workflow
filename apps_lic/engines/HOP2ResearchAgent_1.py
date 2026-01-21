@@ -40,7 +40,7 @@ class HOP2ResearchAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         config: dict[str, Any],
         memory_store: VectorMemoryStore,
         search_client: Any = None,
-        llm_client: Any = None
+        llm_client: Any = None,
     ) -> None:
         """
         Initialize HOP-2 research agent.
@@ -63,9 +63,9 @@ class HOP2ResearchAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
     async def execute(self, state_mgr: StateManager) -> str:
         """Execute HOP-2: Research synthesis with vector-first strategy"""
-        print(f"\n{'='*80}")
+        print(f"\n{'=' * 80}")
         print("HOP-2: RESEARCH AGENT (Vector-Store-First)")
-        print(f"{'='*80}\n")
+        print(f"{'=' * 80}\n")
 
         profile_state = state_mgr.read_state("HOP-1")
         company = profile_state["recipient_company"]
@@ -97,7 +97,7 @@ class HOP2ResearchAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             "signal_score": final_context["signal_score"],
             "cache_hit": is_sufficient,
             "fallback_used": not is_sufficient,
-            "total_sources": len(final_context["all_results"])
+            "total_sources": len(final_context["all_results"]),
         }
 
         output_path = state_mgr.write_state("HOP-2", output_state)
@@ -109,23 +109,24 @@ class HOP2ResearchAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
         return output_path
 
-    async def _query_vector_store(self, company: str, recipient: str, Archetype: str) -> dict[str, Any]:
+    async def _query_vector_store(
+        self, company: str, recipient: str, Archetype: str
+    ) -> dict[str, Any]:
         """Query vector store for pre-computed intelligence"""
         company_results = self.memory_store.query_by_company(
             company_name=company,
             query_text="strategic priorities initiatives roadmap platform",
-            n_results=self.vector_params["n_results"]
+            n_results=self.vector_params["n_results"],
         )
 
         exec_results = self.memory_store.query_by_executive(
             executive_name=recipient,
             query_text="recent posts presentations LinkedIn about background",
-            n_results=10
+            n_results=10,
         )
 
         strategic_briefs = self.memory_store.get_strategic_briefs(
-            company_name=company,
-            max_age_days=90
+            company_name=company, max_age_days=90
         )
 
         recipient_insights = [r["text"][:200] for r in exec_results[:5]]
@@ -134,7 +135,9 @@ class HOP2ResearchAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
         all_results = company_results + exec_results + strategic_briefs
         signal_score = self._calculate_signal_score(all_results)
-        cache_confidence = self._calculate_cache_confidence(company_results, exec_results, strategic_briefs)
+        cache_confidence = self._calculate_cache_confidence(
+            company_results, exec_results, strategic_briefs
+        )
 
         return {
             "recipient_insights": recipient_insights,
@@ -142,7 +145,7 @@ class HOP2ResearchAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             "strategic_brief": strategic_brief_text,
             "all_results": all_results,
             "signal_score": signal_score,
-            "cache_confidence": cache_confidence
+            "cache_confidence": cache_confidence,
         }
 
     def _critique_cache(self, cached_context: dict[str, Any]) -> tuple[bool, list[str]]:
@@ -158,7 +161,8 @@ class HOP2ResearchAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             gaps.append("strategic_brief")
 
         recent_sources = [
-            r for r in cached_context["all_results"]
+            r
+            for r in cached_context["all_results"]
             if r.get("metadata", {}).get("age_days", 999) < min_recency
         ]
         has_recent = len(recent_sources) >= 3
@@ -176,7 +180,9 @@ class HOP2ResearchAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         is_sufficient = len(gaps) == 0
         return is_sufficient, gaps
 
-    async def _run_fallback_rag(self, company: str, recipient: str, gaps: list[str]) -> dict[str, Any]:
+    async def _run_fallback_rag(
+        self, company: str, recipient: str, gaps: list[str]
+    ) -> dict[str, Any]:
         """Run fallback RAG only for identified gaps"""
         fallback_results = []
 
@@ -188,11 +194,15 @@ class HOP2ResearchAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             elif gap == "recent_news":
                 query = f"{company} recent news announcements"
                 results = self.search_client.search(query, num_results=3)
-                fallback_results.extend(self._format_search_results(results, "NEWS_ARTICLE_COMPANY"))
+                fallback_results.extend(
+                    self._format_search_results(results, "NEWS_ARTICLE_COMPANY")
+                )
             elif gap == "recipient_profile":
                 query = f"{recipient} {company} LinkedIn profile"
                 results = self.search_client.search(query, num_results=2)
-                fallback_results.extend(self._format_search_results(results, "RECIPIENT_LINKEDIN_ABOUT"))
+                fallback_results.extend(
+                    self._format_search_results(results, "RECIPIENT_LINKEDIN_ABOUT")
+                )
 
             await asyncio.sleep(1)
 
@@ -212,7 +222,9 @@ class HOP2ResearchAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         scores = [r.get("metadata", {}).get("source_weight", 0.5) for r in results]
         return sum(scores) / len(scores) if scores else 0.0
 
-    def _calculate_cache_confidence(self, company_results: list[dict], exec_results: list[dict], strategic_briefs: list[dict]) -> float:
+    def _calculate_cache_confidence(
+        self, company_results: list[dict], exec_results: list[dict], strategic_briefs: list[dict]
+    ) -> float:
         """Calculate confidence in cached data"""
         has_strategic = 1.0 if strategic_briefs else 0.0
         has_company = min(1.0, len(company_results) / 10)
@@ -223,16 +235,18 @@ class HOP2ResearchAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         """Format search results for consistency"""
         formatted = []
         for result in results:
-            formatted.append({
-                "text": result.get("snippet", ""),
-                "metadata": {
-                    "SourceType": SourceType,
-                    "source_url": result.get("link", ""),
-                    "title": result.get("title", ""),
-                    "age_days": 0,
-                    "source_weight": 1.0
+            formatted.append(
+                {
+                    "text": result.get("snippet", ""),
+                    "metadata": {
+                        "SourceType": SourceType,
+                        "source_url": result.get("link", ""),
+                        "title": result.get("title", ""),
+                        "age_days": 0,
+                        "source_weight": 1.0,
+                    },
                 }
-            })
+            )
         return formatted
 
     def heal_repository(self) -> None:
@@ -255,12 +269,12 @@ class HOP2ResearchAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             if not self.memory_store:
                 Logger.warning("Vector store missing — cannot reinitialize")
                 return
-            if not hasattr(self.memory_store, 'is_healthy'):
+            if not hasattr(self.memory_store, "is_healthy"):
                 Logger.warning("Vector store missing health check — skipping")
                 return
             if not self.memory_store.is_healthy():
                 Logger.warning("Vector store unhealthy — attempting reconnect")
-                if hasattr(self.memory_store, 'reconnect'):
+                if hasattr(self.memory_store, "reconnect"):
                     self.memory_store.reconnect()
         except Exception as e:
             Logger.error(f"Vector store healing failed: {e}")
@@ -271,7 +285,7 @@ class HOP2ResearchAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             if not self.search_client:
                 Logger.warning("Search client missing — fallback RAG disabled")
                 return
-            if not hasattr(self.search_client, 'search'):
+            if not hasattr(self.search_client, "search"):
                 Logger.error("Search client missing search method — disabling fallback")
                 self.search_client = None
         except Exception as e:
@@ -285,9 +299,13 @@ class HOP2ResearchAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
                 self.critique_params = {
                     "min_confidence_score": 0.6,
                     "min_recency_days": 30,
-                    "min_recipient_specific_count": 2
+                    "min_recipient_specific_count": 2,
                 }
-            required_keys = ["min_confidence_score", "min_recency_days", "min_recipient_specific_count"]
+            required_keys = [
+                "min_confidence_score",
+                "min_recency_days",
+                "min_recipient_specific_count",
+            ]
             for key in required_keys:
                 if key not in self.critique_params:
                     Logger.warning(f"Missing critique param {key} — setting default")
@@ -307,9 +325,7 @@ class HOP2ResearchAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
                 Logger.error("Diagnostics skipped — vector store unavailable")
                 return
             test_results = self.memory_store.query_by_company(
-                company_name="test_company",
-                query_text="test query",
-                n_results=1
+                company_name="test_company", query_text="test query", n_results=1
             )
             if not isinstance(test_results, list):
                 Logger.error("Diagnostics failed — invalid vector store response")

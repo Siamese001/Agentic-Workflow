@@ -23,16 +23,18 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-if sys.platform == 'win32':
-    sys.stdout = open(sys.stdout.fileno(), mode='w', encoding='utf-8', buffering=1)
+if sys.platform == "win32":
+    sys.stdout = open(sys.stdout.fileno(), mode="w", encoding="utf-8", buffering=1)
 Logger: Any = logging.getLogger(__name__)
 try:
     import websockets
     from websockets.server import WebSocketServerProtocol
+
     WEBSOCKETS_AVAILABLE: Any = True
 except ImportError:
     WEBSOCKETS_AVAILABLE: Any = False
-    LOGGER.warning('websockets not available - live browser updates disabled')
+    LOGGER.warning("websockets not available - live browser updates disabled")
+
 
 class L5Streamer:
     """
@@ -42,7 +44,7 @@ class L5Streamer:
     file (JSONL) and WebSocket clients for real-time monitoring.
     """
 
-    def __init__(self, stream_dir: str='observability/audit'):
+    def __init__(self, stream_dir: str = "observability/audit"):
         """
         Initialize the L5 streamer.
 
@@ -50,16 +52,16 @@ class L5Streamer:
             stream_dir: Directory for live_stream.jsonl output
         """
         self.stream_dir = Path(stream_dir)
-        self.log_path = self.stream_dir / 'live_stream.jsonl'
+        self.log_path = self.stream_dir / "live_stream.jsonl"
         self.stream_queue: asyncio.Queue = asyncio.Queue()
         self.stream_task: asyncio.Task | None = None
         self._streamer_initialized: bool = False
-        self._current_agent: str = 'System'
+        self._current_agent: str = "System"
         self._websocket_server: Any | None = None
         self._websocket_clients: set[WebSocketServerProtocol] = set()
         self._websocket_task: threading.Thread | None = None
         self.signals: set[str] = set()
-        LOGGER.info(f'L5Streamer initialized with output: {self.log_path}')
+        LOGGER.info(f"L5Streamer initialized with output: {self.log_path}")
 
     async def start_streamer(self) -> Any:
         """Initialize the non-blocking stream worker and WebSocket server."""
@@ -72,8 +74,8 @@ class L5Streamer:
         if WEBSOCKETS_AVAILABLE and (not self._websocket_server):
             self._websocket_task = threading.Thread(target=self._run_websocket_server, daemon=True)
             self._websocket_task.start()
-        await self.broadcast('L5 Streamer initialized and operational', level='SYSTEM')
-        LOGGER.info('L5 Streamer started')
+        await self.broadcast("L5 Streamer initialized and operational", level="SYSTEM")
+        LOGGER.info("L5 Streamer started")
 
     async def _stream_worker(self):
         """Background worker to drain queue to JSONL without blocking execution."""
@@ -81,14 +83,16 @@ class L5Streamer:
             try:
                 payload = await self.stream_queue.get()
                 try:
-                    with open(self.log_path, 'a', encoding='utf-8') as f:
-                        f.write(json.dumps(payload) + '\n')
+                    with open(self.log_path, "a", encoding="utf-8") as f:
+                        f.write(json.dumps(payload) + "\n")
                     if self._websocket_clients:
                         message = json.dumps(payload)
                         disconnected = set()
                         for client in self._websocket_clients:
                             try:
-                                asyncio.run_coroutine_threadsafe(client.send(message), asyncio.get_event_loop()).result(timeout=1.0)
+                                asyncio.run_coroutine_threadsafe(
+                                    client.send(message), asyncio.get_event_loop()
+                                ).result(timeout=1.0)
                             except Exception:
                                 disconnected.add(client)
                         self._websocket_clients -= disconnected
@@ -97,7 +101,7 @@ class L5Streamer:
             except asyncio.CancelledError:
                 break
             except Exception as e:
-                LOGGER.error(f'Streamer error writing to stream: {e}')
+                LOGGER.error(f"Streamer error writing to stream: {e}")
 
     def _run_websocket_server(self):
         """Run WebSocket server in a separate thread with its own event loop."""
@@ -105,29 +109,38 @@ class L5Streamer:
         async def handle_client(websocket: WebSocketServerProtocol, path: str):
             """Handle new WebSocket client connections."""
             self._websocket_clients.add(websocket)
-            LOGGER.info(f'WebSocket client connected: {websocket.remote_address}')
+            LOGGER.info(f"WebSocket client connected: {websocket.remote_address}")
             try:
-                await websocket.send(json.dumps({'type': 'connected', 'message': 'Connected to L5 Stream', 'agent': self._current_agent}))
+                await websocket.send(
+                    json.dumps(
+                        {
+                            "type": "connected",
+                            "message": "Connected to L5 Stream",
+                            "agent": self._current_agent,
+                        }
+                    )
+                )
                 await websocket.wait_closed()
             except Exception as e:
-                LOGGER.error(f'WebSocket client error: {e}')
+                LOGGER.error(f"WebSocket client error: {e}")
             finally:
                 self._websocket_clients.discard(websocket)
-                LOGGER.info('WebSocket client disconnected')
+                LOGGER.info("WebSocket client disconnected")
 
         async def server_main():
             """Main WebSocket server coroutine."""
             try:
-                async with websockets.serve(handle_client, '127.0.0.1', 8765):
-                    LOGGER.info('🌐 WebSocket server started at ws://127.0.0.1:8765')
+                async with websockets.serve(handle_client, "127.0.0.1", 8765):
+                    LOGGER.info("🌐 WebSocket server started at ws://127.0.0.1:8765")
                     await asyncio.Future()
             except Exception as e:
-                LOGGER.error(f'WebSocket server error: {e}')
+                LOGGER.error(f"WebSocket server error: {e}")
+
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         loop.run_until_complete(server_main())
 
-    async def broadcast(self, message: str, agent: str=None, level: str='INFO') -> Any:
+    async def broadcast(self, message: str, agent: str = None, level: str = "INFO") -> Any:
         """
         Queue a message for live stream in non-blocking manner.
 
@@ -136,10 +149,16 @@ class L5Streamer:
             agent: Agent name (defaults to current agent)
             level: Log level (INFO, THOUGHT, AGENT_START, AGENT_END, ERROR)
         """
-        payload: Any = {'timestamp': datetime.now().isoformat(), 'agent': agent or self._current_agent, 'level': level, 'content': message, 'signals': list(self.signals)}
+        payload: Any = {
+            "timestamp": datetime.now().isoformat(),
+            "agent": agent or self._current_agent,
+            "level": level,
+            "content": message,
+            "signals": list(self.signals),
+        }
         await self.stream_queue.put(payload)
 
-    async def broadcast_reasoning(self, response_text: str, agent: str=None) -> Any:
+    async def broadcast_reasoning(self, response_text: str, agent: str = None) -> Any:
         """
         Extract and broadcast reasoning blocks from LLM responses.
 
@@ -150,27 +169,27 @@ class L5Streamer:
         Returns:
             Extracted reasoning text or None
         """
-        reasoning_match: Any = re.search('<reasoning>(.*?)</reasoning>', response_text, re.DOTALL)
+        reasoning_match: Any = re.search("<reasoning>(.*?)</reasoning>", response_text, re.DOTALL)
         if reasoning_match:
             reasoning: Any = reasoning_match.group(1).strip()
-            await self.broadcast(f'REASONING: {reasoning}', agent=agent, level='THOUGHT')
+            await self.broadcast(f"REASONING: {reasoning}", agent=agent, level="THOUGHT")
             return reasoning
         return None
 
-    async def broadcast_agent_start(self, agent_name: str, message: str=None) -> Any:
+    async def broadcast_agent_start(self, agent_name: str, message: str = None) -> Any:
         """Broadcast agent activation event."""
         self.set_current_agent(agent_name)
-        msg: Any = message or f'ACTIVATED: {agent_name} starting execution'
-        await self.broadcast(msg, agent=agent_name, level='AGENT_START')
+        msg: Any = message or f"ACTIVATED: {agent_name} starting execution"
+        await self.broadcast(msg, agent=agent_name, level="AGENT_START")
 
-    async def broadcast_agent_complete(self, agent_name: str, message: str=None) -> Any:
+    async def broadcast_agent_complete(self, agent_name: str, message: str = None) -> Any:
         """Broadcast agent completion event."""
-        msg: Any = message or f'COMPLETED: {agent_name} finished execution'
-        await self.broadcast(msg, agent=agent_name, level='AGENT_END')
+        msg: Any = message or f"COMPLETED: {agent_name} finished execution"
+        await self.broadcast(msg, agent=agent_name, level="AGENT_END")
 
     async def broadcast_agent_error(self, agent_name: str, error: str) -> Any:
         """Broadcast agent error event."""
-        await self.broadcast(f'ERROR: {error}', agent=agent_name, level='ERROR')
+        await self.broadcast(f"ERROR: {error}", agent=agent_name, level="ERROR")
 
     def set_current_agent(self, agent_name: str) -> Any:
         """Set the current agent for broadcast context."""
@@ -198,35 +217,44 @@ class L5Streamer:
             self.stream_task = None
         for client in list(self._websocket_clients):
             try:
-                asyncio.run_coroutine_threadsafe(client.close(), asyncio.get_event_loop()).result(timeout=1.0)
+                asyncio.run_coroutine_threadsafe(client.close(), asyncio.get_event_loop()).result(
+                    timeout=1.0
+                )
             except Exception:
                 pass
         self._websocket_clients.clear()
         self._streamer_initialized = False
-        LOGGER.info('L5 Streamer stopped')
+        LOGGER.info("L5 Streamer stopped")
+
+
 _l5_streamer: L5Streamer | None = None
 
-def get_l5_streamer(stream_dir: str='observability/audit') -> L5Streamer:
+
+def get_l5_streamer(stream_dir: str = "observability/audit") -> L5Streamer:
     """Get or create the global L5 streamer instance."""
     global _l5_streamer
     if _l5_streamer is None:
         _l5_streamer = L5Streamer(stream_dir)
     return _l5_streamer
 
+
 async def start_l5_stream() -> Any:
     """Start the global L5 streamer."""
     streamer: Any = get_l5_streamer()
     await streamer.start_streamer()
 
-async def broadcast(message: str, agent: str=None, level: str='INFO') -> Any:
+
+async def broadcast(message: str, agent: str = None, level: str = "INFO") -> Any:
     """Broadcast a message via the global L5 streamer."""
     streamer: Any = get_l5_streamer()
     await streamer.broadcast(message, agent, level)
 
-async def broadcast_reasoning(response_text: str, agent: str=None) -> Any:
+
+async def broadcast_reasoning(response_text: str, agent: str = None) -> Any:
     """Broadcast reasoning from LLM response via the global L5 streamer."""
     streamer: Any = get_l5_streamer()
     return await streamer.broadcast_reasoning(response_text, agent)
+
 
 async def stop_l5_stream() -> Any:
     """Stop the global L5 streamer."""

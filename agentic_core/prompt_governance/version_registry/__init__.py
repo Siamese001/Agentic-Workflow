@@ -4,6 +4,6 @@ from __future__ import annotations
 # Territory: agentic_core/prompt_governance/version_registry
 from .PromptRegistry import PromptRegistry, get_prompt_registry
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""

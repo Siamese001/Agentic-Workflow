@@ -2,6 +2,7 @@
 """
 Simple Playwright test to verify 100% MCP Hardening is displayed in dashboard.
 """
+
 import subprocess
 import sys
 import time
@@ -10,6 +11,7 @@ from pathlib import Path
 from agentic_core.utils.security import safe_popen
 
 project_root = Path(__file__).parent.parent
+
 
 def test_mcp_hardening():
     """Test that 100% MCP Hardening is displayed in dashboard."""
@@ -25,7 +27,7 @@ def test_mcp_hardening():
         [sys.executable, "-m", "http.server", "8765"],
         cwd=str(dashboard_dir),
         stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE
+        stderr=subprocess.PIPE,
     )
     time.sleep(2)
 
@@ -62,11 +64,11 @@ def test_mcp_hardening():
 
             browser.close()
 
-            if result['success']:
+            if result["success"]:
                 print(f"✅ MCP Hardening: 100% ({result['totalAgents']} agents)")
                 return True
             else:
-                if 'error' in result:
+                if "error" in result:
                     print(f"❌ {result['error']}")
                 else:
                     print(f"❌ MCP Hardening: {result.get('mcpPct', 'N/A')}% (expected 100%)")
@@ -77,6 +79,7 @@ def test_mcp_hardening():
         server.wait()
 
     return False
+
 
 if __name__ == "__main__":
     success = test_mcp_hardening()

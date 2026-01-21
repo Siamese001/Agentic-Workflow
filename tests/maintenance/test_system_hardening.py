@@ -18,7 +18,10 @@ import pytest
 # --- Configuration ---
 RESTORED_AGENTS_MAP = [
     ("MetaLearningAgent", "agentic_core.L1_cognition.thought_engine.MetaLearningAgent"),
-    ("StrategicRecommendationAgent", "agentic_core.L1_cognition.thought_engine.StrategicRecommendationAgent"),
+    (
+        "StrategicRecommendationAgent",
+        "agentic_core.L1_cognition.thought_engine.StrategicRecommendationAgent",
+    ),
     ("BudgetAgent", "agentic_core.L1_cognition.thought_engine.BudgetAgent"),
     ("CodeDeduplicationAgent", "agentic_core.L5_safety.validators.CodeDeduplicationAgent"),
     ("PatternEnforcerAgent", "agentic_core.L5_safety.validators.PatternEnforcerAgent"),
@@ -68,10 +71,7 @@ except Exception as e:
     sys.exit(3)
 """
         result = subprocess.run(
-            [sys.executable, "-c", import_script],
-            capture_output=True,
-            text=True,
-            timeout=30
+            [sys.executable, "-c", import_script], capture_output=True, text=True, timeout=30
         )
 
         assert result.returncode == 0, (
@@ -149,10 +149,10 @@ except Exception as e:
         from agentic_core.L5_safety.validators import structure_blueprint as canonical_blueprint
 
         # Verify the canonical module has the expected exports
-        assert hasattr(canonical_blueprint, 'AGENTIC_CORE_DIR'), (
+        assert hasattr(canonical_blueprint, "AGENTIC_CORE_DIR"), (
             "structure_blueprint missing AGENTIC_CORE_DIR"
         )
-        assert hasattr(canonical_blueprint, 'get_validated_project_root'), (
+        assert hasattr(canonical_blueprint, "get_validated_project_root"), (
             "structure_blueprint missing get_validated_project_root"
         )
 
@@ -161,22 +161,33 @@ except Exception as e:
             from agentic_core.L5_safety.validators.CodeDeduplicationAgent import (
                 AGENTIC_CORE_DIR as dedup_agentic_core_dir,
             )
+
             # Verify it's the same object (SSOT)
             assert dedup_agentic_core_dir == canonical_blueprint.AGENTIC_CORE_DIR, (
                 "CodeDeduplicationAgent AGENTIC_CORE_DIR doesn't match canonical blueprint"
             )
         except ImportError:
             # If import fails, check the source file directly
-            dedup_path = Path(__file__).resolve().parents[2] / "agentic_core" / "L5_safety" / "validators" / "CodeDeduplicationAgent.py"
+            dedup_path = (
+                Path(__file__).resolve().parents[2]
+                / "agentic_core"
+                / "L5_safety"
+                / "validators"
+                / "CodeDeduplicationAgent.py"
+            )
 
             if dedup_path.exists():
-                source = dedup_path.read_text(encoding='utf-8')
+                source = dedup_path.read_text(encoding="utf-8")
                 # Verify it imports from the correct location
-                assert "from agentic_core.L5_safety.validators.structure_blueprint import" in source, (
+                assert (
+                    "from agentic_core.L5_safety.validators.structure_blueprint import" in source
+                ), (
                     "CodeDeduplicationAgent should import from agentic_core.L5_safety.validators.structure_blueprint"
                 )
                 # Verify it does NOT import from deprecated location
-                assert "from agentic_core.config.blueprint_sovereign.structure_blueprint" not in source, (
+                assert (
+                    "from agentic_core.config.blueprint_sovereign.structure_blueprint" not in source
+                ), (
                     "CodeDeduplicationAgent should NOT import from deprecated config/blueprint_sovereign path"
                 )
             else:
@@ -189,11 +200,14 @@ except Exception as e:
         """
         TC-004: Verify that importing MCPHardenedMixin directly raises a DeprecationWarning.
         """
-        with pytest.warns(DeprecationWarning, match="Direct import of MCPHardenedMixin is deprecated"):
+        with pytest.warns(
+            DeprecationWarning, match="Direct import of MCPHardenedMixin is deprecated"
+        ):
             # Force reimport to trigger the warning
             import importlib
 
             import agentic_core.L2_execution.mcp.mcp_hardened_mixin
+
             importlib.reload(agentic_core.L2_execution.mcp.mcp_hardened_mixin)
 
     # =========================================================================

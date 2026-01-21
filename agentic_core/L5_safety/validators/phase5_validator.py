@@ -37,12 +37,14 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 
 # Configure logging
-logging.basicConfig(level=logging.WARNING, format='%(message)s')
+logging.basicConfig(level=logging.WARNING, format="%(message)s")
 Logger = logging.getLogger(__name__)
+
 
 @dataclass
 class AgentValidation:
     """Validation results for a single agent."""
+
     class_name: str
     layer: str
     path: str
@@ -54,9 +56,11 @@ class AgentValidation:
     mcp_audit_ok: bool = False
     error: str | None = None
 
+
 @dataclass
 class ValidationReport:
     """Aggregated validation report."""
+
     total_core: int = 0
     instantiated: int = 0
     testing_pass: int = 0
@@ -89,8 +93,8 @@ class Phase5Validator:
             data = json.load(f)
 
         # Filter to core agents
-        core_layers = {'L0', 'L1', 'L2', 'L3', 'L4', 'L5'}
-        core_agents = [a for a in data if a.get('layer') in core_layers]
+        core_layers = {"L0", "L1", "L2", "L3", "L4", "L5"}
+        core_agents = [a for a in data if a.get("layer") in core_layers]
         self.report.total_core = len(core_agents)
         return core_agents
 
@@ -98,13 +102,13 @@ class Phase5Validator:
         """Convert relative path to module name and absolute path."""
         file_path = self.project_root / rel_path
         # Convert path to module: agentic_core/L1_cognition/foo.py -> agentic_core.L1_cognition.foo
-        module_name = rel_path.replace('/', '.').replace('\\', '.').replace('.py', '')
+        module_name = rel_path.replace("/", ".").replace("\\", ".").replace(".py", "")
         return module_name, file_path
 
     def instantiate_agent(self, agent: dict) -> tuple[Any | None, str | None]:
         """Attempt to instantiate an agent class."""
-        class_name = agent['class_name']
-        rel_path = agent['path']
+        class_name = agent["class_name"]
+        rel_path = agent["path"]
 
         try:
             module_name, file_path = self.get_module_path(rel_path)
@@ -142,7 +146,7 @@ class Phase5Validator:
                     return instance, None
                 except:
                     try:
-                        instance = cls(Path('.'))
+                        instance = cls(Path("."))
                         return instance, None
                     except:
                         return None, "Instantiation requires args"
@@ -153,13 +157,13 @@ class Phase5Validator:
     def run_self_tests(self, instance: Any, agent: dict) -> tuple[bool, str | None]:
         """Run self-tests on an agent instance."""
         try:
-            if hasattr(instance, '_run_self_tests'):
+            if hasattr(instance, "_run_self_tests"):
                 result = instance._run_self_tests()
                 return bool(result), None
-            elif hasattr(instance, 'run_self_tests'):
+            elif hasattr(instance, "run_self_tests"):
                 result = instance.run_self_tests()
                 return bool(result), None
-            elif agent.get('testing') != 'None':
+            elif agent.get("testing") != "None":
                 # Has testing flag but no method found - check inheritance
                 return True, None  # Assume pass if marked as having testing
             else:
@@ -169,13 +173,13 @@ class Phase5Validator:
 
     def simulate_healing(self, instance: Any, agent: dict) -> tuple[bool, str | None]:
         """Simulate a violation and verify healing."""
-        if not agent.get('has_healing'):
+        if not agent.get("has_healing"):
             return False, "No healing capability"
 
         try:
             # Check for heal method
-            if hasattr(instance, 'heal'):
-                violation = {'path': 'test_file.py', 'type': 'simulated', 'line': 1}
+            if hasattr(instance, "heal"):
+                violation = {"path": "test_file.py", "type": "simulated", "line": 1}
                 try:
                     instance.heal(violation)
                     return True, None  # Heal method exists and runs
@@ -183,7 +187,7 @@ class Phase5Validator:
                     return True, None  # Abstract heal - ok
                 except Exception as e:
                     return False, f"Heal error: {str(e)[:50]}"
-            elif hasattr(instance, 'apply_fix'):
+            elif hasattr(instance, "apply_fix"):
                 return True, None  # Has apply_fix
             else:
                 # Has healing flag via inheritance
@@ -193,19 +197,19 @@ class Phase5Validator:
 
     def check_mcp_audit(self, instance: Any, agent: dict) -> tuple[bool, str | None]:
         """Check MCP hardening audit trail."""
-        if not agent.get('external_touch'):
+        if not agent.get("external_touch"):
             return False, "Not external"
 
-        if not agent.get('mcp_hardened'):
+        if not agent.get("mcp_hardened"):
             return False, "Not MCP hardened"
 
         try:
             # Check for mcp_audit_log attribute
-            if hasattr(instance, 'mcp_audit_log'):
+            if hasattr(instance, "mcp_audit_log"):
                 return True, None
-            elif hasattr(instance, 'mcp_safe_execute'):
+            elif hasattr(instance, "mcp_safe_execute"):
                 return True, None
-            elif hasattr(instance, '_mcp_budget'):
+            elif hasattr(instance, "_mcp_budget"):
                 return True, None
             else:
                 # Has MCPHardenedMixin via inheritance
@@ -216,11 +220,11 @@ class Phase5Validator:
     def validate_agent(self, agent: dict) -> AgentValidation:
         """Run full validation on a single agent."""
         result = AgentValidation(
-            class_name=agent['class_name'],
-            layer=agent['layer'],
-            path=agent['path'],
-            external_touch=agent.get('external_touch', False),
-            mcp_hardened=agent.get('mcp_hardened', False)
+            class_name=agent["class_name"],
+            layer=agent["layer"],
+            path=agent["path"],
+            external_touch=agent.get("external_touch", False),
+            mcp_hardened=agent.get("mcp_hardened", False),
         )
 
         # Phase 1: Instantiation
@@ -334,27 +338,32 @@ class Phase5Validator:
         for result in r.agents:
             layer = result.layer
             if layer not in layer_stats:
-                layer_stats[layer] = {'total': 0, 'inst': 0, 'test': 0, 'heal': 0, 'mcp': 0}
-            layer_stats[layer]['total'] += 1
+                layer_stats[layer] = {"total": 0, "inst": 0, "test": 0, "heal": 0, "mcp": 0}
+            layer_stats[layer]["total"] += 1
             if result.instantiated:
-                layer_stats[layer]['inst'] += 1
+                layer_stats[layer]["inst"] += 1
             if result.testing_pass:
-                layer_stats[layer]['test'] += 1
+                layer_stats[layer]["test"] += 1
             if result.healing_pass:
-                layer_stats[layer]['heal'] += 1
+                layer_stats[layer]["heal"] += 1
             if result.mcp_audit_ok:
-                layer_stats[layer]['mcp'] += 1
+                layer_stats[layer]["mcp"] += 1
 
         for layer in sorted(layer_stats.keys()):
             s = layer_stats[layer]
-            print(f"  {layer}: {s['total']} | Inst: {s['inst']} | Test: {s['test']} | Heal: {s['heal']} | MCP: {s['mcp']}")
+            print(
+                f"  {layer}: {s['total']} | Inst: {s['inst']} | Test: {s['test']} | Heal: {s['heal']} | MCP: {s['mcp']}"
+            )
         print()
 
         # Final verdict
         print("=" * 60)
         healing_target = heal_pct >= 70
         mcp_target = mcp_pct >= 80
-        no_critical_regressions = len([r for r in r.regressions if 'syntax' in r.lower() or 'instantiate' in r.lower()]) == 0
+        no_critical_regressions = (
+            len([r for r in r.regressions if "syntax" in r.lower() or "instantiate" in r.lower()])
+            == 0
+        )
 
         if healing_target and mcp_target and no_critical_regressions:
             print("**SYSTEM VALIDATION: PASS — Ultra Zero-Loss Sovereignty Achieved**")
@@ -375,24 +384,24 @@ class Phase5Validator:
         print("=" * 60)
 
         # Save report
-        report_path = self.project_root / 'phase5_validation_report.json'
+        report_path = self.project_root / "phase5_validation_report.json"
         report_data = {
-            'total_core': r.total_core,
-            'instantiated': r.instantiated,
-            'testing_pass': r.testing_pass,
-            'healing_pass': r.healing_pass,
-            'external_agents': r.external_agents,
-            'mcp_hardened': r.mcp_hardened,
-            'mcp_audit_pass': r.mcp_audit_pass,
-            'regressions_count': len(r.regressions),
-            'regressions': r.regressions[:50],
-            'healing_pct': heal_pct,
-            'mcp_pct': mcp_pct,
-            'pass': healing_target and mcp_target,
-            'start_time': r.start_time,
-            'end_time': r.end_time
+            "total_core": r.total_core,
+            "instantiated": r.instantiated,
+            "testing_pass": r.testing_pass,
+            "healing_pass": r.healing_pass,
+            "external_agents": r.external_agents,
+            "mcp_hardened": r.mcp_hardened,
+            "mcp_audit_pass": r.mcp_audit_pass,
+            "regressions_count": len(r.regressions),
+            "regressions": r.regressions[:50],
+            "healing_pct": heal_pct,
+            "mcp_pct": mcp_pct,
+            "pass": healing_target and mcp_target,
+            "start_time": r.start_time,
+            "end_time": r.end_time,
         }
-        with open(report_path, 'w') as f:
+        with open(report_path, "w") as f:
             json.dump(report_data, f, indent=2)
         print(f"\n[SAVED] {report_path}")
 
@@ -404,5 +413,5 @@ def main():
     validator.print_report()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

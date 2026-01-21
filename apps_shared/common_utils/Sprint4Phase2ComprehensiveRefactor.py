@@ -26,18 +26,20 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 
 REPO = Path(__file__).parent.parent
 
+
 def remove_import_line(content: str, import_statement: str) -> str:
     """Remove an import statement and its line."""
-    lines = content.split('\n')
+    lines = content.split("\n")
     new_lines = []
 
     for line in lines:
         # Skip lines that match the import (with or without leading/trailing whitespace)
-        if import_statement.strip() in line and 'import' in line:
+        if import_statement.strip() in line and "import" in line:
             continue
         new_lines.append(line)
 
-    return '\n'.join(new_lines)
+    return "\n".join(new_lines)
+
 
 def refactor_l1_cognition_files():
     """Refactor L1 cognition layer violations."""
@@ -51,7 +53,7 @@ def refactor_l1_cognition_files():
     # query_planner.py - L1→L4, L1→L5
     file_path = l1_dir / "query_planner.py"
     if file_path.exists():
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
         original = content
 
         # Remove L4 import
@@ -60,50 +62,51 @@ def refactor_l1_cognition_files():
         content = remove_import_line(content, "from agentic_core.L5_safety")
 
         if content != original:
-            file_path.write_text(content, encoding='utf-8')
+            file_path.write_text(content, encoding="utf-8")
             print("✅ Fixed: query_planner.py")
             files_modified += 1
 
     # ReasoningMemory.py - L1→L4
     file_path = l1_dir / "ReasoningMemory.py"
     if file_path.exists():
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
         original = content
 
         content = remove_import_line(content, "from agentic_core.L4_state")
 
         if content != original:
-            file_path.write_text(content, encoding='utf-8')
+            file_path.write_text(content, encoding="utf-8")
             print("✅ Fixed: ReasoningMemory.py")
             files_modified += 1
 
     # reasoning_memory.py - L1→L5
     file_path = l1_dir / "reasoning_memory.py"
     if file_path.exists():
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
         original = content
 
         content = remove_import_line(content, "from agentic_core.L5_safety")
 
         if content != original:
-            file_path.write_text(content, encoding='utf-8')
+            file_path.write_text(content, encoding="utf-8")
             print("✅ Fixed: reasoning_memory.py")
             files_modified += 1
 
     # _LegacyNamingAgent.py - L1→L5
     file_path = l1_dir / "_LegacyNamingAgent.py"
     if file_path.exists():
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
         original = content
 
         content = remove_import_line(content, "from agentic_core.L5_safety")
 
         if content != original:
-            file_path.write_text(content, encoding='utf-8')
+            file_path.write_text(content, encoding="utf-8")
             print("✅ Fixed: _LegacyNamingAgent.py")
             files_modified += 1
 
     return files_modified
+
 
 def refactor_l2_execution_files():
     """Refactor L2 execution layer violations."""
@@ -116,64 +119,79 @@ def refactor_l2_execution_files():
     print("=" * 80)
 
     # L2→L3 violations
-    for filename in ["deepwiki_client_sovereign.py", "fetch_mcp_client.py",
-                     "playwright_mcp_client.py", "SherlockAgent.py", "web_search_tools.py"]:
+    for filename in [
+        "deepwiki_client_sovereign.py",
+        "fetch_mcp_client.py",
+        "playwright_mcp_client.py",
+        "SherlockAgent.py",
+        "web_search_tools.py",
+    ]:
         file_path = l2_dir / filename
         if file_path.exists():
-            content = file_path.read_text(encoding='utf-8')
+            content = file_path.read_text(encoding="utf-8")
             original = content
 
             content = remove_import_line(content, "from agentic_core.L3_orchestration")
 
             if content != original:
-                file_path.write_text(content, encoding='utf-8')
+                file_path.write_text(content, encoding="utf-8")
                 print(f"✅ Fixed: {filename}")
                 files_modified += 1
 
     # L2→L4 violations
-    for filename in ["fetch_client_sovereign.py", "figma_client_sovereign.py",
-                     "GitAgent.py", "L2ExecutionBaseAgent.py", "SovereignPineconeStoreAgent.py"]:
+    for filename in [
+        "fetch_client_sovereign.py",
+        "figma_client_sovereign.py",
+        "GitAgent.py",
+        "L2ExecutionBaseAgent.py",
+        "SovereignPineconeStoreAgent.py",
+    ]:
         file_path = l2_dir / filename
         if file_path.exists():
-            content = file_path.read_text(encoding='utf-8')
+            content = file_path.read_text(encoding="utf-8")
             original = content
 
             content = remove_import_line(content, "from agentic_core.L4_state")
 
             if content != original:
-                file_path.write_text(content, encoding='utf-8')
+                file_path.write_text(content, encoding="utf-8")
                 print(f"✅ Fixed: {filename}")
                 files_modified += 1
 
     # SubAtomicAgent.py in tool_registry
     file_path = l2_tool_registry / "SubAtomicAgent.py"
     if file_path.exists():
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
         original = content
 
         content = remove_import_line(content, "from agentic_core.L4_state")
 
         if content != original:
-            file_path.write_text(content, encoding='utf-8')
+            file_path.write_text(content, encoding="utf-8")
             print("✅ Fixed: SubAtomicAgent.py")
             files_modified += 1
 
     # L2→L5 violations
-    for filename in ["ExecutionCanonBaseAgent.py", "fetch_client_sovereign.py",
-                     "figma_client_sovereign.py", "SystemArchitectAgent.py"]:
+    for filename in [
+        "ExecutionCanonBaseAgent.py",
+        "fetch_client_sovereign.py",
+        "figma_client_sovereign.py",
+        "SystemArchitectAgent.py",
+    ]:
         file_path = l2_dir / filename
         if file_path.exists():
-            content = file_path.read_text(encoding='utf-8')
+            content = file_path.read_text(encoding="utf-8")
             original = content
 
             content = remove_import_line(content, "from agentic_core.L5_safety")
 
             if content != original:
-                file_path.write_text(content, encoding='utf-8')
+                file_path.write_text(content, encoding="utf-8")
                 print(f"✅ Fixed: {filename} (L5)")
                 files_modified += 1
 
     return files_modified
+
 
 def refactor_l3_orchestration_files():
     """Refactor remaining L3 orchestration violations."""
@@ -185,47 +203,59 @@ def refactor_l3_orchestration_files():
     print("=" * 80)
 
     # L3→L4 violations
-    for filename in ["autonomous_sovereign_core.py", "TerritoryHealerAgent.py",
-                     "autonomous_execution_engine.py", "CachedOrchestratorAgent.py",
-                     "OrchestrationHandshakeAgent.py", "SemanticTerritoryMapperAgent.py"]:
+    for filename in [
+        "autonomous_sovereign_core.py",
+        "TerritoryHealerAgent.py",
+        "autonomous_execution_engine.py",
+        "CachedOrchestratorAgent.py",
+        "OrchestrationHandshakeAgent.py",
+        "SemanticTerritoryMapperAgent.py",
+    ]:
         file_path = l3_dir / filename
         if file_path.exists():
-            content = file_path.read_text(encoding='utf-8')
+            content = file_path.read_text(encoding="utf-8")
             original = content
 
             content = remove_import_line(content, "from agentic_core.L4_state")
 
             if content != original:
-                file_path.write_text(content, encoding='utf-8')
+                file_path.write_text(content, encoding="utf-8")
                 print(f"✅ Fixed: {filename}")
                 files_modified += 1
 
     # L3→L5 violations (remaining after Phase 1)
-    for filename in ["NervousSystemAgent.py", "autonomous_sovereign_core.py",
-                     "L3OrchestrationBaseAgent.py"]:
+    for filename in [
+        "NervousSystemAgent.py",
+        "autonomous_sovereign_core.py",
+        "L3OrchestrationBaseAgent.py",
+    ]:
         file_path = l3_dir / filename
         if file_path.exists():
-            content = file_path.read_text(encoding='utf-8')
+            content = file_path.read_text(encoding="utf-8")
             original = content
 
             # These files may have dynamic imports in try/except blocks
             # We need to be careful not to remove those
             # Only remove top-level static imports
-            lines = content.split('\n')
+            lines = content.split("\n")
             new_lines = []
             in_try_block = False
 
             for i, line in enumerate(lines):
                 # Track try blocks
-                if 'try:' in line:
+                if "try:" in line:
                     in_try_block = True
-                elif 'except' in line or (line.strip() and not line.startswith(' ') and in_try_block):
+                elif "except" in line or (
+                    line.strip() and not line.startswith(" ") and in_try_block
+                ):
                     in_try_block = False
 
                 # Skip top-level L5 imports (not in try blocks)
-                if not in_try_block and 'from agentic_core.L5_safety' in line and 'import' in line:
+                if not in_try_block and "from agentic_core.L5_safety" in line and "import" in line:
                     # Check if this is a top-level import (minimal indentation)
-                    if line.startswith('from ') or (line.startswith(' ') and line.lstrip().startswith('from ')):
+                    if line.startswith("from ") or (
+                        line.startswith(" ") and line.lstrip().startswith("from ")
+                    ):
                         # Count leading spaces
                         leading_spaces = len(line) - len(line.lstrip())
                         if leading_spaces < 8:  # Top-level or class-level import
@@ -233,14 +263,15 @@ def refactor_l3_orchestration_files():
 
                 new_lines.append(line)
 
-            new_content = '\n'.join(new_lines)
+            new_content = "\n".join(new_lines)
 
             if new_content != original:
-                file_path.write_text(new_content, encoding='utf-8')
+                file_path.write_text(new_content, encoding="utf-8")
                 print(f"✅ Fixed: {filename} (L5)")
                 files_modified += 1
 
     return files_modified
+
 
 def refactor_l4_state_files():
     """Refactor L4 state layer violations."""
@@ -252,22 +283,28 @@ def refactor_l4_state_files():
     print("=" * 80)
 
     # L4→L5 violations
-    for filename in ["filesystem_mcp_sovereign.py", "memory_sovereign_mcp.py",
-                     "PineconeSovereignAgent.py", "semantic_cache_sovereign.py",
-                     "L4StateBaseAgent.py", "_LegacyCanonValidatorAgent.py"]:
+    for filename in [
+        "filesystem_mcp_sovereign.py",
+        "memory_sovereign_mcp.py",
+        "PineconeSovereignAgent.py",
+        "semantic_cache_sovereign.py",
+        "L4StateBaseAgent.py",
+        "_LegacyCanonValidatorAgent.py",
+    ]:
         file_path = l4_dir / filename
         if file_path.exists():
-            content = file_path.read_text(encoding='utf-8')
+            content = file_path.read_text(encoding="utf-8")
             original = content
 
             content = remove_import_line(content, "from agentic_core.L5_safety")
 
             if content != original:
-                file_path.write_text(content, encoding='utf-8')
+                file_path.write_text(content, encoding="utf-8")
                 print(f"✅ Fixed: {filename}")
                 files_modified += 1
 
     return files_modified
+
 
 def main():
     """Apply comprehensive refactoring across all layers."""
@@ -309,6 +346,7 @@ def main():
         print("ℹ️  No files needed refactoring")
 
     return 0
+
 
 if __name__ == "__main__":
     exit(main())

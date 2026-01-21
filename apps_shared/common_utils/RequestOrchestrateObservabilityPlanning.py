@@ -13,8 +13,6 @@ Implements L1 Cognitive Planning Layer for orchestrate observability planning op
 """
 
 
-
-
 import logging
 from abc import ABC, abstractmethod
 from dataclasses import field
@@ -28,6 +26,7 @@ logger = logging.getLogger(__name__)
 
 class OrchestrateObservabilityPlanningOrchestratorType(Enum):
     """L5 Typed enumeration for deterministic behavior"""
+
     DEFAULT = "default"
     CORE = "core"
     SYSTEM = "system"
@@ -35,6 +34,7 @@ class OrchestrateObservabilityPlanningOrchestratorType(Enum):
 
 class OrchestrateObservabilityPlanningOrchestratorConstraints:
     """L5 Safety constraints - fail-closed behavior"""
+
     max_depth: int = 5
     allowed_operations: list[str] = field(default_factory=lambda: ["read", "validate", "filter"])
     safety_level: str = "strict"
@@ -43,6 +43,7 @@ class OrchestrateObservabilityPlanningOrchestratorConstraints:
 
 class OrchestrateObservabilityPlanningOrchestratorResult:
     """L5 Result structure with full type safety"""
+
     success: bool
     data: dict[str, object] = field(default_factory=dict)
     errors: list[str] = field(default_factory=list)
@@ -54,7 +55,9 @@ class OrchestrateObservabilityPlanningOrchestratorProcessor(ABC):
     """L5 interface foundation - ensures L1 pure planning behavior"""
 
     @abstractmethod
-    def process(self, input_data: dict[str, object]) -> OrchestrateObservabilityPlanningOrchestratorResult:
+    def process(
+        self, input_data: dict[str, object]
+    ) -> OrchestrateObservabilityPlanningOrchestratorResult:
         """Process data with L5 safety constraints"""
         ...
 
@@ -64,17 +67,23 @@ class OrchestrateObservabilityPlanningOrchestratorProcessor(ABC):
         ...
 
 
-class OrchestrateObservabilityPlanningOrchestratorImpl(OrchestrateObservabilityPlanningOrchestratorProcessor):
+class OrchestrateObservabilityPlanningOrchestratorImpl(
+    OrchestrateObservabilityPlanningOrchestratorProcessor
+):
     """
     L5 Implementation - L1 Cognitive Planning Layer
     Pure planning functionality with no side effects
     """
 
-    def __init__(self, constraints: OrchestrateObservabilityPlanningOrchestratorConstraints | None = None):
+    def __init__(
+        self, constraints: OrchestrateObservabilityPlanningOrchestratorConstraints | None = None
+    ):
         self.constraints = constraints or OrchestrateObservabilityPlanningOrchestratorConstraints()
         self.logger = logging.getLogger(self.__class__.__name__)
 
-    def process(self, input_data: dict[str, object]) -> OrchestrateObservabilityPlanningOrchestratorResult:
+    def process(
+        self, input_data: dict[str, object]
+    ) -> OrchestrateObservabilityPlanningOrchestratorResult:
         """Process input following L5 architecture principles"""
         self.logger.info(f"Processing {input_data}")
 
@@ -90,7 +99,7 @@ class OrchestrateObservabilityPlanningOrchestratorImpl(OrchestrateObservabilityP
             success=True,
             data={"processed": True, "input": input_data},
             safety_validated=True,
-            timestamp=self._get_timestamp()
+            timestamp=self._get_timestamp(),
         )
 
         self.logger.info(f"Successfully processed: {result.success}")
@@ -100,7 +109,13 @@ class OrchestrateObservabilityPlanningOrchestratorImpl(OrchestrateObservabilityP
         """L5 Safety validation with fail-closed behavior"""
         try:
             # Check for dangerous patterns
-            dangerous_patterns = ["<script>", "javascript:", "# SECURITY: ast.literal_eval(", "# SECURITY: pass  # exec disabled: ", "__import__"]
+            dangerous_patterns = [
+                "<script>",
+                "javascript:",
+                "# SECURITY: ast.literal_eval(",
+                "# SECURITY: pass  # exec disabled: ",
+                "__import__",
+            ]
             data_str = str(data).lower()
             for pattern in dangerous_patterns:
                 if pattern in data_str:
@@ -129,11 +144,13 @@ class OrchestrateObservabilityPlanningOrchestratorImpl(OrchestrateObservabilityP
     def _get_timestamp(self) -> str:
         """Get current timestamp for L5 observability"""
         from datetime import datetime
+
         return datetime.utcnow().isoformat()
 
 
 class SecurityError(Exception):
     """L5 Security exception for fail-closed behavior"""
+
     ...
 
 
@@ -152,7 +169,7 @@ class OrchestrateObservabilityPlanningOrchestratorInterface:
                 "data": result.data,
                 "errors": result.errors,
                 "safety_validated": result.safety_validated,
-                "timestamp": result.timestamp
+                "timestamp": result.timestamp,
             }
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
             raise SecurityError(f"Execution failed: {e}")
@@ -162,9 +179,13 @@ class OrchestrateObservabilityPlanningOrchestratorFactory:
     """L5 builder for creating processors with proper configuration"""
 
     @staticmethod
-    def create_processor(safety_level: str = "strict") -> OrchestrateObservabilityPlanningOrchestratorInterface:
+    def create_processor(
+        safety_level: str = "strict",
+    ) -> OrchestrateObservabilityPlanningOrchestratorInterface:
         """Create configured engine"""
-        constraints = OrchestrateObservabilityPlanningOrchestratorConstraints(safety_level=safety_level)
+        constraints = OrchestrateObservabilityPlanningOrchestratorConstraints(
+            safety_level=safety_level
+        )
         engine = OrchestrateObservabilityPlanningOrchestratorImpl(constraints)
         return OrchestrateObservabilityPlanningOrchestratorInterface(engine)
 

@@ -65,10 +65,7 @@ def test_meta_does_not_import_core() -> None:
 
     # Allow core.models.models imports for data types (established pattern)
     allowed_imports = {"core.models.models", "core.models"}
-    violations = [
-        (path, mod) for path, mod in all_violations
-        if mod not in allowed_imports
-    ]
+    violations = [(path, mod) for path, mod in all_violations if mod not in allowed_imports]
 
     assert not violations, f"meta modules must not import core (except core.models): {violations}"
 

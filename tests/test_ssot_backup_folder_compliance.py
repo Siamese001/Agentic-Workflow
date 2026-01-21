@@ -17,6 +17,7 @@ Responsible Agents:
 - LocationAgent (L5) - _init_backup_dir()
 - FilesystemAgent (L5) - self.backup_dir
 """
+
 from __future__ import annotations
 
 import sys
@@ -50,7 +51,7 @@ class TestSSOTBackupFolderCompliance(unittest.TestCase):
         self.assertIn(
             ".sovereign_healing_backup",
             content,
-            ".sovereign_healing_backup MUST be in .gitignore to prevent accidental commits"
+            ".sovereign_healing_backup MUST be in .gitignore to prevent accidental commits",
         )
 
     def test_location_agent_uses_archives(self):
@@ -66,7 +67,7 @@ class TestSSOTBackupFolderCompliance(unittest.TestCase):
         self.assertIn(
             'self.project_root / "archives"',
             content,
-            "LocationAgent._init_backup_dir() must use archives/ as backup root"
+            "LocationAgent._init_backup_dir() must use archives/ as backup root",
         )
 
         # Check that it does NOT use .sovereign_healing_backup in mkdir or Path construction
@@ -77,16 +78,16 @@ class TestSSOTBackupFolderCompliance(unittest.TestCase):
                 stripped = line.strip()
                 # Allow in comments, docstrings, or SSOT fix explanations
                 is_allowed = (
-                    stripped.startswith("#") or
-                    stripped.startswith('"""') or
-                    stripped.startswith("'''") or
-                    "SSOT" in line or
-                    "Changed from" in line or
-                    "instead of" in line.lower()
+                    stripped.startswith("#")
+                    or stripped.startswith('"""')
+                    or stripped.startswith("'''")
+                    or "SSOT" in line
+                    or "Changed from" in line
+                    or "instead of" in line.lower()
                 )
                 self.assertTrue(
                     is_allowed,
-                    f"Line {i+1}: .sovereign_healing_backup found in active code: {line}"
+                    f"Line {i + 1}: .sovereign_healing_backup found in active code: {line}",
                 )
 
     def test_filesystem_agent_uses_archives(self):
@@ -102,7 +103,7 @@ class TestSSOTBackupFolderCompliance(unittest.TestCase):
         self.assertIn(
             'self.project_root / "archives"',
             content,
-            "FilesystemAgent.backup_dir must use archives/ as backup root"
+            "FilesystemAgent.backup_dir must use archives/ as backup root",
         )
 
         # Check that it does NOT use .sovereign_healing_backup in active code
@@ -112,7 +113,7 @@ class TestSSOTBackupFolderCompliance(unittest.TestCase):
                 stripped = line.strip()
                 self.assertTrue(
                     stripped.startswith("#") or "SSOT FIX" in line or "Changed from" in line,
-                    f"Line {i+1}: .sovereign_healing_backup found in non-comment code: {line}"
+                    f"Line {i + 1}: .sovereign_healing_backup found in non-comment code: {line}",
                 )
 
     def test_no_new_backup_folder_creation_outside_archives(self):
@@ -151,7 +152,7 @@ class TestSSOTBackupFolderCompliance(unittest.TestCase):
                     # This is active code using the forbidden pattern
                     if "Path(" in line or "=" in line:
                         violations.append(
-                            f"{agent_path}:{i+1}: "
+                            f"{agent_path}:{i + 1}: "
                             f".sovereign_healing_backup in active code: {line.strip()}"
                         )
 
@@ -176,7 +177,7 @@ class TestSSOTBackupFolderCompliance(unittest.TestCase):
         self.assertIn(
             '"archives" / "healing_backups"',
             content,
-            "LocationAgent must use archives/healing_backups/ as the backup location"
+            "LocationAgent must use archives/healing_backups/ as the backup location",
         )
 
 
@@ -196,13 +197,15 @@ class TestBackupFolderCleanup(unittest.TestCase):
             self.assertIn(
                 ".sovereign_healing_backup",
                 content,
-                "If .sovereign_healing_backup exists, it MUST be gitignored"
+                "If .sovereign_healing_backup exists, it MUST be gitignored",
             )
 
             # Warn that cleanup is needed
-            print(f"\n⚠️  WARNING: .sovereign_healing_backup folder exists with "
-                  f"{sum(1 for _ in backup_folder.rglob('*'))} files. "
-                  f"Consider deleting it.")
+            print(
+                f"\n⚠️  WARNING: .sovereign_healing_backup folder exists with "
+                f"{sum(1 for _ in backup_folder.rglob('*'))} files. "
+                f"Consider deleting it."
+            )
 
 
 if __name__ == "__main__":

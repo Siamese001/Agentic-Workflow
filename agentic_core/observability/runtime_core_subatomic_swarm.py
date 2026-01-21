@@ -14,9 +14,11 @@ from typing import Any
 
 Logger: Any = logging.getLogger(__name__)
 
+
 @dataclass
 class SwarmResult:
     """Result from a single HOP execution in the swarm."""
+
     hop_id: str
     status: str
     result: dict[str, Any] | None = None
@@ -24,9 +26,11 @@ class SwarmResult:
     execution_time: float = 0.0
     timestamp: float = field(default_factory=time.time)
 
+
 @dataclass
 class SwarmMetrics:
     """Metrics for swarm execution."""
+
     total_hops: int = 0
     successful: int = 0
     failed: int = 0
@@ -34,9 +38,10 @@ class SwarmMetrics:
     total_execution_time: float = 0.0
     average_execution_time: float = 0.0
     max_execution_time: float = 0.0
-    min_execution_time: float = float('inf')
+    min_execution_time: float = float("inf")
     start_time: float | None = None
     end_time: float | None = None
+
 
 class SubatomicSwarm:
     """Orchestrates multiple SubatomicHop instances in parallel.
@@ -46,7 +51,9 @@ class SubatomicSwarm:
     crash the entire swarm.
     """
 
-    def __init__(self, max_concurrency: int=5, timeout_per_hop: float=300.0, enable_metrics: bool=True):
+    def __init__(
+        self, max_concurrency: int = 5, timeout_per_hop: float = 300.0, enable_metrics: bool = True
+    ):
         """Initialize the SubatomicSwarm.
 
         Args:
@@ -58,7 +65,9 @@ class SubatomicSwarm:
         self.timeout_per_hop = timeout_per_hop
         self.enable_metrics = enable_metrics
         self.metrics = SwarmMetrics()
-        Logger.info(f'Initialized SubatomicSwarm: max_concurrency={max_concurrency}, timeout_per_hop={timeout_per_hop}s')
+        Logger.info(
+            f"Initialized SubatomicSwarm: max_concurrency={max_concurrency}, timeout_per_hop={timeout_per_hop}s"
+        )
 
     async def _run_guarded_hop(self, hop: Any, hop_id: str, **kwargs) -> SwarmResult:
         """Wrap a single HOP execution with semaphore guard and error handling.
@@ -74,23 +83,31 @@ class SubatomicSwarm:
         start_time = time.time()
         async with self.semaphore:
             try:
-                Logger.debug(f'Starting HOP {hop_id}')
+                Logger.debug(f"Starting HOP {hop_id}")
                 result = await asyncio.wait_for(hop.run(**kwargs), timeout=self.timeout_per_hop)
                 execution_time = time.time() - start_time
-                Logger.info(f'HOP {hop_id} completed successfully in {execution_time:.2f}s')
-                return SwarmResult(hop_id=hop_id, status='success', result=result, execution_time=execution_time)
+                Logger.info(f"HOP {hop_id} completed successfully in {execution_time:.2f}s")
+                return SwarmResult(
+                    hop_id=hop_id, status="success", result=result, execution_time=execution_time
+                )
             except asyncio.TimeoutError:
                 execution_time = time.time() - start_time
-                error_msg = f'HOP {hop_id} timed out after {self.timeout_per_hop}s'
+                error_msg = f"HOP {hop_id} timed out after {self.timeout_per_hop}s"
                 Logger.error(error_msg)
-                return SwarmResult(hop_id=hop_id, status='timeout', error=error_msg, execution_time=execution_time)
+                return SwarmResult(
+                    hop_id=hop_id, status="timeout", error=error_msg, execution_time=execution_time
+                )
             except Exception as e:
                 execution_time = time.time() - start_time
-                error_msg = f'HOP {hop_id} failed: {str(e)}'
+                error_msg = f"HOP {hop_id} failed: {str(e)}"
                 Logger.error(error_msg, exc_info=True)
-                return SwarmResult(hop_id=hop_id, status='failed', error=error_msg, execution_time=execution_time)
+                return SwarmResult(
+                    hop_id=hop_id, status="failed", error=error_msg, execution_time=execution_time
+                )
 
-    async def execute_swarm(self, hops: list[Any], inputs: list[dict[str, Any]], hop_ids: list[str] | None=None) -> list[SwarmResult]:
+    async def execute_swarm(
+        self, hops: list[Any], inputs: list[dict[str, Any]], hop_ids: list[str] | None = None
+    ) -> list[SwarmResult]:
         """Run a list of HOPs in parallel against a list of inputs.
 
         Args:
@@ -112,22 +129,36 @@ class SubatomicSwarm:
             ... )
         """
         if len(hops) != len(inputs):
-            raise ValueError(f'Number of HOPs ({len(hops)}) must match number of inputs ({len(inputs)})')
+            raise ValueError(
+                f"Number of HOPs ({len(hops)}) must match number of inputs ({len(inputs)})"
+            )
         if hop_ids is None:
-            hop_ids: Any = [f'hop_{i}' for i in range(len(hops))]
+            hop_ids: Any = [f"hop_{i}" for i in range(len(hops))]
         elif len(hop_ids) != len(hops):
-            raise ValueError(f'Number of hop_ids ({len(hop_ids)}) must match number of HOPs ({len(hops)})')
+            raise ValueError(
+                f"Number of hop_ids ({len(hop_ids)}) must match number of HOPs ({len(hops)})"
+            )
         if self.enable_metrics:
             self.metrics = SwarmMetrics(total_hops=len(hops), start_time=time.time())
-        Logger.info(f'Starting swarm execution: {len(hops)} HOPs')
-        tasks: Any = [self._run_guarded_hop(hop, hop_id, **input_data) for hop, hop_id, input_data in zip(hops, hop_ids, inputs, strict=False)]
+        Logger.info(f"Starting swarm execution: {len(hops)} HOPs")
+        tasks: Any = [
+            self._run_guarded_hop(hop, hop_id, **input_data)
+            for hop, hop_id, input_data in zip(hops, hop_ids, inputs, strict=False)
+        ]
         results: Any = await asyncio.gather(*tasks, return_exceptions=True)
         if self.enable_metrics:
             self._update_metrics(results)
-        Logger.info(f'Swarm execution complete: {self.metrics.successful}/{self.metrics.total_hops} successful, {self.metrics.failed} failed, {self.metrics.timeout} timeout')
+        Logger.info(
+            f"Swarm execution complete: {self.metrics.successful}/{self.metrics.total_hops} successful, {self.metrics.failed} failed, {self.metrics.timeout} timeout"
+        )
         return results
 
-    async def execute_batch(self, hop_factory: Callable[[], Any], inputs: list[dict[str, Any]], batch_size: int | None=None) -> list[SwarmResult]:
+    async def execute_batch(
+        self,
+        hop_factory: Callable[[], Any],
+        inputs: list[dict[str, Any]],
+        batch_size: int | None = None,
+    ) -> list[SwarmResult]:
         """Execute a batch of inputs using a HOP factory function.
 
         Useful when you need to create fresh HOP instances for each input
@@ -155,9 +186,9 @@ class SubatomicSwarm:
         if batch_size and batch_size < len(inputs):
             all_results: Any = []
             for i in range(0, len(inputs), batch_size):
-                batch_hops: Any = hops[i:i + batch_size]
-                batch_inputs: Any = inputs[i:i + batch_size]
-                Logger.info(f'Processing batch {i // batch_size + 1}: {len(batch_hops)} HOPs')
+                batch_hops: Any = hops[i : i + batch_size]
+                batch_inputs: Any = inputs[i : i + batch_size]
+                Logger.info(f"Processing batch {i // batch_size + 1}: {len(batch_hops)} HOPs")
                 batch_results: Any = await self.execute_swarm(hops=batch_hops, inputs=batch_inputs)
                 all_results.extend(batch_results)
             return all_results
@@ -173,17 +204,23 @@ class SubatomicSwarm:
         self.metrics.end_time = time.time()
         for result in results:
             if isinstance(result, SwarmResult):
-                if result.status == 'success':
+                if result.status == "success":
                     self.metrics.successful += 1
-                elif result.status == 'failed':
+                elif result.status == "failed":
                     self.metrics.failed += 1
-                elif result.status == 'timeout':
+                elif result.status == "timeout":
                     self.metrics.timeout += 1
                 self.metrics.total_execution_time += result.execution_time
-                self.metrics.max_execution_time = max(self.metrics.max_execution_time, result.execution_time)
-                self.metrics.min_execution_time = min(self.metrics.min_execution_time, result.execution_time)
+                self.metrics.max_execution_time = max(
+                    self.metrics.max_execution_time, result.execution_time
+                )
+                self.metrics.min_execution_time = min(
+                    self.metrics.min_execution_time, result.execution_time
+                )
         if self.metrics.total_hops > 0:
-            self.metrics.average_execution_time = self.metrics.total_execution_time / self.metrics.total_hops
+            self.metrics.average_execution_time = (
+                self.metrics.total_execution_time / self.metrics.total_hops
+            )
 
     def get_metrics(self) -> SwarmMetrics:
         """Get current swarm metrics.
@@ -207,7 +244,10 @@ class SubatomicSwarm:
         """Reset metrics for a new swarm execution."""
         self.metrics = SwarmMetrics()
 
-def create_subatomic_swarm(max_concurrency: int=5, timeout_per_hop: float=300.0, enable_metrics: bool=True) -> SubatomicSwarm:
+
+def create_subatomic_swarm(
+    max_concurrency: int = 5, timeout_per_hop: float = 300.0, enable_metrics: bool = True
+) -> SubatomicSwarm:
     """Create a SubatomicSwarm instance.
 
     Args:
@@ -218,4 +258,8 @@ def create_subatomic_swarm(max_concurrency: int=5, timeout_per_hop: float=300.0,
     Returns:
         Configured SubatomicSwarm instance
     """
-    return SubatomicSwarm(max_concurrency=max_concurrency, timeout_per_hop=timeout_per_hop, enable_metrics=enable_metrics)
+    return SubatomicSwarm(
+        max_concurrency=max_concurrency,
+        timeout_per_hop=timeout_per_hop,
+        enable_metrics=enable_metrics,
+    )

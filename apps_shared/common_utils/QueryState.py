@@ -13,8 +13,6 @@ Implements L5 Safety/Policy Layer for update observability usage operations
 """
 
 
-
-
 import logging
 from abc import ABC, abstractmethod
 from dataclasses import field
@@ -28,6 +26,7 @@ logger = logging.getLogger(__name__)
 
 class UpdateObservabilityUsageSafetyType(Enum):
     """L5 Typed enumeration for deterministic safety operations"""
+
     APPLY = "apply"
     ENFORCE = "enforce"
     VALIDATE = "validate"
@@ -35,6 +34,7 @@ class UpdateObservabilityUsageSafetyType(Enum):
 
 class UpdateObservabilityUsageSafetyConstraints:
     """L5 Safety constraints - fail-closed behavior"""
+
     max_risk_score: float = 0.5
     allowed_operations: list[str] = field(default_factory=lambda: ["apply", "enforce", "validate"])
     safety_level: str = "strict"
@@ -43,6 +43,7 @@ class UpdateObservabilityUsageSafetyConstraints:
 
 class UpdateObservabilityUsageSafetyResult:
     """L5 Safety result with full type safety"""
+
     success: bool
     safety_score: float = 0.0
     risk_assessment: dict[str, object] = field(default_factory=dict)
@@ -99,7 +100,7 @@ class UpdateObservabilityUsageSafetyImpl(UpdateObservabilityUsageSafetySafety):
             safety_score=safety_score,
             risk_assessment=risk_assessment,
             safety_validated=True,
-            timestamp=self._get_timestamp()
+            timestamp=self._get_timestamp(),
         )
 
         self.logger.info(f"Safety check completed: score={safety_score}, passed={result.success}")
@@ -176,12 +177,16 @@ class UpdateObservabilityUsageSafetyImpl(UpdateObservabilityUsageSafetySafety):
             "injection_risk": self._check_injection_risk(data),
             "size_risk": self._check_size_risk(data),
             "complexity_risk": self._check_complexity_risk(data),
-            "pattern_risk": self._check_pattern_risk(data)
+            "pattern_risk": self._check_pattern_risk(data),
         }
 
         return {
             "risks": risks,
-            "overall_risk": "low" if all(r == "low" for r in risks.values()) else "medium" if any(r == "medium" for r in risks.values()) else "high"
+            "overall_risk": "low"
+            if all(r == "low" for r in risks.values())
+            else "medium"
+            if any(r == "medium" for r in risks.values())
+            else "high",
         }
 
     def _check_injection_risk(self, data: dict[str, object]) -> str:
@@ -234,29 +239,41 @@ class UpdateObservabilityUsageSafetyImpl(UpdateObservabilityUsageSafetySafety):
     def _calculate_depth(self, obj: object, current_depth: int = 0) -> int:
         """Calculate nesting depth"""
         if isinstance(obj, dict):
-            return max([self._calculate_depth(v, current_depth + 1) for v in obj.values()], default=current_depth)
+            return max(
+                [self._calculate_depth(v, current_depth + 1) for v in obj.values()],
+                default=current_depth,
+            )
         elif isinstance(obj, list):
-            return max([self._calculate_depth(item, current_depth + 1) for item in obj], default=current_depth)
+            return max(
+                [self._calculate_depth(item, current_depth + 1) for item in obj],
+                default=current_depth,
+            )
         else:
             return current_depth
 
     def _initialize_safety_rules(self) -> list[dict[str, object]]:
         """Initialize L5 safety rules"""
         return [
-            {"name": "no_injection", "pattern": r"(union|select|insert|update|delete|drop)", "severity": "high"},
+            {
+                "name": "no_injection",
+                "pattern": r"(union|select|insert|update|delete|drop)",
+                "severity": "high",
+            },
             {"name": "no_scripts", "pattern": r"<script", "severity": "high"},
             {"name": "no_eval", "pattern": r"eval\s*\(", "severity": "high"},
-            {"name": "size_limit", "max_size": 1000000, "severity": "medium"}
+            {"name": "size_limit", "max_size": 1000000, "severity": "medium"},
         ]
 
     def _get_timestamp(self) -> str:
         """Get current timestamp for L5 observability"""
         from datetime import datetime
+
         return datetime.utcnow().isoformat()
 
 
 class SecurityError(Exception):
     """L5 Security exception for fail-closed behavior"""
+
     pass
 
 
@@ -276,7 +293,7 @@ class UpdateObservabilityUsageSafetyInterface:
                 "risk_assessment": result.risk_assessment,
                 "errors": result.errors,
                 "safety_validated": result.safety_validated,
-                "timestamp": result.timestamp
+                "timestamp": result.timestamp,
             }
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
             raise SecurityError(f"Safety application failed: {e}")

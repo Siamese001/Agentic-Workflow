@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 class DiagramType(str, Enum):
     """Supported Mermaid diagram types."""
+
     FLOWCHART = "flowchart TD"
     SEQUENCE = "sequenceDiagram"
     C4_COMPONENT = "C4Component"
@@ -31,11 +32,11 @@ class DiagramNode(BaseModel):
     shape_code: str = Field(..., description="Mermaid shape code (e.g., '[...]', '(...)')")
     node_type: str = Field(default="default", description="Type of node (service, database, etc.)")
 
-    @validator('id')
+    @validator("id")
     def validate_id(cls, v):
         """Ensure node ID is Mermaid-compatible."""
         # Remove spaces and special characters, keep alphanumeric and underscore
-        return re.sub(r'[^a-zA-Z0-9_]', '', v)
+        return re.sub(r"[^a-zA-Z0-9_]", "", v)
 
 
 class DiagramArtifact(BaseModel):
@@ -84,19 +85,21 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
             "queue": "([{label}])",  # Double circle
             "user": "([{label}])",  # User shape
             "event": "([{label}])",  # Event shape
-            "default": "[{label}]"  # Rectangle
+            "default": "[{label}]",  # Rectangle
         }
 
         # Component detection patterns
         self.component_patterns = {
-            "database": r'\b(redis|postgres|mysql|mongodb|database|db|cache|store)\b',
-            "service": r'\b(service|microservice|api|server|worker|agent)\b',
-            "queue": r'\b(queue|kafka|rabbitmq|sqs|pubsub)\b',
-            "user": r'\b(user|client|customer|actor)\b',
-            "event": r'\b(event|message|trigger|signal)\b'
+            "database": r"\b(redis|postgres|mysql|mongodb|database|db|cache|store)\b",
+            "service": r"\b(service|microservice|api|server|worker|agent)\b",
+            "queue": r"\b(queue|kafka|rabbitmq|sqs|pubsub)\b",
+            "user": r"\b(user|client|customer|actor)\b",
+            "event": r"\b(event|message|trigger|signal)\b",
         }
 
-    async def _extract_system_components(self, text: str) -> tuple[list[DiagramNode], list[tuple[str, str]]]:
+    async def _extract_system_components(
+        self, text: str
+    ) -> tuple[list[DiagramNode], list[tuple[str, str]]]:
         """Extract system components and relationships from text.
 
         Args:
@@ -128,6 +131,7 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
             response = await self._call_llm(prompt, temperature=0.1)
             # Parse JSON response
             import json
+
             extracted = json.loads(response.content.strip())
 
             # Create nodes
@@ -137,10 +141,7 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
                 shape_code = self.shape_mappings.get(node_type, self.shape_mappings["default"])
 
                 node = DiagramNode(
-                    id=comp["id"],
-                    label=comp["label"],
-                    shape_code=shape_code,
-                    node_type=node_type
+                    id=comp["id"], label=comp["label"], shape_code=shape_code, node_type=node_type
                 )
                 nodes.append(node)
 
@@ -159,7 +160,7 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
         self,
         nodes: list[DiagramNode],
         relationships: list[tuple[str, str]],
-        diagram_type: DiagramType
+        diagram_type: DiagramType,
     ) -> str:
         """Generate Mermaid code from nodes and relationships.
 
@@ -199,7 +200,10 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
             lines.insert(1, "    subgraph Data Plane")
             data_nodes = [n for n in nodes if n.node_type in ["database", "queue"]]
             for i, node in enumerate(data_nodes):
-                lines.insert(2 + i, f"        {node.id}{self.shape_mappings.get(node.node_type, self.shape_mappings['default']).format(label=node.label)}")
+                lines.insert(
+                    2 + i,
+                    f"        {node.id}{self.shape_mappings.get(node.node_type, self.shape_mappings['default']).format(label=node.label)}",
+                )
             lines.insert(2 + len(data_nodes), "    end")
 
         return "\n".join(lines)
@@ -208,7 +212,7 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
         self,
         description: str,
         diagram_type: DiagramType = DiagramType.FLOWCHART,
-        caption: str | None = None
+        caption: str | None = None,
     ) -> DiagramArtifact | None:
         """Generate a Mermaid diagram from text description.
 
@@ -226,10 +230,12 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
 
             # Check complexity
             if len(nodes) > self.max_nodes:
-                logger.warning(f"System too complex ({len(nodes)} nodes), generating high-level diagram")
+                logger.warning(
+                    f"System too complex ({len(nodes)} nodes), generating high-level diagram"
+                )
                 # Simplify to high-level components only
-                nodes = nodes[:self.max_nodes]
-                relationships = relationships[:self.max_nodes]
+                nodes = nodes[: self.max_nodes]
+                relationships = relationships[: self.max_nodes]
 
             # Generate Mermaid code
             mermaid_code = self._generate_mermaid_code(nodes, relationships, diagram_type)
@@ -243,7 +249,7 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
                 caption=caption or "System Architecture Diagram",
                 diagram_type=diagram_type,
                 node_count=len(nodes),
-                complexity_score=complexity
+                complexity_score=complexity,
             )
 
             logger.info(f"Generated {diagram_type} diagram with {len(nodes)} nodes")
@@ -287,8 +293,7 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
 
         # Generate diagram
         artifact = await self.generate_diagram(
-            description=bullet_text,
-            caption="Technical Architecture"
+            description=bullet_text, caption="Technical Architecture"
         )
 
         if artifact:
@@ -318,7 +323,7 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
                 model="claude-3-5-sonnet-20241022",
                 max_tokens=2000,
                 temperature=temperature,
-                messages=[{"role": "user", "content": prompt}]
+                messages=[{"role": "user", "content": prompt}],
             )
 
             class LLMResponseImpl:
@@ -329,6 +334,7 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
 
         except Exception as e:
             logger.error(f"LLM call failed: {e}")
+
             # Return fallback response
             class LLMResponseImpl:
                 def __init__(self, content: str):

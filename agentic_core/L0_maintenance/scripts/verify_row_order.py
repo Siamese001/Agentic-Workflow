@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
 """Verify dashboard row order"""
+
 import json
 
 # Load dashboard_data.js
-with open('agentic_core/L6_observability/dashboards/data/dashboard_data.js', encoding='utf-8') as f:
+with open("agentic_core/L6_observability/dashboards/data/dashboard_data.js", encoding="utf-8") as f:
     content = f.read()
-    start = content.find('[')
-    end = content.rfind(']') + 1
+    start = content.find("[")
+    end = content.rfind("]") + 1
     data = json.loads(content[start:end])
 
 print("Dashboard Row Order:")
 print("=" * 70)
 for i, row in enumerate(data, 1):
-    territory = row['Territory']
+    territory = row["Territory"]
     print(f"{i:2}. {territory}")
 
 print("=" * 70)
@@ -24,7 +25,7 @@ print(f"✅ Total rows: {len(data)}")
 expected_first = "Sovereign Base Agent"
 expected_last = "TOTAL"
 
-if data[0]['Territory'] == expected_first and data[-1]['Territory'] == expected_last:
+if data[0]["Territory"] == expected_first and data[-1]["Territory"] == expected_last:
     print("\n✅ Row order is CORRECT!")
 else:
     print("\n❌ Row order is WRONG!")

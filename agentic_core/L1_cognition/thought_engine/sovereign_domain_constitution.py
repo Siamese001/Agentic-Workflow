@@ -18,43 +18,43 @@ BOUNDED_CONTEXTS: dict[str, dict[str, Any]] = {
     "L0_Governance": {
         "path": "agentic_core/L0_maintenance",
         "rank": 0,
-        "role": "Metacognition: The Law, Auditors, and Healers"
+        "role": "Metacognition: The Law, Auditors, and Healers",
     },
     "L1_Cognition": {
         "path": "agentic_core/L1_cognition",
         "rank": 1,
-        "role": "Strategic Reasoning: Planning and Consensus"
+        "role": "Strategic Reasoning: Planning and Consensus",
     },
     "L2_Execution": {
         "path": "agentic_core/L2_execution",
         "rank": 2,
-        "role": "Action: Tool Implementation and Agent Realization"
+        "role": "Action: Tool Implementation and Agent Realization",
     },
     "L3_Orchestration": {
         "path": "agentic_core/L3_orchestration",
         "rank": 3,
-        "role": "Workflow: Task Fission and Fusion"
+        "role": "Workflow: Task Fission and Fusion",
     },
     "L4_State": {
         "path": "agentic_core/L4_state",
         "rank": 4,
-        "role": "Memory: Persistence and Semantic Caching"
+        "role": "Memory: Persistence and Semantic Caching",
     },
     "L5_Safety": {
         "path": "agentic_core/L5_safety",
         "rank": 5,
-        "role": "Membrane: Input/Output Sanitization"
+        "role": "Membrane: Input/Output Sanitization",
     },
     "Observability": {
         "path": "agentic_core/observability",  # [SSOT] Per structure_blueprint.py
         "rank": 6,
-        "role": "Truth: Telemetry, Logging, and Audit Trails"
+        "role": "Truth: Telemetry, Logging, and Audit Trails",
     },
     "SharedContracts": {
         "path": "apps_shared/base_agents",
         "rank": -1,  # Neutral layer, no rank in hierarchy
-        "role": "Neutral Interfaces: Cross-context contracts"
-    }
+        "role": "Neutral Interfaces: Cross-context contracts",
+    },
 }
 
 # 2. Domain Aggregates (Root Entity Protection)
@@ -62,13 +62,13 @@ DOMAIN_AGGREGATES: dict[str, dict] = {
     "Mission": {
         "root": "MissionPlan",
         "entities": ["MissionPhase", "ThoughtChain"],
-        "invariants": ["Phases must be unique", "No cycles in dependency graph"]
+        "invariants": ["Phases must be unique", "No cycles in dependency graph"],
     },
     "Thought": {
         "root": "ThoughtChain",
         "entities": ["ThinkingStep", "Hypothesis", "Revision"],
-        "invariants": ["Steps must be sequential", "Conclusion is mandatory"]
-    }
+        "invariants": ["Steps must be sequential", "Conclusion is mandatory"],
+    },
 }
 
 # 3. Ubiquitous Language (Required Terminology)

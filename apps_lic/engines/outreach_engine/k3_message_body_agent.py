@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class K3Output:
     """K.3 message body output."""
+
     body: str
     archetype: str
     transition_phrase: str
@@ -206,8 +207,7 @@ class K3_MessageBodyAgent(Agent):
             Formatted prompt
         """
         transition_phrase = ARCHETYPE_TRANSITIONS.get(
-            self.archetype,
-            ARCHETYPE_TRANSITIONS["EXECUTIVE"]
+            self.archetype, ARCHETYPE_TRANSITIONS["EXECUTIVE"]
         ).format(company=company_name)
 
         prompt = f"""Generate a professional LinkedIn message body for a {self.archetype} recipient.
@@ -217,11 +217,11 @@ CRITICAL CONSTRAINTS (ZERO TOLERANCE):
 2. Exactly 2 insights (numbered "1." and "2.")
 3. Exactly 3 measurable bullets with metrics
 4. NO placeholders ([NAME], {{company}}, etc.) - BLOCKING violation (LIC-QA-001)
-5. Character limit: {self.char_limit if self.char_limit else 'No limit'}
+5. Character limit: {self.char_limit if self.char_limit else "No limit"}
 
-ARCHETYPE TEMPLATE: {self.template['format']}
-- Tone: {self.template['tone']}
-- Formality: {self.template['formality']}
+ARCHETYPE TEMPLATE: {self.template["format"]}
+- Tone: {self.template["tone"]}
+- Formality: {self.template["formality"]}
 
 STRUCTURE:
 Hi {recipient_name},
@@ -240,10 +240,10 @@ Hi {recipient_name},
 • [Bullet 3 with metric and context]
 
 RAG INSIGHTS (use these):
-{chr(10).join(f'- {insight}' for insight in rag_insights[:5])}
+{chr(10).join(f"- {insight}" for insight in rag_insights[:5])}
 
 SENDER CREDENTIALS (use for bullets):
-{chr(10).join(f'- {bullet}' for bullet in sender_bullets[:5])}
+{chr(10).join(f"- {bullet}" for bullet in sender_bullets[:5])}
 
 FORBIDDEN (LIC-QA-001):
 - [NAME], [COMPANY], {{name}}, {{company}}
@@ -282,7 +282,7 @@ CONSTRAINTS:
 - Must include exact transition phrase
 - Exactly 2 insights, exactly 3 bullets
 - NO placeholders (BLOCKING)
-- Character limit: {self.char_limit if self.char_limit else 'No limit'}
+- Character limit: {self.char_limit if self.char_limit else "No limit"}
 
 INSTRUCTIONS:
 Fix ONLY the failing sections listed in feedback.
@@ -304,8 +304,7 @@ Generate the corrected message body:
             Extracted transition phrase or empty string
         """
         expected_phrase = ARCHETYPE_TRANSITIONS.get(
-            self.archetype,
-            ARCHETYPE_TRANSITIONS["EXECUTIVE"]
+            self.archetype, ARCHETYPE_TRANSITIONS["EXECUTIVE"]
         ).format(company=company_name)
 
         if expected_phrase.lower() in body.lower():
@@ -323,8 +322,9 @@ Generate the corrected message body:
             Number of insights
         """
         import re
+
         # Count patterns like "1." and "2."
-        insights = re.findall(r'\n\d+\.\s+', body)
+        insights = re.findall(r"\n\d+\.\s+", body)
         return len(insights)
 
     def _count_bullets(self, body: str) -> int:
@@ -337,6 +337,7 @@ Generate the corrected message body:
             Number of bullets
         """
         import re
+
         # Count patterns like "•", "-", "*"
-        bullets = re.findall(r'[\n•\-\*]\s+', body)
+        bullets = re.findall(r"[\n•\-\*]\s+", body)
         return len(bullets)

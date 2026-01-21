@@ -8,6 +8,7 @@ Tests verify that:
 - Legacy backup directories are removed
 - SSOT backup location is the only one present
 """
+
 import sys
 from pathlib import Path
 
@@ -74,6 +75,7 @@ def test_backup_ssot_location_exists(tmp_path):
 def test_run_cleanup_script_importable():
     """Verify the cleanup script is importable."""
     import importlib.util
+
     spec = importlib.util.find_spec("agentic_core.L0_maintenance.scripts.run_cleanup")
     assert spec is not None, "run_cleanup script module not found"
 
@@ -81,6 +83,7 @@ def test_run_cleanup_script_importable():
 def test_cleanup_script_has_main():
     """Verify cleanup script has main function."""
     from agentic_core.L0_maintenance.scripts.run_cleanup import main
+
     assert callable(main)
 
 
@@ -105,34 +108,41 @@ def test_ssot_modules_importable():
     """Verify all SSOT modules are importable."""
     # Config SSOT
     from agentic_core.config import DEFAULT_EXCLUDE_DIRS, SOVEREIGN_REGISTRY
+
     assert SOVEREIGN_REGISTRY is not None
     assert DEFAULT_EXCLUDE_DIRS is not None
 
     # Unified API
     from agentic_core.unified import UnifiedCodeValidatorAgent
+
     assert UnifiedCodeValidatorAgent is not None
 
     # Project root
     from agentic_core.utils.project_root import get_project_root
+
     assert callable(get_project_root)
 
     # File utils
     from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+
     assert callable(safe_read_file)
     assert callable(safe_write_file)
 
     # Backup manager
     from agentic_core.utils.backup_manager import BackupManager
+
     assert BackupManager is not None
 
 
 def test_healer_mixin_ssot_location():
     """Verify HealerMixin SSOT is in correct location."""
     from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+
     assert HealerMixin is not None
 
     # Verify it's a class
     import inspect
+
     assert inspect.isclass(HealerMixin)
 
 

@@ -23,6 +23,7 @@ EMBEDDING_FILES = [
 def get_project_root() -> Path:
     """Get project root directory."""
     import os
+
     if "PROJECT_ROOT" in os.environ:
         return Path(os.environ["PROJECT_ROOT"])
 
@@ -63,15 +64,16 @@ class TestGeminiEmbedderAPICompliance:
             # Filter out false positives (variable names like embed_content = ...)
             for match in wrong_matches:
                 if "contents=" not in match:
-                    violations.append({
-                        "file": rel_path,
-                        "issue": "Uses 'content=' instead of 'contents='",
-                        "match": match[:50]
-                    })
+                    violations.append(
+                        {
+                            "file": rel_path,
+                            "issue": "Uses 'content=' instead of 'contents='",
+                            "match": match[:50],
+                        }
+                    )
 
-        assert not violations, (
-            "Found incorrect embed_content parameter usage:\n"
-            + "\n".join(f"  - {v['file']}: {v['issue']}" for v in violations)
+        assert not violations, "Found incorrect embed_content parameter usage:\n" + "\n".join(
+            f"  - {v['file']}: {v['issue']}" for v in violations
         )
 
     def test_embed_content_result_uses_embeddings_array(self, project_root: Path):
@@ -87,22 +89,25 @@ class TestGeminiEmbedderAPICompliance:
 
             # Check for old-style result access
             if "result.embedding.values" in content:
-                violations.append({
-                    "file": rel_path,
-                    "issue": "Uses 'result.embedding.values' instead of 'result.embeddings[0].values'"
-                })
+                violations.append(
+                    {
+                        "file": rel_path,
+                        "issue": "Uses 'result.embedding.values' instead of 'result.embeddings[0].values'",
+                    }
+                )
 
-        assert not violations, (
-            "Found incorrect embed_content result access:\n"
-            + "\n".join(f"  - {v['file']}: {v['issue']}" for v in violations)
+        assert not violations, "Found incorrect embed_content result access:\n" + "\n".join(
+            f"  - {v['file']}: {v['issue']}" for v in violations
         )
 
     def test_gemini_embedder_can_be_imported(self, project_root: Path):
         """Verify GeminiEmbedder can be imported without errors."""
         try:
             import sys
+
             sys.path.insert(0, str(project_root))
             from agentic_core.semantic_memory.embeddings.gemini_embedder import GeminiEmbedder
+
             assert GeminiEmbedder is not None
         except ImportError as e:
             pytest.skip(f"GeminiEmbedder import failed: {e}")

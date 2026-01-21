@@ -26,11 +26,13 @@ from enum import Enum
 # from agentic_workflow_sdk.router import MultiProviderRouter, RouterConfig, Provider
 # from agentic_workflow_sdk.tracing import setup_tracing
 
+
 # Placeholder for SDK imports if not available
 class Provider(Enum):
     OPENAI = "openai"
     ANTHROPIC = "anthropic"
     VERTEX = "vertex"
+
 
 @dataclass
 class RouterConfig:
@@ -39,38 +41,90 @@ class RouterConfig:
     fallback_enabled: bool
     circuit_breaker_enabled: bool
 
+
 class MockLLMClient:
     async def generate(self, message: str, temperature: float, max_tokens: int) -> object:
         logger.info(f"MockLLMClient generating response for: {message[:100]}...")
         # Simulate LLM response based on prompt
         if "strategic talent intelligence operations planner" in message:
-            return MockResponse(json.dumps({
-                "strategy": "Comprehensive talent acquisition and market analysis",
-                "information_needed": ["candidate skills", "experience", "location", "salary expectations", "market demand"],
-                "data_sources": ["resume_database", "job_postings", "market_data"],
-                "analysis_steps": ["skill gap analysis", "salary benchmarking", "geographical talent mapping"],
-                "success_criteria": ["5 qualified candidates identified", "market report generated"],
-                "risks": ["data quality issues", "LLM hallucination"]
-            }))
+            return MockResponse(
+                json.dumps(
+                    {
+                        "strategy": "Comprehensive talent acquisition and market analysis",
+                        "information_needed": [
+                            "candidate skills",
+                            "experience",
+                            "location",
+                            "salary expectations",
+                            "market demand",
+                        ],
+                        "data_sources": ["resume_database", "job_postings", "market_data"],
+                        "analysis_steps": [
+                            "skill gap analysis",
+                            "salary benchmarking",
+                            "geographical talent mapping",
+                        ],
+                        "success_criteria": [
+                            "5 qualified candidates identified",
+                            "market report generated",
+                        ],
+                        "risks": ["data quality issues", "LLM hallucination"],
+                    }
+                )
+            )
         elif "talent intelligence analyst" in message:
-            return MockResponse(json.dumps({
-                "data_quality_assessment": "High for resume and job postings, medium for market data",
-                "key_insights": ["High demand for Python/AWS engineers", "San Francisco is a competitive market"],
-                "information_gaps": ["Specific salary expectations per candidate"],
-                "confidence_levels": "High",
-                "recommendations_for_action": ["Prioritize candidates with specific skills", "Focus on Austin market for React/Node.js"]
-            }))
+            return MockResponse(
+                json.dumps(
+                    {
+                        "data_quality_assessment": "High for resume and job postings, medium for market data",
+                        "key_insights": [
+                            "High demand for Python/AWS engineers",
+                            "San Francisco is a competitive market",
+                        ],
+                        "information_gaps": ["Specific salary expectations per candidate"],
+                        "confidence_levels": "High",
+                        "recommendations_for_action": [
+                            "Prioritize candidates with specific skills",
+                            "Focus on Austin market for React/Node.js",
+                        ],
+                    }
+                )
+            )
         elif "Generate specific actions to take" in message:
-            return MockResponse(json.dumps([
-                {"action_type": "generate_report", "target": "Hiring Manager", "content": "Talent Market Report Q4", "priority": "High", "success_metrics": "Report delivered"},
-                {"action_type": "send_email", "target": ["john.doe@example.com"], "content": "Interview invitation for John Smith", "priority": "Medium", "success_metrics": "Email sent"},
-                {"action_type": "update_database", "target": "ATS", "data": [{"candidate_id": "candidate_001", "status": "shortlisted"}], "priority": "High", "success_metrics": "Database updated"}
-            ]))
+            return MockResponse(
+                json.dumps(
+                    [
+                        {
+                            "action_type": "generate_report",
+                            "target": "Hiring Manager",
+                            "content": "Talent Market Report Q4",
+                            "priority": "High",
+                            "success_metrics": "Report delivered",
+                        },
+                        {
+                            "action_type": "send_email",
+                            "target": ["john.doe@example.com"],
+                            "content": "Interview invitation for John Smith",
+                            "priority": "Medium",
+                            "success_metrics": "Email sent",
+                        },
+                        {
+                            "action_type": "update_database",
+                            "target": "ATS",
+                            "data": [{"candidate_id": "candidate_001", "status": "shortlisted"}],
+                            "priority": "High",
+                            "success_metrics": "Database updated",
+                        },
+                    ]
+                )
+            )
         return MockResponse(json.dumps({"content": "Mock response"}))
+
 
 class MockResponse:
     def __init__(self, content):
         self.content = content
+
 
 class MultiProviderRouter:
     def __init__(self, config: RouterConfig):
@@ -78,11 +132,12 @@ class MultiProviderRouter:
         self.clients = {
             Provider.OPENAI: MockLLMClient(),
             Provider.ANTHROPIC: MockLLMClient(),
-            Provider.VERTEX: MockLLMClient()
+            Provider.VERTEX: MockLLMClient(),
         }
 
     async def get_primary_client(self):
         return self.clients[self.config.primary_provider]
+
 
 def setup_tracing(service_name: str):
     class MockTracer:
@@ -91,27 +146,35 @@ def setup_tracing(service_name: str):
                 def __enter__(self):
                     logger.debug(f"Span '{name}' started.")
                     return self
+
                 def __exit__(self, exc_type, exc_val, exc_tb):
                     logger.debug(f"Span '{name}' finished.")
+
             return MockSpan()
+
     return MockTracer()
+
 
 # Setup logging and tracing
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 tracer = setup_tracing("agentic_full_cycle")
 
+
 class WorkflowStage(Enum):
     """Stages of the agentic workflow"""
+
     PLANNING = "planning"
     RETRIEVAL = "retrieval"
     INSPECTION = "inspection"
     ACTION = "action"
     COMPLETED = "completed"
 
+
 @dataclass
 class WorkflowContext:
     """Context maintained throughout the workflow"""
+
     session_id: str
     objective: str
     stage: WorkflowStage
@@ -122,16 +185,19 @@ class WorkflowContext:
     start_time: datetime
     metadata: dict[str, object]
 
+
 class TalentIntelligenceAgent:
     """Production agent for talent intelligence operations"""
 
     def __init__(self):
-        self.router = MultiProviderRouter(RouterConfig(
-            providers=[Provider.OPENAI, Provider.ANTHROPIC, Provider.VERTEX],
-            primary_provider=Provider.OPENAI,
-            fallback_enabled=True,
-            circuit_breaker_enabled=True
-        ))
+        self.router = MultiProviderRouter(
+            RouterConfig(
+                providers=[Provider.OPENAI, Provider.ANTHROPIC, Provider.VERTEX],
+                primary_provider=Provider.OPENAI,
+                fallback_enabled=True,
+                circuit_breaker_enabled=True,
+            )
+        )
         self.llm_client = None
 
     async def initialize(self):
@@ -169,15 +235,15 @@ class TalentIntelligenceAgent:
                 """
 
                 response = await self.llm_client.generate(
-                    message=planning_prompt,
-                    temperature=0.3,
-                    max_tokens=1000
+                    message=planning_prompt, temperature=0.3, max_tokens=1000
                 )
 
                 # Parse the strategic plan
                 plan = json.loads(response.content)
                 context.data["plan"] = plan
-                context.insights.append(f"Generated strategic plan with {len(plan['analysis_steps'])} steps")
+                context.insights.append(
+                    f"Generated strategic plan with {len(plan['analysis_steps'])} steps"
+                )
                 context.stage = WorkflowStage.RETRIEVAL
 
                 logger.info("Planning stage completed successfully")
@@ -200,11 +266,17 @@ class TalentIntelligenceAgent:
                 # Simulate data retrieval from various sources
                 for source in plan["data_sources"]:
                     if source == "resume_database":
-                        retrieved_data[source] = await self._search_resumes(plan["information_needed"])
+                        retrieved_data[source] = await self._search_resumes(
+                            plan["information_needed"]
+                        )
                     elif source == "job_postings":
-                        retrieved_data[source] = await self._search_job_postings(plan["information_needed"])
+                        retrieved_data[source] = await self._search_job_postings(
+                            plan["information_needed"]
+                        )
                     elif source == "market_data":
-                        retrieved_data[source] = await self._get_market_data(plan["information_needed"])
+                        retrieved_data[source] = await self._get_market_data(
+                            plan["information_needed"]
+                        )
 
                 context.data["retrieved"] = retrieved_data
                 context.insights.append(f"Retrieved data from {len(retrieved_data)} sources")
@@ -235,9 +307,15 @@ class TalentIntelligenceAgent:
                 Information Needed: {json.dumps(plan["information_needed"], indent=2)}
 
                 Retrieved Data Summary:
-                {json.dumps({k: f"{len(v) if isinstance(v, list) else 'summary'} items" for k,
-                     v in retrieved_data.items()},
-                     indent=2)}
+                {
+                    json.dumps(
+                        {
+                            k: f"{len(v) if isinstance(v, list) else 'summary'} items"
+                            for k, v in retrieved_data.items()
+                        },
+                        indent=2,
+                    )
+                }
 
                 Provide analysis including:
                 1. Data quality assessment
@@ -250,9 +328,7 @@ class TalentIntelligenceAgent:
                 """
 
                 response = await self.llm_client.generate(
-                    message=inspection_prompt,
-                    temperature=0.2,
-                    max_tokens=1500
+                    message=inspection_prompt, temperature=0.2, max_tokens=1500
                 )
 
                 analysis = json.loads(response.content)
@@ -275,7 +351,7 @@ class TalentIntelligenceAgent:
         with tracer.start_as_current_span("action_stage"):
             try:
                 analysis = context.data["analysis"]
-                plan = context.data["plan"] # Corrected: context["plan"] to context.data["plan"]
+                plan = context.data["plan"]  # Corrected: context["plan"] to context.data["plan"]
 
                 # Generate action plan
                 action_prompt = f"""
@@ -293,9 +369,7 @@ class TalentIntelligenceAgent:
                 """
 
                 response = await self.llm_client.generate(
-                    message=action_prompt,
-                    temperature=0.3,
-                    max_tokens=1000
+                    message=action_prompt, temperature=0.3, max_tokens=1000
                 )
 
                 actions = json.loads(response.content)
@@ -305,11 +379,13 @@ class TalentIntelligenceAgent:
                 for action in actions:
                     try:
                         result = await self._execute_action(action)
-                        executed_actions.append({
-                            "action": action,
-                            "result": result,
-                            "timestamp": datetime.utcnow().isoformat()
-                        })
+                        executed_actions.append(
+                            {
+                                "action": action,
+                                "result": result,
+                                "timestamp": datetime.utcnow().isoformat(),
+                            }
+                        )
                         context.actions_taken.append(f"Executed {action['action_type']}")
                     except Exception as e:
                         logger.error(f"Action execution failed: {e}")
@@ -336,7 +412,7 @@ class TalentIntelligenceAgent:
                 "skills": ["Python", "AWS", "Machine Learning"],
                 "experience": "5 years",
                 "location": "San Francisco",
-                "match_score": 0.92
+                "match_score": 0.92,
             },
             {
                 "id": "candidate_002",
@@ -344,8 +420,8 @@ class TalentIntelligenceAgent:
                 "skills": ["React", "Node.js", "TypeScript"],
                 "experience": "3 years",
                 "location": "Austin",
-                "match_score": 0.87
-            }
+                "match_score": 0.87,
+            },
         ]
 
     async def _search_job_postings(self, information_needed: list[str]) -> list[dict]:
@@ -357,7 +433,7 @@ class TalentIntelligenceAgent:
                 "company": "TechCorp",
                 "location": "San Francisco",
                 "salary_range": "$150k-$200k",
-                "requirements": ["Python", "AWS", "5+ years"]
+                "requirements": ["Python", "AWS", "5+ years"],
             },
             {
                 "id": "job_002",
@@ -365,8 +441,8 @@ class TalentIntelligenceAgent:
                 "company": "StartupXYZ",
                 "location": "Austin",
                 "salary_range": "$120k-$160k",
-                "requirements": ["React", "Node.js", "3+ years"]
-            }
+                "requirements": ["React", "Node.js", "3+ years"],
+            },
         ]
 
     async def _get_market_data(self, information_needed: list[str]) -> dict:
@@ -375,10 +451,10 @@ class TalentIntelligenceAgent:
             "market_trends": {
                 "demand_for_engineers": "High",
                 "average_salary_growth": "+8% YoY",
-                "top_skills": ["Python", "AWS", "React", "Machine Learning"]
+                "top_skills": ["Python", "AWS", "React", "Machine Learning"],
             },
             "competition_level": "High",
-            "time_to_fill_average": "45 days"
+            "time_to_fill_average": "45 days",
         }
 
     async def _execute_action(self, action: dict) -> dict:
@@ -389,25 +465,23 @@ class TalentIntelligenceAgent:
             return {
                 "status": "success",
                 "report_id": f"report_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}",
-                "file_path": "/reports/talent_intelligence_report.pdf"
+                "file_path": "/reports/talent_intelligence_report.pdf",
             }
         elif action_type == "send_email":
             return {
                 "status": "success",
                 "email_id": f"email_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}",
-                "recipients": action.get("target", [])
+                "recipients": action.get("target", []),
             }
         elif action_type == "update_database":
             return {
                 "status": "success",
                 "records_updated": len(action.get("data", [])),
-                "timestamp": datetime.utcnow().isoformat()
+                "timestamp": datetime.utcnow().isoformat(),
             }
         else:
-            return {
-                "status": "unknown_action",
-                "action_type": action_type
-            }
+            return {"status": "unknown_action", "action_type": action_type}
+
 
 class WorkflowOrchestrator:
     """Orchestrates the complete agentic workflow"""
@@ -428,7 +502,7 @@ class WorkflowOrchestrator:
             actions_taken=[],
             errors=[],
             start_time=datetime.utcnow(),
-            metadata={"version": "3.0", "orchestrator": "WorkflowOrchestrator"}
+            metadata={"version": "3.0", "orchestrator": "WorkflowOrchestrator"},
         )
 
         try:
@@ -443,9 +517,13 @@ class WorkflowOrchestrator:
 
             # Generate final summary
             context.metadata["completion_time"] = datetime.utcnow()
-            context.metadata["duration"] = (context.metadata["completion_time"] - context.start_time).total_seconds()
+            context.metadata["duration"] = (
+                context.metadata["completion_time"] - context.start_time
+            ).total_seconds()
 
-            logger.info(f"Workflow completed successfully in {context.metadata['duration']:.2f} seconds")
+            logger.info(
+                f"Workflow completed successfully in {context.metadata['duration']:.2f} seconds"
+            )
             return context
 
         except Exception as e:
@@ -453,6 +531,7 @@ class WorkflowOrchestrator:
             context.errors.append(f"Workflow failure: {str(e)}")
             context.stage = WorkflowStage.COMPLETED
             return context
+
 
 # Main execution function
 async def main():
@@ -462,7 +541,7 @@ async def main():
     objectives = [
         "Find senior software engineers with Python and AWS experience in San Francisco",
         "Analyze the competitive landscape for machine learning talent",
-        "Identify candidates for a product coordinator position with SaaS experience"
+        "Identify candidates for a product coordinator position with SaaS experience",
     ]
 
     orchestrator = WorkflowOrchestrator()
@@ -492,6 +571,7 @@ async def main():
 
         logger.info(f"Total Duration: {context.metadata.get('duration', 'N/A'):.2f} seconds")
         logger.info("--------------------------------------------------")
+
 
 if __name__ == "__main__":
     # Run the complete agentic workflow

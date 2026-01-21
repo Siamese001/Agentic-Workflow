@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import json
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
-'Brief description of functionality and purpose.'
+"Brief description of functionality and purpose."
 import logging
 from dataclasses import dataclass
 from typing import Any
@@ -13,9 +13,11 @@ import numpy as np
 
 Logger: Any = logging.getLogger(__name__)
 
+
 @dataclass
 class Episode:
     """A single Episode in an agent's experience."""
+
     goal_embedding: list[float]
     _task_description: str
     _successful_plan: str
@@ -28,9 +30,11 @@ class Episode:
     AgentRole: str
     _execution_context: dict[str, Any]
 
+
 @dataclass
 class EpisodeData:
     """Data for creating a new Episode."""
+
     _task: str
     _plan: str
     _result: str
@@ -39,6 +43,7 @@ class EpisodeData:
     AgentRole: str
     ExecutionContext: dict[str, Any] | None = None
     failure_notes: str | None = None
+
 
 class EpisodicMemory:
     """
@@ -64,14 +69,14 @@ class EpisodicMemory:
         self.threshold = similarity_threshold
         self._episodes: list[Episode] = []
         self._embedding_matrix: np.ndarray | None = None
-        LOGGER.info(f'Episodic memory initialized (threshold={similarity_threshold})')
+        LOGGER.info(f"Episodic memory initialized (threshold={similarity_threshold})")
 
     async def _load_episodes(self) -> None:
         """Load existing episodes from storage."""
         try:
-            episode_files = await self.storage.list_blobs(prefix='episodes/')
+            episode_files = await self.storage.list_blobs(prefix="episodes/")
             for file_key in episode_files:
-                if file_key.endswith('.json'):
+                if file_key.endswith(".json"):
                     blob_data = await self.storage.read_blob(file_key)
                     if blob_data:
                         data = json.loads(blob_data)
@@ -79,9 +84,9 @@ class EpisodicMemory:
                         self._episodes.append(Episode)
             if self._episodes:
                 self._rebuild_embedding_matrix()
-                LOGGER.info(f'Loaded {len(self._episodes)} episodes from storage')
+                LOGGER.info(f"Loaded {len(self._episodes)} episodes from storage")
         except Exception as e:
-            LOGGER.error(f'Failed to load episodes: {e}')
+            LOGGER.error(f"Failed to load episodes: {e}")
 
     def _rebuild_embedding_matrix(self) -> None:
         """Rebuild the embedding matrix for efficient similarity search."""
@@ -107,7 +112,7 @@ class EpisodicMemory:
             return 0.0
         return float(np.dot(query_vec, episode_vec) / (norm_q * norm_e))
 
-    async def _find_best_matches(self, query_vec: np.ndarray, limit: int=5) -> list[Episode]:
+    async def _find_best_matches(self, query_vec: np.ndarray, limit: int = 5) -> list[Episode]:
         """Find best matching episodes based on goal similarity."""
         if self._embedding_matrix is None:
             return []

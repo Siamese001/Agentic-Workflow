@@ -17,11 +17,13 @@ def extract_monolithic_data():
         print(f"❌ Backup file not found: {backup_path}")
         return None
 
-    with open(backup_path, encoding='utf-8') as f:
+    with open(backup_path, encoding="utf-8") as f:
         html_content = f.read()
 
     # Find the dashboardData JSON in the HTML (handles both formats)
-    match = re.search(r'const dashboardData = (?:window\.dashboardData \|\| )?(\[.*?\]);', html_content, re.DOTALL)
+    match = re.search(
+        r"const dashboardData = (?:window\.dashboardData \|\| )?(\[.*?\]);", html_content, re.DOTALL
+    )
     if not match:
         print("❌ Could not find dashboardData in monolithic HTML")
         return None
@@ -32,6 +34,7 @@ def extract_monolithic_data():
     print(f"✅ Extracted {len(data)} rows from monolithic backup")
     return data
 
+
 def load_modular_data():
     """Load modular dashboard data from JS file"""
     data_path = Path("agentic_core/L6_observability/dashboards/data/dashboard_data.js")
@@ -40,11 +43,11 @@ def load_modular_data():
         print(f"❌ Modular data file not found: {data_path}")
         return None
 
-    with open(data_path, encoding='utf-8') as f:
+    with open(data_path, encoding="utf-8") as f:
         js_content = f.read()
 
     # Extract the JSON array from window.dashboardData
-    match = re.search(r'window\.dashboardData = (\[.*?\]);', js_content, re.DOTALL)
+    match = re.search(r"window\.dashboardData = (\[.*?\]);", js_content, re.DOTALL)
     if not match:
         print("❌ Could not find dashboardData in modular JS")
         return None
@@ -54,6 +57,7 @@ def load_modular_data():
 
     print(f"✅ Loaded {len(data)} rows from modular data")
     return data
+
 
 def compare_values(mono_val, mod_val, field_name):
     """Compare two values with appropriate tolerance"""
@@ -82,11 +86,12 @@ def compare_values(mono_val, mod_val, field_name):
         match = mono_val == mod_val
         return match, None if match else f"{mono_val} != {mod_val}"
 
+
 def compare_dashboards():
     """Compare monolithic and modular dashboard data cell-by-cell"""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("DASHBOARD DATA COMPARISON: Monolithic vs Modular")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     mono_data = extract_monolithic_data()
     mod_data = load_modular_data()
@@ -96,8 +101,8 @@ def compare_dashboards():
         return False
 
     # Create dictionaries keyed by territory for easy lookup
-    mono_dict = {row['Territory']: row for row in mono_data}
-    mod_dict = {row['Territory']: row for row in mod_data}
+    mono_dict = {row["Territory"]: row for row in mono_data}
+    mod_dict = {row["Territory"]: row for row in mod_data}
 
     # Get all territories from both datasets
     all_territories = sorted(set(mono_dict.keys()) | set(mod_dict.keys()))
@@ -123,7 +128,7 @@ def compare_dashboards():
         all_fields = sorted(set(mono_row.keys()) | set(mod_row.keys()))
 
         for field in all_fields:
-            if field == 'Territory':
+            if field == "Territory":
                 continue  # Skip territory name itself
 
             total_cells += 1
@@ -139,14 +144,14 @@ def compare_dashboards():
                 discrepancies.append(f"❌ {territory} | {field}: {error}")
 
     # Print results
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("COMPARISON RESULTS")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     print(f"Total cells compared: {total_cells}")
     print(f"Matched cells: {matched_cells}")
     print(f"Discrepancies: {len(discrepancies)}")
-    print(f"Match rate: {(matched_cells/total_cells*100):.1f}%\n")
+    print(f"Match rate: {(matched_cells / total_cells * 100):.1f}%\n")
 
     if discrepancies:
         print("DISCREPANCIES FOUND:\n")
@@ -160,6 +165,7 @@ def compare_dashboards():
         print("✅ All cells match! Data fidelity confirmed.")
         return True
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     success = compare_dashboards()
     exit(0 if success else 1)

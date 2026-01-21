@@ -27,7 +27,7 @@ class CCMeasurement:
         self.results = {}
         self.timestamp = datetime.now().isoformat()
 
-    def measure_cc(self, target_path: str = 'agentic_core/') -> dict:
+    def measure_cc(self, target_path: str = "agentic_core/") -> dict:
         """
         Measure cyclomatic complexity using radon.
 
@@ -39,20 +39,15 @@ class CCMeasurement:
         """
         try:
             cmd = [
-                'radon', 'cc',
+                "radon",
+                "cc",
                 str(self.project_root / target_path),
-                '-s',  # Show summary
-                '-a',  # Show average
-                '-j'   # JSON output
+                "-s",  # Show summary
+                "-a",  # Show average
+                "-j",  # JSON output
             ]
 
-            result = safe_execute(
-                cmd,
-                capture_output=True,
-                text=True,
-                timeout=60,
-                check=False
-            )
+            result = safe_execute(cmd, capture_output=True, text=True, timeout=60, check=False)
 
             if result.returncode != 0:
                 print(f"Error running radon: {result.stderr}")
@@ -83,13 +78,13 @@ class CCMeasurement:
             Analyzed metrics
         """
         metrics = {
-            'total_functions': 0,
-            'total_cc': 0,
-            'average_cc': 0.0,
-            'functions_cc_gt_10': [],
-            'functions_cc_gt_15': [],
-            'functions_cc_gt_20': [],
-            'files_analyzed': 0,
+            "total_functions": 0,
+            "total_cc": 0,
+            "average_cc": 0.0,
+            "functions_cc_gt_10": [],
+            "functions_cc_gt_15": [],
+            "functions_cc_gt_20": [],
+            "files_analyzed": 0,
         }
 
         if not data:
@@ -98,35 +93,31 @@ class CCMeasurement:
         all_functions = []
 
         for file_path, file_data in data.items():
-            if isinstance(file_data, dict) and 'functions' in file_data:
-                metrics['files_analyzed'] += 1
+            if isinstance(file_data, dict) and "functions" in file_data:
+                metrics["files_analyzed"] += 1
 
-                for func_name, func_cc in file_data['functions'].items():
-                    metrics['total_functions'] += 1
-                    metrics['total_cc'] += func_cc
+                for func_name, func_cc in file_data["functions"].items():
+                    metrics["total_functions"] += 1
+                    metrics["total_cc"] += func_cc
 
-                    func_info = {
-                        'file': file_path,
-                        'function': func_name,
-                        'cc': func_cc
-                    }
+                    func_info = {"file": file_path, "function": func_name, "cc": func_cc}
 
                     all_functions.append(func_info)
 
                     if func_cc > 20:
-                        metrics['functions_cc_gt_20'].append(func_info)
+                        metrics["functions_cc_gt_20"].append(func_info)
                     elif func_cc > 15:
-                        metrics['functions_cc_gt_15'].append(func_info)
+                        metrics["functions_cc_gt_15"].append(func_info)
                     elif func_cc > 10:
-                        metrics['functions_cc_gt_10'].append(func_info)
+                        metrics["functions_cc_gt_10"].append(func_info)
 
-        if metrics['total_functions'] > 0:
-            metrics['average_cc'] = metrics['total_cc'] / metrics['total_functions']
+        if metrics["total_functions"] > 0:
+            metrics["average_cc"] = metrics["total_cc"] / metrics["total_functions"]
 
         # Sort high-CC functions
-        metrics['functions_cc_gt_20'].sort(key=lambda x: x['cc'], reverse=True)
-        metrics['functions_cc_gt_15'].sort(key=lambda x: x['cc'], reverse=True)
-        metrics['functions_cc_gt_10'].sort(key=lambda x: x['cc'], reverse=True)
+        metrics["functions_cc_gt_20"].sort(key=lambda x: x["cc"], reverse=True)
+        metrics["functions_cc_gt_15"].sort(key=lambda x: x["cc"], reverse=True)
+        metrics["functions_cc_gt_10"].sort(key=lambda x: x["cc"], reverse=True)
 
         return metrics
 
@@ -138,9 +129,9 @@ class CCMeasurement:
             metrics: Analyzed metrics
             title: Report title
         """
-        print(f"\n{'='*70}")
+        print(f"\n{'=' * 70}")
         print(f"{title}")
-        print(f"{'='*70}")
+        print(f"{'=' * 70}")
         print(f"Timestamp: {self.timestamp}")
         print("\nSummary:")
         print(f"  Files Analyzed: {metrics['files_analyzed']}")
@@ -153,19 +144,19 @@ class CCMeasurement:
         print(f"  CC > 15: {len(metrics['functions_cc_gt_15'])}")
         print(f"  CC > 10: {len(metrics['functions_cc_gt_10'])}")
 
-        if metrics['functions_cc_gt_20']:
+        if metrics["functions_cc_gt_20"]:
             print("\n  Functions with CC > 20:")
-            for func in metrics['functions_cc_gt_20'][:10]:
+            for func in metrics["functions_cc_gt_20"][:10]:
                 print(f"    {func['file']}::{func['function']} (CC={func['cc']})")
 
-        if metrics['functions_cc_gt_15']:
+        if metrics["functions_cc_gt_15"]:
             print("\n  Functions with CC > 15:")
-            for func in metrics['functions_cc_gt_15'][:10]:
+            for func in metrics["functions_cc_gt_15"][:10]:
                 print(f"    {func['file']}::{func['function']} (CC={func['cc']})")
 
-        if metrics['functions_cc_gt_10']:
+        if metrics["functions_cc_gt_10"]:
             print("\n  Functions with CC > 10:")
-            for func in metrics['functions_cc_gt_10'][:10]:
+            for func in metrics["functions_cc_gt_10"][:10]:
                 print(f"    {func['file']}::{func['function']} (CC={func['cc']})")
 
     def save_report(self, metrics: dict, output_file: Path):
@@ -180,11 +171,11 @@ class CCMeasurement:
             output_file.parent.mkdir(parents=True, exist_ok=True)
 
             report = {
-                'timestamp': self.timestamp,
-                'metrics': metrics,
+                "timestamp": self.timestamp,
+                "metrics": metrics,
             }
 
-            with open(output_file, 'w') as f:
+            with open(output_file, "w") as f:
                 json.dump(report, f, indent=2)
 
             print(f"\nReport saved to: {output_file}")
@@ -204,17 +195,20 @@ class CCMeasurement:
             Comparison results
         """
         comparison = {
-            'total_cc_change': current['total_cc'] - baseline['total_cc'],
-            'total_cc_percent_change': 0.0,
-            'average_cc_change': current['average_cc'] - baseline['average_cc'],
-            'functions_cc_gt_10_change': len(current['functions_cc_gt_10']) - len(baseline['functions_cc_gt_10']),
-            'functions_cc_gt_15_change': len(current['functions_cc_gt_15']) - len(baseline['functions_cc_gt_15']),
-            'functions_cc_gt_20_change': len(current['functions_cc_gt_20']) - len(baseline['functions_cc_gt_20']),
+            "total_cc_change": current["total_cc"] - baseline["total_cc"],
+            "total_cc_percent_change": 0.0,
+            "average_cc_change": current["average_cc"] - baseline["average_cc"],
+            "functions_cc_gt_10_change": len(current["functions_cc_gt_10"])
+            - len(baseline["functions_cc_gt_10"]),
+            "functions_cc_gt_15_change": len(current["functions_cc_gt_15"])
+            - len(baseline["functions_cc_gt_15"]),
+            "functions_cc_gt_20_change": len(current["functions_cc_gt_20"])
+            - len(baseline["functions_cc_gt_20"]),
         }
 
-        if baseline['total_cc'] > 0:
-            comparison['total_cc_percent_change'] = (
-                comparison['total_cc_change'] / baseline['total_cc'] * 100
+        if baseline["total_cc"] > 0:
+            comparison["total_cc_percent_change"] = (
+                comparison["total_cc_change"] / baseline["total_cc"] * 100
             )
 
         return comparison
@@ -230,14 +224,16 @@ class CCMeasurement:
         """
         comparison = self.compare_reports(baseline, current)
 
-        print(f"\n{'='*70}")
+        print(f"\n{'=' * 70}")
         print(f"{title}")
-        print(f"{'='*70}")
+        print(f"{'=' * 70}")
 
         print("\nTotal CC Change:")
         print(f"  Baseline: {baseline['total_cc']}")
         print(f"  Current: {current['total_cc']}")
-        print(f"  Change: {comparison['total_cc_change']} ({comparison['total_cc_percent_change']:.1f}%)")
+        print(
+            f"  Change: {comparison['total_cc_change']} ({comparison['total_cc_percent_change']:.1f}%)"
+        )
 
         print("\nAverage CC Change:")
         print(f"  Baseline: {baseline['average_cc']:.2f}")
@@ -245,9 +241,15 @@ class CCMeasurement:
         print(f"  Change: {comparison['average_cc_change']:.2f}")
 
         print("\nHigh Complexity Functions:")
-        print(f"  CC > 20: {len(baseline['functions_cc_gt_20'])} → {len(current['functions_cc_gt_20'])} ({comparison['functions_cc_gt_20_change']:+d})")
-        print(f"  CC > 15: {len(baseline['functions_cc_gt_15'])} → {len(current['functions_cc_gt_15'])} ({comparison['functions_cc_gt_15_change']:+d})")
-        print(f"  CC > 10: {len(baseline['functions_cc_gt_10'])} → {len(current['functions_cc_gt_10'])} ({comparison['functions_cc_gt_10_change']:+d})")
+        print(
+            f"  CC > 20: {len(baseline['functions_cc_gt_20'])} → {len(current['functions_cc_gt_20'])} ({comparison['functions_cc_gt_20_change']:+d})"
+        )
+        print(
+            f"  CC > 15: {len(baseline['functions_cc_gt_15'])} → {len(current['functions_cc_gt_15'])} ({comparison['functions_cc_gt_15_change']:+d})"
+        )
+        print(
+            f"  CC > 10: {len(baseline['functions_cc_gt_10'])} → {len(current['functions_cc_gt_10'])} ({comparison['functions_cc_gt_10_change']:+d})"
+        )
 
         # Success criteria
         print("\nSuccess Criteria:")
@@ -275,29 +277,35 @@ def main():
     tool.print_report(metrics, "Current Cyclomatic Complexity Report")
 
     # Save report
-    report_file = tool.project_root / AGENTIC_CORE_DIR / 'L0_maintenance' / 'logs' / 'cc_current_measurement.json'
+    report_file = (
+        tool.project_root
+        / AGENTIC_CORE_DIR
+        / "L0_maintenance"
+        / "logs"
+        / "cc_current_measurement.json"
+    )
     tool.save_report(metrics, report_file)
 
     # Print success/failure
-    print(f"\n{'='*70}")
+    print(f"\n{'=' * 70}")
     print("Phase 3 Validation Results:")
-    print(f"{'='*70}")
+    print(f"{'=' * 70}")
 
     success = True
 
-    if metrics['total_cc'] >= 25:
+    if metrics["total_cc"] >= 25:
         print(f"⚠ Overall CC: {metrics['total_cc']} (target: <25)")
         success = False
     else:
         print(f"✓ Overall CC: {metrics['total_cc']} (target: <25)")
 
-    if len(metrics['functions_cc_gt_10']) > 0:
+    if len(metrics["functions_cc_gt_10"]) > 0:
         print(f"⚠ Functions CC > 10: {len(metrics['functions_cc_gt_10'])} (target: 0)")
         success = False
     else:
         print("✓ Functions CC > 10: 0 (target: 0)")
 
-    if len(metrics['functions_cc_gt_15']) > 0:
+    if len(metrics["functions_cc_gt_15"]) > 0:
         print(f"⚠ Functions CC > 15: {len(metrics['functions_cc_gt_15'])} (target: 0)")
         success = False
     else:
@@ -311,5 +319,5 @@ def main():
         sys.exit(1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

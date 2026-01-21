@@ -1,25 +1,28 @@
 #!/usr/bin/env python3
 """Quick test scanner with built-in progress indicator."""
+
 import re
 import sys
 from pathlib import Path
 
 # ANSI colors
-G = '\033[92m'  # Green
-Y = '\033[93m'  # Yellow
-R = '\033[91m'  # Red
-B = '\033[94m'  # Blue
-C = '\033[96m'  # Cyan
-X = '\033[0m'   # Reset
+G = "\033[92m"  # Green
+Y = "\033[93m"  # Yellow
+R = "\033[91m"  # Red
+B = "\033[94m"  # Blue
+C = "\033[96m"  # Cyan
+X = "\033[0m"  # Reset
+
 
 def progress_bar(current, total, width=40):
     """Simple progress bar."""
     percent = current / total if total > 0 else 0
     filled = int(width * percent)
-    bar = '█' * filled + '░' * (width - filled)
+    bar = "█" * filled + "░" * (width - filled)
     color = G if percent > 0.7 else Y if percent > 0.3 else R
-    sys.stdout.write(f'\r{color}[{bar}]{X} {current}/{total} ({percent*100:.1f}%)')
+    sys.stdout.write(f"\r{color}[{bar}]{X} {current}/{total} ({percent * 100:.1f}%)")
     sys.stdout.flush()
+
 
 # Scan tests
 # Phase 6.7: Use ssot_discovery instead of rglob
@@ -27,7 +30,7 @@ from agentic_core.utils.ssot_discovery import get_python_files
 
 test_files = list(get_python_files(Path(TESTS_UNIT_DIR)))
 
-skip_pattern = re.compile(r'@pytest\.mark\.skip')
+skip_pattern = re.compile(r"@pytest\.mark\.skip")
 total_files_with_skips = 0
 total_skips = 0
 
@@ -36,7 +39,7 @@ print(f"{C}Scanning {len(test_files)} test files...{X}\n")
 for i, py_file in enumerate(test_files, 1):
     progress_bar(i, len(test_files))
     try:
-        content = py_file.read_text(encoding='utf-8')
+        content = py_file.read_text(encoding="utf-8")
         skip_count = len(skip_pattern.findall(content))
         if skip_count > 0:
             total_files_with_skips += 1
@@ -44,9 +47,9 @@ for i, py_file in enumerate(test_files, 1):
     except:
         pass
 
-print(f"\n\n{B}{'='*60}{X}")
+print(f"\n\n{B}{'=' * 60}{X}")
 print(f"{B}Results:{X}")
-print(f"{B}{'='*60}{X}")
+print(f"{B}{'=' * 60}{X}")
 print(f"  Files with skips: {C}{total_files_with_skips}{X}")
 
 color = G if total_skips < 200 else Y if total_skips < 400 else R
@@ -59,4 +62,4 @@ elif total_skips < 400:
 else:
     print(f"  Status: {R}✗ CRITICAL (>400){X}")
 
-print(f"{B}{'='*60}{X}")
+print(f"{B}{'=' * 60}{X}")

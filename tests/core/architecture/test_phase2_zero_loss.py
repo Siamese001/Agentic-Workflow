@@ -14,6 +14,7 @@ Author: Cascade
 Date: January 19, 2026
 Phase: 2 - Orchestrator Unification
 """
+
 import ast
 import sys
 import warnings
@@ -31,9 +32,9 @@ def test_tc5_mode_parity():
     Verify UnifiedOrchestratorAgent(mode="healing") produces the same
     MissionResult schema as expected from a legacy HealingOrchestratorAgent.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-5: Mode Parity")
-    print("="*60)
+    print("=" * 60)
 
     from agentic_core.L3_orchestration.interfaces import MissionResult
     from agentic_core.L3_orchestration.UnifiedOrchestratorAgent import UnifiedOrchestratorAgent
@@ -47,10 +48,7 @@ def test_tc5_mode_parity():
         return False
 
     # Run a mission and verify result schema
-    result = orchestrator.run_mission(
-        agents=["TestAgent1", "TestAgent2"],
-        dry_run=True
-    )
+    result = orchestrator.run_mission(agents=["TestAgent1", "TestAgent2"], dry_run=True)
 
     # Verify result is MissionResult
     if not isinstance(result, MissionResult):
@@ -59,9 +57,16 @@ def test_tc5_mode_parity():
 
     # Verify MissionResult has all required fields
     required_fields = [
-        'success', 'total_agents', 'successful_agents', 'failed_agents',
-        'total_violations_found', 'total_violations_fixed', 'total_errors',
-        'agent_results', 'phase', 'metadata'
+        "success",
+        "total_agents",
+        "successful_agents",
+        "failed_agents",
+        "total_violations_found",
+        "total_violations_fixed",
+        "total_errors",
+        "agent_results",
+        "phase",
+        "metadata",
     ]
 
     result_dict = result.to_dict()
@@ -89,9 +94,9 @@ def test_tc6_registry_resolution():
     Verify get_orchestrator returns an object that satisfies
     isinstance(obj, IOrchestratorAgent).
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-6: Registry Resolution")
-    print("="*60)
+    print("=" * 60)
 
     from agentic_core.L3_orchestration.orchestrator_registry import get_orchestrator
 
@@ -108,7 +113,7 @@ def test_tc6_registry_resolution():
             return False
 
         # Verify it has required protocol methods
-        required_methods = ['run_mission', 'run_agent', 'get_available_agents', 'validate_mission']
+        required_methods = ["run_mission", "run_agent", "get_available_agents", "validate_mission"]
         for method in required_methods:
             if not hasattr(orchestrator, method):
                 print(f"❌ FAIL: Orchestrator missing method: {method}")
@@ -127,9 +132,9 @@ def test_tc7_graceful_fallback():
     Verify that providing an unknown mode raises a descriptive ValueError
     rather than a crash.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-7: Graceful Fallback")
-    print("="*60)
+    print("=" * 60)
 
     from agentic_core.L3_orchestration.orchestrator_registry import get_orchestrator
 
@@ -171,12 +176,14 @@ def test_tc8_discovery_integration():
     Ensure the Unified Orchestrator does NOT perform any rglob calls,
     exclusively using ssot_discovery.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-8: Discovery Integration")
-    print("="*60)
+    print("=" * 60)
 
     # Read the UnifiedOrchestratorAgent source code
-    unified_path = PROJECT_ROOT / "agentic_core" / "L3_orchestration" / "UnifiedOrchestratorAgent.py"
+    unified_path = (
+        PROJECT_ROOT / "agentic_core" / "L3_orchestration" / "UnifiedOrchestratorAgent.py"
+    )
 
     if not unified_path.exists():
         print(f"❌ FAIL: UnifiedOrchestratorAgent.py not found at {unified_path}")
@@ -238,9 +245,9 @@ def test_deprecation_warnings():
     """
     Bonus Test: Verify deprecation warnings are emitted for legacy classes.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("BONUS: Deprecation Warnings")
-    print("="*60)
+    print("=" * 60)
 
     from agentic_core.L3_orchestration.orchestrator_registry import (
         ConsolidatedOrchestratorAgent,
@@ -278,9 +285,9 @@ def test_deprecation_warnings():
 
 def main():
     """Run all Phase 2 Zero-Loss test cases."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("PHASE 2 ZERO-LOSS VERIFICATION TEST SUITE")
-    print("="*70)
+    print("=" * 70)
     print(f"Project Root: {PROJECT_ROOT}")
 
     tests = [
@@ -299,13 +306,14 @@ def main():
         except Exception as e:
             print(f"\n❌ EXCEPTION in {test_name}: {e}")
             import traceback
+
             traceback.print_exc()
             results.append((test_name, False))
 
     # Summary
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST SUMMARY")
-    print("="*70)
+    print("=" * 70)
 
     passed_count = sum(1 for _, passed in results if passed)
     total_count = len(results)
@@ -318,7 +326,7 @@ def main():
         status = "✅ PASS" if passed else "❌ FAIL"
         print(f"{status}: {test_name}")
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print(f"CORE TESTS: {core_passed}/4 passed")
     print(f"TOTAL: {passed_count}/{total_count} tests passed")
 

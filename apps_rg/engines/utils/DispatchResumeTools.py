@@ -20,6 +20,7 @@ try:
         get_titanium_search_tool,
         get_titanium_search_with_sources,
     )
+
     TITANIUM_AVAILABLE = True
     Logger.info("Titanium RAG Pipeline imported successfully")
 except ImportError as e:
@@ -49,15 +50,11 @@ class DispatchResumeTools:
         try:
             output = self._perform_action(action, params)
             return ExecutionResult(
-                success=True,
-                output=output,
-                duration_ms=(time.time() - start) * 1000
+                success=True, output=output, duration_ms=(time.time() - start) * 1000
             )
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
             return ExecutionResult(
-                success=False,
-                error=str(e),
-                duration_ms=(time.time() - start) * 1000
+                success=False, error=str(e), duration_ms=(time.time() - start) * 1000
             )
 
     def _perform_action(self, action: str, params: dict[str, object]) -> object:
@@ -91,11 +88,7 @@ class DispatchResumeTools:
             "query": query,
             "results": f"[Titanium Search Results for: {query}]",
             "pipeline": "titanium",
-            "metadata": {
-                "decomposed": True,
-                "reranked": True,
-                "cached": False
-            }
+            "metadata": {"decomposed": True, "reranked": True, "cached": False},
         }
 
     def _handle_search_with_sources(self, params: dict[str, object]) -> dict[str, object]:
@@ -112,10 +105,10 @@ class DispatchResumeTools:
             "sources": [
                 {
                     "content": f"Sample content for {query}",
-                    "metadata": {"source": "knowledge_base", "confidence": 0.95}
+                    "metadata": {"source": "knowledge_base", "confidence": 0.95},
                 }
             ],
-            "pipeline": "titanium"
+            "pipeline": "titanium",
         }
 
     def _handle_get_stats(self) -> dict[str, object]:

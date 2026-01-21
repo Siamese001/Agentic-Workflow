@@ -6,6 +6,7 @@ to verify that the UnifiedHygieneValidatorAgent correctly scans and reports them
 
 DO NOT FIX THESE MARKERS - Used for testing marker detection.
 """
+
 from __future__ import annotations
 
 

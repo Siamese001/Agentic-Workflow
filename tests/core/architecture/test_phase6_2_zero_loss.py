@@ -13,6 +13,7 @@ Author: Cascade
 Date: January 19, 2026
 Phase: 6.2 - Legacy Key Purge (Batch 2)
 """
+
 import sys
 from pathlib import Path
 
@@ -28,12 +29,16 @@ def test_tc29_key_directness():
     Verify Batch 2 files access 'violations_found' directly from agent results
     without falling back to legacy keys.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-29: Key Directness")
-    print("="*60)
+    print("=" * 60)
 
     batch_2_files = [
-        PROJECT_ROOT / "agentic_core" / "L0_maintenance" / "scripts" / "find_agents_in_low_heal_territories.py",
+        PROJECT_ROOT
+        / "agentic_core"
+        / "L0_maintenance"
+        / "scripts"
+        / "find_agents_in_low_heal_territories.py",
         PROJECT_ROOT / "agentic_core" / "L0_maintenance" / "scripts" / "ssot_audit.py",
         PROJECT_ROOT / "agentic_core" / "L5_safety" / "gravity" / "StructuralHealerAgent.py",
         PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "NamingAgent.py",
@@ -49,17 +54,18 @@ def test_tc29_key_directness():
             continue
 
         try:
-            content = file_path.read_text(encoding='utf-8')
+            content = file_path.read_text(encoding="utf-8")
 
             # Check for standardized keys
-            if 'violations_found' in content:
+            if "violations_found" in content:
                 files_with_violations_found.append(file_path.name)
 
-            if 'violations_fixed' in content:
+            if "violations_fixed" in content:
                 files_with_violations_fixed.append(file_path.name)
 
             # Check for legacy key usage in heal_repository methods
             import re
+
             # Look for direct legacy key access (not backward compat code)
             legacy_patterns = [
                 r'return\s*{\s*["\']violations["\']',  # return {"violations"
@@ -110,9 +116,9 @@ def test_tc30_discovery_parity():
     Verify that find_agents_in_low_heal_territories.py discovers the same
     set of agents using SSOT as it did with rglob.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-30: Discovery Parity")
-    print("="*60)
+    print("=" * 60)
 
     from agentic_core.utils.ssot_discovery import get_agent_files
 
@@ -123,12 +129,15 @@ def test_tc30_discovery_parity():
 
         # Manual verification with os.walk
         import os
+
         l1_agents_manual = []
         for root, dirs, files in os.walk(l1_path):
             # Exclude standard directories
-            dirs[:] = [d for d in dirs if not d.startswith('.') and d not in {'__pycache__', 'archives'}]
+            dirs[:] = [
+                d for d in dirs if not d.startswith(".") and d not in {"__pycache__", "archives"}
+            ]
             for file in files:
-                if file.endswith('Agent.py'):
+                if file.endswith("Agent.py"):
                     l1_agents_manual.append(Path(root) / file)
 
         print("   L1 Cognition:")
@@ -147,9 +156,11 @@ def test_tc30_discovery_parity():
 
         l3_agents_manual = []
         for root, dirs, files in os.walk(l3_path):
-            dirs[:] = [d for d in dirs if not d.startswith('.') and d not in {'__pycache__', 'archives'}]
+            dirs[:] = [
+                d for d in dirs if not d.startswith(".") and d not in {"__pycache__", "archives"}
+            ]
             for file in files:
-                if file.endswith('Agent.py'):
+                if file.endswith("Agent.py"):
                     l3_agents_manual.append(Path(root) / file)
 
         print("   L3 Orchestration:")
@@ -170,8 +181,8 @@ def test_tc30_discovery_parity():
     agents_with_heal = 0
     for agent_path in all_agents_ssot[:20]:  # Sample first 20
         try:
-            content = agent_path.read_text(encoding='utf-8', errors='ignore')
-            if 'def heal_repository' in content:
+            content = agent_path.read_text(encoding="utf-8", errors="ignore")
+            if "def heal_repository" in content:
                 agents_with_heal += 1
         except:
             pass
@@ -189,14 +200,16 @@ def test_tc31_dashboard_integrity():
     Verify test_dashboard_end_to_end.py accurately reports violations_found
     across all layers (even though it doesn't call heal_repository directly).
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-31: Dashboard Integrity")
-    print("="*60)
+    print("=" * 60)
 
     # The dashboard test file doesn't call heal_repository, but it does
     # check for field violations in the agent discovery JSON
 
-    dashboard_test = PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "test_dashboard_end_to_end.py"
+    dashboard_test = (
+        PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "test_dashboard_end_to_end.py"
+    )
 
     if not dashboard_test.exists():
         print("⚠️  WARNING: Dashboard test file not found")
@@ -204,11 +217,11 @@ def test_tc31_dashboard_integrity():
         return True
 
     try:
-        content = dashboard_test.read_text(encoding='utf-8')
+        content = dashboard_test.read_text(encoding="utf-8")
 
         # Check that the test file validates field names correctly
-        has_field_validation = 'field_issues' in content or 'SSOT field' in content
-        has_violation_checks = 'violations' in content
+        has_field_validation = "field_issues" in content or "SSOT field" in content
+        has_violation_checks = "violations" in content
 
         print("   Dashboard test file checks:")
         print(f"      Field validation: {'✓' if has_field_validation else '✗'}")
@@ -230,9 +243,9 @@ def test_rglob_reduction():
     """
     Bonus Test: Verify rglob count has decreased by at least 10 calls.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("BONUS: rglob Count Reduction")
-    print("="*60)
+    print("=" * 60)
 
     # Import the CI check
     sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
@@ -262,12 +275,12 @@ def test_rglob_reduction():
         "find_agents_in_low_heal_territories.py",
         "ssot_audit.py",
         "StructuralHealerAgent.py",
-        "NamingAgent.py"
+        "NamingAgent.py",
     ]
 
     refactored_count = 0
     for offender in offenders:
-        file_name = Path(offender['file']).name
+        file_name = Path(offender["file"]).name
         if file_name in batch_2_names:
             print(f"   {file_name}: {offender['count']} calls remaining")
         else:
@@ -280,9 +293,9 @@ def test_rglob_reduction():
 
 def main():
     """Run all Phase 6.2 (Batch 2) Zero-Loss test cases."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("PHASE 6.2 (BATCH 2) ZERO-LOSS VERIFICATION TEST SUITE")
-    print("="*70)
+    print("=" * 70)
     print(f"Project Root: {PROJECT_ROOT}")
 
     tests = [
@@ -300,13 +313,14 @@ def main():
         except Exception as e:
             print(f"\n❌ EXCEPTION in {test_name}: {e}")
             import traceback
+
             traceback.print_exc()
             results.append((test_name, False))
 
     # Summary
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST SUMMARY")
-    print("="*70)
+    print("=" * 70)
 
     passed_count = sum(1 for _, passed in results if passed)
     total_count = len(results)
@@ -319,7 +333,7 @@ def main():
         status = "✅ PASS" if passed else "❌ FAIL"
         print(f"{status}: {test_name}")
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print(f"CORE TESTS: {core_passed}/3 passed")
     print(f"TOTAL: {passed_count}/{total_count} tests passed")
 

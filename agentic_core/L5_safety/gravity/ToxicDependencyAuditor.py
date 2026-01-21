@@ -61,22 +61,25 @@ class ToxicDependencyAuditor(MCPHardenedMixin):
                 # Systemic risk = fan_in * coverage_weight
                 systemic_risk = fan_in * coverage_weight
 
-                toxic_hubs.append({
-                    "module": module,
-                    "fan_in": fan_in,
-                    "coverage": coverage_data.get(module, 0.0) if coverage_data else None,
-                    "coverage_weight": coverage_weight,
-                    "systemic_risk": systemic_risk,
-                    "dependents": list(dependents)
-                })
+                toxic_hubs.append(
+                    {
+                        "module": module,
+                        "fan_in": fan_in,
+                        "coverage": coverage_data.get(module, 0.0) if coverage_data else None,
+                        "coverage_weight": coverage_weight,
+                        "systemic_risk": systemic_risk,
+                        "dependents": list(dependents),
+                    }
+                )
 
         # Sort by systemic risk (highest first)
-        return sorted(toxic_hubs, key=lambda x: x['systemic_risk'], reverse=True)
+        return sorted(toxic_hubs, key=lambda x: x["systemic_risk"], reverse=True)
 
     def _build_fan_in_map(self):
         """Walks all python files to see who imports what."""
         # Operation Zero: Use ssot_discovery instead of glob
         from agentic_core.utils.ssot_discovery import get_python_files
+
         for py_file in get_python_files(self.root / "agentic_core"):
             current_module = self._get_module_name(py_file)
             imports = self._extract_internal_imports(py_file)
@@ -90,7 +93,7 @@ class ToxicDependencyAuditor(MCPHardenedMixin):
         """Uses AST to find internal agentic_core imports."""
         imports = set()
         try:
-            tree = ast.parse(file_path.read_text(encoding='utf-8'))
+            tree = ast.parse(file_path.read_text(encoding="utf-8"))
             for node in ast.walk(tree):
                 if isinstance(node, ast.ImportFrom) and node.module:
                     if node.module.startswith(AGENTIC_CORE_DIR):
@@ -123,8 +126,8 @@ class ToxicDependencyAuditor(MCPHardenedMixin):
             print(f"Module: {hub['module']}")
             print(f"Fan-in (Dependencies): {hub['fan_in']}")
 
-            if hub.get('coverage') is not None:
-                coverage_pct = hub['coverage'] * 100
+            if hub.get("coverage") is not None:
+                coverage_pct = hub["coverage"] * 100
                 print(f"Coverage: {coverage_pct:.1f}%")
                 print(f"Coverage Weight: {hub['coverage_weight']:.2f}x")
                 print(f"Systemic Risk Score: {hub['systemic_risk']:.1f}")

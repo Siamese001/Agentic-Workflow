@@ -22,6 +22,7 @@ from typing import Any
 @dataclass
 class Thought:
     """Individual thought entry."""
+
     thought_id: str
     content: str
     thought_type: str  # "reasoning", "observation", "conclusion", "hypothesis"
@@ -42,12 +43,7 @@ class ReasoningMemory:
     - Relevance-based retrieval
     """
 
-    def __init__(
-        self,
-        capacity: int = 500,
-        persist: bool = True,
-        semantic_offload: bool = True
-    ):
+    def __init__(self, capacity: int = 500, persist: bool = True, semantic_offload: bool = True):
         """
         Initialize reasoning memory.
 
@@ -77,6 +73,7 @@ class ReasoningMemory:
         if self._semantic_memory is None and self.semantic_offload:
             try:
                 from .SemanticMemory import semantic_memory
+
                 self._semantic_memory = semantic_memory
             except ImportError:
                 self._semantic_memory = None
@@ -101,7 +98,7 @@ class ReasoningMemory:
             thought_type=thought.get("type", "reasoning"),
             context=thought.get("context", {}),
             confidence=thought.get("confidence", 0.8),
-            metadata=thought.get("metadata", {})
+            metadata=thought.get("metadata", {}),
         )
 
         # Add to memory
@@ -115,13 +112,15 @@ class ReasoningMemory:
 
             # Offload to semantic memory
             if self.semantic_offload and self.semantic_memory:
-                self.semantic_memory.add_thought({
-                    "id": evicted.thought_id,
-                    "text": evicted.content,
-                    "type": evicted.thought_type,
-                    "context": evicted.context,
-                    "confidence": evicted.confidence
-                })
+                self.semantic_memory.add_thought(
+                    {
+                        "id": evicted.thought_id,
+                        "text": evicted.content,
+                        "type": evicted.thought_type,
+                        "context": evicted.context,
+                        "confidence": evicted.confidence,
+                    }
+                )
 
         # Persist if enabled
         if self.persist:
@@ -164,7 +163,8 @@ class ReasoningMemory:
 
             # Combine results, preferring in-memory (more recent)
             combined = in_memory_results + [
-                r.get("content", r) for r in semantic_results
+                r.get("content", r)
+                for r in semantic_results
                 if not any(self._is_duplicate(r, im) for im in in_memory_results)
             ]
             return combined[:top_k]
@@ -185,7 +185,9 @@ class ReasoningMemory:
         matching = [t for t in self.thoughts if t.thought_type == thought_type]
         return [self._thought_to_dict(t) for t in matching[-count:]]
 
-    def retrieve_high_confidence(self, threshold: float = 0.9, count: int = 10) -> list[dict[str, Any]]:
+    def retrieve_high_confidence(
+        self, threshold: float = 0.9, count: int = 10
+    ) -> list[dict[str, Any]]:
         """
         Retrieve high-confidence thoughts.
 
@@ -236,17 +238,14 @@ class ReasoningMemory:
             "context": thought.context,
             "confidence": thought.confidence,
             "timestamp": thought.timestamp,
-            "metadata": thought.metadata
+            "metadata": thought.metadata,
         }
 
     def _persist_thought(self, thought: Thought) -> None:
         """Persist thought to storage."""
         try:
             # Try to append to ledger
-            Ledger.append({
-                "type": "reasoning_memory",
-                "thought": self._thought_to_dict(thought)
-            })
+            Ledger.append({"type": "reasoning_memory", "thought": self._thought_to_dict(thought)})
         except ImportError:
             # Fallback: no-op for now
             pass
@@ -258,15 +257,17 @@ class ReasoningMemory:
             for entry in entries:
                 thought_dict = entry.get("thought", {})
                 if thought_dict:
-                    self.thoughts.append(Thought(
-                        thought_id=thought_dict.get("id", ""),
-                        content=thought_dict.get("content", ""),
-                        thought_type=thought_dict.get("type", "reasoning"),
-                        context=thought_dict.get("context", {}),
-                        confidence=thought_dict.get("confidence", 0.8),
-                        timestamp=thought_dict.get("timestamp", time.time()),
-                        metadata=thought_dict.get("metadata", {})
-                    ))
+                    self.thoughts.append(
+                        Thought(
+                            thought_id=thought_dict.get("id", ""),
+                            content=thought_dict.get("content", ""),
+                            thought_type=thought_dict.get("type", "reasoning"),
+                            context=thought_dict.get("context", {}),
+                            confidence=thought_dict.get("confidence", 0.8),
+                            timestamp=thought_dict.get("timestamp", time.time()),
+                            metadata=thought_dict.get("metadata", {}),
+                        )
+                    )
         except (ImportError, Exception):
             # No persistent storage available
             pass
@@ -284,7 +285,7 @@ class ReasoningMemory:
             "total_evicted": self.total_evicted,
             "total_retrieved": self.total_retrieved,
             "persist_enabled": self.persist,
-            "semantic_offload_enabled": self.semantic_offload
+            "semantic_offload_enabled": self.semantic_offload,
         }
 
 

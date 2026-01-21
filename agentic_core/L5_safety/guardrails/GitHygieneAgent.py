@@ -76,7 +76,7 @@ class GitHygieneAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             result = safe_git_execute(
                 cmd,
                 repo_root=self.project_root,
-                timeout=kwargs.get('timeout', 30),
+                timeout=kwargs.get("timeout", 30),
             )
             return result.stdout.strip() if result.returncode == 0 else ""
         except FileNotFoundError:
@@ -153,9 +153,7 @@ class GitHygieneAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         actions = []
 
         if stale_branches:
-            print(
-                f"   [!] Found {len(stale_branches)} stale branches (> {self.stale_days} days)"
-            )
+            print(f"   [!] Found {len(stale_branches)} stale branches (> {self.stale_days} days)")
             for b in stale_branches[:3]:
                 print(f"      → {b['branch']} ({b['age_days']} days)")
             if len(stale_branches) > 3:
@@ -198,7 +196,7 @@ class GitHygieneAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: set[str] | None = None
+        _call_path: set[str] | None = None,
     ) -> dict[str, int]:
         """Execute L5 safety healing operations.
 

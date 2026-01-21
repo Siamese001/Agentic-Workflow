@@ -50,9 +50,9 @@ class HOP4RoutingAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         Returns:
             Path to output state file
         """
-        print(f"\nimport logging\n\nLogger = logging.getLogger(__name__)\n{'='*80}")
+        print(f"\nimport logging\n\nLogger = logging.getLogger(__name__)\n{'=' * 80}")
         print("HOP-4: ROUTING DECISION")
-        print(f"{'='*80}\n")
+        print(f"{'=' * 80}\n")
 
         # Read HOP-1 state
         profile_state = state_mgr.read_state("HOP-1")
@@ -110,7 +110,7 @@ class HOP4RoutingAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             "constraints": constraints,
             "reasoning": "\n".join(reasoning),
             "connection_status": connection_status,
-            "prior_message_count": prior_message_count
+            "prior_message_count": prior_message_count,
         }
 
         # Write to state
@@ -125,10 +125,23 @@ class HOP4RoutingAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         return output_path
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set = None,
+    ) -> dict[str, int]:
         """Operational agent - invoke shared healing chain."""
         if _call_path is None:
             _call_path = set()
-        super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+        super().heal_repository(
+            dry_run=dry_run,
+            execute=execute,
+            depth=depth,
+            max_depth=max_depth,
+            _call_path=_call_path,
+        )
         print(f"[{self.__class__.__name__}] Operational agent - healing chain invoked")
         return {"skipped": 1}

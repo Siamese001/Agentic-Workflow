@@ -34,17 +34,17 @@ def main():
 
     # Run comprehensive hierarchy healing (all operations in dry-run)
     agent.heal_hierarchy(
-        create_structure=True,
-        relocate_files=True,
-        enforce_depth=True,
-        purge_orphans=True
+        create_structure=True, relocate_files=True, enforce_depth=True, purge_orphans=True
     )
 
     print("\n" + "=" * 80)
     print("DRY RUN COMPLETE - No changes were made")
     print("=" * 80)
     print("\nTo apply these changes, run with healing_enabled=True")
-    print("Note: There is an older HierarchyAgent in validators/ - this uses the new unified version in guardrails/")
+    print(
+        "Note: There is an older HierarchyAgent in validators/ - this uses the new unified version in guardrails/"
+    )
+
 
 if __name__ == "__main__":
     main()

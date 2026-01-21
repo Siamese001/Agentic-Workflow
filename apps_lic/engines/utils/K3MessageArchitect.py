@@ -1,4 +1,5 @@
 """Compose outreach drafts using reasoning toggles and retrieval evidence."""
+
 from __future__ import annotations
 
 import hashlib

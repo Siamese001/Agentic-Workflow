@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, orchestrator, prompt, state, workflow
@@ -9,7 +8,7 @@ from __future__ import annotations
 import asyncio
 from dataclasses import dataclass
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
 import datetime
 
@@ -26,6 +25,7 @@ class CartographerAgent(HealerMixin, SubatomicTestingMixin, SubAtomicAgent, MCPH
     """
     ROLE: Memory & Embedding. Maps the codebase into semantic space.
     """
+
     def can_run(self) -> bool:
         """Execute can_run operation."""
         # Explicit validation and defaults
@@ -35,7 +35,9 @@ class CartographerAgent(HealerMixin, SubatomicTestingMixin, SubAtomicAgent, MCPH
 
     async def execute(self) -> None:
         """Execute execute operation."""
-        print(f"\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Mapping code to semantic space...")
+        print(
+            f"\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Mapping code to semantic space..."
+        )
         await asyncio.sleep(0)
 
         if not getattr(self.ctx, "pinecone_available", False):
@@ -48,7 +50,7 @@ class CartographerAgent(HealerMixin, SubatomicTestingMixin, SubAtomicAgent, MCPH
         try:
             # Replace blocking file I/O with async alternative using to_thread
             def _read_sync():
-                with open(file_path, encoding='utf-8') as f:
+                with open(file_path, encoding="utf-8") as f:
                     return f.read()
 
             content = await asyncio.to_thread(_read_sync)
@@ -57,7 +59,7 @@ class CartographerAgent(HealerMixin, SubatomicTestingMixin, SubAtomicAgent, MCPH
             await self.ctx.upsert_embedding(
                 file_path,
                 content,
-                metadata={"modified": datetime.datetime.now(datetime.timezone.utc).isoformat()}
+                metadata={"modified": datetime.datetime.now(datetime.timezone.utc).isoformat()},
             )
             print(f"      📍 Mapped: {file_path}")
         except (OSError, UnicodeDecodeError):
@@ -65,8 +67,8 @@ class CartographerAgent(HealerMixin, SubatomicTestingMixin, SubAtomicAgent, MCPH
             pass
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()
 
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30

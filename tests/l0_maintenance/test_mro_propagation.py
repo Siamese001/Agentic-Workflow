@@ -2,6 +2,7 @@
 """
 MRO Propagation Test - Tests key agents for MRO compliance
 """
+
 import sys
 from pathlib import Path
 
@@ -25,6 +26,7 @@ def main():
         from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import (
             L0MaintenanceBaseAgent,
         )
+
         test_cases.append(("L0MaintenanceBaseAgent", L0MaintenanceBaseAgent, True))
     except Exception as e:
         print(f"Could not import L0MaintenanceBaseAgent: {e}")
@@ -34,6 +36,7 @@ def main():
         from agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent import (
             L1CognitionBaseAgent,
         )
+
         test_cases.append(("L1CognitionBaseAgent", L1CognitionBaseAgent, True))
     except Exception as e:
         print(f"Could not import L1CognitionBaseAgent: {e}")
@@ -41,6 +44,7 @@ def main():
     # L5SafetyBaseAgent
     try:
         from agentic_core.L5_safety.validators.L5SafetyBaseAgent import L5SafetyBaseAgent
+
         test_cases.append(("L5SafetyBaseAgent", L5SafetyBaseAgent, False))
     except Exception as e:
         print(f"Could not import L5SafetyBaseAgent: {e}")

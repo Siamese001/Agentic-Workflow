@@ -4,6 +4,7 @@ ASCIIEnforcerAgent - Extracted for one-class-per-file pattern.
 Originally from: ContentCleanlinessValidatorAgent.py
 Extracted: 2026-01-06 (Surgical Extraction)
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -67,7 +68,9 @@ class ASCIIEnforcerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             non_ascii_chars = [c for c in text if ord(c) > 127]
             return False, f"Non-ASCII characters: {set(non_ascii_chars[:5])}"
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, int]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict[str, int]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 

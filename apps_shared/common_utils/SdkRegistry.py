@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 class SDKCategory(Enum):
     """SDK category classification."""
+
     LLM_PROVIDER = "llm_provider"
     INFERENCE = "inference"
     ROUTING = "routing"
@@ -31,6 +32,7 @@ class SDKCategory(Enum):
 @dataclass
 class SDKEntry:
     """SDK registry entry with metadata."""
+
     name: str
     category: SDKCategory
     module: str
@@ -97,7 +99,6 @@ SDK_REGISTRY: dict[str, SDKEntry] = {
         fallback="openai",
         description="Command R+, RAG, reranking, embeddings",
     ),
-
     # High-Performance Inference
     "groq": SDKEntry(
         name="groq",
@@ -123,7 +124,6 @@ SDK_REGISTRY: dict[str, SDKEntry] = {
         fallback="groq",
         description="Strong tool-calling alternative",
     ),
-
     # Routing & Structured Outputs
     "litellm": SDKEntry(
         name="litellm",
@@ -139,7 +139,6 @@ SDK_REGISTRY: dict[str, SDKEntry] = {
         required=True,
         description="Structured outputs, Pydantic validation",
     ),
-
     # Vector Stores
     "chromadb": SDKEntry(
         name="chromadb",
@@ -163,7 +162,6 @@ SDK_REGISTRY: dict[str, SDKEntry] = {
         fallback="chromadb",
         description="Managed vector DB, serverless scaling",
     ),
-
     # Caching & State
     "redis": SDKEntry(
         name="redis",
@@ -178,7 +176,6 @@ SDK_REGISTRY: dict[str, SDKEntry] = {
         module="hiredis",
         description="C parser for Redis (10x faster parsing)",
     ),
-
     # Orchestration
     "langgraph": SDKEntry(
         name="langgraph",
@@ -192,7 +189,6 @@ SDK_REGISTRY: dict[str, SDKEntry] = {
         module="langchain_core",
         description="Minimal abstractions (LCEL, runnables only)",
     ),
-
     # Observability
     "opentelemetry-api": SDKEntry(
         name="opentelemetry-api",
@@ -208,7 +204,6 @@ SDK_REGISTRY: dict[str, SDKEntry] = {
         required=True,
         description="Tracing implementation",
     ),
-
     # Document Processing
     "unstructured": SDKEntry(
         name="unstructured",
@@ -222,7 +217,6 @@ SDK_REGISTRY: dict[str, SDKEntry] = {
         module="pypdf",
         description="Lightweight PDF text extraction",
     ),
-
     # MCP
     "mcp": SDKEntry(
         name="mcp",
@@ -318,10 +312,7 @@ def get_sdk_by_category(category: SDKCategory) -> list[SDKEntry]:
     Returns:
         List of SDK entries
     """
-    return [
-        entry for entry in SDK_REGISTRY.values()
-        if entry.category == category
-    ]
+    return [entry for entry in SDK_REGISTRY.values() if entry.category == category]
 
 
 def get_available_sdks() -> list[str]:
@@ -356,6 +347,7 @@ def get_vector_store(config: dict[str, Any] | None = None) -> Any:
     Returns:
         Vector store client instance
     """
+
     # Mock collection class
     class MockCollection:
         def __init__(self, documents: list = None):

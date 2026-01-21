@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Run NamingAgent to detect agent file naming violations."""
+
 import sys
 from pathlib import Path
 
@@ -29,13 +30,14 @@ def main():
 
         # Phase 6.9 Sub-50: Use ssot_discovery instead of rglob
         from agentic_core.utils.ssot_discovery import get_python_files
+
         for py_file in get_python_files(dir_path):
-            if '__pycache__' in str(py_file) or '__init__.py' == py_file.name:
+            if "__pycache__" in str(py_file) or "__init__.py" == py_file.name:
                 continue
 
             is_valid, message = agent.validate_file_naming(py_file)
 
-            if not is_valid and 'AGENT FILE NAMING VIOLATION' in message:
+            if not is_valid and "AGENT FILE NAMING VIOLATION" in message:
                 rel_path = py_file.relative_to(PROJECT_ROOT)
                 violations.append((str(rel_path), message))
             elif is_valid:
@@ -65,5 +67,6 @@ def main():
     print(f"TOTAL: {len(violations)} files need renaming to *Agent.py")
     print("=" * 70)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

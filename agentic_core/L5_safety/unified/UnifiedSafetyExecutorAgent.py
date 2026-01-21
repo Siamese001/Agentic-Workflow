@@ -14,6 +14,7 @@ Features:
 - Safety score thresholds
 - Audit logging
 """
+
 from __future__ import annotations
 
 import logging
@@ -31,6 +32,7 @@ T = TypeVar("T")
 
 class ExecutionStatus(Enum):
     """Status of execution."""
+
     ALLOWED = auto()
     BLOCKED = auto()
     WARNED = auto()
@@ -39,6 +41,7 @@ class ExecutionStatus(Enum):
 
 class BlockReason(Enum):
     """Reasons for blocking execution."""
+
     SAFETY_VIOLATION = auto()
     INTEGRITY_FAILURE = auto()
     PERMISSION_DENIED = auto()
@@ -49,6 +52,7 @@ class BlockReason(Enum):
 @dataclass
 class ExecutionResult:
     """Result of an execution attempt."""
+
     status: ExecutionStatus
     block_reason: BlockReason | None = None
     message: str = ""
@@ -60,6 +64,7 @@ class ExecutionResult:
 @dataclass
 class SafetyGate:
     """Represents a safety gate check."""
+
     name: str
     check_fn: Callable[..., bool]
     severity: str = "HIGH"
@@ -69,6 +74,7 @@ class SafetyGate:
 @dataclass
 class ExecutorConfig:
     """Configuration for safety executor."""
+
     enable_integrity_gates: bool = True
     enable_safety_checks: bool = True
     block_on_high_severity: bool = True
@@ -117,12 +123,14 @@ class UnifiedSafetyExecutorAgent:
     def _init_default_gates(self) -> None:
         """Initialize default safety gates."""
         # Integrity gate: Check for valid execution context
-        self._gates.append(SafetyGate(
-            name="context_integrity",
-            check_fn=lambda ctx: ctx is not None,
-            severity="HIGH",
-            blocking=True,
-        ))
+        self._gates.append(
+            SafetyGate(
+                name="context_integrity",
+                check_fn=lambda ctx: ctx is not None,
+                severity="HIGH",
+                blocking=True,
+            )
+        )
 
     def add_gate(
         self,
@@ -245,8 +253,7 @@ class UnifiedSafetyExecutorAgent:
 
                 # Check for high-severity threats
                 high_severity = [
-                    t for t in threats
-                    if hasattr(t, "severity") and t.severity.value >= 2
+                    t for t in threats if hasattr(t, "severity") and t.severity.value >= 2
                 ]
 
                 if high_severity and self.config.block_on_high_severity:

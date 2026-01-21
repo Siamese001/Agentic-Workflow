@@ -14,6 +14,7 @@ Features:
 - Structural code repair
 - Safe file mutation with backup
 """
+
 from __future__ import annotations
 
 import ast
@@ -33,6 +34,7 @@ from enum import Enum
 
 class HealingType(Enum):
     """Types of code healing."""
+
     CANON = "CANON"
     IMPORT = "IMPORT"
     STRUCTURAL = "STRUCTURAL"
@@ -41,6 +43,7 @@ class HealingType(Enum):
 @dataclass
 class HealingAction:
     """Represents a healing action taken."""
+
     healing_type: str
     file_path: Path
     line_number: int
@@ -54,6 +57,7 @@ class HealingAction:
 @dataclass
 class HealerConfig:
     """Configuration for code healing."""
+
     enable_canon: bool = True
     enable_import: bool = True
     enable_structural: bool = True
@@ -83,10 +87,31 @@ class UnifiedCodeHealerAgent:
 
     # Standard library modules for import classification
     STDLIB_MODULES = {
-        "os", "sys", "re", "json", "ast", "typing", "pathlib", "logging",
-        "datetime", "collections", "functools", "itertools", "threading",
-        "asyncio", "dataclasses", "enum", "abc", "contextlib", "copy",
-        "hashlib", "secrets", "shutil", "tempfile", "unittest", "time",
+        "os",
+        "sys",
+        "re",
+        "json",
+        "ast",
+        "typing",
+        "pathlib",
+        "logging",
+        "datetime",
+        "collections",
+        "functools",
+        "itertools",
+        "threading",
+        "asyncio",
+        "dataclasses",
+        "enum",
+        "abc",
+        "contextlib",
+        "copy",
+        "hashlib",
+        "secrets",
+        "shutil",
+        "tempfile",
+        "unittest",
+        "time",
     }
 
     def __init__(

@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, healer, memory, orchestrator, prompt, workflow
@@ -29,6 +28,7 @@ from agentic_core.utils.core_extensions.decorators import standard_heal
 
 class GuardrailResult(Enum):
     """Guardrail check result."""
+
     ALLOW = "allow"
     BLOCK = "block"
     THROTTLE = "throttle"
@@ -84,7 +84,7 @@ class RateLimitGuardrail(Guardrail):
             return {
                 "result": GuardrailResult.THROTTLE,
                 "reason": f"Rate limit exceeded: {self.call_count}/{self.max_calls}",
-                "metadata": {"current": self.call_count, "limit": self.max_calls}
+                "metadata": {"current": self.call_count, "limit": self.max_calls},
             }
 
         return {"result": GuardrailResult.ALLOW, "reason": "within rate limit"}
@@ -109,7 +109,7 @@ class MutationGuardrail(Guardrail):
             return {
                 "result": GuardrailResult.BLOCK,
                 "reason": f"Mutation operation blocked: {operation}",
-                "metadata": {"operation": operation}
+                "metadata": {"operation": operation},
             }
 
         return {"result": GuardrailResult.ALLOW, "reason": "mutation allowed"}
@@ -135,7 +135,7 @@ class ContentFilterGuardrail(Guardrail):
                 return {
                     "result": GuardrailResult.BLOCK,
                     "reason": f"Blocked pattern detected: {pattern}",
-                    "metadata": {"pattern": pattern}
+                    "metadata": {"pattern": pattern},
                 }
 
         return {"result": GuardrailResult.ALLOW, "reason": "content safe"}
@@ -161,7 +161,7 @@ class CircuitBreakerGuardrail(Guardrail):
             return {
                 "result": GuardrailResult.BLOCK,
                 "reason": "Circuit breaker open - service unavailable",
-                "metadata": {"failures": self.failure_count}
+                "metadata": {"failures": self.failure_count},
             }
 
         return {"result": GuardrailResult.ALLOW, "reason": "circuit closed"}
@@ -199,7 +199,7 @@ class PIIAirlockGuardrail(Guardrail):
             return {
                 "result": GuardrailResult.ALERT,
                 "reason": f"PII detected: {', '.join(detected_pii)}",
-                "metadata": {"detected": detected_pii}
+                "metadata": {"detected": detected_pii},
             }
 
         return {"result": GuardrailResult.ALLOW, "reason": "no PII detected"}
@@ -219,7 +219,7 @@ class AuthenticationGuardrail(Guardrail):
             return {
                 "result": GuardrailResult.BLOCK,
                 "reason": "Authentication required",
-                "metadata": {"missing": "auth_token"}
+                "metadata": {"missing": "auth_token"},
             }
 
         return {"result": GuardrailResult.ALLOW, "reason": "authenticated"}
@@ -246,7 +246,7 @@ class AuthorizationGuardrail(Guardrail):
             return {
                 "result": GuardrailResult.BLOCK,
                 "reason": f"Missing permissions: {', '.join(missing)}",
-                "metadata": {"missing": missing}
+                "metadata": {"missing": missing},
             }
 
         return {"result": GuardrailResult.ALLOW, "reason": "authorized"}
@@ -306,7 +306,7 @@ class CompositeGuardrailAgent(MCPHardenedMixin):
                     "result": result.value,
                     "reason": check_result.get("reason", ""),
                     "guardrail": guardrail.name,
-                    "metadata": check_result.get("metadata", {})
+                    "metadata": check_result.get("metadata", {}),
                 }
 
             # Alert but continue
@@ -319,7 +319,7 @@ class CompositeGuardrailAgent(MCPHardenedMixin):
             "result": GuardrailResult.ALLOW.value,
             "reason": "All guardrails passed",
             "guardrail": "CompositeGuardrailAgent",
-            "metadata": {"guardrails_checked": len(self.guardrails)}
+            "metadata": {"guardrails_checked": len(self.guardrails)},
         }
 
     def get_statistics(self) -> dict[str, Any]:
@@ -327,8 +327,12 @@ class CompositeGuardrailAgent(MCPHardenedMixin):
         return {
             "total_checks": self.total_checks,
             "total_blocks": self.total_blocks,
-            "block_rate": (self.total_blocks / self.total_checks * 100) if self.total_checks > 0 else 0,
-            "guardrails": {g.name: {"violations": g.violations, "enabled": g.enabled} for g in self.guardrails}
+            "block_rate": (self.total_blocks / self.total_checks * 100)
+            if self.total_checks > 0
+            else 0,
+            "guardrails": {
+                g.name: {"violations": g.violations, "enabled": g.enabled} for g in self.guardrails
+            },
         }
 
     def enable_guardrail(self, name: str) -> bool:
@@ -365,7 +369,9 @@ class CompositeGuardrailAgent(MCPHardenedMixin):
             results[TESTS_DIR].append({"name": "test_instantiation", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results[TESTS_DIR].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
+            results[TESTS_DIR].append(
+                {"name": "test_instantiation", "status": "failed", "error": str(e)}
+            )
         return results
 
 

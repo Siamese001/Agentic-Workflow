@@ -21,6 +21,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 
 REPO = Path(__file__).parent.parent
 
+
 def fix_hierarchy_violations():
     """Fix hierarchy violations by flattening test folders."""
     print("\n" + "=" * 80)
@@ -75,6 +76,7 @@ def fix_hierarchy_violations():
 
     return violations_fixed
 
+
 def fix_drift_violation():
     """Fix drift violation by moving mixins folder to blueprint-approved location."""
     print("\n" + "=" * 80)
@@ -103,6 +105,7 @@ def fix_drift_violation():
         print("ℹ️  Mixins folder not found")
         return 0
 
+
 def annotate_dynamic_imports():
     """Add SSOT annotations to dynamic imports to mark them as intentional."""
     print("\n" + "=" * 80)
@@ -112,52 +115,65 @@ def annotate_dynamic_imports():
     files_annotated = 0
 
     # NervousSystemAgent.py - already has dynamic imports in try/except
-    nervous_system = REPO / AGENTIC_CORE_DIR / "L3_orchestration" / "workflow_engines" / "NervousSystemAgent.py"
+    nervous_system = (
+        REPO / AGENTIC_CORE_DIR / "L3_orchestration" / "workflow_engines" / "NervousSystemAgent.py"
+    )
     if nervous_system.exists():
-        content = nervous_system.read_text(encoding='utf-8')
+        content = nervous_system.read_text(encoding="utf-8")
 
         # Add SSOT annotation before the try blocks if not present
         if "# [SSOT DYNAMIC]" not in content:
             # Find the first try block with L5 import
-            lines = content.split('\n')
+            lines = content.split("\n")
             new_lines = []
 
             for i, line in enumerate(lines):
                 # Add annotation before first L5 dynamic import
-                if i > 0 and 'try:' in line and i < len(lines) - 1:
+                if i > 0 and "try:" in line and i < len(lines) - 1:
                     next_line = lines[i + 1] if i + 1 < len(lines) else ""
-                    if 'from agentic_core.L5_safety' in next_line:
-                        new_lines.append("        # [SSOT DYNAMIC] Runtime-only L5 imports for validation agents")
+                    if "from agentic_core.L5_safety" in next_line:
+                        new_lines.append(
+                            "        # [SSOT DYNAMIC] Runtime-only L5 imports for validation agents"
+                        )
 
                 new_lines.append(line)
 
-            new_content = '\n'.join(new_lines)
-            nervous_system.write_text(new_content, encoding='utf-8')
+            new_content = "\n".join(new_lines)
+            nervous_system.write_text(new_content, encoding="utf-8")
             print("✅ Annotated: NervousSystemAgent.py")
             files_annotated += 1
 
     # L3OrchestrationBaseAgent.py - already has dynamic import in method
-    orchestration_base = REPO / AGENTIC_CORE_DIR / "L3_orchestration" / "workflow_engines" / "L3OrchestrationBaseAgent.py"
+    orchestration_base = (
+        REPO
+        / AGENTIC_CORE_DIR
+        / "L3_orchestration"
+        / "workflow_engines"
+        / "L3OrchestrationBaseAgent.py"
+    )
     if orchestration_base.exists():
-        content = orchestration_base.read_text(encoding='utf-8')
+        content = orchestration_base.read_text(encoding="utf-8")
 
         if "# [SSOT DYNAMIC]" not in content:
-            lines = content.split('\n')
+            lines = content.split("\n")
             new_lines = []
 
             for i, line in enumerate(lines):
                 # Add annotation before L5 dynamic import in _delegate_to_l5_specialist
-                if 'from agentic_core.L5_safety.validators.TestSovereigntyAgent' in line:
-                    new_lines.append("            # [SSOT DYNAMIC] Runtime-only import for test delegation")
+                if "from agentic_core.L5_safety.validators.TestSovereigntyAgent" in line:
+                    new_lines.append(
+                        "            # [SSOT DYNAMIC] Runtime-only import for test delegation"
+                    )
 
                 new_lines.append(line)
 
-            new_content = '\n'.join(new_lines)
-            orchestration_base.write_text(new_content, encoding='utf-8')
+            new_content = "\n".join(new_lines)
+            orchestration_base.write_text(new_content, encoding="utf-8")
             print("✅ Annotated: L3OrchestrationBaseAgent.py")
             files_annotated += 1
 
     return files_annotated
+
 
 def main():
     """Execute final cleanup to achieve 100% compliance."""
@@ -203,6 +219,7 @@ def main():
         print("ℹ️  No structural fixes needed")
 
     return 0
+
 
 if __name__ == "__main__":
     exit(main())

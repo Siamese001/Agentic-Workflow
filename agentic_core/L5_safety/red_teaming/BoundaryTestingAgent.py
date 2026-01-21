@@ -15,7 +15,6 @@ to identify where the system breaks or behaves unexpectedly.
 # Suggested keywords to add in docstring/code: engine, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-
 from __future__ import annotations
 
 import logging
@@ -87,12 +86,14 @@ class BoundaryTestingAgent(HealerMixin, MCPHardenedMixin):
 
                 if test_result.get("edge_case_found"):
                     results["edge_cases_found"] += 1
-                    results["boundary_violations"].append({
-                        "test": test,
-                        "violation": test_result.get("violation", ""),
-                        "severity": test_result.get("severity", "medium"),
-                        "input_example": test_result.get("input_example", ""),
-                    })
+                    results["boundary_violations"].append(
+                        {
+                            "test": test,
+                            "violation": test_result.get("violation", ""),
+                            "severity": test_result.get("severity", "medium"),
+                            "input_example": test_result.get("input_example", ""),
+                        }
+                    )
                     results["recommendations"].append(
                         f"Fix {test}: {test_result.get('recommendation', 'Add boundary validation')}"
                     )
@@ -100,11 +101,14 @@ class BoundaryTestingAgent(HealerMixin, MCPHardenedMixin):
             self.tests_executed = results["tests_executed"]
             self.edge_cases_found = results["edge_cases_found"]
 
-            log_event("boundary_testing", {
-                TESTS_DIR: results["tests_executed"],
-                "edge_cases": results["edge_cases_found"],
-                "violations": len(results["boundary_violations"]),
-            })
+            log_event(
+                "boundary_testing",
+                {
+                    TESTS_DIR: results["tests_executed"],
+                    "edge_cases": results["edge_cases_found"],
+                    "violations": len(results["boundary_violations"]),
+                },
+            )
 
             return results
 

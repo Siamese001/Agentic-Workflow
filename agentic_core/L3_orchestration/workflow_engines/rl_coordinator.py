@@ -11,6 +11,7 @@ Consolidates:
 - ReinforceOrchestratorAgent
 - RLOrchestratorAgent
 """
+
 from __future__ import annotations
 
 import logging
@@ -37,33 +38,35 @@ class RLCoordinator(WorkflowCoordinator):
 
     def _lazy_load_strategy(self, name: str) -> Any:
         """Lazy load RL strategy implementation."""
-        if name == 'ppo':
+        if name == "ppo":
             log.info("PPO strategy loaded (placeholder)")
             return self._create_default_strategy()
-        elif name == 'qlearning':
+        elif name == "qlearning":
             log.info("Q-Learning strategy loaded (placeholder)")
             return self._create_default_strategy()
-        elif name == 'actor_critic':
+        elif name == "actor_critic":
             log.info("Actor-Critic strategy loaded (placeholder)")
             return self._create_default_strategy()
-        elif name == 'reinforce':
+        elif name == "reinforce":
             log.info("REINFORCE strategy loaded (placeholder)")
             return self._create_default_strategy()
         else:
             log.warning(f"Unknown RL strategy: {name}, falling back to PPO")
-            return self._lazy_load_strategy('ppo')
+            return self._lazy_load_strategy("ppo")
 
     def _create_default_strategy(self) -> Any:
         """Create a default strategy object."""
+
         class DefaultStrategy:
             async def execute(self, task: dict[str, Any]) -> dict[str, Any]:
                 return {"status": "success", "message": "RL strategy executed"}
+
         return DefaultStrategy()
 
     async def coordinate(self, task: dict[str, Any]) -> dict[str, Any]:
         """Execute RL coordination."""
         self._lazy_init()
-        strategy_name = task.get('rl_strategy', 'ppo').lower()
+        strategy_name = task.get("rl_strategy", "ppo").lower()
 
         if strategy_name not in self.strategies:
             self.strategies[strategy_name] = self._lazy_load_strategy(strategy_name)

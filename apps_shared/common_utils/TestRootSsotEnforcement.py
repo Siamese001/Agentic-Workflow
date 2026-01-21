@@ -13,14 +13,16 @@ RCA Gaps Being Tested:
 
 Run: python scripts/test_root_ssot_enforcement.py
 """
+
 import sys
 
 if sys.platform.startswith("win"):
     from agentic_core.utils.security import safe_execute
+
     # Replace os.system with safe_execute for security
-    safe_execute(['chcp', '65001'], capture_output=True, check=False)
-    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
-    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+    safe_execute(["chcp", "65001"], capture_output=True, check=False)
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 from pathlib import Path
 from typing import Any
@@ -45,38 +47,52 @@ APPROVED_ROOT_FOLDERS: set[str] = set(SOVEREIGN_REGISTRY.keys())
 # Standard project files/folders that are always allowed at root
 STANDARD_ROOT_ITEMS: set[str] = {
     # Git/IDE
-    '.git', '.github', '.vscode', '.venv', '__pycache__', '.pytest_cache',
+    ".git",
+    ".github",
+    ".vscode",
+    ".venv",
+    "__pycache__",
+    ".pytest_cache",
     # Config files
-    '.env', '.gitignore', 'pyproject.toml', 'README.md',
+    ".env",
+    ".gitignore",
+    "pyproject.toml",
+    "README.md",
     # Main entry point
-    'canon_validator_agentic_v2_thin.py',
+    "canon_validator_agentic_v2_thin.py",
     # Runtime files
-    'agent_discovery_full.json', 'runtime_state.json',
+    "agent_discovery_full.json",
+    "runtime_state.json",
     # Standard folders
-    'archives', 'docs', 'data', 'reports',
+    "archives",
+    "docs",
+    "data",
+    "reports",
     # Hidden/system
-    '.gravity_state', '.sovereign_healing_backup',
+    ".gravity_state",
+    ".sovereign_healing_backup",
 }
 
 # Folders that should NOT exist at root (they have SSOT locations)
 FORBIDDEN_ROOT_FOLDERS: set[str] = {
-    'scripts',       # Should be agentic_core/L0_maintenance/scripts/
-    'logs',          # Should be agentic_core/L0_maintenance/logs/
-    'coverage_html', # Should be reports/coverage_html/ or gitignored
-    'observability', # Should be agentic_core/L6_observability/
+    "scripts",  # Should be agentic_core/L0_maintenance/scripts/
+    "logs",  # Should be agentic_core/L0_maintenance/logs/
+    "coverage_html",  # Should be reports/coverage_html/ or gitignored
+    "observability",  # Should be agentic_core/L6_observability/
 }
 
 # File patterns that should be in archives/, not root
 ARCHIVE_PATTERNS: list[str] = [
-    '.archived',
-    '.backup',
-    '.old',
+    ".archived",
+    ".backup",
+    ".old",
 ]
 
 
 # ============================================================================
 # TEST FUNCTIONS
 # ============================================================================
+
 
 def test_1_root_folder_whitelist() -> tuple[bool, str]:
     """
@@ -156,10 +172,14 @@ def test_4_scripts_folder_ssot_location() -> tuple[bool, str]:
     # Both exist - this is a violation
     # Phase 6.9: Use ssot_discovery instead of glob
     from agentic_core.utils.ssot_discovery import get_python_files
+
     root_count = len(list(get_python_files(root_scripts)))
     ssot_count = len(list(get_python_files(ssot_scripts)))
 
-    return False, f"DUPLICATE: scripts/ at root ({root_count} files) AND L0_maintenance/scripts/ ({ssot_count} files)"
+    return (
+        False,
+        f"DUPLICATE: scripts/ at root ({root_count} files) AND L0_maintenance/scripts/ ({ssot_count} files)",
+    )
 
 
 def test_5_logs_folder_ssot_location() -> tuple[bool, str]:
@@ -195,8 +215,8 @@ def test_6_coverage_html_handling() -> tuple[bool, str]:
 
     # Check if gitignored
     if gitignore.exists():
-        content = gitignore.read_text(encoding='utf-8', errors='ignore')
-        if 'coverage_html' in content:
+        content = gitignore.read_text(encoding="utf-8", errors="ignore")
+        if "coverage_html" in content:
             return True, "coverage_html/ at root but is gitignored (acceptable)"
 
     return False, "coverage_html/ at root - should be in reports/ or gitignored"
@@ -220,8 +240,14 @@ def test_7_location_agent_root_validation() -> tuple[bool, str]:
 
         if "scripts" not in SOVEREIGN_REGISTRY:
             if result:
-                return False, "is_path_compliant() accepts 'scripts/' but it's not in SOVEREIGN_REGISTRY"
-            return True, "is_path_compliant() correctly rejects 'scripts/' (not in SOVEREIGN_REGISTRY)"
+                return (
+                    False,
+                    "is_path_compliant() accepts 'scripts/' but it's not in SOVEREIGN_REGISTRY",
+                )
+            return (
+                True,
+                "is_path_compliant() correctly rejects 'scripts/' (not in SOVEREIGN_REGISTRY)",
+            )
 
         return True, "scripts/ is in SOVEREIGN_REGISTRY (unexpected but valid)"
 
@@ -242,7 +268,9 @@ def test_8_hierarchy_agent_root_scan() -> tuple[bool, str]:
         agent = HierarchyAgent(root, healing_enabled=False)
 
         # Check if agent has method to scan root
-        has_root_scan = hasattr(agent, 'scan_root_violations') or hasattr(agent, 'validate_root_structure')
+        has_root_scan = hasattr(agent, "scan_root_violations") or hasattr(
+            agent, "validate_root_structure"
+        )
 
         if has_root_scan:
             return True, "HierarchyAgent has root scanning capability"
@@ -268,7 +296,7 @@ def test_9_filesystem_reconciler_root_handling() -> tuple[bool, str]:
         agent = FilesystemSSOTReconcilerAgent(root, enforcement_mode=False)
 
         # Check if agent detects root-level drift
-        has_root_drift = hasattr(agent, 'detect_root_drift') or hasattr(agent, 'scan_root_folders')
+        has_root_drift = hasattr(agent, "detect_root_drift") or hasattr(agent, "scan_root_folders")
 
         if has_root_drift:
             return True, "FilesystemSSOTReconcilerAgent has root drift detection"
@@ -292,13 +320,16 @@ def test_10_archived_file_relocation_logic() -> tuple[bool, str]:
         agent = LocationAgent(root)
 
         # Check archive subfolder mapping
-        if hasattr(agent, 'ARCHIVE_SUBFOLDERS'):
+        if hasattr(agent, "ARCHIVE_SUBFOLDERS"):
             subfolders = agent.ARCHIVE_SUBFOLDERS
             if subfolders:
-                return True, f"LocationAgent has ARCHIVE_SUBFOLDERS mapping ({len(subfolders)} types)"
+                return (
+                    True,
+                    f"LocationAgent has ARCHIVE_SUBFOLDERS mapping ({len(subfolders)} types)",
+                )
 
         # Check _heal_via_archiving method
-        if hasattr(agent, '_heal_via_archiving'):
+        if hasattr(agent, "_heal_via_archiving"):
             return True, "LocationAgent has _heal_via_archiving method"
 
         return False, "LocationAgent lacks proper archiving infrastructure"
@@ -317,16 +348,15 @@ def test_11_root_whitelist_enforcement() -> tuple[bool, str]:
 
     # Get all root-level directories
     root_dirs = {
-        item.name for item in root.iterdir()
-        if item.is_dir() and not item.name.startswith('.')
+        item.name for item in root.iterdir() if item.is_dir() and not item.name.startswith(".")
     }
 
     # Check against whitelist
-    allowed = APPROVED_ROOT_FOLDERS | {'archives', 'docs', 'data', 'reports', '__pycache__'}
+    allowed = APPROVED_ROOT_FOLDERS | {"archives", "docs", "data", "reports", "__pycache__"}
     violations = root_dirs - allowed - STANDARD_ROOT_ITEMS
 
     # Filter out known acceptable items
-    real_violations = {v for v in violations if v not in {'scripts', 'logs', 'coverage_html'}}
+    real_violations = {v for v in violations if v not in {"scripts", "logs", "coverage_html"}}
 
     if not violations:
         return True, f"All {len(root_dirs)} root folders are in whitelist"
@@ -340,7 +370,7 @@ def test_12_sovereign_registry_completeness() -> tuple[bool, str]:
 
     Gap: Missing roots would cause validation failures.
     """
-    required_roots = {'agentic_core', 'apps_rg', 'apps_lic', 'apps_shared', 'tests'}
+    required_roots = {"agentic_core", "apps_rg", "apps_lic", "apps_shared", "tests"}
     actual_roots = set(SOVEREIGN_REGISTRY.keys())
 
     missing = required_roots - actual_roots
@@ -355,6 +385,7 @@ def test_12_sovereign_registry_completeness() -> tuple[bool, str]:
 # TEST RUNNER
 # ============================================================================
 
+
 def run_all_tests(category: str = "all") -> dict[str, Any]:
     """Run all tests and return results.
 
@@ -368,7 +399,10 @@ def run_all_tests(category: str = "all") -> dict[str, Any]:
         ("Test 1: ROOT_WHITELIST matches SOVEREIGN_REGISTRY", test_1_root_folder_whitelist),
         ("Test 7: LocationAgent root validation", test_7_location_agent_root_validation),
         ("Test 8: HierarchyAgent root scan", test_8_hierarchy_agent_root_scan),
-        ("Test 9: FilesystemSSOTReconcilerAgent root handling", test_9_filesystem_reconciler_root_handling),
+        (
+            "Test 9: FilesystemSSOTReconcilerAgent root handling",
+            test_9_filesystem_reconciler_root_handling,
+        ),
         ("Test 10: Archived file relocation logic", test_10_archived_file_relocation_logic),
         ("Test 12: SOVEREIGN_REGISTRY completeness", test_12_sovereign_registry_completeness),
     ]
@@ -412,22 +446,26 @@ def run_all_tests(category: str = "all") -> dict[str, Any]:
             else:
                 results["failed"] += 1
 
-            results["details"].append({
-                "name": name,
-                "passed": passed,
-                "message": message,
-            })
+            results["details"].append(
+                {
+                    "name": name,
+                    "passed": passed,
+                    "message": message,
+                }
+            )
 
             print(f"\n{icon} {name}")
             print(f"   {message}")
 
         except Exception as e:
             results["failed"] += 1
-            results["details"].append({
-                "name": name,
-                "passed": False,
-                "message": f"ERROR: {e}",
-            })
+            results["details"].append(
+                {
+                    "name": name,
+                    "passed": False,
+                    "message": f"ERROR: {e}",
+                }
+            )
             print(f"\n❌ {name}")
             print(f"   ERROR: {e}")
 
@@ -453,7 +491,7 @@ if __name__ == "__main__":
         "--category",
         choices=["all", "capability", "compliance"],
         default="all",
-        help="Test category: 'capability' (agent code), 'compliance' (repo state), or 'all'"
+        help="Test category: 'capability' (agent code), 'compliance' (repo state), or 'all'",
     )
     args = parser.parse_args()
 

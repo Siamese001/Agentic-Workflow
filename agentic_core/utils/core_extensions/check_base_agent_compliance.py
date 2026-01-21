@@ -17,7 +17,6 @@ Requires: Python 3.8+, ast module (standard library)
 # Suggested keywords to add in docstring/code: engine, guardrail, healer, memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-
 import ast
 import sys
 from pathlib import Path
@@ -39,6 +38,7 @@ LAYER_BASE_MAP = {
 # Root project path - adjust if hook runs from different cwd
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 
+
 def detect_layer(file_path: Path) -> str:
     """Detect layer from file path (L0-L5)."""
     relative = file_path.relative_to(PROJECT_ROOT)
@@ -47,6 +47,7 @@ def detect_layer(file_path: Path) -> str:
         if part.startswith("L") and part[1:].isdigit() and len(part) == 2:
             return part
     return "UNKNOWN"
+
 
 def get_base_names(node: ast.ClassDef) -> list:
     """Extract base class names from ClassDef node."""
@@ -57,6 +58,7 @@ def get_base_names(node: ast.ClassDef) -> list:
         elif isinstance(base, ast.Attribute):
             bases.append(base.attr)
     return bases
+
 
 def check_file(file_path: Path) -> tuple:
     """Check single file for proper base class inheritance."""
@@ -79,13 +81,19 @@ def check_file(file_path: Path) -> tuple:
 
     return True, "OK"
 
+
 def main() -> int:
     """Pre-commit entrypoint - check staged Python files."""
     from subprocess import check_output
 
     # Get staged .py files
     try:
-        staged = check_output(["git", "diff", "--cached", "--name-only", "--diff-filter=ACM"]).decode().strip().splitlines()
+        staged = (
+            check_output(["git", "diff", "--cached", "--name-only", "--diff-filter=ACM"])
+            .decode()
+            .strip()
+            .splitlines()
+        )
     except Exception:
         print("Error: Not a git repo or no staged files")
         return 1
@@ -107,6 +115,7 @@ def main() -> int:
 
     print("✓ All staged agents comply with base class hierarchy")
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

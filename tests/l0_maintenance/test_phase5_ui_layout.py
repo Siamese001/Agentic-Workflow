@@ -51,14 +51,14 @@ def test_phase5_1_html_structure():
         record_test("Dashboard HTML exists", False, f"File not found: {DASHBOARD_HTML}")
         return
 
-    html = DASHBOARD_HTML.read_text(encoding='utf-8')
+    html = DASHBOARD_HTML.read_text(encoding="utf-8")
 
     # Test Meta-Learning section
     meta_learning_elements = [
-        ('id="meta-stats"', 'Meta-Learning Stats container'),
-        ('id="strategy-weights"', 'Strategy Weights container'),
-        ('id="experience-stream"', 'Experience Stream container'),
-        ('id="pattern-timeline"', 'Pattern Timeline container'),
+        ('id="meta-stats"', "Meta-Learning Stats container"),
+        ('id="strategy-weights"', "Strategy Weights container"),
+        ('id="experience-stream"', "Experience Stream container"),
+        ('id="pattern-timeline"', "Pattern Timeline container"),
     ]
 
     for pattern, desc in meta_learning_elements:
@@ -66,8 +66,8 @@ def test_phase5_1_html_structure():
 
     # Test Redis section
     redis_elements = [
-        ('id="redis-stats"', 'Redis Stats container'),
-        ('id="redis-log"', 'Redis Log container'),
+        ('id="redis-stats"', "Redis Stats container"),
+        ('id="redis-log"', "Redis Log container"),
     ]
 
     for pattern, desc in redis_elements:
@@ -75,8 +75,8 @@ def test_phase5_1_html_structure():
 
     # Test Pinecone section
     pinecone_elements = [
-        ('id="pinecone-stats"', 'Pinecone Stats container'),
-        ('id="pinecone-queries"', 'Pinecone Queries container'),
+        ('id="pinecone-stats"', "Pinecone Stats container"),
+        ('id="pinecone-queries"', "Pinecone Queries container"),
     ]
 
     for pattern, desc in pinecone_elements:
@@ -84,9 +84,9 @@ def test_phase5_1_html_structure():
 
     # Test Execution Flow section
     execution_elements = [
-        ('id="execution-timeline"', 'Execution Timeline container'),
-        ('id="execution-summary"', 'Execution Summary container'),
-        ('id="layer-flow"', 'Layer Flow container'),
+        ('id="execution-timeline"', "Execution Timeline container"),
+        ('id="execution-summary"', "Execution Summary container"),
+        ('id="layer-flow"', "Layer Flow container"),
     ]
 
     for pattern, desc in execution_elements:
@@ -94,10 +94,10 @@ def test_phase5_1_html_structure():
 
     # Test section headers
     section_headers = [
-        ('Meta-Learning Activity', 'Meta-Learning section header'),
-        ('Redis Cache Activity', 'Redis section header'),
-        ('Pinecone Vector Operations', 'Pinecone section header'),
-        ('Agent Execution Flow', 'Execution Flow section header'),
+        ("Meta-Learning Activity", "Meta-Learning section header"),
+        ("Redis Cache Activity", "Redis section header"),
+        ("Pinecone Vector Operations", "Pinecone section header"),
+        ("Agent Execution Flow", "Execution Flow section header"),
     ]
 
     for header, desc in section_headers:
@@ -114,22 +114,24 @@ def test_phase5_2_file_includes():
         record_test("Dashboard HTML exists", False, f"File not found: {DASHBOARD_HTML}")
         return
 
-    html = DASHBOARD_HTML.read_text(encoding='utf-8')
+    html = DASHBOARD_HTML.read_text(encoding="utf-8")
 
     # Test JS includes
     js_includes = [
-        ('meta-learning-panel.js', 'Meta-Learning Panel JS'),
-        ('redis-monitor.js', 'Redis Monitor JS'),
-        ('pinecone-monitor.js', 'Pinecone Monitor JS'),
-        ('execution-flow.js', 'Execution Flow JS'),
-        ('meta-learning-controller.js', 'Meta-Learning Controller JS'),
+        ("meta-learning-panel.js", "Meta-Learning Panel JS"),
+        ("redis-monitor.js", "Redis Monitor JS"),
+        ("pinecone-monitor.js", "Pinecone Monitor JS"),
+        ("execution-flow.js", "Execution Flow JS"),
+        ("meta-learning-controller.js", "Meta-Learning Controller JS"),
     ]
 
     for filename, desc in js_includes:
         record_test(f"JS include: {desc}", filename in html, f"Missing: {filename}")
 
     # Test CSS include
-    record_test("CSS include: meta-learning.css", 'meta-learning.css' in html, "Missing: meta-learning.css")
+    record_test(
+        "CSS include: meta-learning.css", "meta-learning.css" in html, "Missing: meta-learning.css"
+    )
 
     # Test that files actually exist
     js_files = [
@@ -157,35 +159,35 @@ def test_phase5_3_initialization():
         record_test("main.js exists", False, f"File not found: {main_js}")
         return
 
-    content = main_js.read_text(encoding='utf-8')
+    content = main_js.read_text(encoding="utf-8")
 
     record_test(
         "initializeMetaLearningDashboard called",
         "initializeMetaLearningDashboard" in content,
-        "initializeMetaLearningDashboard not found in main.js"
+        "initializeMetaLearningDashboard not found in main.js",
     )
 
     # Check controller has init function
     controller_js = CONTROLLERS_DIR / "meta-learning-controller.js"
     if controller_js.exists():
-        controller_content = controller_js.read_text(encoding='utf-8')
+        controller_content = controller_js.read_text(encoding="utf-8")
 
         record_test(
             "MetaLearningController has init method",
             "init:" in controller_content or "init(" in controller_content,
-            "init method not found"
+            "init method not found",
         )
 
         record_test(
             "initializeMetaLearningDashboard function defined",
             "function initializeMetaLearningDashboard" in controller_content,
-            "initializeMetaLearningDashboard function not defined"
+            "initializeMetaLearningDashboard function not defined",
         )
 
         record_test(
             "MetaLearningController exported to window",
             "window.MetaLearningController" in controller_content,
-            "MetaLearningController not exported"
+            "MetaLearningController not exported",
         )
 
 
@@ -200,35 +202,35 @@ def test_phase5_4_css_completeness():
         record_test("meta-learning.css exists", False, f"File not found: {css_file}")
         return
 
-    content = css_file.read_text(encoding='utf-8')
+    content = css_file.read_text(encoding="utf-8")
 
     # Check for required CSS classes
     required_classes = [
-        ('.meta-stats-grid', 'Meta stats grid layout'),
-        ('.experience-item', 'Experience item styling'),
-        ('.reward-high', 'High reward styling'),
-        ('.reward-medium', 'Medium reward styling'),
-        ('.reward-low', 'Low reward styling'),
-        ('.strategy-weights-chart', 'Strategy weights chart'),
-        ('.strategy-bar', 'Strategy bar styling'),
-        ('.pattern-timeline', 'Pattern timeline styling'),
-        ('.redis-stats-grid', 'Redis stats grid'),
-        ('.operation-log', 'Operation log styling'),
-        ('.log-entry', 'Log entry styling'),
-        ('.cache-hit', 'Cache hit styling'),
-        ('.cache-miss', 'Cache miss styling'),
-        ('.pinecone-stats-grid', 'Pinecone stats grid'),
-        ('.query-results', 'Query results styling'),
-        ('.execution-timeline', 'Execution timeline styling'),
-        ('.layer-flow', 'Layer flow diagram'),
-        ('.layer-node', 'Layer node styling'),
-        ('.layer-completed', 'Completed layer styling'),
-        ('.layer-active', 'Active layer styling'),
-        ('.layer-pending', 'Pending layer styling'),
-        ('.scrollable-list', 'Scrollable list styling'),
-        ('.stat-box', 'Stat box styling'),
-        ('.stat-label', 'Stat label styling'),
-        ('.stat-value', 'Stat value styling'),
+        (".meta-stats-grid", "Meta stats grid layout"),
+        (".experience-item", "Experience item styling"),
+        (".reward-high", "High reward styling"),
+        (".reward-medium", "Medium reward styling"),
+        (".reward-low", "Low reward styling"),
+        (".strategy-weights-chart", "Strategy weights chart"),
+        (".strategy-bar", "Strategy bar styling"),
+        (".pattern-timeline", "Pattern timeline styling"),
+        (".redis-stats-grid", "Redis stats grid"),
+        (".operation-log", "Operation log styling"),
+        (".log-entry", "Log entry styling"),
+        (".cache-hit", "Cache hit styling"),
+        (".cache-miss", "Cache miss styling"),
+        (".pinecone-stats-grid", "Pinecone stats grid"),
+        (".query-results", "Query results styling"),
+        (".execution-timeline", "Execution timeline styling"),
+        (".layer-flow", "Layer flow diagram"),
+        (".layer-node", "Layer node styling"),
+        (".layer-completed", "Completed layer styling"),
+        (".layer-active", "Active layer styling"),
+        (".layer-pending", "Pending layer styling"),
+        (".scrollable-list", "Scrollable list styling"),
+        (".stat-box", "Stat box styling"),
+        (".stat-label", "Stat label styling"),
+        (".stat-value", "Stat value styling"),
     ]
 
     for css_class, desc in required_classes:
@@ -236,9 +238,7 @@ def test_phase5_4_css_completeness():
 
     # Check for animations
     record_test(
-        "CSS: Layer pulse animation",
-        "@keyframes pulse" in content,
-        "Missing pulse animation"
+        "CSS: Layer pulse animation", "@keyframes pulse" in content, "Missing pulse animation"
     )
 
 
@@ -252,39 +252,39 @@ def test_phase5_5_integration():
         record_test("Dashboard HTML exists", False, f"File not found: {DASHBOARD_HTML}")
         return
 
-    html = DASHBOARD_HTML.read_text(encoding='utf-8')
+    html = DASHBOARD_HTML.read_text(encoding="utf-8")
 
     # Check Phase 5 sections are in runtime-content tab
     record_test(
         "Phase 5 sections in runtime-content tab",
-        'id="runtime-content"' in html and 'meta-learning-section' in html,
-        "Phase 5 sections not in runtime-content tab"
+        'id="runtime-content"' in html and "meta-learning-section" in html,
+        "Phase 5 sections not in runtime-content tab",
     )
 
     # Check CSS is loaded before JS
-    css_pos = html.find('meta-learning.css')
-    js_pos = html.find('meta-learning-panel.js')
+    css_pos = html.find("meta-learning.css")
+    js_pos = html.find("meta-learning-panel.js")
     record_test(
         "CSS loaded before JS",
         css_pos < js_pos if css_pos != -1 and js_pos != -1 else False,
-        "CSS should be loaded before JS"
+        "CSS should be loaded before JS",
     )
 
     # Check components are loaded before controller
-    panel_pos = html.find('meta-learning-panel.js')
-    controller_pos = html.find('meta-learning-controller.js')
+    panel_pos = html.find("meta-learning-panel.js")
+    controller_pos = html.find("meta-learning-controller.js")
     record_test(
         "Components loaded before controller",
         panel_pos < controller_pos if panel_pos != -1 and controller_pos != -1 else False,
-        "Components should be loaded before controller"
+        "Components should be loaded before controller",
     )
 
     # Check main.js is loaded last
-    main_pos = html.find('main.js')
+    main_pos = html.find("main.js")
     record_test(
         "main.js loaded after Phase 5 components",
         controller_pos < main_pos if controller_pos != -1 and main_pos != -1 else False,
-        "main.js should be loaded after Phase 5 components"
+        "main.js should be loaded after Phase 5 components",
     )
 
 
@@ -313,7 +313,7 @@ def test_api_integration():
             record_test(
                 f"API: {desc} returns 200",
                 response.status_code == 200,
-                f"Status: {response.status_code}"
+                f"Status: {response.status_code}",
             )
 
     except ImportError as e:
@@ -345,14 +345,14 @@ def main():
     print(f"  Passed: {test_results['passed']}")
     print(f"  Failed: {test_results['failed']}")
 
-    if test_results['failed'] == 0:
+    if test_results["failed"] == 0:
         print("\n✅ ALL TESTS PASSED - Phase 5 implementation complete!")
         return 0
     else:
         print(f"\n❌ {test_results['failed']} TEST(S) FAILED")
         print("\nFailed tests:")
-        for test in test_results['tests']:
-            if test['status'] == 'FAILED':
+        for test in test_results["tests"]:
+            if test["status"] == "FAILED":
                 print(f"  - {test['name']}: {test['details']}")
         return 1
 

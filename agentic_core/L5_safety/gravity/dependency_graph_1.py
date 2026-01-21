@@ -22,6 +22,7 @@ from pydantic import BaseModel, Field
 
 class GraphOperation(str, Enum):
     """Supported dependency graph operations."""
+
     BUILD_GRAPH = "build_graph"
     DETECT_CYCLES = "detect_cycles"
     IMPACT_ANALYSIS = "ImpactAnalysis"
@@ -31,29 +32,22 @@ class GraphOperation(str, Enum):
 
 class DependencyGraphArgs(BaseModel):
     """Arguments for dependency graph operations."""
-    operation: GraphOperation = Field(
-        description="Operation to perform on the dependency graph"
-    )
-    target_path: str = Field(
-        description="File or directory path to analyze"
-    )
+
+    operation: GraphOperation = Field(description="Operation to perform on the dependency graph")
+    target_path: str = Field(description="File or directory path to analyze")
     symbol: str | None = Field(
-        default=None,
-        description="Symbol name for impact analysis (function, class, or module)"
+        default=None, description="Symbol name for impact analysis (function, class, or module)"
     )
-    max_depth: int | None = Field(
-        default=10,
-        description="Maximum depth for recursive analysis"
-    )
+    max_depth: int | None = Field(default=10, description="Maximum depth for recursive analysis")
     include_stdlib: bool = Field(
-        default=False,
-        description="Include standard library modules in graph"
+        default=False, description="Include standard library modules in graph"
     )
 
 
 @dataclass
 class DependencyNode:
     """A node in the dependency graph."""
+
     name: str
     path: str | None = None
     node_type: str = "module"  # module, function, class
@@ -77,6 +71,7 @@ class DependencyNode:
 @dataclass
 class DependencyGraph:
     """Complete dependency graph structure."""
+
     nodes: dict[str, DependencyNode] = field(default_factory=dict)
     edges: list[tuple[str, str, str]] = field(default_factory=list)  # (from, to, type)
 
@@ -119,6 +114,7 @@ class DependencyGraph:
 @dataclass
 class GraphResult:
     """Result of a dependency graph operation."""
+
     success: bool
     operation: str
     data: dict[str, Any] = field(default_factory=dict)
@@ -139,35 +135,209 @@ class GraphResult:
 # STDLIB MODULES (for filtering)
 # =============================================================================
 STDLIB_MODULES = {
-    "abc", "aifc", "argparse", "array", "ast", "asynchat", "asyncio", "asyncore",
-    "atexit", "audioop", "base64", "bdb", "binascii", "binhex", "bisect",
-    "builtins", "bz2", "calendar", "cgi", "cgitb", "chunk", "cmath", "cmd",
-    "code", "codecs", "codeop", "collections", "colorsys", "compileall",
-    "concurrent", "configparser", "contextlib", "contextvars", "copy", "copyreg",
-    "cProfile", "crypt", "csv", "ctypes", "curses", "dataclasses", "datetime",
-    "dbm", "decimal", "difflib", "dis", "distutils", "doctest", "email",
-    "encodings", "enum", "errno", "faulthandler", "fcntl", "filecmp", "fileinput",
-    "fnmatch", "fractions", "ftplib", "functools", "gc", "getopt", "getpass",
-    "gettext", "glob", "graphlib", "grp", "gzip", "hashlib", "heapq", "hmac",
-    "html", "http", "idlelib", "imaplib", "imghdr", "imp", "importlib", "inspect",
-    "io", "ipaddress", "itertools", "json", "keyword", "lib2to3", "linecache",
-    "locale", "logging", "lzma", "mailbox", "mailcap", "marshal", "math",
-    "mimetypes", "mmap", "modulefinder", "multiprocessing", "netrc", "nis",
-    "nntplib", "numbers", "operator", "optparse", "os", "ossaudiodev", "pathlib",
-    "pdb", "pickle", "pickletools", "pipes", "pkgutil", "platform", "plistlib",
-    "poplib", "posix", "posixpath", "pprint", "profile", "pstats", "pty", "pwd",
-    "py_compile", "pyclbr", "pydoc", "queue", "quopri", "random", "re",
-    "readline", "reprlib", "resource", "rlcompleter", "runpy", "sched", "secrets",
-    "select", "selectors", "shelve", "shlex", "shutil", "signal", "site",
-    "smtpd", "smtplib", "sndhdr", "socket", "socketserver", "spwd", "sqlite3",
-    "ssl", "stat", "statistics", "string", "stringprep", "struct", "subprocess",
-    "sunau", "symtable", "sys", "sysconfig", "syslog", "tabnanny", "tarfile",
-    "telnetlib", "tempfile", "termios", "test", "textwrap", "threading", "time",
-    "timeit", "tkinter", "token", "tokenize", "trace", "traceback", "tracemalloc",
-    "tty", "turtle", "turtledemo", "types", "typing", "unicodedata", "unittest",
-    "urllib", "uu", "uuid", "venv", "warnings", "wave", "weakref", "webbrowser",
-    "winreg", "winsound", "wsgiref", "xdrlib", "xml", "xmlrpc", "zipapp",
-    "zipfile", "zipimport", "zlib", "_thread",
+    "abc",
+    "aifc",
+    "argparse",
+    "array",
+    "ast",
+    "asynchat",
+    "asyncio",
+    "asyncore",
+    "atexit",
+    "audioop",
+    "base64",
+    "bdb",
+    "binascii",
+    "binhex",
+    "bisect",
+    "builtins",
+    "bz2",
+    "calendar",
+    "cgi",
+    "cgitb",
+    "chunk",
+    "cmath",
+    "cmd",
+    "code",
+    "codecs",
+    "codeop",
+    "collections",
+    "colorsys",
+    "compileall",
+    "concurrent",
+    "configparser",
+    "contextlib",
+    "contextvars",
+    "copy",
+    "copyreg",
+    "cProfile",
+    "crypt",
+    "csv",
+    "ctypes",
+    "curses",
+    "dataclasses",
+    "datetime",
+    "dbm",
+    "decimal",
+    "difflib",
+    "dis",
+    "distutils",
+    "doctest",
+    "email",
+    "encodings",
+    "enum",
+    "errno",
+    "faulthandler",
+    "fcntl",
+    "filecmp",
+    "fileinput",
+    "fnmatch",
+    "fractions",
+    "ftplib",
+    "functools",
+    "gc",
+    "getopt",
+    "getpass",
+    "gettext",
+    "glob",
+    "graphlib",
+    "grp",
+    "gzip",
+    "hashlib",
+    "heapq",
+    "hmac",
+    "html",
+    "http",
+    "idlelib",
+    "imaplib",
+    "imghdr",
+    "imp",
+    "importlib",
+    "inspect",
+    "io",
+    "ipaddress",
+    "itertools",
+    "json",
+    "keyword",
+    "lib2to3",
+    "linecache",
+    "locale",
+    "logging",
+    "lzma",
+    "mailbox",
+    "mailcap",
+    "marshal",
+    "math",
+    "mimetypes",
+    "mmap",
+    "modulefinder",
+    "multiprocessing",
+    "netrc",
+    "nis",
+    "nntplib",
+    "numbers",
+    "operator",
+    "optparse",
+    "os",
+    "ossaudiodev",
+    "pathlib",
+    "pdb",
+    "pickle",
+    "pickletools",
+    "pipes",
+    "pkgutil",
+    "platform",
+    "plistlib",
+    "poplib",
+    "posix",
+    "posixpath",
+    "pprint",
+    "profile",
+    "pstats",
+    "pty",
+    "pwd",
+    "py_compile",
+    "pyclbr",
+    "pydoc",
+    "queue",
+    "quopri",
+    "random",
+    "re",
+    "readline",
+    "reprlib",
+    "resource",
+    "rlcompleter",
+    "runpy",
+    "sched",
+    "secrets",
+    "select",
+    "selectors",
+    "shelve",
+    "shlex",
+    "shutil",
+    "signal",
+    "site",
+    "smtpd",
+    "smtplib",
+    "sndhdr",
+    "socket",
+    "socketserver",
+    "spwd",
+    "sqlite3",
+    "ssl",
+    "stat",
+    "statistics",
+    "string",
+    "stringprep",
+    "struct",
+    "subprocess",
+    "sunau",
+    "symtable",
+    "sys",
+    "sysconfig",
+    "syslog",
+    "tabnanny",
+    "tarfile",
+    "telnetlib",
+    "tempfile",
+    "termios",
+    "test",
+    "textwrap",
+    "threading",
+    "time",
+    "timeit",
+    "tkinter",
+    "token",
+    "tokenize",
+    "trace",
+    "traceback",
+    "tracemalloc",
+    "tty",
+    "turtle",
+    "turtledemo",
+    "types",
+    "typing",
+    "unicodedata",
+    "unittest",
+    "urllib",
+    "uu",
+    "uuid",
+    "venv",
+    "warnings",
+    "wave",
+    "weakref",
+    "webbrowser",
+    "winreg",
+    "winsound",
+    "wsgiref",
+    "xdrlib",
+    "xml",
+    "xmlrpc",
+    "zipapp",
+    "zipfile",
+    "zipimport",
+    "zlib",
+    "_thread",
 }
 
 
@@ -188,12 +358,14 @@ class ImportExtractor(ast.NodeVisitor):
         for alias in node.names:
             module = alias.name
             if self.include_stdlib or not self._is_stdlib(module):
-                self.imports.append({
-                    "module": module,
-                    "alias": alias.asname,
-                    "line": node.lineno,
-                    "type": "import",
-                })
+                self.imports.append(
+                    {
+                        "module": module,
+                        "alias": alias.asname,
+                        "line": node.lineno,
+                        "type": "import",
+                    }
+                )
         self.generic_visit(node)
 
     def visit_ImportFrom(self, node: ast.ImportFrom):
@@ -201,14 +373,16 @@ class ImportExtractor(ast.NodeVisitor):
         module = node.module or ""
         if self.include_stdlib or not self._is_stdlib(module):
             for alias in node.names:
-                self.imports.append({
-                    "module": module,
-                    "name": alias.name,
-                    "alias": alias.asname,
-                    "line": node.lineno,
-                    "type": "from_import",
-                    "level": node.level,  # Relative import level
-                })
+                self.imports.append(
+                    {
+                        "module": module,
+                        "name": alias.name,
+                        "alias": alias.asname,
+                        "line": node.lineno,
+                        "type": "from_import",
+                        "level": node.level,  # Relative import level
+                    }
+                )
         self.generic_visit(node)
 
 
@@ -241,11 +415,13 @@ class CallExtractor(ast.NodeVisitor):
         """Extract call information."""
         call_name = self._get_call_name(node.func)
         if call_name:
-            self.calls.append({
-                "name": call_name,
-                "line": node.lineno,
-                "scope": ".".join(self._current_scope) if self._current_scope else "<module>",
-            })
+            self.calls.append(
+                {
+                    "name": call_name,
+                    "line": node.lineno,
+                    "scope": ".".join(self._current_scope) if self._current_scope else "<module>",
+                }
+            )
         self.generic_visit(node)
 
     def _get_call_name(self, node: ast.expr) -> str | None:
@@ -270,13 +446,15 @@ class DefinitionExtractor(ast.NodeVisitor):
     def visit_FunctionDef(self, node: ast.FunctionDef):
         """Extract function definition."""
         full_name = ".".join(self._current_scope + [node.name])
-        self.definitions.append({
-            "name": node.name,
-            "full_name": full_name,
-            "type": "function",
-            "line": node.lineno,
-            "decorators": [self._get_decorator_name(d) for d in node.decorator_list],
-        })
+        self.definitions.append(
+            {
+                "name": node.name,
+                "full_name": full_name,
+                "type": "function",
+                "line": node.lineno,
+                "decorators": [self._get_decorator_name(d) for d in node.decorator_list],
+            }
+        )
         self._current_scope.append(node.name)
         self.generic_visit(node)
         self._current_scope.pop()
@@ -284,13 +462,15 @@ class DefinitionExtractor(ast.NodeVisitor):
     def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef):
         """Extract async function definition."""
         full_name = ".".join(self._current_scope + [node.name])
-        self.definitions.append({
-            "name": node.name,
-            "full_name": full_name,
-            "type": "async_function",
-            "line": node.lineno,
-            "decorators": [self._get_decorator_name(d) for d in node.decorator_list],
-        })
+        self.definitions.append(
+            {
+                "name": node.name,
+                "full_name": full_name,
+                "type": "async_function",
+                "line": node.lineno,
+                "decorators": [self._get_decorator_name(d) for d in node.decorator_list],
+            }
+        )
         self._current_scope.append(node.name)
         self.generic_visit(node)
         self._current_scope.pop()
@@ -298,14 +478,16 @@ class DefinitionExtractor(ast.NodeVisitor):
     def visit_ClassDef(self, node: ast.ClassDef):
         """Extract class definition."""
         full_name = ".".join(self._current_scope + [node.name])
-        self.definitions.append({
-            "name": node.name,
-            "full_name": full_name,
-            "type": "class",
-            "line": node.lineno,
-            "bases": [self._get_base_name(b) for b in node.bases],
-            "decorators": [self._get_decorator_name(d) for d in node.decorator_list],
-        })
+        self.definitions.append(
+            {
+                "name": node.name,
+                "full_name": full_name,
+                "type": "class",
+                "line": node.lineno,
+                "bases": [self._get_base_name(b) for b in node.bases],
+                "decorators": [self._get_decorator_name(d) for d in node.decorator_list],
+            }
+        )
         self._current_scope.append(node.name)
         self.generic_visit(node)
         self._current_scope.pop()
@@ -333,10 +515,11 @@ class DefinitionExtractor(ast.NodeVisitor):
 # CORE FUNCTIONS
 # =============================================================================
 
+
 def parse_file(file_path: str, include_stdlib: bool = False) -> dict[str, Any]:
     """Parse a Python file and extract dependency information."""
     try:
-        with open(file_path, encoding='utf-8', errors='replace') as f:
+        with open(file_path, encoding="utf-8", errors="replace") as f:
             code = f.read()
 
         tree = ast.parse(code)
@@ -374,11 +557,7 @@ def parse_file(file_path: str, include_stdlib: bool = False) -> dict[str, Any]:
         }
 
 
-def build_graph(
-    target_path: str,
-    include_stdlib: bool = False,
-    max_depth: int = 10
-) -> GraphResult:
+def build_graph(target_path: str, include_stdlib: bool = False, max_depth: int = 10) -> GraphResult:
     """
     Build a dependency graph from a file or directory.
 
@@ -397,9 +576,7 @@ def build_graph(
 
     if not target.exists():
         return GraphResult(
-            success=False,
-            operation="build_graph",
-            error=f"Path does not exist: {target_path}"
+            success=False, operation="build_graph", error=f"Path does not exist: {target_path}"
         )
 
     # Collect Python files
@@ -408,13 +585,12 @@ def build_graph(
             files = [target]
         else:
             return GraphResult(
-                success=False,
-                operation="build_graph",
-                error=f"Not a Python file: {target_path}"
+                success=False, operation="build_graph", error=f"Not a Python file: {target_path}"
             )
     else:
         # Phase 6.7: Use ssot_discovery instead of rglob
         from agentic_core.utils.ssot_discovery import get_python_files
+
         files = list(get_python_files(target))
         # Limit depth
         base_depth = len(target.parts)
@@ -430,20 +606,14 @@ def build_graph(
 
         # Create module node
         module_name = _path_to_module(file_path, target if target.is_dir() else target.parent)
-        graph.add_node(
-            module_name,
-            path=str(file_path),
-            node_type="module"
-        )
+        graph.add_node(module_name, path=str(file_path), node_type="module")
 
         # Add import edges
         for imp in result["imports"]:
             imported_module = imp["module"]
             if imp["type"] == "from_import" and imp.get("level", 0) > 0:
                 # Resolve relative import
-                imported_module = _resolve_relative_import(
-                    module_name, imp["module"], imp["level"]
-                )
+                imported_module = _resolve_relative_import(module_name, imp["module"], imp["level"])
 
             graph.add_node(imported_module, node_type="module")
             graph.add_edge(module_name, imported_module, "imports")
@@ -454,10 +624,7 @@ def build_graph(
             graph.add_node(full_name, path=str(file_path), node_type=defn["type"])
 
     return GraphResult(
-        success=True,
-        operation="build_graph",
-        data=graph.to_dict(),
-        warnings=warnings
+        success=True, operation="build_graph", data=graph.to_dict(), warnings=warnings
     )
 
 
@@ -514,14 +681,11 @@ def detect_cycles(graph_data: dict[str, Any]) -> GraphResult:
             "cycles": cycles,
             "cycle_count": len(cycles),
             "has_cycles": len(cycles) > 0,
-        }
+        },
     )
 
 
-def ImpactAnalysis(
-    graph_data: dict[str, Any],
-    symbol: str
-) -> GraphResult:
+def ImpactAnalysis(graph_data: dict[str, Any], symbol: str) -> GraphResult:
     """
     Analyze impact of changing a symbol.
 
@@ -539,9 +703,7 @@ def ImpactAnalysis(
         matches = [n for n in nodes if symbol in n]
         if not matches:
             return GraphResult(
-                success=False,
-                operation="ImpactAnalysis",
-                error=f"Symbol not found: {symbol}"
+                success=False, operation="ImpactAnalysis", error=f"Symbol not found: {symbol}"
             )
         symbol = matches[0]
 
@@ -576,7 +738,7 @@ def ImpactAnalysis(
             "transitive_dependents": list(transitive_dependents - direct_dependents),
             "total_impact": len(transitive_dependents),
             "risk_level": _calculate_risk_level(len(transitive_dependents)),
-        }
+        },
     )
 
 
@@ -599,6 +761,7 @@ def find_unused_imports(target_path: str) -> GraphResult:
     else:
         # Phase 6.7: Use ssot_discovery instead of rglob
         from agentic_core.utils.ssot_discovery import get_python_files
+
         files = list(get_python_files(target))
 
     for file_path in files:
@@ -631,12 +794,14 @@ def find_unused_imports(target_path: str) -> GraphResult:
             imported_name = imp.get("alias") or imp.get("name") or imp["module"].split(".")[-1]
 
             if imported_name not in used_names and imported_name != "*":
-                unused.append({
-                    "file": str(file_path),
-                    "import": imp,
-                    "name": imported_name,
-                    "line": imp["line"],
-                })
+                unused.append(
+                    {
+                        "file": str(file_path),
+                        "import": imp,
+                        "name": imported_name,
+                        "line": imp["line"],
+                    }
+                )
 
     return GraphResult(
         success=True,
@@ -646,7 +811,7 @@ def find_unused_imports(target_path: str) -> GraphResult:
             "count": len(unused),
             "files_analyzed": len(files),
         },
-        warnings=warnings
+        warnings=warnings,
     )
 
 
@@ -667,7 +832,7 @@ def get_module_dependencies(target_path: str, include_stdlib: bool = False) -> G
         return GraphResult(
             success=False,
             operation="module_dependencies",
-            error=result.get("error", "Failed to parse file")
+            error=result.get("error", "Failed to parse file"),
         )
 
     # Group imports by module
@@ -686,13 +851,14 @@ def get_module_dependencies(target_path: str, include_stdlib: bool = False) -> G
             "file": target_path,
             "dependencies": modules,
             "dependency_count": len(modules),
-        }
+        },
     )
 
 
 # =============================================================================
 # HELPER FUNCTIONS
 # =============================================================================
+
 
 def _path_to_module(file_path: Path, base_path: Path) -> str:
     """Convert file path to module name."""
@@ -745,6 +911,7 @@ def _calculate_risk_level(impact_count: int) -> str:
 # MAIN ENTRY POINT
 # =============================================================================
 
+
 def DependencyGraph(args: DependencyGraphArgs) -> dict[str, Any]:
     """
     Main entry point for dependency graph operations.
@@ -757,17 +924,13 @@ def DependencyGraph(args: DependencyGraphArgs) -> dict[str, Any]:
     """
     if args.operation == GraphOperation.BUILD_GRAPH:
         result = build_graph(
-            args.target_path,
-            include_stdlib=args.include_stdlib,
-            max_depth=args.max_depth or 10
+            args.target_path, include_stdlib=args.include_stdlib, max_depth=args.max_depth or 10
         )
 
     elif args.operation == GraphOperation.DETECT_CYCLES:
         # First build the graph, then detect cycles
         graph_result = build_graph(
-            args.target_path,
-            include_stdlib=args.include_stdlib,
-            max_depth=args.max_depth or 10
+            args.target_path, include_stdlib=args.include_stdlib, max_depth=args.max_depth or 10
         )
         if not graph_result.success:
             return graph_result.to_dict()
@@ -779,14 +942,12 @@ def DependencyGraph(args: DependencyGraphArgs) -> dict[str, Any]:
             return GraphResult(
                 success=False,
                 operation="ImpactAnalysis",
-                error="symbol required for ImpactAnalysis operation"
+                error="symbol required for ImpactAnalysis operation",
             ).to_dict()
 
         # First build the graph
         graph_result = build_graph(
-            args.target_path,
-            include_stdlib=args.include_stdlib,
-            max_depth=args.max_depth or 10
+            args.target_path, include_stdlib=args.include_stdlib, max_depth=args.max_depth or 10
         )
         if not graph_result.success:
             return graph_result.to_dict()
@@ -797,16 +958,13 @@ def DependencyGraph(args: DependencyGraphArgs) -> dict[str, Any]:
         result = find_unused_imports(args.target_path)
 
     elif args.operation == GraphOperation.MODULE_DEPENDENCIES:
-        result = get_module_dependencies(
-            args.target_path,
-            include_stdlib=args.include_stdlib
-        )
+        result = get_module_dependencies(args.target_path, include_stdlib=args.include_stdlib)
 
     else:
         result = GraphResult(
             success=False,
             operation=str(args.operation),
-            error=f"Unknown operation: {args.operation}"
+            error=f"Unknown operation: {args.operation}",
         )
 
     return result.to_dict()
@@ -816,12 +974,10 @@ def DependencyGraph(args: DependencyGraphArgs) -> dict[str, Any]:
 # CONVENIENCE FUNCTIONS
 # =============================================================================
 
+
 def quick_cycles(target_path: str) -> list[list[str]]:
     """Quick check for circular dependencies."""
-    args = DependencyGraphArgs(
-        operation=GraphOperation.DETECT_CYCLES,
-        target_path=target_path
-    )
+    args = DependencyGraphArgs(operation=GraphOperation.DETECT_CYCLES, target_path=target_path)
     result = DependencyGraph(args)
     return result.get("data", {}).get("cycles", [])
 
@@ -829,9 +985,7 @@ def quick_cycles(target_path: str) -> list[list[str]]:
 def quick_impact(target_path: str, symbol: str) -> dict[str, Any]:
     """Quick impact analysis for a symbol."""
     args = DependencyGraphArgs(
-        operation=GraphOperation.IMPACT_ANALYSIS,
-        target_path=target_path,
-        symbol=symbol
+        operation=GraphOperation.IMPACT_ANALYSIS, target_path=target_path, symbol=symbol
     )
     result = DependencyGraph(args)
     return result.get("data", {})
@@ -839,9 +993,6 @@ def quick_impact(target_path: str, symbol: str) -> dict[str, Any]:
 
 def quick_unused(target_path: str) -> list[dict[str, Any]]:
     """Quick check for unused imports."""
-    args = DependencyGraphArgs(
-        operation=GraphOperation.UNUSED_IMPORTS,
-        target_path=target_path
-    )
+    args = DependencyGraphArgs(operation=GraphOperation.UNUSED_IMPORTS, target_path=target_path)
     result = DependencyGraph(args)
     return result.get("data", {}).get("unused_imports", [])

@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 
 class GuardAction(Enum):
     """Action to take based on guardrail scan."""
+
     ALLOW = "ALLOW"
     BLOCK = "BLOCK"
     WARN = "WARN"
@@ -28,6 +29,7 @@ class GuardAction(Enum):
 @dataclass
 class GuardResult:
     """Result of input guardrail scan."""
+
     action: GuardAction
     reason: str
     confidence: float
@@ -45,15 +47,17 @@ class GuardResult:
 class InputGuardrail:
     """Adversarial defense layer for input validation and sanitization."""
 
-    def __init__(self,
-                 enable_injection_detection: bool = True,
-                 enable_pii_detection: bool = True,
-                 enable_semantic_check: bool = True,
-                 enable_unicode_check: bool = True,
-                 enable_encoding_check: bool = True,
-                 enable_rate_limit: bool = True,
-                 strict_mode: bool = False,
-                 rate_limit_per_minute: int = 60):
+    def __init__(
+        self,
+        enable_injection_detection: bool = True,
+        enable_pii_detection: bool = True,
+        enable_semantic_check: bool = True,
+        enable_unicode_check: bool = True,
+        enable_encoding_check: bool = True,
+        enable_rate_limit: bool = True,
+        strict_mode: bool = False,
+        rate_limit_per_minute: int = 60,
+    ):
         """Initialize the input guardrail.
 
         Args:
@@ -85,46 +89,43 @@ class InputGuardrail:
         if self.enable_semantic_check:
             self._init_semantic_checker()
 
-        logger.info(f"InputGuardrail initialized - Injection: {enable_injection_detection}, "
-                   f"PII: {enable_pii_detection}, Semantic: {enable_semantic_check}, "
-                   f"Unicode: {enable_unicode_check}, Encoding: {enable_encoding_check}, "
-                   f"Rate Limit: {enable_rate_limit}, Strict: {strict_mode}")
+        logger.info(
+            f"InputGuardrail initialized - Injection: {enable_injection_detection}, "
+            f"PII: {enable_pii_detection}, Semantic: {enable_semantic_check}, "
+            f"Unicode: {enable_unicode_check}, Encoding: {enable_encoding_check}, "
+            f"Rate Limit: {enable_rate_limit}, Strict: {strict_mode}"
+        )
 
     def _compile_patterns(self):
         """Compile regex patterns for fast detection."""
         # Prompt injection patterns
         self.injection_patterns = [
             # DAN (Do Anything Now) patterns
-            r'(?i)(dan|do anything now)',
-            r'(?i)(ignore (all|previous|the above) instructions?)',
-            r'(?i)(disregard (all|previous|the above) instructions?)',
-            r'(?i)(forget (all|previous|the above) instructions?)',
-            r'(?i)(override (all|previous|the above) instructions?)',
-
+            r"(?i)(dan|do anything now)",
+            r"(?i)(ignore (all|previous|the above) instructions?)",
+            r"(?i)(disregard (all|previous|the above) instructions?)",
+            r"(?i)(forget (all|previous|the above) instructions?)",
+            r"(?i)(override (all|previous|the above) instructions?)",
             # System prompt extraction
-            r'(?i)(show|print|display|tell me) (your )?(system|initial|original) prompt',
-            r'(?i)(what are your instructions|what were you told to do)',
-            r'(?i)(repeat|echo|copy) (everything )?above',
-
+            r"(?i)(show|print|display|tell me) (your )?(system|initial|original) prompt",
+            r"(?i)(what are your instructions|what were you told to do)",
+            r"(?i)(repeat|echo|copy) (everything )?above",
             # Role playing/jailbreak attempts
-            r'(?i)(you are now|henceforth|from now on) (a )?(developer|admin|god|dAN)',
-            r'(?i)(pretend|act as|roleplay as) (a )?(jailbroken|uncensored|unrestricted)',
-            r'(?i)(hypothetical|imagine|fictional) scenario',
-
+            r"(?i)(you are now|henceforth|from now on) (a )?(developer|admin|god|dAN)",
+            r"(?i)(pretend|act as|roleplay as) (a )?(jailbroken|uncensored|unrestricted)",
+            r"(?i)(hypothetical|imagine|fictional) scenario",
             # Instruction manipulation
-            r'(?i)(new instruction|additional instruction|update)',
-            r'(?i)(replace|change|modify) (the )?(prompt|instructions)',
-            r'(?i)(add to|append to) (your )?(instructions|prompt)',
-
+            r"(?i)(new instruction|additional instruction|update)",
+            r"(?i)(replace|change|modify) (the )?(prompt|instructions)",
+            r"(?i)(add to|append to) (your )?(instructions|prompt)",
             # Output format manipulation
-            r'(?i)(respond with only|just say|output only)',
-            r'(?i)(no explanation|no commentary|no analysis)',
-            r'(?i)(between brackets|in code block|as JSON)',
-
+            r"(?i)(respond with only|just say|output only)",
+            r"(?i)(no explanation|no commentary|no analysis)",
+            r"(?i)(between brackets|in code block|as JSON)",
             # Security bypass attempts
-            r'(?i)(bypass|override|circumvent) (the )?(filter|restriction|safety)',
-            r'(?i)(this is not harmful|this is safe|this is for testing)',
-            r'(?i)(educational|research|academic) purpose',
+            r"(?i)(bypass|override|circumvent) (the )?(filter|restriction|safety)",
+            r"(?i)(this is not harmful|this is safe|this is for testing)",
+            r"(?i)(educational|research|academic) purpose",
         ]
 
         # Compile injection patterns
@@ -134,37 +135,53 @@ class InputGuardrail:
 
         # Unicode homoglyph patterns (common substitutions)
         self.unicode_homoglyphs = {
-            'i': ['ⅰ', 'і', 'í', 'ì', 'î', 'ï'],
-            'l': ['ⅼ', 'ⅼ', 'ł', 'ĺ', 'ľ'],
-            'o': ['ο', 'о', 'ó', 'ò', 'ô', 'ö'],
-            'e': ['е', 'é', 'è', 'ê', 'ë'],
-            'a': ['а', 'á', 'à', 'â', 'ä'],
-            'r': ['г', 'ŕ', 'ř', 'ŗ'],
-            'n': ['ո', 'ñ', 'ń'],
-            'g': ['ɡ', 'ğ', 'ĝ'],
-            'c': ['с', 'č', 'ć', 'ç'],
-            'v': ['ѵ', 'ν'],
-            'u': ['ս', 'ú', 'ù', 'û', 'ü'],
+            "i": ["ⅰ", "і", "í", "ì", "î", "ï"],
+            "l": ["ⅼ", "ⅼ", "ł", "ĺ", "ľ"],
+            "o": ["ο", "о", "ó", "ò", "ô", "ö"],
+            "e": ["е", "é", "è", "ê", "ë"],
+            "a": ["а", "á", "à", "â", "ä"],
+            "r": ["г", "ŕ", "ř", "ŗ"],
+            "n": ["ո", "ñ", "ń"],
+            "g": ["ɡ", "ğ", "ĝ"],
+            "c": ["с", "č", "ć", "ç"],
+            "v": ["ѵ", "ν"],
+            "u": ["ս", "ú", "ù", "û", "ü"],
         }
 
         # Base64 detection patterns
-        self.base64_pattern = re.compile(r'(?:[A-Za-z0-9+/]{4}){10,}(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?')
+        self.base64_pattern = re.compile(
+            r"(?:[A-Za-z0-9+/]{4}){10,}(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?"
+        )
 
         # PII detection patterns
         self.pii_patterns = {
-            'email': re.compile(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'),
-            'phone': re.compile(r'\b(?:\+?1[-.\s]?)?\(?([0-9]{3})\)?[-.\s]?([0-9]{3})[-.\s]?([0-9]{4})\b'),
-            'ssn': re.compile(r'\b\d{3}-\d{2}-\d{4}\b'),
-            'credit_card': re.compile(r'\b(?:\d{4}[-\s]?){3}\d{4}\b'),
-            'ip_address': re.compile(r'\b(?:\d{1,3}\.){3}\d{1,3}\b'),
-            'url': re.compile(r'https?://(?:[-\w.])+(?:[:\d]+)?(?:/(?:[\w/_.])*(?:\?(?:[\w&=%.])*)?(?:#(?:\w*))?)?'),
+            "email": re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"),
+            "phone": re.compile(
+                r"\b(?:\+?1[-.\s]?)?\(?([0-9]{3})\)?[-.\s]?([0-9]{3})[-.\s]?([0-9]{4})\b"
+            ),
+            "ssn": re.compile(r"\b\d{3}-\d{2}-\d{4}\b"),
+            "credit_card": re.compile(r"\b(?:\d{4}[-\s]?){3}\d{4}\b"),
+            "ip_address": re.compile(r"\b(?:\d{1,3}\.){3}\d{1,3}\b"),
+            "url": re.compile(
+                r"https?://(?:[-\w.])+(?:[:\d]+)?(?:/(?:[\w/_.])*(?:\?(?:[\w&=%.])*)?(?:#(?:\w*))?)?"
+            ),
         }
 
         # Malicious intent keywords
         self.malicious_keywords = [
-            'jailbreak', 'bypass', 'override', 'hack', 'exploit',
-            'injection', 'prompt leak', 'system prompt', 'dan',
-            'malicious', 'harmful', 'illegal', 'forbidden'
+            "jailbreak",
+            "bypass",
+            "override",
+            "hack",
+            "exploit",
+            "injection",
+            "prompt leak",
+            "system prompt",
+            "dan",
+            "malicious",
+            "harmful",
+            "illegal",
+            "forbidden",
         ]
 
     def _init_semantic_checker(self):
@@ -191,7 +208,7 @@ class InputGuardrail:
             reason="Input appears safe",
             confidence=0.0,
             pii_detected=[],
-            injection_patterns=[]
+            injection_patterns=[],
         )
 
         try:
@@ -217,8 +234,12 @@ class InputGuardrail:
                 unicode_result = self._check_unicode_attacks(input_text)
                 if unicode_result[0]:  # Found suspicious Unicode
                     if result.action == GuardAction.ALLOW:
-                        result.action = GuardAction.WARN if not self.strict_mode else GuardAction.BLOCK
-                        result.reason = f"Suspicious Unicode characters detected: {unicode_result[1]}"
+                        result.action = (
+                            GuardAction.WARN if not self.strict_mode else GuardAction.BLOCK
+                        )
+                        result.reason = (
+                            f"Suspicious Unicode characters detected: {unicode_result[1]}"
+                        )
                     result.confidence = max(result.confidence, 0.7)
 
             # Check for encoded payloads
@@ -252,8 +273,10 @@ class InputGuardrail:
 
             # Log the scan
             scan_time = (time.time() - start_time) * 1000
-            logger.info(f"Input scan completed in {scan_time:.2f}ms - "
-                       f"Action: {result.action.value}, Confidence: {result.confidence:.2f}")
+            logger.info(
+                f"Input scan completed in {scan_time:.2f}ms - "
+                f"Action: {result.action.value}, Confidence: {result.confidence:.2f}"
+            )
 
             return result
 
@@ -263,7 +286,7 @@ class InputGuardrail:
             return GuardResult(
                 action=GuardAction.WARN,
                 reason="Scan error - proceeding with caution",
-                confidence=0.0
+                confidence=0.0,
             )
 
     def _check_injection(self, text: str) -> tuple[bool, list[str]]:
@@ -317,18 +340,18 @@ class InputGuardrail:
         for pii_type in pii_types:
             if pii_type in self.pii_patterns:
                 pattern = self.pii_patterns[pii_type]
-                if pii_type == 'email':
-                    redacted = pattern.sub('[EMAIL_REDACTED]', redacted)
-                elif pii_type == 'phone':
-                    redacted = pattern.sub('[PHONE_REDACTED]', redacted)
-                elif pii_type == 'ssn':
-                    redacted = pattern.sub('[SSN_REDACTED]', redacted)
-                elif pii_type == 'credit_card':
-                    redacted = pattern.sub('[CARD_REDACTED]', redacted)
-                elif pii_type == 'ip_address':
-                    redacted = pattern.sub('[IP_REDACTED]', redacted)
-                elif pii_type == 'url':
-                    redacted = pattern.sub('[URL_REDACTED]', redacted)
+                if pii_type == "email":
+                    redacted = pattern.sub("[EMAIL_REDACTED]", redacted)
+                elif pii_type == "phone":
+                    redacted = pattern.sub("[PHONE_REDACTED]", redacted)
+                elif pii_type == "ssn":
+                    redacted = pattern.sub("[SSN_REDACTED]", redacted)
+                elif pii_type == "credit_card":
+                    redacted = pattern.sub("[CARD_REDACTED]", redacted)
+                elif pii_type == "ip_address":
+                    redacted = pattern.sub("[IP_REDACTED]", redacted)
+                elif pii_type == "url":
+                    redacted = pattern.sub("[URL_REDACTED]", redacted)
 
         return redacted
 
@@ -343,15 +366,15 @@ class InputGuardrail:
         """
         # Simple keyword-based semantic check
         text_lower = text.lower()
-        keyword_count = sum(1 for keyword in self.malicious_keywords
-                          if keyword in text_lower)
+        keyword_count = sum(1 for keyword in self.malicious_keywords if keyword in text_lower)
 
         # Calculate confidence based on keyword density
         confidence = min(keyword_count / len(self.malicious_keywords), 1.0)
 
         # Boost confidence if multiple injection patterns are found
-        injection_count = sum(1 for pattern in self.compiled_injection_patterns
-                            if pattern.search(text))
+        injection_count = sum(
+            1 for pattern in self.compiled_injection_patterns if pattern.search(text)
+        )
         if injection_count > 2:
             confidence = min(confidence + 0.3, 1.0)
 
@@ -372,8 +395,7 @@ class InputGuardrail:
         # Clean old entries
         if user_id in self._rate_limit_store:
             self._rate_limit_store[user_id] = [
-                timestamp for timestamp in self._rate_limit_store[user_id]
-                if timestamp > minute_ago
+                timestamp for timestamp in self._rate_limit_store[user_id] if timestamp > minute_ago
             ]
         else:
             self._rate_limit_store[user_id] = []
@@ -399,7 +421,7 @@ class InputGuardrail:
 
         for char in text:
             # Check if character is in suspicious Unicode ranges
-            char_name = unicodedata.name(char, '')
+            char_name = unicodedata.name(char, "")
 
             # Check for homoglyph substitutions
             for normal_char, homoglyphs in self.unicode_homoglyphs.items():
@@ -407,10 +429,10 @@ class InputGuardrail:
                     suspicious_chars.append(f"{char} (looks like {normal_char})")
 
             # Check for suspicious Unicode categories
-            if unicodedata.category(char) in [' Cf', 'Cs', 'Co', 'Cn']:
+            if unicodedata.category(char) in [" Cf", "Cs", "Co", "Cn"]:
                 suspicious_chars.append(f"{char} (control/private char)")
 
-        return (len(suspicious_chars) > 0, ', '.join(suspicious_chars[:5]))
+        return (len(suspicious_chars) > 0, ", ".join(suspicious_chars[:5]))
 
     def _check_encoded_payloads(self, text: str) -> tuple[bool, str]:
         """Check for base64 or other encoded payloads.
@@ -427,7 +449,7 @@ class InputGuardrail:
         for match in base64_matches:
             try:
                 # Try to decode
-                decoded = base64.b64decode(match).decode('utf-8', errors='ignore')
+                decoded = base64.b64decode(match).decode("utf-8", errors="ignore")
 
                 # Check if decoded content looks suspicious
                 decoded_lower = decoded.lower()
@@ -444,13 +466,13 @@ class InputGuardrail:
                 pass
 
         # Check for hex encoding
-        hex_pattern = re.compile(r'[0-9A-Fa-f]{32,}')
+        hex_pattern = re.compile(r"[0-9A-Fa-f]{32,}")
         hex_matches = hex_pattern.findall(text)
 
         for match in hex_matches:
             try:
                 # Try to decode as hex
-                decoded = bytes.fromhex(match).decode('utf-8', errors='ignore')
+                decoded = bytes.fromhex(match).decode("utf-8", errors="ignore")
                 if any(keyword in decoded.lower() for keyword in self.malicious_keywords):
                     return (True, "Hex encoded payload with malicious content")
             except Exception:
@@ -468,7 +490,9 @@ class InputGuardrail:
             "injection_patterns_count": len(self.injection_patterns),
             "pii_types_count": len(self.pii_patterns),
             "malicious_keywords_count": len(self.malicious_keywords),
-            "unicode_homoglyphs_count": sum(len(homoglyphs) for homoglyphs in self.unicode_homoglyphs.values()),
+            "unicode_homoglyphs_count": sum(
+                len(homoglyphs) for homoglyphs in self.unicode_homoglyphs.values()
+            ),
             "strict_mode": self.strict_mode,
             "rate_limit_per_minute": self.rate_limit_per_minute,
             "active_rate_limits": len(self._rate_limit_store),
@@ -478,8 +502,8 @@ class InputGuardrail:
                 "semantic_check": self.enable_semantic_check,
                 "unicode_check": self.enable_unicode_check,
                 "encoding_check": self.enable_encoding_check,
-                "rate_limit": self.enable_rate_limit
-            }
+                "rate_limit": self.enable_rate_limit,
+            },
         }
 
 
@@ -523,19 +547,19 @@ STRICT_GUARDRAIL = {
     "enable_injection_detection": True,
     "enable_pii_detection": True,
     "enable_semantic_check": True,
-    "strict_mode": True
+    "strict_mode": True,
 }
 
 PERMISSIVE_GUARDRAIL = {
     "enable_injection_detection": True,
     "enable_pii_detection": True,
     "enable_semantic_check": False,
-    "strict_mode": False
+    "strict_mode": False,
 }
 
 PII_ONLY_GUARDRAIL = {
     "enable_injection_detection": False,
     "enable_pii_detection": True,
     "enable_semantic_check": False,
-    "strict_mode": False
+    "strict_mode": False,
 }

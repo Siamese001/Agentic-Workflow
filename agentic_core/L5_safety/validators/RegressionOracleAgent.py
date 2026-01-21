@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt, state, validator, workflow
@@ -52,34 +51,43 @@ class RegressionOracleAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMi
             ctx: ValidationContext
         """
         super().__init__(ctx)
-        self.test_dir = Path('tests/autogen')
+        self.test_dir = Path("tests/autogen")
         self.test_dir.mkdir(parents=True, exist_ok=True)
         pinecone_available = PINECONE_AVAILABLE
         pinecone_index = None
         if PINECONE_AVAILABLE:
-            api_key = self.ctx.get_env('PINECONE_API_KEY') if hasattr(self.ctx, 'get_env') else None
+            api_key = self.ctx.get_env("PINECONE_API_KEY") if hasattr(self.ctx, "get_env") else None
             if api_key:
                 try:
                     pc = Pinecone(api_key=api_key)
-                    pinecone_index = pc.Index('canon-healing-patterns')
-                    Logger.info('[OK] Regression Oracle connected to Pinecone')
+                    pinecone_index = pc.Index("canon-healing-patterns")
+                    Logger.info("[OK] Regression Oracle connected to Pinecone")
                 except Exception as e:
-                    Logger.warning(f'[!]  Could not connect to Pinecone: {e}')
+                    Logger.warning(f"[!]  Could not connect to Pinecone: {e}")
                     pinecone_available = False
         genai_available = GENAI_AVAILABLE
         genai_client = None
         if GENAI_AVAILABLE:
-            api_key = self.ctx.get_env('GEMINI_API_KEY') if hasattr(self.ctx, 'get_env') else None
+            api_key = self.ctx.get_env("GEMINI_API_KEY") if hasattr(self.ctx, "get_env") else None
             if api_key:
                 try:
                     genai_client = genai.Client(api_key=api_key)
-                    Logger.info('[OK] Regression Oracle connected to Gemini 2.5')
+                    Logger.info("[OK] Regression Oracle connected to Gemini 2.5")
                 except Exception as e:
-                    Logger.warning(f'[!]  Could not connect to Gemini: {e}')
+                    Logger.warning(f"[!]  Could not connect to Gemini: {e}")
                     genai_available = False
         self.change_detector = MethodChangeDetectorAgent(self.ctx)
-        self.test_generator = RegressionTestGenerator(self.ctx, self.test_dir, pinecone_available, pinecone_index, genai_available, genai_client)
-        self.test_runner = RegressionTestRunner(self.ctx, self.test_dir, genai_available, genai_client, self._emit_regression_check_pass)
+        self.test_generator = RegressionTestGenerator(
+            self.ctx,
+            self.test_dir,
+            pinecone_available,
+            pinecone_index,
+            genai_available,
+            genai_client,
+        )
+        self.test_runner = RegressionTestRunner(
+            self.ctx, self.test_dir, genai_available, genai_client, self._emit_regression_check_pass
+        )
         self.generated_tests: list[GeneratedTest] = []
 
     async def execute(self) -> Any:
@@ -88,21 +96,23 @@ class RegressionOracleAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMi
 
         Listens for FILE_MODIFIED signals and generates tests.
         """
-        Logger.info('🔮 Regression Oracle: Monitoring for FILE_MODIFIED signals...')
+        Logger.info("🔮 Regression Oracle: Monitoring for FILE_MODIFIED signals...")
         modified_files_to_process: Any = []
-        if hasattr(self.ctx, 'signals'):
-            modified_signals: Any = [s for s in self.ctx.signals if s.startswith('FILE_MODIFIED:')]
+        if hasattr(self.ctx, "signals"):
+            modified_signals: Any = [s for s in self.ctx.signals if s.startswith("FILE_MODIFIED:")]
             if modified_signals:
-                Logger.info(f'   Detected {len(modified_signals)} FILE_MODIFIED signals')
-                modified_files_to_process.extend([s.replace('FILE_MODIFIED:', '') for s in modified_signals])
+                Logger.info(f"   Detected {len(modified_signals)} FILE_MODIFIED signals")
+                modified_files_to_process.extend(
+                    [s.replace("FILE_MODIFIED:", "") for s in modified_signals]
+                )
             else:
-                Logger.info('   No FILE_MODIFIED signals detected')
-        if hasattr(self.ctx, 'modified_files') and self.ctx.modified_files:
-            Logger.info(f'   Processing {len(self.ctx.modified_files)} modified files from context')
+                Logger.info("   No FILE_MODIFIED signals detected")
+        if hasattr(self.ctx, "modified_files") and self.ctx.modified_files:
+            Logger.info(f"   Processing {len(self.ctx.modified_files)} modified files from context")
             modified_files_to_process.extend(self.ctx.modified_files)
         unique_modified_files: Any = list(set(modified_files_to_process))
         if not unique_modified_files:
-            Logger.info('   No modified files to test')
+            Logger.info("   No modified files to test")
             return
         for file_path in unique_modified_files:
             await self._process_modified_file(file_path)
@@ -110,26 +120,49 @@ class RegressionOracleAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMi
 
     async def _process_modified_file(self, file_path: str) -> Any:
         """Process a modified file and generate tests."""
-        Logger.info(f'   Analyzing {file_path}...')
+        Logger.info(f"   Analyzing {file_path}...")
         changes = self.change_detector.detect_method_changes(file_path)
         if not changes:
-            Logger.info(f'   No method changes detected in {file_path}')
+            Logger.info(f"   No method changes detected in {file_path}")
             return
         for change in changes:
-            test_code, test_file, edge_cases = await self.test_generator.generate_test_code_and_file(change)
+            (
+                test_code,
+                test_file,
+                edge_cases,
+            ) = await self.test_generator.generate_test_code_and_file(change)
             if test_code and test_file:
-                passed, error_msg = await self.test_runner.run_and_correct_test(change, test_file, test_code)
-                self.generated_tests.append(GeneratedTest(test_file=str(test_file), test_name=f'test_{change.method_name}', test_code=test_code, target_method=change.method_name, edge_cases=edge_cases, passed=passed, error_message=error_msg))
+                passed, error_msg = await self.test_runner.run_and_correct_test(
+                    change, test_file, test_code
+                )
+                self.generated_tests.append(
+                    GeneratedTest(
+                        test_file=str(test_file),
+                        test_name=f"test_{change.method_name}",
+                        test_code=test_code,
+                        target_method=change.method_name,
+                        edge_cases=edge_cases,
+                        passed=passed,
+                        error_message=error_msg,
+                    )
+                )
 
     def _emit_regression_check_pass(self, file_path: str, method_name: str) -> Any:
         """Emit REGRESSION_CHECK_PASS signal to blackboard."""
-        if hasattr(self.ctx, 'signals'):
-            self.ctx.signals.add(f'REGRESSION_CHECK_PASS:{file_path}:{method_name}')
-            Logger.info(f'   [OK] Regression check passed for {method_name}')
+        if hasattr(self.ctx, "signals"):
+            self.ctx.signals.add(f"REGRESSION_CHECK_PASS:{file_path}:{method_name}")
+            Logger.info(f"   [OK] Regression check passed for {method_name}")
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L5 safety agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -146,7 +179,9 @@ class RegressionOracleAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMi
         finally:
             _call_path.discard(agent_name)
 
-    def post_heal_validation(self, generated_tests: list[GeneratedTest], dry_run: bool = True) -> dict[str, Any]:
+    def post_heal_validation(
+        self, generated_tests: list[GeneratedTest], dry_run: bool = True
+    ) -> dict[str, Any]:
         """
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository()
@@ -197,10 +232,7 @@ class RegressionOracleAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMi
         return report
 
     def cleanup_violations(
-        self,
-        violations: list[RegressionViolation],
-        dry_run: bool = True,
-        max_actions: int = 50
+        self, violations: list[RegressionViolation], dry_run: bool = True, max_actions: int = 50
     ) -> list[dict[str, Any]]:
         """
         GOLD STANDARD: Cleanup regression violations with test regeneration.
@@ -231,13 +263,25 @@ class RegressionOracleAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMi
 
             try:
                 if "TEST_FAILED" in violation.message.upper():
-                    action["action_taken"] = "PREVIEW: Would regenerate test" if dry_run else "Test regeneration scheduled"
+                    action["action_taken"] = (
+                        "PREVIEW: Would regenerate test"
+                        if dry_run
+                        else "Test regeneration scheduled"
+                    )
                     action["applied"] = not dry_run
                 elif "NO_TEST" in violation.message.upper():
-                    action["action_taken"] = "PREVIEW: Would generate new test" if dry_run else "New test generation scheduled"
+                    action["action_taken"] = (
+                        "PREVIEW: Would generate new test"
+                        if dry_run
+                        else "New test generation scheduled"
+                    )
                     action["applied"] = not dry_run
                 elif "REGRESSION" in violation.message.upper():
-                    action["action_taken"] = "PREVIEW: Would flag regression for review" if dry_run else "Regression flagged"
+                    action["action_taken"] = (
+                        "PREVIEW: Would flag regression for review"
+                        if dry_run
+                        else "Regression flagged"
+                    )
                     action["applied"] = not dry_run
 
             except Exception as e:
@@ -273,15 +317,19 @@ class RegressionOracleAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMi
         # Check generated tests for failures
         for test in self.generated_tests:
             if not test.passed:
-                all_violations.append(RegressionViolation(
-                    is_valid=False,
-                    message=f"TEST_FAILED: {test.error_message}",
-                    file_path=test.test_file,
-                    method_name=test.target_method,
-                    severity=4
-                ))
+                all_violations.append(
+                    RegressionViolation(
+                        is_valid=False,
+                        message=f"TEST_FAILED: {test.error_message}",
+                        file_path=test.test_file,
+                        method_name=test.target_method,
+                        severity=4,
+                    )
+                )
 
-        cleanup_results = self.cleanup_violations(all_violations, dry_run=dry_run) if all_violations else []
+        cleanup_results = (
+            self.cleanup_violations(all_violations, dry_run=dry_run) if all_violations else []
+        )
         batch_summary = cleanup_results[0].get("batch_post_heal", {}) if cleanup_results else {}
 
         # Post-heal validation

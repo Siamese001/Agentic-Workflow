@@ -31,8 +31,13 @@ class TitaniumSearchWrapper:
             self._loop = asyncio.new_event_loop()
             asyncio.set_event_loop(self._loop)
 
-    def search(self, query: str, context: str | None = None,
-               max_results: int = 5, include_metadata: bool = False) -> str:
+    def search(
+        self,
+        query: str,
+        context: str | None = None,
+        max_results: int = 5,
+        include_metadata: bool = False,
+    ) -> str:
         """Synchronous search wrapper.
 
         Args:
@@ -60,9 +65,7 @@ class TitaniumSearchWrapper:
             Dictionary with sources and metadata
         """
         self._ensure_loop()
-        return self._loop.run_until_complete(
-            get_titanium_search_with_sources(query, context)
-        )
+        return self._loop.run_until_complete(get_titanium_search_with_sources(query, context))
 
     def get_stats(self) -> dict[str, Any]:
         """Get pipeline statistics."""
@@ -93,33 +96,35 @@ def inject_titanium_tools(context: dict[str, Any]) -> dict[str, Any]:
         Updated context with Titanium tools
     """
     # Add search functions to context
-    context['titanium_search'] = _titanium_wrapper.search
-    context['titanium_search_with_sources'] = _titanium_wrapper.search_with_sources
-    context['titanium_stats'] = _titanium_wrapper.get_stats
-    context['titanium_clear_cache'] = _titanium_wrapper.clear_cache
+    context["titanium_search"] = _titanium_wrapper.search
+    context["titanium_search_with_sources"] = _titanium_wrapper.search_with_sources
+    context["titanium_stats"] = _titanium_wrapper.get_stats
+    context["titanium_clear_cache"] = _titanium_wrapper.clear_cache
 
     # Add tool descriptions for LLM function calling
-    context['available_tools'] = context.get('available_tools', [])
-    context['available_tools'].extend([
-        {
-            'name': 'titanium_search',
-            'description': 'Search using the Titanium RAG Pipeline with precision, reasoning, and SOTA ranking',
-            'parameters': {
-                'query': {'type': 'string', 'required': True},
-                'context': {'type': 'string', 'required': False},
-                'max_results': {'type': 'integer', 'required': False, 'default': 5},
-                'include_metadata': {'type': 'boolean', 'required': False, 'default': False}
-            }
-        },
-        {
-            'name': 'titanium_search_with_sources',
-            'description': 'Search with full source information for citations',
-            'parameters': {
-                'query': {'type': 'string', 'required': True},
-                'context': {'type': 'string', 'required': False}
-            }
-        }
-    ])
+    context["available_tools"] = context.get("available_tools", [])
+    context["available_tools"].extend(
+        [
+            {
+                "name": "titanium_search",
+                "description": "Search using the Titanium RAG Pipeline with precision, reasoning, and SOTA ranking",
+                "parameters": {
+                    "query": {"type": "string", "required": True},
+                    "context": {"type": "string", "required": False},
+                    "max_results": {"type": "integer", "required": False, "default": 5},
+                    "include_metadata": {"type": "boolean", "required": False, "default": False},
+                },
+            },
+            {
+                "name": "titanium_search_with_sources",
+                "description": "Search with full source information for citations",
+                "parameters": {
+                    "query": {"type": "string", "required": True},
+                    "context": {"type": "string", "required": False},
+                },
+            },
+        ]
+    )
 
     Logger.info("Injected Titanium RAG tools into agent context")
     return context
@@ -155,7 +160,7 @@ class TitaniumAwareAgent:
             List of sources with metadata
         """
         result = self.titanium.search_with_sources(query, context)
-        return result.get('sources', [])
+        return result.get("sources", [])
 
 
 def with_titanium_search(agent_class):
@@ -167,6 +172,7 @@ def with_titanium_search(agent_class):
     Returns:
         Enhanced agent class with Titanium search
     """
+
     # Create a new class that inherits from both
     class TitaniumEnhancedAgent(TitaniumAwareAgent, agent_class):
         pass
@@ -220,11 +226,11 @@ async def prepare_titanium_context(context: dict[str, Any]) -> dict[str, Any]:
         Context enhanced with Titanium search capabilities
     """
     # Add async search functions
-    context['async_titanium_search'] = get_titanium_search_tool
-    context['async_titanium_search_with_sources'] = get_titanium_search_with_sources
+    context["async_titanium_search"] = get_titanium_search_tool
+    context["async_titanium_search_with_sources"] = get_titanium_search_with_sources
 
     # Add pipeline stats
-    context['titanium_pipeline_stats'] = get_pipeline_stats()
+    context["titanium_pipeline_stats"] = get_pipeline_stats()
 
     return context
 
@@ -237,7 +243,7 @@ def log_titanium_usage(hop_id: str, query: str, results: dict[str, Any]):
         query: Search query
         results: Search results
     """
-    metadata = results.get('metadata', {})
+    metadata = results.get("metadata", {})
 
     Logger.info(f"Titanium Search Usage - Hop: {hop_id}")
     Logger.info(f"  Query: {query[:100]}...")
@@ -247,7 +253,9 @@ def log_titanium_usage(hop_id: str, query: str, results: dict[str, Any]):
 
     # Track statistics
     stats = get_pipeline_stats()
-    if stats.get('status') == 'active':
-        stats_data = stats.get('statistics', {})
-        Logger.info(f"  Pipeline Stats - Total: {stats_data.get('total_queries', 0)}, "
-                   f"Cache Hit Rate: {stats_data.get('cache_hit_rate', 0):.1%}")
+    if stats.get("status") == "active":
+        stats_data = stats.get("statistics", {})
+        Logger.info(
+            f"  Pipeline Stats - Total: {stats_data.get('total_queries', 0)}, "
+            f"Cache Hit Rate: {stats_data.get('cache_hit_rate', 0):.1%}"
+        )

@@ -42,10 +42,13 @@ from main_v10_7 import load_job_input, setup_logging
 try:
     # v10.7: Import new meta-learner
     from run_learning_v10_7 import run_meta_learning
+
     META_LEARNER_AVAILABLE = True
 except ImportError:
     META_LEARNER_AVAILABLE = False
-    logging.getLogger("batch_runner_v10_7").warning("Meta-learning module (run_learning_v10_7.py) not found.")
+    logging.getLogger("batch_runner_v10_7").warning(
+        "Meta-learning module (run_learning_v10_7.py) not found."
+    )
 
 logger = logging.getLogger("batch_runner_v10_7")
 
@@ -57,8 +60,10 @@ SUMMARY_FILE = "batch_summary_v10_7.csv"
 # ROW 7: BATCH FEEDBACK AGGREGATOR (Preserved)
 # ============================================================================
 
+
 class BatchFeedbackAggregator:
     """ROW 7: Aggregates feedback across batch jobs"""
+
     def __init__(self):
         self.job_results: list[dict[str, Any]] = []
 
@@ -66,30 +71,36 @@ class BatchFeedbackAggregator:
         self.job_results.append(result)
 
     def get_batch_summary(self) -> dict[str, Any]:
-        if not self.job_results: return {}
+        if not self.job_results:
+            return {}
         total_jobs = len(self.job_results)
-        successful = sum(1 for r in self.job_results if r['status'] == 'SUCCESS')
-        total_cost = sum(r.get('cost', 0.0) for r in self.job_results)
+        successful = sum(1 for r in self.job_results if r["status"] == "SUCCESS")
+        total_cost = sum(r.get("cost", 0.0) for r in self.job_results)
         avg_cost = total_cost / total_jobs if total_jobs > 0 else 0.0
 
         return {
-            "timestamp": datetime.now().isoformat(), "total_jobs": total_jobs,
-            "successful": successful, "success_rate": successful / total_jobs if total_jobs > 0 else 0.0,
-            "total_cost": total_cost, "avg_cost_per_job": avg_cost,
-            "batch_health_score": (successful / total_jobs * 100) if total_jobs > 0 else 0.0
+            "timestamp": datetime.now().isoformat(),
+            "total_jobs": total_jobs,
+            "successful": successful,
+            "success_rate": successful / total_jobs if total_jobs > 0 else 0.0,
+            "total_cost": total_cost,
+            "avg_cost_per_job": avg_cost,
+            "batch_health_score": (successful / total_jobs * 100) if total_jobs > 0 else 0.0,
         }
+
 
 # ============================================================================
 # ROW 6: ASYNC BATCH PROCESSING ENGINE (v10.7)
 # ============================================================================
 
+
 async def process_single_job_async(
     job_file: str,
     master_resume_path: str,
-    context: WorkflowContext, # v10.7: This is the JOB-SPECIFIC context
-    app, # The compiled graph app
+    context: WorkflowContext,  # v10.7: This is the JOB-SPECIFIC context
+    app,  # The compiled graph app
     circuit_breaker: CircuitBreaker,
-    batch_aggregator: BatchFeedbackAggregator
+    batch_aggregator: BatchFeedbackAggregator,
 ) -> dict[str, Any]:
     """Process a single job asynchronously"""
 
@@ -98,7 +109,7 @@ async def process_single_job_async(
 
     job_input_data = {}
     workflow_id = str(uuid.uuid4())
-    context.workflow_id = workflow_id # Set on job-specific context
+    context.workflow_id = workflow_id  # Set on job-specific context
 
     try:
         circuit_breaker.check()
@@ -106,18 +117,18 @@ async def process_single_job_async(
         job_input_data = load_job_input(job_file)
         master_resume = load_job_input(master_resume_path)
 
-        company = job_input_data.get('company_name', 'N/A')
-        title = job_input_data.get('job_title', 'N/A')
+        company = job_input_data.get("company_name", "N/A")
+        title = job_input_data.get("job_title", "N/A")
 
         run_config = {"configurable": {"thread_id": workflow_id}}
 
         initial_state = MainGraphState()
         initial_state.resume.master_resume = master_resume
-        initial_state.job.raw_jd = job_input_data['job_description']
-        initial_state.job.company = job_input_data['company_name']
-        initial_state.job.job_title = job_input_data['job_title']
+        initial_state.job.raw_jd = job_input_data["job_description"]
+        initial_state.job.company = job_input_data["company_name"]
+        initial_state.job.job_title = job_input_data["job_title"]
         initial_state.metadata.workflow_id = workflow_id
-        initial_state.metadata.complexity = "unknown" # Set by graph
+        initial_state.metadata.complexity = "unknown"  # Set by graph
 
         state_dict = initial_state.to_dict()
 
@@ -129,12 +140,14 @@ async def process_single_job_async(
             raise WorkflowError("Workflow returned no final state.")
 
         if "REJECT_JOB" in final_state_dict:
-             logger.error(f"Workflow {workflow_id} REJECTED.")
-             raise WorkflowError("Workflow rejected, likely due to prompt injection or constitutional failure.")
+            logger.error(f"Workflow {workflow_id} REJECTED.")
+            raise WorkflowError(
+                "Workflow rejected, likely due to prompt injection or constitutional failure."
+            )
 
         final_state = MainGraphState.from_dict(final_state_dict)
         cost_summary = context.cost_tracker.get_cost_summary(workflow_id)
-        total_cost = cost_summary['total_workflow_cost']
+        total_cost = cost_summary["total_workflow_cost"]
 
         complete_path = os.path.join(BATCH_COMPLETE_DIR, job_name)
         shutil.move(job_file, complete_path)
@@ -143,8 +156,13 @@ async def process_single_job_async(
         cleanup_workflow_chroma_collection(context)
 
         result = {
-            "job_file": job_name, "company_name": company, "job_title": title,
-            "status": "SUCCESS", "workflow_id": workflow_id, "cost": total_cost, "error": None
+            "job_file": job_name,
+            "company_name": company,
+            "job_title": title,
+            "status": "SUCCESS",
+            "workflow_id": workflow_id,
+            "cost": total_cost,
+            "error": None,
         }
 
         circuit_breaker.record_success()
@@ -158,24 +176,28 @@ async def process_single_job_async(
             circuit_breaker.record_failure()
 
         result = {
-            "job_file": job_name, "company_name": job_input_data.get('company_name', 'N/A'),
-            "job_title": job_input_data.get('job_title', 'N/A'),
-            "status": "FAILED_CIRCUIT_BREAKER" if isinstance(e, CircuitBreakerOpenError) else "FAILED_FATAL",
-            "workflow_id": workflow_id, "cost": 0.0, "error": str(e)
+            "job_file": job_name,
+            "company_name": job_input_data.get("company_name", "N/A"),
+            "job_title": job_input_data.get("job_title", "N/A"),
+            "status": "FAILED_CIRCUIT_BREAKER"
+            if isinstance(e, CircuitBreakerOpenError)
+            else "FAILED_FATAL",
+            "workflow_id": workflow_id,
+            "cost": 0.0,
+            "error": str(e),
         }
         batch_aggregator.add_job_result(result)
         return result
 
-async def run_batch_async(config: ConfigV10_7): # v10.7
+
+async def run_batch_async(config: ConfigV10_7):  # v10.7
     """Main async batch processing with semaphore concurrency control"""
 
     os.makedirs(BATCH_QUEUE_DIR, exist_ok=True)
     os.makedirs(BATCH_COMPLETE_DIR, exist_ok=True)
 
     job_files = [
-        os.path.join(BATCH_QUEUE_DIR, f)
-        for f in os.listdir(BATCH_QUEUE_DIR)
-        if f.endswith('.json')
+        os.path.join(BATCH_QUEUE_DIR, f) for f in os.listdir(BATCH_QUEUE_DIR) if f.endswith(".json")
     ]
 
     if not job_files:
@@ -187,7 +209,9 @@ async def run_batch_async(config: ConfigV10_7): # v10.7
     # v10.7 (Fix #25): Backpressure Check
     max_queue_size = config.batch_config.max_batch_queue_size
     if len(job_files) > max_queue_size:
-        logger.error(f"BACKPRESSURE: Batch queue size ({len(job_files)}) exceeds limit ({max_queue_size}).")
+        logger.error(
+            f"BACKPRESSURE: Batch queue size ({len(job_files)}) exceeds limit ({max_queue_size})."
+        )
         logger.error("Batch run aborted. Clear queue before retrying.")
         return
 
@@ -240,12 +264,11 @@ async def run_batch_async(config: ConfigV10_7): # v10.7
                 context_budget_manager=context_budget_manager,
                 metrics_collector=metrics_collector,
                 semantic_validator=semantic_validator,
-                embedding_function=shared_context.embedding_function
+                embedding_function=shared_context.embedding_function,
             )
             # v10.7: Manually inject the circular dependency
             job_context.context_budget_manager = ContextBudgetManager(
-                config=config,
-                model_client_getter=job_context.get_model_client
+                config=config, model_client_getter=job_context.get_model_client
             )
 
             job_app = get_graph_app(
@@ -258,19 +281,18 @@ async def run_batch_async(config: ConfigV10_7): # v10.7
             return await process_single_job_async(
                 job_file,
                 master_resume_path,
-                job_context, # Pass job-specific context
-                job_app,     # Pass job-specific app
+                job_context,  # Pass job-specific context
+                job_app,  # Pass job-specific app
                 circuit_breaker,
-                batch_aggregator
+                batch_aggregator,
             )
 
     logger.info(f"Starting parallel processing ({max_workers} workers)...")
     start_time = datetime.now()
 
-    results = await asyncio.gather(*[
-        process_with_semaphore(job_file)
-        for job_file in job_files
-    ], return_exceptions=True)
+    results = await asyncio.gather(
+        *[process_with_semaphore(job_file) for job_file in job_files], return_exceptions=True
+    )
 
     end_time = datetime.now()
     duration = (end_time - start_time).total_seconds()
@@ -281,7 +303,7 @@ async def run_batch_async(config: ConfigV10_7): # v10.7
         summary_path = os.path.join(BATCH_COMPLETE_DIR, SUMMARY_FILE)
         file_exists = os.path.isfile(summary_path)
         try:
-            with open(summary_path, 'a', newline='') as f:
+            with open(summary_path, "a", newline="") as f:
                 writer = csv.DictWriter(f, fieldnames=batch_summary.keys())
                 if not file_exists:
                     writer.writeheader()
@@ -298,7 +320,9 @@ async def run_batch_async(config: ConfigV10_7): # v10.7
     # v10.7: Log metrics summary for the *entire* batch
     logger.info("--- Batch Metrics Summary (v10.7) ---")
     for metric in metrics_collector.get_summary():
-         logger.info(f"  - {metric['agent_name']}::{metric['task_name']} | {metric['duration_ms']:.2f}ms | Success: {metric['success']}")
+        logger.info(
+            f"  - {metric['agent_name']}::{metric['task_name']} | {metric['duration_ms']:.2f}ms | Success: {metric['success']}"
+        )
 
     # Optionally trigger meta-learning
     if META_LEARNER_AVAILABLE and config.meta_loop_config.enable_meta_learning:
@@ -310,6 +334,7 @@ async def run_batch_async(config: ConfigV10_7): # v10.7
             logger.error(f"Meta-learning failed: {e}")
 
     logger.info("v10.7 Batch process complete.")
+
 
 def run_batch():
     """Synchronous wrapper for async batch processing"""
@@ -328,6 +353,7 @@ def run_batch():
 
     # v10.7: Inject the config object
     asyncio.run(run_batch_async(config))
+
 
 if __name__ == "__main__":
     run_batch()

@@ -25,7 +25,7 @@ class CacheEntry(BaseModel):
     access_count: int = Field(default=0, description="Number of times accessed")
     last_accessed: float = Field(default_factory=time.time, description="Last access timestamp")
 
-    @validator('embedding')
+    @validator("embedding")
     def validate_embedding(cls, v):
         """Ensure embedding is a list of floats."""
         if not isinstance(v, list):
@@ -49,7 +49,7 @@ class ContrastiveSemanticCache:
         similarity_threshold: float = 0.92,
         max_entries: int = 1000,
         lazy_load: bool = True,
-        ttl_seconds: int | None = None
+        ttl_seconds: int | None = None,
     ):
         """Initialize the Contrastive Semantic Cache.
 
@@ -76,15 +76,12 @@ class ContrastiveSemanticCache:
         self._fallback_mode = False
 
         # Statistics
-        self._stats = {
-            "hits": 0,
-            "misses": 0,
-            "puts": 0,
-            "evictions": 0
-        }
+        self._stats = {"hits": 0, "misses": 0, "puts": 0, "evictions": 0}
 
-        logger.info(f"Initialized ContrastiveSemanticCache: model={model_name}, "
-                   f"threshold={similarity_threshold}, max_entries={max_entries}")
+        logger.info(
+            f"Initialized ContrastiveSemanticCache: model={model_name}, "
+            f"threshold={similarity_threshold}, max_entries={max_entries}"
+        )
 
     @property
     def is_available(self) -> bool:
@@ -97,9 +94,12 @@ class ContrastiveSemanticCache:
         try:
             import numpy as np
             from sentence_transformers import SentenceTransformer
+
             return True
         except ImportError:
-            logger.warning("sentence_transformers or numpy not available, cache will be in fallback mode")
+            logger.warning(
+                "sentence_transformers or numpy not available, cache will be in fallback mode"
+            )
             return False
 
     def _load_model(self) -> bool:
@@ -165,11 +165,7 @@ class ContrastiveSemanticCache:
 
         try:
             # Encode the query
-            embedding = self._model.encode(
-                query,
-                convert_to_numpy=True,
-                show_progress_bar=False
-            )
+            embedding = self._model.encode(query, convert_to_numpy=True, show_progress_bar=False)
 
             return embedding
 
@@ -205,7 +201,9 @@ class ContrastiveSemanticCache:
         try:
             # Normalize vectors
             query_norm = query_embedding / np.linalg.norm(query_embedding)
-            cache_norm = self._embedding_matrix / np.linalg.norm(self._embedding_matrix, axis=1, keepdims=True)
+            cache_norm = self._embedding_matrix / np.linalg.norm(
+                self._embedding_matrix, axis=1, keepdims=True
+            )
 
             # Calculate cosine similarity
             similarities = np.dot(cache_norm, query_norm)
@@ -339,7 +337,7 @@ class ContrastiveSemanticCache:
             query_text=query,
             response_text=response,
             embedding=query_embedding.tolist(),
-            timestamp=time.time()
+            timestamp=time.time(),
         )
 
         # Add to cache
@@ -379,7 +377,7 @@ class ContrastiveSemanticCache:
             "evictions": self._stats["evictions"],
             "hit_rate": hit_rate,
             "model_loaded": self._model_loaded,
-            "fallback_mode": self._fallback_mode
+            "fallback_mode": self._fallback_mode,
         }
 
     def export_cache(self, filepath: str):
@@ -395,11 +393,11 @@ class ContrastiveSemanticCache:
                 "config": {
                     "model_name": self.model_name,
                     "similarity_threshold": self.similarity_threshold,
-                    "max_entries": self.max_entries
-                }
+                    "max_entries": self.max_entries,
+                },
             }
 
-            with open(filepath, 'w') as f:
+            with open(filepath, "w") as f:
                 json.dump(data, f, indent=2)
 
             logger.info(f"Exported {len(self._cache)} cache entries to {filepath}")
@@ -471,10 +469,4 @@ class NullCache:
 
     def get_stats(self) -> dict[str, Any]:
         """Return empty stats."""
-        return {
-            "entries": 0,
-            "hits": 0,
-            "misses": 0,
-            "hit_rate": 0.0,
-            "fallback_mode": True
-        }
+        return {"entries": 0, "hits": 0, "misses": 0, "hit_rate": 0.0, "fallback_mode": True}

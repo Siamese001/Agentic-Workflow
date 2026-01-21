@@ -16,6 +16,7 @@ Environment Requirements:
     - PINECONE_API_KEY: For vector storage (optional, uses local fallback)
     - REDIS_HOST: For cache (optional, uses local fallback)
 """
+
 import sys
 from pathlib import Path
 
@@ -24,6 +25,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 # Load environment variables from .env file
 try:
     from dotenv import load_dotenv
+
     load_dotenv()
     print("[INFO] Loaded environment variables from .env file")
 except ImportError:
@@ -63,7 +65,7 @@ def check_redis_cache(guardian):
     print("2. REDIS CACHE VERIFICATION")
     print("=" * 80)
 
-    if not hasattr(guardian, 'cache_set'):
+    if not hasattr(guardian, "cache_set"):
         print("❌ cache_set method NOT available")
         return False
 
@@ -79,7 +81,7 @@ def check_pinecone_vector(guardian):
     print("3. PINECONE VECTOR VERIFICATION")
     print("=" * 80)
 
-    if not hasattr(guardian, 'vector_upsert'):
+    if not hasattr(guardian, "vector_upsert"):
         print("❌ vector_upsert method NOT available")
         return False
 
@@ -180,15 +182,18 @@ def main():
     return 0 if all_passed else 1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Sovereign Production Handshake
     import os
+
     print("\n" + "=" * 80)
     print("SOVEREIGN PRODUCTION HANDSHAKE")
     print("=" * 80)
 
     if not os.getenv("GOOGLE_API_KEY"):
-        print("❌ CRITICAL: GOOGLE_API_KEY missing. Semantic Meta-Learning will remain in 'Logging Only' mode.")
+        print(
+            "❌ CRITICAL: GOOGLE_API_KEY missing. Semantic Meta-Learning will remain in 'Logging Only' mode."
+        )
         print("   → Set GOOGLE_API_KEY environment variable to activate Gemini embedder")
         print("   → Without this key, healing events will be logged but not embedded")
     else:

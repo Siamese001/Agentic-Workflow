@@ -23,6 +23,7 @@ from typing import Any
 @dataclass
 class SemanticEntry:
     """Entry in semantic memory."""
+
     entry_id: str
     entry_type: str  # "thought", "episode", "pattern"
     content: dict[str, Any]
@@ -149,8 +150,7 @@ class VectorIndex:
             try:
                 results = self.index.query(vector=embedding, top_k=top_k, include_metadata=True)
                 return [
-                    {"id": m.id, "score": m.score, "metadata": m.metadata}
-                    for m in results.matches
+                    {"id": m.id, "score": m.score, "metadata": m.metadata} for m in results.matches
                 ]
             except Exception:
                 pass
@@ -259,16 +259,20 @@ class SemanticMemory:
             entry_type="thought",
             content=thought,
             embedding=embedding,
-            metadata={"type": "thought", "timestamp": time.time()}
+            metadata={"type": "thought", "timestamp": time.time()},
         )
 
         # Store
         self.entries[entry_id] = entry
-        self.index.upsert(entry_id, embedding, {
-            "type": "thought",
-            "content": text[:500],  # Truncate for metadata
-            "timestamp": entry.timestamp
-        })
+        self.index.upsert(
+            entry_id,
+            embedding,
+            {
+                "type": "thought",
+                "content": text[:500],  # Truncate for metadata
+                "timestamp": entry.timestamp,
+            },
+        )
 
         self.thoughts_stored += 1
         return entry_id
@@ -298,21 +302,23 @@ class SemanticMemory:
             entry_type="episode",
             content=episode,
             embedding=embedding,
-            metadata={"type": "episode", "timestamp": time.time()}
+            metadata={"type": "episode", "timestamp": time.time()},
         )
 
         # Store
         self.entries[entry_id] = entry
-        self.index.upsert(entry_id, embedding, {
-            "type": "episode",
-            "content": text[:500],
-            "timestamp": entry.timestamp
-        })
+        self.index.upsert(
+            entry_id,
+            embedding,
+            {"type": "episode", "content": text[:500], "timestamp": entry.timestamp},
+        )
 
         self.episodes_stored += 1
         return entry_id
 
-    def query(self, query: str, top_k: int = 10, entry_type: str | None = None) -> list[dict[str, Any]]:
+    def query(
+        self, query: str, top_k: int = 10, entry_type: str | None = None
+    ) -> list[dict[str, Any]]:
         """
         Query semantic memory for similar entries.
 
@@ -341,13 +347,15 @@ class SemanticMemory:
         for result in results[:top_k]:
             entry_id = result["id"]
             if entry_id in self.entries:
-                enriched.append({
-                    "id": entry_id,
-                    "score": result["score"],
-                    "type": self.entries[entry_id].entry_type,
-                    "content": self.entries[entry_id].content,
-                    "timestamp": self.entries[entry_id].timestamp
-                })
+                enriched.append(
+                    {
+                        "id": entry_id,
+                        "score": result["score"],
+                        "type": self.entries[entry_id].entry_type,
+                        "content": self.entries[entry_id].content,
+                        "timestamp": self.entries[entry_id].timestamp,
+                    }
+                )
             else:
                 enriched.append(result)
 
@@ -368,7 +376,7 @@ class SemanticMemory:
             "episodes_stored": self.episodes_stored,
             "total_entries": len(self.entries),
             "index_size": self.index.count(),
-            "queries_executed": self.queries_executed
+            "queries_executed": self.queries_executed,
         }
 
 

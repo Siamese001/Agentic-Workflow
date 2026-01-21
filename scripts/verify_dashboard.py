@@ -17,6 +17,7 @@ This script consolidates:
 - verify_dashboard_updates.py (--full)
 - verify_dashboard_deployment.py (--deployment)
 """
+
 import argparse
 import json
 import re
@@ -76,7 +77,7 @@ class DashboardVerifier:
 
         size_kb = self.html_file.stat().st_size / 1024
         self._check(True, f"HTML file exists ({size_kb:.1f}KB)", "")
-        return True, self.html_file.read_text(encoding='utf-8')
+        return True, self.html_file.read_text(encoding="utf-8")
 
     def verify_phase5_sections(self, html: str) -> bool:
         """Verify Phase 5 sections exist in HTML."""
@@ -100,9 +101,17 @@ class DashboardVerifier:
         """Verify container elements exist in HTML."""
         print("\n3. Checking container elements...")
         containers = [
-            "meta-stats", "strategy-weights", "experience-stream", "pattern-timeline",
-            "redis-stats", "redis-log", "pinecone-stats", "pinecone-queries",
-            "layer-flow", "execution-summary", "execution-timeline"
+            "meta-stats",
+            "strategy-weights",
+            "experience-stream",
+            "pattern-timeline",
+            "redis-stats",
+            "redis-log",
+            "pinecone-stats",
+            "pinecone-queries",
+            "layer-flow",
+            "execution-summary",
+            "execution-timeline",
         ]
 
         all_found = True
@@ -168,11 +177,20 @@ class DashboardVerifier:
         """Verify data is injected into HTML."""
         print("\n7. Checking data injection...")
 
-        has_dashboard_data = 'const dashboardData = [' in html and 'const dashboardData = [];' not in html
-        has_recommendations = 'const recommendationsData = [' in html and 'const recommendationsData = [];' not in html
+        has_dashboard_data = (
+            "const dashboardData = [" in html and "const dashboardData = [];" not in html
+        )
+        has_recommendations = (
+            "const recommendationsData = [" in html
+            and "const recommendationsData = [];" not in html
+        )
 
         self._check(has_dashboard_data, "dashboardData populated", "dashboardData empty or missing")
-        self._check(has_recommendations, "recommendationsData populated", "recommendationsData empty or missing")
+        self._check(
+            has_recommendations,
+            "recommendationsData populated",
+            "recommendationsData empty or missing",
+        )
 
         if has_dashboard_data:
             territory_count = html.count('"Territory"')
@@ -209,13 +227,13 @@ class DashboardVerifier:
         if not data_file.exists():
             return self._check(False, "", f"Missing: {data_file}")
 
-        content = data_file.read_text(encoding='utf-8')
-        lines = [l for l in content.split('\n') if not l.strip().startswith('//')]
-        content_clean = '\n'.join(lines).replace('window.dashboardData = ', '').strip().rstrip(';')
+        content = data_file.read_text(encoding="utf-8")
+        lines = [l for l in content.split("\n") if not l.strip().startswith("//")]
+        content_clean = "\n".join(lines).replace("window.dashboardData = ", "").strip().rstrip(";")
 
         try:
             data = json.loads(content_clean)
-            total_row = next((r for r in data if r.get('Territory') == 'TOTAL'), None)
+            total_row = next((r for r in data if r.get("Territory") == "TOTAL"), None)
 
             if total_row:
                 self._check(True, f"TOTAL row found with {len(total_row)} columns", "")
@@ -321,7 +339,7 @@ class DashboardVerifier:
             [sys.executable, "-m", "http.server", "8765"],
             cwd=str(self.dashboard_dir),
             stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
+            stderr=subprocess.PIPE,
         )
 
         time.sleep(2)
@@ -331,13 +349,10 @@ class DashboardVerifier:
             with sync_playwright() as p:
                 print("\n12. Launching browser...")
                 browser = p.chromium.launch(
-                    headless=True,
-                    args=['--disable-cache', '--disable-application-cache']
+                    headless=True, args=["--disable-cache", "--disable-application-cache"]
                 )
 
-                context = browser.new_context(
-                    viewport={'width': 1920, 'height': 1080}
-                )
+                context = browser.new_context(viewport={"width": 1920, "height": 1080})
                 page = context.new_page()
 
                 # Track JavaScript errors
@@ -358,13 +373,21 @@ class DashboardVerifier:
 
                 # Check tables rendered
                 print("\n14. Checking table rendering...")
-                table_rows = page.locator('#kpiGrid table tbody tr').count()
-                self._check(table_rows > 0, f"Table 1 rendered with {table_rows} rows", "Table 1 not rendered")
+                table_rows = page.locator("#kpiGrid table tbody tr").count()
+                self._check(
+                    table_rows > 0,
+                    f"Table 1 rendered with {table_rows} rows",
+                    "Table 1 not rendered",
+                )
 
                 # Check TOTAL row position
                 if table_rows > 0:
-                    first_row_text = page.locator('#kpiGrid table tbody tr').first.text_content()
-                    self._check('TOTAL' in first_row_text, "TOTAL row at top of Table 1", "TOTAL row not at top")
+                    first_row_text = page.locator("#kpiGrid table tbody tr").first.text_content()
+                    self._check(
+                        "TOTAL" in first_row_text,
+                        "TOTAL row at top of Table 1",
+                        "TOTAL row not at top",
+                    )
 
                 # Take screenshot
                 screenshot_path = self.dashboard_dir / "verification_screenshot.png"
@@ -417,13 +440,15 @@ Examples:
   python scripts/verify_dashboard.py --quick       # Fast checks (no browser)
   python scripts/verify_dashboard.py --full        # All checks including data validation
   python scripts/verify_dashboard.py --deployment  # Pre-deployment validation with Playwright
-        """
+        """,
     )
 
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('--quick', action='store_true', help='Run quick verification (no browser)')
-    group.add_argument('--full', action='store_true', help='Run full verification (no browser)')
-    group.add_argument('--deployment', action='store_true', help='Run deployment verification with Playwright')
+    group.add_argument("--quick", action="store_true", help="Run quick verification (no browser)")
+    group.add_argument("--full", action="store_true", help="Run full verification (no browser)")
+    group.add_argument(
+        "--deployment", action="store_true", help="Run deployment verification with Playwright"
+    )
 
     args = parser.parse_args()
 

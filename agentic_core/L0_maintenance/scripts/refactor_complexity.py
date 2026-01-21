@@ -9,6 +9,7 @@ Strategies:
 3. Extract complex conditions into helper methods
 4. Replace nested loops with comprehensions where safe
 """
+
 import ast
 import json
 from pathlib import Path
@@ -16,6 +17,7 @@ from typing import Any
 
 PROJECT_ROOT = Path(__file__).parent.parent
 DISCOVERY_FILE = PROJECT_ROOT / "agent_discovery_full.json"
+
 
 class ComplexityReducer(ast.NodeTransformer):
     """AST transformer to reduce cyclomatic complexity."""
@@ -37,7 +39,7 @@ class ComplexityReducer(ast.NodeTransformer):
 def analyze_complexity_patterns(file_path: Path) -> dict[str, Any]:
     """Analyze a file for complexity patterns that can be refactored."""
     try:
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
         tree = ast.parse(content)
     except Exception as e:
         return {"error": str(e)}
@@ -54,7 +56,7 @@ def analyze_complexity_patterns(file_path: Path) -> dict[str, Any]:
         if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
             patterns["total_methods"] += 1
             # Count lines in method
-            if hasattr(node, 'end_lineno') and hasattr(node, 'lineno'):
+            if hasattr(node, "end_lineno") and hasattr(node, "lineno"):
                 method_lines = node.end_lineno - node.lineno
                 if method_lines > 50:
                     patterns["long_methods"] += 1
@@ -63,7 +65,11 @@ def analyze_complexity_patterns(file_path: Path) -> dict[str, Any]:
             # Count if/elif chains
             elif_count = 0
             current = node
-            while current.orelse and len(current.orelse) == 1 and isinstance(current.orelse[0], ast.If):
+            while (
+                current.orelse
+                and len(current.orelse) == 1
+                and isinstance(current.orelse[0], ast.If)
+            ):
                 elif_count += 1
                 current = current.orelse[0]
             if elif_count >= 3:
@@ -118,14 +124,11 @@ def main():
     print("=" * 70)
 
     # Load agent discovery
-    with open(DISCOVERY_FILE, encoding='utf-8') as f:
+    with open(DISCOVERY_FILE, encoding="utf-8") as f:
         agents = json.load(f)
 
     # Find high-complexity agents
-    high_cc_agents = [
-        a for a in agents
-        if a.get('cyclomatic_complexity', 0) > 50
-    ]
+    high_cc_agents = [a for a in agents if a.get("cyclomatic_complexity", 0) > 50]
 
     print(f"\nTotal agents: {len(agents)}")
     print(f"High complexity agents (CC > 50): {len(high_cc_agents)}")
@@ -135,12 +138,12 @@ def main():
     print("=" * 70)
 
     # Sort by complexity
-    high_cc_agents.sort(key=lambda a: a.get('cyclomatic_complexity', 0), reverse=True)
+    high_cc_agents.sort(key=lambda a: a.get("cyclomatic_complexity", 0), reverse=True)
 
     for i, agent in enumerate(high_cc_agents[:10], 1):
-        name = agent['class_name']
-        cc = agent.get('cyclomatic_complexity', 0)
-        path = PROJECT_ROOT / agent['path']
+        name = agent["class_name"]
+        cc = agent.get("cyclomatic_complexity", 0)
+        path = PROJECT_ROOT / agent["path"]
 
         print(f"\n{i}. {name} (CC: {cc})")
         print(f"   Path: {agent['path']}")
@@ -175,6 +178,7 @@ Given the scope (203 agents need refactoring), the recommended approach is:
 
 4. CONSTRAINT: Keep validation + healing logic together per user requirement.
 """)
+
 
 if __name__ == "__main__":
     main()

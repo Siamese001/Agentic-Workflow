@@ -17,6 +17,7 @@ This script:
 3. Updates all references in code and docs
 4. Regenerates agent discovery
 """
+
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -30,25 +31,35 @@ RENAME_MAP = {
 
 # File renames (old path -> new path, relative to PROJECT_ROOT)
 FILE_RENAMES = {
-    "agentic_core/L0_maintenance/scripts/L0MaintenanceBaseAgent.py":
-        "agentic_core/L0_maintenance/scripts/L0MaintenanceBaseAgent.py",
-    "agentic_core/L1_cognition/thought_engine/L1CognitionBaseAgent.py":
-        "agentic_core/L1_cognition/thought_engine/L1CognitionBaseAgent.py",
+    "agentic_core/L0_maintenance/scripts/L0MaintenanceBaseAgent.py": "agentic_core/L0_maintenance/scripts/L0MaintenanceBaseAgent.py",
+    "agentic_core/L1_cognition/thought_engine/L1CognitionBaseAgent.py": "agentic_core/L1_cognition/thought_engine/L1CognitionBaseAgent.py",
 }
 
 # Extensions to process
-CODE_EXTENSIONS = {'.py', '.md', '.json', '.html', '.txt'}
+CODE_EXTENSIONS = {".py", ".md", ".json", ".html", ".txt"}
 
 # Directories to skip
-SKIP_DIRS = {'.git', '__pycache__', 'node_modules', '.pytest_cache', 'coverage_html',
-             'archive', 'archives', '.venv', 'venv'}
+SKIP_DIRS = {
+    ".git",
+    "__pycache__",
+    "node_modules",
+    ".pytest_cache",
+    "coverage_html",
+    "archive",
+    "archives",
+    ".venv",
+    "venv",
+}
 
 
 def find_files_to_update(root: Path) -> list[Path]:
     """Find all files that may need updating."""
     # Phase 6.7: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_data_files, get_python_files
-    files = list(get_python_files(root)) + list(get_data_files(root, extensions=['.json', '.md', '.yaml', '.yml']))
+
+    files = list(get_python_files(root)) + list(
+        get_data_files(root, extensions=[".json", ".md", ".yaml", ".yml"])
+    )
 
     # Filter by CODE_EXTENSIONS and skip directories
     filtered_files = []
@@ -59,10 +70,12 @@ def find_files_to_update(root: Path) -> list[Path]:
     return filtered_files
 
 
-def update_file_content(file_path: Path, rename_map: dict[str, str], dry_run: bool = True) -> tuple[bool, int]:
+def update_file_content(
+    file_path: Path, rename_map: dict[str, str], dry_run: bool = True
+) -> tuple[bool, int]:
     """Update file content with new names. Returns (changed, count)."""
     try:
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
     except Exception as e:
         print(f"  ⚠️  Could not read {file_path}: {e}")
         return False, 0
@@ -78,7 +91,7 @@ def update_file_content(file_path: Path, rename_map: dict[str, str], dry_run: bo
 
     if content != original:
         if not dry_run:
-            file_path.write_text(content, encoding='utf-8')
+            file_path.write_text(content, encoding="utf-8")
         return True, changes
 
     return False, 0
@@ -159,5 +172,6 @@ def main(dry_run: bool = True):
 
 if __name__ == "__main__":
     import sys
+
     dry_run = "--live" not in sys.argv
     main(dry_run)

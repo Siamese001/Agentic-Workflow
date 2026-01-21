@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 class JudgmentCriterion(Enum):
     """Criteria for judging output quality."""
+
     ACCURACY = "accuracy"
     COMPLETENESS = "completeness"
     RELEVANCE = "relevance"
@@ -26,6 +27,7 @@ class JudgmentCriterion(Enum):
 
 class JudgmentScore(Enum):
     """Judgment score levels."""
+
     EXCELLENT = "excellent"
     GOOD = "good"
     ACCEPTABLE = "acceptable"
@@ -36,6 +38,7 @@ class JudgmentScore(Enum):
 @dataclass
 class JudgeVerdict:
     """Verdict from LM-as-a-Judge evaluation."""
+
     criterion: JudgmentCriterion
     score: JudgmentScore
     score_value: float
@@ -58,6 +61,7 @@ class JudgeVerdict:
 @dataclass
 class JudgeEvaluationResult:
     """Complete evaluation result from judge."""
+
     overall_score: float
     verdicts: list[JudgeVerdict]
     passed: bool
@@ -79,7 +83,8 @@ class JudgeEvaluationResult:
     def get_failing_criteria(self) -> list[JudgmentCriterion]:
         """Get criteria that failed."""
         return [
-            v.criterion for v in self.verdicts
+            v.criterion
+            for v in self.verdicts
             if v.score in {JudgmentScore.POOR, JudgmentScore.UNACCEPTABLE}
         ]
 
@@ -117,7 +122,7 @@ class JudgeEvaluator:
                 extra={
                     "criteria_count": len(self.criteria),
                     "pass_threshold": pass_threshold,
-                }
+                },
             )
 
     async def evaluate(
@@ -142,7 +147,7 @@ class JudgeEvaluator:
                 extra={
                     "output_length": len(output),
                     "has_expected": expected is not None,
-                }
+                },
             )
 
         verdicts: list[JudgeVerdict] = []
@@ -173,7 +178,7 @@ class JudgeEvaluator:
             metadata={
                 "criteria_count": len(self.criteria),
                 "output_length": len(output),
-            }
+            },
         )
 
         if self.enable_logging:
@@ -183,7 +188,7 @@ class JudgeEvaluator:
                     "overall_score": overall_score,
                     "passed": passed,
                     "failing_criteria": [c.value for c in result.get_failing_criteria()],
-                }
+                },
             )
 
         return result
@@ -261,35 +266,41 @@ class JudgeEvaluator:
         ]
 
         if expected:
-            prompt_parts.extend([
-                "EXPECTED OUTPUT:",
-                expected,
-                "",
-            ])
+            prompt_parts.extend(
+                [
+                    "EXPECTED OUTPUT:",
+                    expected,
+                    "",
+                ]
+            )
 
         if context:
             task = context.get("task", "")
             if task:
-                prompt_parts.extend([
-                    "TASK:",
-                    task,
-                    "",
-                ])
+                prompt_parts.extend(
+                    [
+                        "TASK:",
+                        task,
+                        "",
+                    ]
+                )
 
-        prompt_parts.extend([
-            f"Evaluate the output's {criterion.value} on a scale of 0.0 to 1.0.",
-            "Provide:",
-            "1. Score (0.0-1.0)",
-            "2. Reasoning for the score",
-            "3. Specific evidence from the output",
-            "4. Suggestions for improvement",
-            "",
-            "Format your response as:",
-            "SCORE: <number>",
-            "REASONING: <explanation>",
-            "EVIDENCE: <bullet points>",
-            "SUGGESTIONS: <bullet points>",
-        ])
+        prompt_parts.extend(
+            [
+                f"Evaluate the output's {criterion.value} on a scale of 0.0 to 1.0.",
+                "Provide:",
+                "1. Score (0.0-1.0)",
+                "2. Reasoning for the score",
+                "3. Specific evidence from the output",
+                "4. Suggestions for improvement",
+                "",
+                "Format your response as:",
+                "SCORE: <number>",
+                "REASONING: <explanation>",
+                "EVIDENCE: <bullet points>",
+                "SUGGESTIONS: <bullet points>",
+            ]
+        )
 
         return "\n".join(prompt_parts)
 
@@ -313,11 +324,21 @@ class JudgeEvaluator:
 
         for line in lines:
             line = line.strip()
-            score_value, reasoning, current_section = self._parse_line(line, score_value, reasoning, current_section, evidence, suggestions)
+            score_value, reasoning, current_section = self._parse_line(
+                line, score_value, reasoning, current_section, evidence, suggestions
+            )
 
         return self._create_verdict(score_value, reasoning, evidence, suggestions, criterion)
 
-    def _parse_line(self, line: str, score_value: float, reasoning: str, current_section: str | None, evidence: list[str], suggestions: list[str]) -> tuple:
+    def _parse_line(
+        self,
+        line: str,
+        score_value: float,
+        reasoning: str,
+        current_section: str | None,
+        evidence: list[str],
+        suggestions: list[str],
+    ) -> tuple:
         """Parse a single line."""
         if line.startswith("SCORE:"):
             return self._parse_score(line, score_value), reasoning, current_section
@@ -341,7 +362,9 @@ class JudgeEvaluator:
         except (ValueError, IndexError):
             return default
 
-    def _parse_list_item(self, line: str, section: str | None, evidence: list[str], suggestions: list[str]) -> None:
+    def _parse_list_item(
+        self, line: str, section: str | None, evidence: list[str], suggestions: list[str]
+    ) -> None:
         """Parse list item into appropriate list."""
         item = line.lstrip("-•").strip()
         if section == "evidence":
@@ -349,7 +372,14 @@ class JudgeEvaluator:
         elif section == "suggestions":
             suggestions.append(item)
 
-    def _create_verdict(self, score_value: float, reasoning: str, evidence: list[str], suggestions: list[str], criterion: JudgmentCriterion) -> JudgeVerdict:
+    def _create_verdict(
+        self,
+        score_value: float,
+        reasoning: str,
+        evidence: list[str],
+        suggestions: list[str],
+        criterion: JudgmentCriterion,
+    ) -> JudgeVerdict:
         """Create verdict from parsed data."""
 
         # Map score to judgment
@@ -479,7 +509,11 @@ class JudgeEvaluator:
         ]
 
         if not passed:
-            failing = [v.criterion.value for v in verdicts if v.score in {JudgmentScore.POOR, JudgmentScore.UNACCEPTABLE}]
+            failing = [
+                v.criterion.value
+                for v in verdicts
+                if v.score in {JudgmentScore.POOR, JudgmentScore.UNACCEPTABLE}
+            ]
             summary_parts.append(f"Failing criteria: {', '.join(failing)}")
 
         return " | ".join(summary_parts)

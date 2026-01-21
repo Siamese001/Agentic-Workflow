@@ -14,6 +14,7 @@ Author: Cascade
 Date: January 19, 2026
 Phase: 4 - Performance Hardening (rglob Elimination)
 """
+
 import sys
 import tempfile
 import time
@@ -31,9 +32,9 @@ def test_tc13_cache_accuracy():
     Verify that deleting a file and calling invalidate() results in the
     file being removed from the get_python_files() output.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-13: Cache Accuracy")
-    print("="*60)
+    print("=" * 60)
 
     from agentic_core.utils.ssot_discovery import FileCache, get_python_files
 
@@ -103,9 +104,9 @@ def test_tc14_exclusion_integrity():
     Explicitly verify that NO files from .sovereign_healing_backup/
     are present in the cached results.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-14: Exclusion Integrity")
-    print("="*60)
+    print("=" * 60)
 
     from agentic_core.utils.ssot_discovery import DEFAULT_EXCLUDE_DIRS, get_python_files
 
@@ -150,9 +151,9 @@ def test_tc15_performance_delta():
     Compare the time for 10 consecutive calls of get_python_files() (cached)
     vs 10 rglob calls. The cached version must be >90% faster.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-15: Performance Delta")
-    print("="*60)
+    print("=" * 60)
 
     from agentic_core.utils.ssot_discovery import (
         DEFAULT_EXCLUDE_DIRS,
@@ -181,7 +182,7 @@ def test_tc15_performance_delta():
             path_parts = py_file.parts
             skip = False
             for part in path_parts:
-                if part in DEFAULT_EXCLUDE_DIRS or part.startswith('.'):
+                if part in DEFAULT_EXCLUDE_DIRS or part.startswith("."):
                     skip = True
                     break
             if not skip:
@@ -214,9 +215,9 @@ def test_tc16_refactor_parity():
     Verify that ssot_discovery returns the same files as rglob
     (with the same exclusions applied).
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-16: Refactor Parity")
-    print("="*60)
+    print("=" * 60)
 
     from agentic_core.utils.ssot_discovery import compare_with_rglob
 
@@ -226,11 +227,11 @@ def test_tc16_refactor_parity():
     print(f"   rglob (filtered): {result['rglob_count']} files")
     print(f"   Delta: {result['delta']}")
 
-    if result['delta'] != 0:
+    if result["delta"] != 0:
         print(f"❌ FAIL: Delta should be 0, got {result['delta']}")
-        if result.get('only_in_ssot'):
+        if result.get("only_in_ssot"):
             print(f"   Only in SSOT: {result['only_in_ssot'][:3]}")
-        if result.get('only_in_rglob'):
+        if result.get("only_in_rglob"):
             print(f"   Only in rglob: {result['only_in_rglob'][:3]}")
         return False
 
@@ -242,9 +243,9 @@ def test_scan_guard():
     """
     Bonus Test: Verify scan_guard utilities work correctly.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("BONUS: Scan Guard Utilities")
-    print("="*60)
+    print("=" * 60)
 
     import warnings
 
@@ -273,7 +274,9 @@ def test_scan_guard():
     audit = audit_rglob_usage(PROJECT_ROOT / "agentic_core")
 
     print("   guarded_rglob warning: ✓")
-    print(f"   audit_rglob_usage: {audit['total_rglob_calls']} rglob calls in {audit['files_with_rglob']} files")
+    print(
+        f"   audit_rglob_usage: {audit['total_rglob_calls']} rglob calls in {audit['files_with_rglob']} files"
+    )
 
     print("✅ PASS: Scan guard utilities working correctly")
     return True
@@ -281,9 +284,9 @@ def test_scan_guard():
 
 def main():
     """Run all Phase 4 Zero-Loss test cases."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("PHASE 4 ZERO-LOSS VERIFICATION TEST SUITE")
-    print("="*70)
+    print("=" * 70)
     print(f"Project Root: {PROJECT_ROOT}")
 
     tests = [
@@ -302,13 +305,14 @@ def main():
         except Exception as e:
             print(f"\n❌ EXCEPTION in {test_name}: {e}")
             import traceback
+
             traceback.print_exc()
             results.append((test_name, False))
 
     # Summary
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST SUMMARY")
-    print("="*70)
+    print("=" * 70)
 
     passed_count = sum(1 for _, passed in results if passed)
     total_count = len(results)
@@ -321,7 +325,7 @@ def main():
         status = "✅ PASS" if passed else "❌ FAIL"
         print(f"{status}: {test_name}")
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print(f"CORE TESTS: {core_passed}/4 passed")
     print(f"TOTAL: {passed_count}/{total_count} tests passed")
 

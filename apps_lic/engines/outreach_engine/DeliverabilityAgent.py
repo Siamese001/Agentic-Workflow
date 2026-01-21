@@ -57,5 +57,5 @@ class DeliverabilityAgent(SubatomicTestingMixin, OutreachAgent, MCPHardenedMixin
             print(f"   [{self.name}] ✅ Deliverability OK")
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()

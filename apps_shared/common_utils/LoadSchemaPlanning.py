@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 class SchemaType(Enum):
     """Types of schemas."""
+
     JSON = "json"
     XML = "xml"
     YAML = "yaml"
@@ -27,6 +28,7 @@ class SchemaType(Enum):
 
 class ValidationMode(Enum):
     """Schema validation modes."""
+
     STRICT = "strict"
     LENIENT = "lenient"
     SYNTAX_ONLY = "syntax_only"
@@ -35,6 +37,7 @@ class ValidationMode(Enum):
 
 class SchemaScope(Enum):
     """Schema scopes."""
+
     REQUEST = "request"
     RESPONSE = "response"
     EVENT = "event"
@@ -46,6 +49,7 @@ class SchemaScope(Enum):
 @dataclass
 class SchemaDefinition:
     """Definition of a schema to be loaded."""
+
     name: str
     type: SchemaType
     version: str
@@ -59,6 +63,7 @@ class SchemaDefinition:
 @dataclass
 class ValidationRule:
     """Definition of a validation rule."""
+
     name: str
     type: str
     parameters: dict[str, Any] = field(default_factory=dict)
@@ -69,6 +74,7 @@ class ValidationRule:
 @dataclass
 class SchemaTransform:
     """Definition of a schema transformation."""
+
     source_type: SchemaType
     target_type: SchemaType
     transform_function: str
@@ -78,6 +84,7 @@ class SchemaTransform:
 @dataclass
 class SchemaLoadPlan:
     """Complete plan for schema loading."""
+
     id: str
     name: str
     schemas: list[SchemaDefinition] = field(default_factory=list)
@@ -93,6 +100,7 @@ class SchemaLoadPlan:
 @dataclass
 class SchemaLoadConfig:
     """Configuration for schema load planning."""
+
     enable_validation: bool = True
     enable_transforms: bool = True
     max_schemas_per_plan: int = 50
@@ -104,6 +112,7 @@ class SchemaLoadConfig:
 @dataclass
 class SchemaLoadResult:
     """Result of schema load planning."""
+
     success: bool
     load_plan: SchemaLoadPlan | None = None
     schema_count: int = 0
@@ -134,7 +143,9 @@ class SchemaLoadPlanner:
         Returns:
             SchemaLoadResult: Complete planning result with load plan
         """
-        self.logger.info(f"Starting schema load planning for: {load_request.get('plan_name', 'unknown')}")
+        self.logger.info(
+            f"Starting schema load planning for: {load_request.get('plan_name', 'unknown')}"
+        )
 
         try:
             # Validate input request
@@ -148,20 +159,17 @@ class SchemaLoadPlanner:
 
             # Parse validation rules if enabled
             validation_rules = (
-                self._parse_validation_rules(load_request)
-                if self.config.enable_validation else []
+                self._parse_validation_rules(load_request) if self.config.enable_validation else []
             )
 
             # Parse transforms if enabled
             transforms = (
-                self._parse_transforms(load_request)
-                if self.config.enable_transforms else []
+                self._parse_transforms(load_request) if self.config.enable_transforms else []
             )
 
             # Create load plan
             load_plan = self._create_load_plan(
-                load_request, schemas, validation_mode,
-                validation_rules, transforms
+                load_request, schemas, validation_mode, validation_rules, transforms
             )
 
             # Count items
@@ -188,8 +196,8 @@ class SchemaLoadPlanner:
                 metadata={
                     "planned_at": datetime.utcnow().isoformat(),
                     "plan_name": load_request.get("plan_name"),
-                    "planner": "SchemaLoadPlanner"
-                }
+                    "planner": "SchemaLoadPlanner",
+                },
             )
 
             self.logger.info(
@@ -205,8 +213,8 @@ class SchemaLoadPlanner:
                 errors=[str(e)],
                 metadata={
                     "failed_at": datetime.utcnow().isoformat(),
-                    "planner": "SchemaLoadPlanner"
-                }
+                    "planner": "SchemaLoadPlanner",
+                },
             )
 
     def _validate_request(self, request: dict[str, Any]) -> None:
@@ -235,13 +243,10 @@ class SchemaLoadPlanner:
                     "protobuf": SchemaType.PROTOBUF,
                     "avro": SchemaType.AVRO,
                     "openapi": SchemaType.OPENAPI,
-                    "graphql": SchemaType.GRAPHQL
+                    "graphql": SchemaType.GRAPHQL,
                 }
 
-                schema_type = type_mapping.get(
-                    raw_schema.get("type", "json"),
-                    SchemaType.JSON
-                )
+                schema_type = type_mapping.get(raw_schema.get("type", "json"), SchemaType.JSON)
 
                 # Parse scope if present
                 scope = SchemaScope.DATA
@@ -252,12 +257,9 @@ class SchemaLoadPlanner:
                         "event": SchemaScope.EVENT,
                         "config": SchemaScope.CONFIG,
                         "data": SchemaScope.DATA,
-                        "internal": SchemaScope.INTERNAL
+                        "internal": SchemaScope.INTERNAL,
                     }
-                    scope = scope_mapping.get(
-                        raw_schema.get("scope"),
-                        SchemaScope.DATA
-                    )
+                    scope = scope_mapping.get(raw_schema.get("scope"), SchemaScope.DATA)
 
                 schema = SchemaDefinition(
                     name=raw_schema.get("name", "unnamed"),
@@ -267,7 +269,7 @@ class SchemaLoadPlanner:
                     file_path=raw_schema.get("file_path"),
                     url=raw_schema.get("url"),
                     dependencies=raw_schema.get("dependencies", []),
-                    scope=scope
+                    scope=scope,
                 )
                 schemas.append(schema)
 
@@ -294,7 +296,7 @@ class SchemaLoadPlanner:
             "strict": ValidationMode.STRICT,
             "lenient": ValidationMode.LENIENT,
             "syntax_only": ValidationMode.SYNTAX_ONLY,
-            "disabled": ValidationMode.DISABLED
+            "disabled": ValidationMode.DISABLED,
         }
 
         mode_str = request.get("validation_mode", self.config.default_validation_mode)
@@ -312,7 +314,7 @@ class SchemaLoadPlanner:
                     type=raw_rule.get("type", "required"),
                     parameters=raw_rule.get("parameters", {}),
                     severity=raw_rule.get("severity", "error"),
-                    message=raw_rule.get("message")
+                    message=raw_rule.get("message"),
                 )
                 rules.append(rule)
 
@@ -330,22 +332,20 @@ class SchemaLoadPlanner:
             "protobuf": SchemaType.PROTOBUF,
             "avro": SchemaType.AVRO,
             "openapi": SchemaType.OPENAPI,
-            "graphql": SchemaType.GRAPHQL
+            "graphql": SchemaType.GRAPHQL,
         }
 
         for raw_transform in raw_transforms:
             if isinstance(raw_transform, dict):
                 transform = SchemaTransform(
                     source_type=type_mapping.get(
-                        raw_transform.get("source_type", "json"),
-                        SchemaType.JSON
+                        raw_transform.get("source_type", "json"), SchemaType.JSON
                     ),
                     target_type=type_mapping.get(
-                        raw_transform.get("target_type", "json"),
-                        SchemaType.JSON
+                        raw_transform.get("target_type", "json"), SchemaType.JSON
                     ),
                     transform_function=raw_transform.get("transform_function", ""),
-                    parameters=raw_transform.get("parameters", {})
+                    parameters=raw_transform.get("parameters", {}),
                 )
                 transforms.append(transform)
 
@@ -357,7 +357,7 @@ class SchemaLoadPlanner:
         schemas: list[SchemaDefinition],
         validation_mode: ValidationMode,
         validation_rules: list[ValidationRule],
-        transforms: list[SchemaTransform]
+        transforms: list[SchemaTransform],
     ) -> SchemaLoadPlan:
         """Create schema load plan from parsed components."""
         return SchemaLoadPlan(
@@ -370,7 +370,7 @@ class SchemaLoadPlanner:
             resolve_dependencies=request.get("resolve_dependencies", True),
             enable_caching=request.get("enable_caching", True),
             cache_ttl=request.get("cache_ttl", 3600),
-            metadata=request.get("metadata", {})
+            metadata=request.get("metadata", {}),
         )
 
     def _estimate_load_time(self, plan: SchemaLoadPlan) -> int:
@@ -385,12 +385,11 @@ class SchemaLoadPlanner:
             ValidationMode.STRICT: 2.0,
             ValidationMode.LENIENT: 1.0,
             ValidationMode.SYNTAX_ONLY: 0.5,
-            ValidationMode.DISABLED: 0.1
+            ValidationMode.DISABLED: 0.1,
         }
 
         validation_time = (
-            len(plan.validation_rules) * 0.2 *
-            validation_multiplier.get(plan.validation_mode, 1.0)
+            len(plan.validation_rules) * 0.2 * validation_multiplier.get(plan.validation_mode, 1.0)
         )
 
         # Time for transforms
@@ -398,8 +397,7 @@ class SchemaLoadPlanner:
 
         # Time for dependency resolution
         dep_time = (
-            sum(len(s.dependencies) for s in plan.schemas) * 0.1
-            if plan.resolve_dependencies else 0
+            sum(len(s.dependencies) for s in plan.schemas) * 0.1 if plan.resolve_dependencies else 0
         )
 
         total_time = base_time + schema_time + validation_time + transform_time + dep_time
@@ -422,13 +420,15 @@ class SchemaLoadPlanner:
 
         # Memory for dependencies
         dep_memory = (
-            sum(len(s.dependencies) for s in plan.schemas) * 512
-            if plan.resolve_dependencies else 0
+            sum(len(s.dependencies) for s in plan.schemas) * 512 if plan.resolve_dependencies else 0
         )
 
         total_memory_bytes = (
-            base_memory * 1024 * 1024 +
-            schema_memory + validation_memory + transform_memory + dep_memory
+            base_memory * 1024 * 1024
+            + schema_memory
+            + validation_memory
+            + transform_memory
+            + dep_memory
         )
 
         return total_memory_bytes // (1024 * 1024)  # Convert to MB
@@ -436,14 +436,11 @@ class SchemaLoadPlanner:
 
 # Factory function for easy instantiation
 def create_schema_load_planner(
-    enable_validation: bool = True,
-    enable_transforms: bool = True,
-    **kwargs: dict[str, object]) -> SchemaLoadPlanner:
+    enable_validation: bool = True, enable_transforms: bool = True, **kwargs: dict[str, object]
+) -> SchemaLoadPlanner:
     """Create a configured schema load planner."""
     config = SchemaLoadConfig(
-        enable_validation=enable_validation,
-        enable_transforms=enable_transforms,
-        **kwargs
+        enable_validation=enable_validation, enable_transforms=enable_transforms, **kwargs
     )
     return SchemaLoadPlanner(config)
 
@@ -456,7 +453,7 @@ def plan_schema_load(
     validation_rules: list[dict[str, Any]] | None = None,
     transforms: list[dict[str, Any]] | None = None,
     resolve_dependencies: bool = True,
-    config: dict[str, Any] | None = None
+    config: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Plan schema load from simple parameters.
 
@@ -479,7 +476,7 @@ def plan_schema_load(
         "validation_mode": validation_mode,
         "validation_rules": validation_rules or [],
         "transforms": transforms or [],
-        "resolve_dependencies": resolve_dependencies
+        "resolve_dependencies": resolve_dependencies,
     }
 
     # Create planner and execute
@@ -501,7 +498,7 @@ def plan_schema_load(
                     "file_path": s.file_path,
                     "url": s.url,
                     "dependencies": s.dependencies,
-                    "scope": s.scope.value
+                    "scope": s.scope.value,
                 }
                 for s in result.load_plan.schemas
             ],
@@ -512,7 +509,7 @@ def plan_schema_load(
                     "type": r.type,
                     "parameters": r.parameters,
                     "severity": r.severity,
-                    "message": r.message
+                    "message": r.message,
                 }
                 for r in result.load_plan.validation_rules
             ],
@@ -521,15 +518,17 @@ def plan_schema_load(
                     "source_type": t.source_type.value,
                     "target_type": t.target_type.value,
                     "transform_function": t.transform_function,
-                    "parameters": t.parameters
+                    "parameters": t.parameters,
                 }
                 for t in result.load_plan.transforms
             ],
             "resolve_dependencies": result.load_plan.resolve_dependencies,
             "enable_caching": result.load_plan.enable_caching,
             "cache_ttl": result.load_plan.cache_ttl,
-            "metadata": result.load_plan.metadata
-        } if result.load_plan else None,
+            "metadata": result.load_plan.metadata,
+        }
+        if result.load_plan
+        else None,
         "schema_count": result.schema_count,
         "dependency_count": result.dependency_count,
         "validation_rule_count": result.validation_rule_count,
@@ -538,5 +537,5 @@ def plan_schema_load(
         "memory_estimate": result.memory_estimate,
         "warnings": result.warnings,
         "errors": result.errors,
-        "metadata": result.metadata
+        "metadata": result.metadata,
     }

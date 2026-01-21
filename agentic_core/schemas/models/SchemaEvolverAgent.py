@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: healer, state
@@ -40,9 +39,11 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger: Any = logging.getLogger(__name__)
 
+
 @dataclass
 class SchemaDefinition:
     """Represents a Pydantic model or database schema."""
+
     name: str
     file_path: str
     fields: dict[str, str]
@@ -50,9 +51,11 @@ class SchemaDefinition:
     line_number: int
     is_pydantic: bool
 
+
 @dataclass
 class SchemaChange:
     """Represents a proposed schema change."""
+
     schema_name: str
     change_type: str
     field_name: str
@@ -60,9 +63,11 @@ class SchemaChange:
     new_value: str | None
     file_path: str
 
+
 @dataclass
 class ImpactAnalysis:
     """Analysis of schema change impact."""
+
     change: SchemaChange
     affected_files: list[str]
     breaking_change: bool
@@ -70,12 +75,15 @@ class ImpactAnalysis:
     transformation_mapping: str | None
     recommendations: list[str]
 
+
 @dataclass
 class SchemaRegistry:
     """Registry of all schemas in the codebase."""
+
     schemas: dict[str, SchemaDefinition] = field(default_factory=dict)
     dependencies: dict[str, set[str]] = field(default_factory=dict)
     reverse_deps: dict[str, set[str]] = field(default_factory=dict)
+
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
 class SchemaEvolverAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent):
@@ -106,7 +114,7 @@ class SchemaEvolverAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent
         """
         super().__init__(ctx)
         self.registry = SchemaRegistry()
-        self.schema_dirs = ['agentic_core/schemas', 'agentic_core/domain', 'apps_shared/schemas']
+        self.schema_dirs = ["agentic_core/schemas", "agentic_core/domain", "apps_shared/schemas"]
 
     async def execute(self) -> Any:
         """
@@ -114,15 +122,17 @@ class SchemaEvolverAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent
 
         Discovers schemas, tracks dependencies, and analyzes changes.
         """
-        Logger.info('🛡️  Schema Evolver: Monitoring data contracts...')
+        Logger.info("🛡️  Schema Evolver: Monitoring data contracts...")
         self._discover_schemas()
         self._track_dependencies()
-        if hasattr(self.ctx, 'pending_schema_changes'):
+        if hasattr(self.ctx, "pending_schema_changes"):
             for change in self.ctx.pending_schema_changes:
                 impact: Any = self._analyze_impact(change)
                 self._report_impact(impact)
-        Logger.info(f'   Monitored {len(self.registry.schemas)} schemas')
-        Logger.info(f'   Tracked {sum(len(deps) for deps in self.registry.dependencies.values())} dependencies')
+        Logger.info(f"   Monitored {len(self.registry.schemas)} schemas")
+        Logger.info(
+            f"   Tracked {sum(len(deps) for deps in self.registry.dependencies.values())} dependencies"
+        )
 
     def _discover_schemas(self) -> Any:
         """Discover all Pydantic models and database schemas."""
@@ -132,16 +142,17 @@ class SchemaEvolverAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent
                 continue
             # Absolute Zero: Use ssot_discovery instead of rglob
             from agentic_core.utils.ssot_discovery import get_python_files
+
             for py_file in get_python_files(schema_path):
                 self._scan_file_for_schemas(str(py_file))
 
     def _scan_file_for_schemas(self, file_path: str) -> Any:
         """Scan a file for Pydantic model definitions."""
         try:
-            with open(file_path, encoding='utf-8') as f:
+            with open(file_path, encoding="utf-8") as f:
                 source = f.read()
         except Exception as e:
-            Logger.warning(f'Could not read {file_path}: {e}')
+            Logger.warning(f"Could not read {file_path}: {e}")
             return
         try:
             tree = ast.parse(source)
@@ -149,27 +160,52 @@ class SchemaEvolverAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent
             return
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
-                is_pydantic = any(base.id in ['BaseModel', 'BaseSettings'] if isinstance(base, ast.Name) else False for base in node.bases)
-                if is_pydantic or 'Schema' in node.name or 'Model' in node.name:
+                is_pydantic = any(
+                    base.id in ["BaseModel", "BaseSettings"]
+                    if isinstance(base, ast.Name)
+                    else False
+                    for base in node.bases
+                )
+                if is_pydantic or "Schema" in node.name or "Model" in node.name:
                     schema = self._extract_schema_definition(node, file_path, is_pydantic)
                     self.registry.schemas[schema.name] = schema
 
-    def _extract_schema_definition(self, node: ast.ClassDef, file_path: str, is_pydantic: bool) -> SchemaDefinition:
+    def _extract_schema_definition(
+        self, node: ast.ClassDef, file_path: str, is_pydantic: bool
+    ) -> SchemaDefinition:
         """Extract schema definition from AST node."""
         fields = {}
         for item in node.body:
             if isinstance(item, ast.AnnAssign) and isinstance(item.target, ast.Name):
                 field_name = item.target.id
-                type_annotation = ast.unparse(item.annotation) if hasattr(ast, 'unparse') else str(item.annotation)
+                type_annotation = (
+                    ast.unparse(item.annotation)
+                    if hasattr(ast, "unparse")
+                    else str(item.annotation)
+                )
                 fields[field_name] = type_annotation
-        base_classes = [base.id if isinstance(base, ast.Name) else ast.unparse(base) if hasattr(ast, 'unparse') else str(base) for base in node.bases]
-        return SchemaDefinition(name=node.name, file_path=file_path, fields=fields, base_classes=base_classes, line_number=node.lineno, is_pydantic=is_pydantic)
+        base_classes = [
+            base.id
+            if isinstance(base, ast.Name)
+            else ast.unparse(base)
+            if hasattr(ast, "unparse")
+            else str(base)
+            for base in node.bases
+        ]
+        return SchemaDefinition(
+            name=node.name,
+            file_path=file_path,
+            fields=fields,
+            base_classes=base_classes,
+            line_number=node.lineno,
+            is_pydantic=is_pydantic,
+        )
 
     def _track_dependencies(self) -> Any:
         """Track which files depend on which schemas."""
         for file_path in self.ctx.python_files:
             try:
-                with open(file_path, encoding='utf-8') as f:
+                with open(file_path, encoding="utf-8") as f:
                     source = f.read()
             except Exception:
                 continue
@@ -195,82 +231,105 @@ class SchemaEvolverAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent
         """
         schema_name = change.schema_name
         affected_files = list(self.registry.dependencies.get(schema_name, set()))
-        breaking_change = change.change_type in ['remove_field', 'modify_field']
+        breaking_change = change.change_type in ["remove_field", "modify_field"]
         if breaking_change and len(affected_files) > 10:
-            Severity = 'critical'
+            Severity = "critical"
         elif breaking_change and len(affected_files) > 5:
-            Severity = 'high'
+            Severity = "high"
         elif breaking_change:
-            Severity = 'medium'
+            Severity = "medium"
         else:
-            Severity = 'low'
+            Severity = "low"
         transformation_mapping = self._generate_transformation_mapping(change)
         recommendations = self._generate_recommendations(change, affected_files)
-        return ImpactAnalysis(change=change, affected_files=affected_files, breaking_change=breaking_change, Severity=Severity, transformation_mapping=transformation_mapping, recommendations=recommendations)
+        return ImpactAnalysis(
+            change=change,
+            affected_files=affected_files,
+            breaking_change=breaking_change,
+            Severity=Severity,
+            transformation_mapping=transformation_mapping,
+            recommendations=recommendations,
+        )
 
     def _generate_transformation_mapping(self, change: SchemaChange) -> str | None:
         """Generate transformation mapping for schema change."""
-        if change.change_type == 'remove_field':
+        if change.change_type == "remove_field":
             return f"Migration: Remove all references to '{change.field_name}' or provide default value"
-        elif change.change_type == 'modify_field':
+        elif change.change_type == "modify_field":
             return f"Migration: Convert '{change.field_name}' from {change.old_value} to {change.new_value}"
-        elif change.change_type == 'rename_field':
+        elif change.change_type == "rename_field":
             return f"Migration: Rename '{change.old_value}' to '{change.new_value}' in all usages"
-        elif change.change_type == 'add_field':
+        elif change.change_type == "add_field":
             return f"Migration: Add '{change.field_name}' with default value or make optional"
         return None
 
-    def _generate_recommendations(self, change: SchemaChange, affected_files: list[str]) -> list[str]:
+    def _generate_recommendations(
+        self, change: SchemaChange, affected_files: list[str]
+    ) -> list[str]:
         """Generate recommendations for handling schema change."""
         recommendations = []
-        if change.change_type == 'remove_field':
-            recommendations.append(f"Consider deprecation period before removing '{change.field_name}'")
-            recommendations.append('Add migration script to handle existing data')
-            recommendations.append(f'Update {len(affected_files)} dependent files')
-        elif change.change_type == 'modify_field':
-            recommendations.append(f'Ensure type compatibility: {change.old_value} → {change.new_value}')
-            recommendations.append('Add validation for new type')
-            recommendations.append(f'Test all {len(affected_files)} dependent files')
-        elif change.change_type == 'rename_field':
-            recommendations.append('Use alias for backward compatibility')
-            recommendations.append(f'Update {len(affected_files)} files in single commit')
-        elif change.change_type == 'add_field':
-            recommendations.append('Make field optional or provide default')
-            recommendations.append('Document new field in schema')
+        if change.change_type == "remove_field":
+            recommendations.append(
+                f"Consider deprecation period before removing '{change.field_name}'"
+            )
+            recommendations.append("Add migration script to handle existing data")
+            recommendations.append(f"Update {len(affected_files)} dependent files")
+        elif change.change_type == "modify_field":
+            recommendations.append(
+                f"Ensure type compatibility: {change.old_value} → {change.new_value}"
+            )
+            recommendations.append("Add validation for new type")
+            recommendations.append(f"Test all {len(affected_files)} dependent files")
+        elif change.change_type == "rename_field":
+            recommendations.append("Use alias for backward compatibility")
+            recommendations.append(f"Update {len(affected_files)} files in single commit")
+        elif change.change_type == "add_field":
+            recommendations.append("Make field optional or provide default")
+            recommendations.append("Document new field in schema")
         return recommendations
 
     def _report_impact(self, impact: ImpactAnalysis) -> Any:
         """Report impact analysis to user."""
         change = impact.change
-        Logger.info(f"\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\n{'=' * 80}")
-        Logger.info('🛡️  SCHEMA CHANGE IMPACT ANALYSIS')
+        Logger.info(
+            f"\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\n{'=' * 80}"
+        )
+        Logger.info("🛡️  SCHEMA CHANGE IMPACT ANALYSIS")
         Logger.info(f"{'=' * 80}")
-        Logger.info(f'Schema: {change.schema_name}')
-        Logger.info(f'Change: {change.change_type} - {change.field_name}')
-        Logger.info(f'File: {change.file_path}')
-        Logger.info('')
-        Logger.info('Impact:')
-        Logger.info(f'  Affected Files: {len(impact.affected_files)}')
+        Logger.info(f"Schema: {change.schema_name}")
+        Logger.info(f"Change: {change.change_type} - {change.field_name}")
+        Logger.info(f"File: {change.file_path}")
+        Logger.info("")
+        Logger.info("Impact:")
+        Logger.info(f"  Affected Files: {len(impact.affected_files)}")
         Logger.info(f"  Breaking Change: {('YES' if impact.breaking_change else 'NO')}")
-        Logger.info(f'  Severity: {impact.Severity.upper()}')
+        Logger.info(f"  Severity: {impact.Severity.upper()}")
         if impact.breaking_change:
-            Logger.warning('\n[!]  BREAKING CHANGE DETECTED')
+            Logger.warning("\n[!]  BREAKING CHANGE DETECTED")
         if impact.transformation_mapping:
-            Logger.info('\nTransformation Mapping:')
-            Logger.info(f'  {impact.transformation_mapping}')
+            Logger.info("\nTransformation Mapping:")
+            Logger.info(f"  {impact.transformation_mapping}")
         if impact.recommendations:
-            Logger.info('\nRecommendations:')
+            Logger.info("\nRecommendations:")
             for i, rec in enumerate(impact.recommendations, 1):
-                Logger.info(f'  {i}. {rec}')
+                Logger.info(f"  {i}. {rec}")
         if impact.affected_files:
-            Logger.info('\nAffected Files (showing first 10):')
+            Logger.info("\nAffected Files (showing first 10):")
             for file_path in impact.affected_files[:10]:
-                Logger.info(f'  - {file_path}')
+                Logger.info(f"  - {file_path}")
             if len(impact.affected_files) > 10:
-                Logger.info(f'  ... and {len(impact.affected_files) - 10} more')
+                Logger.info(f"  ... and {len(impact.affected_files) - 10} more")
         Logger.info(f"{'=' * 80}\n")
 
-    def propose_schema_change(self, schema_name: str, change_type: str, field_name: str, old_value: str | None=None, new_value: str | None=None, file_path: str='') -> ImpactAnalysis:
+    def propose_schema_change(
+        self,
+        schema_name: str,
+        change_type: str,
+        field_name: str,
+        old_value: str | None = None,
+        new_value: str | None = None,
+        file_path: str = "",
+    ) -> ImpactAnalysis:
         """
         Propose a schema change and get impact analysis.
 
@@ -285,7 +344,14 @@ class SchemaEvolverAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent
         Returns:
             Impact analysis
         """
-        change: Any = SchemaChange(schema_name=schema_name, change_type=change_type, field_name=field_name, old_value=old_value, new_value=new_value, file_path=file_path)
+        change: Any = SchemaChange(
+            schema_name=schema_name,
+            change_type=change_type,
+            field_name=field_name,
+            old_value=old_value,
+            new_value=new_value,
+            file_path=file_path,
+        )
         return self._analyze_impact(change)
 
     def get_schema_dependencies(self, schema_name: str) -> set[str]:
@@ -298,7 +364,14 @@ class SchemaEvolverAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent
 
     def generate_drift_report(self) -> str:
         """Generate schema drift report."""
-        lines: Any = ['🛡️  SCHEMA DRIFT REPORT', '=' * 80, f'Total Schemas: {len(self.registry.schemas)}', f'Total Dependencies: {sum(len(deps) for deps in self.registry.dependencies.values())}', '', 'Schema Usage:']
+        lines: Any = [
+            "🛡️  SCHEMA DRIFT REPORT",
+            "=" * 80,
+            f"Total Schemas: {len(self.registry.schemas)}",
+            f"Total Dependencies: {sum(len(deps) for deps in self.registry.dependencies.values())}",
+            "",
+            "Schema Usage:",
+        ]
         usage_counts: Any = [(name, len(deps)) for name, deps in self.registry.dependencies.items()]
         usage_counts.sort(key=lambda x: x[1], reverse=True)
         return "\n".join(lines)
@@ -311,7 +384,7 @@ class SchemaEvolverAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: set | None = None
+        _call_path: set | None = None,
     ) -> dict[str, int]:
         """
         Schema Evolution Healing - Discovers and validates Pydantic/DB schemas.
@@ -321,7 +394,11 @@ class SchemaEvolverAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent
         - _track_dependencies(): Build dependency graph.
         """
         metrics = super().heal_repository(
-            dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path
+            dry_run=dry_run,
+            execute=execute,
+            depth=depth,
+            max_depth=max_depth,
+            _call_path=_call_path,
         )
         if not isinstance(metrics, dict):
             metrics = {"violations": 0, "fixed": 0, "errors": 0}
@@ -346,7 +423,9 @@ class SchemaEvolverAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent
 
         return metrics
 
+
 _schema_evolver = None
+
 
 def get_schema_evolver(ctx: Any) -> SchemaEvolver:
     """Get or create global Schema Evolver instance."""

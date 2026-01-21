@@ -15,7 +15,6 @@ malicious prompt crafting, jailbreaks, and instruction override attempts.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-
 from __future__ import annotations
 
 import logging
@@ -83,12 +82,14 @@ class PromptInjectionAgent(HealerMixin, MCPHardenedMixin):
 
                 if test_result.get("vulnerable"):
                     results["vulnerabilities_found"] += 1
-                    results["attack_vectors_tested"].append({
-                        "vector": vector,
-                        "vulnerable": True,
-                        "severity": test_result.get("severity", "medium"),
-                        "description": test_result.get("description", ""),
-                    })
+                    results["attack_vectors_tested"].append(
+                        {
+                            "vector": vector,
+                            "vulnerable": True,
+                            "severity": test_result.get("severity", "medium"),
+                            "description": test_result.get("description", ""),
+                        }
+                    )
                     results["recommendations"].append(
                         f"Mitigate {vector}: {test_result.get('mitigation', 'Apply input validation')}"
                     )
@@ -96,11 +97,14 @@ class PromptInjectionAgent(HealerMixin, MCPHardenedMixin):
             self.test_count = results["tests_executed"]
             self.vulnerabilities_found = results["vulnerabilities_found"]
 
-            log_event("prompt_injection_scan", {
-                TESTS_DIR: results["tests_executed"],
-                "vulnerabilities": results["vulnerabilities_found"],
-                "vectors": len(results["attack_vectors_tested"]),
-            })
+            log_event(
+                "prompt_injection_scan",
+                {
+                    TESTS_DIR: results["tests_executed"],
+                    "vulnerabilities": results["vulnerabilities_found"],
+                    "vectors": len(results["attack_vectors_tested"]),
+                },
+            )
 
             return results
 

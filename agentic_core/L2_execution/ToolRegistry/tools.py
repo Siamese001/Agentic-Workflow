@@ -3,11 +3,12 @@ Tools module for L2 Execution ToolRegistry.
 
 Provides common tool implementations.
 """
+
 from typing import Any
 
 from .base import BaseTool, ToolRegistry
 
-__all__ = ['BaseTool', 'ToolRegistry', 'FunctionTool']
+__all__ = ["BaseTool", "ToolRegistry", "FunctionTool"]
 
 
 class FunctionTool(BaseTool):

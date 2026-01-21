@@ -9,6 +9,7 @@ This test opens the dashboard and verifies:
 4. Outlier badges use real data (should show 0 @0%)
 5. All territories are present
 """
+
 import json
 import re
 
@@ -26,14 +27,14 @@ def test_dashboard_visual():
     print("=" * 70)
 
     dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
-    html = dashboard_path.read_text(encoding='utf-8')
+    html = dashboard_path.read_text(encoding="utf-8")
 
     passed = 0
     failed = 0
 
     # Test 1: Extract and verify dashboardData
     print("\n1. Testing dashboardData embedding...")
-    dashboard_match = re.search(r'const dashboardData = (\[.*?\]);', html, re.DOTALL)
+    dashboard_match = re.search(r"const dashboardData = (\[.*?\]);", html, re.DOTALL)
     if dashboard_match:
         try:
             data_json = dashboard_match.group(1)
@@ -41,7 +42,7 @@ def test_dashboard_visual():
             print(f"   ✅ dashboardData found: {len(data)} rows")
 
             # Verify TOTAL row
-            total_row = next((r for r in data if r.get('Territory') == 'TOTAL'), None)
+            total_row = next((r for r in data if r.get("Territory") == "TOTAL"), None)
             if total_row:
                 print("   ✅ TOTAL row found:")
                 print(f"      - Total Agents: {total_row['Total']}")
@@ -49,7 +50,7 @@ def test_dashboard_visual():
                 print(f"      - Health: {total_row['Health']}%")
                 print(f"      - Test %: {total_row['Test %']}%")
 
-                if total_row['Heal Cap %'] == 100.0:
+                if total_row["Heal Cap %"] == 100.0:
                     print("   ✅ Heal Cap is 100% (CORRECT)")
                     passed += 1
                 else:
@@ -67,7 +68,7 @@ def test_dashboard_visual():
 
     # Test 2: Extract and verify realAgentData
     print("\n2. Testing realAgentData embedding...")
-    real_data_match = re.search(r'const realAgentData = (\{.*?\});', html, re.DOTALL)
+    real_data_match = re.search(r"const realAgentData = (\{.*?\});", html, re.DOTALL)
     if real_data_match:
         try:
             real_json = real_data_match.group(1)
@@ -79,13 +80,15 @@ def test_dashboard_visual():
             if territories:
                 sample = territories[0]
                 sample_data = real_data[sample]
-                if 'agents' in sample_data and 'healCap' in sample_data:
-                    agent_count = len(sample_data['agents'])
-                    heal_values = sample_data['healCap']
+                if "agents" in sample_data and "healCap" in sample_data:
+                    agent_count = len(sample_data["agents"])
+                    heal_values = sample_data["healCap"]
                     print(f"   ✅ Sample territory '{sample}':")
                     print(f"      - {agent_count} agents")
                     print(f"      - {len(heal_values)} heal cap values")
-                    print(f"      - Heal cap range: {min(heal_values):.0f}% - {max(heal_values):.0f}%")
+                    print(
+                        f"      - Heal cap range: {min(heal_values):.0f}% - {max(heal_values):.0f}%"
+                    )
 
                     # Check if all agents have 100% heal cap (should be true)
                     all_100 = all(v == 100.0 for v in heal_values)
@@ -111,7 +114,7 @@ def test_dashboard_visual():
 
     # Test 3: Verify globalAgentData assignment
     print("\n3. Testing globalAgentData assignment...")
-    if 'globalAgentData = realAgentData' in html:
+    if "globalAgentData = realAgentData" in html:
         print("   ✅ globalAgentData = realAgentData (uses real data)")
         passed += 1
     else:
@@ -120,7 +123,7 @@ def test_dashboard_visual():
 
     # Test 4: Verify no mock data calls
     print("\n4. Testing for mock data calls...")
-    if 'globalAgentData = generateMockAgentData' in html:
+    if "globalAgentData = generateMockAgentData" in html:
         print("   ❌ Still calling generateMockAgentData")
         failed += 1
     else:
@@ -129,7 +132,7 @@ def test_dashboard_visual():
 
     # Test 5: Verify loadData function exists
     print("\n5. Testing loadData function...")
-    if 'function loadData()' in html:
+    if "function loadData()" in html:
         print("   ✅ loadData function found")
         passed += 1
     else:
@@ -138,13 +141,9 @@ def test_dashboard_visual():
 
     # Test 6: Verify rendering functions
     print("\n6. Testing rendering functions...")
-    render_funcs = [
-        'renderTerritorySummaryTable',
-        'renderCodeQualityTable',
-        'openDrillModal'
-    ]
+    render_funcs = ["renderTerritorySummaryTable", "renderCodeQualityTable", "openDrillModal"]
     for func in render_funcs:
-        if f'function {func}' in html:
+        if f"function {func}" in html:
             print(f"   ✅ {func} found")
             passed += 1
         else:
@@ -163,7 +162,9 @@ def test_dashboard_visual():
     if failed == 0:
         print("\n✅ DASHBOARD IS POPULATED AND READY")
         print("\nTo view the dashboard:")
-        print("1. Open: C:/Git/Agentic-Workflow/agentic_core/L6_observability/dashboards/autonomy_dashboard.html")
+        print(
+            "1. Open: C:/Git/Agentic-Workflow/agentic_core/L6_observability/dashboards/autonomy_dashboard.html"
+        )
         print("2. Check browser console (F12) for any JavaScript errors")
         print("3. Verify TOTAL row shows 100% Heal Cap")
         print("4. Check outlier badges show correct counts (0 @0%)")
@@ -172,7 +173,9 @@ def test_dashboard_visual():
         print("\n❌ DASHBOARD HAS ISSUES")
         return False
 
+
 if __name__ == "__main__":
     import sys
+
     success = test_dashboard_visual()
     sys.exit(0 if success else 1)

@@ -17,6 +17,7 @@ Usage:
     python scripts/archive_consolidated_agents.py
     python scripts/archive_consolidated_agents.py --dry-run
 """
+
 from __future__ import annotations
 
 import argparse
@@ -57,7 +58,6 @@ LEGACY_AGENTS = {
         "unified": "UnifiedASTValidatorAgent",
         "phase": 1,
     },
-
     # Phase 2: Hygiene Validators -> UnifiedHygieneValidatorAgent
     "HygieneGuardianAgent": {
         "source": "agentic_core/L5_safety/validators/HygieneGuardianAgent.py",
@@ -69,7 +69,6 @@ LEGACY_AGENTS = {
         "unified": "UnifiedHygieneValidatorAgent",
         "phase": 2,
     },
-
     # Phase 3: Checkpoint Managers -> UnifiedCheckpointManagerAgent
     "CheckpointManagerAgent": {
         "source": "agentic_core/L4_state/ValidationContext/CheckpointManagerAgent.py",
@@ -81,7 +80,6 @@ LEGACY_AGENTS = {
         "unified": "UnifiedCheckpointManagerAgent",
         "phase": 3,
     },
-
     # Phase 4: Code Standards Enforcers -> CodeStandardsEnforcerAgent
     "BaseClassEnforcerAgent": {
         "source": "agentic_core/L5_safety/validators/BaseClassEnforcerAgent.py",
@@ -98,7 +96,6 @@ LEGACY_AGENTS = {
         "unified": "CodeStandardsEnforcerAgent",
         "phase": 4,
     },
-
     # Phase 5: State Managers -> UnifiedStateManagementAgent
     "ManifestManagerAgent": {
         "source": "agentic_core/L4_state/ValidationContext/ManifestManagerAgent.py",
@@ -130,7 +127,9 @@ def create_archive_directory() -> Path:
     return archive_dir
 
 
-def archive_agent(agent_name: str, info: dict[str, Any], archive_dir: Path, dry_run: bool = False) -> dict[str, Any]:
+def archive_agent(
+    agent_name: str, info: dict[str, Any], archive_dir: Path, dry_run: bool = False
+) -> dict[str, Any]:
     """
     Archive a single legacy agent.
 
@@ -217,7 +216,7 @@ def create_consolidation_manifest(results: list[dict[str, Any]], archive_dir: Pa
     }
 
     manifest_path = archive_dir / "CONSOLIDATION_MANIFEST.json"
-    with open(manifest_path, 'w', encoding='utf-8') as f:
+    with open(manifest_path, "w", encoding="utf-8") as f:
         json.dump(manifest, f, indent=2, default=str)
 
     # Also create a README
@@ -259,17 +258,19 @@ from agentic_core.L1_cognition.thought_engine.UnifiedASTValidatorAgent import Un
 The SubAtomicRegistryAgent has been updated with backward-compatible mappings.
 Legacy agent IDs will automatically resolve to their unified replacements.
 
-## Archived: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+## Archived: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 """
 
     readme_path = archive_dir / "README.md"
-    with open(readme_path, 'w', encoding='utf-8') as f:
+    with open(readme_path, "w", encoding="utf-8") as f:
         f.write(readme_content)
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Archive consolidated legacy agents')
-    parser.add_argument('--dry-run', action='store_true', help='Show what would be done without moving files')
+    parser = argparse.ArgumentParser(description="Archive consolidated legacy agents")
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Show what would be done without moving files"
+    )
     args = parser.parse_args()
 
     print("=" * 60)

@@ -24,14 +24,18 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 try:
     from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 except ImportError:
+
     class MCPHardenedMixin:
         pass
+
 
 try:
     from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 except ImportError:
+
     class SubatomicTestingMixin:
         pass
+
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 try:
@@ -47,72 +51,155 @@ BOUNDED_CONTEXTS: dict[str, dict[str, Any]] = {
     "L0_Governance": {
         "path": "agentic_core/L0_maintenance",
         "rank": 0,
-        "role": "Metacognition: The Law, Auditors, and Healers"
+        "role": "Metacognition: The Law, Auditors, and Healers",
     },
     "L1_Cognition": {
         "path": "agentic_core/L1_cognition",
         "rank": 1,
-        "role": "Strategic Reasoning: Planning and Consensus"
+        "role": "Strategic Reasoning: Planning and Consensus",
     },
     "L2_Execution": {
         "path": "agentic_core/L2_execution",
         "rank": 2,
-        "role": "Action: Tool Implementation and Agent Realization"
+        "role": "Action: Tool Implementation and Agent Realization",
     },
     "L3_Orchestration": {
         "path": "agentic_core/L3_orchestration",
         "rank": 3,
-        "role": "Workflow: Task Fission and Fusion"
+        "role": "Workflow: Task Fission and Fusion",
     },
     "L4_State": {
         "path": "agentic_core/L4_state",
         "rank": 4,
-        "role": "Memory: Persistence and Semantic Caching"
+        "role": "Memory: Persistence and Semantic Caching",
     },
     "L5_Safety": {
         "path": "agentic_core/L5_safety",
         "rank": 5,
-        "role": "Membrane: Input/Output Sanitization"
+        "role": "Membrane: Input/Output Sanitization",
     },
     "L6_Observability": {
         "path": "agentic_core/L6_observability",
         "rank": 6,
-        "role": "Truth: Telemetry, Logging, and Audit Trails"
+        "role": "Truth: Telemetry, Logging, and Audit Trails",
     },
     "SharedContracts": {
         "path": "apps_shared/base_agents",
         "rank": -1,  # Neutral layer, no rank in hierarchy
-        "role": "Neutral Interfaces: Cross-context contracts"
-    }
+        "role": "Neutral Interfaces: Cross-context contracts",
+    },
 }
 
 # Standard library modules (exempt from DDD checks)
-STDLIB_MODULES = frozenset({
-    'pathlib', 'os', 'sys', 'json', 'logging', 'typing', 'datetime',
-    'collections', 'itertools', 'functools', 're', 'asyncio', 'abc',
-    'dataclasses', 'enum', 'copy', 'io', 'time', 'uuid', 'hashlib',
-    'ast', 'inspect', 'importlib', 'warnings', 'contextlib', 'shutil',
-    'tempfile', 'traceback', 'threading', 'multiprocessing', 'subprocess',
-    'socket', 'http', 'urllib', 'email', 'html', 'xml', 'csv', 'pickle',
-    'struct', 'codecs', 'base64', 'binascii', 'zlib', 'gzip', 'bz2',
-    'lzma', 'zipfile', 'tarfile', 'configparser', 'argparse', 'getopt',
-    'textwrap', 'difflib', 'string', 'unicodedata', 'locale', 'gettext',
-    'math', 'cmath', 'decimal', 'fractions', 'random', 'statistics',
-    'secrets', 'operator', 'heapq', 'bisect', 'array', 'weakref',
-    'types', 'pprint', 'reprlib', 'graphlib', 'fnmatch', 'glob',
-    'linecache', 'tokenize', 'keyword', 'symbol', 'token', 'dis',
-    'builtins', '__future__', 'gc', 'atexit', 'signal', 'errno',
-    'ctypes', 'platform', 'sysconfig', 'site', 'code', 'codeop',
-})
+STDLIB_MODULES = frozenset(
+    {
+        "pathlib",
+        "os",
+        "sys",
+        "json",
+        "logging",
+        "typing",
+        "datetime",
+        "collections",
+        "itertools",
+        "functools",
+        "re",
+        "asyncio",
+        "abc",
+        "dataclasses",
+        "enum",
+        "copy",
+        "io",
+        "time",
+        "uuid",
+        "hashlib",
+        "ast",
+        "inspect",
+        "importlib",
+        "warnings",
+        "contextlib",
+        "shutil",
+        "tempfile",
+        "traceback",
+        "threading",
+        "multiprocessing",
+        "subprocess",
+        "socket",
+        "http",
+        "urllib",
+        "email",
+        "html",
+        "xml",
+        "csv",
+        "pickle",
+        "struct",
+        "codecs",
+        "base64",
+        "binascii",
+        "zlib",
+        "gzip",
+        "bz2",
+        "lzma",
+        "zipfile",
+        "tarfile",
+        "configparser",
+        "argparse",
+        "getopt",
+        "textwrap",
+        "difflib",
+        "string",
+        "unicodedata",
+        "locale",
+        "gettext",
+        "math",
+        "cmath",
+        "decimal",
+        "fractions",
+        "random",
+        "statistics",
+        "secrets",
+        "operator",
+        "heapq",
+        "bisect",
+        "array",
+        "weakref",
+        "types",
+        "pprint",
+        "reprlib",
+        "graphlib",
+        "fnmatch",
+        "glob",
+        "linecache",
+        "tokenize",
+        "keyword",
+        "symbol",
+        "token",
+        "dis",
+        "builtins",
+        "__future__",
+        "gc",
+        "atexit",
+        "signal",
+        "errno",
+        "ctypes",
+        "platform",
+        "sysconfig",
+        "site",
+        "code",
+        "codeop",
+    }
+)
 
 # Allowed cross-context import patterns
-ALLOWED_CROSS_CONTEXT_PATTERNS = frozenset({
-    'contracts',
-    'interfaces',
-    'protocols',
-    'base_agents',
-    'mixins',
-})
+ALLOWED_CROSS_CONTEXT_PATTERNS = frozenset(
+    {
+        "contracts",
+        "interfaces",
+        "protocols",
+        "base_agents",
+        "mixins",
+    }
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -120,6 +207,7 @@ Logger = logging.getLogger(__name__)
 @dataclass
 class DDDViolation:
     """Structured DDD violation for reporting."""
+
     file_path: Path
     source_context: str
     target_context: str
@@ -164,14 +252,14 @@ class DDDAlignmentAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             self.project_root = Path(self.project_root).resolve()
 
         self.violations: list[DDDViolation] = []
-        self._skip_patterns = {'tests', 'archives', '__pycache__', '.git', 'venv', '.venv'}
+        self._skip_patterns = {"tests", "archives", "__pycache__", ".git", "venv", ".venv"}
 
     def _get_file_context(self, filepath: Path) -> str | None:
         """Determine which bounded context a file belongs to."""
-        file_str = str(filepath).replace('\\', '/')
+        file_str = str(filepath).replace("\\", "/")
 
         for ctx_name, ctx_info in BOUNDED_CONTEXTS.items():
-            ctx_path = ctx_info.get('path', '')
+            ctx_path = ctx_info.get("path", "")
             if ctx_path and ctx_path in file_str:
                 return ctx_name
 
@@ -183,7 +271,7 @@ class DDDAlignmentAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             return True
 
         # Check if it's a stdlib module
-        module_root = module.split('.')[0]
+        module_root = module.split(".")[0]
         if module_root in STDLIB_MODULES:
             return True
 
@@ -203,7 +291,7 @@ class DDDAlignmentAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             return violations  # File not in a bounded context
 
         try:
-            content = filepath.read_text(encoding='utf-8')
+            content = filepath.read_text(encoding="utf-8")
             tree = ast.parse(content)
         except (SyntaxError, UnicodeDecodeError) as e:
             Logger.debug(f"Could not parse {filepath}: {e}")
@@ -221,18 +309,20 @@ class DDDAlignmentAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                 for ctx_name, ctx_info in BOUNDED_CONTEXTS.items():
                     if ctx_name == source_context:
                         continue
-                    if ctx_name == 'SharedContracts':
+                    if ctx_name == "SharedContracts":
                         continue  # Always allowed
 
-                    ctx_path = ctx_info.get('path', '').replace('/', '.')
+                    ctx_path = ctx_info.get("path", "").replace("/", ".")
                     if ctx_path and ctx_path in module:
-                        violations.append(DDDViolation(
-                            file_path=filepath,
-                            source_context=source_context,
-                            target_context=ctx_name,
-                            imported_module=module,
-                            line_number=node.lineno,
-                        ))
+                        violations.append(
+                            DDDViolation(
+                                file_path=filepath,
+                                source_context=source_context,
+                                target_context=ctx_name,
+                                imported_module=module,
+                                line_number=node.lineno,
+                            )
+                        )
 
         return violations
 
@@ -259,9 +349,10 @@ class DDDAlignmentAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         # Use ssot_discovery for consistent file discovery
         try:
             from agentic_core.utils.ssot_discovery import get_python_files
+
             python_files = list(get_python_files(target))
         except ImportError:
-            python_files = list(target.rglob('*.py'))
+            python_files = list(target.rglob("*.py"))
 
         files_checked = 0
         for filepath in python_files:

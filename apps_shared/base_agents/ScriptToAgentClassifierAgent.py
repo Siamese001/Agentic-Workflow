@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: guardrail, memory, prompt, workflow
@@ -42,9 +41,12 @@ from agentic_core.patterns.agent_roles.experience_buffer import ExperienceBuffer
 from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
 
 
-class ScriptToAgentClassifierAgent(L0MaintenanceBaseAgent, AutonomyMixin,
+class ScriptToAgentClassifierAgent(
+    L0MaintenanceBaseAgent,
+    AutonomyMixin,
     AdaptiveExecutionMixin,
-    SelfDiagnosisMixin,):
+    SelfDiagnosisMixin,
+):
     """
     Sovereign classifier for script vs agent constitutional compliance.
     Uses static analysis (AST) + heuristics aligned with semantic_l2_registry.
@@ -58,9 +60,9 @@ class ScriptToAgentClassifierAgent(L0MaintenanceBaseAgent, AutonomyMixin,
     """
 
     # Constitutional thresholds (tunable via healing evolution)
-    DUST_LINE_THRESHOLD = 40          # Below = fusion candidate (Span-of-Two law)
-    MONOLITH_LINE_THRESHOLD = 250     # Above = fission candidate
-    MAX_CLASSES_FOR_SCRIPT = 1        # >1 class in script → likely needs fission
+    DUST_LINE_THRESHOLD = 40  # Below = fusion candidate (Span-of-Two law)
+    MONOLITH_LINE_THRESHOLD = 250  # Above = fission candidate
+    MAX_CLASSES_FOR_SCRIPT = 1  # >1 class in script → likely needs fission
     HIGH_SIDE_EFFECT_WEIGHT = 0.8
 
     def __init__(self) -> None:
@@ -111,14 +113,16 @@ class ScriptToAgentClassifierAgent(L0MaintenanceBaseAgent, AutonomyMixin,
         Verdict["signals"] = signals
 
         # Record classification attempt
-        self.experience_buffer.record({
-            "file": str(file_path),
-            "recommended_type": Verdict["recommended_type"],
-            "confidence": Verdict["confidence"],
-            "line_count": signals.get("line_count", 0),
-            "num_classes": signals.get("num_classes", 0),
-            "attempted": True,
-        })
+        self.experience_buffer.record(
+            {
+                "file": str(file_path),
+                "recommended_type": Verdict["recommended_type"],
+                "confidence": Verdict["confidence"],
+                "line_count": signals.get("line_count", 0),
+                "num_classes": signals.get("num_classes", 0),
+                "attempted": True,
+            }
+        )
 
         return Verdict
 
@@ -133,7 +137,9 @@ class ScriptToAgentClassifierAgent(L0MaintenanceBaseAgent, AutonomyMixin,
             rationale.append("Defines async main() with asyncio.run → script pattern")
         if signals["top_level_statements"] > 10:
             score += 0.6
-            rationale.append(f"High top-level statements ({signals['top_level_statements']}) → procedural")
+            rationale.append(
+                f"High top-level statements ({signals['top_level_statements']}) → procedural"
+            )
         if signals["side_effect_calls"]:
             score += 0.4 * min(len(signals["side_effect_calls"]) / 5, 1.0)
             rationale.append(f"Top-level side effects: {signals['side_effect_calls'][:3]}...")
@@ -142,27 +148,41 @@ class ScriptToAgentClassifierAgent(L0MaintenanceBaseAgent, AutonomyMixin,
             rationale.append("Few or single class → acceptable in script")
         return score
 
-    def _compute_agent_score(self, signals: dict[str, Any], filename: str, rationale: list[str]) -> float:
+    def _compute_agent_score(
+        self, signals: dict[str, Any], filename: str, rationale: list[str]
+    ) -> float:
         """Compute agent indicator score."""
         score = 0.0
         if signals["num_classes"] >= 2:
             score += 0.8
-            rationale.append(f"Multiple classes ({signals['num_classes']}) → better as separate agents")
+            rationale.append(
+                f"Multiple classes ({signals['num_classes']}) → better as separate agents"
+            )
         if signals["num_classes"] == 1 and not signals["has_main_guard"]:
             score += 0.9
             rationale.append("Single class, no execution block → pure agent pattern")
         if signals["line_count"] < self.DUST_LINE_THRESHOLD and signals["num_classes"] == 1:
             score -= 0.7
-            rationale.append(f"Below dust threshold ({signals['line_count']} < {self.DUST_LINE_THRESHOLD}) → fusion candidate")
+            rationale.append(
+                f"Below dust threshold ({signals['line_count']} < {self.DUST_LINE_THRESHOLD}) → fusion candidate"
+            )
         if signals["line_count"] > self.MONOLITH_LINE_THRESHOLD:
             score += 0.7 if signals["num_classes"] > 1 else 0.3
-            rationale.append(f"Monolithic size ({signals['line_count']} lines) → fission recommended")
-        if filename.startswith("guard_") or filename.startswith("healing_") or "orchestrator" in filename:
+            rationale.append(
+                f"Monolithic size ({signals['line_count']} lines) → fission recommended"
+            )
+        if (
+            filename.startswith("guard_")
+            or filename.startswith("healing_")
+            or "orchestrator" in filename
+        ):
             score += 0.6
             rationale.append("Filename matches sovereign agent pattern")
         return score
 
-    def _determine_recommendation(self, signals: dict[str, Any], score_script: float, score_agent: float) -> tuple[str, float]:
+    def _determine_recommendation(
+        self, signals: dict[str, Any], score_script: float, score_agent: float
+    ) -> tuple[str, float]:
         """Determine final recommendation and confidence."""
         total = score_script + score_agent
         if total == 0:
@@ -210,23 +230,27 @@ class ScriptToAgentClassifierAgent(L0MaintenanceBaseAgent, AutonomyMixin,
 
         suggestions = []
         for class_def in visitor.classes:
-            suggestions.append({
-                "class_name": class_def.name,
-                "line_start": class_def.lineno,
-                "line_end": class_def.end_lineno,
-                "suggested_filename": f"{class_def.name.lower()}.py",
-                "priority": 10 if "Orchestrator" in class_def.name else 5,
-                "reason": f"Extract {class_def.name} to dedicated sovereign agent",
-            })
+            suggestions.append(
+                {
+                    "class_name": class_def.name,
+                    "line_start": class_def.lineno,
+                    "line_end": class_def.end_lineno,
+                    "suggested_filename": f"{class_def.name.lower()}.py",
+                    "priority": 10 if "Orchestrator" in class_def.name else 5,
+                    "reason": f"Extract {class_def.name} to dedicated sovereign agent",
+                }
+            )
 
         # Record fission suggestion
         if suggestions:
-            self.experience_buffer.record({
-                "file": str(file_path),
-                "action": "suggest_fission",
-                "classes_found": len(suggestions),
-                "success": True,  # Assumption — can be corrected later via feedback
-            })
+            self.experience_buffer.record(
+                {
+                    "file": str(file_path),
+                    "action": "suggest_fission",
+                    "classes_found": len(suggestions),
+                    "success": True,  # Assumption — can be corrected later via feedback
+                }
+            )
 
         return sorted(suggestions, key=lambda x: x["priority"], reverse=True)
 
@@ -241,7 +265,7 @@ class ScriptToAgentClassifierAgent(L0MaintenanceBaseAgent, AutonomyMixin,
             return {
                 "reason": "low_confidence_classifications_detected",
                 "files_needing_review": [e["file"] for e in low_confidence[:5]],
-                "action": "trigger_reclassification_cycle"
+                "action": "trigger_reclassification_cycle",
             }
 
         return None
@@ -257,18 +281,14 @@ class ScriptToAgentClassifierAgent(L0MaintenanceBaseAgent, AutonomyMixin,
                 return {
                     "cached": True,
                     "Recommendation": recent[0]["recommended_type"],
-                    "confidence": recent[0]["confidence"]
+                    "confidence": recent[0]["confidence"],
                 }
         # Fallback to standard
         return await self._execute_standard(ctx, **context)
 
     async def _execute_minimal(self, ctx: Any, **context: dict[str, Any]) -> Any:
         self.Logger.warning("Minimal mode: classification paused")
-        return {
-            "mode": "minimal",
-            "status": "standby",
-            "reason": "resource_preservation"
-        }
+        return {"mode": "minimal", "status": "standby", "reason": "resource_preservation"}
 
     async def _execute_standard(self, ctx: Any, **context: dict[str, Any]) -> Any:
         """Standard mode — full classification."""
@@ -279,8 +299,8 @@ class ScriptToAgentClassifierAgent(L0MaintenanceBaseAgent, AutonomyMixin,
 
     @standard_heal
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()
 
 
 class _ModuleAnalyzer(ast.NodeVisitor):
@@ -320,7 +340,12 @@ class _ModuleAnalyzer(ast.NodeVisitor):
             isinstance(node.test, ast.Compare)
             and isinstance(node.test.left, ast.Name)
             and node.test.left.id == "__name__"
-            and any(isinstance(op, ast.Eq) and isinstance(comp, ast.Constant) and comp.value == "__main__" for op, comp in zip(node.test.ops, node.test.comparators))
+            and any(
+                isinstance(op, ast.Eq)
+                and isinstance(comp, ast.Constant)
+                and comp.value == "__main__"
+                for op, comp in zip(node.test.ops, node.test.comparators)
+            )
         ):
             self.has_main_guard = True
         self.generic_visit(node)
@@ -331,8 +356,13 @@ class _ModuleAnalyzer(ast.NodeVisitor):
             # Check if called with asyncio.run
             for stmt in self.tree.body:
                 if isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Call):
-                    if getattr(stmt.value.func, "attr", None) == "run" and getattr(stmt.value.func.value, "id", None) == "asyncio":
-                        if any(arg.id == "main" for arg in stmt.value.args if isinstance(arg, ast.Name)):
+                    if (
+                        getattr(stmt.value.func, "attr", None) == "run"
+                        and getattr(stmt.value.func.value, "id", None) == "asyncio"
+                    ):
+                        if any(
+                            arg.id == "main" for arg in stmt.value.args if isinstance(arg, ast.Name)
+                        ):
                             self.has_async_main = True
         self.generic_visit(node)
 
@@ -347,7 +377,10 @@ class _ModuleAnalyzer(ast.NodeVisitor):
         func_name = self._get_func_name(node.func)
         if func_name in {"print", "open", "Path.write_text", "Path.write_bytes", "logging"}:
             # Only count if at module top level
-            if node.lineno <= max((n.lineno for n in ast.walk(self.tree) if isinstance(n, ast.FunctionDef)), default=50):
+            if node.lineno <= max(
+                (n.lineno for n in ast.walk(self.tree) if isinstance(n, ast.FunctionDef)),
+                default=50,
+            ):
                 self.side_effect_calls.append(func_name)
         self.generic_visit(node)
 
@@ -370,6 +403,7 @@ class _ClassExtractionVisitor(ast.NodeVisitor):
     """
     Extracts class definitions for fission suggestions.
     """
+
     def __init__(self) -> None:
         self.classes: list[ast.ClassDef] = []
 

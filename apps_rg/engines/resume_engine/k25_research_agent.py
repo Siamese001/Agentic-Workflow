@@ -20,13 +20,9 @@ def validate_research_output_local(output: DeepResearchOutput) -> bool:
     # Basic validation
     return len(output.content) > 100 and output.confidence_score > 0.5
 
+
 # Local config to avoid architectural Violation
-K25_REASONING_CONFIG = {
-    "temperature": 0.3,
-    "max_tokens": 4000,
-    "model": "gpt-4",
-    "timeout": 30
-}
+K25_REASONING_CONFIG = {"temperature": 0.3, "max_tokens": 4000, "model": "gpt-4", "timeout": 30}
 
 
 class K25DeepResearchAgent:
@@ -45,7 +41,12 @@ class K25DeepResearchAgent:
         self.prompt_template = self._load_prompt_template()
 
     def _load_prompt_template(self) -> str:
-        prompt_path = Path(__file__).parent.parent.parent / "config" / "prompts" / "k2_5_deep_research_mandate.md"
+        prompt_path = (
+            Path(__file__).parent.parent.parent
+            / "config"
+            / "prompts"
+            / "k2_5_deep_research_mandate.md"
+        )
 
         if prompt_path.exists():
             return prompt_path.read_text(encoding="utf-8")
@@ -110,10 +111,7 @@ Requirements:
         """
 
         result = ResearchHopResult(
-            phase=ResearchHopPhase.FINANCIAL_STRATEGIC,
-            query=query,
-            results=[],
-            citations=[]
+            phase=ResearchHopPhase.FINANCIAL_STRATEGIC, query=query, results=[], citations=[]
         )
 
         return result
@@ -128,10 +126,7 @@ Requirements:
         """
 
         result = ResearchHopResult(
-            phase=ResearchHopPhase.TECHNICAL_PRODUCT,
-            query=query,
-            results=[],
-            citations=[]
+            phase=ResearchHopPhase.TECHNICAL_PRODUCT, query=query, results=[], citations=[]
         )
 
         return result
@@ -146,34 +141,23 @@ Requirements:
         """
 
         result = ResearchHopResult(
-            phase=ResearchHopPhase.ORGANIZATIONAL_LEADERSHIP,
-            query=query,
-            results=[],
-            citations=[]
+            phase=ResearchHopPhase.ORGANIZATIONAL_LEADERSHIP, query=query, results=[], citations=[]
         )
 
         return result
 
-    def _assemble_research_output(
-        self,
-        hop_results: list[ResearchHopResult]
-    ) -> DeepResearchOutput:
+    def _assemble_research_output(self, hop_results: list[ResearchHopResult]) -> DeepResearchOutput:
         StrategicLayer = StrategicLayer(
             core_thesis=f"{self.company_name} strategic positioning",
             financial_proof_points=[],
-            strategic_initiatives=[]
+            strategic_initiatives=[],
         )
 
         TechnicalLayer = TechnicalLayer(
-            key_technologies=[],
-            infrastructure_stack=[],
-            implementation_summary=None
+            key_technologies=[], infrastructure_stack=[], implementation_summary=None
         )
 
-        LeadershipLayer = LeadershipLayer(
-            key_executives=[],
-            organizational_structure=None
-        )
+        LeadershipLayer = LeadershipLayer(key_executives=[], organizational_structure=None)
 
         CitationMap = CitationMap()
 
@@ -187,7 +171,7 @@ Requirements:
             TechnicalLayer=TechnicalLayer,
             LeadershipLayer=LeadershipLayer,
             CitationMap=CitationMap,
-            research_timestamp=datetime.utcnow().isoformat()
+            research_timestamp=datetime.utcnow().isoformat(),
         )
 
     def generate_research_prompt(self) -> str:
@@ -254,7 +238,6 @@ Begin research execution.
 
 
 def create_k25_research_agent(
-    company_name: str,
-    company_url: str | None = None
+    company_name: str, company_url: str | None = None
 ) -> K25DeepResearchAgent:
     return K25DeepResearchAgent(company_name=company_name, company_url=company_url)

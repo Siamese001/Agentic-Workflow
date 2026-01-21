@@ -52,25 +52,25 @@ class TerritoryHealingStrategy(HealingStrategy):
     def apply(self, violation: dict[str, Any], file_path: Path) -> dict[str, Any]:
         """Apply territory healing."""
         if not self._validate_inputs(violation, file_path):
-            return {'success': False, 'error': 'Invalid inputs'}
+            return {"success": False, "error": "Invalid inputs"}
 
         try:
-            target_path = violation.get('target_path')
+            target_path = violation.get("target_path")
             if not target_path:
-                return {'success': False, 'error': 'No target path specified'}
+                return {"success": False, "error": "No target path specified"}
 
             # Simulate file move (in real implementation, would use safe_path_join)
             Logger.info(f"Territory healing: {file_path} → {target_path}")
 
             return {
-                'success': True,
-                'type': 'territory',
-                'from': str(file_path),
-                'to': target_path,
-                'message': f'Moved to correct territory: {target_path}'
+                "success": True,
+                "type": "territory",
+                "from": str(file_path),
+                "to": target_path,
+                "message": f"Moved to correct territory: {target_path}",
             }
         except Exception as e:
-            return {'success': False, 'error': str(e)}
+            return {"success": False, "error": str(e)}
 
 
 class GravityHealingStrategy(HealingStrategy):
@@ -79,25 +79,27 @@ class GravityHealingStrategy(HealingStrategy):
     def apply(self, violation: dict[str, Any], file_path: Path) -> dict[str, Any]:
         """Apply gravity healing."""
         if not self._validate_inputs(violation, file_path):
-            return {'success': False, 'error': 'Invalid inputs'}
+            return {"success": False, "error": "Invalid inputs"}
 
         try:
-            bad_imports = violation.get('bad_imports', [])
+            bad_imports = violation.get("bad_imports", [])
             if not bad_imports:
-                return {'success': False, 'error': 'No bad imports specified'}
+                return {"success": False, "error": "No bad imports specified"}
 
             # Simulate import surgery
-            Logger.info(f"Gravity healing: Removing {len(bad_imports)} bad imports from {file_path}")
+            Logger.info(
+                f"Gravity healing: Removing {len(bad_imports)} bad imports from {file_path}"
+            )
 
             return {
-                'success': True,
-                'type': 'gravity',
-                'file': str(file_path),
-                'removed_imports': bad_imports,
-                'message': f'Removed {len(bad_imports)} gravity violations'
+                "success": True,
+                "type": "gravity",
+                "file": str(file_path),
+                "removed_imports": bad_imports,
+                "message": f"Removed {len(bad_imports)} gravity violations",
             }
         except Exception as e:
-            return {'success': False, 'error': str(e)}
+            return {"success": False, "error": str(e)}
 
 
 class NamingHealingStrategy(HealingStrategy):
@@ -106,25 +108,25 @@ class NamingHealingStrategy(HealingStrategy):
     def apply(self, violation: dict[str, Any], file_path: Path) -> dict[str, Any]:
         """Apply naming healing."""
         if not self._validate_inputs(violation, file_path):
-            return {'success': False, 'error': 'Invalid inputs'}
+            return {"success": False, "error": "Invalid inputs"}
 
         try:
-            proposed_name = violation.get('proposed_name')
+            proposed_name = violation.get("proposed_name")
             if not proposed_name:
-                return {'success': False, 'error': 'No proposed name specified'}
+                return {"success": False, "error": "No proposed name specified"}
 
             # Simulate file rename
             Logger.info(f"Naming healing: {file_path.name} → {proposed_name}")
 
             return {
-                'success': True,
-                'type': 'naming',
-                'from': file_path.name,
-                'to': proposed_name,
-                'message': f'Renamed to follow conventions: {proposed_name}'
+                "success": True,
+                "type": "naming",
+                "from": file_path.name,
+                "to": proposed_name,
+                "message": f"Renamed to follow conventions: {proposed_name}",
             }
         except Exception as e:
-            return {'success': False, 'error': str(e)}
+            return {"success": False, "error": str(e)}
 
 
 class HierarchyHealingStrategy(HealingStrategy):
@@ -133,25 +135,25 @@ class HierarchyHealingStrategy(HealingStrategy):
     def apply(self, violation: dict[str, Any], file_path: Path) -> dict[str, Any]:
         """Apply hierarchy healing."""
         if not self._validate_inputs(violation, file_path):
-            return {'success': False, 'error': 'Invalid inputs'}
+            return {"success": False, "error": "Invalid inputs"}
 
         try:
-            hierarchy_issue = violation.get('issue')
+            hierarchy_issue = violation.get("issue")
             if not hierarchy_issue:
-                return {'success': False, 'error': 'No hierarchy issue specified'}
+                return {"success": False, "error": "No hierarchy issue specified"}
 
             # Simulate hierarchy restructuring
             Logger.info(f"Hierarchy healing: Fixing {hierarchy_issue} in {file_path}")
 
             return {
-                'success': True,
-                'type': 'hierarchy',
-                'file': str(file_path),
-                'issue': hierarchy_issue,
-                'message': f'Fixed hierarchy violation: {hierarchy_issue}'
+                "success": True,
+                "type": "hierarchy",
+                "file": str(file_path),
+                "issue": hierarchy_issue,
+                "message": f"Fixed hierarchy violation: {hierarchy_issue}",
             }
         except Exception as e:
-            return {'success': False, 'error': str(e)}
+            return {"success": False, "error": str(e)}
 
 
 class ComplianceHealingStrategy(HealingStrategy):
@@ -160,25 +162,25 @@ class ComplianceHealingStrategy(HealingStrategy):
     def apply(self, violation: dict[str, Any], file_path: Path) -> dict[str, Any]:
         """Apply compliance healing."""
         if not self._validate_inputs(violation, file_path):
-            return {'success': False, 'error': 'Invalid inputs'}
+            return {"success": False, "error": "Invalid inputs"}
 
         try:
-            compliance_rule = violation.get('rule')
+            compliance_rule = violation.get("rule")
             if not compliance_rule:
-                return {'success': False, 'error': 'No compliance rule specified'}
+                return {"success": False, "error": "No compliance rule specified"}
 
             # Simulate compliance fix
             Logger.info(f"Compliance healing: Enforcing {compliance_rule} in {file_path}")
 
             return {
-                'success': True,
-                'type': 'compliance',
-                'file': str(file_path),
-                'rule': compliance_rule,
-                'message': f'Applied compliance rule: {compliance_rule}'
+                "success": True,
+                "type": "compliance",
+                "file": str(file_path),
+                "rule": compliance_rule,
+                "message": f"Applied compliance rule: {compliance_rule}",
             }
         except Exception as e:
-            return {'success': False, 'error': str(e)}
+            return {"success": False, "error": str(e)}
 
 
 class DriftHealingStrategy(HealingStrategy):
@@ -187,25 +189,25 @@ class DriftHealingStrategy(HealingStrategy):
     def apply(self, violation: dict[str, Any], file_path: Path) -> dict[str, Any]:
         """Apply drift healing."""
         if not self._validate_inputs(violation, file_path):
-            return {'success': False, 'error': 'Invalid inputs'}
+            return {"success": False, "error": "Invalid inputs"}
 
         try:
-            drift_type = violation.get('drift_type')
+            drift_type = violation.get("drift_type")
             if not drift_type:
-                return {'success': False, 'error': 'No drift type specified'}
+                return {"success": False, "error": "No drift type specified"}
 
             # Simulate drift correction
             Logger.info(f"Drift healing: Correcting {drift_type} in {file_path}")
 
             return {
-                'success': True,
-                'type': 'drift',
-                'file': str(file_path),
-                'drift_type': drift_type,
-                'message': f'Corrected code drift: {drift_type}'
+                "success": True,
+                "type": "drift",
+                "file": str(file_path),
+                "drift_type": drift_type,
+                "message": f"Corrected code drift: {drift_type}",
             }
         except Exception as e:
-            return {'success': False, 'error': str(e)}
+            return {"success": False, "error": str(e)}
 
 
 class DeadCodeHealingStrategy(HealingStrategy):
@@ -214,49 +216,47 @@ class DeadCodeHealingStrategy(HealingStrategy):
     def apply(self, violation: dict[str, Any], file_path: Path) -> dict[str, Any]:
         """Apply dead code healing."""
         if not self._validate_inputs(violation, file_path):
-            return {'success': False, 'error': 'Invalid inputs'}
+            return {"success": False, "error": "Invalid inputs"}
 
         try:
-            dead_items = violation.get('dead_items', [])
+            dead_items = violation.get("dead_items", [])
             if not dead_items:
-                return {'success': False, 'error': 'No dead code items specified'}
+                return {"success": False, "error": "No dead code items specified"}
 
             # Simulate dead code removal
-            Logger.info(f"Dead code healing: Removing {len(dead_items)} dead items from {file_path}")
+            Logger.info(
+                f"Dead code healing: Removing {len(dead_items)} dead items from {file_path}"
+            )
 
             return {
-                'success': True,
-                'type': 'dead_code',
-                'file': str(file_path),
-                'removed_items': dead_items,
-                'message': f'Removed {len(dead_items)} dead code items'
+                "success": True,
+                "type": "dead_code",
+                "file": str(file_path),
+                "removed_items": dead_items,
+                "message": f"Removed {len(dead_items)} dead code items",
             }
         except Exception as e:
-            return {'success': False, 'error': str(e)}
+            return {"success": False, "error": str(e)}
 
 
 class HealingStrategyFactory:
     """Factory for creating healing strategies."""
 
     _strategies = {
-        'territory': TerritoryHealingStrategy,
-        'location': TerritoryHealingStrategy,
-        'gravity': GravityHealingStrategy,
-        'import': GravityHealingStrategy,
-        'naming': NamingHealingStrategy,
-        'hierarchy': HierarchyHealingStrategy,
-        'structure': HierarchyHealingStrategy,
-        'compliance': ComplianceHealingStrategy,
-        'drift': DriftHealingStrategy,
-        'dead_code': DeadCodeHealingStrategy,
+        "territory": TerritoryHealingStrategy,
+        "location": TerritoryHealingStrategy,
+        "gravity": GravityHealingStrategy,
+        "import": GravityHealingStrategy,
+        "naming": NamingHealingStrategy,
+        "hierarchy": HierarchyHealingStrategy,
+        "structure": HierarchyHealingStrategy,
+        "compliance": ComplianceHealingStrategy,
+        "drift": DriftHealingStrategy,
+        "dead_code": DeadCodeHealingStrategy,
     }
 
     @classmethod
-    def create(
-        cls,
-        violation_type: str,
-        config: dict[str, Any] | None = None
-    ) -> HealingStrategy:
+    def create(cls, violation_type: str, config: dict[str, Any] | None = None) -> HealingStrategy:
         """
         Create healing strategy instance.
 

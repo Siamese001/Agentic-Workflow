@@ -9,12 +9,15 @@ GROUPS = {
     "Location": ["LocationAgent.py", "LocationValidatorAgent.py", "LocationHealerAgent.py"],
     "Hierarchy": ["HierarchyAgent.py", "HierarchyValidatorAgent.py"],
     "Import": ["ImportAgent.py", "ImportLockAgent.py"],
-    "Strategic": ["StrategicRecommendationAgent.py", "StrategicPlannerAgent.py"]
+    "Strategic": ["StrategicRecommendationAgent.py", "StrategicPlannerAgent.py"],
 }
 
+
 def get_file_hash(path: Path):
-    if not path.exists(): return None
+    if not path.exists():
+        return None
     return hashlib.md5(path.read_bytes()).hexdigest()
+
 
 def investigate():
     print("[*] Investigating Potential Overlaps...")
@@ -43,9 +46,12 @@ def investigate():
         unique_hashes = set(hashes)
 
         if len(unique_hashes) < len(hashes):
-            print("  [!] WARNING: Identical MD5 hashes detected in this group. Consolidation required.")
+            print(
+                "  [!] WARNING: Identical MD5 hashes detected in this group. Consolidation required."
+            )
         else:
             print("  [✓] Implementation patterns differ. Likely intentional separation.")
+
 
 if __name__ == "__main__":
     investigate()

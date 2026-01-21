@@ -14,6 +14,7 @@ from .context_propagation_mixin import span_id_var, trace_id_var
 
 class SovereignEvent(BaseModel):
     """Standardized schema for all agentic events (Report 4.3)."""
+
     event_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     timestamp: str = Field(default_factory=lambda: datetime.utcnow().isoformat())
     event_type: str
@@ -21,6 +22,7 @@ class SovereignEvent(BaseModel):
     severity: str = "INFO"  # DEBUG, INFO, WARNING, ERROR, CRITICAL
     payload: dict[str, Any] = {}
     trace_id: str | None = None
+
 
 class EventEmissionMixin:
     """
@@ -40,11 +42,13 @@ class EventEmissionMixin:
         # Buffer for potential batch emission (Report 4.6)
         self._event_buffer = []
 
-    def emit_event(self,
-                   event_type: str,
-                   payload: dict[str, Any] | None = None,
-                   severity: str = "INFO",
-                   trace_id: str | None = None) -> SovereignEvent:
+    def emit_event(
+        self,
+        event_type: str,
+        payload: dict[str, Any] | None = None,
+        severity: str = "INFO",
+        trace_id: str | None = None,
+    ) -> SovereignEvent:
         """
         Broadmosts a structured event for L6 monitoring.
 
@@ -73,7 +77,7 @@ class EventEmissionMixin:
             source_agent=self.__class__.__name__,
             severity=severity.upper(),
             payload=event_payload,
-            trace_id=active_trace
+            trace_id=active_trace,
         )
 
         # 1. Standard Logging Integration
@@ -111,11 +115,11 @@ class EventEmissionMixin:
                     if inspect.isawaitable(result):
                         await asyncio.wait_for(result, timeout=TIMEOUT_SEC)
                     else:
-                        await asyncio.wait_for(asyncio.to_thread(lambda: result), timeout=TIMEOUT_SEC)
+                        await asyncio.wait_for(
+                            asyncio.to_thread(lambda: result), timeout=TIMEOUT_SEC
+                        )
 
-                    self._ee_logger.debug(
-                        f"Event dispatched (attempt {attempt}): {event.event_id}"
-                    )
+                    self._ee_logger.debug(f"Event dispatched (attempt {attempt}): {event.event_id}")
                     return
                 except asyncio.TimeoutError:
                     self._ee_logger.warning(
@@ -150,8 +154,10 @@ class EventEmissionMixin:
     @staticmethod
     def observe_execution(event_prefix: str):
         """Decorator to automatically emit start/end events for a method."""
+
         def decorator(func):
             from functools import wraps
+
             @wraps(func)
             async def wrapper(self, *args, **kwargs):
                 if not isinstance(self, EventEmissionMixin):
@@ -165,15 +171,17 @@ class EventEmissionMixin:
                     duration = time.time() - start_time
                     self.emit_event(
                         f"{event_prefix}.completed",
-                        {"duration": round(duration, 4), "success": True}
+                        {"duration": round(duration, 4), "success": True},
                     )
                     return result
                 except Exception as e:
                     self.emit_event(
                         f"{event_prefix}.failed",
                         {"error": str(e), "success": False},
-                        severity="ERROR"
+                        severity="ERROR",
                     )
                     raise e
+
             return wrapper
+
         return decorator

@@ -24,18 +24,22 @@ from agentic_core.utils.security import safe_execute
 PROJECT_ROOT = Path(__file__).parent.parent
 GEN_SCRIPT = PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "AutonomyGuardianAgent.py"
 
+
 def regenerate_dashboard():
     """Trigger dashboard regeneration."""
     print("\n🔄 Source files changed → Regenerating autonomy_dashboard.html...")
     try:
         result = safe_execute(
-            [sys.executable, "-c",
-             "from pathlib import Path; from agentic_core.L5_safety.validators.AutonomyGuardianAgent import AutonomyGuardianAgent; "
-             "agent = AutonomyGuardianAgent(project_root=Path('.')); agent.generate_compliance_report()"],
+            [
+                sys.executable,
+                "-c",
+                "from pathlib import Path; from agentic_core.L5_safety.validators.AutonomyGuardianAgent import AutonomyGuardianAgent; "
+                "agent = AutonomyGuardianAgent(project_root=Path('.')); agent.generate_compliance_report()",
+            ],
             capture_output=True,
             text=True,
             cwd=PROJECT_ROOT,
-            check=False
+            check=False,
         )
         if result.returncode == 0:
             print("   ✅ Dashboard regenerated successfully")
@@ -44,11 +48,13 @@ def regenerate_dashboard():
     except Exception as e:
         print(f"   ❌ Error running dashboard generation: {e}")
 
+
 REPORTS_DIR = PROJECT_ROOT / DASHBOARD_DIR
 PORT = 8000
 
 # Global server reference for signal handlers
 live_server = None
+
 
 def signal_handler(signum, frame):
     """Handle shutdown signals gracefully."""
@@ -57,8 +63,9 @@ def signal_handler(signum, frame):
     print("✅ Server stopped gracefully.")
     sys.exit(0)
 
+
 # Register signal handlers for graceful shutdown
-signal.signal(signal.SIGINT, signal_handler)   # Ctrl+C
+signal.signal(signal.SIGINT, signal_handler)  # Ctrl+C
 signal.signal(signal.SIGTERM, signal_handler)  # Termination signal
 
 # Ensure we're in reports directory

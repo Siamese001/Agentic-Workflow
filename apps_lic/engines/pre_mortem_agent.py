@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 class RiskCategory(str, Enum):
     """Categories of risks for onboarding plans."""
+
     CULTURAL_INERTIA = "Cultural Inertia"
     TECHNICAL_DEBT = "Technical Debt"
     RESOURCE_CONSTRAINTS = "Resource Constraints"
@@ -28,6 +29,7 @@ class RiskCategory(str, Enum):
 
 class ImpactLevel(str, Enum):
     """Impact levels for identified risks."""
+
     LOW = "Low"
     MEDIUM = "Medium"
     HIGH = "High"
@@ -42,7 +44,9 @@ class FailureMode(BaseModel):
     probability: float = Field(..., ge=0.0, le=1.0, description="Probability of occurrence (0-1)")
     impact: ImpactLevel = Field(..., description="Impact if risk materializes")
     mitigation_strategy: str = Field(..., description="Specific mitigation approach")
-    early_warning_signs: list[str] = Field(default_factory=list, description="Early warning indicators")
+    early_warning_signs: list[str] = Field(
+        default_factory=list, description="Early warning indicators"
+    )
     owner: str | None = Field(None, description="Who owns this risk")
 
     @property
@@ -52,7 +56,7 @@ class FailureMode(BaseModel):
             ImpactLevel.LOW: 0.25,
             ImpactLevel.MEDIUM: 0.5,
             ImpactLevel.HIGH: 0.75,
-            ImpactLevel.CRITICAL: 1.0
+            ImpactLevel.CRITICAL: 1.0,
         }
         return self.probability * impact_weights[self.impact]
 
@@ -64,8 +68,12 @@ class PreMortemReport(BaseModel):
     top_risks: list[FailureMode] = Field(..., description="Top identified risks")
     overall_risk_score: float = Field(..., ge=0.0, le=1.0, description="Overall plan risk score")
     go_no_go_recommendation: str = Field(..., description="Go/No-Go recommendation")
-    critical_success_factors: list[str] = Field(default_factory=list, description="Critical success factors")
-    monitoring_plan: dict[str, str] = Field(default_factory=dict, description="Risk monitoring plan")
+    critical_success_factors: list[str] = Field(
+        default_factory=list, description="Critical success factors"
+    )
+    monitoring_plan: dict[str, str] = Field(
+        default_factory=dict, description="Risk monitoring plan"
+    )
 
 
 class SimpleAgentBase:
@@ -100,44 +108,44 @@ class PreMortemAgent(SimpleAgentBase):
                 "Team resistance to new tools/processes",
                 "Existing workflows too entrenched",
                 "Lack of buy-in from key stakeholders",
-                "Cultural mismatch with new approach"
+                "Cultural mismatch with new approach",
             ],
             RiskCategory.TECHNICAL_DEBT: [
                 "Legacy systems integration challenges",
                 "Data quality issues",
                 "Scalability bottlenecks",
-                "Unexpected technical dependencies"
+                "Unexpected technical dependencies",
             ],
             RiskCategory.RESOURCE_CONSTRAINTS: [
                 "Insufficient budget for tools/training",
                 "Limited team availability",
                 "Competing priorities",
-                "Skill gaps in team"
+                "Skill gaps in team",
             ],
             RiskCategory.TEAM_ADOPTION: [
                 "Learning curve too steep",
                 "Lack of champions/advocates",
                 "Poor change management",
-                "Inadequate training"
+                "Inadequate training",
             ],
             RiskCategory.STAKEHOLDER_ALIGNMENT: [
                 "Misaligned expectations",
                 "Conflicting priorities",
                 "Lack of executive sponsorship",
-                "Unclear success metrics"
+                "Unclear success metrics",
             ],
             RiskCategory.EXECUTION_RISK: [
                 "Aggressive timeline",
                 "Complex dependencies",
                 "Unclear requirements",
-                "Scope creep"
+                "Scope creep",
             ],
             RiskCategory.EXTERNAL_DEPENDENCIES: [
                 "Vendor reliability",
                 "API changes",
                 "Market shifts",
-                "Regulatory changes"
-            ]
+                "Regulatory changes",
+            ],
         }
 
     async def analyze_plan(self, plan_text: str, plan_type: str = "onboarding") -> PreMortemReport:
@@ -181,7 +189,7 @@ class PreMortemAgent(SimpleAgentBase):
             overall_risk_score=overall_risk,
             go_no_go_recommendation=recommendation,
             critical_success_factors=success_factors,
-            monitoring_plan=monitoring
+            monitoring_plan=monitoring,
         )
 
     async def _identify_failure_modes(self, plan_text: str, plan_type: str) -> list[FailureMode]:
@@ -226,6 +234,7 @@ class PreMortemAgent(SimpleAgentBase):
         try:
             response = await self._call_llm(prompt, temperature=0.2)
             import json
+
             result = json.loads(response.content.strip())
 
             failure_modes = []
@@ -236,7 +245,7 @@ class PreMortemAgent(SimpleAgentBase):
                         category=RiskCategory(fm["category"]),
                         probability=fm["probability"],
                         impact=ImpactLevel(fm["impact"]),
-                        mitigation_strategy=""  # Will be filled later
+                        mitigation_strategy="",  # Will be filled later
                     )
                     failure_modes.append(failure)
                 except (KeyError, ValueError) as e:
@@ -254,7 +263,7 @@ class PreMortemAgent(SimpleAgentBase):
                     category=RiskCategory.TEAM_ADOPTION,
                     probability=0.6,
                     impact=ImpactLevel.HIGH,
-                    mitigation_strategy=""
+                    mitigation_strategy="",
                 )
             ]
 
@@ -308,38 +317,38 @@ class PreMortemAgent(SimpleAgentBase):
             RiskCategory.CULTURAL_INERTIA: [
                 "Low attendance at training sessions",
                 "Continued use of old processes",
-                "Negative feedback in team surveys"
+                "Negative feedback in team surveys",
             ],
             RiskCategory.TECHNICAL_DEBT: [
                 "Increasing system latency",
                 "Rise in bug reports",
-                "Frequent system outages"
+                "Frequent system outages",
             ],
             RiskCategory.RESOURCE_CONSTRAINTS: [
                 "Budget overruns in early phases",
                 "Team member burnout signs",
-                "Missed deadlines"
+                "Missed deadlines",
             ],
             RiskCategory.TEAM_ADOPTION: [
                 "Low tool usage metrics",
                 "Increase in support tickets",
-                "Workaround usage increasing"
+                "Workaround usage increasing",
             ],
             RiskCategory.STAKEHOLDER_ALIGNMENT: [
                 "Conflicting stakeholder requests",
                 "Scope changes mid-project",
-                "Reduced executive engagement"
+                "Reduced executive engagement",
             ],
             RiskCategory.EXECUTION_RISK: [
                 "Missing milestones",
                 "Dependency delays",
-                "Quality issues in deliverables"
+                "Quality issues in deliverables",
             ],
             RiskCategory.EXTERNAL_DEPENDENCIES: [
                 "Vendor service degradation",
                 "API response time increases",
-                "Regulatory announcements"
-            ]
+                "Regulatory announcements",
+            ],
         }
 
         return warning_signs_map.get(failure.category, ["Unexpected deviations from plan"])
@@ -357,8 +366,8 @@ class PreMortemAgent(SimpleAgentBase):
             return 0.0
 
         # Weighted average of top risks
-        total_weight = sum(2 ** i for i in range(len(risks)))  # Exponential weighting
-        weighted_score = sum(risk.risk_score * (2 ** i) for i, risk in enumerate(risks))
+        total_weight = sum(2**i for i in range(len(risks)))  # Exponential weighting
+        weighted_score = sum(risk.risk_score * (2**i) for i, risk in enumerate(risks))
 
         return min(1.0, weighted_score / total_weight * 2)  # Normalize and amplify
 
@@ -372,7 +381,9 @@ class PreMortemAgent(SimpleAgentBase):
         Returns:
             Recommendation string
         """
-        critical_risks = [r for r in risks if r.impact == ImpactLevel.CRITICAL and r.probability > 0.5]
+        critical_risks = [
+            r for r in risks if r.impact == ImpactLevel.CRITICAL and r.probability > 0.5
+        ]
 
         if critical_risks:
             return "NO-GO: Address critical risks before proceeding"
@@ -411,11 +422,9 @@ class PreMortemAgent(SimpleAgentBase):
             factors.append("Adequate resource allocation and realistic timeline")
 
         # Add generic factors
-        factors.extend([
-            "Clear communication plan",
-            "Defined success metrics",
-            "Regular progress reviews"
-        ])
+        factors.extend(
+            ["Clear communication plan", "Defined success metrics", "Regular progress reviews"]
+        )
 
         return factors[:5]  # Top 5 factors
 
@@ -431,7 +440,9 @@ class PreMortemAgent(SimpleAgentBase):
         monitoring = {}
 
         for risk in risks[:3]:  # Top 3 risks
-            monitoring[risk.risk] = f"Weekly check-ins, track {risk.early_warning_signs[0] if risk.early_warning_signs else 'key metrics'}"
+            monitoring[risk.risk] = (
+                f"Weekly check-ins, track {risk.early_warning_signs[0] if risk.early_warning_signs else 'key metrics'}"
+            )
 
         return monitoring
 
@@ -465,29 +476,25 @@ class PreMortemAgent(SimpleAgentBase):
             "### Top Risks & Mitigations",
             "",
             "| Risk | Category | Probability | Impact | Mitigation |",
-            "|------|----------|-------------|---------|------------|"
+            "|------|----------|-------------|---------|------------|",
         ]
 
         for risk in report.top_risks:
-            mitigation = risk.mitigation_strategy[:50] + "..." if len(risk.mitigation_strategy) > 50 else risk.mitigation_strategy
+            mitigation = (
+                risk.mitigation_strategy[:50] + "..."
+                if len(risk.mitigation_strategy) > 50
+                else risk.mitigation_strategy
+            )
             lines.append(
                 f"| {risk.risk[:40]}... | {risk.category} | {risk.probability:.0%} | {risk.impact} | {mitigation} |"
             )
 
-        lines.extend([
-            "",
-            "### Critical Success Factors",
-            ""
-        ])
+        lines.extend(["", "### Critical Success Factors", ""])
 
         for factor in report.critical_success_factors:
             lines.append(f"- {factor}")
 
-        lines.extend([
-            "",
-            "### Risk Monitoring Plan",
-            ""
-        ])
+        lines.extend(["", "### Risk Monitoring Plan", ""])
 
         for risk, monitoring in report.monitoring_plan.items():
             lines.append(f"- **{risk}**: {monitoring}")
@@ -516,7 +523,7 @@ class PreMortemAgent(SimpleAgentBase):
                 model="claude-3-5-sonnet-20241022",
                 max_tokens=2000,
                 temperature=temperature,
-                messages=[{"role": "user", "content": prompt}]
+                messages=[{"role": "user", "content": prompt}],
             )
 
             class LLMResponseImpl:
@@ -527,6 +534,7 @@ class PreMortemAgent(SimpleAgentBase):
 
         except Exception as e:
             logger.error(f"LLM call failed: {e}")
+
             # Return fallback response
             class LLMResponseImpl:
                 def __init__(self, content: str):

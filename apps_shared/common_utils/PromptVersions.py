@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 
 class VersionTag(Enum):
     """Version environment tags."""
+
     DEV = "dev"
     STAGING = "staging"
     PROD = "prod"
@@ -32,6 +33,7 @@ class VersionTag(Enum):
 @dataclass
 class PromptVersion:
     """Versioned prompt template."""
+
     version_id: str
     template_id: str
     version: str
@@ -150,7 +152,7 @@ class PromptVersionManager:
                     "template_id": template_id,
                     "version": next_version,
                     "tag": tag.value,
-                }
+                },
             )
 
         return version
@@ -196,7 +198,7 @@ class PromptVersionManager:
                     "template_id": template_id,
                     "version": version,
                     "to_tag": to_tag.value,
-                }
+                },
             )
 
         return target_version
@@ -242,7 +244,7 @@ class PromptVersionManager:
                     "template_id": template_id,
                     "tag": tag.value,
                     "to_version": to_version,
-                }
+                },
             )
 
         return target_version

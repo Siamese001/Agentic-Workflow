@@ -66,7 +66,9 @@ class ReasoningCache:
         self.misses += 1
         return None
 
-    def put(self, problem: str, context: dict[str, Any], params: tuple, result: dict[str, Any]) -> None:
+    def put(
+        self, problem: str, context: dict[str, Any], params: tuple, result: dict[str, Any]
+    ) -> None:
         """
         Cache reasoning result.
 
@@ -101,7 +103,7 @@ class ReasoningCache:
             "hits": self.hits,
             "misses": self.misses,
             "hit_rate": hit_rate,
-            "total_requests": total
+            "total_requests": total,
         }
 
 
@@ -183,7 +185,7 @@ class ObservationCache:
             "hits": self.hits,
             "misses": self.misses,
             "hit_rate": hit_rate,
-            "total_requests": total
+            "total_requests": total,
         }
 
 
@@ -194,13 +196,14 @@ observation_cache = ObservationCache(maxsize=5000)
 
 def cached_reasoning(func):
     """Decorator for caching reasoning results."""
+
     @functools.wraps(func)
     def wrapper(self, problem: str, context: dict[str, Any], *args, **kwargs):
         # Create parameter tuple
         params = (
-            context.get('temperature', 0.7),
-            context.get('model', 'default'),
-            context.get('max_steps', 8)
+            context.get("temperature", 0.7),
+            context.get("model", "default"),
+            context.get("max_steps", 8),
         )
 
         # Check cache
@@ -223,6 +226,7 @@ def cached_reasoning(func):
 
 def cached_observation(func):
     """Decorator for caching observations."""
+
     @functools.wraps(func)
     def wrapper(self, action: str, context: dict[str, Any], *args, **kwargs):
         # Create context hash

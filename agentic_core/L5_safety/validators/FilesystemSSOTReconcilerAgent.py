@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, validator
@@ -83,14 +82,19 @@ except ImportError:
     # Fallback for testing
     class MCPHardenedMixin:
         pass
+
+
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 try:
     from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 except ImportError:
+
     class SubatomicTestingMixin:
         """Fallback stub for SubatomicTestingMixin."""
+
         pass
+
 
 from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
 
@@ -100,6 +104,7 @@ Logger = logging.getLogger(__name__)
 @dataclass
 class ReconciliationViolation:
     """Structured violation for blueprint reconciliation healing."""
+
     is_valid: bool
     message: str
     drift_type: str | None = None
@@ -108,7 +113,14 @@ class ReconciliationViolation:
     severity: int = 5
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L0 maintenance agent - operational only."""
         super().heal_repository()
 
@@ -182,13 +194,20 @@ class FilesystemSSOTReconcilerAgent(
 
     def _create_rejected_result(self, proposals: list[dict], message: str) -> dict[str, Any]:
         """Create result for rejected/aborted changes."""
-        return {"drift_detected": True, "proposals": proposals, "applied": False, "message": message}
+        return {
+            "drift_detected": True,
+            "proposals": proposals,
+            "applied": False,
+            "message": message,
+        }
 
     def _create_applied_result(self, proposals: list[dict], results: list[str]) -> dict[str, Any]:
         """Create result for successfully applied changes."""
         return {"drift_detected": True, "proposals": proposals, "applied": True, "results": results}
 
-    def _handle_interactive_approval(self, proposals: list[dict]) -> tuple[bool, dict[str, Any] | None]:
+    def _handle_interactive_approval(
+        self, proposals: list[dict]
+    ) -> tuple[bool, dict[str, Any] | None]:
         """Handle interactive approval flow. Returns (should_apply, early_return_result)."""
         Logger.info("Interactive mode - requesting user approval")
         try:
@@ -202,7 +221,9 @@ class FilesystemSSOTReconcilerAgent(
             Logger.warning("User aborted reconciliation")
             return False, self._create_rejected_result(proposals, "Reconciliation aborted by user")
 
-    async def enforce_gospel(self, auto_apply: bool = False, interactive: bool = True) -> dict[str, Any]:
+    async def enforce_gospel(
+        self, auto_apply: bool = False, interactive: bool = True
+    ) -> dict[str, Any]:
         """Main entry point: Align filesystem to match the Gospel (blueprint)."""
         Logger.info("Starting SSOT Gospel Enforcement scan...")
 
@@ -259,14 +280,14 @@ class FilesystemSSOTReconcilerAgent(
             # Scan L1 subfolders
             l1_folders = set()
             for item in root_path.iterdir():
-                if item.is_dir() and not item.name.startswith(('.', '__')):
+                if item.is_dir() and not item.name.startswith((".", "__")):
                     l1_folders.add(item.name)
 
                     # For agentic_core, scan L2 subfolders
                     if root == "agentic_core":
                         l2_folders = set()
                         for subitem in item.iterdir():
-                            if subitem.is_dir() and not subitem.name.startswith(('.', '__')):
+                            if subitem.is_dir() and not subitem.name.startswith((".", "__")):
                                 l2_folders.add(subitem.name)
 
                         if l2_folders:
@@ -276,7 +297,9 @@ class FilesystemSSOTReconcilerAgent(
             self.actual_folders[root] = l1_folders
             Logger.debug(f"Discovered L1 in {root}: {l1_folders}")
 
-        Logger.info(f"Filesystem scan complete: {len(self.actual_folders)} folder hierarchies discovered")
+        Logger.info(
+            f"Filesystem scan complete: {len(self.actual_folders)} folder hierarchies discovered"
+        )
 
     async def _scan_agents(self) -> None:
         """
@@ -293,7 +316,8 @@ class FilesystemSSOTReconcilerAgent(
         if discovery_path.exists():
             try:
                 import json
-                with open(discovery_path, encoding='utf-8') as f:
+
+                with open(discovery_path, encoding="utf-8") as f:
                     discovery_data = json.load(f)
 
                 for entry in discovery_data:
@@ -317,12 +341,13 @@ class FilesystemSSOTReconcilerAgent(
 
         # Sub-20: Use ssot_discovery instead of rglob
         from agentic_core.utils.ssot_discovery import get_agent_files
+
         for py_file in get_agent_files(agentic_core):
             if any(skip in py_file.parts for skip in ["__pycache__", ".git", "archives"]):
                 continue
 
             try:
-                content = py_file.read_text(encoding='utf-8')
+                content = py_file.read_text(encoding="utf-8")
                 tree = ast.parse(content)
 
                 # Extract class names for signal detection
@@ -341,7 +366,9 @@ class FilesystemSSOTReconcilerAgent(
             except Exception as e:
                 Logger.debug(f"Failed to parse {py_file}: {e}")
 
-        Logger.info(f"Agent scan complete: {len(self.actual_agents)} agents, {len(self.actual_signals)} signals discovered")
+        Logger.info(
+            f"Agent scan complete: {len(self.actual_agents)} agents, {len(self.actual_signals)} signals discovered"
+        )
 
     def _load_current_blueprint(self) -> dict[str, Any]:
         """
@@ -355,6 +382,7 @@ class FilesystemSSOTReconcilerAgent(
         Logger.info("Loading current blueprint configuration...")
 
         import importlib.util
+
         spec = importlib.util.spec_from_file_location("blueprint", self.blueprint_file)
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
@@ -365,9 +393,11 @@ class FilesystemSSOTReconcilerAgent(
             "CANON_SIGNALS": getattr(module, "CANON_SIGNALS", set()),
         }
 
-        Logger.info(f"Blueprint loaded: {len(blueprint['sovereign_registry'])} roots, "
-                   f"{len(blueprint['core_subfolder_map'])} L1 folders, "
-                   f"{len(blueprint['CANON_SIGNALS'])} signals")
+        Logger.info(
+            f"Blueprint loaded: {len(blueprint['sovereign_registry'])} roots, "
+            f"{len(blueprint['core_subfolder_map'])} L1 folders, "
+            f"{len(blueprint['CANON_SIGNALS'])} signals"
+        )
 
         return blueprint
 
@@ -396,7 +426,9 @@ class FilesystemSSOTReconcilerAgent(
         Logger.info(f"Drift detection complete: {len(drift)} discrepancies found")
         return drift
 
-    def _check_registry_subfolders(self, current_blueprint: dict[str, Any], drift: list[dict[str, Any]]) -> None:
+    def _check_registry_subfolders(
+        self, current_blueprint: dict[str, Any], drift: list[dict[str, Any]]
+    ) -> None:
         """
         Check SOVEREIGN_REGISTRY subfolders.
 
@@ -415,26 +447,32 @@ class FilesystemSSOTReconcilerAgent(
             # Missing in blueprint
             missing = actual_subfolders - blueprint_subfolders
             if missing:
-                drift.append({
-                    "type": "orphaned_subfolders",
-                    "root": root,
-                    "folders": sorted(missing),
-                    "Severity": "medium"
-                })
+                drift.append(
+                    {
+                        "type": "orphaned_subfolders",
+                        "root": root,
+                        "folders": sorted(missing),
+                        "Severity": "medium",
+                    }
+                )
                 Logger.warning(f"Orphaned subfolders in {root}: {missing}")
 
             # Extra in blueprint (deleted folders)
             extra = blueprint_subfolders - actual_subfolders
             if extra:
-                drift.append({
-                    "type": "missing_subfolders",
-                    "root": root,
-                    "folders": sorted(extra),
-                    "Severity": "high"
-                })
+                drift.append(
+                    {
+                        "type": "missing_subfolders",
+                        "root": root,
+                        "folders": sorted(extra),
+                        "Severity": "high",
+                    }
+                )
                 Logger.warning(f"Missing subfolders in {root}: {extra}")
 
-    def _check_l2_subfolders(self, current_blueprint: dict[str, Any], drift: list[dict[str, Any]]) -> None:
+    def _check_l2_subfolders(
+        self, current_blueprint: dict[str, Any], drift: list[dict[str, Any]]
+    ) -> None:
         """
         Check CORE_SUBFOLDER_MAP (L2 depth).
 
@@ -452,15 +490,19 @@ class FilesystemSSOTReconcilerAgent(
 
             missing_l2 = actual_l2 - blueprint_l2
             if missing_l2:
-                drift.append({
-                    "type": "orphaned_l2_subfolders",
-                    "l1_folder": l1_folder,
-                    "folders": sorted(missing_l2),
-                    "Severity": "medium"
-                })
+                drift.append(
+                    {
+                        "type": "orphaned_l2_subfolders",
+                        "l1_folder": l1_folder,
+                        "folders": sorted(missing_l2),
+                        "Severity": "medium",
+                    }
+                )
                 Logger.warning(f"Orphaned L2 subfolders in {l1_folder}: {missing_l2}")
 
-    def _check_canon_signals(self, current_blueprint: dict[str, Any], drift: list[dict[str, Any]]) -> None:
+    def _check_canon_signals(
+        self, current_blueprint: dict[str, Any], drift: list[dict[str, Any]]
+    ) -> None:
         """
         Check CANON_SIGNALS.
 
@@ -471,14 +513,18 @@ class FilesystemSSOTReconcilerAgent(
         missing_signals = blueprint_signals - self.actual_signals
 
         if missing_signals:
-            drift.append({
-                "type": "missing_canon_signals",
-                "signals": sorted(missing_signals),
-                "Severity": "low"
-            })
+            drift.append(
+                {
+                    "type": "missing_canon_signals",
+                    "signals": sorted(missing_signals),
+                    "Severity": "low",
+                }
+            )
             Logger.info(f"Missing canonical signals: {missing_signals}")
 
-    def _check_registry_subfolders(self, current_blueprint: dict[str, Any], drift: list[dict[str, Any]]) -> None:
+    def _check_registry_subfolders(
+        self, current_blueprint: dict[str, Any], drift: list[dict[str, Any]]
+    ) -> None:
         """Check SOVEREIGN_REGISTRY subfolders for drift."""
         blueprint_registry = current_blueprint.get("sovereign_registry", {})
 
@@ -491,26 +537,32 @@ class FilesystemSSOTReconcilerAgent(
             # Missing in blueprint
             missing = actual_subfolders - blueprint_subfolders
             if missing:
-                drift.append({
-                    "type": "orphaned_subfolders",
-                    "root": root,
-                    "folders": sorted(missing),
-                    "Severity": "medium"
-                })
+                drift.append(
+                    {
+                        "type": "orphaned_subfolders",
+                        "root": root,
+                        "folders": sorted(missing),
+                        "Severity": "medium",
+                    }
+                )
                 Logger.warning(f"Orphaned subfolders in {root}: {missing}")
 
             # Extra in blueprint (deleted folders)
             extra = blueprint_subfolders - actual_subfolders
             if extra:
-                drift.append({
-                    "type": "missing_subfolders",
-                    "root": root,
-                    "folders": sorted(extra),
-                    "Severity": "high"
-                })
+                drift.append(
+                    {
+                        "type": "missing_subfolders",
+                        "root": root,
+                        "folders": sorted(extra),
+                        "Severity": "high",
+                    }
+                )
                 Logger.warning(f"Missing subfolders in {root}: {extra}")
 
-    def _check_l2_subfolders(self, current_blueprint: dict[str, Any], drift: list[dict[str, Any]]) -> None:
+    def _check_l2_subfolders(
+        self, current_blueprint: dict[str, Any], drift: list[dict[str, Any]]
+    ) -> None:
         """Check CORE_SUBFOLDER_MAP (L2 depth) for drift."""
         blueprint_core_map = current_blueprint.get("core_subfolder_map", {})
 
@@ -523,25 +575,31 @@ class FilesystemSSOTReconcilerAgent(
 
             missing_l2 = actual_l2 - blueprint_l2
             if missing_l2:
-                drift.append({
-                    "type": "orphaned_l2_subfolders",
-                    "l1_folder": l1_folder,
-                    "folders": sorted(missing_l2),
-                    "Severity": "medium"
-                })
+                drift.append(
+                    {
+                        "type": "orphaned_l2_subfolders",
+                        "l1_folder": l1_folder,
+                        "folders": sorted(missing_l2),
+                        "Severity": "medium",
+                    }
+                )
                 Logger.warning(f"Orphaned L2 subfolders in {l1_folder}: {missing_l2}")
 
-    def _check_canon_signals(self, current_blueprint: dict[str, Any], drift: list[dict[str, Any]]) -> None:
+    def _check_canon_signals(
+        self, current_blueprint: dict[str, Any], drift: list[dict[str, Any]]
+    ) -> None:
         """Check CANON_SIGNALS for drift."""
         blueprint_signals = set(current_blueprint.get("CANON_SIGNALS", set()))
         missing_signals = blueprint_signals - self.actual_signals
 
         if missing_signals:
-            drift.append({
-                "type": "missing_canon_signals",
-                "signals": sorted(missing_signals),
-                "Severity": "low"
-            })
+            drift.append(
+                {
+                    "type": "missing_canon_signals",
+                    "signals": sorted(missing_signals),
+                    "Severity": "low",
+                }
+            )
             Logger.info(f"Missing canonical signals: {missing_signals}")
 
     def _generate_filesystem_proposals(self, drift: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -555,23 +613,33 @@ class FilesystemSSOTReconcilerAgent(
                 # Blueprint requires these folders - CREATE them
                 for folder in drift_item["folders"]:
                     target = self.project_root / drift_item["root"] / folder
-                    proposals.append({
-                        "action": "CREATE_FOLDER",
-                        "target": str(target),
-                        "reason": f"Required by blueprint root '{drift_item['root']}'"
-                    })
+                    proposals.append(
+                        {
+                            "action": "CREATE_FOLDER",
+                            "target": str(target),
+                            "reason": f"Required by blueprint root '{drift_item['root']}'",
+                        }
+                    )
 
             elif drift_item["type"] == "orphaned_subfolders":
                 # Filesystem has unauthorized folders - ARCHIVE them
                 for folder in drift_item["folders"]:
                     source = self.project_root / drift_item["root"] / folder
-                    archive_target = self.project_root / self.ARCHIVE_ROOT / datetime.now().strftime("%Y%m%d") / drift_item["root"] / folder
-                    proposals.append({
-                        "action": "ARCHIVE_UNAUTHORIZED",
-                        "source": str(source),
-                        "target": str(archive_target),
-                        "reason": "Unauthorized folder not found in Gospel"
-                    })
+                    archive_target = (
+                        self.project_root
+                        / self.ARCHIVE_ROOT
+                        / datetime.now().strftime("%Y%m%d")
+                        / drift_item["root"]
+                        / folder
+                    )
+                    proposals.append(
+                        {
+                            "action": "ARCHIVE_UNAUTHORIZED",
+                            "source": str(source),
+                            "target": str(archive_target),
+                            "reason": "Unauthorized folder not found in Gospel",
+                        }
+                    )
 
         Logger.info(f"Generated {len(proposals)} filesystem alignment proposals")
         return proposals
@@ -594,16 +662,22 @@ class FilesystemSSOTReconcilerAgent(
                 target = Path(prop["target"])
                 if source.exists():
                     # SSOT COMPLIANCE: Archiving requires user approval
-                    if not self._prompt_user_for_archive_approval(source, target, prop.get("reason", "Unauthorized folder")):
+                    if not self._prompt_user_for_archive_approval(
+                        source, target, prop.get("reason", "Unauthorized folder")
+                    ):
                         applied_logs.append(f"SKIPPED: {prop['source']} (user declined)")
                         Logger.info(f"Skipped archive (user declined): {prop['source']}")
                         continue
 
                     target.parent.mkdir(parents=True, exist_ok=True)
-                    gk_result = self.gatekeeper.safe_move(source, target, self.agent_name, "Archive unauthorized folder")
+                    gk_result = self.gatekeeper.safe_move(
+                        source, target, self.agent_name, "Archive unauthorized folder"
+                    )
                     if gk_result.success:
                         applied_logs.append(f"ARCHIVED: {prop['source']} -> {prop['target']}")
-                        Logger.info(f"Archived unauthorized folder: {prop['source']} -> {prop['target']}")
+                        Logger.info(
+                            f"Archived unauthorized folder: {prop['source']} -> {prop['target']}"
+                        )
                     else:
                         applied_logs.append(f"FAILED: {prop['source']} - {gk_result.error}")
                         Logger.error(f"Failed to archive: {prop['source']} - {gk_result.error}")
@@ -620,13 +694,16 @@ class FilesystemSSOTReconcilerAgent(
             True if user approves, False otherwise
         """
         # Check for skip-all flag
-        if getattr(self, '_skip_all_archives', False):
+        if getattr(self, "_skip_all_archives", False):
             return False
 
         # Check if we're in a non-interactive environment
         import sys
+
         if not sys.stdin.isatty():
-            Logger.warning(f"[FilesystemSSOTReconcilerAgent] Non-interactive mode - skipping archive: {source}")
+            Logger.warning(
+                f"[FilesystemSSOTReconcilerAgent] Non-interactive mode - skipping archive: {source}"
+            )
             return False
 
         try:
@@ -636,19 +713,19 @@ class FilesystemSSOTReconcilerAgent(
             rel_source = source
             rel_target = target
 
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print("ARCHIVE APPROVAL REQUIRED")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
         print(f"Folder: {rel_source}")
         print(f"Target: {rel_target}")
         print(f"Reason: {reason}")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
 
         try:
             response = input("Approve archive? [y/n/s(kip all)]: ").strip().lower()
-            if response == 'y':
+            if response == "y":
                 return True
-            elif response == 's':
+            elif response == "s":
                 self._skip_all_archives = True
                 return False
             else:
@@ -677,7 +754,7 @@ class FilesystemSSOTReconcilerAgent(
         Logger.info(f"Applying {len(proposals)} proposals to blueprint...")
 
         # Load current content
-        content = self.blueprint_file.read_text(encoding='utf-8')
+        content = self.blueprint_file.read_text(encoding="utf-8")
 
         # Apply each proposal
         for proposal in proposals:
@@ -685,31 +762,20 @@ class FilesystemSSOTReconcilerAgent(
 
             if action == "add_to_sovereign_registry":
                 content = self._apply_sovereign_registry_update(
-                    content,
-                    proposal["root"],
-                    proposal["subfolders"]
+                    content, proposal["root"], proposal["subfolders"]
                 )
             elif action == "add_to_core_subfolder_map":
                 content = self._apply_core_map_update(
-                    content,
-                    proposal["l1_folder"],
-                    proposal["subfolders"]
+                    content, proposal["l1_folder"], proposal["subfolders"]
                 )
             elif action == "add_to_canon_signals":
-                content = self._apply_signals_update(
-                    content,
-                    proposal["signals"]
-                )
+                content = self._apply_signals_update(content, proposal["signals"])
 
             Logger.debug(f"Applied proposal: {action}")
 
         # Write back atomically
         with tempfile.NamedTemporaryFile(
-            mode='w',
-            encoding='utf-8',
-            dir=self.blueprint_file.parent,
-            delete=False,
-            suffix='.py'
+            mode="w", encoding="utf-8", dir=self.blueprint_file.parent, delete=False, suffix=".py"
         ) as tmp:
             tmp.write(content)
             tmp_path = tmp.name
@@ -734,13 +800,18 @@ class FilesystemSSOTReconcilerAgent(
                 # Insert extend call after this line
                 indent = "    "  # Match dict indentation
                 insert_line = f"{indent}# Auto-added by FilesystemSSOTReconcilerAgent\n"
-                insert_line += f"{indent}sovereign_registry['{root}']['subfolders'].extend({folders})\n"
+                insert_line += (
+                    f"{indent}sovereign_registry['{root}']['subfolders'].extend({folders})\n"
+                )
                 lines.insert(i + 1, insert_line)
                 return "".join(lines)
 
         # Fallback: append at end of file
         Logger.warning(f"Could not find exact insertion point for {root}, appending at end")
-        return content + f"\n# Auto-added by FilesystemSSOTReconcilerAgent\nsovereign_registry['{root}']['subfolders'].extend({folders})\n"
+        return (
+            content
+            + f"\n# Auto-added by FilesystemSSOTReconcilerAgent\nsovereign_registry['{root}']['subfolders'].extend({folders})\n"
+        )
 
     def _apply_core_map_update(self, content: str, l1_folder: str, folders: list[str]) -> str:
         """
@@ -765,7 +836,10 @@ class FilesystemSSOTReconcilerAgent(
 
         # Fallback: append at end
         Logger.warning(f"Could not find exact insertion point for {l1_folder}, appending at end")
-        return content + f"\n# Auto-added by FilesystemSSOTReconcilerAgent\ncore_subfolder_map['{l1_folder}'].extend({folders})\n"
+        return (
+            content
+            + f"\n# Auto-added by FilesystemSSOTReconcilerAgent\ncore_subfolder_map['{l1_folder}'].extend({folders})\n"
+        )
 
     def _apply_signals_update(self, content: str, signals: list[str]) -> str:
         """
@@ -791,7 +865,10 @@ class FilesystemSSOTReconcilerAgent(
 
         # Fallback: append at end
         Logger.warning("Could not find exact insertion point for CANON_SIGNALS, appending at end")
-        return content + f"\n# Auto-added by FilesystemSSOTReconcilerAgent\nCANON_SIGNALS.update({set(signals)})\n"
+        return (
+            content
+            + f"\n# Auto-added by FilesystemSSOTReconcilerAgent\nCANON_SIGNALS.update({set(signals)})\n"
+        )
 
     def _request_user_approval(self, proposals: list[dict[str, Any]]) -> bool:
         """
@@ -808,9 +885,9 @@ class FilesystemSSOTReconcilerAgent(
         Raises:
             KeyboardInterrupt: If user chooses to quit
         """
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("[BLUEPRINT RECONCILIATION] Drift detected - approval required")
-        print("="*80)
+        print("=" * 80)
         print(f"\n{len(proposals)} proposed change(s):\n")
 
         for i, proposal in enumerate(proposals, 1):
@@ -828,7 +905,7 @@ class FilesystemSSOTReconcilerAgent(
             print(f"     Add: {items}")
             print(f"     Code: {proposal['code_change']}\n")
 
-        print("="*80)
+        print("=" * 80)
 
         # Request approval with retry loop
         while True:
@@ -861,8 +938,8 @@ class FilesystemSSOTReconcilerAgent(
             True if syntax is valid, False otherwise
         """
         try:
-            content = self.blueprint_file.read_text(encoding='utf-8')
-            compile(content, str(self.blueprint_file), 'exec')
+            content = self.blueprint_file.read_text(encoding="utf-8")
+            compile(content, str(self.blueprint_file), "exec")
             Logger.info("Blueprint syntax validation passed")
             return True
         except SyntaxError as e:
@@ -921,15 +998,14 @@ class FilesystemSSOTReconcilerAgent(
 
         # Check if blueprint is valid Python
         try:
-            content = self.blueprint_file.read_text(encoding='utf-8')
-            compile(content, str(self.blueprint_file), 'exec')
+            content = self.blueprint_file.read_text(encoding="utf-8")
+            compile(content, str(self.blueprint_file), "exec")
         except Exception as e:
             issues.append(f"Blueprint syntax error: {e}")
 
-
-# ===================================================================
-# Mixin Implementations
-# ===================================================================
+    # ===================================================================
+    # Mixin Implementations
+    # ===================================================================
 
     async def _detect_action_opportunity(self) -> dict[str, Any] | None:
         """Proactively detect when blueprint needs reconciliation."""
@@ -939,7 +1015,9 @@ class FilesystemSSOTReconcilerAgent(
         """Minimal mode - health check only."""
         return await self.self_diagnose()
 
-    def post_heal_validation(self, affected_paths: list[Path], dry_run: bool = True) -> dict[str, Any]:
+    def post_heal_validation(
+        self, affected_paths: list[Path], dry_run: bool = True
+    ) -> dict[str, Any]:
         """
         GOLD STANDARD: Post-heal validation confirming blueprint sync.
         Verifies blueprint was successfully updated and syntax is valid.
@@ -981,7 +1059,9 @@ class FilesystemSSOTReconcilerAgent(
             else:
                 report["post_heal_status"] = "PARTIAL"
                 report["drift_remaining"] = remaining_drift
-                report["message"] = f"Blueprint partially synchronized - {len(remaining_drift)} drift items remain"
+                report["message"] = (
+                    f"Blueprint partially synchronized - {len(remaining_drift)} drift items remain"
+                )
 
             Logger.info(f"[FilesystemSSOTReconcilerAgent] {report['message']}")
 
@@ -993,10 +1073,7 @@ class FilesystemSSOTReconcilerAgent(
         return report
 
     def cleanup_violations(
-        self,
-        violations: list[ReconciliationViolation],
-        dry_run: bool = True,
-        max_actions: int = 50
+        self, violations: list[ReconciliationViolation], dry_run: bool = True, max_actions: int = 50
     ) -> list[dict[str, Any]]:
         """
         GOLD STANDARD: Cleanup reconciliation violations with blueprint updates.
@@ -1013,7 +1090,9 @@ class FilesystemSSOTReconcilerAgent(
 
         for i, violation in enumerate(violations):
             if i >= max_actions:
-                Logger.warning(f"[FilesystemSSOTReconcilerAgent] Cleanup budget exhausted ({max_actions})")
+                Logger.warning(
+                    f"[FilesystemSSOTReconcilerAgent] Cleanup budget exhausted ({max_actions})"
+                )
                 break
 
             action = {
@@ -1026,13 +1105,25 @@ class FilesystemSSOTReconcilerAgent(
 
             try:
                 if "MISSING_FOLDER" in violation.message.upper():
-                    action["action_taken"] = "PREVIEW: Would add folder to blueprint" if dry_run else "Folder added to blueprint"
+                    action["action_taken"] = (
+                        "PREVIEW: Would add folder to blueprint"
+                        if dry_run
+                        else "Folder added to blueprint"
+                    )
                     action["applied"] = not dry_run
                 elif "STALE_FOLDER" in violation.message.upper():
-                    action["action_taken"] = "PREVIEW: Would remove stale folder from blueprint" if dry_run else "Stale folder removed"
+                    action["action_taken"] = (
+                        "PREVIEW: Would remove stale folder from blueprint"
+                        if dry_run
+                        else "Stale folder removed"
+                    )
                     action["applied"] = not dry_run
                 elif "SIGNAL_DRIFT" in violation.message.upper():
-                    action["action_taken"] = "PREVIEW: Would update signals in blueprint" if dry_run else "Signals updated"
+                    action["action_taken"] = (
+                        "PREVIEW: Would update signals in blueprint"
+                        if dry_run
+                        else "Signals updated"
+                    )
                     action["applied"] = not dry_run
 
             except Exception as e:
@@ -1071,16 +1162,20 @@ class FilesystemSSOTReconcilerAgent(
 
         # Convert drift to violations
         for drift in drift_items:
-            all_violations.append(ReconciliationViolation(
-                is_valid=False,
-                message=drift.get("description", "Blueprint drift detected"),
-                drift_type=drift.get("type", "UNKNOWN"),
-                file_path=Path(drift.get("path", "")) if drift.get("path") else None,
-                suggested_action=drift.get("action", ""),
-                severity=drift.get("severity", 5)
-            ))
+            all_violations.append(
+                ReconciliationViolation(
+                    is_valid=False,
+                    message=drift.get("description", "Blueprint drift detected"),
+                    drift_type=drift.get("type", "UNKNOWN"),
+                    file_path=Path(drift.get("path", "")) if drift.get("path") else None,
+                    suggested_action=drift.get("action", ""),
+                    severity=drift.get("severity", 5),
+                )
+            )
 
-        cleanup_results = self.cleanup_violations(all_violations, dry_run=dry_run) if all_violations else []
+        cleanup_results = (
+            self.cleanup_violations(all_violations, dry_run=dry_run) if all_violations else []
+        )
         batch_summary = cleanup_results[0].get("batch_post_heal", {}) if cleanup_results else {}
 
         # Post-heal validation
@@ -1102,10 +1197,10 @@ class FilesystemSSOTReconcilerAgent(
 
     # Forbidden folders at root (they have SSOT locations elsewhere)
     FORBIDDEN_ROOT_FOLDERS = {
-        'scripts',       # SSOT: agentic_core/L0_maintenance/scripts/
-        'logs',          # SSOT: agentic_core/L0_maintenance/logs/
-        'coverage_html', # SSOT: reports/coverage_html/ or gitignored
-        'observability', # SSOT: agentic_core/L6_observability/
+        "scripts",  # SSOT: agentic_core/L0_maintenance/scripts/
+        "logs",  # SSOT: agentic_core/L0_maintenance/logs/
+        "coverage_html",  # SSOT: reports/coverage_html/ or gitignored
+        "observability",  # SSOT: agentic_core/L6_observability/
     }
 
     def detect_root_drift(self) -> dict[str, Any]:
@@ -1137,7 +1232,7 @@ class FilesystemSSOTReconcilerAgent(
                 Logger.warning(f"   [DRIFT] Forbidden root folder: {item.name}/")
 
         # 2. Check for .archived files at root
-        archive_patterns = ('.archived', '.backup', '.old')
+        archive_patterns = (".archived", ".backup", ".old")
         for item in self.project_root.iterdir():
             if item.is_file():
                 for pattern in archive_patterns:
@@ -1147,24 +1242,30 @@ class FilesystemSSOTReconcilerAgent(
                         break
 
         if drift["archived_files_at_root"]:
-            Logger.warning(f"   [DRIFT] {len(drift['archived_files_at_root'])} archived files at root")
+            Logger.warning(
+                f"   [DRIFT] {len(drift['archived_files_at_root'])} archived files at root"
+            )
 
         # 3. Check for duplicate folders
         ssot_locations = {
-            'scripts': self.project_root / 'agentic_core' / 'L0_maintenance' / 'scripts',
-            'logs': self.project_root / 'agentic_core' / 'L0_maintenance' / 'logs',
+            "scripts": self.project_root / "agentic_core" / "L0_maintenance" / "scripts",
+            "logs": self.project_root / "agentic_core" / "L0_maintenance" / "logs",
         }
 
         for folder_name, ssot_path in ssot_locations.items():
             root_path = self.project_root / folder_name
             if root_path.exists() and ssot_path.exists():
                 drift["root_drift_detected"] = True
-                drift["duplicate_folders"].append({
-                    "name": folder_name,
-                    "root_path": str(root_path),
-                    "ssot_path": str(ssot_path),
-                })
-                Logger.warning(f"   [DRIFT] Duplicate folder: {folder_name}/ at root AND SSOT location")
+                drift["duplicate_folders"].append(
+                    {
+                        "name": folder_name,
+                        "root_path": str(root_path),
+                        "ssot_path": str(ssot_path),
+                    }
+                )
+                Logger.warning(
+                    f"   [DRIFT] Duplicate folder: {folder_name}/ at root AND SSOT location"
+                )
 
         return drift
 
@@ -1173,7 +1274,14 @@ class FilesystemSSOTReconcilerAgent(
         return self.detect_root_drift()
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L0 maintenance agent - operational only."""
         if _call_path is None:
             _call_path = set()
@@ -1186,7 +1294,13 @@ class FilesystemSSOTReconcilerAgent(
         try:
             print(f"[{agent_name}] L0 maintenance - operational only")
             # Proper super() chain invocation
-            super().heal_repository(dry_run=dry_run, execute=execute, depth=depth+1, max_depth=max_depth, _call_path=_call_path)
+            super().heal_repository(
+                dry_run=dry_run,
+                execute=execute,
+                depth=depth + 1,
+                max_depth=max_depth,
+                _call_path=_call_path,
+            )
             return {"skipped": 1}
         finally:
             _call_path.discard(agent_name)

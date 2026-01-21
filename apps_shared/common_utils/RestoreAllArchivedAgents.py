@@ -14,6 +14,7 @@ Usage:
     python scripts/restore_all_archived_agents.py --dry-run
     python scripts/restore_all_archived_agents.py
 """
+
 from __future__ import annotations
 
 import argparse
@@ -64,7 +65,9 @@ def infer_target_directory(agent_name: str, source_path: str) -> str | None:
         return TARGETS["L3"]
 
     # L5 Safety/Validation agents
-    if any(x in name_lower for x in ["validator", "enforcer", "guard", "safety", "canon", "hygiene"]):
+    if any(
+        x in name_lower for x in ["validator", "enforcer", "guard", "safety", "canon", "hygiene"]
+    ):
         return TARGETS["L5"]
 
     # L6 Observability agents
@@ -107,8 +110,8 @@ def restore_agent(source: Path, target: Path, dry_run: bool = False) -> tuple[bo
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Restore all incorrectly archived agents')
-    parser.add_argument('--dry-run', action='store_true', help='Show what would be done')
+    parser = argparse.ArgumentParser(description="Restore all incorrectly archived agents")
+    parser.add_argument("--dry-run", action="store_true", help="Show what would be done")
     args = parser.parse_args()
 
     print("=" * 80)

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import argparse
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
 import ast
 import hashlib
@@ -14,12 +14,13 @@ from collections import defaultdict
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 Logger = logging.getLogger(__name__)
 
+
 def aggressive_cleanup():
     """More aggressive cleanup targeting additional patterns"""
     purged_count = 0
 
     # Remove all test_repo directories
-    for item in os.listdir('.'):
+    for item in os.listdir("."):
         if os.path.isdir(item) and item.startswith("test_repo"):
             try:
                 shutil.rmtree(item)
@@ -36,19 +37,20 @@ def aggressive_cleanup():
     from pathlib import Path
 
     from agentic_core.utils.ssot_discovery import get_python_files
-    search_path = Path(pattern.split('**')[0] if '**' in pattern else '.')
+
+    search_path = Path(pattern.split("**")[0] if "**" in pattern else ".")
     for file in [str(f) for f in get_python_files(search_path)]:
-            try:
-                os.remove(file)
-                Logger.info(f"🗑️ Purged temp file: {file}")
-                purged_count += 1
-            except Exception as e:
-                Logger.error(f"❌ Failed to delete {file}: {e}")
+        try:
+            os.remove(file)
+            Logger.info(f"🗑️ Purged temp file: {file}")
+            purged_count += 1
+        except Exception as e:
+            Logger.error(f"❌ Failed to delete {file}: {e}")
 
     # Remove __pycache__ directories
-    for root, dirs, files in os.walk('.'):
-        if '__pycache__' in dirs:
-            pycache_path = os.path.join(root, '__pycache__')
+    for root, dirs, files in os.walk("."):
+        if "__pycache__" in dirs:
+            pycache_path = os.path.join(root, "__pycache__")
             try:
                 shutil.rmtree(pycache_path)
                 Logger.info(f"🗑️ PURGED DIRECTORY: {pycache_path}")
@@ -57,6 +59,7 @@ def aggressive_cleanup():
                 Logger.error(f"❌ Failed to delete directory {pycache_path}: {e}")
 
     return purged_count
+
 
 def organize_structure():
     """Reorganize files into proper engine directories"""
@@ -76,13 +79,13 @@ def organize_structure():
         "resume": "resume_engine",
         "outreach": "outreach_engine",
         "canon": "CanonValidatorAgent",
-        "validator": "CanonValidatorAgent"
+        "validator": "CanonValidatorAgent",
     }
 
     moved_count = 0
-    for root, dirs, files in os.walk('/app'):
+    for root, dirs, files in os.walk("/app"):
         for file in files:
-            if file.endswith('.py'):
+            if file.endswith(".py"):
                 file_path = os.path.join(root, file)
                 file_lower = file.lower()
 
@@ -93,7 +96,7 @@ def organize_structure():
                         target_dir = directory
                         break
 
-                if target_dir and not file.startswith('__'):
+                if target_dir and not file.startswith("__"):
                     target_path = os.path.join(engines_dir, target_dir, file)
                     try:
                         # Avoid overwriting existing files
@@ -107,18 +110,20 @@ def organize_structure():
     Logger.info(f"\n✨ Reorganization complete. Moved {moved_count} files.")
     return moved_count
 
+
 def get_file_hash(filepath):
     """Calculate hash of file content for deduplication"""
     try:
-        with open(filepath, 'rb') as f:
+        with open(filepath, "rb") as f:
             return hashlib.md5(f.read()).hexdigest()
     except Exception:
         return None
 
+
 def extract_functions(filepath):
     """Extract function definitions from a Python file"""
     try:
-        with open(filepath, encoding='utf-8') as f:
+        with open(filepath, encoding="utf-8") as f:
             content = f.read()
 
         tree = ast.parse(content)
@@ -128,19 +133,22 @@ def extract_functions(filepath):
             if isinstance(node, ast.FunctionDef):
                 # Get function source
                 start_line = node.lineno - 1
-                end_line = node.end_lineno if hasattr(node, 'end_lineno') else start_line + 1
-                lines = content.split('\n')[start_line:end_line]
-                func_code = '\n'.join(lines)
-                functions.append({
-                    'name': node.name,
-                    'code': func_code,
-                    'hash': hashlib.md5(func_code.encode()).hexdigest()
-                })
+                end_line = node.end_lineno if hasattr(node, "end_lineno") else start_line + 1
+                lines = content.split("\n")[start_line:end_line]
+                func_code = "\n".join(lines)
+                functions.append(
+                    {
+                        "name": node.name,
+                        "code": func_code,
+                        "hash": hashlib.md5(func_code.encode()).hexdigest(),
+                    }
+                )
 
         return functions
     except Exception as e:
         Logger.error(f"❌ Failed to parse {filepath}: {e}")
         return []
+
 
 def merge_validator_logic(silos, exclude_dirs, merge_to):
     """Merge duplicate validator logic across silos into a single file"""
@@ -155,7 +163,7 @@ def merge_validator_logic(silos, exclude_dirs, merge_to):
                 # Skip excluded directories
                 dirs[:] = [d for d in dirs if d not in exclude_dirs]
                 for file in files:
-                    if file.endswith('.py') and not file.startswith('__'):
+                    if file.endswith(".py") and not file.startswith("__"):
                         filepath = os.path.join(root, file)
                         all_files.append(filepath)
 
@@ -165,14 +173,12 @@ def merge_validator_logic(silos, exclude_dirs, merge_to):
     for filepath in all_files:
         functions = extract_functions(filepath)
         for func in functions:
-            if func['name'] not in ['validate', 'check', 'verify', 'is_valid']:
+            if func["name"] not in ["validate", "check", "verify", "is_valid"]:
                 continue  # Focus on validation functions
 
-            function_map[func['name']].append({
-                'hash': func['hash'],
-                'code': func['code'],
-                'file': filepath
-            })
+            function_map[func["name"]].append(
+                {"hash": func["hash"], "code": func["code"], "file": filepath}
+            )
 
     # Create merged file
     merged_content = '''#!/usr/bin/env python3
@@ -265,14 +271,14 @@ def is_excluded(path: str) -> bool:
         if func_list:
             # Use the first occurrence of each unique function
             func_data = func_list[0]
-            if func_data['hash'] not in added_functions:
+            if func_data["hash"] not in added_functions:
                 merged_content += f"\n# Function: {func_name} (from {func_data['file']})\n"
-                merged_content += func_data['code'] + "\n\n"
-                added_functions.add(func_data['hash'])
+                merged_content += func_data["code"] + "\n\n"
+                added_functions.add(func_data["hash"])
 
     # Write merged file
     os.makedirs(os.path.dirname(merge_to), exist_ok=True)
-    with open(merge_to, 'w', encoding='utf-8') as f:
+    with open(merge_to, "w", encoding="utf-8") as f:
         f.write(merged_content)
 
     Logger.info(f"✅ Merged validator logic to {merge_to}")
@@ -281,8 +287,10 @@ def is_excluded(path: str) -> bool:
 
     return len(added_functions)
 
-def purge_everything(aggressive=False, organize=False, merge_logic=False,
-                     merge_to=None, silos=None, exclude=None):
+
+def purge_everything(
+    aggressive=False, organize=False, merge_logic=False, merge_to=None, silos=None, exclude=None
+):
     """
     Brief description of functionality and purpose.
 
@@ -298,7 +306,7 @@ def purge_everything(aggressive=False, organize=False, merge_logic=False,
     purged_count = 0
 
     # 1. Target runaway directories identified in your logs
-    for item in os.listdir('.'):
+    for item in os.listdir("."):
         if os.path.isdir(item) and item.startswith("test_repo_1765"):
             try:
                 shutil.rmtree(item)
@@ -308,7 +316,7 @@ def purge_everything(aggressive=False, organize=False, merge_logic=False,
                 Logger.error(f"❌ Failed to delete directory {item}: {e}")
 
     # 2. Target individual "clean" file clones and reports
-    for root, dirs, files in os.walk('.'):
+    for root, dirs, files in os.walk("."):
         for file in files:
             file_path = os.path.join(root, file)
             if "_clean.py" in file or file == "test_report.html":
@@ -334,20 +342,27 @@ def purge_everything(aggressive=False, organize=False, merge_logic=False,
         merged_count = merge_validator_logic(silos, exclude or [], merge_to)
         Logger.info(f"\n🔀 Merge Complete. {merged_count} functions merged.")
 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Clean duplicates and organize code structure")
     parser.add_argument("--aggressive", action="store_true", help="Perform aggressive cleanup")
-    parser.add_argument("--organize", action="store_true", help="Organize files into engine directories")
-    parser.add_argument("--merge-logic", action="store_true", help="Merge duplicate validator logic")
+    parser.add_argument(
+        "--organize", action="store_true", help="Organize files into engine directories"
+    )
+    parser.add_argument(
+        "--merge-logic", action="store_true", help="Merge duplicate validator logic"
+    )
     parser.add_argument("--merge-to", type=str, help="Target file for merged validator logic")
     parser.add_argument("--silos", type=str, help="Comma-separated list of silos to process")
-    parser.add_argument("--exclude", type=str, help="Comma-separated list of directories to exclude")
+    parser.add_argument(
+        "--exclude", type=str, help="Comma-separated list of directories to exclude"
+    )
 
     args = parser.parse_args()
 
     # Parse silos and exclude lists
-    silos = args.silos.split(',') if args.silos else []
-    exclude = args.exclude.split(',') if args.exclude else []
+    silos = args.silos.split(",") if args.silos else []
+    exclude = args.exclude.split(",") if args.exclude else []
 
     purge_everything(
         aggressive=args.aggressive,
@@ -355,5 +370,5 @@ if __name__ == "__main__":
         merge_logic=args.merge_logic,
         merge_to=args.merge_to,
         silos=silos,
-        exclude=exclude
+        exclude=exclude,
     )

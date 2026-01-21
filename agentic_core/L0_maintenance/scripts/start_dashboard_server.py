@@ -18,9 +18,11 @@ PORT = 8000
 # Global process reference for signal handlers
 server_process = None
 
+
 def is_port_in_use(port: int) -> bool:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        return s.connect_ex(('127.0.0.1', port)) == 0
+        return s.connect_ex(("127.0.0.1", port)) == 0
+
 
 def signal_handler(signum, frame):
     """Handle shutdown signals gracefully."""
@@ -33,8 +35,9 @@ def signal_handler(signum, frame):
     print("✅ Server stopped gracefully.")
     sys.exit(0)
 
+
 # Register signal handlers
-signal.signal(signal.SIGINT, signal_handler)   # Ctrl+C
+signal.signal(signal.SIGINT, signal_handler)  # Ctrl+C
 signal.signal(signal.SIGTERM, signal_handler)  # Termination signal
 
 if is_port_in_use(PORT):

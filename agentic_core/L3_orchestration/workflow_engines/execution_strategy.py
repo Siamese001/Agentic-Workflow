@@ -20,6 +20,7 @@ from typing import Any
 
 class ExecutionStatus(Enum):
     """Workflow execution status."""
+
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"
@@ -31,6 +32,7 @@ class ExecutionStatus(Enum):
 @dataclass
 class WorkflowContext:
     """Context for workflow execution."""
+
     workflow_id: str
     workflow_type: str
     input_data: dict[str, Any]
@@ -42,6 +44,7 @@ class WorkflowContext:
 @dataclass
 class WorkflowResult:
     """Result of workflow execution."""
+
     workflow_id: str
     status: ExecutionStatus
     output: Any = None
@@ -53,6 +56,7 @@ class WorkflowResult:
 @dataclass
 class WorkflowStep:
     """Single step in workflow execution."""
+
     step_id: str
     name: str
     handler: Callable
@@ -100,7 +104,8 @@ class DAGStrategy(ExecutionStrategy):
         while len(completed) < len(steps):
             # Find ready steps (all dependencies completed)
             ready = [
-                step for step in steps
+                step
+                for step in steps
                 if step.step_id not in completed
                 and all(dep in completed for dep in step.dependencies)
             ]
@@ -111,7 +116,7 @@ class DAGStrategy(ExecutionStrategy):
                     workflow_id=context.workflow_id,
                     status=ExecutionStatus.FAILED,
                     error="Circular dependency detected",
-                    steps_executed=steps_executed
+                    steps_executed=steps_executed,
                 )
 
             # Execute ready steps in parallel
@@ -131,23 +136,24 @@ class DAGStrategy(ExecutionStrategy):
                         workflow_id=context.workflow_id,
                         status=ExecutionStatus.FAILED,
                         error=f"Step {step_id} failed: {str(e)}",
-                        steps_executed=steps_executed
+                        steps_executed=steps_executed,
                     )
 
         return WorkflowResult(
             workflow_id=context.workflow_id,
             status=ExecutionStatus.COMPLETED,
             output=results,
-            steps_executed=steps_executed
+            steps_executed=steps_executed,
         )
 
-    async def _execute_step(self, step: WorkflowStep, context: WorkflowContext, results: dict) -> Any:
+    async def _execute_step(
+        self, step: WorkflowStep, context: WorkflowContext, results: dict
+    ) -> Any:
         """Execute single step."""
         try:
             if asyncio.iscoroutinefunction(step.handler):
                 return await asyncio.wait_for(
-                    step.handler(context, results),
-                    timeout=step.timeout_seconds
+                    step.handler(context, results), timeout=step.timeout_seconds
                 )
             else:
                 return await asyncio.to_thread(step.handler, context, results)
@@ -184,7 +190,7 @@ class StateMachineStrategy(ExecutionStrategy):
                     workflow_id=context.workflow_id,
                     status=ExecutionStatus.COMPLETED,
                     output=results,
-                    steps_executed=steps_executed
+                    steps_executed=steps_executed,
                 )
 
             # Get current step
@@ -218,17 +224,19 @@ class StateMachineStrategy(ExecutionStrategy):
                     workflow_id=context.workflow_id,
                     status=ExecutionStatus.FAILED,
                     error=f"State {current_state} failed: {str(e)}",
-                    steps_executed=steps_executed
+                    steps_executed=steps_executed,
                 )
 
         return WorkflowResult(
             workflow_id=context.workflow_id,
             status=ExecutionStatus.COMPLETED,
             output=results,
-            steps_executed=steps_executed
+            steps_executed=steps_executed,
         )
 
-    async def _execute_step(self, step: WorkflowStep, context: WorkflowContext, results: dict) -> Any:
+    async def _execute_step(
+        self, step: WorkflowStep, context: WorkflowContext, results: dict
+    ) -> Any:
         """Execute single state."""
         if asyncio.iscoroutinefunction(step.handler):
             return await step.handler(context, results)
@@ -295,17 +303,19 @@ class EventDrivenStrategy(ExecutionStrategy):
                     workflow_id=context.workflow_id,
                     status=ExecutionStatus.FAILED,
                     error=f"Event {event} failed: {str(e)}",
-                    steps_executed=steps_executed
+                    steps_executed=steps_executed,
                 )
 
         return WorkflowResult(
             workflow_id=context.workflow_id,
             status=ExecutionStatus.COMPLETED,
             output=results,
-            steps_executed=steps_executed
+            steps_executed=steps_executed,
         )
 
-    async def _execute_step(self, step: WorkflowStep, context: WorkflowContext, results: dict) -> Any:
+    async def _execute_step(
+        self, step: WorkflowStep, context: WorkflowContext, results: dict
+    ) -> Any:
         """Execute step as event handler."""
         if asyncio.iscoroutinefunction(step.handler):
             return await step.handler(context, results)
@@ -347,7 +357,7 @@ class ReactiveStrategy(ExecutionStrategy):
                     workflow_id=context.workflow_id,
                     status=ExecutionStatus.FAILED,
                     error=f"Stream step {step.step_id} failed: {str(e)}",
-                    steps_executed=steps_executed
+                    steps_executed=steps_executed,
                 )
 
         return WorkflowResult(
@@ -355,7 +365,7 @@ class ReactiveStrategy(ExecutionStrategy):
             status=ExecutionStatus.COMPLETED,
             output=current_value,
             metrics={"all_results": results},
-            steps_executed=steps_executed
+            steps_executed=steps_executed,
         )
 
     async def _execute_step(self, step: WorkflowStep, context: WorkflowContext, value: Any) -> Any:

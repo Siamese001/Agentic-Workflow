@@ -13,6 +13,7 @@ Tests:
 6. test_naming_law_compliance - Force-rename non-compliant classes
 7. test_gravity_import_block - Reject layer hierarchy violations
 """
+
 from __future__ import annotations
 
 import concurrent.futures
@@ -54,9 +55,7 @@ class TestResourceConcurrency(unittest.TestCase):
         with concurrent.futures.ThreadPoolExecutor(max_workers=15) as executor:
             futures = []
             for i in range(15):
-                futures.append(
-                    executor.submit(request_budget, f"agent_{i}", 50.0)
-                )
+                futures.append(executor.submit(request_budget, f"agent_{i}", 50.0))
             concurrent.futures.wait(futures)
 
         # Verify no errors
@@ -70,9 +69,7 @@ class TestResourceConcurrency(unittest.TestCase):
 
         # With 1000 total and 15 requests of 50 each (750 needed),
         # all should be allocated
-        allocated_count = sum(
-            1 for _, r in results if r.status == AllocationStatus.ALLOCATED
-        )
+        allocated_count = sum(1 for _, r in results if r.status == AllocationStatus.ALLOCATED)
         self.assertGreater(allocated_count, 0, "Some allocations should succeed")
 
         # Verify no race conditions (used + available = total)
@@ -188,6 +185,7 @@ class TestEnforcerSSOTSync(unittest.TestCase):
 
             # Verify update persisted
             import json
+
             updated = json.loads(ssot_path.read_text(encoding="utf-8"))
             self.assertEqual(updated["count"], 10, "SSOT must be immediately updated")
             self.assertTrue(updated["updated"], "New fields must be added")
@@ -263,26 +261,22 @@ class TestNamingLawCompliance(unittest.TestCase):
             # Validate - should find naming violation
             violations = enforcer.validate_file(bad_file)
             naming_violations = [
-                v for v in violations
-                if v.violation_type == StructureViolationType.NAMING
+                v for v in violations if v.violation_type == StructureViolationType.NAMING
             ]
             self.assertGreater(
-                len(naming_violations), 0,
+                len(naming_violations),
+                0,
                 "Should detect naming violation",
             )
             self.assertIn("Agent", naming_violations[0].suggested_fix)
 
             # Force rename (dry run)
-            result = enforcer.force_rename_class(
-                bad_file, "BadName", "BadNameAgent", dry_run=True
-            )
+            result = enforcer.force_rename_class(bad_file, "BadName", "BadNameAgent", dry_run=True)
             self.assertIn("new_name", result)
             self.assertEqual(result["new_name"], "BadNameAgent")
 
             # Force rename (actual)
-            result = enforcer.force_rename_class(
-                bad_file, "BadName", "BadNameAgent", dry_run=False
-            )
+            result = enforcer.force_rename_class(bad_file, "BadName", "BadNameAgent", dry_run=False)
             self.assertTrue(result["applied"], "Rename should be applied")
 
             # Verify file was updated
@@ -331,8 +325,8 @@ class TestGravityImportBlock(unittest.TestCase):
             # Create file with bad import
             bad_file = l2_dir / "BadImportAgent.py"
             bad_file.write_text(
-                'from agentic_core.L5_safety.validators import SomeValidator\n'
-                'class BadImportAgent:\n    pass\n',
+                "from agentic_core.L5_safety.validators import SomeValidator\n"
+                "class BadImportAgent:\n    pass\n",
                 encoding="utf-8",
             )
 
@@ -340,11 +334,11 @@ class TestGravityImportBlock(unittest.TestCase):
             violations = enforcer2.validate_file(bad_file)
 
             gravity_violations = [
-                v for v in violations
-                if v.violation_type == StructureViolationType.GRAVITY
+                v for v in violations if v.violation_type == StructureViolationType.GRAVITY
             ]
             self.assertGreater(
-                len(gravity_violations), 0,
+                len(gravity_violations),
+                0,
                 "Should detect gravity violation in imports",
             )
 

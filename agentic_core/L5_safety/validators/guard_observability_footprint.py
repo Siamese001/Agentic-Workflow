@@ -58,15 +58,18 @@ def check_dark_reasoning(filepath: Path) -> list[str]:
             # Check if line contains reasoning signal
             if any(sig in line.lower() for sig in reasoning_signals):
                 # Scan the next 10 lines for a corresponding log entry
-                ContextWindow = "\n".join(lines[i:min(i+10, len(lines))])
+                ContextWindow = "\n".join(lines[i : min(i + 10, len(lines))])
                 if not any(log_sig in ContextWindow for log_sig in log_signals):
-                    issues.append(f"Potential Dark Reasoning at line {i+1}: Action without L6 footprint")
+                    issues.append(
+                        f"Potential Dark Reasoning at line {i + 1}: Action without L6 footprint"
+                    )
 
     except Exception:
         # Silently skip files that can't be read
         pass
 
     return issues
+
 
 def validate_observability_footprint(target_dir: str) -> tuple[float, list[str]]:
     """
@@ -82,6 +85,7 @@ def validate_observability_footprint(target_dir: str) -> tuple[float, list[str]]
     total_files = 0
 
     from agentic_core.utils.ssot_discovery import get_python_files
+
     for path in get_python_files(Path(target_dir)):
         if TESTS_DIR in str(path) or "__pycache__" in str(path):
             continue

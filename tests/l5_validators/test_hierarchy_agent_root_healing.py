@@ -17,13 +17,14 @@ Tests the HierarchyAgent's ability to heal root directory SSOT violations:
 
 Run: python scripts/test_hierarchy_agent_root_healing.py
 """
+
 import os
 import sys
 
 if sys.platform.startswith("win"):
     os.system("chcp 65001 >nul 2>&1")
-    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
-    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 import shutil
 import tempfile
@@ -38,6 +39,7 @@ sys.path.insert(0, str(project_root))
 # ============================================================================
 # TEST FIXTURES
 # ============================================================================
+
 
 def create_test_environment() -> Path:
     """Create a temporary test environment with SSOT violations."""
@@ -90,16 +92,17 @@ def cleanup_test_environment(temp_dir: Path) -> None:
 # TEST FUNCTIONS
 # ============================================================================
 
+
 def test_1_hierarchy_agent_has_root_healing_methods() -> tuple[bool, str]:
     """Test 1: Verify HierarchyAgent has required root healing methods."""
     try:
         from agentic_core.L5_safety.guardrails.HierarchyAgent import HierarchyAgent
 
         required_methods = [
-            'scan_root_violations',
-            'heal_root_violations',
-            '_merge_root_folder_to_ssot',
-            '_handle_coverage_html',
+            "scan_root_violations",
+            "heal_root_violations",
+            "_merge_root_folder_to_ssot",
+            "_handle_coverage_html",
         ]
 
         missing = []
@@ -121,11 +124,11 @@ def test_2_hierarchy_agent_has_ssot_targets() -> tuple[bool, str]:
     try:
         from agentic_core.L5_safety.guardrails.HierarchyAgent import HierarchyAgent
 
-        if not hasattr(HierarchyAgent, 'ROOT_FOLDER_SSOT_TARGETS'):
+        if not hasattr(HierarchyAgent, "ROOT_FOLDER_SSOT_TARGETS"):
             return False, "Missing ROOT_FOLDER_SSOT_TARGETS attribute"
 
         targets = HierarchyAgent.ROOT_FOLDER_SSOT_TARGETS
-        required_keys = {'scripts', 'logs', 'coverage_html'}
+        required_keys = {"scripts", "logs", "coverage_html"}
 
         missing = required_keys - set(targets.keys())
         if missing:
@@ -173,7 +176,7 @@ def test_4_scan_root_violations_detects_forbidden_folders() -> tuple[bool, str]:
         results = agent.scan_root_violations()
 
         forbidden = set(results.get("forbidden_folders", []))
-        expected = {'scripts', 'logs', 'coverage_html'}
+        expected = {"scripts", "logs", "coverage_html"}
 
         missing = expected - forbidden
         if missing:
@@ -198,14 +201,14 @@ def test_5_heal_root_violations_moves_archived_files() -> tuple[bool, str]:
         agent = HierarchyAgent(temp_dir, healing_enabled=True)
 
         # Count archived files before
-        archived_before = [f for f in temp_dir.iterdir() if f.suffix in ['.archived', '.backup']]
+        archived_before = [f for f in temp_dir.iterdir() if f.suffix in [".archived", ".backup"]]
         count_before = len(archived_before)
 
         # Heal
         results = agent.heal_root_violations(dry_run=False)
 
         # Count archived files after
-        archived_after = [f for f in temp_dir.iterdir() if f.suffix in ['.archived', '.backup']]
+        archived_after = [f for f in temp_dir.iterdir() if f.suffix in [".archived", ".backup"]]
         count_after = len(archived_after)
 
         # Check archives folder
@@ -218,7 +221,10 @@ def test_5_heal_root_violations_moves_archived_files() -> tuple[bool, str]:
         if len(moved_files) < count_before:
             return False, f"Only {len(moved_files)} files in archives (expected {count_before})"
 
-        return True, f"Moved {results['archived_files_moved']} archived files to archives/root_archived/"
+        return (
+            True,
+            f"Moved {results['archived_files_moved']} archived files to archives/root_archived/",
+        )
 
     except Exception as e:
         return False, f"Error: {e}"
@@ -310,8 +316,8 @@ def test_8_heal_root_violations_handles_coverage_html() -> tuple[bool, str]:
         if not gitignore_path.exists():
             return False, ".gitignore not found"
 
-        content = gitignore_path.read_text(encoding='utf-8')
-        if 'coverage_html' not in content:
+        content = gitignore_path.read_text(encoding="utf-8")
+        if "coverage_html" not in content:
             return False, "coverage_html/ not added to .gitignore"
 
         if not results["coverage_handled"]:
@@ -336,7 +342,7 @@ def test_9_heal_root_violations_dry_run_no_changes() -> tuple[bool, str]:
         agent = HierarchyAgent(temp_dir, healing_enabled=False)
 
         # Count files before
-        archived_before = len([f for f in temp_dir.iterdir() if f.suffix == '.archived'])
+        archived_before = len([f for f in temp_dir.iterdir() if f.suffix == ".archived"])
         scripts_before = (temp_dir / "scripts").exists()
         logs_before = (temp_dir / "logs").exists()
 
@@ -344,7 +350,7 @@ def test_9_heal_root_violations_dry_run_no_changes() -> tuple[bool, str]:
         results = agent.heal_root_violations(dry_run=True)
 
         # Count files after
-        archived_after = len([f for f in temp_dir.iterdir() if f.suffix == '.archived'])
+        archived_after = len([f for f in temp_dir.iterdir() if f.suffix == ".archived"])
         scripts_after = (temp_dir / "scripts").exists()
         logs_after = (temp_dir / "logs").exists()
 
@@ -458,7 +464,9 @@ def test_12_heal_removes_empty_folders() -> tuple[bool, str]:
             pass
         elif folders_removed == 0 and scripts_exists and logs_exists:
             # Check if they're empty
-            scripts_files = get_python_files(temp_dir / "scripts") if (temp_dir / "scripts").exists() else []
+            scripts_files = (
+                get_python_files(temp_dir / "scripts") if (temp_dir / "scripts").exists() else []
+            )
             logs_files = get_files(temp_dir / "logs") if (temp_dir / "logs").exists() else []
             if scripts_files or logs_files:
                 return False, "Folders not removed and still contain files"
@@ -476,19 +484,44 @@ def test_12_heal_removes_empty_folders() -> tuple[bool, str]:
 # TEST RUNNER
 # ============================================================================
 
+
 def run_all_tests() -> dict[str, Any]:
     """Run all tests and return results."""
     tests = [
-        ("Test 1: HierarchyAgent has root healing methods", test_1_hierarchy_agent_has_root_healing_methods),
-        ("Test 2: HierarchyAgent has SSOT targets mapping", test_2_hierarchy_agent_has_ssot_targets),
-        ("Test 3: scan_root_violations detects archived files", test_3_scan_root_violations_detects_archived_files),
-        ("Test 4: scan_root_violations detects forbidden folders", test_4_scan_root_violations_detects_forbidden_folders),
-        ("Test 5: heal_root_violations moves archived files", test_5_heal_root_violations_moves_archived_files),
-        ("Test 6: heal_root_violations merges scripts/", test_6_heal_root_violations_merges_scripts),
+        (
+            "Test 1: HierarchyAgent has root healing methods",
+            test_1_hierarchy_agent_has_root_healing_methods,
+        ),
+        (
+            "Test 2: HierarchyAgent has SSOT targets mapping",
+            test_2_hierarchy_agent_has_ssot_targets,
+        ),
+        (
+            "Test 3: scan_root_violations detects archived files",
+            test_3_scan_root_violations_detects_archived_files,
+        ),
+        (
+            "Test 4: scan_root_violations detects forbidden folders",
+            test_4_scan_root_violations_detects_forbidden_folders,
+        ),
+        (
+            "Test 5: heal_root_violations moves archived files",
+            test_5_heal_root_violations_moves_archived_files,
+        ),
+        (
+            "Test 6: heal_root_violations merges scripts/",
+            test_6_heal_root_violations_merges_scripts,
+        ),
         ("Test 7: heal_root_violations merges logs/", test_7_heal_root_violations_merges_logs),
-        ("Test 8: heal_root_violations handles coverage_html/", test_8_heal_root_violations_handles_coverage_html),
+        (
+            "Test 8: heal_root_violations handles coverage_html/",
+            test_8_heal_root_violations_handles_coverage_html,
+        ),
         ("Test 9: dry_run=True makes no changes", test_9_heal_root_violations_dry_run_no_changes),
-        ("Test 10: heal_repository includes root healing", test_10_heal_repository_includes_root_healing),
+        (
+            "Test 10: heal_repository includes root healing",
+            test_10_heal_repository_includes_root_healing,
+        ),
         ("Test 11: merge skips existing files", test_11_merge_handles_existing_files),
         ("Test 12: healing removes empty folders", test_12_heal_removes_empty_folders),
     ]
@@ -515,22 +548,26 @@ def run_all_tests() -> dict[str, Any]:
             else:
                 results["failed"] += 1
 
-            results["details"].append({
-                "name": name,
-                "passed": passed,
-                "message": message,
-            })
+            results["details"].append(
+                {
+                    "name": name,
+                    "passed": passed,
+                    "message": message,
+                }
+            )
 
             print(f"\n{icon} {name}")
             print(f"   {message}")
 
         except Exception as e:
             results["failed"] += 1
-            results["details"].append({
-                "name": name,
-                "passed": False,
-                "message": f"ERROR: {e}",
-            })
+            results["details"].append(
+                {
+                    "name": name,
+                    "passed": False,
+                    "message": f"ERROR: {e}",
+                }
+            )
             print(f"\n❌ {name}")
             print(f"   ERROR: {e}")
 

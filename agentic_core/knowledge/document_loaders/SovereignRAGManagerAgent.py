@@ -8,7 +8,6 @@ Restored: 2026-01-13 | Version: 2.1.0 (Modernized)
 # Suggested keywords to add in docstring/code: engine, guardrail, prompt, state, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-
 import logging
 from pathlib import Path
 from typing import Any
@@ -33,18 +32,21 @@ class SovereignRAGManager(MCPHardenedMixin, HealerMixin):
         # Best-effort dependency init (must not crash core agents)
         try:
             from agentic_core.semantic_memory.embeddings.gemini_embedder import GeminiEmbedder
+
             self.embedder = GeminiEmbedder()
         except Exception as e:
             self.logger.warning(f"GeminiEmbedder unavailable: {e}")
 
         try:
             from agentic_core.semantic_memory.store.pinecone_store import PineconeVectorStore
+
             self.vector_store = PineconeVectorStore()
         except Exception as e:
             self.logger.warning(f"PineconeVectorStore unavailable: {e}")
 
         try:
             from agentic_core.semantic_memory.store.bm25_store import get_bm25_store
+
             self.bm25_store = get_bm25_store()
         except Exception as e:
             self.logger.warning(f"Bm25Store unavailable: {e}")
@@ -85,7 +87,10 @@ class SovereignRAGManager(MCPHardenedMixin, HealerMixin):
         if self.bm25_store:
             try:
                 self.bm25_store.add_documents(
-                    [{"id": f"{doc_id}_chunk_{i}", "text": chunk, "metadata": {"doc_id": doc_id}} for i, chunk in enumerate(chunks)]
+                    [
+                        {"id": f"{doc_id}_chunk_{i}", "text": chunk, "metadata": {"doc_id": doc_id}}
+                        for i, chunk in enumerate(chunks)
+                    ]
                 )
             except Exception as e:
                 self.logger.warning(f"BM25 indexing failed: {e}")
@@ -144,7 +149,9 @@ class SovereignRAGManager(MCPHardenedMixin, HealerMixin):
         combined = self._fuse_results(vector_results, bm25_results)
         return combined[:top_k]
 
-    def _fuse_results(self, vector: list[dict[str, Any]], bm25: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    def _fuse_results(
+        self, vector: list[dict[str, Any]], bm25: list[dict[str, Any]]
+    ) -> list[dict[str, Any]]:
         return vector + bm25
 
     def format_context(self, results: list[dict[str, Any]]) -> str:

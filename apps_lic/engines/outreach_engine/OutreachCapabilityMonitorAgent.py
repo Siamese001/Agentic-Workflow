@@ -25,6 +25,7 @@ class OutreachTaskPriority(Enum):
     Defines the urgency and importance of tasks identified by the
     proactive scheduler for outreach campaigns.
     """
+
     CRITICAL = "critical"
     HIGH = "high"
     MEDIUM = "medium"
@@ -39,6 +40,7 @@ class OutreachHandoffReason(Enum):
     Defines the specific conditions that trigger a handoff request
     when the agent reaches capability limits or encounters compliance issues.
     """
+
     CAPABILITY_LIMIT = "capability_limit"
     CONFIDENCE_LOW = "confidence_low"
     HIGH_RISK = "high_risk"
@@ -50,6 +52,7 @@ class OutreachHandoffReason(Enum):
 @dataclass
 class OutreachProactiveTask:
     """A proactive outreach Task."""
+
     task_id: str
     name: str
     description: str
@@ -66,6 +69,7 @@ class OutreachProactiveTask:
 @dataclass
 class OutreachHandoffRequest:
     """A request for human handoff in outreach."""
+
     request_id: str
     reason: OutreachHandoffReason
     context: str
@@ -79,6 +83,7 @@ class OutreachHandoffRequest:
 @dataclass
 class OutreachCapabilityProfile:
     """Profile of outreach agent capabilities."""
+
     agent_name: str
     supported_tasks: list[str]
     confidence_threshold: float
@@ -118,69 +123,83 @@ class OutreachProactiveScheduler:
 
         # Check for lead quality issues
         if self.ctx.has_signal("LEAD_QUALITY_ISSUE"):
-            tasks.append(self._create_task(
-                name="Lead Quality Remediation",
-                description="Address lead quality issues",
-                priority=OutreachTaskPriority.HIGH,
-                auto_execute=True,
-            ))
+            tasks.append(
+                self._create_task(
+                    name="Lead Quality Remediation",
+                    description="Address lead quality issues",
+                    priority=OutreachTaskPriority.HIGH,
+                    auto_execute=True,
+                )
+            )
 
         # Check for compliance issues
         if self.ctx.has_signal("COMPLIANCE_ISSUE"):
-            tasks.append(self._create_task(
-                name="Compliance Review",
-                description="Review and fix compliance issues",
-                priority=OutreachTaskPriority.CRITICAL,
-                auto_execute=False,
-                requires_approval=True,
-            ))
+            tasks.append(
+                self._create_task(
+                    name="Compliance Review",
+                    description="Review and fix compliance issues",
+                    priority=OutreachTaskPriority.CRITICAL,
+                    auto_execute=False,
+                    requires_approval=True,
+                )
+            )
 
         # Check for deliverability issues
         if self.ctx.has_signal("DELIVERABILITY_ISSUE"):
-            tasks.append(self._create_task(
-                name="Deliverability Optimization",
-                description="Optimize message deliverability",
-                priority=OutreachTaskPriority.HIGH,
-                auto_execute=True,
-            ))
+            tasks.append(
+                self._create_task(
+                    name="Deliverability Optimization",
+                    description="Optimize message deliverability",
+                    priority=OutreachTaskPriority.HIGH,
+                    auto_execute=True,
+                )
+            )
 
         # Check campaign state
         campaign = self.ctx.current_campaign
         if campaign:
             if not campaign.get("schedule"):
-                tasks.append(self._create_task(
-                    name="Add Schedule",
-                    description="Add send schedule to campaign",
-                    priority=OutreachTaskPriority.MEDIUM,
-                    auto_execute=True,
-                ))
+                tasks.append(
+                    self._create_task(
+                        name="Add Schedule",
+                        description="Add send schedule to campaign",
+                        priority=OutreachTaskPriority.MEDIUM,
+                        auto_execute=True,
+                    )
+                )
 
             if not campaign.get("tracking"):
-                tasks.append(self._create_task(
-                    name="Enable Tracking",
-                    description="Enable campaign tracking",
-                    priority=OutreachTaskPriority.LOW,
-                    auto_execute=True,
-                ))
+                tasks.append(
+                    self._create_task(
+                        name="Enable Tracking",
+                        description="Enable campaign tracking",
+                        priority=OutreachTaskPriority.LOW,
+                        auto_execute=True,
+                    )
+                )
 
         # Check lead count
         if len(self.ctx.leads) > 100 and not self.ctx.current_campaign.get("segmentation"):
-            tasks.append(self._create_task(
-                name="Lead Segmentation",
-                description="Segment large lead list",
-                priority=OutreachTaskPriority.MEDIUM,
-                auto_execute=True,
-            ))
+            tasks.append(
+                self._create_task(
+                    name="Lead Segmentation",
+                    description="Segment large lead list",
+                    priority=OutreachTaskPriority.MEDIUM,
+                    auto_execute=True,
+                )
+            )
 
         # Check budget
         if self.ctx.budget.get_remaining() < 0.1:
-            tasks.append(self._create_task(
-                name="Budget Alert",
-                description="Budget running low",
-                priority=OutreachTaskPriority.CRITICAL,
-                auto_execute=False,
-                requires_approval=True,
-            ))
+            tasks.append(
+                self._create_task(
+                    name="Budget Alert",
+                    description="Budget running low",
+                    priority=OutreachTaskPriority.CRITICAL,
+                    auto_execute=False,
+                    requires_approval=True,
+                )
+            )
 
         self._tasks.extend(tasks)
         return tasks
@@ -386,14 +405,16 @@ class OutreachCapabilityMonitorAgent(SubatomicTestingMixin, HealerMixin, MCPHard
         leads_processed: int = 0,
     ) -> Any:
         """Record an agent execution."""
-        self._execution_history.append({
-            "agent_name": agent_name,
-            "TaskType": TaskType,
-            "success": success,
-            "duration_ms": duration_ms,
-            "leads_processed": leads_processed,
-            "timestamp": datetime.now().isoformat(),
-        })
+        self._execution_history.append(
+            {
+                "agent_name": agent_name,
+                "TaskType": TaskType,
+                "success": success,
+                "duration_ms": duration_ms,
+                "leads_processed": leads_processed,
+                "timestamp": datetime.now().isoformat(),
+            }
+        )
 
         if agent_name not in self._agent_stats:
             self._agent_stats[agent_name] = {
@@ -448,5 +469,5 @@ class OutreachCapabilityMonitorAgent(SubatomicTestingMixin, HealerMixin, MCPHard
         return self._agent_stats.copy()
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()

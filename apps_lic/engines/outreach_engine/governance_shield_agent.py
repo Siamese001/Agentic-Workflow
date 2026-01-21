@@ -10,7 +10,6 @@ address security, privacy, and evaluation frameworks.
 # Suggested keywords to add in docstring/code: engine, guardrail, healer, memory, orchestrator, prompt, state, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-
 import logging
 import re
 from enum import Enum
@@ -22,6 +21,7 @@ logger = logging.getLogger(__name__)
 
 class IndustrySensitivity(str, Enum):
     """Industry risk sensitivity levels."""
+
     HIGH = "HIGH"  # Healthcare, Finance, Legal, Cybersecurity
     MEDIUM = "MEDIUM"  # Technology, Retail, Manufacturing
     LOW = "LOW"  # Creative, Media, Education
@@ -31,7 +31,9 @@ class RiskProfile(BaseModel):
     """Risk profile for target company and role."""
 
     industry_sensitivity: IndustrySensitivity = Field(..., description="Industry risk level")
-    compliance_keywords: list[str] = Field(default_factory=list, description="Required compliance frameworks")
+    compliance_keywords: list[str] = Field(
+        default_factory=list, description="Required compliance frameworks"
+    )
     data_sensitivity: list[str] = Field(default_factory=list, description="Sensitive data types")
 
     @property
@@ -46,16 +48,16 @@ class SafetyProtocol(BaseModel):
     validation_strategy: str = Field(..., description="Model validation approach")
     data_privacy_approach: str = Field(..., description="Data privacy protection method")
     human_in_the_loop_policy: str = Field(..., description="Human oversight requirements")
-    compliance_frameworks: list[str] = Field(default_factory=list, description="Compliance standards")
+    compliance_frameworks: list[str] = Field(
+        default_factory=list, description="Compliance standards"
+    )
 
     @property
     def is_comprehensive(self) -> bool:
         """Check if protocol covers all major areas."""
-        return all([
-            self.validation_strategy,
-            self.data_privacy_approach,
-            self.human_in_the_loop_policy
-        ])
+        return all(
+            [self.validation_strategy, self.data_privacy_approach, self.human_in_the_loop_policy]
+        )
 
 
 class GovernanceShieldAgent:
@@ -70,27 +72,27 @@ class GovernanceShieldAgent:
                 r"perfect accuracy",
                 r"zero errors",
                 r"flawless performance",
-                r"always correct"
+                r"always correct",
             ],
             "hallucination_claims": [
                 r"zero hallucinations",
                 r"hallucination[- ]free",
                 r"no hallucinations",
                 r"eliminated hallucinations",
-                r"completely factual"
+                r"completely factual",
             ],
             "privacy_violations": [
                 r"used user data",
                 r"trained on customer data",
                 r"leverages personal information",
-                r"processes private data"
+                r"processes private data",
             ],
             "security_claims": [
                 r"completely secure",
                 r"unhackable",
                 r"impenetrable",
-                r"100% secure"
-            ]
+                r"100% secure",
+            ],
         }
 
         # Senior replacements for naive claims
@@ -98,23 +100,23 @@ class GovernanceShieldAgent:
             "absolute_accuracy": [
                 "high-precision (>99%) with human fallback",
                 "99.5%+ accuracy with confidence scoring",
-                "enterprise-grade accuracy with validation"
+                "enterprise-grade accuracy with validation",
             ],
             "hallucination_claims": [
                 "minimized hallucination rates via citation-based RAG",
                 "reduced hallucination risk through fact-checking pipelines",
-                "hallucination mitigation with source attribution"
+                "hallucination mitigation with source attribution",
             ],
             "privacy_violations": [
                 "leveraged anonymized telemetry for model fine-tuning",
                 "utilized privacy-preserving synthetic data",
-                "employed differential privacy techniques for training"
+                "employed differential privacy techniques for training",
             ],
             "security_claims": [
                 "enterprise-grade security with defense-in-depth",
                 "multi-layered security architecture",
-                "comprehensive security controls and monitoring"
-            ]
+                "comprehensive security controls and monitoring",
+            ],
         }
 
         # Industry-specific compliance requirements
@@ -123,7 +125,7 @@ class GovernanceShieldAgent:
             "finance": ["SOC 2 Type II", "PCI DSS", "GLBA", "FINRA"],
             "legal": ["ABA Model Rules", "Data Protection Act", "Bar Compliance"],
             "cybersecurity": ["NIST CSF", "ISO 27001", "CMMC"],
-            "general": ["GDPR", "CCPA", "SOX"]
+            "general": ["GDPR", "CCPA", "SOX"],
         }
 
         logger.info("Initialized GovernanceShieldAgent")
@@ -142,7 +144,9 @@ class GovernanceShieldAgent:
 
             # Check for zero tolerance violations
             if "zero hallucinations" in sanitized.lower():
-                logger.warning("CRITICAL: 'Zero hallucinations' claim detected - immediate disqualifier")
+                logger.warning(
+                    "CRITICAL: 'Zero hallucinations' claim detected - immediate disqualifier"
+                )
                 sanitized = self._critical_fix_zero_hallucinations(sanitized)
 
             # Apply pattern replacements
@@ -187,7 +191,7 @@ class GovernanceShieldAgent:
             return SafetyProtocol(
                 validation_strategy="Comprehensive testing before deployment",
                 data_privacy_approach="Privacy by design principles",
-                human_in_the_loop_policy="Human review for critical decisions"
+                human_in_the_loop_policy="Human review for critical decisions",
             )
 
     def audit_outreach(self, email_draft: str) -> str:
@@ -250,7 +254,9 @@ class GovernanceShieldAgent:
                 data_types = ["User Data", "Analytics Data"]
 
             # Boost sensitivity if JD mentions compliance
-            if any(term in jd_lower for term in ["compliance", "regulatory", "audit", "sox", "hipaa"]):
+            if any(
+                term in jd_lower for term in ["compliance", "regulatory", "audit", "sox", "hipaa"]
+            ):
                 if sensitivity == IndustrySensitivity.MEDIUM:
                     sensitivity = IndustrySensitivity.HIGH
                     logger.info("Boosted to HIGH sensitivity due to JD compliance keywords")
@@ -266,7 +272,7 @@ class GovernanceShieldAgent:
             return RiskProfile(
                 industry_sensitivity=sensitivity,
                 compliance_keywords=list(set(compliance)),  # Remove duplicates
-                data_sensitivity=data_types
+                data_sensitivity=data_types,
             )
 
         except Exception as e:
@@ -274,7 +280,7 @@ class GovernanceShieldAgent:
             return RiskProfile(
                 industry_sensitivity=IndustrySensitivity.MEDIUM,
                 compliance_keywords=["GDPR"],
-                data_sensitivity=["User Data"]
+                data_sensitivity=["User Data"],
             )
 
     def _critical_fix_zero_hallucinations(self, content: str) -> str:
@@ -291,14 +297,11 @@ class GovernanceShieldAgent:
             r"zero hallucinations",
             "minimized hallucinations through rigorous validation",
             content,
-            flags=re.IGNORECASE
+            flags=re.IGNORECASE,
         )
 
         content = re.sub(
-            r"hallucination[- ]free",
-            "hallucination-mitigated",
-            content,
-            flags=re.IGNORECASE
+            r"hallucination[- ]free", "hallucination-mitigated", content, flags=re.IGNORECASE
         )
 
         return content
@@ -317,7 +320,7 @@ class GovernanceShieldAgent:
             r"user data without consent": "anonymized user data with consent",
             r"personal information": "anonymized identifiers",
             r"private data": "privacy-protected data",
-            r"customer data": "customer-approved analytics"
+            r"customer data": "customer-approved analytics",
         }
 
         for pattern, replacement in privacy_fixes.items():
@@ -346,7 +349,7 @@ class GovernanceShieldAgent:
             validation_strategy="Automated eval pipeline (Ragas) + human expert review before production",
             data_privacy_approach=privacy,
             human_in_the_loop_policy="Mandatory human oversight for all high-stakes decisions with audit trails",
-            compliance_frameworks=frameworks
+            compliance_frameworks=frameworks,
         )
 
     def _generate_standard_protocol(self, risk_profile: RiskProfile) -> SafetyProtocol:
@@ -362,7 +365,7 @@ class GovernanceShieldAgent:
             validation_strategy="Comprehensive testing including bias, fairness, and performance metrics",
             data_privacy_approach="Privacy by design with differential privacy techniques",
             human_in_the_loop_policy="Human review for edge cases and sensitive applications",
-            compliance_frameworks=risk_profile.compliance_keywords
+            compliance_frameworks=risk_profile.compliance_keywords,
         )
 
 

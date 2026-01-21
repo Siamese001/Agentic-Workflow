@@ -18,6 +18,7 @@ try:
     from opentelemetry.sdk.trace import TracerProvider
     from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
     from opentelemetry.trace import Status, StatusCode
+
     OTEL_AVAILABLE = True
 except ImportError:
     OTEL_AVAILABLE = False
@@ -27,6 +28,7 @@ logger = logging.getLogger(__name__)
 
 class SpanType(Enum):
     """Types of execution spans."""
+
     ORCHESTRATOR = "orchestrator"
     COGNITIVE = "cognitive"
     ACTION = "action"
@@ -38,6 +40,7 @@ class SpanType(Enum):
 @dataclass
 class SpanMetadata:
     """Metadata attached to a span."""
+
     span_type: SpanType
     component: str
     layer: str
@@ -56,6 +59,7 @@ class SpanMetadata:
 @dataclass
 class CostMetrics:
     """Cost and token metrics for LLM calls."""
+
     prompt_tokens: int = 0
     completion_tokens: int = 0
     total_tokens: int = 0
@@ -78,6 +82,7 @@ class CostMetrics:
 @dataclass
 class ResilienceMetrics:
     """Resilience metrics for action execution."""
+
     retry_attempts: int = 0
     circuit_breaker_state: str = "CLOSED"
     rate_limit_status: str = "OK"
@@ -142,10 +147,7 @@ class OpenTelemetryTracingAdapter:
             self._enabled = True
 
             if self.enable_logging:
-                logger.info(
-                    "opentelemetry_initialized",
-                    extra={"service_name": service_name}
-                )
+                logger.info("opentelemetry_initialized", extra={"service_name": service_name})
         else:
             self.tracer = None
             self._enabled = False
@@ -153,7 +155,7 @@ class OpenTelemetryTracingAdapter:
             if self.enable_logging:
                 logger.warning(
                     "opentelemetry_not_available",
-                    extra={"message": "Install opentelemetry-api and opentelemetry-sdk"}
+                    extra={"message": "Install opentelemetry-api and opentelemetry-sdk"},
                 )
 
     @contextmanager
@@ -178,7 +180,7 @@ class OpenTelemetryTracingAdapter:
             attributes={
                 "mission": mission,
                 **(metadata or {}),
-            }
+            },
         )
 
         with self._create_span(
@@ -338,7 +340,7 @@ class OpenTelemetryTracingAdapter:
                 "dag.task_type": task_type,
                 "dag.dependencies": str(dependencies or []),
                 **(metadata or {}),
-            }
+            },
         )
 
         with self._create_span(
@@ -372,7 +374,7 @@ class OpenTelemetryTracingAdapter:
                 "reasoning.step": step_number,
                 "reasoning.type": step_type,
                 **(metadata or {}),
-            }
+            },
         )
 
         with self._create_span(
@@ -421,7 +423,7 @@ class OpenTelemetryTracingAdapter:
                             "span_name": name,
                             "span_type": metadata.span_type.value,
                             "duration_ms": (time.time() - start_time) * 1000,
-                        }
+                        },
                     )
 
             except Exception as e:

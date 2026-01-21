@@ -5,6 +5,7 @@ Test Suite: Sleeping Giants Verification
 Verifies that the previously dormant agents now have properly wired
 heal_repository methods that call their internal validation logic.
 """
+
 import sys
 from pathlib import Path
 from unittest.mock import MagicMock
@@ -15,15 +16,18 @@ sys.path.insert(0, str(PROJECT_ROOT))
 PASSED = 0
 FAILED = 0
 
+
 def test_pass(test_id: str, msg: str):
     global PASSED
     PASSED += 1
     print(f"  ✅ {test_id}: {msg}")
 
+
 def test_fail(test_id: str, msg: str):
     global FAILED
     FAILED += 1
     print(f"  ❌ {test_id}: {msg}")
+
 
 # =============================================================================
 # Test 1: TwoPhaseDeduplicationAgent Import Fix
@@ -36,11 +40,13 @@ def test_two_phase_dedup_import():
 
     try:
         from apps_lic.engines.TwoPhaseDeduplicationAgent import TwoPhaseDeduplicationAgent
+
         test_pass("GIANT-01", "TwoPhaseDeduplicationAgent imports successfully")
     except ImportError as e:
         test_fail("GIANT-01", f"ImportError: {e}")
     except Exception as e:
         test_fail("GIANT-01", f"Unexpected error: {e}")
+
 
 # =============================================================================
 # Test 2: CoreOrchestrationAgent Task Validation
@@ -59,18 +65,21 @@ def test_scripts_planning_validation():
         agent = CoreOrchestrationAgent()
 
         # Verify heal_repository exists and has proper signature
-        if hasattr(agent, 'heal_repository'):
+        if hasattr(agent, "heal_repository"):
             # Call heal_repository in dry_run mode
             result = agent.heal_repository(dry_run=True)
 
             if isinstance(result, dict):
-                test_pass("GIANT-02", f"heal_repository returns dict with keys: {list(result.keys())}")
+                test_pass(
+                    "GIANT-02", f"heal_repository returns dict with keys: {list(result.keys())}"
+                )
             else:
                 test_fail("GIANT-02", f"heal_repository returned {type(result)}, expected dict")
         else:
             test_fail("GIANT-02", "heal_repository method not found")
     except Exception as e:
         test_fail("GIANT-02", f"Error: {e}")
+
 
 # =============================================================================
 # Test 3: MemoryLeakDetectorAgent Scan and Fix
@@ -93,7 +102,7 @@ def test_memory_leak_detector():
         agent = MemoryLeakDetectorAgent(ctx=mock_ctx)
 
         # Verify heal_repository exists
-        if hasattr(agent, 'heal_repository'):
+        if hasattr(agent, "heal_repository"):
             result = agent.heal_repository(dry_run=True)
 
             if isinstance(result, dict):
@@ -104,6 +113,7 @@ def test_memory_leak_detector():
             test_fail("GIANT-03", "heal_repository method not found")
     except Exception as e:
         test_fail("GIANT-03", f"Error: {e}")
+
 
 # =============================================================================
 # Test 4: PeerIntelligenceAuditorAgent Search Count Validation
@@ -122,7 +132,7 @@ def test_peer_intelligence_auditor():
         agent = PeerIntelligenceAuditorAgent()
 
         # Verify heal_repository exists
-        if hasattr(agent, 'heal_repository'):
+        if hasattr(agent, "heal_repository"):
             result = agent.heal_repository(dry_run=True)
 
             if isinstance(result, dict):
@@ -133,6 +143,7 @@ def test_peer_intelligence_auditor():
             test_fail("GIANT-04", "heal_repository method not found")
     except Exception as e:
         test_fail("GIANT-04", f"Error: {e}")
+
 
 # =============================================================================
 # Test 5: DAGMutatorAgent Mutation Validation
@@ -150,7 +161,7 @@ def test_dag_mutator():
         agent = DAGMutatorAgent(config=config)
 
         # Verify heal_repository exists
-        if hasattr(agent, 'heal_repository'):
+        if hasattr(agent, "heal_repository"):
             result = agent.heal_repository(dry_run=True)
 
             if isinstance(result, dict):
@@ -165,6 +176,7 @@ def test_dag_mutator():
             test_fail("GIANT-05", "heal_repository method not found")
     except Exception as e:
         test_fail("GIANT-05", f"Error: {e}")
+
 
 # =============================================================================
 # Test 6: ImportHealerAgent Directory Healing
@@ -181,7 +193,7 @@ def test_import_healer():
         agent = ImportHealerAgent(project_root=PROJECT_ROOT)
 
         # Verify heal_repository exists
-        if hasattr(agent, 'heal_repository'):
+        if hasattr(agent, "heal_repository"):
             result = agent.heal_repository(dry_run=True)
 
             if isinstance(result, dict):
@@ -192,6 +204,7 @@ def test_import_healer():
             test_fail("GIANT-06", "heal_repository method not found")
     except Exception as e:
         test_fail("GIANT-06", f"Error: {e}")
+
 
 # =============================================================================
 # Main
@@ -224,5 +237,6 @@ def main():
         print(f"\n  ❌ {FAILED} TESTS FAILED - GIANTS STILL SLEEPING")
         return 1
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     sys.exit(main())

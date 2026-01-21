@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, healer, memory, orchestrator, prompt, state, validator, workflow
@@ -17,7 +16,13 @@ from agentic_core.utils.core_extensions.event_emission_mixin import EventEmissio
 from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
 
 
-class SovereignObservabilityAgent(SubatomicTestingMixin, MCPHardenedMixin, RedisCacheMixin, EventEmissionMixin, ContextPropagationMixin):
+class SovereignObservabilityAgent(
+    SubatomicTestingMixin,
+    MCPHardenedMixin,
+    RedisCacheMixin,
+    EventEmissionMixin,
+    ContextPropagationMixin,
+):
     """
     L6 Observability Agent: The Consumer (Report 4.3 Part C).
 
@@ -32,9 +37,10 @@ class SovereignObservabilityAgent(SubatomicTestingMixin, MCPHardenedMixin, Redis
         _consumer_name: Unique consumer identifier
     """
 
-
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -94,8 +100,10 @@ class SovereignObservabilityAgent(SubatomicTestingMixin, MCPHardenedMixin, Redis
         if not self.redis_client:
             return
 
-        messages: list[tuple[bytes, list[tuple[bytes, dict[bytes, bytes]]]]] = self.redis_client.xreadgroup(
-            self._group_name, self._consumer_name, {self._stream_name: ">"}, count=count
+        messages: list[tuple[bytes, list[tuple[bytes, dict[bytes, bytes]]]]] = (
+            self.redis_client.xreadgroup(
+                self._group_name, self._consumer_name, {self._stream_name: ">"}, count=count
+            )
         )
 
         for _, stream_msgs in messages:
@@ -117,7 +125,7 @@ class SovereignObservabilityAgent(SubatomicTestingMixin, MCPHardenedMixin, Redis
         Args:
             event: Event data dictionary containing event_id and event_type
         """
-        self.emit_event("observability.analysis_complete", {
-            "target_event_id": event.get("event_id"),
-            "target_type": event.get("event_type")
-        })
+        self.emit_event(
+            "observability.analysis_complete",
+            {"target_event_id": event.get("event_id"), "target_type": event.get("event_type")},
+        )

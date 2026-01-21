@@ -26,8 +26,14 @@ class MessageComplianceAgent(SubatomicTestingMixin, OutreachAgent, MCPHardenedMi
     """
 
     FORBIDDEN_WORDS = [
-        "guaranteed", "free money", "act now", "limited time",
-        "winner", "congratulations", "urgent", "click here",
+        "guaranteed",
+        "free money",
+        "act now",
+        "limited time",
+        "winner",
+        "congratulations",
+        "urgent",
+        "click here",
     ]
 
     async def execute(self) -> None:
@@ -79,5 +85,5 @@ class MessageComplianceAgent(SubatomicTestingMixin, OutreachAgent, MCPHardenedMi
             print(f"   [{self.name}] ✅ Messages compliant")
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()

@@ -31,8 +31,9 @@ try:
         validate_print_statements,
     )
 except ImportError:
-    validate_print_statements = validate_debugger = validate_empty_except = validate_bare_except = validate_eval_exec = lambda *a, **k: (True, [])
-
+    validate_print_statements = validate_debugger = validate_empty_except = validate_bare_except = (
+        validate_eval_exec
+    ) = lambda *a, **k: (True, [])
 
 
 # NOT_AN_AGENT — legacy L1 class removed 2026-01-06, use L5 canonical version
@@ -61,8 +62,18 @@ class _LegacySafetyInspectorAgent(HealerMixin):
         Executes the security audit by running all defined checks.
         Reports findings to the context and signals security status.
         """
-        print(f'\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.agent.name} ACTIVATED: Security Audit...')
-        keys: Any = [(0, self.check_key_00_no_hardcoded_secrets), (1, self.check_key_01_no_todo_fixme), (2, self.check_key_02_no_print_statements), (3, self.check_key_03_no_debugger_statements), (4, self.check_key_04_no_empty_except_blocks), (5, self.check_key_05_no_bare_except), (6, self.check_key_06_no_eval_exec)]
+        print(
+            f"\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.agent.name} ACTIVATED: Security Audit..."
+        )
+        keys: Any = [
+            (0, self.check_key_00_no_hardcoded_secrets),
+            (1, self.check_key_01_no_todo_fixme),
+            (2, self.check_key_02_no_print_statements),
+            (3, self.check_key_03_no_debugger_statements),
+            (4, self.check_key_04_no_empty_except_blocks),
+            (5, self.check_key_05_no_bare_except),
+            (6, self.check_key_06_no_eval_exec),
+        ]
         for key, check_func in keys:
             passed, details = check_func()
             self.agent.ctx.report(self.agent.name, key, passed, details)
@@ -78,10 +89,10 @@ class _LegacySafetyInspectorAgent(HealerMixin):
     def _read_file_content(self, fp: str) -> tuple[str, bool]:
         """Helper to read file content, returns content and success status."""
         try:
-            with open(fp, encoding='utf-8') as f:
+            with open(fp, encoding="utf-8") as f:
                 return (f.read(), True)
         except Exception:
-            return ('', False)
+            return ("", False)
 
     def _find_secret_violations_in_file(self, fp: str, patterns: list[str]) -> list[str]:
         """Helper to find hardcoded secrets in a single file."""
@@ -97,7 +108,12 @@ class _LegacySafetyInspectorAgent(HealerMixin):
         Checks for hardcoded secrets (passwords, API keys, tokens) in files.
         """
         violations: Any = []
-        patterns: Any = ['password\\s*=\\s*["\\\'][^"\\\']+["\\\']', 'api[_-]?key\\s*=\\s*["\\\'][^"\\\']+["\\\']', 'secret\\s*=\\s*["\\\'][^"\\\']+["\\\']', 'token\\s*=\\s*["\\\'][^"\\\']+["\\\']']
+        patterns: Any = [
+            "password\\s*=\\s*[\"\\'][^\"\\']+[\"\\']",
+            "api[_-]?key\\s*=\\s*[\"\\'][^\"\\']+[\"\\']",
+            "secret\\s*=\\s*[\"\\'][^\"\\']+[\"\\']",
+            "token\\s*=\\s*[\"\\'][^\"\\']+[\"\\']",
+        ]
         for fp in self.agent.ctx.python_files:
             violations.extend(self._find_secret_violations_in_file(fp, patterns))
         return (len(violations) == 0, violations)
@@ -106,14 +122,14 @@ class _LegacySafetyInspectorAgent(HealerMixin):
         """Helper to process lines of an open file for TODO/FIXME violations."""
         violations = []
         for i, line in enumerate(f_obj, 1):
-            if re.search('\\b(TODO|FIXME)\\b', line, re.IGNORECASE):
-                violations.append(f'{fp}:{i}')
+            if re.search("\\b(TODO|FIXME)\\b", line, re.IGNORECASE):
+                violations.append(f"{fp}:{i}")
         return violations
 
     def _find_todo_fixme_violations_in_file(self, fp: str) -> list[str]:
         """Helper to find TODO/FIXME comments in a single file."""
         try:
-            with open(fp, encoding='utf-8') as f:
+            with open(fp, encoding="utf-8") as f:
                 return self._process_file_lines_for_todo_fixme(f, fp)
         except Exception:
             pass
@@ -136,7 +152,7 @@ class _LegacySafetyInspectorAgent(HealerMixin):
         violations: Any = []
         for fp in self.agent.ctx.python_files:
             try:
-                with open(fp, encoding='utf-8') as f:
+                with open(fp, encoding="utf-8") as f:
                     content: Any = f.read()
                 results: Any = validate_print_statements(Path(fp), content)
                 for result in results:
@@ -153,7 +169,7 @@ class _LegacySafetyInspectorAgent(HealerMixin):
         violations: Any = []
         for fp in self.agent.ctx.python_files:
             try:
-                with open(fp, encoding='utf-8') as f:
+                with open(fp, encoding="utf-8") as f:
                     content: Any = f.read()
                 results: Any = validate_debugger(Path(fp), content)
                 for result in results:
@@ -169,7 +185,7 @@ class _LegacySafetyInspectorAgent(HealerMixin):
         violations: Any = []
         for fp in self.agent.ctx.python_files:
             try:
-                with open(fp, encoding='utf-8') as f:
+                with open(fp, encoding="utf-8") as f:
                     content: Any = f.read()
                 results: Any = validate_empty_except(Path(fp), content)
                 for result in results:
@@ -185,7 +201,7 @@ class _LegacySafetyInspectorAgent(HealerMixin):
         violations: Any = []
         for fp in self.agent.ctx.python_files:
             try:
-                with open(fp, encoding='utf-8') as f:
+                with open(fp, encoding="utf-8") as f:
                     content: Any = f.read()
                 results: Any = validate_bare_except(Path(fp), content)
                 for result in results:
@@ -201,7 +217,7 @@ class _LegacySafetyInspectorAgent(HealerMixin):
         violations: Any = []
         for fp in self.agent.ctx.python_files:
             try:
-                with open(fp, encoding='utf-8') as f:
+                with open(fp, encoding="utf-8") as f:
                     content: Any = f.read()
                 results: Any = validate_eval_exec(Path(fp), content)
                 for result in results:
@@ -211,5 +227,5 @@ class _LegacySafetyInspectorAgent(HealerMixin):
         return (len(violations) == 0, violations)
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()

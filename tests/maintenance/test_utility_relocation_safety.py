@@ -37,18 +37,19 @@ class TestDependencyIsolation:
 
         # Phase 6.8: Use ssot_discovery instead of rglob
         from agentic_core.utils.ssot_discovery import get_python_files
+
         for py_file in get_python_files(apps_shared_dir):
             try:
-                content = py_file.read_text(encoding='utf-8', errors='ignore')
+                content = py_file.read_text(encoding="utf-8", errors="ignore")
                 tree = ast.parse(content)
 
                 for node in ast.walk(tree):
                     if isinstance(node, ast.Import):
                         for alias in node.names:
-                            if alias.name.startswith('apps_lic'):
+                            if alias.name.startswith("apps_lic"):
                                 violations.append((str(py_file), f"import {alias.name}"))
                     elif isinstance(node, ast.ImportFrom):
-                        if node.module and node.module.startswith('apps_lic'):
+                        if node.module and node.module.startswith("apps_lic"):
                             violations.append((str(py_file), f"from {node.module} import ..."))
             except SyntaxError:
                 continue
@@ -70,18 +71,19 @@ class TestDependencyIsolation:
 
         # Phase 6.8: Use ssot_discovery instead of rglob
         from agentic_core.utils.ssot_discovery import get_python_files
+
         for py_file in get_python_files(apps_shared_dir):
             try:
-                content = py_file.read_text(encoding='utf-8', errors='ignore')
+                content = py_file.read_text(encoding="utf-8", errors="ignore")
                 tree = ast.parse(content)
 
                 for node in ast.walk(tree):
                     if isinstance(node, ast.Import):
                         for alias in node.names:
-                            if alias.name.startswith('apps_rg'):
+                            if alias.name.startswith("apps_rg"):
                                 violations.append((str(py_file), f"import {alias.name}"))
                     elif isinstance(node, ast.ImportFrom):
-                        if node.module and node.module.startswith('apps_rg'):
+                        if node.module and node.module.startswith("apps_rg"):
                             violations.append((str(py_file), f"from {node.module} import ..."))
             except SyntaxError:
                 continue
@@ -100,17 +102,17 @@ class TestCircularDependencyPrevention:
         """Extract all import module roots from a Python file."""
         imports = set()
         try:
-            content = file_path.read_text(encoding='utf-8', errors='ignore')
+            content = file_path.read_text(encoding="utf-8", errors="ignore")
             tree = ast.parse(content)
 
             for node in ast.walk(tree):
                 if isinstance(node, ast.Import):
                     for alias in node.names:
-                        root = alias.name.split('.')[0]
+                        root = alias.name.split(".")[0]
                         imports.add(root)
                 elif isinstance(node, ast.ImportFrom):
                     if node.module:
-                        root = node.module.split('.')[0]
+                        root = node.module.split(".")[0]
                         imports.add(root)
         except SyntaxError:
             pass
@@ -123,10 +125,18 @@ class TestCircularDependencyPrevention:
             return {}
 
         deps = {}
-        known_territories = {'agentic_core', 'apps_shared', 'apps_rg', 'apps_lic', 'tests', 'scripts'}
+        known_territories = {
+            "agentic_core",
+            "apps_shared",
+            "apps_rg",
+            "apps_lic",
+            "tests",
+            "scripts",
+        }
 
         # Phase 6.8: Use ssot_discovery instead of rglob
         from agentic_core.utils.ssot_discovery import get_python_files
+
         for py_file in get_python_files(territory_dir):
             imports = self._extract_imports(py_file)
             external = imports & known_territories
@@ -144,12 +154,14 @@ class TestCircularDependencyPrevention:
         # Check if any apps_shared file imports apps_lic
         circular_risk = []
         for file_path, deps in apps_shared_deps.items():
-            if 'apps_lic' in deps:
+            if "apps_lic" in deps:
                 circular_risk.append(file_path)
 
         if circular_risk:
-            pytest.fail("Circular dependency risk: apps_shared files importing apps_lic:\n" +
-                       "\n".join(f"  - {f}" for f in circular_risk))
+            pytest.fail(
+                "Circular dependency risk: apps_shared files importing apps_lic:\n"
+                + "\n".join(f"  - {f}" for f in circular_risk)
+            )
 
     def test_gravity_compliance(self):
         """
@@ -163,7 +175,7 @@ class TestCircularDependencyPrevention:
         # Check if agentic_core imports from apps_*
         gravity_violations = []
         for file_path, deps in agentic_core_deps.items():
-            forbidden = deps & {'apps_shared', 'apps_rg', 'apps_lic'}
+            forbidden = deps & {"apps_shared", "apps_rg", "apps_lic"}
             if forbidden:
                 gravity_violations.append((file_path, forbidden))
 
@@ -189,35 +201,77 @@ class TestRelocationCandidate:
         # Check its imports
         imports = set()
         try:
-            content = detector_path.read_text(encoding='utf-8', errors='ignore')
+            content = detector_path.read_text(encoding="utf-8", errors="ignore")
             tree = ast.parse(content)
 
             for node in ast.walk(tree):
                 if isinstance(node, ast.Import):
                     for alias in node.names:
-                        imports.add(alias.name.split('.')[0])
+                        imports.add(alias.name.split(".")[0])
                 elif isinstance(node, ast.ImportFrom):
                     if node.module:
-                        imports.add(node.module.split('.')[0])
+                        imports.add(node.module.split(".")[0])
         except SyntaxError as e:
             pytest.fail(f"Syntax error in DuplicateCodeDetectorAgent: {e}")
 
         # Allowed dependencies
-        allowed = {'agentic_core', 'apps_shared', 'typing', 'pathlib', 'os', 'sys',
-                   'ast', 're', 'json', 'logging', 'dataclasses', 'collections',
-                   'functools', 'itertools', 'hashlib', 'difflib', 'abc', 'enum'}
+        allowed = {
+            "agentic_core",
+            "apps_shared",
+            "typing",
+            "pathlib",
+            "os",
+            "sys",
+            "ast",
+            "re",
+            "json",
+            "logging",
+            "dataclasses",
+            "collections",
+            "functools",
+            "itertools",
+            "hashlib",
+            "difflib",
+            "abc",
+            "enum",
+        }
 
         forbidden = imports - allowed
         # Filter out stdlib modules
-        stdlib_prefixes = {'typing', 'pathlib', 'os', 'sys', 'ast', 're', 'json',
-                          'logging', 'dataclasses', 'collections', 'functools',
-                          'itertools', 'hashlib', 'difflib', 'abc', 'enum', 'datetime',
-                          'time', 'copy', 'io', 'warnings', 'traceback', 'inspect',
-                          'importlib', 'contextlib', 'threading', 'subprocess', 'shutil'}
+        stdlib_prefixes = {
+            "typing",
+            "pathlib",
+            "os",
+            "sys",
+            "ast",
+            "re",
+            "json",
+            "logging",
+            "dataclasses",
+            "collections",
+            "functools",
+            "itertools",
+            "hashlib",
+            "difflib",
+            "abc",
+            "enum",
+            "datetime",
+            "time",
+            "copy",
+            "io",
+            "warnings",
+            "traceback",
+            "inspect",
+            "importlib",
+            "contextlib",
+            "threading",
+            "subprocess",
+            "shutil",
+        }
 
         forbidden = forbidden - stdlib_prefixes
 
-        if 'apps_lic' in forbidden or 'apps_rg' in forbidden:
+        if "apps_lic" in forbidden or "apps_rg" in forbidden:
             pytest.fail(f"DuplicateCodeDetectorAgent has forbidden dependencies: {forbidden}")
 
 

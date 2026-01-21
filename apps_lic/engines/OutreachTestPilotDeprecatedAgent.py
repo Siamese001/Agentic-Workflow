@@ -63,5 +63,5 @@ class OutreachTestPilotDeprecatedAgent(SubatomicTestingMixin, OutreachAgent):
             print(f"   [{self.name}] ❌ Failed tests: {failed_tests}")
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()

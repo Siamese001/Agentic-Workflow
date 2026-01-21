@@ -35,6 +35,7 @@ ARCHIVE_OPERATION_PATTERNS = [
 def get_project_root() -> Path:
     """Get project root directory."""
     import os
+
     if "PROJECT_ROOT" in os.environ:
         return Path(os.environ["PROJECT_ROOT"])
 
@@ -96,7 +97,7 @@ class TestArchiveApprovalRequired:
             approval_match = re.search(
                 r"def _prompt_user_for_archive_approval\s*\([^)]*\)[^:]*:.*?(?=\n    def |\nclass |\Z)",
                 content,
-                re.DOTALL
+                re.DOTALL,
             )
 
             if approval_match:
@@ -118,7 +119,7 @@ class TestArchiveApprovalRequired:
             approval_match = re.search(
                 r"def _prompt_user_for_archive_approval\s*\([^)]*\)[^:]*:.*?(?=\n    def |\nclass |\Z)",
                 content,
-                re.DOTALL
+                re.DOTALL,
             )
 
             if approval_match:

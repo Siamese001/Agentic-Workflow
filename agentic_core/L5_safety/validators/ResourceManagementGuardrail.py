@@ -21,6 +21,7 @@ from typing import Any
 
 class ResourceType(Enum):
     """Types of managed resources."""
+
     TOKENS = "tokens"
     API_CALLS = "api_calls"
     MEMORY = "memory"
@@ -32,6 +33,7 @@ class ResourceType(Enum):
 @dataclass
 class ResourceQuota:
     """Resource quota definition."""
+
     resource_type: ResourceType
     limit: float
     used: float = 0.0
@@ -49,6 +51,7 @@ class ResourceQuota:
 @dataclass
 class ResourceCheckResult:
     """Result of resource check."""
+
     allowed: bool
     resource_type: ResourceType
     requested: float
@@ -77,24 +80,16 @@ class ResourceManagementGuardrail:
         # Default quotas
         self.quotas: dict[ResourceType, ResourceQuota] = {
             ResourceType.TOKENS: ResourceQuota(
-                resource_type=ResourceType.TOKENS,
-                limit=1_000_000,
-                unit="tokens"
+                resource_type=ResourceType.TOKENS, limit=1_000_000, unit="tokens"
             ),
             ResourceType.API_CALLS: ResourceQuota(
-                resource_type=ResourceType.API_CALLS,
-                limit=10_000,
-                unit="calls"
+                resource_type=ResourceType.API_CALLS, limit=10_000, unit="calls"
             ),
             ResourceType.COST: ResourceQuota(
-                resource_type=ResourceType.COST,
-                limit=100.0,
-                unit="USD"
+                resource_type=ResourceType.COST, limit=100.0, unit="USD"
             ),
             ResourceType.MEMORY: ResourceQuota(
-                resource_type=ResourceType.MEMORY,
-                limit=1024,
-                unit="MB"
+                resource_type=ResourceType.MEMORY, limit=1024, unit="MB"
             ),
         }
 
@@ -103,7 +98,7 @@ class ResourceManagementGuardrail:
             "gpt-4": 0.03,  # per 1K tokens
             "gpt-3.5-turbo": 0.002,
             "claude-3": 0.015,
-            "default": 0.01
+            "default": 0.01,
         }
 
         # Statistics
@@ -113,9 +108,7 @@ class ResourceManagementGuardrail:
         self.total_cost = 0.0
 
     async def check_resource(
-        self,
-        resource_type: ResourceType,
-        amount: float
+        self, resource_type: ResourceType, amount: float
     ) -> ResourceCheckResult:
         """
         Check if resource request is allowed.
@@ -135,8 +128,8 @@ class ResourceManagementGuardrail:
                 allowed=True,
                 resource_type=resource_type,
                 requested=amount,
-                available=float('inf'),
-                message="Resource quotas disabled"
+                available=float("inf"),
+                message="Resource quotas disabled",
             )
 
         quota = self.quotas.get(resource_type)
@@ -146,8 +139,8 @@ class ResourceManagementGuardrail:
                 allowed=True,
                 resource_type=resource_type,
                 requested=amount,
-                available=float('inf'),
-                message="No quota defined"
+                available=float("inf"),
+                message="No quota defined",
             )
 
         if amount <= quota.remaining:
@@ -157,7 +150,7 @@ class ResourceManagementGuardrail:
                 resource_type=resource_type,
                 requested=amount,
                 available=quota.remaining,
-                message="Request approved"
+                message="Request approved",
             )
         else:
             self.requests_denied += 1
@@ -166,14 +159,10 @@ class ResourceManagementGuardrail:
                 resource_type=resource_type,
                 requested=amount,
                 available=quota.remaining,
-                message=f"Quota exceeded: requested {amount}, available {quota.remaining}"
+                message=f"Quota exceeded: requested {amount}, available {quota.remaining}",
             )
 
-    async def consume_resource(
-        self,
-        resource_type: ResourceType,
-        amount: float
-    ) -> bool:
+    async def consume_resource(self, resource_type: ResourceType, amount: float) -> bool:
         """
         Consume resource from quota.
 
@@ -230,10 +219,7 @@ class ResourceManagementGuardrail:
         if resource_type in self.quotas:
             self.quotas[resource_type].limit = limit
         else:
-            self.quotas[resource_type] = ResourceQuota(
-                resource_type=resource_type,
-                limit=limit
-            )
+            self.quotas[resource_type] = ResourceQuota(resource_type=resource_type, limit=limit)
 
     def reset_quotas(self) -> None:
         """Reset all quota usage."""
@@ -248,7 +234,7 @@ class ResourceManagementGuardrail:
                 "used": q.used,
                 "remaining": q.remaining,
                 "usage_percent": q.usage_percent,
-                "unit": q.unit
+                "unit": q.unit,
             }
             for rt, q in self.quotas.items()
         }
@@ -259,7 +245,9 @@ class ResourceManagementGuardrail:
             "checks_performed": self.checks_performed,
             "requests_allowed": self.requests_allowed,
             "requests_denied": self.requests_denied,
-            "denial_rate": (self.requests_denied / self.checks_performed * 100) if self.checks_performed > 0 else 0,
+            "denial_rate": (self.requests_denied / self.checks_performed * 100)
+            if self.checks_performed > 0
+            else 0,
             "total_cost": self.total_cost,
-            "quota_status": self.get_quota_status()
+            "quota_status": self.get_quota_status(),
         }

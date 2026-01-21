@@ -23,22 +23,22 @@ Last Generated: 2026-01-20 14:46:21
 # ============================================================================
 # Auto-generated from dashboard_ssot.yaml - DO NOT EDIT MANUALLY
 
-COL_TERRITORY = 'Territory'
-COL_TOTAL = 'Total'
-COL_COMPLIANT = 'Compliant'
-COL_HEAL_CAP = 'Heal Cap %'
-COL_INVOCATION = 'Invocation %'
-COL_TEST = 'Test %'
-COL_HARDENED = 'MCP Hardened %'
-COL_COMPLEXITY_HEALTH = 'Complexity Health %'
-COL_HEALTH = 'Health'
-COL_TYPED = 'Typed %'
-COL_DOCUMENTED = 'Documented %'
-COL_SCHEMA_STRICTNESS = 'Schema Strictness %'
-COL_CANONICAL_INHERITANCE = 'Canonical Inheritance %'
-COL_CODE_QUALITY = 'Code Quality Score'
-COL_AVG_CC = 'Avg CC'
-COL_OBSERVABLE = 'Observable %'
+COL_TERRITORY = "Territory"
+COL_TOTAL = "Total"
+COL_COMPLIANT = "Compliant"
+COL_HEAL_CAP = "Heal Cap %"
+COL_INVOCATION = "Invocation %"
+COL_TEST = "Test %"
+COL_HARDENED = "MCP Hardened %"
+COL_COMPLEXITY_HEALTH = "Complexity Health %"
+COL_HEALTH = "Health"
+COL_TYPED = "Typed %"
+COL_DOCUMENTED = "Documented %"
+COL_SCHEMA_STRICTNESS = "Schema Strictness %"
+COL_CANONICAL_INHERITANCE = "Canonical Inheritance %"
+COL_CODE_QUALITY = "Code Quality Score"
+COL_AVG_CC = "Avg CC"
+COL_OBSERVABLE = "Observable %"
 
 
 # ============================================================================
@@ -46,24 +46,24 @@ COL_OBSERVABLE = 'Observable %'
 # ============================================================================
 # Auto-generated from dashboard_ssot.yaml - DO NOT EDIT MANUALLY
 
-FIELD_CLASS_NAME = 'class_name'
-FIELD_PATH = 'path'
-FIELD_LAYER = 'layer'
-FIELD_TERRITORY = 'territory'
-FIELD_CATEGORY = 'category'
-FIELD_HAS_HEALING = 'has_healing'
-FIELD_HAS_TESTS = 'has_tests'
-FIELD_HAS_TOOLS = 'has_tools'
-FIELD_HAS_MEMORY = 'has_memory'
-FIELD_MCP_HARDENED = 'mcp_hardened'
-FIELD_INVOCATION = 'invocation'
-FIELD_TYPED_PCT = 'typed_pct'
-FIELD_DOCUMENTED_PCT = 'documented_pct'
-FIELD_SCHEMA_STRICTNESS = 'schema_strictness'
-FIELD_PROPER_BASE_CLASS = 'proper_base_class'
-FIELD_CYCLOMATIC_COMPLEXITY = 'cyclomatic_complexity'
-FIELD_INHERITANCE = 'inheritance'
-FIELD_BASE_CLASSES = 'base_classes'
+FIELD_CLASS_NAME = "class_name"
+FIELD_PATH = "path"
+FIELD_LAYER = "layer"
+FIELD_TERRITORY = "territory"
+FIELD_CATEGORY = "category"
+FIELD_HAS_HEALING = "has_healing"
+FIELD_HAS_TESTS = "has_tests"
+FIELD_HAS_TOOLS = "has_tools"
+FIELD_HAS_MEMORY = "has_memory"
+FIELD_MCP_HARDENED = "mcp_hardened"
+FIELD_INVOCATION = "invocation"
+FIELD_TYPED_PCT = "typed_pct"
+FIELD_DOCUMENTED_PCT = "documented_pct"
+FIELD_SCHEMA_STRICTNESS = "schema_strictness"
+FIELD_PROPER_BASE_CLASS = "proper_base_class"
+FIELD_CYCLOMATIC_COMPLEXITY = "cyclomatic_complexity"
+FIELD_INHERITANCE = "inheritance"
+FIELD_BASE_CLASSES = "base_classes"
 
 
 # ============================================================================
@@ -121,11 +121,44 @@ WEIGHT_CODE_QUALITY_CANONICAL_INHERITANCE = 0.25
 # SSOT INTEGRITY CONSTRAINTS
 # ============================================================================
 try:
-    assert abs(sum([WEIGHT_HEALTH_HEAL_CAP, WEIGHT_HEALTH_INVOCATION, WEIGHT_HEALTH_TEST, WEIGHT_HEALTH_OBSERVABLE, WEIGHT_HEALTH_COMPLEXITY]) - 1.0) < 0.001
-    assert abs(sum([WEIGHT_HEALTH_L0_TEST, WEIGHT_HEALTH_L0_HARDENED, WEIGHT_HEALTH_L0_COMPLEXITY]) - 1.0) < 0.001
-    assert abs(sum([WEIGHT_CODE_QUALITY_TYPED, WEIGHT_CODE_QUALITY_DOCUMENTED, WEIGHT_CODE_QUALITY_SCHEMA_STRICTNESS, WEIGHT_CODE_QUALITY_CANONICAL_INHERITANCE]) - 1.0) < 0.001
+    assert (
+        abs(
+            sum(
+                [
+                    WEIGHT_HEALTH_HEAL_CAP,
+                    WEIGHT_HEALTH_INVOCATION,
+                    WEIGHT_HEALTH_TEST,
+                    WEIGHT_HEALTH_OBSERVABLE,
+                    WEIGHT_HEALTH_COMPLEXITY,
+                ]
+            )
+            - 1.0
+        )
+        < 0.001
+    )
+    assert (
+        abs(
+            sum([WEIGHT_HEALTH_L0_TEST, WEIGHT_HEALTH_L0_HARDENED, WEIGHT_HEALTH_L0_COMPLEXITY])
+            - 1.0
+        )
+        < 0.001
+    )
+    assert (
+        abs(
+            sum(
+                [
+                    WEIGHT_CODE_QUALITY_TYPED,
+                    WEIGHT_CODE_QUALITY_DOCUMENTED,
+                    WEIGHT_CODE_QUALITY_SCHEMA_STRICTNESS,
+                    WEIGHT_CODE_QUALITY_CANONICAL_INHERITANCE,
+                ]
+            )
+            - 1.0
+        )
+        < 0.001
+    )
 except AssertionError:
-    print('❌ CRITICAL: SSOT Weight mismatch detected in dashboard_ssot.yaml')
+    print("❌ CRITICAL: SSOT Weight mismatch detected in dashboard_ssot.yaml")
     raise
 
 
@@ -141,23 +174,35 @@ PLACEHOLDER_OBSERVABLE_PCT = 50.0  # Observable Pct awaiting implementation
 # LAYER DEFINITIONS
 # ============================================================================
 
-LAYER_ORDER = ['Base', 'L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'Apps']
+LAYER_ORDER = ["Base", "L0", "L1", "L2", "L3", "L4", "L5", "L6", "Apps"]
 
 # L0 is infrastructure layer - healing metrics are N/A
 L0_HEALING_NA = True
 
 # MCP-hardened base classes
 MCP_HARDENED_BASES = {
-    'SovereignBaseAgent', 'L0MaintenanceBaseAgent', 'L1CognitionBaseAgent',
-    'L2ExecutionBaseAgent', 'L3OrchestrationBaseAgent', 'L4StateBaseAgent',
-    'L5SafetyBaseAgent', 'L6ObservabilityBaseAgent', 'MCPHardenedMixin'
+    "SovereignBaseAgent",
+    "L0MaintenanceBaseAgent",
+    "L1CognitionBaseAgent",
+    "L2ExecutionBaseAgent",
+    "L3OrchestrationBaseAgent",
+    "L4StateBaseAgent",
+    "L5SafetyBaseAgent",
+    "L6ObservabilityBaseAgent",
+    "MCPHardenedMixin",
 }
 
 # Healer base classes
 HEALER_BASES = {
-    'HealerMixin', 'SovereignBaseAgent', 'L0MaintenanceBaseAgent',
-    'L1CognitionBaseAgent', 'L2ExecutionBaseAgent', 'L3OrchestrationBaseAgent',
-    'L4StateBaseAgent', 'L5SafetyBaseAgent', 'L6ObservabilityBaseAgent'
+    "HealerMixin",
+    "SovereignBaseAgent",
+    "L0MaintenanceBaseAgent",
+    "L1CognitionBaseAgent",
+    "L2ExecutionBaseAgent",
+    "L3OrchestrationBaseAgent",
+    "L4StateBaseAgent",
+    "L5SafetyBaseAgent",
+    "L6ObservabilityBaseAgent",
 }
 
 
@@ -167,6 +212,7 @@ HEALER_BASES = {
 # These functions are preserved from the original file.
 # Add calculation functions here.
 
+
 def calc_heal_cap_pct(agents: list[dict], is_l0: bool = False) -> float:
     """Calculate Heal Capability % for a set of agents."""
     if is_l0:
@@ -175,5 +221,6 @@ def calc_heal_cap_pct(agents: list[dict], is_l0: bool = False) -> float:
         return 0.0
     count = sum(1 for a in agents if a.get(FIELD_HAS_HEALING, False))
     return round(count / len(agents) * 100, 1)
+
 
 # Add other calculation functions as needed...

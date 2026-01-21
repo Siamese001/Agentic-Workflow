@@ -15,6 +15,7 @@ Exit Codes:
     1 - Tests failed, deployment BLOCKED
     2 - Configuration error
 """
+
 import subprocess
 import sys
 from datetime import datetime
@@ -23,6 +24,7 @@ from pathlib import Path
 from agentic_core.utils.security import safe_execute
 
 PROJECT_ROOT = Path(__file__).parent.parent
+
 
 def print_banner(message: str, char: str = "="):
     """Print a banner message."""
@@ -48,7 +50,7 @@ def run_e2e_tests() -> bool:
             cwd=str(PROJECT_ROOT),
             capture_output=False,  # Show output in real-time
             timeout=300,  # 5 minute timeout
-            check=False
+            check=False,
         )
 
         return result.returncode == 0
@@ -71,8 +73,18 @@ def check_ssot_files_exist() -> bool:
         PROJECT_ROOT / "scripts" / "dashboard_ssot_definitions.py",
         PROJECT_ROOT / "scripts" / "territory_ssot_definitions.py",
         PROJECT_ROOT / "scripts" / "regenerate_dashboard_data.py",
-        PROJECT_ROOT / "agentic_core" / "L6_observability" / "dashboards" / "data" / "dashboard_data.js",
-        PROJECT_ROOT / "agentic_core" / "L6_observability" / "dashboards" / "data" / "agent_data.js",
+        PROJECT_ROOT
+        / "agentic_core"
+        / "L6_observability"
+        / "dashboards"
+        / "data"
+        / "dashboard_data.js",
+        PROJECT_ROOT
+        / "agentic_core"
+        / "L6_observability"
+        / "dashboards"
+        / "data"
+        / "agent_data.js",
     ]
 
     all_exist = True
@@ -91,7 +103,14 @@ def check_data_freshness() -> bool:
     print_banner("CHECKING DATA FRESHNESS", "-")
 
     discovery_json = PROJECT_ROOT / "agent_discovery_full.json"
-    dashboard_data = PROJECT_ROOT / "agentic_core" / "L6_observability" / "dashboards" / "data" / "dashboard_data.js"
+    dashboard_data = (
+        PROJECT_ROOT
+        / "agentic_core"
+        / "L6_observability"
+        / "dashboards"
+        / "data"
+        / "dashboard_data.js"
+    )
 
     if not discovery_json.exists() or not dashboard_data.exists():
         print("   ⚠️  Cannot check freshness - files missing")

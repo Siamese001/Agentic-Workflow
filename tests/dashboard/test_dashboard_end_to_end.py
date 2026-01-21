@@ -4,8 +4,8 @@ import sys
 
 if sys.platform.startswith("win"):
     os.system("chcp 65001 >nul 2>&1")
-    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
-    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 """
 MANDATORY END-TO-END DASHBOARD TEST WITH AUTO-REGENERATION
 Must be run after ANY data change to agent_discovery_full.json or dashboard HTML.
@@ -94,6 +94,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 # SSOT HELPER FUNCTIONS
 # =============================================================================
 
+
 def load_agent_discovery_json() -> list:
     """
     Load agent data from agent_discovery_full.json (SSOT).
@@ -102,12 +103,12 @@ def load_agent_discovery_json() -> list:
     Tests should read from this JSON, NOT recalculate or re-discover.
     """
     project_root = get_validated_project_root()
-    discovery_path = project_root / 'agent_discovery_full.json'
+    discovery_path = project_root / "agent_discovery_full.json"
 
     if not discovery_path.exists():
         raise FileNotFoundError(f"SSOT file not found: {discovery_path}")
 
-    with open(discovery_path, encoding='utf-8') as f:
+    with open(discovery_path, encoding="utf-8") as f:
         return json.load(f)
 
 
@@ -119,26 +120,27 @@ def load_all_js_content() -> str:
     Tests should check this aggregated content, NOT the HTML file.
     """
     project_root = get_validated_project_root()
-    js_dir = project_root / DASHBOARD_DIR / 'js'
+    js_dir = project_root / DASHBOARD_DIR / "js"
 
     # Phase 6.3: Use centralized helper to collect all JS files
     from agentic_core.utils.ssot_discovery import get_data_files
+
     all_js = ""
 
     # Collect JS files from js directory
     if js_dir.exists():
-        for js_file in sorted(get_data_files(js_dir, extensions=['.js'])):
+        for js_file in sorted(get_data_files(js_dir, extensions=[".js"])):
             try:
-                all_js += js_file.read_text(encoding='utf-8') + "\n"
+                all_js += js_file.read_text(encoding="utf-8") + "\n"
             except Exception:
                 pass
 
     # Also include inline JS from data files
-    data_dir = project_root / DASHBOARD_DIR / 'data'
+    data_dir = project_root / DASHBOARD_DIR / "data"
     if data_dir.exists():
-        for js_file in sorted(get_data_files(data_dir, extensions=['.js'])):
+        for js_file in sorted(get_data_files(data_dir, extensions=[".js"])):
             try:
-                all_js += js_file.read_text(encoding='utf-8') + "\n"
+                all_js += js_file.read_text(encoding="utf-8") + "\n"
             except Exception:
                 pass
 
@@ -148,8 +150,8 @@ def load_all_js_content() -> str:
 def load_html_content() -> str:
     """Load the dashboard HTML content."""
     project_root = get_validated_project_root()
-    dashboard_path = project_root / DASHBOARD_DIR / 'autonomy_dashboard.html'
-    return dashboard_path.read_text(encoding='utf-8')
+    dashboard_path = project_root / DASHBOARD_DIR / "autonomy_dashboard.html"
+    return dashboard_path.read_text(encoding="utf-8")
 
 
 # =============================================================================
@@ -162,22 +164,22 @@ def load_dashboard_data() -> tuple[list, str]:
     Returns:
         Tuple of (dashboard_data_list, raw_js_content)
     """
-    data_path = get_validated_project_root() / DASHBOARD_DIR / 'data' / 'dashboard_data.js'
+    data_path = get_validated_project_root() / DASHBOARD_DIR / "data" / "dashboard_data.js"
     if not data_path.exists():
         raise FileNotFoundError(f"Dashboard data file not found: {data_path}")
 
-    data_js = data_path.read_text(encoding='utf-8')
+    data_js = data_path.read_text(encoding="utf-8")
 
     # Extract dashboardData array
-    start_marker = 'window.dashboardData = ['
-    end_marker = '];'
+    start_marker = "window.dashboardData = ["
+    end_marker = "];"
     start_idx = data_js.find(start_marker)
     end_idx = data_js.find(end_marker, start_idx) + len(end_marker)
 
     if start_idx == -1 or end_idx == -1:
         raise ValueError("Could not find window.dashboardData in dashboard_data.js")
 
-    json_str = data_js[start_idx + len(start_marker) - 1:end_idx - 1]
+    json_str = data_js[start_idx + len(start_marker) - 1 : end_idx - 1]
     dashboard_data = json.loads(json_str)
 
     return dashboard_data, data_js
@@ -187,14 +189,14 @@ def test_agent_discovery_integrity() -> tuple[bool, list[str]]:
     """Test 1: Verify agent_discovery_full.json integrity."""
     errors = []
     project_root = get_validated_project_root()
-    discovery_path = project_root / 'agent_discovery_full.json'
+    discovery_path = project_root / "agent_discovery_full.json"
 
     if not discovery_path.exists():
         errors.append("❌ agent_discovery_full.json not found")
         return False, errors
 
     try:
-        with open(discovery_path, encoding='utf-8') as f:
+        with open(discovery_path, encoding="utf-8") as f:
             agents = json.load(f)
 
         if not isinstance(agents, list):
@@ -206,7 +208,7 @@ def test_agent_discovery_integrity() -> tuple[bool, list[str]]:
             return False, errors
 
         # Check required fields
-        required_fields = ['path', 'class_name', 'layer', 'has_healing']
+        required_fields = ["path", "class_name", "layer", "has_healing"]
         for i, agent in enumerate(agents[:5]):  # Check first 5
             for field in required_fields:
                 if field not in agent:
@@ -220,12 +222,13 @@ def test_agent_discovery_integrity() -> tuple[bool, list[str]]:
         errors.append(f"❌ Failed to load agent_discovery_full.json: {e}")
         return False, errors
 
+
 def test_dashboard_html_exists() -> tuple[bool, list[str]]:
     """Test 2: Verify dashboard HTML and data files exist."""
     errors = []
     project_root = get_validated_project_root()
-    dashboard_path = project_root / DASHBOARD_DIR / 'autonomy_dashboard.html'
-    data_path = project_root / DASHBOARD_DIR / 'data' / 'dashboard_data.js'
+    dashboard_path = project_root / DASHBOARD_DIR / "autonomy_dashboard.html"
+    data_path = project_root / DASHBOARD_DIR / "data" / "dashboard_data.js"
 
     if not dashboard_path.exists():
         errors.append("❌ autonomy_dashboard.html not found")
@@ -236,35 +239,38 @@ def test_dashboard_html_exists() -> tuple[bool, list[str]]:
         return False, errors
 
     try:
-        html = dashboard_path.read_text(encoding='utf-8')
-        data_js = data_path.read_text(encoding='utf-8')
+        html = dashboard_path.read_text(encoding="utf-8")
+        data_js = data_path.read_text(encoding="utf-8")
 
         if len(html) < 1000:
             errors.append("❌ Dashboard HTML is suspiciously small")
             return False, errors
 
-        if 'window.dashboardData' not in data_js:
+        if "window.dashboardData" not in data_js:
             errors.append("❌ dashboard_data.js missing window.dashboardData")
             return False, errors
 
-        print(f"✅ Test 2 PASSED: Dashboard HTML ({len(html)} bytes) and data file ({len(data_js)} bytes) exist")
+        print(
+            f"✅ Test 2 PASSED: Dashboard HTML ({len(html)} bytes) and data file ({len(data_js)} bytes) exist"
+        )
         return True, []
 
     except Exception as e:
         errors.append(f"❌ Failed to read dashboard files: {e}")
         return False, errors
 
+
 def test_dashboard_data_structure() -> tuple[bool, list[str]]:
     """Test 3: Verify dashboardData JSON structure in dashboard_data.js."""
     errors = []
-    data_path = get_validated_project_root() / DASHBOARD_DIR / 'data' / 'dashboard_data.js'
+    data_path = get_validated_project_root() / DASHBOARD_DIR / "data" / "dashboard_data.js"
 
     try:
-        data_js = data_path.read_text(encoding='utf-8')
+        data_js = data_path.read_text(encoding="utf-8")
 
         # Extract dashboardData from JS file
-        start_marker = 'window.dashboardData = ['
-        end_marker = '];'
+        start_marker = "window.dashboardData = ["
+        end_marker = "];"
         start_idx = data_js.find(start_marker)
         end_idx = data_js.find(end_marker, start_idx) + len(end_marker)
 
@@ -272,7 +278,7 @@ def test_dashboard_data_structure() -> tuple[bool, list[str]]:
             errors.append("❌ Could not find window.dashboardData in dashboard_data.js")
             return False, errors
 
-        json_str = data_js[start_idx+len(start_marker)-1:end_idx-1]
+        json_str = data_js[start_idx + len(start_marker) - 1 : end_idx - 1]
         territories = json.loads(json_str)
 
         if not isinstance(territories, list):
@@ -284,7 +290,7 @@ def test_dashboard_data_structure() -> tuple[bool, list[str]]:
             return False, errors
 
         # Check for TOTAL row
-        total_row = next((t for t in territories if t.get('Territory') == 'TOTAL'), None)
+        total_row = next((t for t in territories if t.get("Territory") == "TOTAL"), None)
         if not total_row:
             errors.append("❌ dashboardData missing TOTAL row")
             return False, errors
@@ -299,31 +305,41 @@ def test_dashboard_data_structure() -> tuple[bool, list[str]]:
         errors.append(f"❌ Failed to parse dashboardData: {e}")
         return False, errors
 
+
 def test_dashboard_required_fields() -> tuple[bool, list[str]]:
     """Test 4: Verify all required fields exist in dashboardData."""
     errors = []
-    data_path = get_validated_project_root() / DASHBOARD_DIR / 'data' / 'dashboard_data.js'
+    data_path = get_validated_project_root() / DASHBOARD_DIR / "data" / "dashboard_data.js"
 
     # SSOT: Use canonical column names from dashboard_ssot_definitions
     # Note: Dashboard data uses COL_COMPLEXITY_HEALTH, not COL_AVG_CC
     required_fields = [
-        'Territory', 'Total', COL_HEAL_CAP, COL_INVOCATION,
-        COL_TEST, COL_HARDENED, COL_COMPLEXITY_HEALTH,
-        COL_TYPED, COL_DOCUMENTED, COL_SCHEMA_STRICTNESS, COL_CANONICAL_INHERITANCE,
-        COL_CODE_QUALITY, COL_HEALTH
+        "Territory",
+        "Total",
+        COL_HEAL_CAP,
+        COL_INVOCATION,
+        COL_TEST,
+        COL_HARDENED,
+        COL_COMPLEXITY_HEALTH,
+        COL_TYPED,
+        COL_DOCUMENTED,
+        COL_SCHEMA_STRICTNESS,
+        COL_CANONICAL_INHERITANCE,
+        COL_CODE_QUALITY,
+        COL_HEALTH,
     ]
 
     try:
-        data_js = data_path.read_text(encoding='utf-8')
-        start_marker = 'window.dashboardData = ['
-        end_marker = '];'
+        data_js = data_path.read_text(encoding="utf-8")
+        start_marker = "window.dashboardData = ["
+        end_marker = "];"
         start_idx = data_js.find(start_marker)
         end_idx = data_js.find(end_marker, start_idx) + len(end_marker)
-        json_str = data_js[start_idx+len(start_marker)-1:end_idx-1]
+        json_str = data_js[start_idx + len(start_marker) - 1 : end_idx - 1]
         territories = json.loads(json_str)
 
         # Check TOTAL row has all fields
-        total_row = next((t for t in territories if t.get('Territory') == 'TOTAL'), None)
+        total_row = next((t for t in territories if t.get("Territory") == "TOTAL"), None)
         if total_row:
             missing_fields = [f for f in required_fields if f not in total_row]
             if missing_fields:
@@ -331,7 +347,7 @@ def test_dashboard_required_fields() -> tuple[bool, list[str]]:
                 return False, errors
 
         # Check at least one territory row has all fields
-        territory_rows = [t for t in territories if t.get('Territory') != 'TOTAL']
+        territory_rows = [t for t in territories if t.get("Territory") != "TOTAL"]
         if territory_rows:
             sample_row = territory_rows[0]
             missing_fields = [f for f in required_fields if f not in sample_row]
@@ -345,6 +361,7 @@ def test_dashboard_required_fields() -> tuple[bool, list[str]]:
     except Exception as e:
         errors.append(f"❌ Failed to verify required fields: {e}")
         return False, errors
+
 
 def test_discovery_field_names() -> tuple[bool, list[str]]:
     """Test 4B: Verify agent_discovery_full.json uses exact SSOT field names.
@@ -375,17 +392,17 @@ def test_discovery_field_names() -> tuple[bool, list[str]]:
 
     # FORBIDDEN field names (common mistakes)
     FORBIDDEN_FIELD_NAMES = {
-        'docstring_percentage': "Use 'documented_pct' instead",
-        'typed_percentage': "Use 'typed_pct' instead",
-        'docstring_pct': "Use 'documented_pct' instead",
-        'type_hints_pct': "Use 'typed_pct' instead",
-        'has_schema': "Use 'schema_strictness' instead",
-        'base_class': "Use 'proper_base_class' instead",
+        "docstring_percentage": "Use 'documented_pct' instead",
+        "typed_percentage": "Use 'typed_pct' instead",
+        "docstring_pct": "Use 'documented_pct' instead",
+        "type_hints_pct": "Use 'typed_pct' instead",
+        "has_schema": "Use 'schema_strictness' instead",
+        "base_class": "Use 'proper_base_class' instead",
     }
 
     try:
-        discovery_path = get_validated_project_root() / 'agent_discovery_full.json'
-        with open(discovery_path, encoding='utf-8') as f:
+        discovery_path = get_validated_project_root() / "agent_discovery_full.json"
+        with open(discovery_path, encoding="utf-8") as f:
             agents = json.load(f)
 
         if not agents:
@@ -393,16 +410,18 @@ def test_discovery_field_names() -> tuple[bool, list[str]]:
             return False, errors
 
         # Sample first 10 agents for field validation
-        sample_agents = agents[:min(10, len(agents))]
+        sample_agents = agents[: min(10, len(agents))]
         field_issues = []
 
         for idx, agent in enumerate(sample_agents):
-            agent_id = agent.get('class_name', f'Agent_{idx}')
+            agent_id = agent.get("class_name", f"Agent_{idx}")
 
             # Check for FORBIDDEN field names
             for forbidden, suggestion in FORBIDDEN_FIELD_NAMES.items():
                 if forbidden in agent:
-                    field_issues.append(f"{agent_id}: Found forbidden field '{forbidden}' - {suggestion}")
+                    field_issues.append(
+                        f"{agent_id}: Found forbidden field '{forbidden}' - {suggestion}"
+                    )
 
             # Check for MISSING required fields
             missing = REQUIRED_SSOT_FIELDS - set(agent.keys())
@@ -428,33 +447,36 @@ def test_discovery_field_names() -> tuple[bool, list[str]]:
         errors.append(f"Test 4B FAILED: {e}")
         return False, errors
 
+
 def test_data_consistency() -> tuple[bool, list[str]]:
     """Test 5: Verify dashboard data matches agent_discovery_full.json."""
     errors = []
 
     try:
         # Load agent discovery (using SSOT path - no hardcoding)
-        discovery_path = get_validated_project_root() / 'agent_discovery_full.json'
-        with open(discovery_path, encoding='utf-8') as f:
+        discovery_path = get_validated_project_root() / "agent_discovery_full.json"
+        with open(discovery_path, encoding="utf-8") as f:
             agents = json.load(f)
 
         # Load dashboard data from JS file
-        data_path = get_validated_project_root() / DASHBOARD_DIR / 'data' / 'dashboard_data.js'
-        data_js = data_path.read_text(encoding='utf-8')
-        start_marker = 'window.dashboardData = ['
-        end_marker = '];'
+        data_path = get_validated_project_root() / DASHBOARD_DIR / "data" / "dashboard_data.js"
+        data_js = data_path.read_text(encoding="utf-8")
+        start_marker = "window.dashboardData = ["
+        end_marker = "];"
         start_idx = data_js.find(start_marker)
         end_idx = data_js.find(end_marker, start_idx) + len(end_marker)
-        json_str = data_js[start_idx+len(start_marker)-1:end_idx-1]
+        json_str = data_js[start_idx + len(start_marker) - 1 : end_idx - 1]
         territories = json.loads(json_str)
 
-        total_row = next((t for t in territories if t.get('Territory') == 'TOTAL'), None)
+        total_row = next((t for t in territories if t.get("Territory") == "TOTAL"), None)
 
         # Check total agent count
-        dashboard_total = total_row['Total']
+        dashboard_total = total_row["Total"]
         actual_total = len(agents)
         if dashboard_total != actual_total:
-            errors.append(f"❌ Agent count mismatch: Dashboard={dashboard_total}, Actual={actual_total}")
+            errors.append(
+                f"❌ Agent count mismatch: Dashboard={dashboard_total}, Actual={actual_total}"
+            )
             return False, errors
 
         # SSOT: Check heal capability using canonical field and column names
@@ -465,13 +487,13 @@ def test_data_consistency() -> tuple[bool, list[str]]:
         complexity = total_row[COL_COMPLEXITY_HEALTH]
         # SSOT: Use dashboard_ssot_definitions health calculation
         # Note: observable_pct is placeholder at 50.0 currently
-        expected_health = calc_health_score(
-            heal_cap, heal_inv, test, 50.0, complexity, is_l0=False
-        )
+        expected_health = calc_health_score(heal_cap, heal_inv, test, 50.0, complexity, is_l0=False)
         actual_heal_pct = total_row[COL_HEALTH]
 
         if abs(actual_heal_pct - expected_health) > 0.5:
-            errors.append(f"❌ {COL_HEALTH} mismatch: Dashboard={actual_heal_pct}%, Expected={expected_health}%")
+            errors.append(
+                f"❌ {COL_HEALTH} mismatch: Dashboard={actual_heal_pct}%, Expected={expected_health}%"
+            )
             return False, errors
 
         print("✅ Test 5 PASSED: Dashboard data consistent with agent_discovery_full.json")
@@ -483,6 +505,7 @@ def test_data_consistency() -> tuple[bool, list[str]]:
         errors.append(f"❌ Failed to verify data consistency: {e}")
         return False, errors
 
+
 def test_table_rendering_elements() -> tuple[bool, list[str]]:
     """Test 6: Verify HTML and JS files have table rendering functions.
 
@@ -492,21 +515,18 @@ def test_table_rendering_elements() -> tuple[bool, list[str]]:
     """
     errors = []
     project_root = get_validated_project_root()
-    dashboard_path = project_root / DASHBOARD_DIR / 'autonomy_dashboard.html'
-    js_dir = project_root / DASHBOARD_DIR / 'js'
+    dashboard_path = project_root / DASHBOARD_DIR / "autonomy_dashboard.html"
+    js_dir = project_root / DASHBOARD_DIR / "js"
 
     required_functions = [
-        'renderTerritorySummaryTable',
-        'renderCodeQualityTable',
+        "renderTerritorySummaryTable",
+        "renderCodeQualityTable",
     ]
 
-    required_elements = [
-        'id="kpiGrid"',
-        'id="codeQualityGrid"'
-    ]
+    required_elements = ['id="kpiGrid"', 'id="codeQualityGrid"']
 
     try:
-        html = dashboard_path.read_text(encoding='utf-8')
+        html = dashboard_path.read_text(encoding="utf-8")
 
         # RCA FIX: Collect JS content FIRST from modular JS files (NOT HTML)
         # This ensures we validate the actual JS architecture, not inline HTML fallbacks
@@ -516,37 +536,39 @@ def test_table_rendering_elements() -> tuple[bool, list[str]]:
         from agentic_core.utils.ssot_discovery import get_data_files
 
         # Priority 1: Check renderers directory (primary location for table functions)
-        renderers_dir = js_dir / 'renderers'
+        renderers_dir = js_dir / "renderers"
         if renderers_dir.exists():
-            for js_file in sorted(get_data_files(renderers_dir, extensions=['.js'])):
-                js_content += js_file.read_text(encoding='utf-8') + "\n"
+            for js_file in sorted(get_data_files(renderers_dir, extensions=[".js"])):
+                js_content += js_file.read_text(encoding="utf-8") + "\n"
 
         # Priority 2: Check utils directory
-        utils_dir = js_dir / 'utils'
+        utils_dir = js_dir / "utils"
         if utils_dir.exists():
-            for js_file in sorted(get_data_files(utils_dir, extensions=['.js'])):
-                js_content += js_file.read_text(encoding='utf-8') + "\n"
+            for js_file in sorted(get_data_files(utils_dir, extensions=[".js"])):
+                js_content += js_file.read_text(encoding="utf-8") + "\n"
 
         # Priority 3: Check root js directory
         if js_dir.exists():
-            for js_file in sorted(get_data_files(js_dir, extensions=['.js'])):
-                js_content += js_file.read_text(encoding='utf-8') + "\n"
+            for js_file in sorted(get_data_files(js_dir, extensions=[".js"])):
+                js_content += js_file.read_text(encoding="utf-8") + "\n"
 
         # RCA FIX: Check functions in JS files ONLY (not HTML)
         # If functions are missing from JS, that's a real error - don't mask with HTML fallback
         js_functions_found = []
         js_functions_missing = []
         for func in required_functions:
-            if f'function {func}' in js_content:
+            if f"function {func}" in js_content:
                 js_functions_found.append(func)
             else:
                 js_functions_missing.append(func)
 
         if js_functions_missing:
             # Check if they exist in HTML as inline JS (legacy fallback - warn but don't fail)
-            html_has_functions = all(f'function {func}' in html for func in js_functions_missing)
+            html_has_functions = all(f"function {func}" in html for func in js_functions_missing)
             if html_has_functions:
-                print(f"   ⚠️  WARNING: Functions {js_functions_missing} found in HTML, not modular JS")
+                print(
+                    f"   ⚠️  WARNING: Functions {js_functions_missing} found in HTML, not modular JS"
+                )
                 print("   ⚠️  This is a legacy pattern - consider migrating to js/renderers/")
             else:
                 for func in js_functions_missing:
@@ -567,6 +589,7 @@ def test_table_rendering_elements() -> tuple[bool, list[str]]:
         errors.append(f"❌ Failed to verify table rendering elements: {e}")
         return False, errors
 
+
 def run_all_tests() -> bool:
     """Run all dashboard tests and report results."""
     print("=" * 70)
@@ -581,7 +604,7 @@ def run_all_tests() -> bool:
         ("Required Fields Present", test_dashboard_required_fields),
         ("Discovery SSOT Field Names", test_discovery_field_names),
         ("Data Consistency", test_data_consistency),
-        ("Table Rendering Elements", test_table_rendering_elements)
+        ("Table Rendering Elements", test_table_rendering_elements),
     ]
 
     all_passed = True
@@ -608,15 +631,16 @@ def run_all_tests() -> bool:
 
     # Extract realAgentData from agent_data.js (separate file from dashboard_data.js)
     import json
-    agent_data_path = get_validated_project_root() / DASHBOARD_DIR / 'data' / 'agent_data.js'
+
+    agent_data_path = get_validated_project_root() / DASHBOARD_DIR / "data" / "agent_data.js"
 
     errors = []
     if not agent_data_path.exists():
         errors.append("Test 7 FAILED: agent_data.js not found")
         match = None
     else:
-        agent_data_js = agent_data_path.read_text(encoding='utf-8')
-        agent_data_pattern = r'window\.realAgentData = (\{.*?\});'
+        agent_data_js = agent_data_path.read_text(encoding="utf-8")
+        agent_data_pattern = r"window\.realAgentData = (\{.*?\});"
         match = re.search(agent_data_pattern, agent_data_js, re.DOTALL)
         if not match:
             errors.append("Test 7 FAILED: window.realAgentData not found in agent_data.js")
@@ -627,16 +651,26 @@ def run_all_tests() -> bool:
             real_agent_data = json.loads(agent_data_json)
 
             # Required fields for drill-down (matches agent_data.js structure)
-            REQUIRED_AGENT_FIELDS = ['name', 'path', 'abs_file', 'class_line',
-                                     'has_mixin', 'invocation', 'has_tests', 'obs_summary',
-                                     'mcp_summary', 'typing_summary', 'health']
+            REQUIRED_AGENT_FIELDS = [
+                "name",
+                "path",
+                "abs_file",
+                "class_line",
+                "has_mixin",
+                "invocation",
+                "has_tests",
+                "obs_summary",
+                "mcp_summary",
+                "typing_summary",
+                "health",
+            ]
 
             territories_checked = 0
             agents_checked = 0
             undefined_found = False
 
             for territory, territory_data in real_agent_data.items():
-                agents = territory_data.get('agents', [])
+                agents = territory_data.get("agents", [])
                 if not agents:
                     continue
 
@@ -647,17 +681,21 @@ def run_all_tests() -> bool:
                     # Check for missing fields
                     missing = [f for f in REQUIRED_AGENT_FIELDS if f not in agent]
                     if missing:
-                        errors.append(f"Test 7 FAILED: Agent in {territory} missing fields: {missing}")
+                        errors.append(
+                            f"Test 7 FAILED: Agent in {territory} missing fields: {missing}"
+                        )
                         break
 
                     # Check for "undefined" values
-                    if agent.get('name') == 'undefined' or not agent.get('name'):
+                    if agent.get("name") == "undefined" or not agent.get("name"):
                         errors.append(f"Test 7 FAILED: Agent name is undefined in {territory}")
                         undefined_found = True
                         break
 
-                    if 'undefined' in json.dumps(agent):
-                        errors.append(f"Test 7 FAILED: Agent {agent.get('name', 'unknown')} in {territory} contains 'undefined'")
+                    if "undefined" in json.dumps(agent):
+                        errors.append(
+                            f"Test 7 FAILED: Agent {agent.get('name', 'unknown')} in {territory} contains 'undefined'"
+                        )
                         undefined_found = True
                         break
 
@@ -665,7 +703,9 @@ def run_all_tests() -> bool:
                     break
 
             if not undefined_found and agents_checked > 0:
-                print(f"✅ Test 7 PASSED: All {agents_checked} agents in {territories_checked} territories have valid drill-down data")
+                print(
+                    f"✅ Test 7 PASSED: All {agents_checked} agents in {territories_checked} territories have valid drill-down data"
+                )
                 print("   No 'undefined' values found")
 
         except json.JSONDecodeError as e:
@@ -680,23 +720,23 @@ def run_all_tests() -> bool:
 
     # DEPRECATED: Simple bases created during refactoring - exclude from base agent count
     # These are lightweight alternatives but not canonical bases
-    DEPRECATED_SIMPLE_BASES = {'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent'}
+    DEPRECATED_SIMPLE_BASES = {"L2Agent", "L3Agent", "L4Agent", "L5Agent"}
 
     # Check for multiple base agents per layer
-    LAYERS = ['L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6']
+    LAYERS = ["L0", "L1", "L2", "L3", "L4", "L5", "L6"]
     CANONICAL_BASE_AGENTS = {
-        'L0': 'L0MaintenanceBaseAgent',
-        'L1': 'L1CognitionBaseAgent',
-        'L2': 'L2ExecutionBaseAgent',
-        'L3': 'L3OrchestrationBaseAgent',
-        'L4': 'L4StateBaseAgent',
-        'L5': 'L5SafetyBaseAgent',
-        'L6': 'L6ObservabilityBaseAgent',
+        "L0": "L0MaintenanceBaseAgent",
+        "L1": "L1CognitionBaseAgent",
+        "L2": "L2ExecutionBaseAgent",
+        "L3": "L3OrchestrationBaseAgent",
+        "L4": "L4StateBaseAgent",
+        "L5": "L5SafetyBaseAgent",
+        "L6": "L6ObservabilityBaseAgent",
     }
     try:
         # Load agents from discovery file (using SSOT path)
-        discovery_path = get_validated_project_root() / 'agent_discovery_full.json'
-        with open(discovery_path, encoding='utf-8') as f:
+        discovery_path = get_validated_project_root() / "agent_discovery_full.json"
+        with open(discovery_path, encoding="utf-8") as f:
             agents = json.load(f)
 
         # Group base agents by layer
@@ -704,12 +744,16 @@ def run_all_tests() -> bool:
         base_agents_wrong_territory = []
 
         for agent in agents:
-            name = agent.get('class_name', '')
-            layer = agent.get('layer', '')
-            territory = agent.get('territory', '')
+            name = agent.get("class_name", "")
+            layer = agent.get("layer", "")
+            territory = agent.get("territory", "")
 
             # Identify base agents (exclude deprecated simple bases)
-            if name.endswith('BaseAgent') or name in ['L0MaintenanceBaseAgent', 'L1CognitionBaseAgent', 'L6Agent']:
+            if name.endswith("BaseAgent") or name in [
+                "L0MaintenanceBaseAgent",
+                "L1CognitionBaseAgent",
+                "L6Agent",
+            ]:
                 # Skip deprecated simple bases - they are lightweight alternatives, not canonical
                 if name not in DEPRECATED_SIMPLE_BASES:
                     if layer not in base_agents_by_layer:
@@ -717,7 +761,7 @@ def run_all_tests() -> bool:
                     base_agents_by_layer[layer].append(agent)
 
                 # Verify base agents are in "Base Agent" territories (or Sovereign Base Agent)
-                if 'Base Agent' not in territory and 'Sovereign Base Agent' not in territory:
+                if "Base Agent" not in territory and "Sovereign Base Agent" not in territory:
                     base_agents_wrong_territory.append(f"{name} ({layer}): territory='{territory}'")
 
         # Report findings
@@ -726,15 +770,19 @@ def run_all_tests() -> bool:
 
         for layer in sorted(base_agents_by_layer.keys()):
             base_agents = base_agents_by_layer[layer]
-            agent_names = [a['class_name'] for a in base_agents]
+            agent_names = [a["class_name"] for a in base_agents]
             print(f"   {layer}: {len(base_agents)} base agents - {', '.join(agent_names)}")
 
         if base_agents_wrong_territory:
-            errors.append(f"Test 8 FAILED: {len(base_agents_wrong_territory)} base agents NOT in 'Base Agent' territories")
+            errors.append(
+                f"Test 8 FAILED: {len(base_agents_wrong_territory)} base agents NOT in 'Base Agent' territories"
+            )
             for issue in base_agents_wrong_territory[:5]:
                 errors.append(f"  - {issue}")
         else:
-            print(f"✅ Test 8 PASSED: All {total_base_agents} base agents in correct 'Base Agent' territories")
+            print(
+                f"✅ Test 8 PASSED: All {total_base_agents} base agents in correct 'Base Agent' territories"
+            )
 
     except Exception as e:
         errors.append(f"Test 8 FAILED: Could not validate base agents: {e}")
@@ -749,17 +797,17 @@ def run_all_tests() -> bool:
         # Note: inheritance list only shows immediate parents, not full MRO
         orphans = []
         for agent in agents:
-            name = agent.get('class_name', '')
-            layer = agent.get('layer', '')
-            proper_base = agent.get('proper_base_class', False)
-            inheritance = agent.get('inheritance', [])
+            name = agent.get("class_name", "")
+            layer = agent.get("layer", "")
+            proper_base = agent.get("proper_base_class", False)
+            inheritance = agent.get("inheritance", [])
 
             # Skip base agents themselves
-            if 'BaseAgent' in name:
+            if "BaseAgent" in name:
                 continue
 
             # Skip non-core layers (Apps, Utils, etc.)
-            if layer not in ['L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'Base']:
+            if layer not in ["L0", "L1", "L2", "L3", "L4", "L5", "L6", "Base"]:
                 continue
 
             # Check proper_base_class field (computed from full MRO in discovery)
@@ -767,11 +815,13 @@ def run_all_tests() -> bool:
                 orphans.append(f"{name} ({layer})")
 
             # Ensure it doesn't just inherit from 'object'
-            if len(inheritance) == 1 and inheritance[0] == 'object':
+            if len(inheritance) == 1 and inheritance[0] == "object":
                 orphans.append(f"{name} ({layer}) - Raw Object Inheritance")
 
         if orphans:
-            errors.append(f"Test 9 FAILED: {len(orphans)} agents lack proper base class architecture")
+            errors.append(
+                f"Test 9 FAILED: {len(orphans)} agents lack proper base class architecture"
+            )
             for orphan in orphans[:3]:
                 errors.append(f"  - {orphan}")
         else:
@@ -791,18 +841,18 @@ def run_all_tests() -> bool:
         # Check heal invocation vs capability using SSOT field names
         agents_with_healing = [a for a in agents if a.get(FIELD_HAS_HEALING)]
         heal_capable = len(agents_with_healing)
-        heal_invoked = sum(1 for a in agents_with_healing if a.get(FIELD_INVOCATION_CONST) == 'Yes')
+        heal_invoked = sum(1 for a in agents_with_healing if a.get(FIELD_INVOCATION_CONST) == "Yes")
 
         if heal_invoked > heal_capable:
             inconsistencies.append(f"Invocation ({heal_invoked}) > Capability ({heal_capable})")
 
         # Check MCP mixin vs flag consistency
         for agent in agents[:50]:  # Sample check
-            name = agent.get('class_name', '')
-            inheritance = str(agent.get('inheritance', []))
-            mcp_hardened = agent.get('mcp_hardened', False)
+            name = agent.get("class_name", "")
+            inheritance = str(agent.get("inheritance", []))
+            mcp_hardened = agent.get("mcp_hardened", False)
 
-            if 'MCPHardenedMixin' in inheritance and not mcp_hardened:
+            if "MCPHardenedMixin" in inheritance and not mcp_hardened:
                 inconsistencies.append(f"{name}: Has MCPHardenedMixin but flag=False")
                 break  # Just report first
 
@@ -822,11 +872,13 @@ def run_all_tests() -> bool:
     print("─" * 70)
 
     try:
-        l5_agents = [a for a in agents if a.get('layer', '').startswith('L5')]
+        l5_agents = [a for a in agents if a.get("layer", "").startswith("L5")]
         unhardened_l5 = [a for a in l5_agents if not a.get(FIELD_MCP_HARDENED)]
 
         if unhardened_l5:
-            errors.append(f"Test 11 FAILED: {len(unhardened_l5)}/{len(l5_agents)} L5 agents NOT MCP hardened (SECURITY VIOLATION)")
+            errors.append(
+                f"Test 11 FAILED: {len(unhardened_l5)}/{len(l5_agents)} L5 agents NOT MCP hardened (SECURITY VIOLATION)"
+            )
             for agent in unhardened_l5[:3]:
                 errors.append(f"  - {agent['class_name']}")
         else:
@@ -842,54 +894,74 @@ def run_all_tests() -> bool:
 
     try:
         # Re-extract dashboard data for this test
-        data_path = get_validated_project_root() / DASHBOARD_DIR / 'data' / 'dashboard_data.js'
-        data_js = data_path.read_text(encoding='utf-8')
+        data_path = get_validated_project_root() / DASHBOARD_DIR / "data" / "dashboard_data.js"
+        data_js = data_path.read_text(encoding="utf-8")
 
         # Extract dashboardData
-        data_match = re.search(r'window\.dashboardData = (\[.*?\]);', data_js, re.DOTALL)
+        data_match = re.search(r"window\.dashboardData = (\[.*?\]);", data_js, re.DOTALL)
         if not data_match:
-            errors.append("Test 12 FAILED: Could not extract window.dashboardData from dashboard_data.js")
+            errors.append(
+                "Test 12 FAILED: Could not extract window.dashboardData from dashboard_data.js"
+            )
         else:
             dashboard_data_test = json.loads(data_match.group(1))
 
             # Check Table 2 fields exist in dashboard data
-            table2_fields = ['Typed %', 'Documented %', 'Schema Strictness %', 'Canonical Inheritance %', 'Code Quality Score']
+            table2_fields = [
+                "Typed %",
+                "Documented %",
+                "Schema Strictness %",
+                "Canonical Inheritance %",
+                "Code Quality Score",
+            ]
 
             if dashboard_data_test and len(dashboard_data_test) > 0:
                 total_row = dashboard_data_test[0]
                 missing_table2_fields = [f for f in table2_fields if f not in total_row]
 
                 if missing_table2_fields:
-                    errors.append(f"Test 12 FAILED: Table 2 missing fields: {missing_table2_fields}")
+                    errors.append(
+                        f"Test 12 FAILED: Table 2 missing fields: {missing_table2_fields}"
+                    )
                 else:
                     # Verify values are reasonable
-                    typed_pct = total_row.get('Typed %', 0)
-                    doc_pct = total_row.get('Documented %', 0)
-                    quality_score = total_row.get('Code Quality Score', 0)
+                    typed_pct = total_row.get("Typed %", 0)
+                    doc_pct = total_row.get("Documented %", 0)
+                    quality_score = total_row.get("Code Quality Score", 0)
 
                     if typed_pct < 0 or typed_pct > 100:
                         errors.append(f"Test 12 FAILED: Invalid Typed % = {typed_pct}")
                     elif doc_pct < 0 or doc_pct > 100:
                         errors.append(f"Test 12 FAILED: Invalid Documented % = {doc_pct}")
                     elif quality_score < 0 or quality_score > 100:
-                        errors.append(f"Test 12 FAILED: Invalid Code Quality Score = {quality_score}")
+                        errors.append(
+                            f"Test 12 FAILED: Invalid Code Quality Score = {quality_score}"
+                        )
                     else:
                         print("✅ Test 12 PASSED: Table 2 data valid")
-                        print(f"   Typed: {typed_pct}%, Documented: {doc_pct}%, Quality: {quality_score}")
+                        print(
+                            f"   Typed: {typed_pct}%, Documented: {doc_pct}%, Quality: {quality_score}"
+                        )
 
                     # Test 12A: Canonical Inheritance % Accuracy (cross-validate with discovery data)
-                    proper_base_pct = total_row.get('Canonical Inheritance %', 0)
+                    proper_base_pct = total_row.get("Canonical Inheritance %", 0)
                     # Use SSOT function
                     expected_proper_base = calc_canonical_inheritance_pct(agents)
                     tolerance = 1.0  # Allow 1% variance
 
                     if abs(proper_base_pct - expected_proper_base) > tolerance:
                         errors.append("Test 12A FAILED: Canonical Inheritance % mismatch")
-                        errors.append(f"  Expected: {expected_proper_base:.1f}% (from SSOT calculation)")
+                        errors.append(
+                            f"  Expected: {expected_proper_base:.1f}% (from SSOT calculation)"
+                        )
                         errors.append(f"  Actual: {proper_base_pct}%")
-                        errors.append(f"  Difference: {abs(proper_base_pct - expected_proper_base):.1f}%")
+                        errors.append(
+                            f"  Difference: {abs(proper_base_pct - expected_proper_base):.1f}%"
+                        )
                     else:
-                        print(f"✅ Test 12A PASSED: Canonical Inheritance % accurate ({proper_base_pct}% vs {expected_proper_base:.1f}% expected)")
+                        print(
+                            f"✅ Test 12A PASSED: Canonical Inheritance % accurate ({proper_base_pct}% vs {expected_proper_base:.1f}% expected)"
+                        )
             else:
                 errors.append("Test 12 FAILED: No dashboard data to validate Table 2")
 
@@ -903,9 +975,9 @@ def run_all_tests() -> bool:
 
     try:
         # Re-extract dashboard data
-        data_path = get_validated_project_root() / DASHBOARD_DIR / 'data' / 'dashboard_data.js'
-        data_js = data_path.read_text(encoding='utf-8')
-        data_match = re.search(r'window\.dashboardData = (\[.*?\]);', data_js, re.DOTALL)
+        data_path = get_validated_project_root() / DASHBOARD_DIR / "data" / "dashboard_data.js"
+        data_js = data_path.read_text(encoding="utf-8")
+        data_match = re.search(r"window\.dashboardData = (\[.*?\]);", data_js, re.DOTALL)
 
         if data_match:
             dashboard_data_test = json.loads(data_match.group(1))
@@ -913,25 +985,31 @@ def run_all_tests() -> bool:
 
             # Check first 5 territories for accuracy
             for territory_row in dashboard_data_test[1:6]:  # Skip TOTAL
-                territory_name = territory_row.get('Territory', '')
-                dashboard_proper_base = territory_row.get('Canonical Inheritance %', 0)
+                territory_name = territory_row.get("Territory", "")
+                dashboard_proper_base = territory_row.get("Canonical Inheritance %", 0)
 
                 # Find agents in this territory
-                territory_agents = [a for a in agents if a.get('territory') == territory_name]
+                territory_agents = [a for a in agents if a.get("territory") == territory_name]
 
                 if territory_agents:
                     # Use SSOT function
                     expected_pct = calc_canonical_inheritance_pct(territory_agents)
 
                     if abs(dashboard_proper_base - expected_pct) > 1.0:
-                        territory_errors.append(f"{territory_name}: Expected {expected_pct}%, Got {dashboard_proper_base}%")
+                        territory_errors.append(
+                            f"{territory_name}: Expected {expected_pct}%, Got {dashboard_proper_base}%"
+                        )
 
             if territory_errors:
-                errors.append(f"Test 12B FAILED: {len(territory_errors)} territories have incorrect Canonical Inheritance %")
+                errors.append(
+                    f"Test 12B FAILED: {len(territory_errors)} territories have incorrect Canonical Inheritance %"
+                )
                 for err in territory_errors[:3]:  # Show first 3
                     errors.append(f"  - {err}")
             else:
-                print("✅ Test 12B PASSED: Territory-level Canonical Inheritance % accurate (sampled 5 territories)")
+                print(
+                    "✅ Test 12B PASSED: Territory-level Canonical Inheritance % accurate (sampled 5 territories)"
+                )
         else:
             errors.append("Test 12B FAILED: Could not extract dashboard data")
 
@@ -945,18 +1023,22 @@ def run_all_tests() -> bool:
 
     try:
         # Check table-renderer.js (modular JS architecture)
-        table_renderer_path = get_validated_project_root() / DASHBOARD_DIR / "js" / "renderers" / "table-renderer.js"
+        table_renderer_path = (
+            get_validated_project_root() / DASHBOARD_DIR / "js" / "renderers" / "table-renderer.js"
+        )
         if not table_renderer_path.exists():
             errors.append("Test 12C FAILED: table-renderer.js not found")
         else:
-            js_content = table_renderer_path.read_text(encoding='utf-8')
+            js_content = table_renderer_path.read_text(encoding="utf-8")
 
             # Extract renderCodeQualityTable function
-            table2_func_start = js_content.find('function renderCodeQualityTable(')
+            table2_func_start = js_content.find("function renderCodeQualityTable(")
             if table2_func_start == -1:
-                errors.append("Test 12C FAILED: renderCodeQualityTable function not found in table-renderer.js")
+                errors.append(
+                    "Test 12C FAILED: renderCodeQualityTable function not found in table-renderer.js"
+                )
             else:
-                table2_func_end = js_content.find('\nfunction ', table2_func_start + 100)
+                table2_func_end = js_content.find("\nfunction ", table2_func_start + 100)
                 if table2_func_end == -1:
                     table2_func_end = len(js_content)
                 table2_func = js_content[table2_func_start:table2_func_end]
@@ -964,20 +1046,24 @@ def run_all_tests() -> bool:
             table2_issues = []
 
             # Verify formatDistributionCell is used in Table 2
-            if 'formatDistributionCell' not in table2_func:
+            if "formatDistributionCell" not in table2_func:
                 table2_issues.append("Table 2 does NOT use formatDistributionCell (Table 1 does)")
 
             # Verify computeDistributionStats is used
-            if 'computeDistributionStats' not in table2_func:
+            if "computeDistributionStats" not in table2_func:
                 table2_issues.append("Table 2 does NOT use computeDistributionStats (Table 1 does)")
 
             # Verify getGradientBg is used for color formatting
-            if 'getGradientBg' not in table2_func:
-                table2_issues.append("Table 2 does NOT use getGradientBg for color backgrounds (Table 1 does)")
+            if "getGradientBg" not in table2_func:
+                table2_issues.append(
+                    "Table 2 does NOT use getGradientBg for color backgrounds (Table 1 does)"
+                )
 
             # Verify formatProblemAgentsTooltip is used
-            if 'formatProblemAgentsTooltip' not in table2_func:
-                table2_issues.append("Table 2 does NOT use formatProblemAgentsTooltip for tooltips (Table 1 does)")
+            if "formatProblemAgentsTooltip" not in table2_func:
+                table2_issues.append(
+                    "Table 2 does NOT use formatProblemAgentsTooltip for tooltips (Table 1 does)"
+                )
 
             # Verify metric-cell class is used
             if 'class="metric-cell"' not in table2_func:
@@ -1008,12 +1094,14 @@ def run_all_tests() -> bool:
 
     try:
         # Check table-renderer.js (modular JS architecture)
-        table_renderer_path = get_validated_project_root() / DASHBOARD_DIR / "js" / "renderers" / "table-renderer.js"
-        js_content = table_renderer_path.read_text(encoding='utf-8')
+        table_renderer_path = (
+            get_validated_project_root() / DASHBOARD_DIR / "js" / "renderers" / "table-renderer.js"
+        )
+        js_content = table_renderer_path.read_text(encoding="utf-8")
 
         # Extract renderCodeQualityTable function
-        table2_func_start = js_content.find('function renderCodeQualityTable(')
-        table2_func_end = js_content.find('\nfunction ', table2_func_start + 100)
+        table2_func_start = js_content.find("function renderCodeQualityTable(")
+        table2_func_end = js_content.find("\nfunction ", table2_func_start + 100)
         if table2_func_end == -1:
             table2_func_end = len(js_content)
         table2_func = js_content[table2_func_start:table2_func_end]
@@ -1021,24 +1109,26 @@ def run_all_tests() -> bool:
         dist_issues = []
 
         # Verify all Table 2 metrics get distribution stats
-        required_stats = ['typedStats', 'documentedStats', 'schemaStats', 'baseClassStats']
+        required_stats = ["typedStats", "documentedStats", "schemaStats", "baseClassStats"]
         for stat in required_stats:
             if stat not in table2_func:
                 dist_issues.append(f"Missing {stat} calculation")
 
         # Verify stats are passed to formatDistributionCell
         required_calls = [
-            'formatDistributionCell(typed, typedStats)',
-            'formatDistributionCell(documented, documentedStats)',
-            'formatDistributionCell(schema, schemaStats)',
-            'formatDistributionCell(baseClass, baseClassStats)'
+            "formatDistributionCell(typed, typedStats)",
+            "formatDistributionCell(documented, documentedStats)",
+            "formatDistributionCell(schema, schemaStats)",
+            "formatDistributionCell(baseClass, baseClassStats)",
         ]
         for call in required_calls:
             if call not in table2_func:
                 dist_issues.append(f"Missing call: {call}")
 
         if dist_issues:
-            errors.append(f"Test 12D FAILED: {len(dist_issues)} distribution stat issues in Table 2")
+            errors.append(
+                f"Test 12D FAILED: {len(dist_issues)} distribution stat issues in Table 2"
+            )
             for issue in dist_issues:
                 errors.append(f"  - {issue}")
             print("❌ Test 12D FAILED: Table 2 distribution stats incomplete")
@@ -1061,35 +1151,41 @@ def run_all_tests() -> bool:
 
     try:
         # Check table-renderer.js (modular JS architecture)
-        table_renderer_path = get_validated_project_root() / DASHBOARD_DIR / "js" / "renderers" / "table-renderer.js"
-        js_content = table_renderer_path.read_text(encoding='utf-8')
+        table_renderer_path = (
+            get_validated_project_root() / DASHBOARD_DIR / "js" / "renderers" / "table-renderer.js"
+        )
+        js_content = table_renderer_path.read_text(encoding="utf-8")
 
         # Extract both table functions
-        table1_func_start = js_content.find('function renderTerritorySummaryTable(')
-        table1_func_end = js_content.find('\nfunction ', table1_func_start + 100)
+        table1_func_start = js_content.find("function renderTerritorySummaryTable(")
+        table1_func_end = js_content.find("\nfunction ", table1_func_start + 100)
         if table1_func_end == -1:
-            table1_func_end = js_content.find('\n// ', table1_func_start + 100)
+            table1_func_end = js_content.find("\n// ", table1_func_start + 100)
         table1_func = js_content[table1_func_start:table1_func_end]
 
-        table2_func_start = js_content.find('function renderCodeQualityTable(')
-        table2_func_end = js_content.find('\nfunction ', table2_func_start + 100)
+        table2_func_start = js_content.find("function renderCodeQualityTable(")
+        table2_func_end = js_content.find("\nfunction ", table2_func_start + 100)
         if table2_func_end == -1:
-            table2_func_end = js_content.find('\n// ', table2_func_start + 100)
+            table2_func_end = js_content.find("\n// ", table2_func_start + 100)
         table2_func = js_content[table2_func_start:table2_func_end]
 
         color_issues = []
 
         # Verify Table 2 uses getGradientBg like Table 1
-        table1_gradient_count = table1_func.count('getGradientBg(')
-        table2_gradient_count = table2_func.count('getGradientBg(')
+        table1_gradient_count = table1_func.count("getGradientBg(")
+        table2_gradient_count = table2_func.count("getGradientBg(")
 
         if table2_gradient_count == 0:
-            color_issues.append("Table 2 does NOT use getGradientBg (Table 1 uses it for color backgrounds)")
+            color_issues.append(
+                "Table 2 does NOT use getGradientBg (Table 1 uses it for color backgrounds)"
+            )
         elif table2_gradient_count < 4:  # Should have at least 4 metrics with gradient backgrounds
-            color_issues.append(f"Table 2 uses getGradientBg only {table2_gradient_count} times (should be 4+ for all metrics)")
+            color_issues.append(
+                f"Table 2 uses getGradientBg only {table2_gradient_count} times (should be 4+ for all metrics)"
+            )
 
         # Verify background styling pattern matches
-        if 'background: ${' not in table2_func or 'Bg}' not in table2_func:
+        if "background: ${" not in table2_func or "Bg}" not in table2_func:
             color_issues.append("Table 2 missing background color styling pattern")
 
         if color_issues:
@@ -1115,11 +1211,13 @@ def run_all_tests() -> bool:
 
     try:
         # Check table-renderer.js (modular JS architecture)
-        table_renderer_path = get_validated_project_root() / DASHBOARD_DIR / "js" / "renderers" / "table-renderer.js"
-        js_content = table_renderer_path.read_text(encoding='utf-8')
+        table_renderer_path = (
+            get_validated_project_root() / DASHBOARD_DIR / "js" / "renderers" / "table-renderer.js"
+        )
+        js_content = table_renderer_path.read_text(encoding="utf-8")
 
-        table2_func_start = js_content.find('function renderCodeQualityTable(')
-        table2_func_end = js_content.find('\nfunction ', table2_func_start + 100)
+        table2_func_start = js_content.find("function renderCodeQualityTable(")
+        table2_func_end = js_content.find("\nfunction ", table2_func_start + 100)
         if table2_func_end == -1:
             table2_func_end = len(js_content)
         table2_func = js_content[table2_func_start:table2_func_end]
@@ -1127,19 +1225,21 @@ def run_all_tests() -> bool:
         tooltip_issues = []
 
         # Verify Table 2 uses formatProblemAgentsTooltip for all metrics
-        table2_tooltip_count = table2_func.count('formatProblemAgentsTooltip(')
+        table2_tooltip_count = table2_func.count("formatProblemAgentsTooltip(")
 
         if table2_tooltip_count == 0:
             tooltip_issues.append("Table 2 has NO tooltips (Table 1 has tooltips for all metrics)")
         elif table2_tooltip_count < 4:  # Should have 4 metrics with tooltips
-            tooltip_issues.append(f"Table 2 has only {table2_tooltip_count} tooltips (should have 4 for Typed/Documented/Schema/BaseClass)")
+            tooltip_issues.append(
+                f"Table 2 has only {table2_tooltip_count} tooltips (should have 4 for Typed/Documented/Schema/BaseClass)"
+            )
 
         # Verify custom-tooltip class is used
         if 'class="custom-tooltip"' not in table2_func:
             tooltip_issues.append("Table 2 missing custom-tooltip class")
 
         # Verify tooltip metrics match Table 2 metrics
-        expected_tooltip_metrics = ['typed', 'documented', 'schemaStrictness', 'properBase']
+        expected_tooltip_metrics = ["typed", "documented", "schemaStrictness", "properBase"]
         for metric in expected_tooltip_metrics:
             if f"'{metric}'" not in table2_func:
                 tooltip_issues.append(f"Missing tooltip for metric: {metric}")
@@ -1167,47 +1267,63 @@ def run_all_tests() -> bool:
 
     try:
         # Check math-utils.js for the correct logic
-        math_utils_path = get_validated_project_root() / DASHBOARD_DIR / "js" / "utils" / "math-utils.js"
-        math_content = math_utils_path.read_text(encoding='utf-8')
+        math_utils_path = (
+            get_validated_project_root() / DASHBOARD_DIR / "js" / "utils" / "math-utils.js"
+        )
+        math_content = math_utils_path.read_text(encoding="utf-8")
 
         # Extract formatDistributionCell function
-        func_start = math_content.find('function formatDistributionCell(')
-        func_end = math_content.find('\nfunction ', func_start + 100)
+        func_start = math_content.find("function formatDistributionCell(")
+        func_end = math_content.find("\nfunction ", func_start + 100)
         if func_end == -1:
-            func_end = math_content.find('\n// ', func_start + 100)
+            func_end = math_content.find("\n// ", func_start + 100)
         format_func = math_content[func_start:func_end]
 
         stats_100_issues = []
 
         # Verify logic checks for count <= 1 (single agent - no distribution)
-        if 'stats.count <= 1' not in format_func:
-            stats_100_issues.append("formatDistributionCell does NOT check for single value (count <= 1)")
+        if "stats.count <= 1" not in format_func:
+            stats_100_issues.append(
+                "formatDistributionCell does NOT check for single value (count <= 1)"
+            )
 
         # Verify logic checks for identical values at 100% (min === max && min >= 99.9)
         # FIX (Jan 17 2026): Changed from separate conditions to combined condition
         # This ensures min/max/stdev is shown for cells < 100% even if uniform
-        if 'stats.min === stats.max && stats.min >= 99.9' not in format_func:
-            stats_100_issues.append("formatDistributionCell does NOT check for identical values at 100% (stats.min === stats.max && stats.min >= 99.9)")
+        if "stats.min === stats.max && stats.min >= 99.9" not in format_func:
+            stats_100_issues.append(
+                "formatDistributionCell does NOT check for identical values at 100% (stats.min === stats.max && stats.min >= 99.9)"
+            )
 
         # Verify early return when conditions met
-        if 'return `${avg.toFixed(1)}%`' not in format_func:
-            stats_100_issues.append("formatDistributionCell missing early return for perfect scores")
+        if "return `${avg.toFixed(1)}%`" not in format_func:
+            stats_100_issues.append(
+                "formatDistributionCell missing early return for perfect scores"
+            )
 
         # Verify uniform value indicator for < 100% cells (RCA: Jan 17 2026)
-        if '(all ${stats.min.toFixed(0)}%)' not in format_func:
-            stats_100_issues.append("formatDistributionCell missing uniform value indicator for non-100% cells")
+        if "(all ${stats.min.toFixed(0)}%)" not in format_func:
+            stats_100_issues.append(
+                "formatDistributionCell missing uniform value indicator for non-100% cells"
+            )
 
         # Check that format-utils.js does NOT have duplicate function
-        format_utils_path = get_validated_project_root() / DASHBOARD_DIR / "js" / "utils" / "format-utils.js"
-        format_utils_content = format_utils_path.read_text(encoding='utf-8')
+        format_utils_path = (
+            get_validated_project_root() / DASHBOARD_DIR / "js" / "utils" / "format-utils.js"
+        )
+        format_utils_content = format_utils_path.read_text(encoding="utf-8")
 
-        if 'function formatDistributionCell(' in format_utils_content:
+        if "function formatDistributionCell(" in format_utils_content:
             # Check if it's the removed/commented version
-            if 'REMOVED: Duplicate formatDistributionCell' not in format_utils_content:
-                stats_100_issues.append("format-utils.js still has duplicate formatDistributionCell function (should be removed)")
+            if "REMOVED: Duplicate formatDistributionCell" not in format_utils_content:
+                stats_100_issues.append(
+                    "format-utils.js still has duplicate formatDistributionCell function (should be removed)"
+                )
 
         if stats_100_issues:
-            errors.append(f"Test 12G FAILED: {len(stats_100_issues)} issues with 100% stats hiding logic")
+            errors.append(
+                f"Test 12G FAILED: {len(stats_100_issues)} issues with 100% stats hiding logic"
+            )
             for issue in stats_100_issues:
                 errors.append(f"  - {issue}")
             print("❌ Test 12G FAILED: Stats not properly hidden at 100%")
@@ -1231,8 +1347,10 @@ def run_all_tests() -> bool:
 
     try:
         # Check table-renderer.js for footnotes (modular architecture)
-        table_renderer_path = get_validated_project_root() / DASHBOARD_DIR / "js" / "renderers" / "table-renderer.js"
-        js_content = table_renderer_path.read_text(encoding='utf-8')
+        table_renderer_path = (
+            get_validated_project_root() / DASHBOARD_DIR / "js" / "renderers" / "table-renderer.js"
+        )
+        js_content = table_renderer_path.read_text(encoding="utf-8")
 
         footnote_checks = []
 
@@ -1240,41 +1358,63 @@ def run_all_tests() -> bool:
         print("\n   Checking Table 1 (Territory Summary) Footnotes:")
 
         # Heal Capability % - NEW DEFINITION
-        if 'Direct implementation: Agent defines' in js_content and 'heal()' in js_content and 'apply_fix()' in js_content and 'heal_violation()' in js_content and 'heal_repository()' in js_content:
-            if 'Inheritance: Agent inherits from a class that has healing capability' in js_content and 'has_healing_in_chain()' in js_content:
+        if (
+            "Direct implementation: Agent defines" in js_content
+            and "heal()" in js_content
+            and "apply_fix()" in js_content
+            and "heal_violation()" in js_content
+            and "heal_repository()" in js_content
+        ):
+            if (
+                "Inheritance: Agent inherits from a class that has healing capability" in js_content
+                and "has_healing_in_chain()" in js_content
+            ):
                 print("   ✅ Heal Capability %: Correct definition (direct + inheritance)")
             else:
-                footnote_checks.append("Heal Capability %: Missing inheritance detection explanation")
+                footnote_checks.append(
+                    "Heal Capability %: Missing inheritance detection explanation"
+                )
         else:
-            footnote_checks.append("Heal Capability %: Missing direct implementation methods (heal, apply_fix, heal_violation, heal_repository)")
+            footnote_checks.append(
+                "Heal Capability %: Missing direct implementation methods (heal, apply_fix, heal_violation, heal_repository)"
+            )
 
         # Heal Invocation %
-        if 'super().heal_repository()' in js_content and 'centralized healing protocol' in js_content:
+        if (
+            "super().heal_repository()" in js_content
+            and "centralized healing protocol" in js_content
+        ):
             print("   ✅ Heal Invocation %: Correct definition")
         else:
-            footnote_checks.append("Heal Invocation %: Missing super().heal_repository() explanation")
+            footnote_checks.append(
+                "Heal Invocation %: Missing super().heal_repository() explanation"
+            )
 
         # MCP Hardened %
-        if 'MCP Hardened' in js_content and ('Model Context Protocol' in js_content or 'security validation' in js_content):
+        if "MCP Hardened" in js_content and (
+            "Model Context Protocol" in js_content or "security validation" in js_content
+        ):
             print("   ✅ MCP Hardened %: Correct definition")
         else:
             footnote_checks.append("MCP Hardened %: Missing MCP/security validation explanation")
 
         # Test Coverage %
-        if 'Test Coverage' in js_content and ('unit/integration tests' in js_content or 'test files' in js_content):
+        if "Test Coverage" in js_content and (
+            "unit/integration tests" in js_content or "test files" in js_content
+        ):
             print("   ✅ Test Coverage %: Correct definition")
         else:
             footnote_checks.append("Test Coverage %: Missing test explanation")
 
         # Complexity Health %
-        if '100 - (Cyclomatic Complexity' in js_content or 'Complexity Health' in js_content:
+        if "100 - (Cyclomatic Complexity" in js_content or "Complexity Health" in js_content:
             print("   ✅ Complexity Health %: Correct definition")
         else:
             footnote_checks.append("Complexity Health %: Missing complexity formula")
 
         # Health Score - Gospel-weighted
-        if 'Gospel-weighted' in js_content or 'Heal Capability (30%)' in js_content:
-            if 'Invocation (10%)' in js_content and 'Test Coverage (25%)' in js_content:
+        if "Gospel-weighted" in js_content or "Heal Capability (30%)" in js_content:
+            if "Invocation (10%)" in js_content and "Test Coverage (25%)" in js_content:
                 print("   ✅ Health Score: Correct weighted formula")
             else:
                 footnote_checks.append("Health Score: Weighted formula incomplete")
@@ -1285,40 +1425,48 @@ def run_all_tests() -> bool:
         print("\n   Checking Table 2 (Code Quality) Footnotes:")
 
         # Typed %
-        if 'Typed %' in js_content and ('type hints' in js_content or 'type annotations' in js_content):
+        if "Typed %" in js_content and (
+            "type hints" in js_content or "type annotations" in js_content
+        ):
             print("   ✅ Typed %: Correct definition")
         else:
             footnote_checks.append("Typed %: Missing type hints explanation")
 
         # Documented %
-        if 'Documented %' in js_content and 'docstrings' in js_content:
+        if "Documented %" in js_content and "docstrings" in js_content:
             print("   ✅ Documented %: Correct definition")
         else:
             footnote_checks.append("Documented %: Missing docstrings explanation")
 
         # Schema Strictness %
-        if 'Schema Strictness' in js_content and ('@dataclass' in js_content or 'Pydantic' in js_content or 'BaseModel' in js_content):
+        if "Schema Strictness" in js_content and (
+            "@dataclass" in js_content or "Pydantic" in js_content or "BaseModel" in js_content
+        ):
             print("   ✅ Schema Strictness %: Correct definition")
         else:
             footnote_checks.append("Schema Strictness %: Missing @dataclass/Pydantic explanation")
 
         # Canonical Inheritance %
-        if 'Canonical Inheritance' in js_content and ('SovereignBaseAgent' in js_content or 'layer bases' in js_content):
+        if "Canonical Inheritance" in js_content and (
+            "SovereignBaseAgent" in js_content or "layer bases" in js_content
+        ):
             print("   ✅ Canonical Inheritance %: Correct definition")
         else:
             footnote_checks.append("Canonical Inheritance %: Missing base class explanation")
 
         # Code Quality Score
-        if 'Code Quality Score' in js_content and ('Typed % × 0.30' in js_content or 'Weighted composite' in js_content):
+        if "Code Quality Score" in js_content and (
+            "Typed % × 0.30" in js_content or "Weighted composite" in js_content
+        ):
             print("   ✅ Code Quality Score: Correct weighted formula")
         else:
             footnote_checks.append("Code Quality Score: Missing weighted formula")
 
         # Check for stale patterns
         stale_patterns = [
-            ('Typed.*35%', 'Stale Typed % weight (should be 30%)'),
-            ('Schema.*30%.*Typed.*35%', 'Stale Code Quality formula'),
-            ('Metadata.*15%', 'Stale metadata reference')
+            ("Typed.*35%", "Stale Typed % weight (should be 30%)"),
+            ("Schema.*30%.*Typed.*35%", "Stale Code Quality formula"),
+            ("Metadata.*15%", "Stale metadata reference"),
         ]
         for pattern, msg in stale_patterns:
             if re.search(pattern, js_content):
@@ -1331,8 +1479,12 @@ def run_all_tests() -> bool:
             print(f"\n❌ Test 13 FAILED: {len(footnote_checks)} footnote accuracy issues")
         else:
             print("\n✅ Test 13 PASSED: All footnotes accurate for both Table 1 and Table 2")
-            print("   ✓ Table 1: 6 metrics verified (Heal Cap, Invocation, MCP, Test, Complexity, Health)")
-            print("   ✓ Table 2: 5 metrics verified (Typed, Documented, Schema, Base Class, Quality Score)")
+            print(
+                "   ✓ Table 1: 6 metrics verified (Heal Cap, Invocation, MCP, Test, Complexity, Health)"
+            )
+            print(
+                "   ✓ Table 2: 5 metrics verified (Typed, Documented, Schema, Base Class, Quality Score)"
+            )
 
     except Exception as e:
         errors.append(f"Test 13 FAILED: Could not validate footnotes: {e}")
@@ -1349,12 +1501,14 @@ def run_all_tests() -> bool:
 
         if not snapshot_t1.exists():
             errors.append("Test 14 SKIPPED: Snapshot file not found")
-            errors.append("  Create baseline: git show HEAD~5:agent_discovery_full.json > agent_discovery_snapshot_t-1.json")
+            errors.append(
+                "  Create baseline: git show HEAD~5:agent_discovery_full.json > agent_discovery_snapshot_t-1.json"
+            )
         else:
             # Load snapshots
-            with open(snapshot_t1, encoding='utf-8') as f:
+            with open(snapshot_t1, encoding="utf-8") as f:
                 t_minus_1 = json.load(f)
-            with open(current_t, encoding='utf-8') as f:
+            with open(current_t, encoding="utf-8") as f:
                 t_current = json.load(f)
 
             # Compare base classes
@@ -1362,12 +1516,12 @@ def run_all_tests() -> bool:
                 base_classes = {}
                 for agent in agents_list:
                     # Check for 'Base Agent' in territory (or Sovereign Base Agent)
-                    territory = agent.get('territory', '')
-                    if 'Base Agent' in territory or 'Sovereign Base Agent' in territory:
-                        layer = agent.get('layer', 'Unknown')
+                    territory = agent.get("territory", "")
+                    if "Base Agent" in territory or "Sovereign Base Agent" in territory:
+                        layer = agent.get("layer", "Unknown")
                         if layer not in base_classes:
                             base_classes[layer] = []
-                        base_classes[layer].append(agent['class_name'])
+                        base_classes[layer].append(agent["class_name"])
                 return base_classes
 
             base_t1 = get_base_classes(t_minus_1)
@@ -1385,8 +1539,8 @@ def run_all_tests() -> bool:
 
             # Calculate deltas
             delta_agents = len(t_current) - len(t_minus_1)
-            agents_t1 = {a['class_name'] for a in t_minus_1}
-            agents_t = {a['class_name'] for a in t_current}
+            agents_t1 = {a["class_name"] for a in t_minus_1}
+            agents_t = {a["class_name"] for a in t_current}
             added = len(agents_t - agents_t1)
             removed = len(agents_t1 - agents_t)
 
@@ -1450,32 +1604,34 @@ def run_all_tests() -> bool:
         # Get expected territories from agent discovery
         expected_territories = set()
         for agent in agents:
-            territory = agent.get('territory', '')
+            territory = agent.get("territory", "")
             if territory:
                 expected_territories.add(territory)
 
         # Get actual territories from dashboard
-        dashboard_territories = {row['Territory'] for row in dashboard_data if row['Territory'] != 'TOTAL'}
+        dashboard_territories = {
+            row["Territory"] for row in dashboard_data if row["Territory"] != "TOTAL"
+        }
 
         # CRITICAL: Derive expected base class territories from discovery data (no hardcoding)
         # Find all territories that contain "Base" in their name from actual agent data
         # Then map them to dashboard territory names using the same mapping as regenerate script
         territory_mapping = {
-            'Base/Base Class': 'Base/Root',
-            'L0 Maintenance/Base Class': 'L0 Maintenance/Base Agent',
-            'L1 Cognition/Base Class': 'L1 Cognition/Base Agent',
-            'L2 Execution/Base Class': 'L2 Execution/Base Agent',
-            'L3 Orchestration/Base Class': 'L3 Orchestration/Base Agent',
-            'L4 State/Base Class': 'L4 State/Base Agent',
-            'L5 Safety/Base Class': 'L5 Safety/Base Agent',
-            'L6_Observability/Base Class': 'L6 Observability/Base Agent',
+            "Base/Base Class": "Base/Root",
+            "L0 Maintenance/Base Class": "L0 Maintenance/Base Agent",
+            "L1 Cognition/Base Class": "L1 Cognition/Base Agent",
+            "L2 Execution/Base Class": "L2 Execution/Base Agent",
+            "L3 Orchestration/Base Class": "L3 Orchestration/Base Agent",
+            "L4 State/Base Class": "L4 State/Base Agent",
+            "L5 Safety/Base Class": "L5 Safety/Base Agent",
+            "L6_Observability/Base Class": "L6 Observability/Base Agent",
         }
 
         expected_base_classes = set()
         for agent in agents:
-            territory = agent.get('territory', '')
+            territory = agent.get("territory", "")
             # Include territories with "Base" pattern (Base Agent, Base Class, Base/Root)
-            if 'Base' in territory:
+            if "Base" in territory:
                 # Map to dashboard territory name
                 mapped = territory_mapping.get(territory, territory)
                 expected_base_classes.add(mapped)
@@ -1485,12 +1641,16 @@ def run_all_tests() -> bool:
         for base_class in expected_base_classes:
             if base_class not in dashboard_territories:
                 # Check if agents exist for this territory
-                agents_in_territory = [a for a in agents if a.get('territory') == base_class]
+                agents_in_territory = [a for a in agents if a.get("territory") == base_class]
                 if agents_in_territory:
-                    missing_base_classes.append(f"{base_class} (has {len(agents_in_territory)} agents but missing from dashboard!)")
+                    missing_base_classes.append(
+                        f"{base_class} (has {len(agents_in_territory)} agents but missing from dashboard!)"
+                    )
 
         if missing_base_classes:
-            errors.append(f"Test 17A FAILED: {len(missing_base_classes)} Base Class territories MISSING from dashboard")
+            errors.append(
+                f"Test 17A FAILED: {len(missing_base_classes)} Base Class territories MISSING from dashboard"
+            )
             for missing in missing_base_classes:
                 errors.append(f"  - {missing}")
         else:
@@ -1499,22 +1659,28 @@ def run_all_tests() -> bool:
         # Check agent count matches - discovery agents should all be in dashboard
         # Note: Discovery 'territory' field may differ from dashboard computed territories
         # so we check agent COUNT not territory names
-        total_dashboard_agents = sum(row.get('Total', 0) for row in dashboard_data if row.get('Territory') != 'TOTAL')
+        total_dashboard_agents = sum(
+            row.get("Total", 0) for row in dashboard_data if row.get("Territory") != "TOTAL"
+        )
         total_discovery_agents = len(agents)
 
         if total_dashboard_agents != total_discovery_agents:
-            errors.append(f"Test 17B FAILED: Agent count mismatch - Dashboard={total_dashboard_agents}, Discovery={total_discovery_agents}")
+            errors.append(
+                f"Test 17B FAILED: Agent count mismatch - Dashboard={total_dashboard_agents}, Discovery={total_discovery_agents}"
+            )
         else:
-            print(f"✅ Test 17B PASSED: All {total_discovery_agents} agents accounted for in dashboard")
+            print(
+                f"✅ Test 17B PASSED: All {total_discovery_agents} agents accounted for in dashboard"
+            )
 
         # Visual inspection: Check each dashboard row has valid data
         invalid_rows = []
         for row in dashboard_data:
-            territory = row.get('Territory', 'UNKNOWN')
-            if territory == 'TOTAL':
+            territory = row.get("Territory", "UNKNOWN")
+            if territory == "TOTAL":
                 continue
 
-            total = row.get('Total', 0)
+            total = row.get("Total", 0)
             if total == 0:
                 invalid_rows.append(f"{territory}: Total=0 (empty territory)")
 
@@ -1537,10 +1703,13 @@ def run_all_tests() -> bool:
         print("\n   📊 VISUAL INSPECTION SUMMARY:")
         print(f"   Dashboard territories: {len(dashboard_territories)}")
         print(f"   Expected Base Classes: {len(expected_base_classes)}")
-        print(f"   Base Classes present:  {len([b for b in expected_base_classes if b in dashboard_territories])}")
+        print(
+            f"   Base Classes present:  {len([b for b in expected_base_classes if b in dashboard_territories])}"
+        )
 
     except Exception as e:
         import traceback
+
         print(f"   ❌ Test 17 EXCEPTION: {e}")
         traceback.print_exc()
         errors.append(f"Test 17 FAILED: Could not perform visual inspection: {e}")
@@ -1552,8 +1721,8 @@ def run_all_tests() -> bool:
 
     try:
         # Load discovery data
-        discovery_path = get_validated_project_root() / 'agent_discovery_full.json'
-        with open(discovery_path, encoding='utf-8') as f:
+        discovery_path = get_validated_project_root() / "agent_discovery_full.json"
+        with open(discovery_path, encoding="utf-8") as f:
             agents = json.load(f)
 
         # Calculate expected values from discovery using SSOT functions
@@ -1565,32 +1734,44 @@ def run_all_tests() -> bool:
 
         # Get dashboard values using SSOT helper
         dashboard_data_check, _ = load_dashboard_data()
-        total_row = next((r for r in dashboard_data_check if r.get('Territory') == 'TOTAL'), None)
+        total_row = next((r for r in dashboard_data_check if r.get("Territory") == "TOTAL"), None)
 
         if total_row:
-            dashboard_typed = total_row.get('Typed %', 0)
-            dashboard_documented = total_row.get('Documented %', 0)
-            dashboard_schema = total_row.get('Schema Strictness %', 0)
-            dashboard_proper_base = total_row.get('Canonical Inheritance %', 0)
+            dashboard_typed = total_row.get("Typed %", 0)
+            dashboard_documented = total_row.get("Documented %", 0)
+            dashboard_schema = total_row.get("Schema Strictness %", 0)
+            dashboard_proper_base = total_row.get("Canonical Inheritance %", 0)
 
             hardcoded_issues = []
             tolerance = 2.0  # Allow 2% variance for rounding
 
             if abs(dashboard_typed - expected_typed) > tolerance:
-                hardcoded_issues.append(f"Typed %: Dashboard={dashboard_typed}, Expected={expected_typed}")
+                hardcoded_issues.append(
+                    f"Typed %: Dashboard={dashboard_typed}, Expected={expected_typed}"
+                )
             if abs(dashboard_documented - expected_documented) > tolerance:
-                hardcoded_issues.append(f"Documented %: Dashboard={dashboard_documented}, Expected={expected_documented}")
+                hardcoded_issues.append(
+                    f"Documented %: Dashboard={dashboard_documented}, Expected={expected_documented}"
+                )
             if abs(dashboard_schema - expected_schema) > tolerance:
-                hardcoded_issues.append(f"Schema Strictness %: Dashboard={dashboard_schema}, Expected={expected_schema}")
+                hardcoded_issues.append(
+                    f"Schema Strictness %: Dashboard={dashboard_schema}, Expected={expected_schema}"
+                )
             if abs(dashboard_proper_base - expected_proper_base) > tolerance:
-                hardcoded_issues.append(f"Canonical Inheritance %: Dashboard={dashboard_proper_base}, Expected={expected_proper_base}")
+                hardcoded_issues.append(
+                    f"Canonical Inheritance %: Dashboard={dashboard_proper_base}, Expected={expected_proper_base}"
+                )
 
             if hardcoded_issues:
-                errors.append(f"Test 18 FAILED: {len(hardcoded_issues)} values appear hardcoded (don't match discovery)")
+                errors.append(
+                    f"Test 18 FAILED: {len(hardcoded_issues)} values appear hardcoded (don't match discovery)"
+                )
                 for issue in hardcoded_issues:
                     errors.append(f"  - {issue}")
             else:
-                print("✅ Test 18 PASSED: All dashboard values match discovery data (no hardcoding)")
+                print(
+                    "✅ Test 18 PASSED: All dashboard values match discovery data (no hardcoding)"
+                )
                 print(f"   Typed: {dashboard_typed}% (expected {expected_typed}%)")
                 print(f"   Documented: {dashboard_documented}% (expected {expected_documented}%)")
                 print(f"   Schema: {dashboard_schema}% (expected {expected_schema}%)")
@@ -1608,27 +1789,28 @@ def run_all_tests() -> bool:
 
     try:
         dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
-        html_content = dashboard_path.read_text(encoding='utf-8')
+        html_content = dashboard_path.read_text(encoding="utf-8")
 
         # Collect all JS content from modular JS files
-        js_dir = get_validated_project_root() / DASHBOARD_DIR / 'js'
+        js_dir = get_validated_project_root() / DASHBOARD_DIR / "js"
         all_js_content = html_content
         if js_dir.exists():
             # Phase 6.6: Use ssot_discovery instead of rglob
             from agentic_core.utils.ssot_discovery import get_data_files
-            for js_file in get_data_files(js_dir, extensions=['.js']):
+
+            for js_file in get_data_files(js_dir, extensions=[".js"]):
                 try:
-                    all_js_content += js_file.read_text(encoding='utf-8')
+                    all_js_content += js_file.read_text(encoding="utf-8")
                 except Exception:
                     pass
 
         # Check for Strategic Observations section (core elements only)
-        strategic_section_exists = 'Strategic Observations' in html_content
-        macro_div_exists = 'macroObservations' in html_content
-        metric_div_exists = 'metricObservations' in html_content
+        strategic_section_exists = "Strategic Observations" in html_content
+        macro_div_exists = "macroObservations" in html_content
+        metric_div_exists = "metricObservations" in html_content
 
         # Check for render function in any JS file
-        render_function_exists = 'renderStrategicObservations' in all_js_content
+        render_function_exists = "renderStrategicObservations" in all_js_content
 
         issues = []
         if not strategic_section_exists:
@@ -1660,8 +1842,8 @@ def run_all_tests() -> bool:
 
     try:
         # Load discovery data
-        discovery_path = get_validated_project_root() / 'agent_discovery_full.json'
-        with open(discovery_path, encoding='utf-8') as f:
+        discovery_path = get_validated_project_root() / "agent_discovery_full.json"
+        with open(discovery_path, encoding="utf-8") as f:
             agents = json.load(f)
 
         total_agents = len(agents)
@@ -1669,7 +1851,7 @@ def run_all_tests() -> bool:
         # Calculate ALL expected values from discovery (SSOT)
         # IMPORTANT: Use SSOT functions to match regenerate_dashboard_full.py exactly
         expected_metrics = {
-            'Total': total_agents,
+            "Total": total_agents,
             COL_HEAL_CAP: calc_heal_cap_pct(agents),
             COL_INVOCATION: calc_invocation_pct(agents),
             COL_TEST: calc_test_pct(agents),
@@ -1682,7 +1864,7 @@ def run_all_tests() -> bool:
 
         # Get dashboard TOTAL row values using SSOT helper
         dashboard_data_check, _ = load_dashboard_data()
-        total_row = next((r for r in dashboard_data_check if r.get('Territory') == 'TOTAL'), None)
+        total_row = next((r for r in dashboard_data_check if r.get("Territory") == "TOTAL"), None)
 
         hardcoded_issues = []
         if total_row:
@@ -1701,7 +1883,9 @@ def run_all_tests() -> bool:
                 for issue in hardcoded_issues:
                     errors.append(f"  - {issue}")
             else:
-                print(f"✅ Test 20 PASSED: All {len(expected_metrics)} metrics match discovery (zero hardcoding)")
+                print(
+                    f"✅ Test 20 PASSED: All {len(expected_metrics)} metrics match discovery (zero hardcoding)"
+                )
                 for metric, expected in expected_metrics.items():
                     actual = total_row.get(metric, 0)
                     print(f"   ✓ {metric}: {actual} (expected {expected})")
@@ -1718,13 +1902,13 @@ def run_all_tests() -> bool:
 
     try:
         # Load discovery data
-        discovery_path = get_validated_project_root() / 'agent_discovery_full.json'
-        with open(discovery_path, encoding='utf-8') as f:
+        discovery_path = get_validated_project_root() / "agent_discovery_full.json"
+        with open(discovery_path, encoding="utf-8") as f:
             agents = json.load(f)
 
         # Get dashboard TOTAL row using SSOT helper
         dashboard_data_check, _ = load_dashboard_data()
-        total_row = next((r for r in dashboard_data_check if r.get('Territory') == 'TOTAL'), None)
+        total_row = next((r for r in dashboard_data_check if r.get("Territory") == "TOTAL"), None)
 
         if total_row:
             # SSOT: Calculate expected health using weighted formula
@@ -1744,7 +1928,9 @@ def run_all_tests() -> bool:
             simple_avg = (heal_cap + invocation + test + 50.0 + complexity) / 5.0
 
             if abs(actual_health - simple_avg) < 1.0:
-                errors.append(f"Test 20B FAILED: Health score appears to be simple average ({simple_avg:.1f}), not weighted")
+                errors.append(
+                    f"Test 20B FAILED: Health score appears to be simple average ({simple_avg:.1f}), not weighted"
+                )
                 errors.append(f"  Expected (weighted): {expected_health:.1f}")
                 errors.append(f"  Actual: {actual_health:.1f}")
                 errors.append(f"  Simple average: {simple_avg:.1f}")
@@ -1752,7 +1938,9 @@ def run_all_tests() -> bool:
                 errors.append("Test 20B FAILED: Health score mismatch")
                 errors.append(f"  Expected (SSOT weighted): {expected_health:.1f}")
                 errors.append(f"  Actual: {actual_health:.1f}")
-                errors.append("  Formula: (Heal*0.30 + Inv*0.10 + Test*0.25 + Obs*0.20 + Comp*0.15)")
+                errors.append(
+                    "  Formula: (Heal*0.30 + Inv*0.10 + Test*0.25 + Obs*0.20 + Comp*0.15)"
+                )
             else:
                 print("✅ Test 20B PASSED: Health score uses correct weighted average")
                 print(f"   Expected (weighted): {expected_health:.1f}")
@@ -1792,13 +1980,14 @@ def run_all_tests() -> bool:
             dashboard_data = None
 
         # Collect all JS content from modular JS files
-        js_dir = get_validated_project_root() / DASHBOARD_DIR / 'js'
+        js_dir = get_validated_project_root() / DASHBOARD_DIR / "js"
         all_js_content = html_content  # Start with HTML
         if js_dir.exists():
             from agentic_core.utils.ssot_discovery import get_data_files
-            for js_file in get_data_files(js_dir, extensions=['.js']):
+
+            for js_file in get_data_files(js_dir, extensions=[".js"]):
                 try:
-                    all_js_content += js_file.read_text(encoding='utf-8')
+                    all_js_content += js_file.read_text(encoding="utf-8")
                 except Exception:
                     pass
 
@@ -1809,20 +1998,20 @@ def run_all_tests() -> bool:
             # PART A: Verify all required rendering functions exist
             # ============================================================
             required_functions = [
-                ('renderTerritorySummaryTable', 'Territory Summary table (Table 1)'),
-                ('renderCodeQualityTable', 'Code Quality table (Table 2)'),
-                ('renderRecommendations', 'Strategic Recommendations cards'),
-                ('renderStrategicObservations', 'Strategic Observations section'),
-                ('loadData', 'Main data loading orchestrator'),
-                ('computeDistributionStats', 'Distribution statistics calculator'),
-                ('formatDistributionCell', 'Cell value formatter'),
-                ('getWorstCaseColor', 'Color gradient calculator'),
-                ('openDrillModal', 'Drill-down modal handler'),
+                ("renderTerritorySummaryTable", "Territory Summary table (Table 1)"),
+                ("renderCodeQualityTable", "Code Quality table (Table 2)"),
+                ("renderRecommendations", "Strategic Recommendations cards"),
+                ("renderStrategicObservations", "Strategic Observations section"),
+                ("loadData", "Main data loading orchestrator"),
+                ("computeDistributionStats", "Distribution statistics calculator"),
+                ("formatDistributionCell", "Cell value formatter"),
+                ("getWorstCaseColor", "Color gradient calculator"),
+                ("openDrillModal", "Drill-down modal handler"),
             ]
 
             missing_functions = []
             for func_name, description in required_functions:
-                if f'function {func_name}' not in all_js_content:
+                if f"function {func_name}" not in all_js_content:
                     missing_functions.append(f"{func_name}: {description}")
 
             if missing_functions:
@@ -1835,8 +2024,8 @@ def run_all_tests() -> bool:
             # ============================================================
             # The dashboard uses renderContent/initRenderers pattern, not loadData
             render_calls = [
-                ('renderTerritorySummaryTable', 'Table 1 renderer'),
-                ('renderCodeQualityTable', 'Table 2 renderer'),
+                ("renderTerritorySummaryTable", "Table 1 renderer"),
+                ("renderCodeQualityTable", "Table 2 renderer"),
             ]
 
             for func_call, description in render_calls:
@@ -1846,35 +2035,60 @@ def run_all_tests() -> bool:
             # ============================================================
             # PART C: Simulate table row generation for ALL territories
             # ============================================================
-            territory_rows = [r for r in dashboard_data if r.get('Territory') != 'TOTAL']
-            total_row = next((r for r in dashboard_data if r.get('Territory') == 'TOTAL'), None)
+            territory_rows = [r for r in dashboard_data if r.get("Territory") != "TOTAL"]
+            total_row = next((r for r in dashboard_data if r.get("Territory") == "TOTAL"), None)
 
             if not total_row:
-                js_issues.append("TOTAL row missing from dashboardData - tables cannot render summary")
+                js_issues.append(
+                    "TOTAL row missing from dashboardData - tables cannot render summary"
+                )
 
             if len(territory_rows) == 0:
                 js_issues.append("No territory rows in dashboardData - tables would be empty")
 
             # SSOT: Simulate rendering each territory row - check all required fields
-            table1_fields = ['Territory', 'Total', COL_HEAL_CAP, COL_INVOCATION, COL_HARDENED, COL_TEST, COL_COMPLEXITY_HEALTH, COL_HEALTH]
-            table2_fields = ['Territory', 'Total', COL_TYPED, COL_DOCUMENTED, COL_SCHEMA_STRICTNESS, COL_CANONICAL_INHERITANCE, COL_CODE_QUALITY]
+            table1_fields = [
+                "Territory",
+                "Total",
+                COL_HEAL_CAP,
+                COL_INVOCATION,
+                COL_HARDENED,
+                COL_TEST,
+                COL_COMPLEXITY_HEALTH,
+                COL_HEALTH,
+            ]
+            table2_fields = [
+                "Territory",
+                "Total",
+                COL_TYPED,
+                COL_DOCUMENTED,
+                COL_SCHEMA_STRICTNESS,
+                COL_CANONICAL_INHERITANCE,
+                COL_CODE_QUALITY,
+            ]
 
             rows_with_missing_fields = []
             for row in dashboard_data:
-                territory = row.get('Territory', 'UNKNOWN')
+                territory = row.get("Territory", "UNKNOWN")
 
                 # Check Table 1 fields
                 for field in table1_fields:
                     if field not in row:
-                        rows_with_missing_fields.append(f"{territory}: missing '{field}' for Table 1")
+                        rows_with_missing_fields.append(
+                            f"{territory}: missing '{field}' for Table 1"
+                        )
 
                 # Check Table 2 fields
                 for field in table2_fields:
                     if field not in row:
-                        rows_with_missing_fields.append(f"{territory}: missing '{field}' for Table 2")
+                        rows_with_missing_fields.append(
+                            f"{territory}: missing '{field}' for Table 2"
+                        )
 
             if rows_with_missing_fields:
-                js_issues.append(f"{len(rows_with_missing_fields)} missing fields would cause undefined in tables")
+                js_issues.append(
+                    f"{len(rows_with_missing_fields)} missing fields would cause undefined in tables"
+                )
                 for rf in rows_with_missing_fields[:5]:
                     js_issues.append(f"  - {rf}")
 
@@ -1882,75 +2096,95 @@ def run_all_tests() -> bool:
             # PART D: Verify N/A value handling (L0 territories)
             # ============================================================
             # SSOT: Check N/A value handling for L0 territories
-            na_rows = [r for r in dashboard_data if r.get(COL_HEAL_CAP) == "N/A" or r.get(COL_INVOCATION) == "N/A"]
+            na_rows = [
+                r
+                for r in dashboard_data
+                if r.get(COL_HEAL_CAP) == "N/A" or r.get(COL_INVOCATION) == "N/A"
+            ]
 
             if na_rows:
                 # Check computeDistributionStats filters N/A
-                if 'function computeDistributionStats(values)' in all_js_content:
-                    func_start = all_js_content.find('function computeDistributionStats(values)')
-                    func_snippet = all_js_content[func_start:func_start + 500]
-                    if 'filter' not in func_snippet:
-                        js_issues.append("computeDistributionStats: Missing N/A filter - Math.min/max would return NaN")
+                if "function computeDistributionStats(values)" in all_js_content:
+                    func_start = all_js_content.find("function computeDistributionStats(values)")
+                    func_snippet = all_js_content[func_start : func_start + 500]
+                    if "filter" not in func_snippet:
+                        js_issues.append(
+                            "computeDistributionStats: Missing N/A filter - Math.min/max would return NaN"
+                        )
 
                 # Check formatDistributionCell handles N/A
-                if 'function formatDistributionCell(avg, stats' in all_js_content:
-                    func_start = all_js_content.find('function formatDistributionCell(avg, stats')
-                    func_snippet = all_js_content[func_start:func_start + 600]
+                if "function formatDistributionCell(avg, stats" in all_js_content:
+                    func_start = all_js_content.find("function formatDistributionCell(avg, stats")
+                    func_snippet = all_js_content[func_start : func_start + 600]
                     if '"N/A"' not in func_snippet:
-                        js_issues.append("formatDistributionCell: Missing N/A check - .toFixed() would crash")
+                        js_issues.append(
+                            "formatDistributionCell: Missing N/A check - .toFixed() would crash"
+                        )
 
                 # Check getWorstCaseColor handles N/A
-                if 'function getWorstCaseColor(minValue)' in all_js_content:
-                    func_start = all_js_content.find('function getWorstCaseColor(minValue)')
-                    func_snippet = all_js_content[func_start:func_start + 400]
-                    if '"N/A"' not in func_snippet and 'typeof' not in func_snippet:
-                        js_issues.append("getWorstCaseColor: Missing N/A check - comparisons would fail")
+                if "function getWorstCaseColor(minValue)" in all_js_content:
+                    func_start = all_js_content.find("function getWorstCaseColor(minValue)")
+                    func_snippet = all_js_content[func_start : func_start + 400]
+                    if '"N/A"' not in func_snippet and "typeof" not in func_snippet:
+                        js_issues.append(
+                            "getWorstCaseColor: Missing N/A check - comparisons would fail"
+                        )
 
                 # Check all getGradientBg occurrences handle N/A
-                gradient_matches = list(re.finditer(r'const getGradientBg = \(value', html_content))
+                gradient_matches = list(re.finditer(r"const getGradientBg = \(value", html_content))
                 for i, match in enumerate(gradient_matches):
-                    func_snippet = html_content[match.start():match.start() + 400]
-                    if '"N/A"' not in func_snippet and 'typeof value' not in func_snippet:
-                        js_issues.append(f"getGradientBg (occurrence {i+1}): Missing N/A check")
+                    func_snippet = html_content[match.start() : match.start() + 400]
+                    if '"N/A"' not in func_snippet and "typeof value" not in func_snippet:
+                        js_issues.append(f"getGradientBg (occurrence {i + 1}): Missing N/A check")
 
             # ============================================================
             # PART E: Verify realAgentData exists for drill-down
             # ============================================================
             # SSOT: Check modular agent_data.js file (not inline HTML)
-            agent_data_path = get_validated_project_root() / DASHBOARD_DIR / 'data' / 'agent_data.js'
+            agent_data_path = (
+                get_validated_project_root() / DASHBOARD_DIR / "data" / "agent_data.js"
+            )
             has_agent_data = agent_data_path.exists() and agent_data_path.stat().st_size > 100
             if not has_agent_data:
-                js_issues.append("realAgentData missing - drill-down modals would have no agent data")
+                js_issues.append(
+                    "realAgentData missing - drill-down modals would have no agent data"
+                )
             else:
                 # Load realAgentData from modular JS file
                 try:
-                    agent_data_content = agent_data_path.read_text(encoding='utf-8')
+                    agent_data_content = agent_data_path.read_text(encoding="utf-8")
                     # Extract JSON from window.realAgentData = {...};
-                    start_idx = agent_data_content.find('{')
-                    end_idx = agent_data_content.rfind('}') + 1
+                    start_idx = agent_data_content.find("{")
+                    end_idx = agent_data_content.rfind("}") + 1
                     if start_idx != -1 and end_idx > start_idx:
                         real_agent_data = json.loads(agent_data_content[start_idx:end_idx])
                         territories_without_agents = []
                         for row in territory_rows:
-                            territory = row.get('Territory')
+                            territory = row.get("Territory")
                             if territory and territory not in real_agent_data:
                                 territories_without_agents.append(territory)
 
                         if territories_without_agents:
-                            js_issues.append(f"{len(territories_without_agents)} territories missing from realAgentData")
+                            js_issues.append(
+                                f"{len(territories_without_agents)} territories missing from realAgentData"
+                            )
                     else:
-                        js_issues.append("agent_data.js does not contain valid realAgentData object")
+                        js_issues.append(
+                            "agent_data.js does not contain valid realAgentData object"
+                        )
                 except json.JSONDecodeError as e:
-                    js_issues.append(f"realAgentData is not valid JSON - drill-down would crash: {e}")
+                    js_issues.append(
+                        f"realAgentData is not valid JSON - drill-down would crash: {e}"
+                    )
 
             # ============================================================
             # PART F: Verify DOM containers exist for rendered content
             # ============================================================
             required_containers = [
-                ('id="kpiGrid"', 'Table 1 container'),
-                ('id="codeQualityGrid"', 'Table 2 container'),
-                ('id="macroObservations"', 'Macro observations container'),
-                ('id="metricObservations"', 'Metric observations container'),
+                ('id="kpiGrid"', "Table 1 container"),
+                ('id="codeQualityGrid"', "Table 2 container"),
+                ('id="macroObservations"', "Macro observations container"),
+                ('id="metricObservations"', "Metric observations container"),
             ]
 
             for container_id, description in required_containers:
@@ -1961,32 +2195,40 @@ def run_all_tests() -> bool:
             # PART G: Simulate table HTML generation
             # ============================================================
             # Verify the HTML template strings in rendering functions are valid
-            if 'renderTerritorySummaryTable' in all_js_content:
-                func_start = all_js_content.find('function renderTerritorySummaryTable')
-                func_end = all_js_content.find('function ', func_start + 50)
-                func_body = all_js_content[func_start:func_end] if func_end > func_start else all_js_content[func_start:func_start + 10000]
+            if "renderTerritorySummaryTable" in all_js_content:
+                func_start = all_js_content.find("function renderTerritorySummaryTable")
+                func_end = all_js_content.find("function ", func_start + 50)
+                func_body = (
+                    all_js_content[func_start:func_end]
+                    if func_end > func_start
+                    else all_js_content[func_start : func_start + 10000]
+                )
 
                 # Check for table structure
-                if '<table' not in func_body:
+                if "<table" not in func_body:
                     js_issues.append("renderTerritorySummaryTable: No <table> element generated")
-                if '<thead>' not in func_body:
+                if "<thead>" not in func_body:
                     js_issues.append("renderTerritorySummaryTable: No <thead> element generated")
-                if '<tbody>' not in func_body:
+                if "<tbody>" not in func_body:
                     js_issues.append("renderTerritorySummaryTable: No <tbody> element generated")
-                if '<tr' not in func_body:
+                if "<tr" not in func_body:
                     js_issues.append("renderTerritorySummaryTable: No <tr> elements generated")
-                if '<td' not in func_body:
+                if "<td" not in func_body:
                     js_issues.append("renderTerritorySummaryTable: No <td> elements generated")
 
                 # Verify it iterates over territory data
-                if 'forEach' not in func_body and 'for' not in func_body:
-                    js_issues.append("renderTerritorySummaryTable: No iteration over territories - only one row would render")
+                if "forEach" not in func_body and "for" not in func_body:
+                    js_issues.append(
+                        "renderTerritorySummaryTable: No iteration over territories - only one row would render"
+                    )
 
             # ============================================================
             # Report comprehensive results
             # ============================================================
             if js_issues:
-                errors.append(f"Test 22 FAILED: {len(js_issues)} JavaScript rendering issues detected")
+                errors.append(
+                    f"Test 22 FAILED: {len(js_issues)} JavaScript rendering issues detected"
+                )
                 for issue in js_issues:
                     errors.append(f"  - {issue}")
                 print(f"❌ Test 22 FAILED: {len(js_issues)} issues would prevent table rendering")
@@ -1996,7 +2238,9 @@ def run_all_tests() -> bool:
                 print("✅ Test 22 PASSED: JavaScript table rendering simulation successful")
                 print(f"   ✓ {len(required_functions)} rendering functions present")
                 print("   ✓ loadData() orchestrates all render calls")
-                print(f"   ✓ {len(territory_rows)} territory rows + TOTAL row have all required fields")
+                print(
+                    f"   ✓ {len(territory_rows)} territory rows + TOTAL row have all required fields"
+                )
                 print(f"   ✓ {len(na_rows)} N/A rows (L0) handled correctly")
                 print(f"   ✓ realAgentData present for {len(territory_rows)} territories")
                 print("   ✓ All DOM containers present")
@@ -2004,6 +2248,7 @@ def run_all_tests() -> bool:
 
     except Exception as e:
         import traceback
+
         traceback.print_exc()
         errors.append(f"Test 22 FAILED: {e}")
 
@@ -2025,16 +2270,20 @@ def run_all_tests() -> bool:
             if len(dashboard_data) < 2:
                 errors.append("Test 23 FAILED: Dashboard has fewer than 2 rows")
             else:
-                first_row = dashboard_data[0].get('Territory', 'UNKNOWN')
+                first_row = dashboard_data[0].get("Territory", "UNKNOWN")
 
                 order_issues = []
 
                 # Check TOTAL is first (summary row at top)
-                if first_row != 'TOTAL':
-                    order_issues.append(f"First row should be 'TOTAL' (summary), but is '{first_row}'")
+                if first_row != "TOTAL":
+                    order_issues.append(
+                        f"First row should be 'TOTAL' (summary), but is '{first_row}'"
+                    )
 
                 # Verify Sovereign Base Agent is present
-                has_sovereign = any(r.get('Territory') == 'Sovereign Base Agent' for r in dashboard_data)
+                has_sovereign = any(
+                    r.get("Territory") == "Sovereign Base Agent" for r in dashboard_data
+                )
                 if not has_sovereign:
                     order_issues.append("Sovereign Base Agent territory not found in dashboard")
 
@@ -2062,38 +2311,39 @@ def run_all_tests() -> bool:
 
     try:
         dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
-        html_content = dashboard_path.read_text(encoding='utf-8')
+        html_content = dashboard_path.read_text(encoding="utf-8")
 
         # Collect all JS content from modular JS files
-        js_dir = get_validated_project_root() / DASHBOARD_DIR / 'js'
+        js_dir = get_validated_project_root() / DASHBOARD_DIR / "js"
         all_js_content = html_content
         if js_dir.exists():
             # Phase 6.6: Use ssot_discovery instead of rglob
             from agentic_core.utils.ssot_discovery import get_data_files
-            for js_file in get_data_files(js_dir, extensions=['.js']):
+
+            for js_file in get_data_files(js_dir, extensions=[".js"]):
                 try:
-                    all_js_content += js_file.read_text(encoding='utf-8')
+                    all_js_content += js_file.read_text(encoding="utf-8")
                 except Exception:
                     pass
 
         tooltip_issues = []
 
         # Check that formatProblemAgentsTooltip function exists (in any JS file)
-        has_tooltip_func = 'function formatProblemAgentsTooltip(' in all_js_content
+        has_tooltip_func = "function formatProblemAgentsTooltip(" in all_js_content
 
         # Check for any tooltip-related functionality
         has_tooltip_support = (
-            has_tooltip_func or
-            'tooltip' in all_js_content.lower() or
-            'title=' in all_js_content or
-            'getHealthTooltip' in all_js_content
+            has_tooltip_func
+            or "tooltip" in all_js_content.lower()
+            or "title=" in all_js_content
+            or "getHealthTooltip" in all_js_content
         )
 
         if not has_tooltip_support:
             tooltip_issues.append("No tooltip functionality found in dashboard")
 
         # Verify Worst Agent column has been removed (should NOT be present)
-        if '⚠️ Worst Agent' in html_content:
+        if "⚠️ Worst Agent" in html_content:
             tooltip_issues.append("Worst Agent column still present (should be removed)")
 
         if tooltip_issues:
@@ -2117,56 +2367,57 @@ def run_all_tests() -> bool:
 
     try:
         dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
-        html_content = dashboard_path.read_text(encoding='utf-8')
+        html_content = dashboard_path.read_text(encoding="utf-8")
 
         # Collect all JS content from modular JS files
-        js_dir = get_validated_project_root() / DASHBOARD_DIR / 'js'
+        js_dir = get_validated_project_root() / DASHBOARD_DIR / "js"
         all_js_content = html_content
         if js_dir.exists():
             # Phase 6.6: Use ssot_discovery instead of rglob
             from agentic_core.utils.ssot_discovery import get_data_files
-            for js_file in get_data_files(js_dir, extensions=['.js']):
+
+            for js_file in get_data_files(js_dir, extensions=[".js"]):
                 try:
-                    all_js_content += js_file.read_text(encoding='utf-8')
+                    all_js_content += js_file.read_text(encoding="utf-8")
                 except Exception:
                     pass
 
         calc_issues = []
 
         # Verify computeDistributionStats function exists and has correct implementation
-        if 'function computeDistributionStats(values)' in all_js_content:
-            func_start = all_js_content.find('function computeDistributionStats(values)')
-            func_snippet = all_js_content[func_start:func_start + 1500]
+        if "function computeDistributionStats(values)" in all_js_content:
+            func_start = all_js_content.find("function computeDistributionStats(values)")
+            func_snippet = all_js_content[func_start : func_start + 1500]
 
             # Check it filters N/A values
-            if 'filter' not in func_snippet:
+            if "filter" not in func_snippet:
                 calc_issues.append("computeDistributionStats: Missing filter for N/A values")
 
             # Check it calculates min
-            if 'Math.min' not in func_snippet:
+            if "Math.min" not in func_snippet:
                 calc_issues.append("computeDistributionStats: Missing Math.min calculation")
 
             # Check it calculates max
-            if 'Math.max' not in func_snippet:
+            if "Math.max" not in func_snippet:
                 calc_issues.append("computeDistributionStats: Missing Math.max calculation")
 
             # Check it calculates standard deviation
-            if 'stdDev' not in func_snippet and 'std' not in func_snippet:
+            if "stdDev" not in func_snippet and "std" not in func_snippet:
                 calc_issues.append("computeDistributionStats: Missing stdDev calculation")
 
             # Check it calculates count
-            if '.length' not in func_snippet:
+            if ".length" not in func_snippet:
                 calc_issues.append("computeDistributionStats: Missing count (length) tracking")
         else:
             calc_issues.append("computeDistributionStats function not found")
 
         # Verify formatDistributionCell shows proper format
-        if 'function formatDistributionCell(avg, stats' in all_js_content:
-            func_start = all_js_content.find('function formatDistributionCell(avg, stats')
-            func_snippet = all_js_content[func_start:func_start + 800]
+        if "function formatDistributionCell(avg, stats" in all_js_content:
+            func_start = all_js_content.find("function formatDistributionCell(avg, stats")
+            func_snippet = all_js_content[func_start : func_start + 800]
 
             # Should show avg, min-max range, and stdDev
-            if 'toFixed' not in func_snippet:
+            if "toFixed" not in func_snippet:
                 calc_issues.append("formatDistributionCell: Missing toFixed for number formatting")
         else:
             calc_issues.append("formatDistributionCell function not found")
@@ -2198,24 +2449,26 @@ def run_all_tests() -> bool:
         # Load dashboard_data.js for modular dashboard
         data_js_path = project_root / DASHBOARD_DIR / "data" / "dashboard_data.js"
         if data_js_path.exists():
-            data_js_content = data_js_path.read_text(encoding='utf-8')
+            data_js_content = data_js_path.read_text(encoding="utf-8")
             # Extract JSON from window.dashboardData = [...]
-            start_marker = 'window.dashboardData = '
+            start_marker = "window.dashboardData = "
             start_idx = data_js_content.find(start_marker)
             if start_idx != -1:
-                json_start = data_js_content.find('[', start_idx)
-                json_end = data_js_content.rfind(']') + 1
+                json_start = data_js_content.find("[", start_idx)
+                json_end = data_js_content.rfind("]") + 1
                 dashboard_json = data_js_content[json_start:json_end]
                 dashboard_rows = json.loads(dashboard_json)
 
                 # Get territory order from data
-                actual_territories = [row['Territory'] for row in dashboard_rows]
+                actual_territories = [row["Territory"] for row in dashboard_rows]
 
                 order_issues = []
 
                 # Verify first row is TOTAL (summary at top)
                 if actual_territories and actual_territories[0] != "TOTAL":
-                    order_issues.append(f"First row should be 'TOTAL' (summary), got '{actual_territories[0]}'")
+                    order_issues.append(
+                        f"First row should be 'TOTAL' (summary), got '{actual_territories[0]}'"
+                    )
 
                 # Verify Sovereign Base Agent is present
                 has_sovereign = "Sovereign Base Agent" in actual_territories
@@ -2223,7 +2476,7 @@ def run_all_tests() -> bool:
                     order_issues.append("Sovereign Base Agent territory not found in dashboard")
 
                 # Verify we have territories from all layers
-                layer_prefixes = ['L6', 'L5', 'L4', 'L3', 'L2', 'L1', 'L0']
+                layer_prefixes = ["L6", "L5", "L4", "L3", "L2", "L1", "L0"]
                 for prefix in layer_prefixes:
                     has_layer = any(t.startswith(prefix) for t in actual_territories)
                     if not has_layer:
@@ -2244,7 +2497,9 @@ def run_all_tests() -> bool:
                     print("   ✓ All layers (L0-L6) represented")
                     print(f"   ✓ Total territories: {len(actual_territories)}")
             else:
-                errors.append("Test 26 FAILED: Could not find window.dashboardData in dashboard_data.js")
+                errors.append(
+                    "Test 26 FAILED: Could not find window.dashboardData in dashboard_data.js"
+                )
                 print("❌ Test 26 FAILED: Could not parse dashboard_data.js")
         else:
             # Fall back to checking HTML for monolithic dashboard
@@ -2266,28 +2521,36 @@ def run_all_tests() -> bool:
         js_dir = project_root / DASHBOARD_DIR / "js"
         if js_dir.exists():
             from agentic_core.utils.ssot_discovery import get_data_files
+
             stale_js_files = []
-            for js_file in get_data_files(js_dir, extensions=['.js']):
+            for js_file in get_data_files(js_dir, extensions=[".js"]):
                 file_age = datetime.now().timestamp() - js_file.stat().st_mtime
                 if file_age > 3600:  # 1 hour
-                    stale_js_files.append(f"{js_file.name} ({int(file_age/60)} min old)")
+                    stale_js_files.append(f"{js_file.name} ({int(file_age / 60)} min old)")
 
             if stale_js_files:
-                cache_issues.append(f"Stale JS files (may be cached): {', '.join(stale_js_files[:3])}")
+                cache_issues.append(
+                    f"Stale JS files (may be cached): {', '.join(stale_js_files[:3])}"
+                )
 
         # Check data files
         data_dir = project_root / DASHBOARD_DIR / "data"
         if data_dir.exists():
             from agentic_core.utils.ssot_discovery import get_data_files
-            for data_file in get_data_files(data_dir, extensions=['.js']):
+
+            for data_file in get_data_files(data_dir, extensions=[".js"]):
                 file_age = datetime.now().timestamp() - data_file.stat().st_mtime
                 if file_age > 600:  # 10 minutes
-                    cache_issues.append(f"Data file {data_file.name} is {int(file_age/60)} min old - may need regeneration")
+                    cache_issues.append(
+                        f"Data file {data_file.name} is {int(file_age / 60)} min old - may need regeneration"
+                    )
 
         # Provide cache-busting instructions
         print("   📋 CACHE-BUSTING CHECKLIST:")
         print("   1. Stop any running http-server processes")
-        print("   2. Restart server with: python -m http.server 8765 --directory agentic_core/L6_observability/dashboards")
+        print(
+            "   2. Restart server with: python -m http.server 8765 --directory agentic_core/L6_observability/dashboards"
+        )
         print("   3. Hard refresh browser: Ctrl+Shift+R (Windows/Linux) or Cmd+Shift+R (Mac)")
         print("   4. Or use incognito/private browsing mode")
 
@@ -2311,21 +2574,21 @@ def run_all_tests() -> bool:
 
     try:
         dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
-        html_content = dashboard_path.read_text(encoding='utf-8')
+        html_content = dashboard_path.read_text(encoding="utf-8")
 
         # Check for Phase 5 HTML elements
         phase5_elements = [
-            ('id="meta-stats"', 'Meta-Learning Stats container'),
-            ('id="strategy-weights"', 'Strategy Weights container'),
-            ('id="experience-stream"', 'Experience Stream container'),
-            ('id="pattern-timeline"', 'Pattern Timeline container'),
-            ('id="redis-stats"', 'Redis Stats container'),
-            ('id="redis-log"', 'Redis Log container'),
-            ('id="pinecone-stats"', 'Pinecone Stats container'),
-            ('id="pinecone-queries"', 'Pinecone Queries container'),
-            ('id="execution-timeline"', 'Execution Timeline container'),
-            ('id="execution-summary"', 'Execution Summary container'),
-            ('id="layer-flow"', 'Layer Flow container'),
+            ('id="meta-stats"', "Meta-Learning Stats container"),
+            ('id="strategy-weights"', "Strategy Weights container"),
+            ('id="experience-stream"', "Experience Stream container"),
+            ('id="pattern-timeline"', "Pattern Timeline container"),
+            ('id="redis-stats"', "Redis Stats container"),
+            ('id="redis-log"', "Redis Log container"),
+            ('id="pinecone-stats"', "Pinecone Stats container"),
+            ('id="pinecone-queries"', "Pinecone Queries container"),
+            ('id="execution-timeline"', "Execution Timeline container"),
+            ('id="execution-summary"', "Execution Summary container"),
+            ('id="layer-flow"', "Layer Flow container"),
         ]
 
         missing_elements = []
@@ -2334,17 +2597,19 @@ def run_all_tests() -> bool:
                 missing_elements.append(desc)
 
         if missing_elements:
-            errors.append(f"Test 28A FAILED: Missing Phase 5 HTML elements: {', '.join(missing_elements[:3])}")
+            errors.append(
+                f"Test 28A FAILED: Missing Phase 5 HTML elements: {', '.join(missing_elements[:3])}"
+            )
         else:
             print(f"✅ Test 28A PASSED: All {len(phase5_elements)} Phase 5 HTML elements present")
 
         # Check for Phase 5 JS includes
         phase5_js = [
-            ('meta-learning-panel.js', 'Meta-Learning Panel component'),
-            ('redis-monitor.js', 'Redis Monitor component'),
-            ('pinecone-monitor.js', 'Pinecone Monitor component'),
-            ('execution-flow.js', 'Execution Flow component'),
-            ('meta-learning-controller.js', 'Meta-Learning Controller'),
+            ("meta-learning-panel.js", "Meta-Learning Panel component"),
+            ("redis-monitor.js", "Redis Monitor component"),
+            ("pinecone-monitor.js", "Pinecone Monitor component"),
+            ("execution-flow.js", "Execution Flow component"),
+            ("meta-learning-controller.js", "Meta-Learning Controller"),
         ]
 
         missing_js = []
@@ -2358,17 +2623,17 @@ def run_all_tests() -> bool:
             print(f"✅ Test 28B PASSED: All {len(phase5_js)} Phase 5 JS files included")
 
         # Check for Phase 5 CSS include
-        if 'meta-learning.css' not in html_content:
+        if "meta-learning.css" not in html_content:
             errors.append("Test 28C FAILED: meta-learning.css not included in dashboard")
         else:
             print("✅ Test 28C PASSED: meta-learning.css included")
 
         # Check Phase 5 section headers
         phase5_sections = [
-            ('Meta-Learning Activity', 'Meta-Learning section'),
-            ('Redis Cache Activity', 'Redis section'),
-            ('Pinecone Vector Operations', 'Pinecone section'),
-            ('Agent Execution Flow', 'Execution Flow section'),
+            ("Meta-Learning Activity", "Meta-Learning section"),
+            ("Redis Cache Activity", "Redis section"),
+            ("Pinecone Vector Operations", "Pinecone section"),
+            ("Agent Execution Flow", "Execution Flow section"),
         ]
 
         missing_sections = []
@@ -2377,7 +2642,9 @@ def run_all_tests() -> bool:
                 missing_sections.append(desc)
 
         if missing_sections:
-            errors.append(f"Test 28D FAILED: Missing Phase 5 sections: {', '.join(missing_sections)}")
+            errors.append(
+                f"Test 28D FAILED: Missing Phase 5 sections: {', '.join(missing_sections)}"
+            )
         else:
             print(f"✅ Test 28D PASSED: All {len(phase5_sections)} Phase 5 sections present")
 
@@ -2448,9 +2715,13 @@ def run_all_tests() -> bool:
                 failed_endpoints.append(f"{desc} ({response.status_code})")
 
         if failed_endpoints:
-            errors.append(f"Test 30 FAILED: API endpoints not working: {', '.join(failed_endpoints)}")
+            errors.append(
+                f"Test 30 FAILED: API endpoints not working: {', '.join(failed_endpoints)}"
+            )
         else:
-            print(f"✅ Test 30 PASSED: All {len(phase5_endpoints)} Phase 5 API endpoints return 200")
+            print(
+                f"✅ Test 30 PASSED: All {len(phase5_endpoints)} Phase 5 API endpoints return 200"
+            )
 
     except ImportError as e:
         print(f"   ⚠️  Test 30 SKIPPED: Could not import API ({e})")
@@ -2467,7 +2738,7 @@ def run_all_tests() -> bool:
         errors.append("Test 31 FAILED: start_runtime_api.py not found")
         print("❌ Test 31 FAILED: start_runtime_api.py not found")
     else:
-        content = start_script.read_text(encoding='utf-8')
+        content = start_script.read_text(encoding="utf-8")
         required = ["uvicorn", "runtime_api", "def main()", "argparse"]
         missing = [r for r in required if r not in content]
         if missing:
@@ -2482,7 +2753,9 @@ def run_all_tests() -> bool:
     print("\n--- Test 32: Phase 6 E2E Data Flow ---")
     try:
         # Check if runtime_api module and dependencies exist
-        runtime_api_path = project_root / "agentic_core" / "L6_observability" / "api" / "runtime_api.py"
+        runtime_api_path = (
+            project_root / "agentic_core" / "L6_observability" / "api" / "runtime_api.py"
+        )
         if not runtime_api_path.exists():
             print("✅ Test 32 PASSED: runtime_api.py not present (optional component)")
         else:
@@ -2495,9 +2768,10 @@ def run_all_tests() -> bool:
 
                 # Test meta-learning data flow
                 initial_exp = meta_agent.total_experiences
-                response = client.post("/api/meta-learning/experience", json={
-                    "thought_type": "cot", "reward": 0.9, "state": {}, "outcome": {}
-                })
+                response = client.post(
+                    "/api/meta-learning/experience",
+                    json={"thought_type": "cot", "reward": 0.9, "state": {}, "outcome": {}},
+                )
 
                 response = client.get("/api/meta-learning/statistics")
                 data = response.json()
@@ -2505,10 +2779,14 @@ def run_all_tests() -> bool:
                 if data.get("total_experiences", 0) > initial_exp:
                     print("✅ Test 32 PASSED: E2E data flow working (meta-learning → API)")
                 else:
-                    print("✅ Test 32 PASSED: runtime_api exists (data flow test skipped - requires running services)")
+                    print(
+                        "✅ Test 32 PASSED: runtime_api exists (data flow test skipped - requires running services)"
+                    )
             except ImportError as ie:
                 # Missing dependencies are acceptable - this is an optional integration test
-                print(f"✅ Test 32 PASSED: runtime_api exists (import skipped: {ie.name} not available)")
+                print(
+                    f"✅ Test 32 PASSED: runtime_api exists (import skipped: {ie.name} not available)"
+                )
     except Exception as e:
         errors.append(f"Test 32 FAILED: {e}")
         print(f"❌ Test 32 FAILED: {e}")
@@ -2525,30 +2803,36 @@ def run_all_tests() -> bool:
         ssot_issues = []
 
         # Check 1: Agent count matches between JSON and dashboard TOTAL row
-        total_row = next((r for r in dashboard_data if r.get('Territory') == 'TOTAL'), None)
+        total_row = next((r for r in dashboard_data if r.get("Territory") == "TOTAL"), None)
         if total_row:
             json_count = len(agents)
-            dashboard_count = total_row.get('Total', 0)
+            dashboard_count = total_row.get("Total", 0)
             if json_count != dashboard_count:
-                ssot_issues.append(f"Agent count mismatch: JSON={json_count}, Dashboard={dashboard_count}")
+                ssot_issues.append(
+                    f"Agent count mismatch: JSON={json_count}, Dashboard={dashboard_count}"
+                )
         else:
             ssot_issues.append("Dashboard missing TOTAL row")
 
         # Check 2: All territories in JSON are represented in dashboard
-        json_territories = set(a.get(FIELD_TERRITORY, 'Unknown') for a in agents)
-        dashboard_territories = set(r.get('Territory') for r in dashboard_data if r.get('Territory') != 'TOTAL')
+        json_territories = set(a.get(FIELD_TERRITORY, "Unknown") for a in agents)
+        dashboard_territories = set(
+            r.get("Territory") for r in dashboard_data if r.get("Territory") != "TOTAL"
+        )
         missing_in_dashboard = json_territories - dashboard_territories
         if missing_in_dashboard:
             ssot_issues.append(f"Territories in JSON but not dashboard: {missing_in_dashboard}")
 
         # Check 3: Dashboard data is not stale (file timestamps)
-        discovery_path = project_root / 'agent_discovery_full.json'
-        dashboard_path = project_root / DASHBOARD_DIR / 'data' / 'dashboard_data.js'
+        discovery_path = project_root / "agent_discovery_full.json"
+        dashboard_path = project_root / DASHBOARD_DIR / "data" / "dashboard_data.js"
         if discovery_path.exists() and dashboard_path.exists():
             discovery_mtime = discovery_path.stat().st_mtime
             dashboard_mtime = dashboard_path.stat().st_mtime
             if dashboard_mtime < discovery_mtime - 60:  # 60 second tolerance
-                ssot_issues.append("dashboard_data.js is older than agent_discovery_full.json - regenerate needed")
+                ssot_issues.append(
+                    "dashboard_data.js is older than agent_discovery_full.json - regenerate needed"
+                )
 
         if ssot_issues:
             errors.append(f"Test 33 FAILED: {len(ssot_issues)} SSOT issues")
@@ -2574,11 +2858,11 @@ def run_all_tests() -> bool:
         # Check 1: Required rendering functions exist in JS files (not HTML)
         # These are the actual functions in the modular JS architecture
         required_js_functions = [
-            'renderTerritorySummaryTable',  # Main table renderer
-            'renderCodeQualityTable',       # Code quality table
-            'renderStrategicObservations',  # Strategic observations
-            'getGradientBg',                # Color gradient utility
-            'formatDistributionCell'        # Cell formatting
+            "renderTerritorySummaryTable",  # Main table renderer
+            "renderCodeQualityTable",  # Code quality table
+            "renderStrategicObservations",  # Strategic observations
+            "getGradientBg",  # Color gradient utility
+            "formatDistributionCell",  # Cell formatting
         ]
 
         for func in required_js_functions:
@@ -2587,21 +2871,22 @@ def run_all_tests() -> bool:
                 js_issues.append(f"Missing JS function: {func}")
 
         # Check 2: Dashboard data is loaded from external JS file
-        if 'window.dashboardData' not in all_js:
+        if "window.dashboardData" not in all_js:
             js_issues.append("dashboardData not found in JS files")
 
         # Check 3: HTML includes modular JS files
-        js_dir = project_root / DASHBOARD_DIR / 'js'
+        js_dir = project_root / DASHBOARD_DIR / "js"
         if js_dir.exists():
             from agentic_core.utils.ssot_discovery import get_data_files
-            js_files = list(get_data_files(js_dir, extensions=['.js']))
+
+            js_files = list(get_data_files(js_dir, extensions=[".js"]))
             for js_file in js_files[:5]:  # Check first 5
-                if js_file.name not in html and f'js/{js_file.name}' not in html:
+                if js_file.name not in html and f"js/{js_file.name}" not in html:
                     # Not a critical error - some JS may be optional
                     pass
 
         # Check 4: realAgentData exists for drill-down
-        if 'realAgentData' not in all_js:
+        if "realAgentData" not in all_js:
             js_issues.append("realAgentData not found - drill-down will fail")
 
         if js_issues:
@@ -2626,24 +2911,39 @@ def run_all_tests() -> bool:
 
         # Check that all agents have required SSOT fields
         required_fields = [
-            FIELD_CLASS_NAME, FIELD_PATH, FIELD_LAYER, FIELD_TERRITORY,
-            FIELD_HAS_HEALING, FIELD_HAS_TESTS, FIELD_MCP_HARDENED,
-            FIELD_TYPED_PCT, FIELD_DOCUMENTED_PCT, FIELD_PROPER_BASE_CLASS
+            FIELD_CLASS_NAME,
+            FIELD_PATH,
+            FIELD_LAYER,
+            FIELD_TERRITORY,
+            FIELD_HAS_HEALING,
+            FIELD_HAS_TESTS,
+            FIELD_MCP_HARDENED,
+            FIELD_TYPED_PCT,
+            FIELD_DOCUMENTED_PCT,
+            FIELD_PROPER_BASE_CLASS,
         ]
 
         # Sample check on first 10 agents
         for i, agent in enumerate(agents[:10]):
             for field in required_fields:
                 if field not in agent:
-                    field_issues.append(f"Agent {i} ({agent.get('class_name', 'unknown')}) missing field: {field}")
+                    field_issues.append(
+                        f"Agent {i} ({agent.get('class_name', 'unknown')}) missing field: {field}"
+                    )
 
         # Check dashboard data uses correct column names
         dashboard_data, _ = load_dashboard_data()
         if dashboard_data:
             first_row = dashboard_data[0]
             required_cols = [
-                COL_HEAL_CAP, COL_INVOCATION, COL_TEST, COL_HARDENED,
-                COL_TYPED, COL_DOCUMENTED, COL_CODE_QUALITY, COL_HEALTH
+                COL_HEAL_CAP,
+                COL_INVOCATION,
+                COL_TEST,
+                COL_HARDENED,
+                COL_TYPED,
+                COL_DOCUMENTED,
+                COL_CODE_QUALITY,
+                COL_HEALTH,
             ]
             for col in required_cols:
                 if col not in first_row:
@@ -2672,31 +2972,33 @@ def run_all_tests() -> bool:
         order_issues = []
 
         # TOTAL should be first row
-        if dashboard_data and dashboard_data[0].get('Territory') != 'TOTAL':
-            order_issues.append(f"TOTAL row not first (found: {dashboard_data[0].get('Territory')})")
+        if dashboard_data and dashboard_data[0].get("Territory") != "TOTAL":
+            order_issues.append(
+                f"TOTAL row not first (found: {dashboard_data[0].get('Territory')})"
+            )
 
         # Check territories are in canonical order (L0 before L1 before L2, etc.)
-        territories = [r.get('Territory') for r in dashboard_data if r.get('Territory') != 'TOTAL']
+        territories = [r.get("Territory") for r in dashboard_data if r.get("Territory") != "TOTAL"]
 
         # Extract layer numbers for ordering check
         def get_layer_num(territory):
-            if 'L0' in territory or 'Maintenance' in territory:
+            if "L0" in territory or "Maintenance" in territory:
                 return 0
-            elif 'L1' in territory or 'Cognition' in territory:
+            elif "L1" in territory or "Cognition" in territory:
                 return 1
-            elif 'L2' in territory or 'Execution' in territory:
+            elif "L2" in territory or "Execution" in territory:
                 return 2
-            elif 'L3' in territory or 'Orchestration' in territory:
+            elif "L3" in territory or "Orchestration" in territory:
                 return 3
-            elif 'L4' in territory or 'State' in territory:
+            elif "L4" in territory or "State" in territory:
                 return 4
-            elif 'L5' in territory or 'Safety' in territory:
+            elif "L5" in territory or "Safety" in territory:
                 return 5
-            elif 'L6' in territory or 'Observability' in territory:
+            elif "L6" in territory or "Observability" in territory:
                 return 6
-            elif 'Apps' in territory:
+            elif "Apps" in territory:
                 return 7
-            elif 'Base' in territory:
+            elif "Base" in territory:
                 return 8
             return 99
 
@@ -2708,7 +3010,7 @@ def run_all_tests() -> bool:
         out_of_order = 0
         for i in range(1, len(layer_nums)):
             # Only count as out-of-order if jumping back more than 2 layers
-            if layer_nums[i] < layer_nums[i-1] - 2:
+            if layer_nums[i] < layer_nums[i - 1] - 2:
                 out_of_order += 1
 
         if out_of_order > 5:  # Allow up to 5 out-of-order items (sub-territories)
@@ -2736,7 +3038,7 @@ def run_all_tests() -> bool:
         calc_issues = []
 
         # Get TOTAL row from dashboard
-        total_row = next((r for r in dashboard_data if r.get('Territory') == 'TOTAL'), None)
+        total_row = next((r for r in dashboard_data if r.get("Territory") == "TOTAL"), None)
 
         if total_row:
             # Recalculate using SSOT functions and compare
@@ -2750,11 +3052,17 @@ def run_all_tests() -> bool:
 
             # Allow 0.5% tolerance for rounding
             if abs(expected_heal_cap - actual_heal_cap) > 0.5:
-                calc_issues.append(f"Heal Cap mismatch: expected={expected_heal_cap:.1f}%, actual={actual_heal_cap:.1f}%")
+                calc_issues.append(
+                    f"Heal Cap mismatch: expected={expected_heal_cap:.1f}%, actual={actual_heal_cap:.1f}%"
+                )
             if abs(expected_test - actual_test) > 0.5:
-                calc_issues.append(f"Test % mismatch: expected={expected_test:.1f}%, actual={actual_test:.1f}%")
+                calc_issues.append(
+                    f"Test % mismatch: expected={expected_test:.1f}%, actual={actual_test:.1f}%"
+                )
             if abs(expected_hardened - actual_hardened) > 0.5:
-                calc_issues.append(f"Hardened % mismatch: expected={expected_hardened:.1f}%, actual={actual_hardened:.1f}%")
+                calc_issues.append(
+                    f"Hardened % mismatch: expected={expected_hardened:.1f}%, actual={actual_hardened:.1f}%"
+                )
         else:
             calc_issues.append("Cannot verify calculations - TOTAL row missing")
 
@@ -2778,7 +3086,7 @@ def run_all_tests() -> bool:
         errors.append("Test 38 FAILED: DASHBOARD_META_LEARNING_GUIDE.md not found")
         print("❌ Test 38 FAILED: DASHBOARD_META_LEARNING_GUIDE.md not found")
     else:
-        content = user_doc.read_text(encoding='utf-8')
+        content = user_doc.read_text(encoding="utf-8")
         required = ["Overview", "Getting Started", "Troubleshooting", "FAQ"]
         missing = [r for r in required if r not in content]
         if missing:
@@ -2796,7 +3104,7 @@ def run_all_tests() -> bool:
         errors.append("Test 39 FAILED: META_LEARNING_TELEMETRY_API.md not found")
         print("❌ Test 39 FAILED: META_LEARNING_TELEMETRY_API.md not found")
     else:
-        content = dev_doc.read_text(encoding='utf-8')
+        content = dev_doc.read_text(encoding="utf-8")
         required = ["/api/health", "/api/meta-learning", "/api/redis", "/api/pinecone"]
         missing = [r for r in required if r not in content]
         if missing:
@@ -2812,9 +3120,9 @@ def run_all_tests() -> bool:
     if errors:
         all_passed = False
         for e in errors:
-            if 'FAILED' in e:
+            if "FAILED" in e:
                 # Extract test name from error message
-                test_name = e.split(':')[0].replace('FAILED', '').strip()
+                test_name = e.split(":")[0].replace("FAILED", "").strip()
                 if test_name and test_name not in failed_tests:
                     failed_tests.append(test_name)
 
@@ -2834,6 +3142,7 @@ def run_all_tests() -> bool:
 
     return all_passed
 
+
 def count_actual_agents() -> int:
     """Count actual Python files that could contain agents (heuristic).
 
@@ -2845,7 +3154,7 @@ def count_actual_agents() -> int:
     Returns approximate count of potential agent files for staleness comparison.
     """
     project_root = get_validated_project_root()
-    agentic_core = project_root / 'agentic_core'
+    agentic_core = project_root / "agentic_core"
 
     if not agentic_core.exists():
         return 0
@@ -2853,9 +3162,10 @@ def count_actual_agents() -> int:
     try:
         # Count Python files that match agent naming patterns
         agent_file_count = 0
-        excluded_patterns = {'__pycache__', '.git', 'test_', 'conftest', '__init__', 'mixin'}
+        excluded_patterns = {"__pycache__", ".git", "test_", "conftest", "__init__", "mixin"}
 
         from agentic_core.utils.ssot_discovery import get_python_files
+
         for py_file in get_python_files(agentic_core):
             filename = py_file.stem.lower()
             path_str = str(py_file).lower()
@@ -2865,7 +3175,7 @@ def count_actual_agents() -> int:
                 continue
 
             # Count files that likely contain agents
-            if filename.endswith('agent') or 'agent' in filename:
+            if filename.endswith("agent") or "agent" in filename:
                 agent_file_count += 1
 
         return agent_file_count
@@ -2889,6 +3199,7 @@ def regenerate_agent_discovery() -> bool:
     try:
         import os
         import sys
+
         env = os.environ.copy()
         env["PYTHONPATH"] = str(project_root)
         env["PYTHONIOENCODING"] = "utf-8"
@@ -2899,7 +3210,7 @@ def regenerate_agent_discovery() -> bool:
             capture_output=True,
             timeout=300,
             env=env,
-            check=False
+            check=False,
         )
 
         # Check if discovery file was created/updated (more reliable than return code)
@@ -2914,7 +3225,9 @@ def regenerate_agent_discovery() -> bool:
 
         # Only fail if file doesn't exist or is empty
         if result.returncode != 0:
-            print(f"❌ Discovery failed: {result.stderr[:500] if result.stderr else 'No error output'}")
+            print(
+                f"❌ Discovery failed: {result.stderr[:500] if result.stderr else 'No error output'}"
+            )
         else:
             print("❌ Discovery file not created or empty")
         return False
@@ -2946,6 +3259,7 @@ def regenerate_dashboard() -> bool:
     try:
         import os
         import sys
+
         env = os.environ.copy()
         env["PYTHONPATH"] = str(project_root)
         env["PYTHONIOENCODING"] = "utf-8"
@@ -2956,11 +3270,13 @@ def regenerate_dashboard() -> bool:
             capture_output=True,
             timeout=120,
             env=env,
-            check=False
+            check=False,
         )
 
         if result.returncode != 0:
-            print(f"❌ Dashboard data generation failed: {result.stderr[:500] if result.stderr else 'No error output'}")
+            print(
+                f"❌ Dashboard data generation failed: {result.stderr[:500] if result.stderr else 'No error output'}"
+            )
             return False
 
         # Verify dashboard_data.js was created/updated
@@ -3011,14 +3327,19 @@ def check_if_stale() -> tuple[bool, str]:
         # Agent files vs discovered agents won't match exactly due to multi-class files
         # But a large difference (>20%) indicates staleness
         if actual_count > 0:
-            diff_pct = abs(actual_count - discovered_count) / max(actual_count, discovered_count) * 100
+            diff_pct = (
+                abs(actual_count - discovered_count) / max(actual_count, discovered_count) * 100
+            )
             if diff_pct > 20:
-                return True, f"Agent count mismatch: {actual_count} files vs {discovered_count} discovered ({diff_pct:.0f}% diff)"
+                return (
+                    True,
+                    f"Agent count mismatch: {actual_count} files vs {discovered_count} discovered ({diff_pct:.0f}% diff)",
+                )
 
         # Check 4: File age (stale if > 1 hour old)
         file_age = datetime.now().timestamp() - discovery_path.stat().st_mtime
         if file_age > 3600:  # 1 hour
-            return True, f"Discovery file is {file_age/3600:.1f} hours old - REFRESH RECOMMENDED"
+            return True, f"Discovery file is {file_age / 3600:.1f} hours old - REFRESH RECOMMENDED"
 
         # Check 5: Dashboard data should be newer than or same age as discovery
         if dashboard_data_path.exists():
@@ -3026,7 +3347,10 @@ def check_if_stale() -> tuple[bool, str]:
             if dashboard_age > file_age + 60:  # Dashboard older than discovery by >1 min
                 return True, "Dashboard data is older than discovery - REGENERATION REQUIRED"
 
-        return False, f"Dashboard is current ({discovered_count} agents, {file_age/60:.0f} min old)"
+        return (
+            False,
+            f"Dashboard is current ({discovered_count} agents, {file_age / 60:.0f} min old)",
+        )
 
     except Exception as e:
         return True, f"Error checking staleness: {e} - FULL SCAN REQUIRED"
@@ -3058,20 +3382,16 @@ def check_server_health():
         # Try to connect to server
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.settimeout(5)
-        result = sock.connect_ex(('localhost', 8765))
+        result = sock.connect_ex(("localhost", 8765))
         sock.close()
 
         if result == 0:
             # Server is listening - check for excessive TIME_WAIT connections
             try:
-                netstat_output = subprocess.check_output(
-                    ['netstat', '-ano'],
-                    text=True,
-                    timeout=5
-                )
+                netstat_output = subprocess.check_output(["netstat", "-ano"], text=True, timeout=5)
 
                 # Count TIME_WAIT connections on port 8765
-                time_wait_count = netstat_output.count('8765') - 2  # Subtract LISTENING entries
+                time_wait_count = netstat_output.count("8765") - 2  # Subtract LISTENING entries
 
                 if time_wait_count > 30:
                     print(f"   ⚠️  WARNING: {time_wait_count} TIME_WAIT connections detected")
@@ -3104,12 +3424,12 @@ def restart_dashboard_server():
 
     # Find and kill existing Python HTTP servers on port 8765
     killed_count = 0
-    for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
+    for proc in psutil.process_iter(["pid", "name", "cmdline"]):
         try:
-            cmdline = proc.info.get('cmdline', [])
-            if cmdline and 'python' in proc.info['name'].lower():
+            cmdline = proc.info.get("cmdline", [])
+            if cmdline and "python" in proc.info["name"].lower():
                 # Check if it's running http.server on port 8765
-                if 'http.server' in ' '.join(cmdline) and '8765' in ' '.join(cmdline):
+                if "http.server" in " ".join(cmdline) and "8765" in " ".join(cmdline):
                     print(f"   🛑 Stopping existing server (PID {proc.info['pid']})...")
                     proc.kill()
                     killed_count += 1
@@ -3135,7 +3455,7 @@ def restart_dashboard_server():
             cwd=str(dashboard_dir),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            start_new_session=True  # Detach from parent
+            start_new_session=True,  # Detach from parent
         )
 
         # Wait a moment to ensure server starts
@@ -3166,10 +3486,18 @@ if __name__ == "__main__":
     import sys
 
     parser = argparse.ArgumentParser(description="Dashboard E2E Test with Auto-Regeneration")
-    parser.add_argument("--regenerate", action="store_true", help="Force regeneration before testing")
-    parser.add_argument("--skip-regenerate", action="store_true", help="Skip auto-regeneration (NOT RECOMMENDED)")
-    parser.add_argument("--no-server-restart", action="store_true", help="Skip automated server restart")
-    parser.add_argument("--yes", "-y", action="store_true", help="Skip all interactive prompts (assume yes)")
+    parser.add_argument(
+        "--regenerate", action="store_true", help="Force regeneration before testing"
+    )
+    parser.add_argument(
+        "--skip-regenerate", action="store_true", help="Skip auto-regeneration (NOT RECOMMENDED)"
+    )
+    parser.add_argument(
+        "--no-server-restart", action="store_true", help="Skip automated server restart"
+    )
+    parser.add_argument(
+        "--yes", "-y", action="store_true", help="Skip all interactive prompts (assume yes)"
+    )
     args = parser.parse_args()
 
     # SSOT FIX: Auto-regeneration is now DEFAULT behavior (not optional)
@@ -3199,7 +3527,7 @@ if __name__ == "__main__":
                 print("\n⚠️  Server restart failed. Continue anyway? (yes/no): ")
                 try:
                     response = input().strip().lower()
-                    if response not in ['yes', 'y']:
+                    if response not in ["yes", "y"]:
                         print("\n⚠️  Test aborted due to server restart failure.")
                         sys.exit(1)
                 except (KeyboardInterrupt, EOFError):
@@ -3209,6 +3537,7 @@ if __name__ == "__main__":
         # Additional health check after restart
         print("\n   🔍 Performing post-restart health check...")
         import time
+
         time.sleep(1)  # Brief pause before health check
         if not check_server_health():
             print("\n⚠️  WARNING: Server health check failed after restart")
@@ -3216,7 +3545,7 @@ if __name__ == "__main__":
             if not args.yes:
                 try:
                     response = input("   Continue anyway? (yes/no): ").strip().lower()
-                    if response not in ['yes', 'y']:
+                    if response not in ["yes", "y"]:
                         print("\n⚠️  Test aborted due to health check failure.")
                         sys.exit(1)
                 except (KeyboardInterrupt, EOFError):
@@ -3235,7 +3564,7 @@ if __name__ == "__main__":
         print("\n" + "=" * 70)
         try:
             response = input("\n✅ Have you cleared browser cache? (yes/no): ").strip().lower()
-            if response not in ['yes', 'y']:
+            if response not in ["yes", "y"]:
                 print("\n⚠️  Please clear browser cache before running tests.")
                 print("   Tests may fail or show incorrect results without fresh cache.")
                 sys.exit(1)
@@ -3283,7 +3612,7 @@ if __name__ == "__main__":
                     capture_output=True,
                     text=True,
                     timeout=120,
-                    check=False
+                    check=False,
                 )
 
                 if result.returncode == 0:

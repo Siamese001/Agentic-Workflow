@@ -23,15 +23,17 @@ logger = logging.getLogger(__name__)
 
 class ConstraintFailureType(str, Enum):
     """Types of constraint failures for adaptive retry."""
-    MECHANICAL = "MECHANICAL"      # Word count, char count, structural
-    CREATIVE = "CREATIVE"          # Placeholders, generic content, redundancy
-    SEMANTIC = "SEMANTIC"          # Forbidden words, tone violations
-    CONFLICT = "CONFLICT"          # Impossible constraint combinations
+
+    MECHANICAL = "MECHANICAL"  # Word count, char count, structural
+    CREATIVE = "CREATIVE"  # Placeholders, generic content, redundancy
+    SEMANTIC = "SEMANTIC"  # Forbidden words, tone violations
+    CONFLICT = "CONFLICT"  # Impossible constraint combinations
 
 
 @dataclass
 class RegenerationCheckpoint:
     """Checkpoint for a single regeneration attempt."""
+
     attempt: int
     timestamp: datetime
     content: str
@@ -48,13 +50,16 @@ class RegenerationCheckpoint:
             "temperature": self.temperature,
             "failure_type": self.failure_type.value if self.failure_type else None,
             "score": self.score,
-            "validation_status": self.validation_result.status.value if self.validation_result else None,
+            "validation_status": self.validation_result.status.value
+            if self.validation_result
+            else None,
         }
 
 
 @dataclass
 class RegenerationResult:
     """Result of regeneration process."""
+
     success: bool
     final_content: str
     attempts: int
@@ -145,7 +150,9 @@ class FeedbackLoopOrchestrator:
         context = initial_context.copy()
 
         for attempt in range(1, self.max_attempts + 1):
-            logger.info(f"Attempt {attempt}/{self.max_attempts} for {k_node_id} (temp={temperature:.2f})")
+            logger.info(
+                f"Attempt {attempt}/{self.max_attempts} for {k_node_id} (temp={temperature:.2f})"
+            )
 
             # Generate content
             try:
@@ -164,7 +171,7 @@ class FeedbackLoopOrchestrator:
                 content=content,
                 validation_result=validation_result,
                 temperature=temperature,
-                score=validation_result.score if hasattr(validation_result, 'score') else 0.0,
+                score=validation_result.score if hasattr(validation_result, "score") else 0.0,
             )
 
             if self.checkpoint_saving:
@@ -195,7 +202,7 @@ class FeedbackLoopOrchestrator:
                 prev_checkpoint = checkpoints[-2]
                 if checkpoint.score < prev_checkpoint.score:
                     logger.info(
-                        f"Reverting to attempt {attempt-1} "
+                        f"Reverting to attempt {attempt - 1} "
                         f"(score {prev_checkpoint.score:.2f} > {checkpoint.score:.2f})"
                     )
                     return RegenerationResult(
@@ -226,7 +233,9 @@ class FeedbackLoopOrchestrator:
         # Return best attempt if reversion enabled
         if self.reversion_enabled and checkpoints:
             best_checkpoint = max(checkpoints, key=lambda cp: cp.score)
-            logger.info(f"Returning best attempt {best_checkpoint.attempt} (score={best_checkpoint.score:.2f})")
+            logger.info(
+                f"Returning best attempt {best_checkpoint.attempt} (score={best_checkpoint.score:.2f})"
+            )
             return RegenerationResult(
                 success=False,
                 final_content=best_checkpoint.content,
@@ -256,7 +265,7 @@ class FeedbackLoopOrchestrator:
         Returns:
             ConstraintFailureType
         """
-        if not hasattr(validation_result, 'failures') or not validation_result.failures:
+        if not hasattr(validation_result, "failures") or not validation_result.failures:
             return ConstraintFailureType.MECHANICAL
 
         # Analyze failure types
@@ -343,7 +352,7 @@ class FeedbackLoopOrchestrator:
         context["previous_content"] = previous_content
 
         # Build detailed failure feedback
-        if hasattr(validation_result, 'failures') and validation_result.failures:
+        if hasattr(validation_result, "failures") and validation_result.failures:
             failure_details = []
 
             for failure in validation_result.failures:
@@ -376,14 +385,10 @@ class FeedbackLoopOrchestrator:
         summary_lines = ["VALIDATION FAILURES:"]
 
         for i, failure in enumerate(failures, 1):
-            summary_lines.append(
-                f"{i}. {failure.rule_name}: {failure.message}"
-            )
+            summary_lines.append(f"{i}. {failure.rule_name}: {failure.message}")
 
-            if hasattr(failure, 'actual') and hasattr(failure, 'expected'):
-                summary_lines.append(
-                    f"   Actual: {failure.actual}, Expected: {failure.expected}"
-                )
+            if hasattr(failure, "actual") and hasattr(failure, "expected"):
+                summary_lines.append(f"   Actual: {failure.actual}, Expected: {failure.expected}")
 
         summary_lines.append("\nREGENERATION INSTRUCTIONS:")
         summary_lines.append("Fix ONLY the failing sections listed above.")
@@ -466,14 +471,14 @@ class FeedbackLoopOrchestrator:
         ]
 
         for checkpoint in result.checkpoints:
-            report_lines.append(
-                f"\nAttempt {checkpoint.attempt}:"
-            )
+            report_lines.append(f"\nAttempt {checkpoint.attempt}:")
             report_lines.append(f"  Temperature: {checkpoint.temperature:.2f}")
             report_lines.append(f"  Score: {checkpoint.score:.2f}")
-            report_lines.append(f"  Failure Type: {checkpoint.failure_type.value if checkpoint.failure_type else 'N/A'}")
+            report_lines.append(
+                f"  Failure Type: {checkpoint.failure_type.value if checkpoint.failure_type else 'N/A'}"
+            )
 
-            if hasattr(checkpoint.validation_result, 'failures'):
+            if hasattr(checkpoint.validation_result, "failures"):
                 report_lines.append(f"  Failures: {len(checkpoint.validation_result.failures)}")
                 for failure in checkpoint.validation_result.failures[:3]:  # Show first 3
                     report_lines.append(f"    - {failure.rule_name}: {failure.message}")

@@ -13,6 +13,7 @@ Author: Cascade
 Date: January 19, 2026
 Phase: 6.6 - Scorched Earth Refactoring
 """
+
 import sys
 from pathlib import Path
 
@@ -28,32 +29,44 @@ def test_tc41_secure_checkpoint_security():
     Verify SecureCheckpointManagerAgent correctly locates encrypted backups
     using SSOT discovery instead of glob.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-41: SecureCheckpoint Security")
-    print("="*60)
+    print("=" * 60)
 
-    secure_checkpoint = PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "SecureCheckpointManagerAgent.py"
+    secure_checkpoint = (
+        PROJECT_ROOT
+        / "agentic_core"
+        / "L5_safety"
+        / "validators"
+        / "SecureCheckpointManagerAgent.py"
+    )
 
     if not secure_checkpoint.exists():
         print("⚠️  WARNING: SecureCheckpointManagerAgent.py not found")
         return True
 
     try:
-        content = secure_checkpoint.read_text(encoding='utf-8')
+        content = secure_checkpoint.read_text(encoding="utf-8")
 
         # Check for ssot_discovery import
-        has_ssot_import = 'from agentic_core.utils.ssot_discovery import get_data_files' in content
+        has_ssot_import = "from agentic_core.utils.ssot_discovery import get_data_files" in content
 
         # Check for glob usage (should be none)
-        glob_count = content.count('.glob(')
+        glob_count = content.count(".glob(")
 
         # Check that methods use get_data_files
-        uses_get_data_files = 'get_data_files(self.checkpoint_dir' in content
+        uses_get_data_files = "get_data_files(self.checkpoint_dir" in content
 
         # Check all three methods are refactored
-        load_latest_refactored = 'async def load_latest_checkpoint' in content and 'get_data_files' in content
-        cleanup_refactored = 'def cleanup_old_checkpoints' in content and 'get_data_files' in content
-        quarantine_refactored = 'def quarantine_all_checkpoints' in content and 'get_data_files' in content
+        load_latest_refactored = (
+            "async def load_latest_checkpoint" in content and "get_data_files" in content
+        )
+        cleanup_refactored = (
+            "def cleanup_old_checkpoints" in content and "get_data_files" in content
+        )
+        quarantine_refactored = (
+            "def quarantine_all_checkpoints" in content and "get_data_files" in content
+        )
 
         print("   SecureCheckpointManagerAgent.py:")
         print(f"      Uses ssot_discovery: {'✓' if has_ssot_import else '✗'}")
@@ -61,7 +74,9 @@ def test_tc41_secure_checkpoint_security():
         print(f"      Uses get_data_files: {'✓' if uses_get_data_files else '✗'}")
         print(f"      load_latest_checkpoint refactored: {'✓' if load_latest_refactored else '✗'}")
         print(f"      cleanup_old_checkpoints refactored: {'✓' if cleanup_refactored else '✗'}")
-        print(f"      quarantine_all_checkpoints refactored: {'✓' if quarantine_refactored else '✗'}")
+        print(
+            f"      quarantine_all_checkpoints refactored: {'✓' if quarantine_refactored else '✗'}"
+        )
 
         if not has_ssot_import:
             print("❌ FAIL: Missing ssot_discovery import")
@@ -90,27 +105,31 @@ def test_tc42_depth_compliance():
     Verify force_app_depth correctly identifies files exceeding the L6 boundary
     using SSOT discovery.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-42: Depth Compliance")
-    print("="*60)
+    print("=" * 60)
 
-    force_app_depth = PROJECT_ROOT / "agentic_core" / "utils" / "core_extensions" / "force_app_depth.py"
+    force_app_depth = (
+        PROJECT_ROOT / "agentic_core" / "utils" / "core_extensions" / "force_app_depth.py"
+    )
 
     if not force_app_depth.exists():
         print("⚠️  WARNING: force_app_depth.py not found")
         return True
 
     try:
-        content = force_app_depth.read_text(encoding='utf-8')
+        content = force_app_depth.read_text(encoding="utf-8")
 
         # Check for ssot_discovery import
-        has_ssot_import = 'from agentic_core.utils.ssot_discovery import get_python_files' in content
+        has_ssot_import = (
+            "from agentic_core.utils.ssot_discovery import get_python_files" in content
+        )
 
         # Check for glob usage (should be minimal or none)
-        glob_count = content.count('.glob(')
+        glob_count = content.count(".glob(")
 
         # Check that it uses get_python_files
-        uses_get_python_files = 'get_python_files(app_path)' in content
+        uses_get_python_files = "get_python_files(app_path)" in content
 
         print("   force_app_depth.py:")
         print(f"      Uses ssot_discovery: {'✓' if has_ssot_import else '✗'}")
@@ -122,7 +141,9 @@ def test_tc42_depth_compliance():
             return False
 
         if glob_count > 0:
-            print(f"⚠️  INFO: Still has {glob_count} glob calls (may be acceptable for directory traversal)")
+            print(
+                f"⚠️  INFO: Still has {glob_count} glob calls (may be acceptable for directory traversal)"
+            )
 
         if not uses_get_python_files:
             print("❌ FAIL: Not using get_python_files for depth enforcement")
@@ -142,21 +163,23 @@ def test_tc43_dashboard_integrity():
 
     Verify test_dashboard_end_to_end uses SSOT for JS file discovery.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-43: Dashboard Integrity")
-    print("="*60)
+    print("=" * 60)
 
-    dashboard_test = PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "test_dashboard_end_to_end.py"
+    dashboard_test = (
+        PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "test_dashboard_end_to_end.py"
+    )
 
     if not dashboard_test.exists():
         print("⚠️  WARNING: test_dashboard_end_to_end.py not found")
         return True
 
     try:
-        content = dashboard_test.read_text(encoding='utf-8')
+        content = dashboard_test.read_text(encoding="utf-8")
 
         # Check for ssot_discovery import
-        has_ssot_import = 'from agentic_core.utils.ssot_discovery import get_data_files' in content
+        has_ssot_import = "from agentic_core.utils.ssot_discovery import get_data_files" in content
 
         # Check for rglob usage (should be none for JS files)
         rglob_js_count = content.count("js_dir.rglob('*.js')")
@@ -193,9 +216,9 @@ def test_phase6_6_reduction():
     """
     Bonus Test: Verify Phase 6.6 scorched earth reduction achievement.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("BONUS: Phase 6.6 Scorched Earth Achievement")
-    print("="*60)
+    print("=" * 60)
 
     # Import the CI check
     sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
@@ -212,7 +235,7 @@ def test_phase6_6_reduction():
     reduction = baseline - total_count
 
     print(f"   Baseline (Phase 6.5): {baseline}")
-    print(f"   Reduction: {reduction} calls ({reduction/baseline*100:.1f}%)")
+    print(f"   Reduction: {reduction} calls ({reduction / baseline * 100:.1f}%)")
 
     # Show refactored files
     refactored_files = [
@@ -229,8 +252,11 @@ def test_phase6_6_reduction():
     for py_file in get_python_files(PROJECT_ROOT / "agentic_core"):
         if py_file.name in refactored_files:
             try:
-                content = py_file.read_text(encoding='utf-8', errors='ignore')
-                if 'from agentic_core.utils.ssot_discovery import' in content or 'ssot_discovery' in content:
+                content = py_file.read_text(encoding="utf-8", errors="ignore")
+                if (
+                    "from agentic_core.utils.ssot_discovery import" in content
+                    or "ssot_discovery" in content
+                ):
                     files_using_ssot += 1
                     print(f"   ✓ {py_file.name}")
             except:
@@ -248,9 +274,9 @@ def test_phase6_6_reduction():
 
 def main():
     """Run all Phase 6.6 Zero-Loss test cases."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("PHASE 6.6 ZERO-LOSS VERIFICATION TEST SUITE")
-    print("="*70)
+    print("=" * 70)
     print(f"Project Root: {PROJECT_ROOT}")
 
     tests = [
@@ -268,13 +294,14 @@ def main():
         except Exception as e:
             print(f"\n❌ EXCEPTION in {test_name}: {e}")
             import traceback
+
             traceback.print_exc()
             results.append((test_name, False))
 
     # Summary
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST SUMMARY")
-    print("="*70)
+    print("=" * 70)
 
     passed_count = sum(1 for _, passed in results if passed)
     total_count = len(results)
@@ -287,7 +314,7 @@ def main():
         status = "✅ PASS" if passed else "❌ FAIL"
         print(f"{status}: {test_name}")
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print(f"CORE TESTS: {core_passed}/3 passed")
     print(f"TOTAL: {passed_count}/{total_count} tests passed")
 

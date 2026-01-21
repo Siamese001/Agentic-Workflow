@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, healer, orchestrator, prompt, state, validator, workflow
@@ -122,7 +121,9 @@ class SemanticDebuggerAgent(SubatomicTestingMixin, L5SafetyBaseAgent, CognitiveR
         return client.find_healing_pattern(error_context)
 
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict[str, Any]:
         """Autonomous healing with proper invocation chain."""
         super().heal_repository(dry_run=dry_run, execute=execute, **kwargs)
         return {"violations_found": 0, "violations_fixed": 0, "errors": 0}

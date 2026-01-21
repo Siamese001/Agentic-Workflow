@@ -22,6 +22,7 @@ from typing import Any
 @dataclass
 class Episode:
     """Individual episode entry."""
+
     episode_id: str
     summary: str
     mission_type: str  # "task", "healing", "reasoning", "execution"
@@ -45,11 +46,7 @@ class EpisodicMemory:
     - Mission pattern extraction
     """
 
-    def __init__(
-        self,
-        capacity: int = 200,
-        embed_index: bool = True
-    ):
+    def __init__(self, capacity: int = 200, embed_index: bool = True):
         """
         Initialize episodic memory.
 
@@ -74,6 +71,7 @@ class EpisodicMemory:
         if self._semantic_memory is None and self.embed_index:
             try:
                 from .SemanticMemory import semantic_memory
+
                 self._semantic_memory = semantic_memory
             except ImportError:
                 self._semantic_memory = None
@@ -101,7 +99,7 @@ class EpisodicMemory:
             context=episode.get("context", {}),
             duration_ms=episode.get("duration_ms", 0.0),
             reward=episode.get("reward", 0.0),
-            metadata=episode.get("metadata", {})
+            metadata=episode.get("metadata", {}),
         )
 
         # Track outcomes
@@ -116,12 +114,14 @@ class EpisodicMemory:
 
         # Add to semantic index immediately for searchability
         if self.semantic_index:
-            self.semantic_index.add_episode({
-                "id": episode_id,
-                "summary": episode_obj.summary,
-                "type": episode_obj.mission_type,
-                "outcome": episode_obj.outcome
-            })
+            self.semantic_index.add_episode(
+                {
+                    "id": episode_id,
+                    "summary": episode_obj.summary,
+                    "type": episode_obj.mission_type,
+                    "outcome": episode_obj.outcome,
+                }
+            )
 
         # Check capacity and evict if needed
         while len(self.episodes) > self.capacity:
@@ -262,7 +262,7 @@ class EpisodicMemory:
             "timestamp": episode.timestamp,
             "duration_ms": episode.duration_ms,
             "reward": episode.reward,
-            "metadata": episode.metadata
+            "metadata": episode.metadata,
         }
 
     def clear(self) -> None:
@@ -279,7 +279,7 @@ class EpisodicMemory:
             "success_count": self.success_count,
             "failure_count": self.failure_count,
             "success_rate": self.get_success_rate(),
-            "embed_index_enabled": self.embed_index
+            "embed_index_enabled": self.embed_index,
         }
 
 

@@ -6,6 +6,7 @@ CodeStandardsEnforcerAgent should detect.
 
 DO NOT FIX - Used for testing type hint enforcement.
 """
+
 from __future__ import annotations
 
 

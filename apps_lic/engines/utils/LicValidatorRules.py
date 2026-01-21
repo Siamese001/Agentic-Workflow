@@ -238,6 +238,7 @@ RECENCY_FACTORS: dict[str, float] = {
     "180+_days": 0.5,
 }
 
+
 class LICValidator:
     """Validator for LIC message content."""
 
@@ -290,7 +291,9 @@ class LICValidator:
         else:
             return RECENCY_FACTORS["180+_days"]
 
-    def _calculate_source_weight(self, source: dict[str, object], recency_days: int | None) -> float:
+    def _calculate_source_weight(
+        self, source: dict[str, object], recency_days: int | None
+    ) -> float:
         """Calculate weight for a single source."""
         SourceType = source.get("SourceType", "GENERIC_SEARCH")
         base_weight = SIGNAL_SOURCE_WEIGHTS.get(SourceType, 0.4)
@@ -309,7 +312,9 @@ class LICValidator:
         if not sources:
             return 0.0
 
-        total_weight = sum(self._calculate_source_weight(source, recency_days) for source in sources)
+        total_weight = sum(
+            self._calculate_source_weight(source, recency_days) for source in sources
+        )
         return min(1.0, total_weight / len(sources))
 
     def validate_message(self, text: str) -> dict[str, object]:
@@ -324,29 +329,35 @@ class LICValidator:
         implementations = self.check_implementations(text)
         if implementations:
             results["is_valid"] = False
-            results["errors"].append({
-                "code": "LIC-E001",
-                "message": f"implementations found: {implementations}",
-                "Severity": "CRITICAL",
-            })
+            results["errors"].append(
+                {
+                    "code": "LIC-E001",
+                    "message": f"implementations found: {implementations}",
+                    "Severity": "CRITICAL",
+                }
+            )
 
         # Check forbidden verbs (MEDIUM)
         forbidden = self.check_forbidden_verbs(text)
         if forbidden:
-            results["warnings"].append({
-                "code": "LIC-E008",
-                "message": f"Forbidden verbs found: {forbidden}",
-                "Severity": "MEDIUM",
-            })
+            results["warnings"].append(
+                {
+                    "code": "LIC-E008",
+                    "message": f"Forbidden verbs found: {forbidden}",
+                    "Severity": "MEDIUM",
+                }
+            )
 
         # Check filler phrases (MEDIUM)
         fillers = self.check_filler_phrases(text)
         if fillers:
-            results["warnings"].append({
-                "code": "LIC-E009",
-                "message": f"Filler phrases found: {fillers}",
-                "Severity": "MEDIUM",
-            })
+            results["warnings"].append(
+                {
+                    "code": "LIC-E009",
+                    "message": f"Filler phrases found: {fillers}",
+                    "Severity": "MEDIUM",
+                }
+            )
 
         return results
 

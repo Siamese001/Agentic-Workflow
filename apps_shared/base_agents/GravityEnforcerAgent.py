@@ -24,7 +24,9 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
-class GravityEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin, CachedSafetyShield):
+class GravityEnforcerAgent(
+    MCPHardenedMixin, SubatomicTestingMixin, HealerMixin, CachedSafetyShield
+):
     """
     The "Neural Link" stabilizer that enforces gravity rules by actively
     commenting out forbidden imports from upstream sovereign code to downstream domains.
@@ -35,7 +37,7 @@ class GravityEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin,
             "GravityEnforcerAgent is deprecated. Use GravityHealerAgent from "
             "agentic_core.L2_execution.ToolRegistry.GravityHealerAgent instead.",
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         super().__init__(project_root, "gravity_gate")
         self.ctx = ctx
@@ -49,8 +51,10 @@ class GravityEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin,
         # Build regex pattern to catch forbidden imports
         if self.downstream_roots:
             self.forbidden_pattern = re.compile(
-                r"^(?:import|from)\s+(" + "|".join(map(re.escape, sorted(self.downstream_roots))) + r")(?:\.\w|\s|$)",
-                re.MULTILINE
+                r"^(?:import|from)\s+("
+                + "|".join(map(re.escape, sorted(self.downstream_roots)))
+                + r")(?:\.\w|\s|$)",
+                re.MULTILINE,
             )
         else:
             self.forbidden_pattern = None
@@ -63,7 +67,9 @@ class GravityEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin,
         Execute the gravity enforcement pass.
         Scans agentic_core files and comments out any forbidden downstream imports.
         """
-        print("\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n   [*] GravityEnforcerAgent: Scanning for neural leaks...")
+        print(
+            "\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n   [*] GravityEnforcerAgent: Scanning for neural leaks..."
+        )
         self.healed_count = 0
         self.healed_files = []
 
@@ -89,7 +95,9 @@ class GravityEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin,
                 self.ctx.report("GravityEnforcer", 1, True, f"Sealed leak in {py_file.name}")
 
         if self.healed_count > 0:
-            print(f"   [✓] GravityEnforcerAgent: Sealed {self.healed_count} neural leaks (Upstream -> Downstream).")
+            print(
+                f"   [✓] GravityEnforcerAgent: Sealed {self.healed_count} neural leaks (Upstream -> Downstream)."
+            )
             for file_path in self.healed_files[:5]:  # Show first 5
                 print(f"      - {file_path}")
             if len(self.healed_files) > 5:
@@ -115,7 +123,7 @@ class GravityEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin,
         cached = self.get_cached_verdict("gravity", str(file_path))
         if cached:
             print(f"   [CACHE HIT] Gravity Verdict for {file_path.name}")
-            return cached.get('had_violations', False)
+            return cached.get("had_violations", False)
 
         try:
             with open(file_path, encoding="utf-8", errors="replace") as f:
@@ -156,11 +164,18 @@ class GravityEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin,
             "healed_count": self.healed_count,
             "healed_files": [str(f) for f in self.healed_files],
             "upstream_roots": list(self.upstream_roots),
-            "downstream_roots": list(self.downstream_roots)
+            "downstream_roots": list(self.downstream_roots),
         }
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L5 safety agent - operational only."""
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository()

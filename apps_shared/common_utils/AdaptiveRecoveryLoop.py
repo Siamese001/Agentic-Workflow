@@ -29,11 +29,13 @@ class FailureType(Enum):
     MECHANICAL = "MECHANICAL"
     UNKNOWN = "UNKNOWN"
 
+
 class RecoveryAction(Enum):
     INCREASE_TEMP = "INCREASE_TEMP"
     DECREASE_TEMP = "DECREASE_TEMP"
     HARD_HALT = "HARD_HALT"
     CONTINUE = "CONTINUE"
+
 
 @dataclass
 class FailureEvent:
@@ -44,6 +46,7 @@ class FailureEvent:
     timestamp: float = field(default_factory=time.time)
     details: dict[str, Any] | None = None
 
+
 @dataclass
 class TemperatureAdjustment:
     from_temp: float
@@ -52,6 +55,7 @@ class TemperatureAdjustment:
     failure_type: FailureType
     timestamp: float = field(default_factory=time.time)
 
+
 @dataclass
 class RecoveryResult:
     action: RecoveryAction
@@ -59,6 +63,7 @@ class RecoveryResult:
     message: str
     should_retry: bool
     details: dict[str, Any]
+
 
 class AdaptiveRecoveryLoop:
     """
@@ -77,13 +82,26 @@ class AdaptiveRecoveryLoop:
     MECHANICAL_MAX_TEMP = 0.7
 
     CREATIVE_FAILURE_PATTERNS = {
-        'generic', 'cliché', 'robotic', 'template', 'boilerplate',
-        'buzzword', 'jargon', 'vague', 'abstract', 'unoriginal'
+        "generic",
+        "cliché",
+        "robotic",
+        "template",
+        "boilerplate",
+        "buzzword",
+        "jargon",
+        "vague",
+        "abstract",
+        "unoriginal",
     }
 
     MECHANICAL_FAILURE_PATTERNS = {
-        'word count', 'character limit', 'length', 'format',
-        'structure', 'punctuation', 'capitalization'
+        "word count",
+        "character limit",
+        "length",
+        "format",
+        "structure",
+        "punctuation",
+        "capitalization",
     }
 
     def __init__(self, initial_temperature: float = 0.5):
@@ -94,10 +112,7 @@ class AdaptiveRecoveryLoop:
         self.temperature_history: list[TemperatureAdjustment] = []
 
     def record_failure(
-        self,
-        gate_id: str,
-        message: str,
-        details: dict[str, Any] | None = None
+        self, gate_id: str, message: str, details: dict[str, Any] | None = None
     ) -> RecoveryResult:
         """
         Record a validation failure and determine recovery action.
@@ -113,7 +128,7 @@ class AdaptiveRecoveryLoop:
             failure_type=failure_type,
             gate_id=gate_id,
             message=message,
-            details=details
+            details=details,
         )
         self.failure_history.append(failure_event)
 
@@ -124,12 +139,12 @@ class AdaptiveRecoveryLoop:
                 message=f"HARD_HALT: Max attempts ({self.MAX_ATTEMPTS}) reached",
                 should_retry=False,
                 details={
-                    'total_attempts': self.attempt_count,
-                    'failure_history': [
-                        {'attempt': f.attempt, 'type': f.failure_type.value, 'gate': f.gate_id}
+                    "total_attempts": self.attempt_count,
+                    "failure_history": [
+                        {"attempt": f.attempt, "type": f.failure_type.value, "gate": f.gate_id}
                         for f in self.failure_history
-                    ]
-                }
+                    ],
+                },
             )
 
         new_temp = self._calculate_new_temperature(failure_type)
@@ -137,7 +152,7 @@ class AdaptiveRecoveryLoop:
             from_temp=self.current_temperature,
             to_temp=new_temp,
             reason=self._get_adjustment_reason(failure_type),
-            failure_type=failure_type
+            failure_type=failure_type,
         )
         self.temperature_history.append(adjustment)
 
@@ -150,29 +165,29 @@ class AdaptiveRecoveryLoop:
             message=f"Temperature adjusted: {old_temp:.2f} → {new_temp:.2f} ({failure_type.value})",
             should_retry=True,
             details={
-                'attempt': self.attempt_count,
-                'failure_type': failure_type.value,
-                'temperature_delta': new_temp - old_temp,
-                'remaining_attempts': self.MAX_ATTEMPTS - self.attempt_count
-            }
+                "attempt": self.attempt_count,
+                "failure_type": failure_type.value,
+                "temperature_delta": new_temp - old_temp,
+                "remaining_attempts": self.MAX_ATTEMPTS - self.attempt_count,
+            },
         )
 
     def record_success(self) -> dict[str, Any]:
         """Record successful generation after recovery"""
         return {
-            'success': True,
-            'total_attempts': self.attempt_count,
-            'temperature_adjustments': len(self.temperature_history),
-            'final_temperature': self.current_temperature,
-            'recovery_path': [
+            "success": True,
+            "total_attempts": self.attempt_count,
+            "temperature_adjustments": len(self.temperature_history),
+            "final_temperature": self.current_temperature,
+            "recovery_path": [
                 {
-                    'from': adj.from_temp,
-                    'to': adj.to_temp,
-                    'reason': adj.reason,
-                    'type': adj.failure_type.value
+                    "from": adj.from_temp,
+                    "to": adj.to_temp,
+                    "reason": adj.reason,
+                    "type": adj.failure_type.value,
                 }
                 for adj in self.temperature_history
-            ]
+            ],
         }
 
     def reset(self, initial_temperature: float | None = None) -> None:
@@ -189,21 +204,17 @@ class AdaptiveRecoveryLoop:
         """Get complete temperature adjustment log for audit"""
         return [
             {
-                'from_temp': adj.from_temp,
-                'to_temp': adj.to_temp,
-                'delta': adj.to_temp - adj.from_temp,
-                'reason': adj.reason,
-                'failure_type': adj.failure_type.value,
-                'timestamp': adj.timestamp
+                "from_temp": adj.from_temp,
+                "to_temp": adj.to_temp,
+                "delta": adj.to_temp - adj.from_temp,
+                "reason": adj.reason,
+                "failure_type": adj.failure_type.value,
+                "timestamp": adj.timestamp,
             }
             for adj in self.temperature_history
         ]
 
-    def _classify_failure(
-        self,
-        message: str,
-        details: dict[str, Any] | None
-    ) -> FailureType:
+    def _classify_failure(self, message: str, details: dict[str, Any] | None) -> FailureType:
         """
         Classify failure as CREATIVE or MECHANICAL based on message content.
 
@@ -236,18 +247,15 @@ class AdaptiveRecoveryLoop:
         """
         if failure_type == FailureType.CREATIVE:
             new_temp = min(
-                self.current_temperature + self.CREATIVE_TEMP_INCREASE,
-                self.CREATIVE_MAX_TEMP
+                self.current_temperature + self.CREATIVE_TEMP_INCREASE, self.CREATIVE_MAX_TEMP
             )
         elif failure_type == FailureType.MECHANICAL:
             new_temp = min(
-                self.current_temperature + self.MECHANICAL_TEMP_INCREASE,
-                self.MECHANICAL_MAX_TEMP
+                self.current_temperature + self.MECHANICAL_TEMP_INCREASE, self.MECHANICAL_MAX_TEMP
             )
         else:
             new_temp = min(
-                self.current_temperature + self.MECHANICAL_TEMP_INCREASE,
-                self.MECHANICAL_MAX_TEMP
+                self.current_temperature + self.MECHANICAL_TEMP_INCREASE, self.MECHANICAL_MAX_TEMP
             )
 
         return round(new_temp, 2)

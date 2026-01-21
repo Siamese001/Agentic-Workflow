@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import logging
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
-'Brief description of functionality and purpose.'
+"Brief description of functionality and purpose."
 import time
 from dataclasses import dataclass, field
 from enum import Enum
@@ -12,19 +12,24 @@ from typing import Any
 
 Logger: Any = logging.getLogger(__name__)
 
+
 class IdentityType(Enum):
     """Types of agent identities."""
-    ORCHESTRATOR: Any = 'orchestrator'
-    COGNITIVE_AGENT: Any = 'cognitive_agent'
-    ACTION_AGENT: Any = 'action_agent'
-    TOOL_AGENT: Any = 'tool_agent'
-    HUMAN_OPERATOR: Any = 'human_operator'
+
+    ORCHESTRATOR: Any = "orchestrator"
+    COGNITIVE_AGENT: Any = "cognitive_agent"
+    ACTION_AGENT: Any = "action_agent"
+    TOOL_AGENT: Any = "tool_agent"
+    HUMAN_OPERATOR: Any = "human_operator"
+
 
 class TrustDomain(Enum):
     """Trust domains for identity verification."""
-    LOCAL: Any = 'local'
-    CLUSTER: Any = 'cluster'
-    FEDERATED: Any = 'federated'
+
+    LOCAL: Any = "local"
+    CLUSTER: Any = "cluster"
+    FEDERATED: Any = "federated"
+
 
 @dataclass
 class AgentIdentity:
@@ -32,6 +37,7 @@ class AgentIdentity:
 
     Based on SPIFFE ID format: spiffe://trust-domain/path
     """
+
     spiffe_id: str
     agent_type: IdentityType
     TrustDomain: TrustDomain
@@ -64,7 +70,16 @@ class AgentIdentity:
         Returns:
             Dictionary representation
         """
-        return {'spiffe_id': self.spiffe_id, 'agent_type': self.agent_type.value, 'TrustDomain': self.TrustDomain.value, 'public_key': self.public_key, 'issued_at': self.issued_at, 'expires_at': self.expires_at, 'capabilities': self.capabilities, 'metadata': self.metadata}
+        return {
+            "spiffe_id": self.spiffe_id,
+            "agent_type": self.agent_type.value,
+            "TrustDomain": self.TrustDomain.value,
+            "public_key": self.public_key,
+            "issued_at": self.issued_at,
+            "expires_at": self.expires_at,
+            "capabilities": self.capabilities,
+            "metadata": self.metadata,
+        }
 
     def get_namespace(self) -> str:
         """Extract namespace from SPIFFE ID.
@@ -72,10 +87,10 @@ class AgentIdentity:
         Returns:
             Namespace portion of SPIFFE ID
         """
-        PARTS: Any = self.spiffe_id.split('/')
+        PARTS: Any = self.spiffe_id.split("/")
         if len(PARTS) >= 4:
             return PARTS[3]
-        return 'default'
+        return "default"
 
     def get_agent_name(self) -> str:
         """Extract agent name from SPIFFE ID.
@@ -83,17 +98,19 @@ class AgentIdentity:
         Returns:
             Agent name portion of SPIFFE ID
         """
-        PARTS: Any = self.spiffe_id.split('/')
+        PARTS: Any = self.spiffe_id.split("/")
         if len(PARTS) >= 5:
             return PARTS[4]
-        return 'unknown'
+        return "unknown"
+
 
 @dataclass
 class IdentityVerificationResult:
     """Result of identity verification."""
+
     valid: bool
     identity: AgentIdentity | None = None
-    reason: str = ''
+    reason: str = ""
     verified_at: float = field(default_factory=time.time)
 
     def to_dict(self) -> dict[str, Any]:
@@ -102,4 +119,9 @@ class IdentityVerificationResult:
         Returns:
             Dictionary representation
         """
-        return {'valid': self.valid, 'identity': self.identity.to_dict() if self.identity else None, 'reason': self.reason, 'verified_at': self.verified_at}
+        return {
+            "valid": self.valid,
+            "identity": self.identity.to_dict() if self.identity else None,
+            "reason": self.reason,
+            "verified_at": self.verified_at,
+        }

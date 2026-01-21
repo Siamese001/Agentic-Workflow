@@ -68,7 +68,9 @@ class GovernorConfig:
     bias_detection_enabled: bool = True
     audit_logging_enabled: bool = True
     max_requests_per_minute: int = 100
-    allowed_models: list[str] = field(default_factory=lambda: ["gpt-4o", "gpt-4o-mini", "claude-3-5-sonnet"])
+    allowed_models: list[str] = field(
+        default_factory=lambda: ["gpt-4o", "gpt-4o-mini", "claude-3-5-sonnet"]
+    )
 
 
 @dataclass
@@ -109,18 +111,118 @@ C2 = CONFIG
 
 # Section-specific configurations
 _REASONING_CONFIGS = [
-    ("K0_HEADLINE_CONFIG", {"cot_min_paths": 4, "tot_branches": 3, "min_tot_depth": 2, "self_consistency": 6, "reflexion": True}),
-    ("K1_EXECUTIVE_SUMMARY_CONFIG", {"cot_min_paths": 3, "tot_branches": 3, "min_tot_depth": 3, "self_consistency": 12, "reflexion": True, "max_reflexion_loops": 2}),
-    ("K5_UNIFY_BULLETS_CONFIG", {"cot_min_paths": 4, "tot_branches": 3, "min_tot_depth": 3, "self_consistency": 12, "reflexion": True}),
+    (
+        "K0_HEADLINE_CONFIG",
+        {
+            "cot_min_paths": 4,
+            "tot_branches": 3,
+            "min_tot_depth": 2,
+            "self_consistency": 6,
+            "reflexion": True,
+        },
+    ),
+    (
+        "K1_EXECUTIVE_SUMMARY_CONFIG",
+        {
+            "cot_min_paths": 3,
+            "tot_branches": 3,
+            "min_tot_depth": 3,
+            "self_consistency": 12,
+            "reflexion": True,
+            "max_reflexion_loops": 2,
+        },
+    ),
+    (
+        "K5_UNIFY_BULLETS_CONFIG",
+        {
+            "cot_min_paths": 4,
+            "tot_branches": 3,
+            "min_tot_depth": 3,
+            "self_consistency": 12,
+            "reflexion": True,
+        },
+    ),
     ("K5_UNIFY_OVERVIEW_CONFIG", None),
-    ("K6_IBM_BULLETS_CONFIG", {"cot_min_paths": 4, "tot_branches": 3, "min_tot_depth": 3, "self_consistency": 12, "reflexion": True}),
-    ("K6_IBM_OVERVIEW_CONFIG", {"cot_min_paths": 2, "tot_branches": 2, "min_tot_depth": 2, "self_consistency": 4, "reflexion": False}),
-    ("K8_EY_BULLETS_CONFIG", {"cot_min_paths": 2, "tot_branches": 2, "min_tot_depth": 2, "self_consistency": 4, "reflexion": False}),
-    ("K8_EY_OVERVIEW_CONFIG", {"cot_min_paths": 2, "tot_branches": 2, "min_tot_depth": 2, "self_consistency": 4, "reflexion": False}),
-    ("K9_EARLY_CAREER_BULLETS_CONFIG", {"cot_min_paths": 2, "tot_branches": 2, "min_tot_depth": 2, "self_consistency": 4, "reflexion": False}),
-    ("K9_EARLY_CAREER_OVERVIEW_CONFIG", {"cot_min_paths": 2, "tot_branches": 2, "min_tot_depth": 2, "self_consistency": 4, "reflexion": False}),
-    ("K2_SKILLS_CONFIG", {"cot_min_paths": 2, "tot_branches": 2, "min_tot_depth": 2, "self_consistency": 4, "reflexion": False}),
-    ("K10_COMPETENCIES_CONFIG", {"cot_min_paths": 3, "tot_branches": 3, "min_tot_depth": 2, "self_consistency": 10, "reflexion": True}),
+    (
+        "K6_IBM_BULLETS_CONFIG",
+        {
+            "cot_min_paths": 4,
+            "tot_branches": 3,
+            "min_tot_depth": 3,
+            "self_consistency": 12,
+            "reflexion": True,
+        },
+    ),
+    (
+        "K6_IBM_OVERVIEW_CONFIG",
+        {
+            "cot_min_paths": 2,
+            "tot_branches": 2,
+            "min_tot_depth": 2,
+            "self_consistency": 4,
+            "reflexion": False,
+        },
+    ),
+    (
+        "K8_EY_BULLETS_CONFIG",
+        {
+            "cot_min_paths": 2,
+            "tot_branches": 2,
+            "min_tot_depth": 2,
+            "self_consistency": 4,
+            "reflexion": False,
+        },
+    ),
+    (
+        "K8_EY_OVERVIEW_CONFIG",
+        {
+            "cot_min_paths": 2,
+            "tot_branches": 2,
+            "min_tot_depth": 2,
+            "self_consistency": 4,
+            "reflexion": False,
+        },
+    ),
+    (
+        "K9_EARLY_CAREER_BULLETS_CONFIG",
+        {
+            "cot_min_paths": 2,
+            "tot_branches": 2,
+            "min_tot_depth": 2,
+            "self_consistency": 4,
+            "reflexion": False,
+        },
+    ),
+    (
+        "K9_EARLY_CAREER_OVERVIEW_CONFIG",
+        {
+            "cot_min_paths": 2,
+            "tot_branches": 2,
+            "min_tot_depth": 2,
+            "self_consistency": 4,
+            "reflexion": False,
+        },
+    ),
+    (
+        "K2_SKILLS_CONFIG",
+        {
+            "cot_min_paths": 2,
+            "tot_branches": 2,
+            "min_tot_depth": 2,
+            "self_consistency": 4,
+            "reflexion": False,
+        },
+    ),
+    (
+        "K10_COMPETENCIES_CONFIG",
+        {
+            "cot_min_paths": 3,
+            "tot_branches": 3,
+            "min_tot_depth": 2,
+            "self_consistency": 10,
+            "reflexion": True,
+        },
+    ),
 ]
 
 for _name, _cfg in _REASONING_CONFIGS:

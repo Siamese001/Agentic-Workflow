@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt, workflow
@@ -37,26 +36,44 @@ from agentic_core.L2_execution.ToolRegistry.IntegrityGateExecutorAgent import (
 
 # NAMING FIXED: ValidationResult → ValidationResult
 class ValidationResult:
-    '''Brief description of functionality and purpose.'''
+    """Brief description of functionality and purpose."""
 
-    def __init__(self, gate_id: str, PASSED: bool, SEVERITY: str, MESSAGE: str, DETAILS: dict | None = None, SIGNATURE: str | None = None) -> None: pass
+    def __init__(
+        self,
+        gate_id: str,
+        PASSED: bool,
+        SEVERITY: str,
+        MESSAGE: str,
+        DETAILS: dict | None = None,
+        SIGNATURE: str | None = None,
+    ) -> None:
+        pass
+
     passed = True
     gate_id = ""
     message = ""
     details = {}
+
+
 # NAMING FIXED: AdaptiveRecoveryLoop → AdaptiveRecoveryLoop
 class AdaptiveRecoveryLoop:
-    '''Brief description of functionality and purpose.'''
+    """Brief description of functionality and purpose."""
 
-    def __init__(self, initial_temperature: float) -> None: pass
-    def reset(self, temperature: float): pass
+    def __init__(self, initial_temperature: float) -> None:
+        pass
 
-    def record_failure(self, gate_id: str, MESSAGE: str, DETAILS: dict): pass
+    def reset(self, temperature: float):
+        pass
 
-    def get_temperature_log(self): return []
+    def record_failure(self, gate_id: str, MESSAGE: str, DETAILS: dict):
+        pass
+
+    def get_temperature_log(self):
+        return []
 
     current_temperature = 0.5
     should_retry = True
+
 
 # Assuming FLOAT is meant to be float
 # NAMING FIXED: FLOAT → float
@@ -74,10 +91,12 @@ class TitleComposerConfig:
     TEMPERATURE: float = 0.5
     max_attempts: int = 3
 
+
 @dataclass
 # NAMING FIXED: TitleComposerResult → TitleComposerResult
 class TitleComposerResult:
     """Docstring."""
+
     headline: str
     segments: list[str]
     word_count: int
@@ -86,6 +105,7 @@ class TitleComposerResult:
     temperature_log: list[dict[str, Any]]
     success: bool
     attempts: int
+
 
 # NAMING FIXED: ExecutiveTitleComposer → ExecutiveTitleComposer
 class ExecutiveTitleComposer:
@@ -99,44 +119,92 @@ class ExecutiveTitleComposer:
     """
 
     GICS_SECTORS = {
-        'FinTech', 'Financial Services', 'Banking', 'Insurance', 'Investment Management',
-        'Healthcare', 'Pharmaceuticals', 'Biotechnology', 'Medical Devices',
-        'Retail', 'E-Commerce', 'Consumer Goods', 'Luxury Goods',
-        'Manufacturing', 'Industrial', 'Automotive', 'Aerospace',
-        'Energy', 'Oil & Gas', 'Renewable Energy', 'Utilities',
-        'Real Estate', 'Construction', 'Infrastructure',
-        'Telecommunications', 'Media', 'Entertainment',
-        'Education', 'EdTech', 'Professional Services',
-        'Logistics', 'Supply Chain', 'Transportation',
-        'Hospitality', 'Travel', 'Food & Beverage',
-        'Government', 'Public Sector', 'Non-Profit'
+        "FinTech",
+        "Financial Services",
+        "Banking",
+        "Insurance",
+        "Investment Management",
+        "Healthcare",
+        "Pharmaceuticals",
+        "Biotechnology",
+        "Medical Devices",
+        "Retail",
+        "E-Commerce",
+        "Consumer Goods",
+        "Luxury Goods",
+        "Manufacturing",
+        "Industrial",
+        "Automotive",
+        "Aerospace",
+        "Energy",
+        "Oil & Gas",
+        "Renewable Energy",
+        "Utilities",
+        "Real Estate",
+        "Construction",
+        "Infrastructure",
+        "Telecommunications",
+        "Media",
+        "Entertainment",
+        "Education",
+        "EdTech",
+        "Professional Services",
+        "Logistics",
+        "Supply Chain",
+        "Transportation",
+        "Hospitality",
+        "Travel",
+        "Food & Beverage",
+        "Government",
+        "Public Sector",
+        "Non-Profit",
     }
 
     TECHNOLOGY_KEYWORDS = {
-        'AI', 'Artificial Intelligence', 'Machine Learning', 'ML',
-        'Cloud', 'Cloud Computing', 'AWS', 'Azure', 'GCP',
-        'Data', 'Data Science', 'Analytics', 'Big Data',
-        'Software', 'SaaS', 'Platform', 'DevOps',
-        'Cybersecurity', 'Security', 'Blockchain', 'Crypto',
-        'IoT', 'Mobile', 'Web', 'API', 'Microservices'
+        "AI",
+        "Artificial Intelligence",
+        "Machine Learning",
+        "ML",
+        "Cloud",
+        "Cloud Computing",
+        "AWS",
+        "Azure",
+        "GCP",
+        "Data",
+        "Data Science",
+        "Analytics",
+        "Big Data",
+        "Software",
+        "SaaS",
+        "Platform",
+        "DevOps",
+        "Cybersecurity",
+        "Security",
+        "Blockchain",
+        "Crypto",
+        "IoT",
+        "Mobile",
+        "Web",
+        "API",
+        "Microservices",
     }
 
     def __init__(
         self,
         config: TitleComposerConfig | None = None,
         gate_executor: IntegrityGateExecutorAgent | None = None,
-        recovery_loop: AdaptiveRecoveryLoop | None = None
+        recovery_loop: AdaptiveRecoveryLoop | None = None,
     ):
         self.CONFIG = config or TitleComposerConfig()
         self.gate_executor = gate_executor or IntegrityGateExecutorAgent()
-        self.recovery_loop = recovery_loop or AdaptiveRecoveryLoop(
-            initial_temperature=self.CONFIG.TEMPERATURE # Changed self.config to self.CONFIG to match definition
+        self.recovery_loop = (
+            recovery_loop
+            or AdaptiveRecoveryLoop(
+                initial_temperature=self.CONFIG.TEMPERATURE  # Changed self.config to self.CONFIG to match definition
+            )
         )
 
-    def generate_headline(
-        self,
-        context: dict[str, Any]
-    ) -> TitleComposerResult:
+    def generate_headline(self, context: dict[str, Any]) -> TitleComposerResult:
         """
         Generate headline with industry-first validation.
 
@@ -146,29 +214,29 @@ class ExecutiveTitleComposer:
         Returns:
             TitleComposerResult with headline and validation details
         """
-        self.recovery_loop.reset(self.CONFIG.TEMPERATURE) # Changed self.config to self.CONFIG
+        self.recovery_loop.reset(self.CONFIG.TEMPERATURE)  # Changed self.config to self.CONFIG
         validation_results = []
 
-        for attempt in range(1, self.CONFIG.max_attempts + 1): # Changed self.config to self.CONFIG
-            headline = self._generate_content( # Changed HEADLINE to headline
-                context=context, # Changed CONTEXT to context
-                temperature=self.recovery_loop.current_temperature, # Changed TEMPERATURE to temperature
-                attempt=attempt # Changed ATTEMPT to attempt
+        for attempt in range(1, self.CONFIG.max_attempts + 1):  # Changed self.config to self.CONFIG
+            headline = self._generate_content(  # Changed HEADLINE to headline
+                context=context,  # Changed CONTEXT to context
+                temperature=self.recovery_loop.current_temperature,  # Changed TEMPERATURE to temperature
+                attempt=attempt,  # Changed ATTEMPT to attempt
             )
 
             hygiene_result = self.gate_executor.execute_hygiene_scan(headline)
             validation_results.append(hygiene_result)
 
             if not hygiene_result.passed:
-                recovery = self.recovery_loop.record_failure( # Changed RECOVERY to recovery
+                recovery = self.recovery_loop.record_failure(  # Changed RECOVERY to recovery
                     gate_id=hygiene_result.gate_id,
-                    message=hygiene_result.message, # Changed MESSAGE to message
-                    details=hygiene_result.details # Changed DETAILS to details
+                    message=hygiene_result.message,  # Changed MESSAGE to message
+                    details=hygiene_result.details,  # Changed DETAILS to details
                 )
                 if not recovery.should_retry:
                     break
                 continue
-            segments = [s.strip() for s in headline.split('|')] # Changed SEGMENTS to segments
+            segments = [s.strip() for s in headline.split("|")]  # Changed SEGMENTS to segments
             word_count = len(headline.split())
             char_count = len(headline)
 
@@ -176,27 +244,27 @@ class ExecutiveTitleComposer:
             validation_results.append(length_result)
 
             if not length_result.passed:
-                recovery = self.recovery_loop.record_failure( # Changed RECOVERY to recovery
+                recovery = self.recovery_loop.record_failure(  # Changed RECOVERY to recovery
                     gate_id=length_result.gate_id,
-                    message=length_result.message, # Changed MESSAGE to message
-                    details=length_result.details # Changed DETAILS to details
+                    message=length_result.message,  # Changed MESSAGE to message
+                    details=length_result.details,  # Changed DETAILS to details
                 )
                 if not recovery.should_retry:
                     break
                 continue
 
             industry_result = self.gate_executor.execute_industry_first_gate(
-                headline=headline, # Changed HEADLINE to headline
+                headline=headline,  # Changed HEADLINE to headline
                 valid_industries=self.GICS_SECTORS,
-                gate_id='VG_INDUSTRY_FIRST_COMPLIANCE'
+                gate_id="VG_INDUSTRY_FIRST_COMPLIANCE",
             )
             validation_results.append(industry_result)
 
             if not industry_result.passed:
-                recovery = self.recovery_loop.record_failure( # Changed RECOVERY to recovery
+                recovery = self.recovery_loop.record_failure(  # Changed RECOVERY to recovery
                     gate_id=industry_result.gate_id,
-                    message=industry_result.message, # Changed MESSAGE to message
-                    details=industry_result.details # Changed DETAILS to details
+                    message=industry_result.message,  # Changed MESSAGE to message
+                    details=industry_result.details,  # Changed DETAILS to details
                 )
                 if not recovery.should_retry:
                     break
@@ -206,10 +274,10 @@ class ExecutiveTitleComposer:
             validation_results.append(tech_first_result)
 
             if not tech_first_result.passed:
-                recovery = self.recovery_loop.record_failure( # Changed RECOVERY to recovery
+                recovery = self.recovery_loop.record_failure(  # Changed RECOVERY to recovery
                     gate_id=tech_first_result.gate_id,
-                    message=tech_first_result.message, # Changed MESSAGE to message
-                    details=tech_first_result.details # Changed DETAILS to details
+                    message=tech_first_result.message,  # Changed MESSAGE to message
+                    details=tech_first_result.details,  # Changed DETAILS to details
                 )
                 if not recovery.should_retry:
                     break
@@ -218,80 +286,76 @@ class ExecutiveTitleComposer:
             self.gate_executor.results = validation_results
 
             return TitleComposerResult(
-                headline=headline, # Changed HEADLINE to headline
-                segments=segments, # Changed SEGMENTS to segments
+                headline=headline,  # Changed HEADLINE to headline
+                segments=segments,  # Changed SEGMENTS to segments
                 word_count=word_count,
                 char_count=char_count,
                 validation_results=validation_results,
                 temperature_log=self.recovery_loop.get_temperature_log(),
-                success=True, # Changed SUCCESS to success
-                attempts=attempt # Changed ATTEMPTS to attempts
+                success=True,  # Changed SUCCESS to success
+                attempts=attempt,  # Changed ATTEMPTS to attempts
             )
 
         return TitleComposerResult(
-            headline="", # Changed HEADLINE to headline
-            segments=[], # Changed SEGMENTS to segments
+            headline="",  # Changed HEADLINE to headline
+            segments=[],  # Changed SEGMENTS to segments
             word_count=0,
             char_count=0,
             validation_results=validation_results,
             temperature_log=self.recovery_loop.get_temperature_log(),
-            success=False, # Changed SUCCESS to success
-            attempts=self.CONFIG.max_attempts # Changed ATTEMPTS to attempts, self.config to self.CONFIG
+            success=False,  # Changed SUCCESS to success
+            attempts=self.CONFIG.max_attempts,  # Changed ATTEMPTS to attempts, self.config to self.CONFIG
         )
 
-    def _generate_content(
-        self,
-        context: dict[str, Any],
-        temperature: float,
-        attempt: int
-    ) -> str:
+    def _generate_content(self, context: dict[str, Any], temperature: float, attempt: int) -> str:
         """
         Generate headline content using LLM.
         Placeholder for actual LLM integration.
         """
-        industry = context.get('industry', 'Technology') # Changed INDUSTRY to industry
-        role = context.get('role', 'Executive') # Changed ROLE to role
+        industry = context.get("industry", "Technology")  # Changed INDUSTRY to industry
+        role = context.get("role", "Executive")  # Changed ROLE to role
 
         return f"{industry} | {role} | Strategic Leader"
 
-    def _validate_length(
-        self,
-        headline: str,
-        word_count: int,
-        char_count: int
-    ) -> ValidationResult:
+    def _validate_length(self, headline: str, word_count: int, char_count: int) -> ValidationResult:
         """
         Validate headline length constraints.
         BLOCKS if outside word/char limits.
         """
-        violations = [] # Changed VIOLATIONS to violations
+        violations = []  # Changed VIOLATIONS to violations
 
-        if word_count < self.CONFIG.min_words: # Changed self.config to self.CONFIG
-            violations.append(f"Word count {word_count} below minimum {self.CONFIG.min_words}") # Changed self.config to self.CONFIG
-        elif word_count > self.CONFIG.max_words: # Changed self.config to self.CONFIG
-            violations.append(f"Word count {word_count} exceeds maximum {self.CONFIG.max_words}") # Changed self.config to self.CONFIG
+        if word_count < self.CONFIG.min_words:  # Changed self.config to self.CONFIG
+            violations.append(
+                f"Word count {word_count} below minimum {self.CONFIG.min_words}"
+            )  # Changed self.config to self.CONFIG
+        elif word_count > self.CONFIG.max_words:  # Changed self.config to self.CONFIG
+            violations.append(
+                f"Word count {word_count} exceeds maximum {self.CONFIG.max_words}"
+            )  # Changed self.config to self.CONFIG
 
-        if char_count > self.CONFIG.max_chars: # Changed self.config to self.CONFIG
-            violations.append(f"Character count {char_count} exceeds maximum {self.CONFIG.max_chars}") # Fixed f-string syntax
+        if char_count > self.CONFIG.max_chars:  # Changed self.config to self.CONFIG
+            violations.append(
+                f"Character count {char_count} exceeds maximum {self.CONFIG.max_chars}"
+            )  # Fixed f-string syntax
 
         if violations:
             return ValidationResult(
-                gate_id='VG_HEADLINE_LENGTH',
-                passed=False, # Changed PASSED to passed
-                Severity='BLOCK', # Changed SEVERITY to Severity
-                message=f"BLOCKED: {len(violations)} length violations", # Changed MESSAGE to message
+                gate_id="VG_HEADLINE_LENGTH",
+                passed=False,  # Changed PASSED to passed
+                Severity="BLOCK",  # Changed SEVERITY to Severity
+                message=f"BLOCKED: {len(violations)} length violations",  # Changed MESSAGE to message
                 details={
-                    'violations': violations,
-                    'word_count': word_count,
-                    'char_count': char_count
-                }
+                    "violations": violations,
+                    "word_count": word_count,
+                    "char_count": char_count,
+                },
             )
         return ValidationResult(
-            gate_id='VG_HEADLINE_LENGTH',
-            passed=True, # Changed PASSED to passed
-            Severity='INFO', # Changed SEVERITY to Severity
-            message=f"Length compliant: {word_count} words, {char_count} chars", # Changed MESSAGE to message
-            signature=f"LENGTH:OK:{hash(headline) % 10000}" # Changed SIGNATURE to signature
+            gate_id="VG_HEADLINE_LENGTH",
+            passed=True,  # Changed PASSED to passed
+            Severity="INFO",  # Changed SEVERITY to Severity
+            message=f"Length compliant: {word_count} words, {char_count} chars",  # Changed MESSAGE to message
+            signature=f"LENGTH:OK:{hash(headline) % 10000}",  # Changed SIGNATURE to signature
         )
 
     def _validate_not_tech_first(self, segments: list[str]) -> ValidationResult:
@@ -301,36 +365,37 @@ class ExecutiveTitleComposer:
         """
         if not segments:
             return ValidationResult(
-                gate_id='VG_NOT_TECH_FIRST',
-                passed=False, # Changed PASSED to passed
-                Severity='BLOCK', # Changed SEVERITY to Severity
-                message="BLOCKED: No segments found in headline" # Changed MESSAGE to message
+                gate_id="VG_NOT_TECH_FIRST",
+                passed=False,  # Changed PASSED to passed
+                Severity="BLOCK",  # Changed SEVERITY to Severity
+                message="BLOCKED: No segments found in headline",  # Changed MESSAGE to message
             )
 
         first_segment = segments[0]
 
         if first_segment in self.TECHNOLOGY_KEYWORDS:
             return ValidationResult(
-                gate_id='VG_NOT_TECH_FIRST',
-                passed=False, # Changed PASSED to passed
-                Severity='BLOCK', # Changed SEVERITY to Severity
-                message=f"BLOCKED: First segment '{first_segment}' is a technology keyword", # Changed MESSAGE to message
+                gate_id="VG_NOT_TECH_FIRST",
+                passed=False,  # Changed PASSED to passed
+                Severity="BLOCK",  # Changed SEVERITY to Severity
+                message=f"BLOCKED: First segment '{first_segment}' is a technology keyword",  # Changed MESSAGE to message
                 details={
-                    'first_segment': first_segment,
-                    'tech_keywords': list(self.TECHNOLOGY_KEYWORDS)[:10]
-                }
+                    "first_segment": first_segment,
+                    "tech_keywords": list(self.TECHNOLOGY_KEYWORDS)[:10],
+                },
             )
 
         return ValidationResult(
-            gate_id='VG_NOT_TECH_FIRST',
-            passed=True, # Changed PASSED to passed
-            Severity='INFO', # Changed SEVERITY to Severity
-            message=f"Not tech-first: '{first_segment}' is industry/role", # Changed MESSAGE to message
-            signature=f"NOTTECH:OK:{hash(first_segment) % 10000}" # Changed SIGNATURE to signature
+            gate_id="VG_NOT_TECH_FIRST",
+            passed=True,  # Changed PASSED to passed
+            Severity="INFO",  # Changed SEVERITY to Severity
+            message=f"Not tech-first: '{first_segment}' is industry/role",  # Changed MESSAGE to message
+            signature=f"NOTTECH:OK:{hash(first_segment) % 10000}",  # Changed SIGNATURE to signature
         )
 
+
 def create_executive_title_composer(
-    config: TitleComposerConfig | None = None
+    config: TitleComposerConfig | None = None,
 ) -> ExecutiveTitleComposer:
     """Factory function to create ExecutiveTitleComposer instance"""
     return ExecutiveTitleComposer(config=config)

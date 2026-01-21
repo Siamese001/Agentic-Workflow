@@ -1,4 +1,5 @@
 """Tests for OutreachStack coordination logic."""
+
 from unittest.mock import patch
 
 from src.lic_agentic.reasoning.toggles import ReasoningToggles

@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, workflow
@@ -24,7 +23,7 @@ from typing import Any
 from agentic_core.runtime.shared_runtime.ast_validator import CanonASTValidator
 
 # GRAVITY FIXED (Upward Leak): from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
-_mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_mixin')
+_mod = importlib.import_module("agentic_core.L5_safety.guardrails.mcp_hardened_mixin")
 MCPHardenedMixin = _mod.MCPHardenedMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
@@ -33,7 +32,9 @@ from agentic_core.utils.core_extensions.subatomic_testing_mixin import Subatomic
 
 
 @dataclass
-class AsyncBlockingValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValidator, MCPHardenedMixin):
+class AsyncBlockingValidatorAgent(
+    HealerMixin, SubatomicTestingMixin, CanonASTValidator, MCPHardenedMixin
+):
     """
     Key 31: Detects blocking calls in async functions (time.sleep, requests, etc).
     """
@@ -54,12 +55,21 @@ class AsyncBlockingValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTVa
         """Check for blocking calls inside async functions."""
         if self.in_async_function and (not self.in_type_checking):
             if isinstance(node.func, ast.Attribute):
-                if isinstance(node.func.value, ast.Name) and node.func.value.id == 'time' and (node.func.attr == 'sleep'):
-                    self.report('Blocking time.sleep() in async function (use asyncio.sleep())', node)
-                elif isinstance(node.func.value, ast.Name) and node.func.value.id == 'requests':
-                    self.report(f'Blocking requests.{node.func.attr}() in async function (use httpx.AsyncClient or asyncio.to_thread())', node)
+                if (
+                    isinstance(node.func.value, ast.Name)
+                    and node.func.value.id == "time"
+                    and (node.func.attr == "sleep")
+                ):
+                    self.report(
+                        "Blocking time.sleep() in async function (use asyncio.sleep())", node
+                    )
+                elif isinstance(node.func.value, ast.Name) and node.func.value.id == "requests":
+                    self.report(
+                        f"Blocking requests.{node.func.attr}() in async function (use httpx.AsyncClient or asyncio.to_thread())",
+                        node,
+                    )
         self.generic_visit(node)
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()

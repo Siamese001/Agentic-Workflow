@@ -12,20 +12,21 @@ Validates:
 4. Metrics are properly calculated (< 50%, = 0%)
 5. VS Code links are properly formatted
 """
+
 import json
 import re
 from pathlib import Path
 
 # Load dashboard HTML
-dashboard_path = Path('agentic_core/L6_observability/dashboards/autonomy_dashboard.html')
+dashboard_path = Path("agentic_core/L6_observability/dashboards/autonomy_dashboard.html")
 if not dashboard_path.exists():
     print("❌ Dashboard HTML not found")
     exit(1)
 
-html = dashboard_path.read_text(encoding='utf-8')
+html = dashboard_path.read_text(encoding="utf-8")
 
 # Extract realAgentData from HTML
-agent_data_pattern = r'const realAgentData = (\{.*?\});'
+agent_data_pattern = r"const realAgentData = (\{.*?\});"
 match = re.search(agent_data_pattern, html, re.DOTALL)
 
 if not match:
@@ -46,10 +47,22 @@ print()
 
 # Required fields for drill-down agent objects
 REQUIRED_FIELDS = [
-    'name', 'path', 'rel', 'abs_file', 'abs_class', 'class_line',
-    'has_mixin', 'invocation', 'has_tests',
-    'obs_summary', 'mcp_summary', 'typing_summary',
-    'typed_pct', 'overall_typed_pct', 'complexity', 'health'
+    "name",
+    "path",
+    "rel",
+    "abs_file",
+    "abs_class",
+    "class_line",
+    "has_mixin",
+    "invocation",
+    "has_tests",
+    "obs_summary",
+    "mcp_summary",
+    "typing_summary",
+    "typed_pct",
+    "overall_typed_pct",
+    "complexity",
+    "health",
 ]
 
 total_territories = len(real_agent_data)
@@ -62,7 +75,7 @@ print(f"📊 Validating {total_territories} territories...")
 print()
 
 for territory, territory_data in real_agent_data.items():
-    agents = territory_data.get('agents', [])
+    agents = territory_data.get("agents", [])
 
     if not agents:
         continue
@@ -81,56 +94,60 @@ for territory, territory_data in real_agent_data.items():
             continue
 
         # Check for "undefined" values in critical fields
-        if agent.get('name') == 'undefined' or not agent.get('name'):
+        if agent.get("name") == "undefined" or not agent.get("name"):
             errors.append(f"❌ {agent_id}: Agent name is undefined or empty")
 
-        if agent.get('rel') == 'undefined' or not agent.get('rel'):
+        if agent.get("rel") == "undefined" or not agent.get("rel"):
             errors.append(f"❌ {agent_id}: Relative path is undefined or empty")
 
-        if agent.get('class_line') == 'undefined':
+        if agent.get("class_line") == "undefined":
             errors.append(f"❌ {agent_id}: Class line is undefined")
 
         # Validate metric values are numbers (not "undefined")
-        numeric_fields = ['health', 'complexity', 'typed_pct', 'overall_typed_pct']
+        numeric_fields = ["health", "complexity", "typed_pct", "overall_typed_pct"]
         for field in numeric_fields:
             value = agent.get(field)
-            if value == 'undefined' or value is None:
+            if value == "undefined" or value is None:
                 errors.append(f"❌ {agent_id}: {field} is undefined")
             elif not isinstance(value, (int, float)):
                 errors.append(f"❌ {agent_id}: {field} is not numeric: {value}")
 
         # Validate boolean fields
-        boolean_fields = ['has_mixin', 'has_tests']
+        boolean_fields = ["has_mixin", "has_tests"]
         for field in boolean_fields:
             value = agent.get(field)
-            if value == 'undefined' or value is None:
+            if value == "undefined" or value is None:
                 errors.append(f"❌ {agent_id}: {field} is undefined")
 
         # Validate summary strings
-        summary_fields = ['obs_summary', 'mcp_summary', 'typing_summary']
+        summary_fields = ["obs_summary", "mcp_summary", "typing_summary"]
         for field in summary_fields:
             value = agent.get(field)
-            if value == 'undefined' or not value:
+            if value == "undefined" or not value:
                 errors.append(f"❌ {agent_id}: {field} is undefined or empty")
-            elif 'undefined' in str(value):
+            elif "undefined" in str(value):
                 errors.append(f"❌ {agent_id}: {field} contains 'undefined': {value}")
 
         # Check invocation field
-        inv_value = agent.get('invocation')
-        valid_invocations = ['Yes', 'No', 'Inherited', 'Unknown']
+        inv_value = agent.get("invocation")
+        valid_invocations = ["Yes", "No", "Inherited", "Unknown"]
         if inv_value not in valid_invocations:
             warnings.append(f"⚠️  {agent_id}: Unexpected invocation value: {inv_value}")
 
         # Validate metric thresholds (< 50% and = 0%)
-        if agent.get('health', 100) < 50:
+        if agent.get("health", 100) < 50:
             # This is expected for low-health agents, just validate it's a valid number
-            if not isinstance(agent['health'], (int, float)):
-                errors.append(f"❌ {agent_id}: health < 50% but not a valid number: {agent['health']}")
+            if not isinstance(agent["health"], (int, float)):
+                errors.append(
+                    f"❌ {agent_id}: health < 50% but not a valid number: {agent['health']}"
+                )
 
-        if agent.get('health', 100) == 0:
+        if agent.get("health", 100) == 0:
             # Zero health should be explicitly 0, not undefined
-            if agent['health'] != 0:
-                errors.append(f"❌ {agent_id}: health appears to be 0 but has invalid value: {agent['health']}")
+            if agent["health"] != 0:
+                errors.append(
+                    f"❌ {agent_id}: health appears to be 0 but has invalid value: {agent['health']}"
+                )
 
 # Print results
 print("─" * 80)
@@ -170,8 +187,8 @@ agents_below_50_health = 0
 agents_with_undefined = 0
 
 for territory_data in real_agent_data.values():
-    for agent in territory_data.get('agents', []):
-        health = agent.get('health', 100)
+    for agent in territory_data.get("agents", []):
+        health = agent.get("health", 100)
         if health == 0:
             agents_at_zero_health += 1
         elif health < 50:
@@ -179,7 +196,7 @@ for territory_data in real_agent_data.values():
 
         # Check for any undefined values
         agent_str = json.dumps(agent)
-        if 'undefined' in agent_str:
+        if "undefined" in agent_str:
             agents_with_undefined += 1
 
 print(f"Agents at 0% health: {agents_at_zero_health}")

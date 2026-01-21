@@ -9,6 +9,7 @@ Tests the 5 detailed test cases for:
 4. Observability Duration
 5. Critical Error Transparency
 """
+
 import sys
 import time
 from pathlib import Path
@@ -44,9 +45,9 @@ def test_1_stability_gate_execution_failure():
     Provide an agent that returns violations: 5 and fixed: 0 with execute=True.
     Verify is_stable returns False.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 1: Stability Gate - Execution Failure")
-    print("="*60)
+    print("=" * 60)
 
     orchestrator = CoreOrchestrationAgent(PROJECT_ROOT)
 
@@ -58,7 +59,9 @@ def test_1_stability_gate_execution_failure():
     result = orchestrator.run_mission(agents, context)
 
     assert result["is_stable"] == False, f"Expected is_stable=False, got {result['is_stable']}"
-    assert result["total_violations"] == 5, f"Expected total_violations=5, got {result['total_violations']}"
+    assert result["total_violations"] == 5, (
+        f"Expected total_violations=5, got {result['total_violations']}"
+    )
 
     print(f"✅ PASSED: is_stable={result['is_stable']} (expected False)")
     print(f"   total_violations={result['total_violations']}")
@@ -72,9 +75,9 @@ def test_2_stability_gate_dry_run_safety():
     Provide an agent that returns violations: 10 with execute=False (dry-run).
     Verify is_stable returns True (dry-runs are inherently "stable").
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 2: Stability Gate - Dry-Run Safety")
-    print("="*60)
+    print("=" * 60)
 
     orchestrator = CoreOrchestrationAgent(PROJECT_ROOT)
 
@@ -86,10 +89,14 @@ def test_2_stability_gate_dry_run_safety():
     result = orchestrator.run_mission(agents, context)
 
     assert result["is_stable"] == True, f"Expected is_stable=True, got {result['is_stable']}"
-    assert result["total_violations"] == 10, f"Expected total_violations=10, got {result['total_violations']}"
+    assert result["total_violations"] == 10, (
+        f"Expected total_violations=10, got {result['total_violations']}"
+    )
 
     print(f"✅ PASSED: is_stable={result['is_stable']} (expected True for dry-run)")
-    print(f"   total_violations={result['total_violations']} (violations don't affect stability in dry-run)")
+    print(
+        f"   total_violations={result['total_violations']} (violations don't affect stability in dry-run)"
+    )
     return True
 
 
@@ -100,9 +107,9 @@ def test_3_ssot_key_extraction():
     Execute an agent that uses legacy keys (e.g., violations_found: 3).
     Verify the orchestrator correctly maps this to total_violations: 3.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 3: SSOT Key Extraction")
-    print("="*60)
+    print("=" * 60)
 
     orchestrator = CoreOrchestrationAgent(PROJECT_ROOT)
 
@@ -122,10 +129,12 @@ def test_3_ssot_key_extraction():
     expected_violations = 3 + 5 + 7
     expected_fixes = 2 + 1 + 4
 
-    assert result["total_violations"] == expected_violations, \
+    assert result["total_violations"] == expected_violations, (
         f"Expected total_violations={expected_violations}, got {result['total_violations']}"
-    assert result["total_fixes"] == expected_fixes, \
+    )
+    assert result["total_fixes"] == expected_fixes, (
         f"Expected total_fixes={expected_fixes}, got {result['total_fixes']}"
+    )
 
     # Verify individual mission_log entries
     log = result["mission_log"]
@@ -148,9 +157,9 @@ def test_4_observability_duration():
     Verify that both individual mission_log entries and the final summary
     report accurate execution times in seconds.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 4: Observability Duration")
-    print("="*60)
+    print("=" * 60)
 
     orchestrator = CoreOrchestrationAgent(PROJECT_ROOT)
 
@@ -168,8 +177,9 @@ def test_4_observability_duration():
 
     # Verify mission duration exists and is reasonable
     assert "duration_sec" in result, "Missing duration_sec in result"
-    assert result["duration_sec"] >= (delay_1 + delay_2), \
+    assert result["duration_sec"] >= (delay_1 + delay_2), (
         f"Mission duration {result['duration_sec']} should be >= {delay_1 + delay_2}"
+    )
 
     # Verify individual agent durations
     log = result["mission_log"]
@@ -178,10 +188,12 @@ def test_4_observability_duration():
 
     # Allow 50ms tolerance for timing variance
     tolerance = 0.05
-    assert log[0]["duration_sec"] >= delay_1 - tolerance, \
+    assert log[0]["duration_sec"] >= delay_1 - tolerance, (
         f"FastAgent duration {log[0]['duration_sec']} should be >= {delay_1}"
-    assert log[1]["duration_sec"] >= delay_2 - tolerance, \
+    )
+    assert log[1]["duration_sec"] >= delay_2 - tolerance, (
         f"SlowAgent duration {log[1]['duration_sec']} should be >= {delay_2}"
+    )
 
     print("✅ PASSED: Duration tracking working")
     print(f"   Mission duration_sec={result['duration_sec']}")
@@ -198,9 +210,9 @@ def test_5_critical_error_transparency():
     status: "failed" and includes the error string, while the mission
     continues to the next agent.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 5: Critical Error Transparency")
-    print("="*60)
+    print("=" * 60)
 
     orchestrator = CoreOrchestrationAgent(PROJECT_ROOT)
 
@@ -247,10 +259,10 @@ def test_5_critical_error_transparency():
 
 def run_all_tests():
     """Run all test cases."""
-    print("\n" + "#"*60)
+    print("\n" + "#" * 60)
     print("# CoreOrchestrationAgent Test Suite")
     print("# Testing: Stability Gate & Standardized Metrics")
-    print("#"*60)
+    print("#" * 60)
 
     tests = [
         ("Test 1: Stability Gate - Execution Failure", test_1_stability_gate_execution_failure),
@@ -276,9 +288,9 @@ def run_all_tests():
             print(f"   Exception: {e}")
             failed += 1
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print(f"RESULTS: {passed}/{len(tests)} tests passed")
-    print("="*60)
+    print("=" * 60)
 
     if failed > 0:
         print(f"❌ {failed} test(s) FAILED")

@@ -177,8 +177,6 @@ class ConstitutionalReviewerAgent(BaseAgent):
             )
 
         if not validated_output.review_passed:
-            self.log_warning(
-                f"CONSTITUTIONAL REVIEW FAILED: {validated_output.violations_found}"
-            )
+            self.log_warning(f"CONSTITUTIONAL REVIEW FAILED: {validated_output.violations_found}")
 
         return validated_output

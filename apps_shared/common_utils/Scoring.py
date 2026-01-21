@@ -12,6 +12,7 @@ from typing import Any
 @dataclass
 class DocumentScore:
     """Score for a retrieved document."""
+
     document_id: str
     content: str
     relevance_score: float
@@ -23,10 +24,10 @@ class DocumentScore:
     def __post_init__(self):
         # Calculate final weighted score
         self.final_score = (
-            0.4 * self.relevance_score +
-            0.3 * self.semantic_score +
-            0.2 * self.keyword_score +
-            0.1 * self.freshness_score
+            0.4 * self.relevance_score
+            + 0.3 * self.semantic_score
+            + 0.2 * self.keyword_score
+            + 0.1 * self.freshness_score
         )
 
 
@@ -40,19 +41,16 @@ class RAGScorer:
             config: Optional configuration for scoring weights
         """
         self.config = config or {}
-        self.weights = self.config.get("weights", {
-            "relevance": 0.4,
-            "semantic": 0.3,
-            "keyword": 0.2,
-            "freshness": 0.1
-        })
+        self.weights = self.config.get(
+            "weights", {"relevance": 0.4, "semantic": 0.3, "keyword": 0.2, "freshness": 0.1}
+        )
 
     def score_documents(
         self,
         documents: list[dict[str, Any]],
         query: str,
         query_embedding: list[float] | None = None,
-        document_embeddings: list[list[float]] | None = None
+        document_embeddings: list[list[float]] | None = None,
     ) -> list[DocumentScore]:
         """Score a list of documents against a query.
 
@@ -71,8 +69,7 @@ class RAGScorer:
             # Calculate different score components
             relevance = self._calculate_relevance(doc["content"], query)
             semantic = self._calculate_semantic_score(
-                doc, query, query_embedding,
-                document_embeddings[i] if document_embeddings else None
+                doc, query, query_embedding, document_embeddings[i] if document_embeddings else None
             )
             keyword = self._calculate_keyword_score(doc["content"], query)
             freshness = self._calculate_freshness_score(doc)
@@ -85,7 +82,7 @@ class RAGScorer:
                 semantic_score=semantic,
                 keyword_score=keyword,
                 freshness_score=freshness,
-                final_score=0.0  # Will be calculated in __post_init__
+                final_score=0.0,  # Will be calculated in __post_init__
             )
 
             scores.append(doc_score)
@@ -110,7 +107,7 @@ class RAGScorer:
         doc: dict[str, Any],
         query: str,
         query_embedding: list[float] | None,
-        doc_embedding: list[float] | None
+        doc_embedding: list[float] | None,
     ) -> float:
         """Calculate semantic similarity score."""
         if not query_embedding or not doc_embedding:

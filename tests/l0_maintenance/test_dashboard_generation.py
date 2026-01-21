@@ -5,6 +5,7 @@ E2E Dashboard Generation Test - MANDATORY DATA INJECTION VALIDATION
 This test ensures that dashboard generation and data injection are atomic.
 If any injection fails, the entire generation must fail.
 """
+
 import json
 import re
 import sys
@@ -20,6 +21,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 # Add project root to path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
+
 
 def test_dashboard_generation():
     """Test dashboard generation end-to-end with mandatory injection validation."""
@@ -52,19 +54,19 @@ def test_dashboard_generation():
         print(f"✓ Dashboard file exists: {dashboard_path}")
 
         # Read dashboard content
-        content = dashboard_path.read_text(encoding='utf-8')
+        content = dashboard_path.read_text(encoding="utf-8")
 
         # MANDATORY CHECKS - These must all pass or generation should have failed
         failures = []
 
         # Check 1: Dashboard data injection
-        if 'const dashboardData = [];' in content:
+        if "const dashboardData = [];" in content:
             failures.append("dashboardData placeholder not replaced (empty array still present)")
-        elif 'const dashboardData = [' not in content:
+        elif "const dashboardData = [" not in content:
             failures.append("dashboardData variable not found in output")
         else:
             # Verify data is actually present (not just empty)
-            match = re.search(r'const dashboardData = \[(.*?)\];', content, re.DOTALL)
+            match = re.search(r"const dashboardData = \[(.*?)\];", content, re.DOTALL)
             if match:
                 data_str = f"[{match.group(1).strip()}]"
                 try:
@@ -77,9 +79,9 @@ def test_dashboard_generation():
                 print("✓ Dashboard data injected with content")
 
         # Check 2: Recommendations data injection
-        if 'const recommendationsData = [];' in content:
+        if "const recommendationsData = [];" in content:
             failures.append("recommendationsData placeholder not replaced")
-        elif 'const recommendationsData = [' not in content:
+        elif "const recommendationsData = [" not in content:
             failures.append("recommendationsData variable not found")
         else:
             print("✓ Recommendations data injected")
@@ -93,13 +95,13 @@ def test_dashboard_generation():
             print("✓ Last updated timestamp injected")
 
         # Check 4: Gauge data injection
-        if 'const gaugeData = {};' in content:
+        if "const gaugeData = {};" in content:
             failures.append("gaugeData placeholder not replaced (empty object still present)")
-        elif 'const gaugeData = {' not in content:
+        elif "const gaugeData = {" not in content:
             failures.append("gaugeData variable not found")
         else:
             # Hardening: Verify gaugeData has required keys for UI rendering
-            match = re.search(r'const gaugeData = (\{.*?\});', content, re.DOTALL)
+            match = re.search(r"const gaugeData = (\{.*?\});", content, re.DOTALL)
             if match:
                 try:
                     g_data = json.loads(match.group(1))
@@ -109,19 +111,19 @@ def test_dashboard_generation():
                     failures.append("gaugeData contains invalid JSON")
 
         # Check 5: Strategic review injection
-        if '<!-- STRATEGIC_REVIEW_INSERT -->' in content:
+        if "<!-- STRATEGIC_REVIEW_INSERT -->" in content:
             failures.append("Strategic review placeholder not replaced")
         else:
             print("✓ Strategic review placeholder replaced")
 
         # Check 6: Top recommendations injection
-        if '<!-- TOP_RECS_INSERT -->' in content:
+        if "<!-- TOP_RECS_INSERT -->" in content:
             failures.append("Top recommendations placeholder not replaced")
         else:
             print("✓ Top recommendations placeholder replaced")
 
         # Check 6.1: Strategic Observations injection (Phase 5 Requirement)
-        if 'const strategicObservationsData = {};' in content:
+        if "const strategicObservationsData = {};" in content:
             failures.append("strategicObservationsData placeholder not replaced")
 
         # Check 7: Verify actual data content
@@ -158,8 +160,10 @@ def test_dashboard_generation():
     except Exception as e:
         print(f"\n✗ Unexpected error: {e}")
         import traceback
+
         traceback.print_exc()
         return False
+
 
 if __name__ == "__main__":
     success = test_dashboard_generation()

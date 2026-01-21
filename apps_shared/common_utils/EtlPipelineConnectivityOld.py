@@ -37,10 +37,7 @@ class ETLPipeline:
         logger.info("ETL Pipeline initialized")
 
     def hydrate_cache(
-        self,
-        min_success_count: int = 10,
-        max_patterns: int = 50,
-        project_filter: str | None = None
+        self, min_success_count: int = 10, max_patterns: int = 50, project_filter: str | None = None
     ) -> dict[str, Any]:
         """
         Hydrate Redis cache with golden patterns from Pinecone.
@@ -53,14 +50,13 @@ class ETLPipeline:
         Returns:
             Statistics about the hydration process
         """
-        logger.info(
-            f"Starting cache hydration with up to {max_patterns} golden patterns")
+        logger.info(f"Starting cache hydration with up to {max_patterns} golden patterns")
 
         # Get golden patterns from Pinecone
         golden_patterns = self._fetch_golden_patterns(
             min_success_count=min_success_count,
             max_patterns=max_patterns,
-            project_filter=project_filter
+            project_filter=project_filter,
         )
 
         # Load into Redis
@@ -71,17 +67,14 @@ class ETLPipeline:
             "loaded_to_redis": loaded_count,
             "min_success_count": min_success_count,
             "max_patterns": max_patterns,
-            "project_filter": project_filter
+            "project_filter": project_filter,
         }
 
         logger.info(f"Cache hydration complete: {stats}")
         return stats
 
     def _fetch_golden_patterns(
-        self,
-        min_success_count: int,
-        max_patterns: int,
-        project_filter: str | None
+        self, min_success_count: int, max_patterns: int, project_filter: str | None
     ) -> list[CanonEntry]:
         """Fetch golden patterns from Pinecone."""
         try:
@@ -98,7 +91,7 @@ class ETLPipeline:
                 vector=[0.0] * 768,  # Dummy vector for metadata-only query
                 top_k=max_patterns,
                 include_metadata=True,
-                filter=filter_dict
+                filter=filter_dict,
             )
 
             # Convert to CanonEntry objects
@@ -112,20 +105,18 @@ class ETLPipeline:
                         id=match["id"],
                         code_snippet=metadata["code_snippet"],
                         ast_structure=metadata["ast_structure"],
-                        embedding=match["values"] if "values" in match else [
-                            0.0] * 768,
+                        embedding=match["values"] if "values" in match else [0.0] * 768,
                         metadata={
                             "failure_count": metadata["failure_count"],
                             "success_count": metadata["success_count"],
                             "last_validated": metadata["last_validated"],
                             "project_context": metadata["project_context"],
-                            "canon_rule_id": metadata["canon_rule_id"]
-                        }
+                            "canon_rule_id": metadata["canon_rule_id"],
+                        },
                     )
                     patterns.append(entry)
 
-            logger.info(
-                f"Fetched {len(patterns)} golden patterns from Pinecone")
+            logger.info(f"Fetched {len(patterns)} golden patterns from Pinecone")
             return patterns
 
         except Exception as e:
@@ -152,15 +143,17 @@ class ETLPipeline:
 
                 # Add to search index
                 self.redis_index.load(
-                    documents=[{
-                        "id": fields["id"],
-                        "embedding": fields["embedding"],
-                        "failure_count": fields["failure_count"],
-                        "success_count": fields["success_count"],
-                        "project_context": fields["project_context"],
-                        "canon_rule_id": fields["canon_rule_id"],
-                        "last_validated": fields["last_validated"]
-                    }]
+                    documents=[
+                        {
+                            "id": fields["id"],
+                            "embedding": fields["embedding"],
+                            "failure_count": fields["failure_count"],
+                            "success_count": fields["success_count"],
+                            "project_context": fields["project_context"],
+                            "canon_rule_id": fields["canon_rule_id"],
+                            "last_validated": fields["last_validated"],
+                        }
+                    ]
                 )
 
                 loaded_count += 1
@@ -176,10 +169,7 @@ class ETLPipeline:
             return 0
 
     def backfill_from_code(
-        self,
-        code_files: list[str],
-        project_context: str = "backfill",
-        batch_size: int = 100
+        self, code_files: list[str], project_context: str = "backfill", batch_size: int = 100
     ) -> dict[str, Any]:
         """
         Backfill Pinecone with code files.
@@ -199,21 +189,17 @@ class ETLPipeline:
         failed = 0
 
         for i in range(0, len(code_files), batch_size):
-            batch = code_files[i:i + batch_size]
+            batch = code_files[i : i + batch_size]
             entries = []
 
             for file_path in batch:
                 try:
                     # Read file
-                    with open(file_path, encoding='utf-8') as f:
+                    with open(file_path, encoding="utf-8") as f:
                         code = f.read()
 
                     # Generate entry
-                    entry = self._create_entry_from_code(
-                        code,
-                        project_context,
-                        file_path
-                    )
+                    entry = self._create_entry_from_code(code, project_context, file_path)
                     entries.append(entry)
                     processed += 1
 
@@ -229,17 +215,14 @@ class ETLPipeline:
             "total_files": len(code_files),
             "processed": processed,
             "failed": failed,
-            "batch_size": batch_size
+            "batch_size": batch_size,
         }
 
         logger.info(f"Backfill complete: {stats}")
         return stats
 
     def _create_entry_from_code(
-        self,
-        code: str,
-        project_context: str,
-        file_path: str
+        self, code: str, project_context: str, file_path: str
     ) -> CanonEntry:
         """Create CanonEntry from code."""
         # Generate AST
@@ -258,8 +241,8 @@ class ETLPipeline:
                 "failure_count": 0,
                 "success_count": 0,
                 "project_context": project_context,
-                "canon_rule_id": "backfill"
-            }
+                "canon_rule_id": "backfill",
+            },
         )
 
         return entry
@@ -282,10 +265,7 @@ class ETLPipeline:
 
     def get_cache_stats(self) -> dict[str, Any]:
         """Get statistics for both caches."""
-        stats = {
-            "redis": {},
-            "pinecone": {}
-        }
+        stats = {"redis": {}, "pinecone": {}}
 
         # Redis stats
         try:
@@ -294,7 +274,7 @@ class ETLPipeline:
                 "connected_clients": redis_info.get("connected_clients", 0),
                 "used_memory": redis_info.get("used_memory_human", "0B"),
                 "keyspace_hits": redis_info.get("keyspace_hits", 0),
-                "keyspace_misses": redis_info.get("keyspace_misses", 0)
+                "keyspace_misses": redis_info.get("keyspace_misses", 0),
             }
         except Exception as e:
             logger.error(f"Failed to get Redis stats: {e}")
@@ -306,7 +286,7 @@ class ETLPipeline:
             stats["pinecone"] = {
                 "vector_count": index_stats.get("total_vector_count", 0),
                 "dimension": index_stats.get("dimension", 0),
-                "index_fullness": index_stats.get("index_fullness", 0)
+                "index_fullness": index_stats.get("index_fullness", 0),
             }
         except Exception as e:
             logger.error(f"Failed to get Pinecone stats: {e}")

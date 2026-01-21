@@ -17,7 +17,13 @@ def _iter_project_py_files() -> list:
             continue
         yield path
     for path in PROJECT_ROOT.iterdir():
-        if path.is_dir() and path.name not in {"tests", ".mypy_cache", ".pytest_cache", ".ruff_cache", ".git"}:
+        if path.is_dir() and path.name not in {
+            "tests",
+            ".mypy_cache",
+            ".pytest_cache",
+            ".ruff_cache",
+            ".git",
+        }:
             for sub in path.rglob("*.py"):
                 yield sub
 

@@ -16,6 +16,7 @@ Usage:
             # This result will be cached for 1 hour
             return await self._compute(key)
 """
+
 from __future__ import annotations
 
 import functools
@@ -46,6 +47,7 @@ def cached(ttl: int = 3600, prefix: str | None = None):
     - Metrics collection
     - Async-safe
     """
+
     def decorator(func: Callable):
         @functools.wraps(func)
         async def wrapper(self, *args, **kwargs) -> Any:
@@ -59,7 +61,9 @@ def cached(ttl: int = 3600, prefix: str | None = None):
             sorted_items = sorted(kwargs.items())
             key_parts.extend(f"{k}:{repr(v)}" for k, v in sorted_items)
             raw_key = ":".join(key_parts)
-            cache_key = f"{prefix or func.__name__}:{hashlib.sha256(raw_key.encode()).hexdigest()[:16]}"
+            cache_key = (
+                f"{prefix or func.__name__}:{hashlib.sha256(raw_key.encode()).hexdigest()[:16]}"
+            )
 
             start = time.time()
             metrics = get_cache_metrics()
@@ -94,7 +98,9 @@ def cached(ttl: int = 3600, prefix: str | None = None):
                 log.debug(f"Cache store failed ({e}) - result not cached")
 
             return result
+
         return wrapper
+
     return decorator
 
 
@@ -103,6 +109,7 @@ def cached_sync(ttl: int = 3600, prefix: str | None = None):
     Synchronous version of @cached decorator for non-async methods.
     Uses local dict fallback only (no Redis for sync).
     """
+
     def decorator(func: Callable):
         _local_cache: dict = {}
 
@@ -128,11 +135,10 @@ def cached_sync(ttl: int = 3600, prefix: str | None = None):
             log.debug(f"Sync cache MISS {func.__name__}")
             result = func(self, *args, **kwargs)
 
-            _local_cache[cache_key] = {
-                "value": result,
-                "expires": time.time() + ttl
-            }
+            _local_cache[cache_key] = {"value": result, "expires": time.time() + ttl}
 
             return result
+
         return wrapper
+
     return decorator

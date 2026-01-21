@@ -9,6 +9,7 @@ Usage:
     python -m agentic_core.L0_maintenance.scripts.ZombieVaccinator --pilot AgentName
     python -m agentic_core.L0_maintenance.scripts.ZombieVaccinator --execute
 """
+
 import argparse
 import ast
 import json
@@ -18,7 +19,7 @@ from pathlib import Path
 from typing import Any
 
 # Configure logging for the vaccination process
-logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s')
+logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 Logger = logging.getLogger("ZombieVaccinator")
 
 
@@ -30,15 +31,33 @@ class ZombieVaccinator:
 
     # Method prefixes that indicate healing/validation logic
     VACCINE_PREFIXES = [
-        '_validate', '_reconcile', '_cleanup', '_heal', '_fix', '_repair',
-        'validate_', 'heal_', 'cleanup_', 'reconcile_', 'fix_', 'repair_',
-        '_scan', '_check', '_audit', '_enforce'
+        "_validate",
+        "_reconcile",
+        "_cleanup",
+        "_heal",
+        "_fix",
+        "_repair",
+        "validate_",
+        "heal_",
+        "cleanup_",
+        "reconcile_",
+        "fix_",
+        "repair_",
+        "_scan",
+        "_check",
+        "_audit",
+        "_enforce",
     ]
 
     # Methods to exclude from wiring (infrastructure, not healing logic)
     EXCLUDE_METHODS = {
-        '_call_path', '__init__', '__post_init__', '_initialize',
-        'heal_repository', '_merge_results', '_log_results'
+        "_call_path",
+        "__init__",
+        "__post_init__",
+        "_initialize",
+        "heal_repository",
+        "_merge_results",
+        "_log_results",
     }
 
     def __init__(self, discovery_json: str = "agent_discovery_full.json"):
@@ -55,12 +74,12 @@ class ZombieVaccinator:
         with open(self.discovery_path) as f:
             agents = json.load(f)
 
-        zombies = [a for a in agents if a.get('healing_implementation') == 'Super only']
+        zombies = [a for a in agents if a.get("healing_implementation") == "Super only"]
         Logger.info(f"Found {len(zombies)} Zombie candidates for vaccination.")
 
         # Filter for pilot mode
         if pilot:
-            zombies = [a for a in zombies if a['class_name'] == pilot]
+            zombies = [a for a in zombies if a["class_name"] == pilot]
             if not zombies:
                 Logger.error(f"Pilot agent '{pilot}' not found or not a zombie.")
                 return
@@ -69,7 +88,7 @@ class ZombieVaccinator:
         vaccinated_count = 0
         for agent in zombies:
             result = self.vaccinate_agent(agent, dry_run)
-            if result and result.get('orphans'):
+            if result and result.get("orphans"):
                 vaccinated_count += 1
                 self.vaccination_report.append(result)
 
@@ -88,19 +107,19 @@ class ZombieVaccinator:
 
     def vaccinate_agent(self, agent: dict[str, Any], dry_run: bool) -> dict[str, Any] | None:
         """Scan a single agent for orphaned logic and wire it."""
-        agent_path = self.root / agent['path']
+        agent_path = self.root / agent["path"]
         if not agent_path.exists():
             Logger.warning(f"[!] {agent['class_name']}: File not found at {agent_path}")
             return None
 
-        source = agent_path.read_text(encoding='utf-8')
-        orphans = self._find_orphans(source, agent['class_name'])
+        source = agent_path.read_text(encoding="utf-8")
+        orphans = self._find_orphans(source, agent["class_name"])
 
         result = {
-            'class_name': agent['class_name'],
-            'path': agent['path'],
-            'orphans': orphans,
-            'vaccinated': False
+            "class_name": agent["class_name"],
+            "path": agent["path"],
+            "orphans": orphans,
+            "vaccinated": False,
         }
 
         if not orphans:
@@ -110,8 +129,8 @@ class ZombieVaccinator:
         Logger.info(f"[+] {agent['class_name']}: Found {len(orphans)} orphans: {orphans}")
 
         if not dry_run:
-            success = self._apply_vaccine(agent_path, source, orphans, agent['class_name'])
-            result['vaccinated'] = success
+            success = self._apply_vaccine(agent_path, source, orphans, agent["class_name"])
+            result["vaccinated"] = success
             if success:
                 Logger.info("    [✓] Vaccination applied successfully.")
             else:
@@ -139,7 +158,7 @@ class ZombieVaccinator:
             # Extract methods from the class
             for item in target_class.body:
                 if isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef):
-                    if item.name == 'heal_repository':
+                    if item.name == "heal_repository":
                         heal_repo_node = item
                     elif self._is_vaccine_candidate(item.name):
                         candidate_methods.append(item.name)
@@ -184,28 +203,28 @@ class ZombieVaccinator:
             injection_lines = self._build_injection_block(orphans)
 
             # Find insertion point (after super().heal_repository() call)
-            lines = source.split('\n')
+            lines = source.split("\n")
             insertion_idx = None
             indent = "        "  # Default 8 spaces
 
             in_heal_repo = False
             for i, line in enumerate(lines):
                 # Detect heal_repository method start
-                if 'def heal_repository(' in line:
+                if "def heal_repository(" in line:
                     in_heal_repo = True
                     # Capture indentation
-                    match = re.match(r'^(\s*)', line)
+                    match = re.match(r"^(\s*)", line)
                     if match:
                         indent = match.group(1) + "    "  # Add one level
                     continue
 
                 if in_heal_repo:
                     # Look for super().heal_repository() call
-                    if 'super().heal_repository(' in line or 'super().heal_repository(' in line:
+                    if "super().heal_repository(" in line or "super().heal_repository(" in line:
                         insertion_idx = i + 1
                         break
                     # Stop if we hit another method definition
-                    if re.match(r'^\s*def\s+', line) and 'heal_repository' not in line:
+                    if re.match(r"^\s*def\s+", line) and "heal_repository" not in line:
                         break
 
             if insertion_idx is None:
@@ -215,7 +234,9 @@ class ZombieVaccinator:
             # Build indented injection
             indented_injection = []
             indented_injection.append(f"{indent}")
-            indented_injection.append(f"{indent}# === ZOMBIE VACCINATION: Wired orphaned methods ===")
+            indented_injection.append(
+                f"{indent}# === ZOMBIE VACCINATION: Wired orphaned methods ==="
+            )
             for line in injection_lines:
                 indented_injection.append(f"{indent}{line}")
             indented_injection.append(f"{indent}# === END VACCINATION ===")
@@ -223,7 +244,7 @@ class ZombieVaccinator:
 
             # Insert the vaccination block
             new_lines = lines[:insertion_idx] + indented_injection + lines[insertion_idx:]
-            new_source = '\n'.join(new_lines)
+            new_source = "\n".join(new_lines)
 
             # Verify syntax before writing
             try:
@@ -233,7 +254,7 @@ class ZombieVaccinator:
                 return False
 
             # Write the vaccinated file
-            path.write_text(new_source, encoding='utf-8')
+            path.write_text(new_source, encoding="utf-8")
             return True
 
         except Exception as e:
@@ -252,7 +273,9 @@ class ZombieVaccinator:
         for method in orphans:
             lines.append(f"    # Wired Orphan: {method}")
             lines.append(f"    if hasattr(self, '{method}'):")
-            lines.append(f"        Logger.debug(f'[{{self.__class__.__name__}}] Invoking {method}')")
+            lines.append(
+                f"        Logger.debug(f'[{{self.__class__.__name__}}] Invoking {method}')"
+            )
 
         lines.append("except Exception as e:")
         lines.append("    Logger.error(f'[{self.__class__.__name__}] Vaccination Failed: {e}')")
@@ -261,15 +284,30 @@ class ZombieVaccinator:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Zombie Vaccinator - Automated Agent Wiring Engine")
-    parser.add_argument('--dry-run', action='store_true', default=True,
-                        help='Preview changes without modifying files (default)')
-    parser.add_argument('--execute', action='store_true',
-                        help='Actually apply vaccinations to files')
-    parser.add_argument('--pilot', type=str, default=None,
-                        help='Target a single agent by class name for pilot vaccination')
-    parser.add_argument('--discovery', type=str, default='agent_discovery_full.json',
-                        help='Path to discovery JSON file')
+    parser = argparse.ArgumentParser(
+        description="Zombie Vaccinator - Automated Agent Wiring Engine"
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        default=True,
+        help="Preview changes without modifying files (default)",
+    )
+    parser.add_argument(
+        "--execute", action="store_true", help="Actually apply vaccinations to files"
+    )
+    parser.add_argument(
+        "--pilot",
+        type=str,
+        default=None,
+        help="Target a single agent by class name for pilot vaccination",
+    )
+    parser.add_argument(
+        "--discovery",
+        type=str,
+        default="agent_discovery_full.json",
+        help="Path to discovery JSON file",
+    )
 
     args = parser.parse_args()
 
@@ -280,5 +318,5 @@ def main():
     vaccinator.run(dry_run=dry_run, pilot=args.pilot)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

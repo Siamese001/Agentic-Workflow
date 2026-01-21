@@ -102,6 +102,7 @@ TERRITORY_UTILS = "Apps Shared"  # Changed from "Utils" to "Apps Shared"
 # TERRITORY MAPPING FUNCTIONS
 # ============================================================================
 
+
 def get_base_agent_territory(layer: str) -> str:
     """
     Get the canonical territory name for a base agent in a given layer.
@@ -113,19 +114,21 @@ def get_base_agent_territory(layer: str) -> str:
         Canonical territory name for the base agent
     """
     base_territories = {
-        'Base': TERRITORY_SOVEREIGN_BASE,
-        'L0': TERRITORY_L0_BASE,
-        'L1': TERRITORY_L1_BASE,
-        'L2': TERRITORY_L2_BASE,
-        'L3': TERRITORY_L3_BASE,
-        'L4': TERRITORY_L4_BASE,
-        'L5': TERRITORY_L5_BASE,
-        'L6': TERRITORY_L6_BASE,
+        "Base": TERRITORY_SOVEREIGN_BASE,
+        "L0": TERRITORY_L0_BASE,
+        "L1": TERRITORY_L1_BASE,
+        "L2": TERRITORY_L2_BASE,
+        "L3": TERRITORY_L3_BASE,
+        "L4": TERRITORY_L4_BASE,
+        "L5": TERRITORY_L5_BASE,
+        "L6": TERRITORY_L6_BASE,
     }
     return base_territories.get(layer, f"{layer}/Base Agent")
 
 
-def get_territory_from_path(layer: str, path_str: str, is_base_class: bool, class_name: str = '') -> str:
+def get_territory_from_path(
+    layer: str, path_str: str, is_base_class: bool, class_name: str = ""
+) -> str:
     """
     Determine the canonical territory name based on layer, path, and class type.
 
@@ -139,7 +142,7 @@ def get_territory_from_path(layer: str, path_str: str, is_base_class: bool, clas
         Canonical territory name
     """
     # Special case: SovereignBaseAgent
-    if class_name == 'SovereignBaseAgent' or layer == 'Base':
+    if class_name == "SovereignBaseAgent" or layer == "Base":
         return TERRITORY_SOVEREIGN_BASE
 
     # Base agents get their layer's base territory
@@ -147,70 +150,70 @@ def get_territory_from_path(layer: str, path_str: str, is_base_class: bool, clas
         return get_base_agent_territory(layer)
 
     # Apps territories
-    if 'apps_lic' in path_str:
+    if "apps_lic" in path_str:
         return TERRITORY_APPS_LIC
-    elif 'apps_rg' in path_str:
+    elif "apps_rg" in path_str:
         return TERRITORY_APPS_RG
-    elif 'apps_shared' in path_str:
+    elif "apps_shared" in path_str:
         return TERRITORY_APPS_SHARED
 
     # Utils territory
-    if 'utils' in path_str:
+    if "utils" in path_str:
         return TERRITORY_UTILS
 
     # Layer-specific territories
-    if layer == 'L5':
-        if 'validators' in path_str or 'validator' in path_str:
+    if layer == "L5":
+        if "validators" in path_str or "validator" in path_str:
             return TERRITORY_L5_VALIDATORS
-        elif 'red_team' in path_str or 'red_teaming' in path_str:
+        elif "red_team" in path_str or "red_teaming" in path_str:
             return TERRITORY_L5_RED_TEAMING
-        elif 'gravity' in path_str:
+        elif "gravity" in path_str:
             return TERRITORY_L5_GRAVITY
         else:
             return TERRITORY_L5_GUARDRAILS
 
-    elif layer == 'L4':
-        if 'filesystem' in path_str or 'infrastructure' in path_str:
+    elif layer == "L4":
+        if "filesystem" in path_str or "infrastructure" in path_str:
             return TERRITORY_L4_INFRASTRUCTURE
-        elif 'adapter' in path_str:
+        elif "adapter" in path_str:
             return TERRITORY_L4_SPECIALIZED
         else:
             return TERRITORY_L4_CORE
 
-    elif layer == 'L3':
-        if 'infrastructure' in path_str:
+    elif layer == "L3":
+        if "infrastructure" in path_str:
             return TERRITORY_L3_INFRASTRUCTURE
-        elif 'adapter' in path_str:
+        elif "adapter" in path_str:
             return TERRITORY_L3_SPECIALIZED
         else:
             return TERRITORY_L3_CORE
 
-    elif layer == 'L2':
-        if 'adapter' in path_str:
+    elif layer == "L2":
+        if "adapter" in path_str:
             return TERRITORY_L2_SPECIALIZED
         else:
             return TERRITORY_L2_CORE
 
-    elif layer == 'L1':
-        if 'adapter' in path_str:
+    elif layer == "L1":
+        if "adapter" in path_str:
             return TERRITORY_L1_SPECIALIZED
         else:
             return TERRITORY_L1_CORE
 
-    elif layer == 'L0':
-        if 'infrastructure' in path_str:
+    elif layer == "L0":
+        if "infrastructure" in path_str:
             return TERRITORY_L0_INFRASTRUCTURE
         else:
             return TERRITORY_L0_CORE
 
-    elif layer == 'L6':
-        if 'metrics' in path_str:
+    elif layer == "L6":
+        if "metrics" in path_str:
             return TERRITORY_L6_METRICS
-        elif 'telemetry' in path_str:
+        elif "telemetry" in path_str:
             return TERRITORY_L6_TELEMETRY
-        elif 'tracing' in path_str:
+        elif "tracing" in path_str:
             return TERRITORY_L6_TRACING
-        elif 'compliance' in path_str:
+        elif "compliance" in path_str:
             return TERRITORY_L6_COMPLIANCE
         else:
             return TERRITORY_L6_METRICS
@@ -226,14 +229,12 @@ def get_territory_from_path(layer: str, path_str: str, is_base_class: bool, clas
 CANONICAL_TERRITORY_ORDER = [
     # Sovereign Base Agent always first
     TERRITORY_SOVEREIGN_BASE,
-
     # L6 Observability
     TERRITORY_L6_BASE,
     TERRITORY_L6_METRICS,
     TERRITORY_L6_TELEMETRY,
     TERRITORY_L6_TRACING,
     TERRITORY_L6_COMPLIANCE,
-
     # L5 Safety
     TERRITORY_L5_BASE,
     TERRITORY_L5_VALIDATORS,
@@ -246,13 +247,11 @@ CANONICAL_TERRITORY_ORDER = [
     TERRITORY_L5_GUARDRAILS_HYGIENE,
     TERRITORY_L5_RED_TEAMING,
     TERRITORY_L5_GRAVITY,
-
     # L4 State
     TERRITORY_L4_BASE,
     TERRITORY_L4_CORE,
     TERRITORY_L4_INFRASTRUCTURE,
     TERRITORY_L4_SPECIALIZED,
-
     # L3 Orchestration
     TERRITORY_L3_BASE,
     TERRITORY_L3_CORE,
@@ -264,7 +263,6 @@ CANONICAL_TERRITORY_ORDER = [
     TERRITORY_L3_MONITORING,
     TERRITORY_L3_INFRASTRUCTURE,
     TERRITORY_L3_SPECIALIZED,
-
     # L2 Execution
     TERRITORY_L2_BASE,
     TERRITORY_L2_CORE,
@@ -272,7 +270,6 @@ CANONICAL_TERRITORY_ORDER = [
     TERRITORY_L2_HANDLERS,
     TERRITORY_L2_COORDINATORS,
     TERRITORY_L2_SPECIALIZED,
-
     # L1 Cognition
     TERRITORY_L1_BASE,
     TERRITORY_L1_CORE,
@@ -281,12 +278,10 @@ CANONICAL_TERRITORY_ORDER = [
     TERRITORY_L1_MEMORY,
     TERRITORY_L1_PLANNING,
     TERRITORY_L1_SPECIALIZED,
-
     # L0 Maintenance
     TERRITORY_L0_BASE,
     TERRITORY_L0_CORE,
     TERRITORY_L0_INFRASTRUCTURE,
-
     # Apps
     TERRITORY_APPS_LIC,
     TERRITORY_APPS_LIC_ENGINES,
@@ -299,7 +294,6 @@ CANONICAL_TERRITORY_ORDER = [
     TERRITORY_APPS_RG_ORCHESTRATION,
     TERRITORY_APPS_RG_DOMAIN,
     TERRITORY_APPS_SHARED,
-
     # Utils
     TERRITORY_UTILS,
 ]
@@ -338,12 +332,7 @@ HIGH_COUNT_TERRITORIES = {
 }
 
 
-def refine_territory_by_ast(
-    territory: str,
-    class_name: str,
-    docstring: str,
-    path_str: str
-) -> str:
+def refine_territory_by_ast(territory: str, class_name: str, docstring: str, path_str: str) -> str:
     """
     Refine high-count territories into sub-territories using AST analysis.
 
@@ -398,34 +387,73 @@ def refine_territory_by_ast(
 def _categorize_l3_orchestration(class_name: str, docstring: str, path_str: str) -> str:
     """Categorize L3 Orchestration/Core agents into 5 sub-territories."""
     name_lower = class_name.lower()
-    doc_lower = (docstring or '').lower()
+    doc_lower = (docstring or "").lower()
 
     # DAG-related agents
-    if 'dag' in name_lower or 'dag' in doc_lower or 'graph' in doc_lower:
+    if "dag" in name_lower or "dag" in doc_lower or "graph" in doc_lower:
         return TERRITORY_L3_DAG
 
     # Reinforcement Learning orchestrators (PPO, RL, Q-Learning, Actor-Critic)
-    if any(kw in name_lower for kw in ['ppo', 'qlearning', 'actorcritic', 'reinforcecritic', 'rlorchestrat']):
+    if any(
+        kw in name_lower
+        for kw in ["ppo", "qlearning", "actorcritic", "reinforcecritic", "rlorchestrat"]
+    ):
         return TERRITORY_L3_RL
 
     # Routing and connection management
-    if any(kw in name_lower for kw in ['router', 'connection', 'permission', 'registry', 'gatekeeper']):
+    if any(
+        kw in name_lower for kw in ["router", "connection", "permission", "registry", "gatekeeper"]
+    ):
         return TERRITORY_L3_ROUTING
 
     # Monitoring, metrics, coverage, detection, telemetry, observability, cost, reporting
-    if any(kw in name_lower for kw in ['metric', 'coverage', 'detector', 'monitor', 'benchmark', 'inspector',
-                                        'telemetry', 'observability', 'cost', 'report', 'auditor', 'track']):
+    if any(
+        kw in name_lower
+        for kw in [
+            "metric",
+            "coverage",
+            "detector",
+            "monitor",
+            "benchmark",
+            "inspector",
+            "telemetry",
+            "observability",
+            "cost",
+            "report",
+            "auditor",
+            "track",
+        ]
+    ):
         return TERRITORY_L3_MONITORING
 
     # Territory and semantic mapping agents
-    if any(kw in name_lower for kw in ['territory', 'semantic', 'mapper', 'hierarchy']):
+    if any(kw in name_lower for kw in ["territory", "semantic", "mapper", "hierarchy"]):
         return TERRITORY_L3_TERRITORY
 
     # Workflow orchestration, fission, healing
-    if any(kw in name_lower for kw in ['workflow', 'orchestrat', 'nervous', 'phase', 'handshake',
-                                        'fission', 'healer', 'governor',
-                                        'signature', 'canon', 'subatomic', 'testpilot', 'exerciser',
-                                        'ssot', 'rag', 'cached', 'scope', 'git']):
+    if any(
+        kw in name_lower
+        for kw in [
+            "workflow",
+            "orchestrat",
+            "nervous",
+            "phase",
+            "handshake",
+            "fission",
+            "healer",
+            "governor",
+            "signature",
+            "canon",
+            "subatomic",
+            "testpilot",
+            "exerciser",
+            "ssot",
+            "rag",
+            "cached",
+            "scope",
+            "git",
+        ]
+    ):
         return TERRITORY_L3_WORKFLOW
 
     # Fallback: Keep in Core
@@ -437,21 +465,37 @@ def _categorize_apps_lic(class_name: str, docstring: str, path_str: str) -> str:
     name_lower = class_name.lower()
 
     # HOP pipeline agents (HOP1-HOP8, HOPOrchestrator)
-    if 'hop' in name_lower:
+    if "hop" in name_lower:
         return TERRITORY_APPS_LIC_HOP
 
     # Orchestration agents (orchestrators, workflow, supervisor, healing)
-    if any(kw in name_lower for kw in ['orchestrat', 'workflow', 'supervisor', 's2supervisor', 'healing']):
+    if any(
+        kw in name_lower
+        for kw in ["orchestrat", "workflow", "supervisor", "s2supervisor", "healing"]
+    ):
         return TERRITORY_APPS_LIC_ORCHESTRATION
 
     # Utilities - helpers, formatters, parsers
-    if '/utils/' in path_str or any(kw in name_lower for kw in ['util', 'helper', 'formatter', 'parser', 'converter']):
+    if "/utils/" in path_str or any(
+        kw in name_lower for kw in ["util", "helper", "formatter", "parser", "converter"]
+    ):
         return TERRITORY_APPS_LIC_UTILITIES
 
     # Domain agents - validators, quality, content, test, validation (check before engines)
-    if '/domain/' in path_str or '/validators/' in path_str:
+    if "/domain/" in path_str or "/validators/" in path_str:
         return TERRITORY_APPS_LIC_DOMAIN
-    if any(kw in name_lower for kw in ['validator', 'quality', 'compliance', 'checker', 'enforcer', 'test', 'validation']):
+    if any(
+        kw in name_lower
+        for kw in [
+            "validator",
+            "quality",
+            "compliance",
+            "checker",
+            "enforcer",
+            "test",
+            "validation",
+        ]
+    ):
         return TERRITORY_APPS_LIC_DOMAIN
 
     # Engines (default for apps_lic)
@@ -463,13 +507,41 @@ def _categorize_l2_execution(class_name: str, docstring: str, path_str: str) -> 
     name_lower = class_name.lower()
 
     # Coordinators and managers (check first - more specific)
-    if any(kw in name_lower for kw in ['coordinator', 'manager', 'scheduler', 'dispatcher', 'orchestrator',
-                                        'architect', 'strategist', 'curator', 'diplomat', 'governor']):
+    if any(
+        kw in name_lower
+        for kw in [
+            "coordinator",
+            "manager",
+            "scheduler",
+            "dispatcher",
+            "orchestrator",
+            "architect",
+            "strategist",
+            "curator",
+            "diplomat",
+            "governor",
+        ]
+    ):
         return TERRITORY_L2_COORDINATORS
 
     # Event handlers and validators
-    if any(kw in name_lower for kw in ['handler', 'event', 'listener', 'callback', 'validator', 'enforcer',
-                                        'detector', 'inspector', 'auditor', 'gate', 'boundary', 'seal']):
+    if any(
+        kw in name_lower
+        for kw in [
+            "handler",
+            "event",
+            "listener",
+            "callback",
+            "validator",
+            "enforcer",
+            "detector",
+            "inspector",
+            "auditor",
+            "gate",
+            "boundary",
+            "seal",
+        ]
+    ):
         return TERRITORY_L2_HANDLERS
 
     # Task runners and executors (default - includes tools, healers, agents)
@@ -479,22 +551,55 @@ def _categorize_l2_execution(class_name: str, docstring: str, path_str: str) -> 
 def _categorize_l5_guardrails(class_name: str, docstring: str, path_str: str) -> str:
     """Categorize L5 Safety/Guardrails agents into 3 sub-territories."""
     name_lower = class_name.lower()
-    doc_lower = (docstring or '').lower()
+    doc_lower = (docstring or "").lower()
 
     # MCP-related safety and hardening
-    if any(kw in name_lower for kw in ['mcp', 'hardened', 'hardening', 'rollback', 'recovery', 'circuit']):
+    if any(
+        kw in name_lower
+        for kw in ["mcp", "hardened", "hardening", "rollback", "recovery", "circuit"]
+    ):
         return TERRITORY_L5_GUARDRAILS_MCP
-    if 'mcp' in doc_lower:
+    if "mcp" in doc_lower:
         return TERRITORY_L5_GUARDRAILS_MCP
 
     # Code hygiene and cleanup agents
-    if any(kw in name_lower for kw in ['hygiene', 'cleanup', 'formatter', 'duplicate', 'import', 'file',
-                                        'dependency', 'pruning', 'lock', 'git', 'hierarchy', 'structural', 'healer']):
+    if any(
+        kw in name_lower
+        for kw in [
+            "hygiene",
+            "cleanup",
+            "formatter",
+            "duplicate",
+            "import",
+            "file",
+            "dependency",
+            "pruning",
+            "lock",
+            "git",
+            "hierarchy",
+            "structural",
+            "healer",
+        ]
+    ):
         return TERRITORY_L5_GUARDRAILS_HYGIENE
 
     # Threat detection and red teaming agents
-    if any(kw in name_lower for kw in ['threat', 'adversarial', 'red', 'sentinel', 'hunter', 'autoimmune',
-                                        'neural', 'policy', 'safety', 'inspector', 'debugger']):
+    if any(
+        kw in name_lower
+        for kw in [
+            "threat",
+            "adversarial",
+            "red",
+            "sentinel",
+            "hunter",
+            "autoimmune",
+            "neural",
+            "policy",
+            "safety",
+            "inspector",
+            "debugger",
+        ]
+    ):
         return TERRITORY_L5_GUARDRAILS_THREAT
 
     # Core guardrails (cost, composite, exerciser, integrity, checkpoint, config)
@@ -504,20 +609,34 @@ def _categorize_l5_guardrails(class_name: str, docstring: str, path_str: str) ->
 def _categorize_l1_cognition(class_name: str, docstring: str, path_str: str) -> str:
     """Categorize L1 Cognition/Core agents into 4 sub-territories."""
     name_lower = class_name.lower()
-    (docstring or '').lower()
+    (docstring or "").lower()
 
     # Memory and context
-    if any(kw in name_lower for kw in ['memory', 'context', 'cache', 'recall', 'history']):
+    if any(kw in name_lower for kw in ["memory", "context", "cache", "recall", "history"]):
         return TERRITORY_L1_MEMORY
 
     # Planning, strategy, orchestration, governance
-    if any(kw in name_lower for kw in ['plan', 'strategy', 'goal', 'intent', 'decision',
-                                        'orchestrat', 'governance', 'budget', 'router', 'mapper',
-                                        'metalearning', 'meta']):
+    if any(
+        kw in name_lower
+        for kw in [
+            "plan",
+            "strategy",
+            "goal",
+            "intent",
+            "decision",
+            "orchestrat",
+            "governance",
+            "budget",
+            "router",
+            "mapper",
+            "metalearning",
+            "meta",
+        ]
+    ):
         return TERRITORY_L1_PLANNING
 
     # Validation agents (validators that are in L1)
-    if 'validator' in name_lower:
+    if "validator" in name_lower:
         return TERRITORY_L1_VALIDATION
 
     # Reasoning and LLM (default for cognition)
@@ -529,13 +648,16 @@ def _categorize_apps_rg(class_name: str, docstring: str, path_str: str) -> str:
     name_lower = class_name.lower()
 
     # Orchestration agents (orchestrators, phase agents)
-    if any(kw in name_lower for kw in ['orchestrat', 'phase', 'unified', 'planner']):
+    if any(kw in name_lower for kw in ["orchestrat", "phase", "unified", "planner"]):
         return TERRITORY_APPS_RG_ORCHESTRATION
 
     # Domain agents - validators, quality, content
-    if '/domain/' in path_str or '/validators/' in path_str:
+    if "/domain/" in path_str or "/validators/" in path_str:
         return TERRITORY_APPS_RG_DOMAIN
-    if any(kw in name_lower for kw in ['validator', 'quality', 'compliance', 'checker', 'content', 'fact', 'balance']):
+    if any(
+        kw in name_lower
+        for kw in ["validator", "quality", "compliance", "checker", "content", "fact", "balance"]
+    ):
         return TERRITORY_APPS_RG_DOMAIN
 
     # Engines (default for apps_rg)
@@ -545,15 +667,39 @@ def _categorize_apps_rg(class_name: str, docstring: str, path_str: str) -> str:
 def _categorize_l5_validators(class_name: str, docstring: str, path_str: str) -> str:
     """Categorize L5 Safety/Validators agents into 2 sub-territories."""
     name_lower = class_name.lower()
-    doc_lower = (docstring or '').lower()
+    doc_lower = (docstring or "").lower()
 
     # Content validation - text, format, naming, documentation, syntax, type hints
-    if any(kw in name_lower for kw in ['content', 'text', 'ascii', 'format', 'string', 'message',
-                                        'naming', 'doc', 'print', 'debug', 'eval', 'exec', 'http',
-                                        'builtin', 'bare', 'empty', 'async', 'blocking',
-                                        'syntax', 'typehint', 'pascal', 'python', 'input']):
+    if any(
+        kw in name_lower
+        for kw in [
+            "content",
+            "text",
+            "ascii",
+            "format",
+            "string",
+            "message",
+            "naming",
+            "doc",
+            "print",
+            "debug",
+            "eval",
+            "exec",
+            "http",
+            "builtin",
+            "bare",
+            "empty",
+            "async",
+            "blocking",
+            "syntax",
+            "typehint",
+            "pascal",
+            "python",
+            "input",
+        ]
+    ):
         return TERRITORY_L5_VALIDATORS_CONTENT
-    if any(kw in doc_lower for kw in ['content', 'text', 'format', 'string']):
+    if any(kw in doc_lower for kw in ["content", "text", "format", "string"]):
         return TERRITORY_L5_VALIDATORS_CONTENT
 
     # Structure validation (default) - schema, hierarchy, contract, base class

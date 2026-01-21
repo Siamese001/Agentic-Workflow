@@ -115,7 +115,7 @@ class GraphTransaction:
 
         # Validate all nodes have required attributes
         for node in self.transaction_graph.nodes():
-            if 'hop_spec' not in self.transaction_graph.nodes[node]:
+            if "hop_spec" not in self.transaction_graph.nodes[node]:
                 raise ValueError(f"Node {node} Missing hop_spec attribute")
 
         # Validate depth ordering
@@ -123,7 +123,7 @@ class GraphTransaction:
 
     def _validate_depth_ordering(self):
         """Validate that depth values are consistent with graph structure."""
-        depths = nx.get_node_attributes(self.transaction_graph, 'depth')
+        depths = nx.get_node_attributes(self.transaction_graph, "depth")
 
         for edge in self.transaction_graph.edges():
             source, target = edge
@@ -139,6 +139,7 @@ class GraphTransaction:
 
 class MutationAction(Enum):
     """Types of DAG mutations."""
+
     SPAWN_PREDECESSOR = "SPAWN_PREDECESSOR"
     SPAWN_SUCCESSOR = "SPAWN_SUCCESSOR"
     SKIP_SUCCESSOR = "SKIP_SUCCESSOR"
@@ -147,6 +148,7 @@ class MutationAction(Enum):
 
 class HopSpec(BaseModel):
     """Specification for creating a new hop."""
+
     hop_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     hop_function: str  # Name of function to create
     parameters: dict[str, Any] = Field(default_factory=dict)
@@ -160,6 +162,7 @@ class HopSpec(BaseModel):
 
 class DAGMutation(BaseModel):
     """A mutation request for the DAG."""
+
     mutation_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     action: MutationAction
     target_hop_id: str
@@ -168,16 +171,20 @@ class DAGMutation(BaseModel):
     timestamp: datetime = Field(default_factory=datetime.now)
     requester_hop_id: str
 
-    @validator('new_hop_spec')
+    @validator("new_hop_spec")
     def validate_hop_spec(cls, v, values):
-        if values.get('action') in [MutationAction.SPAWN_PREDECESSOR, MutationAction.SPAWN_SUCCESSOR]:
+        if values.get("action") in [
+            MutationAction.SPAWN_PREDECESSOR,
+            MutationAction.SPAWN_SUCCESSOR,
+        ]:
             if v is None:
-                raise ValueError('new_hop_spec is required for spawn operations')
+                raise ValueError("new_hop_spec is required for spawn operations")
         return v
 
 
 class MutationResult(BaseModel):
     """Result of applying a mutation."""
+
     mutation_id: str
     success: bool
     message: str
@@ -188,10 +195,12 @@ class MutationResult(BaseModel):
 
 class DAGConfig(BaseModel):
     """Configuration for DAG management."""
+
     max_depth: int = Field(default=10, ge=1, le=50)
     max_fan_out: int = Field(default=5, ge=1, le=20)
     enable_mutation_logging: bool = True
     mutation_history_size: int = Field(default=1000, ge=100)
+
 
 from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import (
     L3SubatomicTestingMixin,
@@ -212,11 +221,7 @@ class DAGMutatorAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
         self.config = config
         self.mutation_history: list[MutationResult] = []
 
-    def apply_mutation(
-        self,
-        graph: nx.DiGraph,
-        mutation: DAGMutation
-    ) -> MutationResult:
+    def apply_mutation(self, graph: nx.DiGraph, mutation: DAGMutation) -> MutationResult:
         """Apply a mutation to the graph with transactional safety.
 
         Args:
@@ -246,8 +251,10 @@ class DAGMutatorAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
 
                 # Log successful mutation
                 if self.config.enable_mutation_logging:
-                    Logger.info(f"Applied mutation {mutation.mutation_id}: {mutation.action.value} "
-                               f"on {mutation.target_hop_id} - {mutation.reason}")
+                    Logger.info(
+                        f"Applied mutation {mutation.mutation_id}: {mutation.action.value} "
+                        f"on {mutation.target_hop_id} - {mutation.reason}"
+                    )
 
                 # Store in history
                 self._store_mutation_result(result)
@@ -259,7 +266,7 @@ class DAGMutatorAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
             error_result = MutationResult(
                 mutation_id=mutation.mutation_id,
                 success=False,
-                message=f"Mutation failed: {str(e)}"
+                message=f"Mutation failed: {str(e)}",
             )
             self._store_mutation_result(error_result)
             return error_result
@@ -273,9 +280,11 @@ class DAGMutatorAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
         # Check depth constraint
         if mutation.action == MutationAction.SPAWN_PREDECESSOR:
             # Calculate new depth if we add a predecessor
-            target_depth = graph.nodes[mutation.target_hop_id].get('depth', 0)
+            target_depth = graph.nodes[mutation.target_hop_id].get("depth", 0)
             if target_depth >= self.config.max_depth - 1:
-                raise ValueError(f"Cannot spawn predecessor: would exceed max depth {self.config.max_depth}")
+                raise ValueError(
+                    f"Cannot spawn predecessor: would exceed max depth {self.config.max_depth}"
+                )
 
         # For spawn operations, check new node doesn't already exist
         if mutation.new_hop_spec and mutation.new_hop_spec.hop_id in graph.nodes:
@@ -285,7 +294,9 @@ class DAGMutatorAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
         if mutation.action == MutationAction.SPAWN_SUCCESSOR:
             successors = list(graph.successors(mutation.target_hop_id))
             if len(successors) >= self.config.max_fan_out:
-                raise ValueError(f"Cannot spawn successor: would exceed max fan-out {self.config.max_fan_out}")
+                raise ValueError(
+                    f"Cannot spawn successor: would exceed max fan-out {self.config.max_fan_out}"
+                )
 
     def _spawn_predecessor(self, graph: nx.DiGraph, mutation: DAGMutation) -> MutationResult:
         """Spawn a new predecessor node."""
@@ -293,16 +304,21 @@ class DAGMutatorAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
         target_node = mutation.target_hop_id
 
         # Add new node
-        graph.add_node(new_node,
-                      hop_spec=mutation.new_hop_spec.dict(),
-                      depth=graph.nodes[target_node].get('depth', 0) + 1,
-                      created_by=mutation.requester_hop_id,
-                      created_at=mutation.timestamp)
+        graph.add_node(
+            new_node,
+            hop_spec=mutation.new_hop_spec.dict(),
+            depth=graph.nodes[target_node].get("depth", 0) + 1,
+            created_by=mutation.requester_hop_id,
+            created_at=mutation.timestamp,
+        )
 
         # Add edge from new node to target
-        graph.add_edge(new_node, target_node,
-                      created_by=mutation.requester_hop_id,
-                      created_at=mutation.timestamp)
+        graph.add_edge(
+            new_node,
+            target_node,
+            created_by=mutation.requester_hop_id,
+            created_at=mutation.timestamp,
+        )
 
         # Update depths of all predecessors
         self._update_depths(graph)
@@ -318,7 +334,7 @@ class DAGMutatorAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
             success=True,
             message=f"Spawned predecessor {new_node} for {target_node}",
             affected_nodes=[new_node, target_node],
-            new_edges=[(new_node, target_node)]
+            new_edges=[(new_node, target_node)],
         )
 
     def _spawn_successor(self, graph: nx.DiGraph, mutation: DAGMutation) -> MutationResult:
@@ -327,24 +343,29 @@ class DAGMutatorAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
         target_node = mutation.target_hop_id
 
         # Add new node
-        graph.add_node(new_node,
-                      hop_spec=mutation.new_hop_spec.dict(),
-                      depth=graph.nodes[target_node].get('depth', 0) - 1,
-                      created_by=mutation.requester_hop_id,
-                      created_at=mutation.timestamp)
+        graph.add_node(
+            new_node,
+            hop_spec=mutation.new_hop_spec.dict(),
+            depth=graph.nodes[target_node].get("depth", 0) - 1,
+            created_by=mutation.requester_hop_id,
+            created_at=mutation.timestamp,
+        )
 
         # Move existing successors to new node
         old_successors = list(graph.successors(target_node))
         for successor in old_successors:
             graph.remove_edge(target_node, successor)
-            graph.add_edge(new_node, successor,
-                          moved_from=target_node,
-                          created_by=mutation.requester_hop_id)
+            graph.add_edge(
+                new_node, successor, moved_from=target_node, created_by=mutation.requester_hop_id
+            )
 
         # Add edge from target to new node
-        graph.add_edge(target_node, new_node,
-                      created_by=mutation.requester_hop_id,
-                      created_at=mutation.timestamp)
+        graph.add_edge(
+            target_node,
+            new_node,
+            created_by=mutation.requester_hop_id,
+            created_at=mutation.timestamp,
+        )
 
         # Update depths
         self._update_depths(graph)
@@ -362,7 +383,7 @@ class DAGMutatorAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
             success=True,
             message=f"Spawned successor {new_node} for {target_node}",
             affected_nodes=[new_node, target_node] + old_successors,
-            new_edges=[(target_node, new_node)] + [(new_node, s) for s in old_successors]
+            new_edges=[(target_node, new_node)] + [(new_node, s) for s in old_successors],
         )
 
     def _skip_successor(self, graph: nx.DiGraph, mutation: DAGMutation) -> MutationResult:
@@ -379,21 +400,24 @@ class DAGMutatorAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
 
         # Bridge edges from target to skip's successors
         for skip_successor in skip_successors:
-            graph.add_edge(target_node, skip_successor,
-                          bridge_created=True,
-                          created_by=mutation.requester_hop_id)
+            graph.add_edge(
+                target_node,
+                skip_successor,
+                bridge_created=True,
+                created_by=mutation.requester_hop_id,
+            )
 
         # Mark node as skipped
-        graph.nodes[skip_node]['skipped'] = True
-        graph.nodes[skip_node]['skipped_by'] = mutation.requester_hop_id
-        graph.nodes[skip_node]['skipped_at'] = mutation.timestamp
+        graph.nodes[skip_node]["skipped"] = True
+        graph.nodes[skip_node]["skipped_by"] = mutation.requester_hop_id
+        graph.nodes[skip_node]["skipped_at"] = mutation.timestamp
 
         return MutationResult(
             mutation_id=mutation.mutation_id,
             success=True,
             message=f"Skipped successor {skip_node} of {target_node}",
             affected_nodes=[target_node, skip_node] + skip_successors,
-            new_edges=[(target_node, s) for s in skip_successors]
+            new_edges=[(target_node, s) for s in skip_successors],
         )
 
     def _replace_node(self, graph: nx.DiGraph, mutation: DAGMutation) -> MutationResult:
@@ -406,28 +430,30 @@ class DAGMutatorAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
         successors = list(graph.successors(old_node))
 
         # Add new node
-        graph.add_node(new_node,
-                      hop_spec=mutation.new_hop_spec.dict(),
-                      depth=graph.nodes[old_node].get('depth', 0),
-                      created_by=mutation.requester_hop_id,
-                      created_at=mutation.timestamp,
-                      replaces=old_node)
+        graph.add_node(
+            new_node,
+            hop_spec=mutation.new_hop_spec.dict(),
+            depth=graph.nodes[old_node].get("depth", 0),
+            created_by=mutation.requester_hop_id,
+            created_at=mutation.timestamp,
+            replaces=old_node,
+        )
 
         # Reconnect edges
         for pred in predecessors:
-            graph.add_edge(pred, new_node,
-                          replaced_from=old_node,
-                          created_by=mutation.requester_hop_id)
+            graph.add_edge(
+                pred, new_node, replaced_from=old_node, created_by=mutation.requester_hop_id
+            )
 
         for succ in successors:
-            graph.add_edge(new_node, succ,
-                          replaced_to=old_node,
-                          created_by=mutation.requester_hop_id)
+            graph.add_edge(
+                new_node, succ, replaced_to=old_node, created_by=mutation.requester_hop_id
+            )
 
         # Mark old node as replaced
-        graph.nodes[old_node]['replaced'] = True
-        graph.nodes[old_node]['replaced_by'] = new_node
-        graph.nodes[old_node]['replaced_at'] = mutation.timestamp
+        graph.nodes[old_node]["replaced"] = True
+        graph.nodes[old_node]["replaced_by"] = new_node
+        graph.nodes[old_node]["replaced_at"] = mutation.timestamp
 
         # Remove old edges
         graph.remove_edges_from([(p, old_node) for p in predecessors])
@@ -438,7 +464,7 @@ class DAGMutatorAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
             success=True,
             message=f"Replaced node {old_node} with {new_node}",
             affected_nodes=[old_node, new_node] + predecessors + successors,
-            new_edges=[(p, new_node) for p in predecessors] + [(new_node, s) for s in successors]
+            new_edges=[(p, new_node) for p in predecessors] + [(new_node, s) for s in successors],
         )
 
     def _update_depths(self, graph: nx.DiGraph) -> None:
@@ -448,16 +474,16 @@ class DAGMutatorAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
 
         # BFS to assign depths
         for root in roots:
-            graph.nodes[root]['depth'] = 0
+            graph.nodes[root]["depth"] = 0
             queue = [(root, 0)]
 
             while queue:
                 node, depth = queue.pop(0)
 
                 for successor in graph.successors(node):
-                    current_depth = graph.nodes[successor].get('depth', -1)
+                    current_depth = graph.nodes[successor].get("depth", -1)
                     if depth + 1 > current_depth:
-                        graph.nodes[successor]['depth'] = depth + 1
+                        graph.nodes[successor]["depth"] = depth + 1
                         queue.append((successor, depth + 1))
 
     def _store_mutation_result(self, result: MutationResult) -> None:
@@ -466,7 +492,7 @@ class DAGMutatorAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
 
         # Trim history if needed
         if len(self.mutation_history) > self.config.mutation_history_size:
-            self.mutation_history = self.mutation_history[-self.config.mutation_history_size:]
+            self.mutation_history = self.mutation_history[-self.config.mutation_history_size :]
 
     def get_mutation_history(self, limit: int | None = None) -> list[MutationResult]:
         """Get mutation history."""
@@ -482,7 +508,7 @@ class DAGMutatorAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: set | None = None
+        _call_path: set | None = None,
     ) -> dict[str, int]:
         """
         DAG Mutation Healing - Validates graph mutation logic integrity.
@@ -491,7 +517,11 @@ class DAGMutatorAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
         - _validate_mutation(): Self-diagnostic on graph mutation rules.
         """
         metrics = super().heal_repository(
-            dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path
+            dry_run=dry_run,
+            execute=execute,
+            depth=depth,
+            max_depth=max_depth,
+            _call_path=_call_path,
         )
         if not isinstance(metrics, dict):
             metrics = {"violations": 0, "fixed": 0, "errors": 0}
@@ -511,11 +541,11 @@ class DAGMutatorAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
                 target_hop_id="root",
                 new_hop_spec=HopSpec(hop_function="test_func", parameters={}),
                 reason="diagnostic_check",
-                requester_hop_id="system_healer"
+                requester_hop_id="system_healer",
             )
 
             # Run validation (should pass or raise specific ValueError)
-            if hasattr(self, '_validate_mutation'):
+            if hasattr(self, "_validate_mutation"):
                 # We only validate, we do not apply (safe for dry_run)
                 self._validate_mutation(test_graph, test_mutation)
                 metrics["fixed"] = metrics.get("fixed", 0) + 1
@@ -525,6 +555,7 @@ class DAGMutatorAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
             metrics["errors"] = metrics.get("errors", 0) + 1
 
         return metrics
+
 
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
@@ -556,7 +587,14 @@ def get_dag_manager(**kwargs) -> DAGManagerAgent:
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L3 orchestration agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:

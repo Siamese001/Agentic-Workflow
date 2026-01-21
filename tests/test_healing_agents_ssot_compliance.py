@@ -8,6 +8,7 @@ all use archives/healing_backups/ instead of .sovereign_healing_backup/
 This is a runtime test that actually instantiates the agents and verifies
 their backup paths are correct.
 """
+
 from __future__ import annotations
 
 import shutil
@@ -46,8 +47,9 @@ def test_location_agent_backup_path():
         assert "location" in backup_str, f"Path must contain 'location': {backup_str}"
 
         # Must NOT contain .sovereign_healing_backup
-        assert ".sovereign_healing_backup" not in backup_str, \
+        assert ".sovereign_healing_backup" not in backup_str, (
             f"Path must NOT contain '.sovereign_healing_backup': {backup_str}"
+        )
 
         # Clean up created directory
         if backup_dir.exists():
@@ -90,8 +92,9 @@ def test_filesystem_agent_backup_path():
         assert "filesystem" in backup_str, f"Path must contain 'filesystem': {backup_str}"
 
         # Must NOT contain .sovereign_healing_backup
-        assert ".sovereign_healing_backup" not in backup_str, \
+        assert ".sovereign_healing_backup" not in backup_str, (
             f"Path must NOT contain '.sovereign_healing_backup': {backup_str}"
+        )
 
         print("   ✅ PASSED: FilesystemAgent uses archives/healing_backups/filesystem/")
         return True
@@ -130,8 +133,9 @@ def test_healing_transaction_manager_backup_path():
         assert "transactions" in backup_str, f"Path must contain 'transactions': {backup_str}"
 
         # Must NOT contain .sovereign_healing_backup
-        assert ".sovereign_healing_backup" not in backup_str, \
+        assert ".sovereign_healing_backup" not in backup_str, (
             f"Path must NOT contain '.sovereign_healing_backup': {backup_str}"
+        )
 
         print("   ✅ PASSED: HealingTransaction uses archives/healing_backups/transactions/")
         return True
@@ -154,7 +158,7 @@ def test_backup_file_creation():
         from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
 
         # Create a temp file to backup
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
             f.write("# Test file for backup\nprint('hello')\n")
             temp_file = Path(f.name)
 
@@ -168,8 +172,9 @@ def test_backup_file_creation():
             print(f"   Created backup dir: {backup_dir}")
 
             # Verify the backup dir is under archives/
-            assert backup_dir.is_relative_to(PROJECT_ROOT / "archives"), \
+            assert backup_dir.is_relative_to(PROJECT_ROOT / "archives"), (
                 f"Backup dir must be under archives/: {backup_dir}"
+            )
 
             # Clean up
             if backup_dir.exists():
@@ -201,8 +206,10 @@ def test_no_sovereign_healing_backup_created():
     forbidden_dir = PROJECT_ROOT / ".sovereign_healing_backup"
 
     if forbidden_dir.exists():
-        print(f"   ❌ FAILED: .sovereign_healing_backup exists with "
-              f"{sum(1 for _ in forbidden_dir.rglob('*'))} files")
+        print(
+            f"   ❌ FAILED: .sovereign_healing_backup exists with "
+            f"{sum(1 for _ in forbidden_dir.rglob('*'))} files"
+        )
         print("   Run: Remove-Item -Recurse -Force .sovereign_healing_backup")
         return False
     else:
@@ -217,9 +224,22 @@ def test_source_code_compliance():
     print("=" * 70)
 
     agents_to_check = [
-        ("LocationAgent", PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "LocationAgent.py"),
-        ("FilesystemAgent", PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "FilesystemAgent.py"),
-        ("HealingTransaction", PROJECT_ROOT / "agentic_core" / "L4_state" / "ledger" / "healing_transaction_manager.py"),
+        (
+            "LocationAgent",
+            PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "LocationAgent.py",
+        ),
+        (
+            "FilesystemAgent",
+            PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "FilesystemAgent.py",
+        ),
+        (
+            "HealingTransaction",
+            PROJECT_ROOT
+            / "agentic_core"
+            / "L4_state"
+            / "ledger"
+            / "healing_transaction_manager.py",
+        ),
     ]
 
     all_passed = True
@@ -232,8 +252,11 @@ def test_source_code_compliance():
         content = agent_path.read_text(encoding="utf-8")
 
         # Check for archives/healing_backups (handles both quoted and f-string formats)
-        has_archives = ('archives' in content and 'healing_backups' in content and
-                       ('archives/healing_backups' in content or '"archives"' in content))
+        has_archives = (
+            "archives" in content
+            and "healing_backups" in content
+            and ("archives/healing_backups" in content or '"archives"' in content)
+        )
 
         # Check for .sovereign_healing_backup in active code (not comments or explanations)
         has_forbidden = False
@@ -242,12 +265,12 @@ def test_source_code_compliance():
                 stripped = line.strip()
                 # Skip comments, docstrings, and SSOT fix explanations
                 is_allowed = (
-                    stripped.startswith("#") or
-                    stripped.startswith('"""') or
-                    stripped.startswith("'''") or
-                    "SSOT" in line or
-                    "Changed from" in line or
-                    "instead of" in line.lower()
+                    stripped.startswith("#")
+                    or stripped.startswith('"""')
+                    or stripped.startswith("'''")
+                    or "SSOT" in line
+                    or "Changed from" in line
+                    or "instead of" in line.lower()
                 )
                 if not is_allowed:
                     # Check if it's actually creating a path (not just referencing)
@@ -274,7 +297,9 @@ def main():
     # Run all tests
     results.append(("LocationAgent._init_backup_dir()", test_location_agent_backup_path()))
     results.append(("FilesystemAgent.backup_dir", test_filesystem_agent_backup_path()))
-    results.append(("HealingTransactionManager.backup_dir", test_healing_transaction_manager_backup_path()))
+    results.append(
+        ("HealingTransactionManager.backup_dir", test_healing_transaction_manager_backup_path())
+    )
     results.append(("Backup File Creation", test_backup_file_creation()))
     results.append(("No .sovereign_healing_backup", test_no_sovereign_healing_backup_created()))
     results.append(("Source Code Compliance", test_source_code_compliance()))

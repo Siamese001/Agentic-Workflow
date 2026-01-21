@@ -29,5 +29,6 @@ def check_for_duplicates():
     print("[✓] No duplicate filenames found.")
     sys.exit(0)
 
+
 if __name__ == "__main__":
     check_for_duplicates()

@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt, state, workflow
@@ -29,7 +28,9 @@ Logger = logging.getLogger(__name__)
 class SecureError(Exception):
     """Base class for secure errors with sanitized messages."""
 
-    def __init__(self, message: str, ErrorCode: str | None = None, context: dict[str, Any] | None = None):
+    def __init__(
+        self, message: str, ErrorCode: str | None = None, context: dict[str, Any] | None = None
+    ):
         """Initialize secure error.
 
         Args:
@@ -53,27 +54,31 @@ class SecureError(Exception):
             "message": str(self),
             "ErrorCode": self.ErrorCode,
             "context": self.context,
-            "timestamp": self.timestamp
+            "timestamp": self.timestamp,
         }
 
 
 class SecurityError(SecureError):
     """Raised for security-related errors."""
+
     pass
 
 
 class ConfigurationError(SecureError):
     """Raised for configuration-related errors."""
+
     pass
 
 
 class ValidationError(SecureError):
     """Raised for validation errors."""
+
     pass
 
 
 class ExecutionError(SecureError):
     """Raised for execution errors."""
+
     pass
 
 
@@ -83,33 +88,39 @@ class ErrorSanitizer:
     # Patterns to detect and redact sensitive information
     SENSITIVE_PATTERNS = [
         # File paths with sensitive directories
-        (r'(/[a-zA-Z0-9_-]+)*(?:/(?:home|users|Documents|Desktop|Downloads)[/][^/\s]+)', '/REDACTED_PATH'),
+        (
+            r"(/[a-zA-Z0-9_-]+)*(?:/(?:home|users|Documents|Desktop|Downloads)[/][^/\s]+)",
+            "/REDACTED_PATH",
+        ),
         # Environment variables
-        (r'\$[A-Z_][A-Z0-9_]*', '$REDACTED'),
+        (r"\$[A-Z_][A-Z0-9_]*", "$REDACTED"),
         # Passwords and secrets in connection strings
-        (r'(?i)(password|passwd|pwd|secret|token|key)[\s=:]+[^\s&\'}"]+', 'password=REDACTED'),
+        (r'(?i)(password|passwd|pwd|secret|token|key)[\s=:]+[^\s&\'}"]+', "password=REDACTED"),
         # API keys
-        (r'(?i)(api[_-]?key|apikey)[\s=:]+[a-zA-Z0-9+/]{20,}', 'api_key=REDACTED'),
+        (r"(?i)(api[_-]?key|apikey)[\s=:]+[a-zA-Z0-9+/]{20,}", "api_key=REDACTED"),
         # Database connection strings
-        (r'(?i)(mongodb|mysql|postgres)://[^@\s]+@', r'\1://REDACTED@'),
+        (r"(?i)(mongodb|mysql|postgres)://[^@\s]+@", r"\1://REDACTED@"),
         # URLs with query parameters
-        (r'https?://[^/?]+\?[^\s]*', 'https://REDACTED/?parameters=REDACTED'),
+        (r"https?://[^/?]+\?[^\s]*", "https://REDACTED/?parameters=REDACTED"),
         # Email addresses
-        (r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', 'EMAIL@REDACTED'),
+        (r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b", "EMAIL@REDACTED"),
         # Phone numbers
-        (r'\b\d{3}[-.]?\d{3}[-.]?\d{4}\b', 'XXX-XXX-XXXX'),
+        (r"\b\d{3}[-.]?\d{3}[-.]?\d{4}\b", "XXX-XXX-XXXX"),
         # Large numeric values (potentially IDs)
-        (r'\b\d{10,}\b', 'REDACTED_ID'),
+        (r"\b\d{10,}\b", "REDACTED_ID"),
     ]
 
     # Stack trace patterns to sanitize
     STACK_PATTERNS = [
         # Local variable values in stack traces
-        (r'(?<=\s)[a-zA-Z_][a-zA-Z0-9_]*\s*=\s*<[^>]*>', 'variable=<REDACTED>'),
+        (r"(?<=\s)[a-zA-Z_][a-zA-Z0-9_]*\s*=\s*<[^>]*>", "variable=<REDACTED>"),
         # File paths in stack traces
-        (r'File\s+"([^"]*(?:home|users|Documents|Desktop|Downloads)[^"]*)"', 'File "<REDACTED_PATH>"'),
+        (
+            r'File\s+"([^"]*(?:home|users|Documents|Desktop|Downloads)[^"]*)"',
+            'File "<REDACTED_PATH>"',
+        ),
         # Argument values in function calls
-        (r'(?<=\()\s*[^)]*(?:password|secret|token|key)[^)]*(?=\))', 'REDACTED_ARGS'),
+        (r"(?<=\()\s*[^)]*(?:password|secret|token|key)[^)]*(?=\))", "REDACTED_ARGS"),
     ]
 
     @classmethod
@@ -154,7 +165,7 @@ class ErrorSanitizer:
             sanitized = re.sub(pattern, replacement, sanitized, flags=re.IGNORECASE)
 
         # Remove local variable sections
-        sanitized = re.sub(r'\n\s+[a-zA-Z_][a-zA-Z0-9_]*\s*=\s*.*\n', '\n', sanitized)
+        sanitized = re.sub(r"\n\s+[a-zA-Z_][a-zA-Z0-9_]*\s*=\s*.*\n", "\n", sanitized)
 
         return sanitized
 
@@ -164,7 +175,7 @@ class ErrorSanitizer:
         error_type: type[SecureError],
         original_error: Exception,
         ErrorCode: str | None = None,
-        add_context: dict[str, Any] | None = None
+        add_context: dict[str, Any] | None = None,
     ) -> SecureError:
         """Create a secure error from an original exception.
 
@@ -183,7 +194,7 @@ class ErrorSanitizer:
         # Prepare context
         context = {
             "original_type": type(original_error).__name__,
-            "module": getattr(original_error, '__module__', 'unknown')
+            "module": getattr(original_error, "__module__", "unknown"),
         }
 
         if add_context:
@@ -198,7 +209,7 @@ class ErrorSanitizer:
         secure_error = error_type(
             f"{sanitized_message} (Error: {ErrorCode or 'UNKNOWN'})",
             ErrorCode=ErrorCode,
-            context=context
+            context=context,
         )
 
         return secure_error
@@ -207,7 +218,7 @@ class ErrorSanitizer:
 def secure_exception(
     error_type: type[SecureError] = SecurityError,
     ErrorCode: str | None = None,
-    sanitize_args: bool = True
+    sanitize_args: bool = True,
 ):
     """Decorator to secure exceptions from functions.
 
@@ -219,6 +230,7 @@ def secure_exception(
     Returns:
         Decorated function
     """
+
     def decorator(func):
         @wraps(func)
         async def async_wrapper(*args, **kwargs):
@@ -244,9 +256,7 @@ def secure_exception(
                             context[f"arg_{name}"] = "<sanitized>"
 
                 # Create and raise secure error
-                secure_error = ErrorSanitizer.create_secure_error(
-                    error_type, e, ErrorCode, context
-                )
+                secure_error = ErrorSanitizer.create_secure_error(error_type, e, ErrorCode, context)
                 raise secure_error
 
         @wraps(func)
@@ -273,9 +283,7 @@ def secure_exception(
                             context[f"arg_{name}"] = "<sanitized>"
 
                 # Create and raise secure error
-                secure_error = ErrorSanitizer.create_secure_error(
-                    error_type, e, ErrorCode, context
-                )
+                secure_error = ErrorSanitizer.create_secure_error(error_type, e, ErrorCode, context)
                 raise secure_error
 
         # Return appropriate wrapper based on function type
@@ -299,10 +307,7 @@ class SecureErrorHandler:
         self.Logger = logging.getLogger(logger_name)
 
     def handle_error(
-        self,
-        error: Exception,
-        context: dict[str, Any] | None = None,
-        include_stack: bool = False
+        self, error: Exception, context: dict[str, Any] | None = None, include_stack: bool = False
     ) -> SecureError:
         """Handle an error securely.
 
@@ -326,7 +331,7 @@ class SecureErrorHandler:
         log_data = {
             "error_type": secure_error.__class__.__name__,
             "ErrorCode": secure_error.ErrorCode,
-            "message": str(secure_error)
+            "message": str(secure_error),
         }
 
         if context:
@@ -336,7 +341,7 @@ class SecureErrorHandler:
 
         # Log stack trace if requested (sanitized)
         if include_stack and not isinstance(error, SecureError):
-            tb_str = ''.join(traceback.format_tb(error.__traceback__))
+            tb_str = "".join(traceback.format_tb(error.__traceback__))
             sanitized_tb = ErrorSanitizer.sanitize_stack_trace(tb_str)
             self.Logger.debug("Sanitized stack trace:\n%s", sanitized_tb)
 
@@ -347,7 +352,7 @@ class SecureErrorHandler:
         error_type: type[SecureError],
         message: str,
         ErrorCode: str | None = None,
-        context: dict[str, Any] | None = None
+        context: dict[str, Any] | None = None,
     ) -> None:
         """Raise a secure error.
 
@@ -370,7 +375,7 @@ class SecureErrorHandler:
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: set | None = None
+        _call_path: set | None = None,
     ) -> dict[str, int]:
         """L5 safety agent - operational only."""
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
@@ -395,10 +400,7 @@ class SecureErrorHandler:
 default_error_handler = SecureErrorHandler()
 
 
-def handle_secure_error(
-    error: Exception,
-    context: dict[str, Any] | None = None
-) -> SecureError:
+def handle_secure_error(error: Exception, context: dict[str, Any] | None = None) -> SecureError:
     """Handle an error using the default secure error handler.
 
     Args:

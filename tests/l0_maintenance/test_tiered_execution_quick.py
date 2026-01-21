@@ -13,9 +13,9 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 def test_implementation_structure():
     """Verify the tiered execution code structure is correct."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("QUICK VALIDATION: Tiered Execution Implementation")
-    print("="*70)
+    print("=" * 70)
 
     validator_path = PROJECT_ROOT / "canon_validator_agentic_v2_thin.py"
 
@@ -23,23 +23,41 @@ def test_implementation_structure():
         print("❌ canon_validator_agentic_v2_thin.py not found")
         return False
 
-    content = validator_path.read_text(encoding='utf-8')
+    content = validator_path.read_text(encoding="utf-8")
 
     checks = [
         ("Tier 1: Structural Stabilization", "TIER 1: Structural Stabilization"),
         ("Tier 2: Architectural Alignment", "TIER 2: Architectural Alignment"),
         ("Tier 3: Deep Domain Healing", "TIER 3: Deep Domain Healing"),
         ("Tier 4: Final Safety Gate", "TIER 4: Final Safety Gate"),
-        ("LocationAgent import", "from agentic_core.L5_safety.validators.LocationAgent import get_location_agent"),
-        ("HierarchyAgent import", "from agentic_core.L5_safety.validators.HierarchyAgent import get_hierarchy_agent"),
-        ("NamingAgent import", "from agentic_core.L5_safety.validators.NamingAgent import get_naming_agent"),
-        ("ImportAgent import", "from agentic_core.L5_safety.gravity.ImportAgent import get_import_agent"),
-        ("AutonomyGuardian import", "from agentic_core.L5_safety.validators.AutonomyGuardianAgent import get_autonomy_guardian"),
+        (
+            "LocationAgent import",
+            "from agentic_core.L5_safety.validators.LocationAgent import get_location_agent",
+        ),
+        (
+            "HierarchyAgent import",
+            "from agentic_core.L5_safety.validators.HierarchyAgent import get_hierarchy_agent",
+        ),
+        (
+            "NamingAgent import",
+            "from agentic_core.L5_safety.validators.NamingAgent import get_naming_agent",
+        ),
+        (
+            "ImportAgent import",
+            "from agentic_core.L5_safety.gravity.ImportAgent import get_import_agent",
+        ),
+        (
+            "AutonomyGuardian import",
+            "from agentic_core.L5_safety.validators.AutonomyGuardianAgent import get_autonomy_guardian",
+        ),
         ("Stability gate abort", "MISSION ABORTED: Repository filesystem is unstable"),
         ("Roster deduplication", "mandatory_names = {name for name, _ in mandatory_structural}"),
         ("Execution timeline", '"execution_timeline": []'),
         ("Tier 1 timeline append", '_runtime_state["execution_timeline"].append'),
-        ("Tier results consolidation", "total_fixes = t1_results[\"total_fixes\"] + t2_results[\"total_fixes\"]"),
+        (
+            "Tier results consolidation",
+            'total_fixes = t1_results["total_fixes"] + t2_results["total_fixes"]',
+        ),
         ("Tiered scan mode", '"scan_mode": "tiered_sovereign_sweep"'),
     ]
 
@@ -54,7 +72,7 @@ def test_implementation_structure():
             print(f"   ❌ {check_name} - NOT FOUND")
             failed += 1
 
-    print(f"\n{'='*70}")
+    print(f"\n{'=' * 70}")
     print(f"Implementation Checks: {passed}/{len(checks)} passed")
 
     if failed == 0:
@@ -67,12 +85,12 @@ def test_implementation_structure():
 
 def test_tier_structure():
     """Verify tier structure matches specification."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TIER STRUCTURE VALIDATION")
-    print("="*70)
+    print("=" * 70)
 
     validator_path = PROJECT_ROOT / "canon_validator_agentic_v2_thin.py"
-    content = validator_path.read_text(encoding='utf-8')
+    content = validator_path.read_text(encoding="utf-8")
 
     # Extract tier definitions
     tier1_agents = ["LocationAgent", "HierarchyAgent", "NamingAgent"]
@@ -106,18 +124,18 @@ def test_tier_structure():
 
 def test_stability_gate():
     """Verify stability gate logic is present."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("STABILITY GATE VALIDATION")
-    print("="*70)
+    print("=" * 70)
 
     validator_path = PROJECT_ROOT / "canon_validator_agentic_v2_thin.py"
-    content = validator_path.read_text(encoding='utf-8')
+    content = validator_path.read_text(encoding="utf-8")
 
     # Check for stability gate logic
     stability_checks = [
         'if execute_heal and t1_results.get("total_violations", 0) > 0:',
         'print("\\n[!] MISSION ABORTED: Repository filesystem is unstable.")',
-        'return',
+        "return",
     ]
 
     all_present = all(check in content for check in stability_checks)
@@ -133,18 +151,18 @@ def test_stability_gate():
 
 def test_execution_timeline():
     """Verify execution timeline tracking is present."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("EXECUTION TIMELINE VALIDATION")
-    print("="*70)
+    print("=" * 70)
 
     validator_path = PROJECT_ROOT / "canon_validator_agentic_v2_thin.py"
-    content = validator_path.read_text(encoding='utf-8')
+    content = validator_path.read_text(encoding="utf-8")
 
     # Check for timeline tracking
     timeline_checks = [
         '"execution_timeline": []',
-        'tier1_start = datetime.now()',
-        'tier1_end = datetime.now()',
+        "tier1_start = datetime.now()",
+        "tier1_end = datetime.now()",
         '_runtime_state["execution_timeline"].append',
         '"tier": 1',
         '"tier": 2',
@@ -157,28 +175,32 @@ def test_execution_timeline():
     passed = sum(1 for check in timeline_checks if check in content)
 
     if passed >= 8:  # At least 8 out of 10 checks should pass
-        print(f"   ✅ Execution timeline tracking is implemented ({passed}/{len(timeline_checks)} checks)")
+        print(
+            f"   ✅ Execution timeline tracking is implemented ({passed}/{len(timeline_checks)} checks)"
+        )
         print("   ✅ All 4 tiers will be tracked with start/end timestamps")
         return True
     else:
-        print(f"   ❌ Execution timeline tracking is incomplete ({passed}/{len(timeline_checks)} checks)")
+        print(
+            f"   ❌ Execution timeline tracking is incomplete ({passed}/{len(timeline_checks)} checks)"
+        )
         return False
 
 
 def test_roster_deduplication_logic():
     """Verify roster deduplication logic is present."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("ROSTER DEDUPLICATION VALIDATION")
-    print("="*70)
+    print("=" * 70)
 
     validator_path = PROJECT_ROOT / "canon_validator_agentic_v2_thin.py"
-    content = validator_path.read_text(encoding='utf-8')
+    content = validator_path.read_text(encoding="utf-8")
 
     # Check for deduplication logic
     dedup_checks = [
-        'mandatory_names = {name for name, _ in mandatory_structural}',
+        "mandatory_names = {name for name, _ in mandatory_structural}",
         'mandatory_names.add("AutonomyGuardian")',
-        'discovery_roster = [a for a in full_roster if a[0] not in mandatory_names]',
+        "discovery_roster = [a for a in full_roster if a[0] not in mandatory_names]",
     ]
 
     all_present = all(check in content for check in dedup_checks)
@@ -194,9 +216,9 @@ def test_roster_deduplication_logic():
 
 def main():
     """Run all quick validation tests."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TIERED EXECUTION FLOW - QUICK VALIDATION SUITE")
-    print("="*70)
+    print("=" * 70)
 
     tests = [
         ("Implementation Structure", test_implementation_structure),
@@ -214,13 +236,14 @@ def main():
         except Exception as e:
             print(f"\n   ❌ TEST FAILED WITH EXCEPTION: {e}")
             import traceback
+
             traceback.print_exc()
             results.append((test_name, False))
 
     # Summary
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("VALIDATION SUMMARY")
-    print("="*70)
+    print("=" * 70)
 
     passed_count = sum(1 for _, passed in results if passed)
     total_count = len(results)

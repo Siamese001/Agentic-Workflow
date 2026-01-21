@@ -131,11 +131,12 @@ class TestHealingStrategyIntegration:
 
                 # Agent should have heal_repository or validate_file method
                 # Some agents are validators (validate_file), others are healers (heal_repository)
-                has_heal = hasattr(agent, 'heal_repository')
-                has_validate = hasattr(agent, 'validate_file')
+                has_heal = hasattr(agent, "heal_repository")
+                has_validate = hasattr(agent, "validate_file")
 
-                assert has_heal or has_validate, \
+                assert has_heal or has_validate, (
                     f"{agent_name} missing both heal_repository() and validate_file()"
+                )
 
         # At least 75% of agents should load successfully
         # (Some agents may fail due to missing environment dependencies)
@@ -145,8 +146,9 @@ class TestHealingStrategyIntegration:
         if failed_agents:
             print(f"\nWarning: {len(failed_agents)} agents failed to load: {failed_agents}")
 
-        assert success_rate >= 0.75, \
-            f"Too many agents failed to load: {failed_agents} ({success_rate*100:.1f}% success rate)"
+        assert success_rate >= 0.75, (
+            f"Too many agents failed to load: {failed_agents} ({success_rate * 100:.1f}% success rate)"
+        )
 
     def test_tier_filtering(self):
         """Verify tier filtering works correctly."""
@@ -178,7 +180,7 @@ class TestAgentLoadingAndExecution:
         agent = strategy.get_agent("HygieneGuardianAgent")
 
         assert agent is not None
-        assert hasattr(agent, 'heal_repository')
+        assert hasattr(agent, "heal_repository")
         assert agent.__class__.__name__ == "HygieneGuardianAgent"
 
     def test_import_agent_loads(self):
@@ -187,7 +189,7 @@ class TestAgentLoadingAndExecution:
         agent = strategy.get_agent("ImportAgent")
 
         assert agent is not None
-        assert hasattr(agent, 'heal_repository')
+        assert hasattr(agent, "heal_repository")
         assert agent.__class__.__name__ == "ImportAgent"
 
     def test_unified_code_validator_loads(self):
@@ -196,7 +198,7 @@ class TestAgentLoadingAndExecution:
         agent = strategy.get_agent("UnifiedCodeValidatorAgent")
 
         assert agent is not None
-        assert hasattr(agent, 'heal_repository')
+        assert hasattr(agent, "heal_repository")
         assert agent.__class__.__name__ == "UnifiedCodeValidatorAgent"
 
     def test_agent_heal_repository_signature(self):
@@ -212,7 +214,7 @@ class TestAgentLoadingAndExecution:
                 continue
 
             # Should have heal_repository method
-            assert hasattr(agent, 'heal_repository')
+            assert hasattr(agent, "heal_repository")
 
             # Method should be callable
             assert callable(agent.heal_repository)
@@ -229,9 +231,9 @@ class TestPreflightGate:
 
         # All mandatory preflight agents should be in Tier 0
         for agent_name in MANDATORY_PREFLIGHT:
-            assert agent_name in tier_0_agents or \
-                   any(agent_name in tier_agents for tier_agents in tiers.values()), \
-                   f"{agent_name} not found in any tier"
+            assert agent_name in tier_0_agents or any(
+                agent_name in tier_agents for tier_agents in tiers.values()
+            ), f"{agent_name} not found in any tier"
 
     def test_tier_0_runs_first(self):
         """Verify Tier 0 is the first tier."""

@@ -68,7 +68,7 @@ class TestLegacyHygieneFunctionality:
         hygiene_agent._scan_directory(temp_project)
 
         # Check violations
-        empty_violations = [v for v in hygiene_agent.violations if v.violation_type == 'empty_file']
+        empty_violations = [v for v in hygiene_agent.violations if v.violation_type == "empty_file"]
         assert len(empty_violations) == 2
 
         violation_files = {v.file_path for v in empty_violations}
@@ -93,7 +93,9 @@ class TestLegacyHygieneFunctionality:
         hygiene_agent._scan_directory(temp_project)
 
         # Check violations
-        orphan_violations = [v for v in hygiene_agent.violations if v.violation_type == 'orphaned_init']
+        orphan_violations = [
+            v for v in hygiene_agent.violations if v.violation_type == "orphaned_init"
+        ]
         assert len(orphan_violations) == 1
         assert orphan_violations[0].file_path == orphan_init
 
@@ -108,7 +110,9 @@ class TestLegacyHygieneFunctionality:
         hygiene_agent._scan_directory(temp_project)
 
         # Check violations
-        backup_violations = [v for v in hygiene_agent.violations if v.violation_type == 'stale_backup']
+        backup_violations = [
+            v for v in hygiene_agent.violations if v.violation_type == "stale_backup"
+        ]
         assert len(backup_violations) == 3
 
     def test_detects_temp_files(self, hygiene_agent, temp_project):
@@ -122,7 +126,7 @@ class TestLegacyHygieneFunctionality:
         hygiene_agent._scan_directory(temp_project)
 
         # Check violations
-        temp_violations = [v for v in hygiene_agent.violations if v.violation_type == 'temp_file']
+        temp_violations = [v for v in hygiene_agent.violations if v.violation_type == "temp_file"]
         assert len(temp_violations) == 3
 
 
@@ -143,7 +147,9 @@ class TestPortedFileCleanupLogic:
         hygiene_agent._scan_directory(temp_project)
 
         # Check violations
-        repeated_violations = [v for v in hygiene_agent.violations if v.violation_type == 'repeated_filename']
+        repeated_violations = [
+            v for v in hygiene_agent.violations if v.violation_type == "repeated_filename"
+        ]
         assert len(repeated_violations) == 3
 
         # Verify valid file is NOT flagged
@@ -166,7 +172,9 @@ class TestPortedFileCleanupLogic:
         hygiene_agent._scan_directory(temp_project)
 
         # Check violations
-        copy_violations = [v for v in hygiene_agent.violations if v.violation_type == 'copy_pattern']
+        copy_violations = [
+            v for v in hygiene_agent.violations if v.violation_type == "copy_pattern"
+        ]
         assert len(copy_violations) == 5
 
         # Verify valid file is NOT flagged
@@ -218,9 +226,9 @@ class TestGatekeeperCompliance:
         agent.violations = [
             HygieneViolation(
                 file_path=backup_file,
-                violation_type='stale_backup',
-                message='Test backup file',
-                auto_fixable=True
+                violation_type="stale_backup",
+                message="Test backup file",
+                auto_fixable=True,
             )
         ]
 
@@ -231,10 +239,10 @@ class TestGatekeeperCompliance:
             source_path=backup_file,
             destination_path=temp_project / ".archive" / "test.bak",
             requester_agent="HygieneGuardianAgent",
-            reason="stale_backup: Test backup file"
+            reason="stale_backup: Test backup file",
         )
 
-        with patch.object(agent.gatekeeper, 'safe_delete', return_value=mock_result) as mock_delete:
+        with patch.object(agent.gatekeeper, "safe_delete", return_value=mock_result) as mock_delete:
             fixed_count = agent._fix_violations()
 
             # Verify safe_delete was called
@@ -263,23 +271,23 @@ class TestGatekeeperCompliance:
         agent.violations = [
             HygieneViolation(
                 file_path=test_file,
-                violation_type='empty_file',
-                message='Empty file',
-                auto_fixable=True
+                violation_type="empty_file",
+                message="Empty file",
+                auto_fixable=True,
             )
         ]
 
         # Patch Path.unlink to detect if it's called directly
-        with patch.object(Path, 'unlink') as mock_unlink:
+        with patch.object(Path, "unlink") as mock_unlink:
             # Also mock gatekeeper to prevent actual file operations
             mock_result = ArchivalResult(
                 success=True,
                 operation=ArchivalOperation.DELETE,
                 source_path=test_file,
                 requester_agent="HygieneGuardianAgent",
-                reason="test"
+                reason="test",
             )
-            with patch.object(agent.gatekeeper, 'safe_delete', return_value=mock_result):
+            with patch.object(agent.gatekeeper, "safe_delete", return_value=mock_result):
                 agent._fix_violations()
 
             # Path.unlink should NOT be called directly
@@ -396,11 +404,11 @@ class TestHealRepository:
 
         # @standard_heal decorator normalizes to canonical schema
         # Use canonical keys directly (not _raw_result)
-        assert result.get('violations_found', 0) >= 2
+        assert result.get("violations_found", 0) >= 2
         # In dry_run, nothing should be fixed
-        assert result.get('violations_fixed', 0) == 0
+        assert result.get("violations_fixed", 0) == 0
         # Status should be FAIL (violations found but not fixed)
-        assert result.get('status') in ['FAIL', 'PASS', 'SKIPPED']
+        assert result.get("status") in ["FAIL", "PASS", "SKIPPED"]
 
         ArchivalGatekeeper.reset_instance()
 
@@ -421,9 +429,9 @@ class TestHealRepository:
         # File should be archived (moved to archives/gatekeeper)
         assert not backup_file.exists()
         # Check canonical keys - at least one violation was fixed
-        assert result.get('violations_fixed', 0) >= 1
+        assert result.get("violations_fixed", 0) >= 1
         # Status should be PASS (all violations fixed)
-        assert result.get('status') == 'PASS'
+        assert result.get("status") == "PASS"
 
         ArchivalGatekeeper.reset_instance()
 
@@ -435,15 +443,17 @@ class TestHealRepository:
 
         # Create only valid files (no violations)
         # Note: print() is detected as debug_print violation, so use logging instead
-        (temp_project / "valid_module.py").write_text("# Valid module\nimport logging\nlogger = logging.getLogger(__name__)")
+        (temp_project / "valid_module.py").write_text(
+            "# Valid module\nimport logging\nlogger = logging.getLogger(__name__)"
+        )
 
         result = agent.heal_repository(dry_run=True)
 
         # Canonical schema should have zero violations
-        assert result.get('violations_found', -1) == 0
-        assert result.get('violations_fixed', -1) == 0
-        assert result.get('status') == 'PASS'
+        assert result.get("violations_found", -1) == 0
+        assert result.get("violations_fixed", -1) == 0
+        assert result.get("status") == "PASS"
         # No errors
-        assert result.get('errors', -1) == 0
+        assert result.get("errors", -1) == 0
 
         ArchivalGatekeeper.reset_instance()

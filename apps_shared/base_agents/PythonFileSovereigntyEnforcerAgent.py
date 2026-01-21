@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: guardrail
@@ -54,6 +53,7 @@ class PythonFileSovereigntyEnforcerAgent(SubatomicTestingMixin, MCPHardenedMixin
 
         # Absolute Zero: Use ssot_discovery instead of rglob
         from agentic_core.utils.ssot_discovery import get_python_files
+
         for py_file in get_python_files(self.project_root):
             rel_path = py_file.relative_to(self.project_root)
             if not any(rel_path.parts[0].startswith(prefix) for prefix in self.target_prefixes):
@@ -71,7 +71,7 @@ class PythonFileSovereigntyEnforcerAgent(SubatomicTestingMixin, MCPHardenedMixin
                     "current_path": old_path,
                     "expected_path": new_path,
                     "class_name": primary_agent,
-                    "status": "PROPOSED"
+                    "status": "PROPOSED",
                 }
 
                 if not self.dry_run:
@@ -81,7 +81,9 @@ class PythonFileSovereigntyEnforcerAgent(SubatomicTestingMixin, MCPHardenedMixin
                         self.renames_applied += 1
 
                 actions.append(action)
-                print(f"[{'DRY-RUN' if self.dry_run else 'APPLIED'}] {py_file.name} → {expected_name}")
+                print(
+                    f"[{'DRY-RUN' if self.dry_run else 'APPLIED'}] {py_file.name} → {expected_name}"
+                )
 
         return actions
 
@@ -99,14 +101,23 @@ class PythonFileSovereigntyEnforcerAgent(SubatomicTestingMixin, MCPHardenedMixin
     def _safe_git_mv(self, old_path: Path, new_path: Path) -> bool:
         """Execute git mv with error handling."""
         try:
-            subprocess.run(["git", "mv", str(old_path), str(new_path)], check=True, cwd=self.project_root)
+            subprocess.run(
+                ["git", "mv", str(old_path), str(new_path)], check=True, cwd=self.project_root
+            )
             return True
         except subprocess.CalledProcessError as e:
             print(f"[ERROR] git mv failed {old_path} → {new_path}: {e}")
             return False
 
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set[str] | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set[str] | None = None,
+    ) -> dict[str, int]:
         """Healer chain entrypoint."""
         if _call_path is None:
             _call_path = set()
@@ -123,7 +134,7 @@ class PythonFileSovereigntyEnforcerAgent(SubatomicTestingMixin, MCPHardenedMixin
             return {
                 "renames_proposed": len(results),
                 "renames_applied": self.renames_applied,
-                "errors": len(results) - self.renames_applied
+                "errors": len(results) - self.renames_applied,
             }
         finally:
             _call_path.discard(agent_name)

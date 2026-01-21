@@ -2,6 +2,7 @@
 file: tests/maintenance/verify_restored_agents.py
 description: Smoke test to identify broken imports in the 10 recently restored agents.
 """
+
 import importlib
 import sys
 from pathlib import Path
@@ -15,7 +16,10 @@ import pytest
 # The 10 agents we just restored
 RESTORED_TARGETS = [
     ("MetaLearningAgent", "agentic_core.L1_cognition.thought_engine.MetaLearningAgent"),
-    ("StrategicRecommendationAgent", "agentic_core.L1_cognition.thought_engine.StrategicRecommendationAgent"),
+    (
+        "StrategicRecommendationAgent",
+        "agentic_core.L1_cognition.thought_engine.StrategicRecommendationAgent",
+    ),
     ("BudgetAgent", "agentic_core.L1_cognition.thought_engine.BudgetAgent"),
     ("CodeDeduplicationAgent", "agentic_core.L5_safety.validators.CodeDeduplicationAgent"),
     ("PatternEnforcerAgent", "agentic_core.L5_safety.validators.PatternEnforcerAgent"),
@@ -25,6 +29,7 @@ RESTORED_TARGETS = [
     ("DocumentationAgent", "agentic_core.L5_safety.validators.DocumentationAgent"),
     ("BenchmarkingAgent", "agentic_core.L6_observability.BenchmarkingAgent"),
 ]
+
 
 def check_agent_import(class_name, module_path):
     print(f"Testing {class_name}...", end=" ")
@@ -42,6 +47,7 @@ def check_agent_import(class_name, module_path):
         print(f"❌ ERROR: {e}")
         return False
 
+
 def test_restoration_integrity():
     print("\n=== Restored Agents Integrity Check ===\n")
     failures = []
@@ -51,6 +57,7 @@ def test_restoration_integrity():
 
     if failures:
         pytest.fail(f"Failed to import {len(failures)} restored agents: {failures}")
+
 
 if __name__ == "__main__":
     try:

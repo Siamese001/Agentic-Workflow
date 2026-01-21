@@ -12,6 +12,7 @@ Definition:
 
 All tests must pass 100%.
 """
+
 import sys
 from pathlib import Path
 
@@ -27,15 +28,19 @@ def test_1_depth_definition():
     Depth = folder level where file resides (len(parts) - 1)
     NOT the total path length including the file.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 1: Depth Definition Verification")
-    print("="*60)
+    print("=" * 60)
 
     test_cases = [
         # (path, expected_depth, explanation)
         ("agentic_core/L0_maintenance/scripts/README.md", 3, "scripts is level 3"),
         ("agentic_core/L5_safety/validators/LocationAgent.py", 3, "validators is level 3"),
-        ("agentic_core/config/blueprint_sovereign/structure_blueprint.py", 3, "blueprint_sovereign is level 3"),
+        (
+            "agentic_core/config/blueprint_sovereign/structure_blueprint.py",
+            3,
+            "blueprint_sovereign is level 3",
+        ),
         ("tests/unit/test_example.py", 2, "unit is level 2"),
         ("apps_rg/logic_nodes/example.py", 2, "logic_nodes is level 2"),
         ("canon_validator_agentic_v2_thin.py", 0, "root level file"),
@@ -64,12 +69,14 @@ def test_2_hierarchy_agent_fix():
     """
     Test Case 2: Verify HierarchyAgent uses correct depth formula
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 2: HierarchyAgent Depth Fix")
-    print("="*60)
+    print("=" * 60)
 
-    hierarchy_agent_path = PROJECT_ROOT / "agentic_core" / "L5_safety" / "guardrails" / "HierarchyAgent.py"
-    content = hierarchy_agent_path.read_text(encoding='utf-8')
+    hierarchy_agent_path = (
+        PROJECT_ROOT / "agentic_core" / "L5_safety" / "guardrails" / "HierarchyAgent.py"
+    )
+    content = hierarchy_agent_path.read_text(encoding="utf-8")
 
     # Check for the fix pattern
     fix_pattern = "len(rel.parts) - 1"
@@ -82,8 +89,8 @@ def test_2_hierarchy_agent_fix():
 
     # Check that old incorrect pattern is not used for depth
     old_pattern_lines = []
-    for i, line in enumerate(content.split('\n'), 1):
-        if 'depth = len(rel.parts)' in line and '- 1' not in line:
+    for i, line in enumerate(content.split("\n"), 1):
+        if "depth = len(rel.parts)" in line and "- 1" not in line:
             old_pattern_lines.append(i)
 
     if old_pattern_lines:
@@ -99,12 +106,18 @@ def test_3_hierarchy_enforcer_agent_fix():
     """
     Test Case 3: Verify HierarchyEnforcerAgent uses correct depth formula
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 3: HierarchyEnforcerAgent Depth Fix")
-    print("="*60)
+    print("=" * 60)
 
-    enforcer_path = PROJECT_ROOT / "agentic_core" / "L3_orchestration" / "workflow_engines" / "HierarchyEnforcerAgent.py"
-    content = enforcer_path.read_text(encoding='utf-8')
+    enforcer_path = (
+        PROJECT_ROOT
+        / "agentic_core"
+        / "L3_orchestration"
+        / "workflow_engines"
+        / "HierarchyEnforcerAgent.py"
+    )
+    content = enforcer_path.read_text(encoding="utf-8")
 
     fix_pattern = "len(rel.parts) - 1"
     fix_count = content.count(fix_pattern)
@@ -114,8 +127,8 @@ def test_3_hierarchy_enforcer_agent_fix():
 
     # Check for old pattern
     old_pattern_count = 0
-    for line in content.split('\n'):
-        if 'depth = len(rel.parts)' in line and '- 1' not in line:
+    for line in content.split("\n"):
+        if "depth = len(rel.parts)" in line and "- 1" not in line:
             old_pattern_count += 1
 
     assert old_pattern_count == 0, f"Found {old_pattern_count} old incorrect patterns"
@@ -129,12 +142,12 @@ def test_4_location_agent_fix():
     """
     Test Case 4: Verify LocationAgent uses correct depth formula
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 4: LocationAgent Depth Fix")
-    print("="*60)
+    print("=" * 60)
 
     location_path = PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "LocationAgent.py"
-    content = location_path.read_text(encoding='utf-8')
+    content = location_path.read_text(encoding="utf-8")
 
     # Check for correct formula in _validate_depth_requirements
     assert "actual_depth = len(parts) - 1" in content, "Missing correct depth formula"
@@ -145,7 +158,7 @@ def test_4_location_agent_fix():
     print("   ✓ agentic_core check uses actual_depth")
 
     # Ensure old pattern is fixed
-    assert 'len(parts) != 4' not in content, "Old incorrect pattern 'len(parts) != 4' still present"
+    assert "len(parts) != 4" not in content, "Old incorrect pattern 'len(parts) != 4' still present"
     print("   ✓ Old 'len(parts) != 4' pattern removed")
 
     print("✅ PASSED: LocationAgent uses correct depth formula")
@@ -156,12 +169,18 @@ def test_5_dry_run_script_fix():
     """
     Test Case 5: Verify run_hierarchy_enforcer_dry_run.py uses correct depth formula
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 5: Dry Run Script Depth Fix")
-    print("="*60)
+    print("=" * 60)
 
-    script_path = PROJECT_ROOT / "agentic_core" / "L0_maintenance" / "scripts" / "run_hierarchy_enforcer_dry_run.py"
-    content = script_path.read_text(encoding='utf-8')
+    script_path = (
+        PROJECT_ROOT
+        / "agentic_core"
+        / "L0_maintenance"
+        / "scripts"
+        / "run_hierarchy_enforcer_dry_run.py"
+    )
+    content = script_path.read_text(encoding="utf-8")
 
     fix_pattern = "len(rel.parts) - 1"
     fix_count = content.count(fix_pattern)
@@ -171,8 +190,8 @@ def test_5_dry_run_script_fix():
 
     # Check for old pattern
     old_pattern_count = 0
-    for line in content.split('\n'):
-        if 'depth = len(rel.parts)' in line and '- 1' not in line:
+    for line in content.split("\n"):
+        if "depth = len(rel.parts)" in line and "- 1" not in line:
             old_pattern_count += 1
 
     assert old_pattern_count == 0, f"Found {old_pattern_count} old incorrect patterns"
@@ -186,12 +205,14 @@ def test_6_check_key_49_depth_fix():
     """
     Test Case 6: Verify check_key_49_depth.py uses correct depth formula
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 6: Check Key 49 Depth Script Fix")
-    print("="*60)
+    print("=" * 60)
 
-    script_path = PROJECT_ROOT / "agentic_core" / "L0_maintenance" / "scripts" / "check_key_49_depth.py"
-    content = script_path.read_text(encoding='utf-8')
+    script_path = (
+        PROJECT_ROOT / "agentic_core" / "L0_maintenance" / "scripts" / "check_key_49_depth.py"
+    )
+    content = script_path.read_text(encoding="utf-8")
 
     fix_pattern = "len(relative_path.parts) - 1"
     fix_count = content.count(fix_pattern)
@@ -207,9 +228,9 @@ def test_7_real_file_depth_verification():
     """
     Test Case 7: Verify real files in repository have correct depth
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 7: Real File Depth Verification")
-    print("="*60)
+    print("=" * 60)
 
     from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
 
@@ -250,9 +271,9 @@ def test_8_no_false_positives():
     """
     Test Case 8: Verify no false positive depth violations for valid files
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 8: No False Positives")
-    print("="*60)
+    print("=" * 60)
 
     from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
 
@@ -291,9 +312,9 @@ def test_8_no_false_positives():
 
 def run_all_tests():
     """Run all test cases."""
-    print("\n" + "#"*60)
+    print("\n" + "#" * 60)
     print("# Depth Calculation Fix Test Suite")
-    print("#"*60)
+    print("#" * 60)
     print("\nDefinition: depth = folder level where file resides")
     print("Formula: depth = len(rel.parts) - 1")
     print("Example: agentic_core/L0_maintenance/scripts/file.md -> depth 3")
@@ -324,12 +345,13 @@ def run_all_tests():
             print(f"❌ ERROR: {name}")
             print(f"   Exception: {e}")
             import traceback
+
             traceback.print_exc()
             failed += 1
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print(f"RESULTS: {passed}/{len(tests)} tests passed")
-    print("="*60)
+    print("=" * 60)
 
     if failed > 0:
         print(f"❌ {failed} test(s) FAILED")

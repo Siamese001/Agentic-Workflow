@@ -25,7 +25,7 @@ PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 # Enable logging to capture trace messages
-logging.basicConfig(level=5, format='%(message)s')  # TRACE level = 5
+logging.basicConfig(level=5, format="%(message)s")  # TRACE level = 5
 
 from apps_rg.engines.full_agent_discovery import (
     CLASS_INHERITANCE_MAP,
@@ -48,15 +48,15 @@ def test_1_test_agent_visibility():
     Verify that /tests/ and /test/ are NOT in EXCLUDED_PATH_PATTERNS,
     allowing TestAgent discovery from tests/ directories.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 1: Test Agent Visibility")
-    print("="*60)
+    print("=" * 60)
 
     # Verify /tests/ and /test/ are NOT in EXCLUDED_PATH_PATTERNS
-    assert '/tests/' not in EXCLUDED_PATH_PATTERNS, \
+    assert "/tests/" not in EXCLUDED_PATH_PATTERNS, (
         "/tests/ should NOT be in EXCLUDED_PATH_PATTERNS"
-    assert '/test/' not in EXCLUDED_PATH_PATTERNS, \
-        "/test/ should NOT be in EXCLUDED_PATH_PATTERNS"
+    )
+    assert "/test/" not in EXCLUDED_PATH_PATTERNS, "/test/ should NOT be in EXCLUDED_PATH_PATTERNS"
 
     # Verify a test agent path would NOT be excluded by should_exclude_path
     test_agent_path = Path("tests/L5/test_TestContentQualityAgent.py")
@@ -83,9 +83,9 @@ def test_2_fixture_exclusion():
     Verify that files in /fixtures/ are still excluded despite
     the global /tests/ allowance.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 2: Fixture Exclusion")
-    print("="*60)
+    print("=" * 60)
 
     # Create test paths
     fixture_path = Path("tests/fixtures/MockAgent.py")
@@ -93,21 +93,16 @@ def test_2_fixture_exclusion():
     stub_path = Path("tests/stubs/StubAgent.py")
 
     # All fixture/mock/stub paths should be excluded
-    assert should_exclude_file(fixture_path), \
-        f"Fixture path should be excluded: {fixture_path}"
-    assert should_exclude_file(mock_path), \
-        f"Mock path should be excluded: {mock_path}"
-    assert should_exclude_file(stub_path), \
-        f"Stub path should be excluded: {stub_path}"
+    assert should_exclude_file(fixture_path), f"Fixture path should be excluded: {fixture_path}"
+    assert should_exclude_file(mock_path), f"Mock path should be excluded: {mock_path}"
+    assert should_exclude_file(stub_path), f"Stub path should be excluded: {stub_path}"
 
     # Also verify conftest.py and setup.py are excluded
     conftest_path = Path("tests/conftest.py")
     setup_path = Path("tests/setup.py")
 
-    assert should_exclude_file(conftest_path), \
-        f"conftest.py should be excluded: {conftest_path}"
-    assert should_exclude_file(setup_path), \
-        f"setup.py should be excluded: {setup_path}"
+    assert should_exclude_file(conftest_path), f"conftest.py should be excluded: {conftest_path}"
+    assert should_exclude_file(setup_path), f"setup.py should be excluded: {setup_path}"
 
     print("✅ PASSED: Fixture exclusion working")
     print("   tests/fixtures/MockAgent.py: excluded ✓")
@@ -125,34 +120,32 @@ def test_3_healer_identification():
     Verify that SovereignHealer is in HEALING_BASES and that
     agents inheriting from it are detected as healers.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 3: Healer Identification")
-    print("="*60)
+    print("=" * 60)
 
     # Verify SovereignHealer is in HEALING_BASES
-    assert 'SovereignHealer' in HEALING_BASES, \
-        "SovereignHealer should be in HEALING_BASES"
-    assert 'HealerMixin' in HEALING_BASES, \
-        "HealerMixin should be in HEALING_BASES"
+    assert "SovereignHealer" in HEALING_BASES, "SovereignHealer should be in HEALING_BASES"
+    assert "HealerMixin" in HEALING_BASES, "HealerMixin should be in HEALING_BASES"
 
     # Test has_healing_in_chain with SovereignHealer
     # Clear the inheritance map first
     CLASS_INHERITANCE_MAP.clear()
 
     # Simulate an agent that inherits from SovereignHealer
-    CLASS_INHERITANCE_MAP['TestHealerAgent'] = {'SovereignHealer'}
+    CLASS_INHERITANCE_MAP["TestHealerAgent"] = {"SovereignHealer"}
 
-    has_healing = has_healing_in_chain('TestHealerAgent', {'SovereignHealer'})
-    assert has_healing, \
-        "Agent inheriting from SovereignHealer should have has_healing=True"
+    has_healing = has_healing_in_chain("TestHealerAgent", {"SovereignHealer"})
+    assert has_healing, "Agent inheriting from SovereignHealer should have has_healing=True"
 
     # Test with indirect inheritance
-    CLASS_INHERITANCE_MAP['IndirectHealerAgent'] = {'BaseClass'}
-    CLASS_INHERITANCE_MAP['BaseClass'] = {'SovereignHealer'}
+    CLASS_INHERITANCE_MAP["IndirectHealerAgent"] = {"BaseClass"}
+    CLASS_INHERITANCE_MAP["BaseClass"] = {"SovereignHealer"}
 
-    has_healing_indirect = has_healing_in_chain('IndirectHealerAgent', {'BaseClass'})
-    assert has_healing_indirect, \
+    has_healing_indirect = has_healing_in_chain("IndirectHealerAgent", {"BaseClass"})
+    assert has_healing_indirect, (
         "Agent with indirect SovereignHealer inheritance should have has_healing=True"
+    )
 
     print("✅ PASSED: Healer identification working")
     print("   HEALING_BASES includes: HealerMixin, SovereignHealer")
@@ -168,16 +161,16 @@ def test_4_infrastructure_noise_reduction():
     Verify that infrastructure classes (AgentRegistry, etc.) are excluded
     and logged with TRACE level messages.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 4: Infrastructure Noise Reduction")
-    print("="*60)
+    print("=" * 60)
 
     # Create mock AST nodes for infrastructure classes
     infrastructure_classes = [
-        ('AgentRegistry', {'object'}),
-        ('AgentFactory', {'object'}),
-        ('SovereignClient', {'object'}),
-        ('StateSerializer', {'object'}),
+        ("AgentRegistry", {"object"}),
+        ("AgentFactory", {"object"}),
+        ("SovereignClient", {"object"}),
+        ("StateSerializer", {"object"}),
     ]
 
     excluded_count = 0
@@ -197,8 +190,9 @@ def test_4_infrastructure_noise_reduction():
         else:
             print(f"   {class_name}: NOT excluded (unexpected)")
 
-    assert excluded_count == len(infrastructure_classes), \
+    assert excluded_count == len(infrastructure_classes), (
         f"Expected all {len(infrastructure_classes)} infrastructure classes to be excluded"
+    )
 
     print("✅ PASSED: Infrastructure noise reduction working")
     print(f"   {excluded_count}/{len(infrastructure_classes)} infrastructure classes excluded")
@@ -212,18 +206,20 @@ def test_5_baseline_count_verification():
     Verify that the baseline thresholds are set correctly and
     validate_agent_count works as expected.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 5: Baseline Count Verification")
-    print("="*60)
+    print("=" * 60)
 
     # Verify baseline constants
     print(f"   MINIMUM_AGENT_COUNT: {MINIMUM_AGENT_COUNT}")
     print(f"   EXPECTED_AGENT_COUNT: {EXPECTED_AGENT_COUNT}")
 
-    assert MINIMUM_AGENT_COUNT >= 150, \
+    assert MINIMUM_AGENT_COUNT >= 150, (
         f"MINIMUM_AGENT_COUNT should be >= 150, got {MINIMUM_AGENT_COUNT}"
-    assert EXPECTED_AGENT_COUNT >= 200, \
+    )
+    assert EXPECTED_AGENT_COUNT >= 200, (
         f"EXPECTED_AGENT_COUNT should be >= 200, got {EXPECTED_AGENT_COUNT}"
+    )
 
     # Test validate_agent_count with various counts
 
@@ -258,9 +254,9 @@ def test_trace_logging_level():
 
     Verify that the TRACE logging level is properly configured.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("BONUS TEST: TRACE Logging Level")
-    print("="*60)
+    print("=" * 60)
 
     import logging
 
@@ -270,7 +266,7 @@ def test_trace_logging_level():
 
     # Verify Logger has trace method
     log = logging.getLogger("test_trace")
-    assert hasattr(log, 'trace'), "Logger should have trace method"
+    assert hasattr(log, "trace"), "Logger should have trace method"
 
     print("✅ PASSED: TRACE logging level configured")
     print(f"   TRACE level: {trace_level}")
@@ -280,9 +276,9 @@ def test_trace_logging_level():
 
 def run_all_tests():
     """Run all test cases."""
-    print("\n" + "#"*60)
+    print("\n" + "#" * 60)
     print("# Full Agent Discovery Hardening Test Suite")
-    print("#"*60)
+    print("#" * 60)
 
     tests = [
         ("Test 1: Test Agent Visibility", test_1_test_agent_visibility),
@@ -308,12 +304,13 @@ def run_all_tests():
             print(f"❌ ERROR: {name}")
             print(f"   Exception: {e}")
             import traceback
+
             traceback.print_exc()
             failed += 1
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print(f"RESULTS: {passed}/{len(tests)} tests passed")
-    print("="*60)
+    print("=" * 60)
 
     if failed > 0:
         print(f"❌ {failed} test(s) FAILED")

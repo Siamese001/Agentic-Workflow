@@ -12,9 +12,6 @@ from shared.result_types import OperationResult
 Logger = logging.getLogger(__name__)
 
 
-
-
-
 class RankResumeSections:
     """Operations executor for resume domain."""
 

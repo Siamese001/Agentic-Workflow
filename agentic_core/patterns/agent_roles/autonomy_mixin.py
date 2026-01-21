@@ -12,11 +12,13 @@ from typing import Any
 
 # GRAVITY FIXED (Upward Leak): from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 try:
-    _mod = importlib.import_module('agentic_core.L2_execution.mcp.mcp_hardened_mixin_1')
+    _mod = importlib.import_module("agentic_core.L2_execution.mcp.mcp_hardened_mixin_1")
     MCPHardenedMixin = _mod.MCPHardenedMixin
 except (ImportError, AttributeError):
+
     class MCPHardenedMixin:
         """Fallback stub for MCPHardenedMixin."""
+
         pass
 
 
@@ -62,7 +64,9 @@ class AutonomyMixin(MCPHardenedMixin):
         return True
 
     async def _detect_action_opportunity(self) -> dict[str, Any] | None:
-        raise NotImplementedError(f"{self.__class__.__name__} must implement _detect_action_opportunity")
+        raise NotImplementedError(
+            f"{self.__class__.__name__} must implement _detect_action_opportunity"
+        )
 
     async def proactive_execute(self) -> dict[str, Any]:
         if not await self.should_act_proactively():

@@ -2,12 +2,14 @@
 """
 Verify healing and invocation metrics for all agents.
 """
+
 import json
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent
 DISCOVERY_FILE = PROJECT_ROOT / "agent_discovery_full.json"
 DASHBOARD_DATA = PROJECT_ROOT / "agentic_core/L6_observability/dashboards/data/dashboard_data.js"
+
 
 def main():
     """Verify healing metrics."""
@@ -16,22 +18,23 @@ def main():
     print("=" * 70)
 
     # Load agent discovery
-    with open(DISCOVERY_FILE, encoding='utf-8') as f:
+    with open(DISCOVERY_FILE, encoding="utf-8") as f:
         agents = json.load(f)
 
     total = len(agents)
-    with_healing = sum(1 for a in agents if a.get('has_healing', False))
-    with_invocation = sum(1 for a in agents if a.get('invocation') == 'Yes')
+    with_healing = sum(1 for a in agents if a.get("has_healing", False))
+    with_invocation = sum(1 for a in agents if a.get("invocation") == "Yes")
 
     print("\nAgent Discovery Data:")
     print(f"  Total agents: {total}")
-    print(f"  With healing: {with_healing} ({with_healing/total*100:.1f}%)")
-    print(f"  With invocation: {with_invocation} ({with_invocation/total*100:.1f}%)")
+    print(f"  With healing: {with_healing} ({with_healing / total * 100:.1f}%)")
+    print(f"  With invocation: {with_invocation} ({with_invocation / total * 100:.1f}%)")
 
     # Load dashboard data
-    content = DASHBOARD_DATA.read_text(encoding='utf-8')
+    content = DASHBOARD_DATA.read_text(encoding="utf-8")
     import re
-    match = re.search(r'window\.dashboardData = (\[.*?\]);', content, re.DOTALL)
+
+    match = re.search(r"window\.dashboardData = (\[.*?\]);", content, re.DOTALL)
     if match:
         data = json.loads(match.group(1))
         total_row = data[0]
@@ -55,6 +58,7 @@ def main():
         print("=" * 70)
         print(f"\nMissing healing: {total - with_healing} agents")
         print(f"Missing invocation: {total - with_invocation} agents")
+
 
 if __name__ == "__main__":
     main()

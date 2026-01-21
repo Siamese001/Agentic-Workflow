@@ -3,17 +3,18 @@
 Generate test files for ALL agents that don't have tests.
 Goal: 100% test coverage for all agents.
 """
+
 import json
 from pathlib import Path
 
 # Load agent discovery data
-with open('agent_discovery_full.json') as f:
+with open("agent_discovery_full.json") as f:
     agents = json.load(f)
 
 print(f"Total agents: {len(agents)}")
 
 # Find agents without tests
-agents_without_tests = [a for a in agents if not a.get('has_tests', False)]
+agents_without_tests = [a for a in agents if not a.get("has_tests", False)]
 print(f"Agents WITHOUT tests: {len(agents_without_tests)}")
 
 # Test template
@@ -104,35 +105,35 @@ created_count = 0
 skipped_count = 0
 
 for agent in agents_without_tests:
-    class_name = agent['class_name']
-    agent_path = agent['path']
+    class_name = agent["class_name"]
+    agent_path = agent["path"]
 
     # Convert path to import path
     # e.g., "apps_lic\domain\validators\ASCIIEnforcerAgent.py" -> "apps_lic.domain.validators.ASCIIEnforcerAgent"
-    import_path = agent_path.replace('\\', '.').replace('/', '.').replace('.py', '')
+    import_path = agent_path.replace("\\", ".").replace("/", ".").replace(".py", "")
 
     # Determine test directory based on agent location
-    path_parts = agent_path.replace('\\', '/').split('/')
+    path_parts = agent_path.replace("\\", "/").split("/")
 
-    if path_parts[0] == 'agentic_core':
+    if path_parts[0] == "agentic_core":
         # For agentic_core agents, put tests in tests/unit/agentic_core/
-        test_dir = Path('tests/unit/agentic_core')
+        test_dir = Path("tests/unit/agentic_core")
         if len(path_parts) > 2:
             # Add layer subdirectory
             test_dir = test_dir / path_parts[1]
-    elif path_parts[0].startswith('apps_'):
+    elif path_parts[0].startswith("apps_"):
         # For apps agents, put tests in tests/unit/apps/
-        test_dir = Path('tests/unit/apps') / path_parts[0]
+        test_dir = Path("tests/unit/apps") / path_parts[0]
     else:
-        test_dir = Path('tests/unit/other')
+        test_dir = Path("tests/unit/other")
 
     # Create test directory
     test_dir.mkdir(parents=True, exist_ok=True)
 
     # Create __init__.py files
     init_path = test_dir
-    while init_path != Path('tests'):
-        init_file = init_path / '__init__.py'
+    while init_path != Path("tests"):
+        init_file = init_path / "__init__.py"
         if not init_file.exists():
             init_file.write_text('"""Test package."""\n')
         init_path = init_path.parent
@@ -144,18 +145,15 @@ for agent in agents_without_tests:
         skipped_count += 1
         continue
 
-    test_content = TEST_TEMPLATE.format(
-        class_name=class_name,
-        import_path=import_path
-    )
+    test_content = TEST_TEMPLATE.format(class_name=class_name, import_path=import_path)
 
     test_file.write_text(test_content)
     created_count += 1
     print(f"✅ Created: {test_file}")
 
-print(f"\n{'='*70}")
+print(f"\n{'=' * 70}")
 print("SUMMARY")
-print(f"{'='*70}")
+print(f"{'=' * 70}")
 print(f"Tests created: {created_count}")
 print(f"Tests skipped (already exist): {skipped_count}")
 print(f"Total agents: {len(agents)}")

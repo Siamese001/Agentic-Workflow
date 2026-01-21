@@ -13,6 +13,7 @@ from typing import Any
 
 class HealTimeoutError(Exception):
     """Raised when heal_repository() exceeds time limit."""
+
     pass
 
 
@@ -29,6 +30,7 @@ def timeout(seconds: int):
         def heal_repository(self, ...):
             ...
     """
+
     def decorator(func: Callable) -> Callable:
         @wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
@@ -62,5 +64,7 @@ def timeout(seconds: int):
                 raise exception[0]
 
             return result[0]
+
         return wrapper
+
     return decorator

@@ -88,7 +88,7 @@ def cmd_scan(args) -> int:
     else:
         # Full listing
         if args.limit:
-            agents = agents[:args.limit]
+            agents = agents[: args.limit]
             print(f"Showing first {args.limit} agents:")
         else:
             print("All agents:")
@@ -161,22 +161,22 @@ def cmd_validate(args) -> int:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             output_path = REPO / f"SSOT_Health_Report_{timestamp}.md"
 
-        output_path.write_text(report.to_markdown(), encoding='utf-8')
+        output_path.write_text(report.to_markdown(), encoding="utf-8")
         print(f"\n📄 Report saved: {output_path}")
 
     # JSON output
     if args.json:
         json_data = {
-            'compliance_score': report.compliance_score,
-            'total_violations': report.total_violations,
-            'is_compliant': report.is_compliant,
-            'scan_duration': report.scan_duration,
-            'violations': {
-                'gravity': len(report.gravity_violations),
-                'imports': len(report.import_violations),
-                'hierarchy': len(report.hierarchy_violations),
-                'drift': len(report.drift_violations)
-            }
+            "compliance_score": report.compliance_score,
+            "total_violations": report.total_violations,
+            "is_compliant": report.is_compliant,
+            "scan_duration": report.scan_duration,
+            "violations": {
+                "gravity": len(report.gravity_violations),
+                "imports": len(report.import_violations),
+                "hierarchy": len(report.hierarchy_violations),
+                "drift": len(report.drift_violations),
+            },
         }
         print("\n" + json.dumps(json_data, indent=2))
 
@@ -209,7 +209,7 @@ def cmd_enforce(args) -> int:
         # Confirmation prompt
         if not args.yes:
             response = input("Continue with enforcement? (yes/no): ").strip().lower()
-            if response not in ('yes', 'y'):
+            if response not in ("yes", "y"):
                 print("\nEnforcement cancelled by user.")
                 return 0
         print()
@@ -375,115 +375,65 @@ def cmd_status(args) -> int:
 def main():
     """Main entry point for SSOT CLI."""
     parser = argparse.ArgumentParser(
-        prog='ssot',
-        description='SSOT - Sovereign Single Source of Truth CLI',
-        epilog='For more information on a command, use: python scripts/ssot.py <command> --help'
+        prog="ssot",
+        description="SSOT - Sovereign Single Source of Truth CLI",
+        epilog="For more information on a command, use: python scripts/ssot.py <command> --help",
     )
 
-    subparsers = parser.add_subparsers(dest='command', help='Available commands')
+    subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
     # Scan command
-    scan_parser = subparsers.add_parser(
-        'scan',
-        help='Scan and list all discovered agents'
+    scan_parser = subparsers.add_parser("scan", help="Scan and list all discovered agents")
+    scan_parser.add_argument(
+        "--summary", action="store_true", help="Show summary by layer instead of full listing"
     )
     scan_parser.add_argument(
-        '--summary',
-        action='store_true',
-        help='Show summary by layer instead of full listing'
+        "--violations-only", action="store_true", help="Show only agents with gravity violations"
     )
-    scan_parser.add_argument(
-        '--violations-only',
-        action='store_true',
-        help='Show only agents with gravity violations'
-    )
-    scan_parser.add_argument(
-        '--limit',
-        type=int,
-        help='Limit number of agents displayed'
-    )
+    scan_parser.add_argument("--limit", type=int, help="Limit number of agents displayed")
 
     # Validate command
-    validate_parser = subparsers.add_parser(
-        'validate',
-        help='Run comprehensive SSOT validation'
+    validate_parser = subparsers.add_parser("validate", help="Run comprehensive SSOT validation")
+    validate_parser.add_argument(
+        "--summary", action="store_true", help="Show brief summary instead of full report"
     )
     validate_parser.add_argument(
-        '--summary',
-        action='store_true',
-        help='Show brief summary instead of full report'
+        "--markdown", action="store_true", help="Save report as Markdown file"
     )
-    validate_parser.add_argument(
-        '--markdown',
-        action='store_true',
-        help='Save report as Markdown file'
-    )
-    validate_parser.add_argument(
-        '--json',
-        action='store_true',
-        help='Output report as JSON'
-    )
-    validate_parser.add_argument(
-        '--output',
-        type=str,
-        help='Output file path for Markdown report'
-    )
+    validate_parser.add_argument("--json", action="store_true", help="Output report as JSON")
+    validate_parser.add_argument("--output", type=str, help="Output file path for Markdown report")
 
     # Enforce command
-    enforce_parser = subparsers.add_parser(
-        'enforce',
-        help='Apply automated remediation'
+    enforce_parser = subparsers.add_parser("enforce", help="Apply automated remediation")
+    enforce_parser.add_argument(
+        "--execute", action="store_true", help="Execute enforcement (default is dry-run)"
+    )
+    enforce_parser.add_argument("--yes", "-y", action="store_true", help="Skip confirmation prompt")
+    enforce_parser.add_argument(
+        "--gravity", action="store_true", help="Fix gravity violations only"
+    )
+    enforce_parser.add_argument("--drift", action="store_true", help="Fix drift violations only")
+    enforce_parser.add_argument(
+        "--hierarchy", action="store_true", help="Fix hierarchy violations only"
     )
     enforce_parser.add_argument(
-        '--execute',
-        action='store_true',
-        help='Execute enforcement (default is dry-run)'
-    )
-    enforce_parser.add_argument(
-        '--yes',
-        '-y',
-        action='store_true',
-        help='Skip confirmation prompt'
-    )
-    enforce_parser.add_argument(
-        '--gravity',
-        action='store_true',
-        help='Fix gravity violations only'
-    )
-    enforce_parser.add_argument(
-        '--drift',
-        action='store_true',
-        help='Fix drift violations only'
-    )
-    enforce_parser.add_argument(
-        '--hierarchy',
-        action='store_true',
-        help='Fix hierarchy violations only'
-    )
-    enforce_parser.add_argument(
-        '--all',
-        action='store_true',
-        default=True,
-        help='Fix all violations (default)'
+        "--all", action="store_true", default=True, help="Fix all violations (default)"
     )
 
     # Status command
-    subparsers.add_parser(
-        'status',
-        help='Show compliance dashboard'
-    )
+    subparsers.add_parser("status", help="Show compliance dashboard")
 
     # Parse arguments
     args = parser.parse_args()
 
     # Execute command
-    if args.command == 'scan':
+    if args.command == "scan":
         return cmd_scan(args)
-    elif args.command == 'validate':
+    elif args.command == "validate":
         return cmd_validate(args)
-    elif args.command == 'enforce':
+    elif args.command == "enforce":
         return cmd_enforce(args)
-    elif args.command == 'status':
+    elif args.command == "status":
         return cmd_status(args)
     else:
         parser.print_help()

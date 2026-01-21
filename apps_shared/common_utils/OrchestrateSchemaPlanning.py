@@ -13,8 +13,10 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
+
 class SchemaType(Enum):
     """Types of schemas for different data formats."""
+
     JSON = "json"
     XML = "xml"
     AVRO = "avro"
@@ -22,24 +24,30 @@ class SchemaType(Enum):
     SQL = "sql"
     YAML = "yaml"
 
+
 class ValidationLevel(Enum):
     """Levels of schema validation."""
+
     SYNTAX = "syntax"
     SEMANTIC = "semantic"
     BUSINESS = "business"
     FULL = "full"
 
+
 class TransformationType(Enum):
     """Types of schema transformations."""
+
     FORMAT_CONVERSION = "format_conversion"
     FIELD_MAPPING = "field_mapping"
     TYPE_COERCION = "type_coercion"
     STRUCTURE_REFACTOR = "structure_refactor"
     VERSION_MIGRATION = "version_migration"
 
+
 @dataclass
 class SchemaDefinition:
     """Definition of a data schema."""
+
     name: str
     schema_type: SchemaType
     version: str
@@ -48,18 +56,22 @@ class SchemaDefinition:
     description: str | None = None
     tags: list[str] = field(default_factory=list)
 
+
 @dataclass
 class ValidationRule:
     """Rule for schema validation."""
+
     name: str
     rule_type: ValidationLevel
     condition: str
     message: str
     severity: str = "error"
 
+
 @dataclass
 class TransformationPlan:
     """Plan for schema transformation."""
+
     transformation_type: TransformationType
     source_schema: str
     target_schema: str
@@ -67,9 +79,11 @@ class TransformationPlan:
     validation_rules: list[ValidationRule] = field(default_factory=list)
     dependencies: list[str] = field(default_factory=list)
 
+
 @dataclass
 class SchemaPlanningConfig:
     """Configuration for schema planning orchestrator."""
+
     enable_validation: bool = True
     enable_transformation: bool = True
     enable_compatibility_check: bool = True
@@ -77,9 +91,11 @@ class SchemaPlanningConfig:
     strict_validation: bool = True
     log_level: str = "INFO"
 
+
 @dataclass
 class SchemaPlanningResult:
     """Result of schema planning orchestration."""
+
     success: bool
     validated_schemas: list[SchemaDefinition] = field(default_factory=list)
     transformation_plans: list[TransformationPlan] = field(default_factory=list)
@@ -88,6 +104,7 @@ class SchemaPlanningResult:
     warnings: list[str] = field(default_factory=list)
     errors: list[str] = field(default_factory=list)
     metadata: dict[str, Any] = field(default_factory=dict)
+
 
 class SchemaPlanningOrchestrator:
     """Orchestrator for planning schema operations."""
@@ -106,7 +123,9 @@ class SchemaPlanningOrchestrator:
         Returns:
             SchemaPlanningResult: Complete planning result with validated schemas and transformations
         """
-        self.logger.info(f"Starting schema planning for: {schema_request.get('operation', 'unknown')}")
+        self.logger.info(
+            f"Starting schema planning for: {schema_request.get('operation', 'unknown')}"
+        )
 
         try:
             # Validate input request
@@ -141,11 +160,13 @@ class SchemaPlanningOrchestrator:
                     "operation": schema_request.get("operation"),
                     "schema_count": len(validated_schemas),
                     "transformation_count": len(transformation_plans),
-                    "orchestrator": "SchemaPlanningOrchestrator"
-                }
+                    "orchestrator": "SchemaPlanningOrchestrator",
+                },
             )
 
-            self.logger.info(f"Successfully planned schemas: {len(validated_schemas)} validated, {len(transformation_plans)} transformations")
+            self.logger.info(
+                f"Successfully planned schemas: {len(validated_schemas)} validated, {len(transformation_plans)} transformations"
+            )
             return result
 
         except Exception as e:
@@ -155,8 +176,8 @@ class SchemaPlanningOrchestrator:
                 errors=[str(e)],
                 metadata={
                     "failed_at": datetime.utcnow().isoformat(),
-                    "orchestrator": "SchemaPlanningOrchestrator"
-                }
+                    "orchestrator": "SchemaPlanningOrchestrator",
+                },
             )
 
     def _validate_request(self, request: dict[str, Any]) -> None:
@@ -184,13 +205,15 @@ class SchemaPlanningOrchestrator:
                     content=raw_schema.get("content", {}),
                     namespace=raw_schema.get("namespace"),
                     description=raw_schema.get("description"),
-                    tags=raw_schema.get("tags", [])
+                    tags=raw_schema.get("tags", []),
                 )
                 schemas.append(schema)
 
         return schemas
 
-    def _plan_transformations(self, request: dict[str, Any], schemas: list[SchemaDefinition]) -> list[TransformationPlan]:
+    def _plan_transformations(
+        self, request: dict[str, Any], schemas: list[SchemaDefinition]
+    ) -> list[TransformationPlan]:
         """Plan schema transformations based on request."""
         plans = []
         transformations = request.get("transformations", [])
@@ -201,7 +224,7 @@ class SchemaPlanningOrchestrator:
                 source_schema=transform.get("source", ""),
                 target_schema=transform.get("target", ""),
                 mapping_rules=transform.get("mapping_rules", {}),
-                dependencies=transform.get("dependencies", [])
+                dependencies=transform.get("dependencies", []),
             )
             plans.append(plan)
 
@@ -209,16 +232,12 @@ class SchemaPlanningOrchestrator:
 
     def _check_compatibility(self, schemas: list[SchemaDefinition]) -> dict[str, Any]:
         """Check compatibility between schemas."""
-        report = {
-            "compatible": True,
-            "issues": [],
-            "warnings": []
-        }
+        report = {"compatible": True, "issues": [], "warnings": []}
 
         # Simple compatibility check
         if len(schemas) > 1:
             for i, schema1 in enumerate(schemas):
-                for schema2 in schemas[i+1:]:
+                for schema2 in schemas[i + 1 :]:
                     if schema1.schema_type != schema2.schema_type:
                         report["warnings"].append(
                             f"Schema type mismatch: {schema1.name} ({schema1.schema_type}) vs {schema2.name} ({schema2.schema_type})"
@@ -244,25 +263,24 @@ class SchemaPlanningOrchestrator:
 
         return errors
 
+
 # Factory function for easy instantiation
 def create_schema_planning_orchestrator(
-    enable_validation: bool = True,
-    enable_transformation: bool = True,
-    **kwargs: dict[str, object]) -> SchemaPlanningOrchestrator:
+    enable_validation: bool = True, enable_transformation: bool = True, **kwargs: dict[str, object]
+) -> SchemaPlanningOrchestrator:
     """Create a configured schema planning orchestrator."""
     config = SchemaPlanningConfig(
-        enable_validation=enable_validation,
-        enable_transformation=enable_transformation,
-        **kwargs
+        enable_validation=enable_validation, enable_transformation=enable_transformation, **kwargs
     )
     return SchemaPlanningOrchestrator(config)
+
 
 # Convenience function for direct usage
 def plan_schema_operations(
     operation: str,
     schemas: list[dict[str, Any]],
     transformations: list[dict[str, Any]] | None = None,
-    config: dict[str, Any] | None = None
+    config: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Plan schema operations from simple parameters.
 
@@ -276,11 +294,7 @@ def plan_schema_operations(
         Dict: Planning result with schemas and transformations
     """
     # Build request
-    request = {
-        "operation": operation,
-        "schemas": schemas,
-        "transformations": transformations or []
-    }
+    request = {"operation": operation, "schemas": schemas, "transformations": transformations or []}
 
     # Create orchestrator and execute
     orchestrator_config = SchemaPlanningConfig(**config) if config else None
@@ -298,7 +312,7 @@ def plan_schema_operations(
                 "content": s.content,
                 "namespace": s.namespace,
                 "description": s.description,
-                "tags": s.tags
+                "tags": s.tags,
             }
             for s in result.validated_schemas
         ],
@@ -308,7 +322,7 @@ def plan_schema_operations(
                 "source_schema": t.source_schema,
                 "target_schema": t.target_schema,
                 "mapping_rules": t.mapping_rules,
-                "dependencies": t.dependencies
+                "dependencies": t.dependencies,
             }
             for t in result.transformation_plans
         ],
@@ -316,8 +330,9 @@ def plan_schema_operations(
         "validation_errors": result.validation_errors,
         "warnings": result.warnings,
         "errors": result.errors,
-        "metadata": result.metadata
+        "metadata": result.metadata,
     }
+
 
 if __name__ == "__main__":
     # Example usage
@@ -326,14 +341,12 @@ if __name__ == "__main__":
             "name": "user_schema",
             "type": "json",
             "version": "1.0",
-            "content": {"type": "object", "properties": {"id": {"type": "string"}}}
+            "content": {"type": "object", "properties": {"id": {"type": "string"}}},
         }
     ]
 
-    result = plan_schema_operations(
-        operation="validate",
-        schemas=example_schemas
-    )
+    result = plan_schema_operations(operation="validate", schemas=example_schemas)
+
 
 class OrchestrateDataPlanningOrchestratorImpl(OrchestrateDataPlanningOrchestratorProcessor):
     """
@@ -361,7 +374,7 @@ class OrchestrateDataPlanningOrchestratorImpl(OrchestrateDataPlanningOrchestrato
             success=True,
             data={"processed": True, "input": input_data},
             safety_validated=True,
-            timestamp=self._get_timestamp()
+            timestamp=self._get_timestamp(),
         )
 
         self.logger.info(f"Successfully processed: {result.success}")
@@ -371,7 +384,13 @@ class OrchestrateDataPlanningOrchestratorImpl(OrchestrateDataPlanningOrchestrato
         """L5 Safety validation with fail-closed behavior"""
         try:
             # Check for dangerous patterns
-            dangerous_patterns = ["<script>", "javascript:", "ast.literal_eval(", "pass  # exec disabled: ", "__import__"]
+            dangerous_patterns = [
+                "<script>",
+                "javascript:",
+                "ast.literal_eval(",
+                "pass  # exec disabled: ",
+                "__import__",
+            ]
             data_str = str(data).lower()
             for pattern in dangerous_patterns:
                 if pattern in data_str:
@@ -400,11 +419,15 @@ class OrchestrateDataPlanningOrchestratorImpl(OrchestrateDataPlanningOrchestrato
     def _get_timestamp(self) -> str:
         """Get current timestamp for L5 observability"""
         from datetime import datetime
+
         return datetime.utcnow().isoformat()
+
 
 class SecurityError(Exception):
     """L5 Security exception for fail-closed behavior"""
+
     ...
+
 
 # L5 Interface compliance
 class OrchestrateDataPlanningOrchestratorInterface:
@@ -422,21 +445,25 @@ class OrchestrateDataPlanningOrchestratorInterface:
                 "data": result.data,
                 "errors": result.errors,
                 "safety_validated": result.safety_validated,
-                "timestamp": result.timestamp
+                "timestamp": result.timestamp,
             }
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
             raise SecurityError(f"Execution failed: {e}")
+
 
 # L5 builder
 class OrchestrateDataPlanningOrchestratorFactory:
     """L5 builder for creating processors with proper configuration"""
 
     @staticmethod
-    def create_processor(safety_level: str = "strict") -> OrchestrateDataPlanningOrchestratorInterface:
+    def create_processor(
+        safety_level: str = "strict",
+    ) -> OrchestrateDataPlanningOrchestratorInterface:
         """Create configured engine"""
         constraints = OrchestrateDataPlanningOrchestratorConstraints(safety_level=safety_level)
         engine = OrchestrateDataPlanningOrchestratorImpl(constraints)
         return OrchestrateDataPlanningOrchestratorInterface(engine)
+
 
 # L5 Main execution point
 def orchestrate_data_planning(input_data: dict[str, object]) -> dict[str, object]:
@@ -455,6 +482,7 @@ def orchestrate_data_planning(input_data: dict[str, object]) -> dict[str, object
     builder = OrchestrateDataPlanningOrchestratorFactory()
     engine = builder.create_processor()
     return engine.execute(input_data)
+
 
 if __name__ == "__main__":
     # L5 Test execution

@@ -8,6 +8,7 @@ Author: Cascade
 Date: January 19, 2026
 Phase: 6.9 - Final Mile
 """
+
 import ast
 from collections import defaultdict
 from pathlib import Path
@@ -36,39 +37,41 @@ def audit_residual_rglob_calls(project_root: Path) -> dict[str, Any]:
         files_scanned += 1
 
         try:
-            content = py_file.read_text(encoding='utf-8', errors='ignore')
+            content = py_file.read_text(encoding="utf-8", errors="ignore")
             lines = content.splitlines()
             tree = ast.parse(content)
 
             for node in ast.walk(tree):
                 # Detect .rglob() and .glob() attribute calls
-                if isinstance(node, ast.Attribute) and node.attr in ['rglob', 'glob']:
-                    line_no = getattr(node, 'lineno', 0)
+                if isinstance(node, ast.Attribute) and node.attr in ["rglob", "glob"]:
+                    line_no = getattr(node, "lineno", 0)
 
                     # Get context (the line of code)
                     context = lines[line_no - 1].strip() if line_no <= len(lines) else ""
 
                     # Determine the pattern
                     pattern = "unknown"
-                    if '*.py' in context or '"*.py"' in context or "'*.py'" in context:
+                    if "*.py" in context or '"*.py"' in context or "'*.py'" in context:
                         pattern = "*.py"
-                    elif '*.json' in context or '"*.json"' in context or "'*.json'" in context:
+                    elif "*.json" in context or '"*.json"' in context or "'*.json'" in context:
                         pattern = "*.json"
-                    elif '*.md' in context or '"*.md"' in context or "'*.md'" in context:
+                    elif "*.md" in context or '"*.md"' in context or "'*.md'" in context:
                         pattern = "*.md"
-                    elif '*Agent.py' in context:
+                    elif "*Agent.py" in context:
                         pattern = "*Agent.py"
-                    elif '*' in context:
+                    elif "*" in context:
                         pattern = "other_pattern"
 
-                    rglob_calls.append({
-                        'file': str(py_file.relative_to(project_root)),
-                        'line': line_no,
-                        'method': node.attr,
-                        'context': context[:100],
-                        'pattern': pattern,
-                        'directory': str(py_file.parent.relative_to(project_root))
-                    })
+                    rglob_calls.append(
+                        {
+                            "file": str(py_file.relative_to(project_root)),
+                            "line": line_no,
+                            "method": node.attr,
+                            "context": context[:100],
+                            "pattern": pattern,
+                            "directory": str(py_file.parent.relative_to(project_root)),
+                        }
+                    )
 
         except SyntaxError:
             continue
@@ -78,25 +81,25 @@ def audit_residual_rglob_calls(project_root: Path) -> dict[str, Any]:
     # Analyze by directory
     by_directory = defaultdict(list)
     for call in rglob_calls:
-        by_directory[call['directory']].append(call)
+        by_directory[call["directory"]].append(call)
 
     # Analyze by pattern
     by_pattern = defaultdict(list)
     for call in rglob_calls:
-        by_pattern[call['pattern']].append(call)
+        by_pattern[call["pattern"]].append(call)
 
     # Analyze by file
     by_file = defaultdict(list)
     for call in rglob_calls:
-        by_file[call['file']].append(call)
+        by_file[call["file"]].append(call)
 
     return {
-        'total_calls': len(rglob_calls),
-        'files_scanned': files_scanned,
-        'calls': rglob_calls,
-        'by_directory': dict(by_directory),
-        'by_pattern': dict(by_pattern),
-        'by_file': dict(by_file)
+        "total_calls": len(rglob_calls),
+        "files_scanned": files_scanned,
+        "calls": rglob_calls,
+        "by_directory": dict(by_directory),
+        "by_pattern": dict(by_pattern),
+        "by_file": dict(by_file),
     }
 
 
@@ -115,9 +118,7 @@ def print_audit_report(audit_results: dict[str, Any]) -> None:
     print("=" * 80)
 
     sorted_dirs = sorted(
-        audit_results['by_directory'].items(),
-        key=lambda x: len(x[1]),
-        reverse=True
+        audit_results["by_directory"].items(), key=lambda x: len(x[1]), reverse=True
     )
 
     for directory, calls in sorted_dirs[:15]:
@@ -129,15 +130,13 @@ def print_audit_report(audit_results: dict[str, Any]) -> None:
     print("=" * 80)
 
     sorted_patterns = sorted(
-        audit_results['by_pattern'].items(),
-        key=lambda x: len(x[1]),
-        reverse=True
+        audit_results["by_pattern"].items(), key=lambda x: len(x[1]), reverse=True
     )
 
     for pattern, calls in sorted_patterns:
         print(f"{len(calls):3d} calls: {pattern}")
         # Show sample files
-        sample_files = list({call['file'] for call in calls[:3]})
+        sample_files = list({call["file"] for call in calls[:3]})
         for file in sample_files:
             print(f"      - {file}")
 
@@ -146,11 +145,7 @@ def print_audit_report(audit_results: dict[str, Any]) -> None:
     print("TOP 20 OFFENDING FILES")
     print("=" * 80)
 
-    sorted_files = sorted(
-        audit_results['by_file'].items(),
-        key=lambda x: len(x[1]),
-        reverse=True
-    )
+    sorted_files = sorted(audit_results["by_file"].items(), key=lambda x: len(x[1]), reverse=True)
 
     for file_path, calls in sorted_files[:20]:
         print(f"{len(calls):2d} calls: {file_path}")
@@ -163,13 +158,13 @@ def print_audit_report(audit_results: dict[str, Any]) -> None:
     print("=" * 80)
 
     print("\n1. HIGH PRIORITY - L0_maintenance/scripts (Easy wins, 1 call each)")
-    l0_scripts = [f for f, calls in sorted_files if 'L0_maintenance/scripts' in f]
+    l0_scripts = [f for f, calls in sorted_files if "L0_maintenance/scripts" in f]
     print(f"   {len(l0_scripts)} files to refactor")
     for file in l0_scripts[:10]:
         print(f"   - {file}")
 
     print("\n2. MEDIUM PRIORITY - Other directories")
-    other_files = [f for f, calls in sorted_files if 'L0_maintenance/scripts' not in f]
+    other_files = [f for f, calls in sorted_files if "L0_maintenance/scripts" not in f]
     print(f"   {len(other_files)} files to refactor")
     for file in other_files[:10]:
         print(f"   - {file}")
@@ -179,7 +174,7 @@ def print_audit_report(audit_results: dict[str, Any]) -> None:
     print("PATH TO SUB-50")
     print("=" * 80)
 
-    current = audit_results['total_calls']
+    current = audit_results["total_calls"]
     target = 50
     needed = current - target
 
@@ -203,8 +198,9 @@ def main():
 
     # Save detailed results to JSON
     import json
+
     output_file = project_root / "audit_residual_rglob_results.json"
-    with open(output_file, 'w', encoding='utf-8') as f:
+    with open(output_file, "w", encoding="utf-8") as f:
         json.dump(audit_results, f, indent=2)
 
     print(f"\n\nDetailed results saved to: {output_file}")

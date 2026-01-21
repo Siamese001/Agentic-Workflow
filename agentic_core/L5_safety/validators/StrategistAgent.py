@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, healer, memory, orchestrator, prompt, state, validator, workflow
@@ -30,6 +29,7 @@ class StrategistAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin):
     """
     ROLE: Proactive Architecture. Identifies code smells and proposes refactors.
     """
+
     def can_run(self) -> bool:
         """Execute can_run operation."""
         results = getattr(self.ctx, "results", {})
@@ -47,5 +47,5 @@ class StrategistAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin):
 
     @standard_heal
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()

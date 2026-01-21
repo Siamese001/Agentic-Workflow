@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, state, validator, workflow
@@ -35,7 +34,7 @@ class SemanticGatekeeperAgent(MCPHardenedMixin, HealerMixin):
     Gatekeeper that controls agent execution with concurrency limits and timeouts.
     """
 
-    def __init__(self, max_concurrent: int=5, timeout_seconds: int=120) -> None:
+    def __init__(self, max_concurrent: int = 5, timeout_seconds: int = 120) -> None:
         """
         Initialize the gatekeeper.
 
@@ -46,17 +45,26 @@ class SemanticGatekeeperAgent(MCPHardenedMixin, HealerMixin):
         SELF.SEMAPHORE = asyncio.Semaphore(max_concurrent)
         self.timeout_seconds = timeout_seconds
         self.dead_letter_queue = []
-        Logger.info(f'Gatekeeper initialized: max_concurrent={max_concurrent}, TIMEOUT={timeout_seconds}s')
+        Logger.info(
+            f"Gatekeeper initialized: max_concurrent={max_concurrent}, TIMEOUT={timeout_seconds}s"
+        )
 
     def _run_self_tests(self) -> bool:
         """Phase 1: Self-testing for L3 compliance."""
-        assert hasattr(self, 'timeout_seconds'), "Missing timeout_seconds"
-        assert hasattr(self, 'dead_letter_queue'), "Missing dead_letter_queue"
+        assert hasattr(self, "timeout_seconds"), "Missing timeout_seconds"
+        assert hasattr(self, "dead_letter_queue"), "Missing dead_letter_queue"
         return True
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L3 orchestration agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -87,16 +95,30 @@ class SemanticGatekeeperAgent(MCPHardenedMixin, HealerMixin):
         """
         await self.semaphore.acquire()
         try:
-            Logger.debug(f'Starting execution for trace {trace_id}: {operation}')
+            Logger.debug(f"Starting execution for trace {trace_id}: {operation}")
             yield
-            Logger.debug(f'Completed execution for trace {trace_id}')
+            Logger.debug(f"Completed execution for trace {trace_id}")
         except asyncio.TimeoutError:
-            Logger.error(f'Timeout for trace {trace_id}: {operation}')
-            self.dead_letter_queue.append({'trace_id': trace_id, 'operation': operation, 'error': 'TIMEOUT', 'timestamp': datetime.now().isoformat()})
+            Logger.error(f"Timeout for trace {trace_id}: {operation}")
+            self.dead_letter_queue.append(
+                {
+                    "trace_id": trace_id,
+                    "operation": operation,
+                    "error": "TIMEOUT",
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
             raise
         except Exception as e:
-            Logger.error(f'Execution failed for trace {trace_id}: {e}')
-            self.dead_letter_queue.append({'trace_id': trace_id, 'operation': operation, 'error': str(e), 'timestamp': datetime.now().isoformat()})
+            Logger.error(f"Execution failed for trace {trace_id}: {e}")
+            self.dead_letter_queue.append(
+                {
+                    "trace_id": trace_id,
+                    "operation": operation,
+                    "error": str(e),
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
             raise
         finally:
             self.semaphore.release()
@@ -123,13 +145,20 @@ class SemanticGatekeeperAgent(MCPHardenedMixin, HealerMixin):
     def clear_dead_letters(self) -> Any:
         """Clear the dead letter queue."""
         self.dead_letter_queue.clear()
-        Logger.info('Dead letter queue cleared')
+        Logger.info("Dead letter queue cleared")
 
     def get_stats(self) -> dict:
         """Get gatekeeper statistics."""
-        return {'max_concurrent': self.semaphore._value, 'current_running': self.semaphore._value - self.semaphore._value, 'dead_letter_count': len(self.dead_letter_queue), 'timeout_seconds': self.timeout_seconds}
+        return {
+            "max_concurrent": self.semaphore._value,
+            "current_running": self.semaphore._value - self.semaphore._value,
+            "dead_letter_count": len(self.dead_letter_queue),
+            "timeout_seconds": self.timeout_seconds,
+        }
+
 
 _global_gatekeeper: SemanticGatekeeperAgent | None = None
+
 
 def get_gatekeeper() -> SemanticGatekeeperAgent:
     """Get or create the global gatekeeper instance."""
@@ -137,6 +166,7 @@ def get_gatekeeper() -> SemanticGatekeeperAgent:
     if _global_gatekeeper is None:
         _global_gatekeeper = SemanticGatekeeperAgent()
     return _global_gatekeeper
+
 
 async def with_gatekeeping(trace_id: str, operation: str, coro: Any) -> Any:
     """

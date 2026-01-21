@@ -8,6 +8,7 @@ from functools import wraps
 trace_id_var = contextvars.ContextVar("trace_id", default=None)
 span_id_var = contextvars.ContextVar("span_id", default=None)
 
+
 class ContextPropagationMixin:
     """
     Phase 3 Advanced Infrastructure: Context Propagation (Report 4.7).
@@ -32,10 +33,7 @@ class ContextPropagationMixin:
 
     def get_context(self) -> dict[str, str | None]:
         """Retrieves the current trace and span IDs."""
-        return {
-            "trace_id": trace_id_var.get(),
-            "span_id": span_id_var.get()
-        }
+        return {"trace_id": trace_id_var.get(), "span_id": span_id_var.get()}
 
     @staticmethod
     def _validate_context():
@@ -45,6 +43,7 @@ class ContextPropagationMixin:
     @staticmethod
     def trace_context(func):
         """Decorator to ensure trace context is captured and logged."""
+
         @wraps(func)
         async def wrapper(self, *args, **kwargs):
             # Generate trace_id if none exists in the current context
@@ -62,7 +61,9 @@ class ContextPropagationMixin:
             if func.__name__.startswith("_critical"):
                 ContextPropagationMixin._validate_context()
 
-            self._cp_logger.debug(f"Entering {func.__name__} [Trace: {trace_id_var.get()}, Span: {new_span}]")
+            self._cp_logger.debug(
+                f"Entering {func.__name__} [Trace: {trace_id_var.get()}, Span: {new_span}]"
+            )
 
             try:
                 result = await func(self, *args, **kwargs)
@@ -70,4 +71,5 @@ class ContextPropagationMixin:
             finally:
                 # Restore previous span_id on exit
                 span_id_var.set(old_span)
+
         return wrapper

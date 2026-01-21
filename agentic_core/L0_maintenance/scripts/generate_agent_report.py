@@ -25,21 +25,33 @@ with open(AGENT_DISCOVERY_JSON) as f:
 # Calculate stats
 by_layer = defaultdict(list)
 for a in agents:
-    by_layer[a['layer']].append(a)
+    by_layer[a["layer"]].append(a)
 
-layer_order = ['L0', 'L1', 'L2', 'L3', 'L4', 'L5', APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, TESTS_DIR, 'misc']
+layer_order = [
+    "L0",
+    "L1",
+    "L2",
+    "L3",
+    "L4",
+    "L5",
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    TESTS_DIR,
+    "misc",
+]
 total = len(agents)
 
 # Capability stats
-healing = sum(1 for a in agents if a['has_healing'])
-memory = sum(1 for a in agents if a['has_memory'])
-tools = sum(1 for a in agents if a['has_tools'])
-subatomic = sum(1 for a in agents if a['has_subatomic'])
-self_test = sum(1 for a in agents if a['testing'] == 'Self')
-delegated = sum(1 for a in agents if a['testing'] == 'Delegated')
-no_test = sum(1 for a in agents if a['testing'] == 'None')
-pascal = sum(1 for a in agents if a['pascal_compliant'])
-mcp = sum(1 for a in agents if a['mcp_hardened'])
+healing = sum(1 for a in agents if a["has_healing"])
+memory = sum(1 for a in agents if a["has_memory"])
+tools = sum(1 for a in agents if a["has_tools"])
+subatomic = sum(1 for a in agents if a["has_subatomic"])
+self_test = sum(1 for a in agents if a["testing"] == "Self")
+delegated = sum(1 for a in agents if a["testing"] == "Delegated")
+no_test = sum(1 for a in agents if a["testing"] == "None")
+pascal = sum(1 for a in agents if a["pascal_compliant"])
+mcp = sum(1 for a in agents if a["mcp_hardened"])
 
 # Build report
 lines = []
@@ -71,27 +83,27 @@ lines.append("### Capability Analysis")
 lines.append("")
 lines.append("| Capability | Count | % |")
 lines.append("|------------|-------|---|")
-lines.append(f"| **Healing Included** | {healing} | {100*healing//total}% |")
-lines.append(f"| **Memory/State** | {memory} | {100*memory//total}% |")
-lines.append(f"| **Tools Integration** | {tools} | {100*tools//total}% |")
-lines.append(f"| **Subatomic Hops** | {subatomic} | {100*subatomic//total}% |")
+lines.append(f"| **Healing Included** | {healing} | {100 * healing // total}% |")
+lines.append(f"| **Memory/State** | {memory} | {100 * memory // total}% |")
+lines.append(f"| **Tools Integration** | {tools} | {100 * tools // total}% |")
+lines.append(f"| **Subatomic Hops** | {subatomic} | {100 * subatomic // total}% |")
 
 lines.append("")
 lines.append("### Testing Compliance")
 lines.append("")
 lines.append("| Testing Type | Count | % |")
 lines.append("|--------------|-------|---|")
-lines.append(f"| **Self-Testing** | {self_test} | {100*self_test//total}% |")
-lines.append(f"| **Delegated** | {delegated} | {100*delegated//total}% |")
-lines.append(f"| **None** | {no_test} | {100*no_test//total}% |")
+lines.append(f"| **Self-Testing** | {self_test} | {100 * self_test // total}% |")
+lines.append(f"| **Delegated** | {delegated} | {100 * delegated // total}% |")
+lines.append(f"| **None** | {no_test} | {100 * no_test // total}% |")
 
 lines.append("")
 lines.append("### Sovereignty Compliance")
 lines.append("")
 lines.append("| Metric | Count | % |")
 lines.append("|--------|-------|---|")
-lines.append(f"| **PascalCase Compliant** | {pascal} | {100*pascal//total}% |")
-lines.append(f"| **MCP Hardened** | {mcp} | {100*mcp//total}% |")
+lines.append(f"| **PascalCase Compliant** | {pascal} | {100 * pascal // total}% |")
+lines.append(f"| **MCP Hardened** | {mcp} | {100 * mcp // total}% |")
 
 lines.append("")
 lines.append("---")
@@ -107,20 +119,26 @@ for layer in layer_order:
 
     lines.append(f"### {layer} Layer ({len(layer_agents)} agents)")
     lines.append("")
-    lines.append("| Agent Name | Inheritance | Tools | Memory | Healing | Testing | LOC | Description |")
-    lines.append("|------------|-------------|-------|--------|---------|---------|-----|-------------|")
+    lines.append(
+        "| Agent Name | Inheritance | Tools | Memory | Healing | Testing | LOC | Description |"
+    )
+    lines.append(
+        "|------------|-------------|-------|--------|---------|---------|-----|-------------|"
+    )
 
-    for a in sorted(layer_agents, key=lambda x: x['class_name']):
-        name = a['class_name'][:35]
-        inherit = ', '.join(a['inheritance'][:2])[:25] if a['inheritance'] else '-'
-        tools_v = 'Y' if a['has_tools'] else '-'
-        memory_v = 'Y' if a['has_memory'] else '-'
-        healing_v = 'Y' if a['has_healing'] else '-'
-        testing_v = a['testing'][0] if a['testing'] != 'None' else '-'
-        loc = a['loc']
-        desc = (a['description'][:35] if a['description'] else '-').replace('|', '-')
+    for a in sorted(layer_agents, key=lambda x: x["class_name"]):
+        name = a["class_name"][:35]
+        inherit = ", ".join(a["inheritance"][:2])[:25] if a["inheritance"] else "-"
+        tools_v = "Y" if a["has_tools"] else "-"
+        memory_v = "Y" if a["has_memory"] else "-"
+        healing_v = "Y" if a["has_healing"] else "-"
+        testing_v = a["testing"][0] if a["testing"] != "None" else "-"
+        loc = a["loc"]
+        desc = (a["description"][:35] if a["description"] else "-").replace("|", "-")
 
-        lines.append(f"| {name} | {inherit} | {tools_v} | {memory_v} | {healing_v} | {testing_v} | {loc} | {desc} |")
+        lines.append(
+            f"| {name} | {inherit} | {tools_v} | {memory_v} | {healing_v} | {testing_v} | {loc} | {desc} |"
+        )
 
     lines.append("")
 
@@ -132,11 +150,11 @@ lines.append("")
 lines.append("### Non-Compliant Agents (L2-L4 without Self-Testing)")
 lines.append("")
 
-non_compliant = [a for a in agents if a['layer'] in ['L2', 'L3', 'L4'] and a['testing'] == 'None']
+non_compliant = [a for a in agents if a["layer"] in ["L2", "L3", "L4"] and a["testing"] == "None"]
 lines.append(f"**Count: {len(non_compliant)}**")
 lines.append("")
 for a in non_compliant[:20]:
-    filename = a['path'].split('\\')[-1] if '\\' in a['path'] else a['path'].split('/')[-1]
+    filename = a["path"].split("\\")[-1] if "\\" in a["path"] else a["path"].split("/")[-1]
     lines.append(f"- `{a['class_name']}` ({a['layer']}) - {filename}")
 if len(non_compliant) > 20:
     lines.append(f"- ... and {len(non_compliant) - 20} more")
@@ -144,20 +162,26 @@ if len(non_compliant) > 20:
 lines.append("")
 lines.append("### L0 Agents Without Delegation")
 lines.append("")
-l0_no_delegate = [a for a in agents if a['layer'] == 'L0' and a['testing'] != 'Delegated']
+l0_no_delegate = [a for a in agents if a["layer"] == "L0" and a["testing"] != "Delegated"]
 lines.append(f"**Count: {len(l0_no_delegate)}**")
 lines.append("")
 for a in l0_no_delegate:
-    desc = a['description'][:50] if a['description'] else 'No description'
+    desc = a["description"][:50] if a["description"] else "No description"
     lines.append(f"- `{a['class_name']}` - {desc}")
 
 lines.append("")
 lines.append("### Agents with Healing Capability")
 lines.append("")
-healing_agents = [a for a in agents if a['has_healing']]
+healing_agents = [a for a in agents if a["has_healing"]]
 lines.append(f"**Count: {len(healing_agents)}**")
 lines.append("")
-for a in sorted(healing_agents, key=lambda x: (layer_order.index(x['layer']) if x['layer'] in layer_order else 99, x['class_name'])):
+for a in sorted(
+    healing_agents,
+    key=lambda x: (
+        layer_order.index(x["layer"]) if x["layer"] in layer_order else 99,
+        x["class_name"],
+    ),
+):
     lines.append(f"- `{a['class_name']}` ({a['layer']})")
 
 lines.append("")
@@ -167,7 +191,7 @@ lines.append("## PHASE 4: VALIDATION EXAMPLES")
 lines.append("")
 
 # Top 3 agents per core layer with code examples
-for layer in ['L0', 'L1', 'L2', 'L3', 'L4', 'L5']:
+for layer in ["L0", "L1", "L2", "L3", "L4", "L5"]:
     layer_agents = by_layer[layer][:3]
     if not layer_agents:
         continue
@@ -178,11 +202,15 @@ for layer in ['L0', 'L1', 'L2', 'L3', 'L4', 'L5']:
     for a in layer_agents:
         lines.append(f"**{a['class_name']}**")
         lines.append(f"- Path: `{a['path']}`")
-        lines.append(f"- Inheritance: {', '.join(a['inheritance']) if a['inheritance'] else 'None'}")
-        lines.append(f"- Key Methods: {', '.join(a['key_methods']) if a['key_methods'] else 'None'}")
+        lines.append(
+            f"- Inheritance: {', '.join(a['inheritance']) if a['inheritance'] else 'None'}"
+        )
+        lines.append(
+            f"- Key Methods: {', '.join(a['key_methods']) if a['key_methods'] else 'None'}"
+        )
         lines.append(f"- Healing: {'Yes' if a['has_healing'] else 'No'}")
         lines.append(f"- Testing: {a['testing']}")
-        if a['description']:
+        if a["description"]:
             lines.append(f"- Description: {a['description']}")
         lines.append("")
 
@@ -192,8 +220,12 @@ lines.append("## DISCOVERY VALIDATION")
 lines.append("")
 lines.append("- **Expected agents**: 63+ core + apps")
 lines.append(f"- **Discovered agents**: {total}")
-lines.append(f"- **Core agents (L0-L5)**: {sum(len(by_layer[l]) for l in ['L0', 'L1', 'L2', 'L3', 'L4', 'L5'])}")
-lines.append(f"- **Apps agents**: {sum(len(by_layer[l]) for l in [APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR])}")
+lines.append(
+    f"- **Core agents (L0-L5)**: {sum(len(by_layer[l]) for l in ['L0', 'L1', 'L2', 'L3', 'L4', 'L5'])}"
+)
+lines.append(
+    f"- **Apps agents**: {sum(len(by_layer[l]) for l in [APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR])}"
+)
 lines.append(f"- **Test agents**: {len(by_layer[TESTS_DIR])}")
 lines.append(f"- **Misc agents**: {len(by_layer['misc'])}")
 lines.append("")
@@ -204,8 +236,8 @@ lines.append("")
 lines.append("*Report generated by Ultra Agent Discovery Scanner*")
 
 # Write report
-report_content = '\n'.join(lines)
-with open('ULTRA_AGENT_DISCOVERY_REPORT.md', 'w', encoding='utf-8') as f:
+report_content = "\n".join(lines)
+with open("ULTRA_AGENT_DISCOVERY_REPORT.md", "w", encoding="utf-8") as f:
     f.write(report_content)
 
 print("Report generated: ULTRA_AGENT_DISCOVERY_REPORT.md")

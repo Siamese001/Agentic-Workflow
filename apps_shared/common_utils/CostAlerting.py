@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 class CostAlertLevel(Enum):
     """Cost alert levels."""
+
     INFO = "info"
     WARNING = "warning"
     CRITICAL = "critical"
@@ -28,6 +29,7 @@ class CostAlertLevel(Enum):
 @dataclass
 class CostMetrics:
     """Cost metrics for an agent."""
+
     agent_id: str
     spiffe_id: str
     total_cost: float
@@ -56,6 +58,7 @@ class CostMetrics:
 @dataclass
 class CostAlert:
     """Cost alert for budget violations."""
+
     alert_id: str
     agent_id: str
     spiffe_id: str
@@ -117,7 +120,7 @@ class CostTracker:
                 extra={
                     "default_budget": default_budget_per_agent,
                     "alert_threshold": alert_threshold_percent,
-                }
+                },
             )
 
     def record_cost(
@@ -161,7 +164,7 @@ class CostTracker:
                     "agent_id": agent_id,
                     "model_id": model_id,
                     "cost": cost,
-                }
+                },
             )
 
     def set_budget(self, agent_id: str, budget: float) -> None:
@@ -179,7 +182,7 @@ class CostTracker:
                 extra={
                     "agent_id": agent_id,
                     "budget": budget,
-                }
+                },
             )
 
     def get_metrics(
@@ -363,7 +366,7 @@ class CostTracker:
                     "level": level.value,
                     "current_cost": current_cost,
                     "budget": budget_limit,
-                }
+                },
             )
 
 

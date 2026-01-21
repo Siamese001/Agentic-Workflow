@@ -30,12 +30,14 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 )
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(message)s')
+logging.basicConfig(level=logging.INFO, format="%(message)s")
 Logger = logging.getLogger(__name__)
+
 
 @dataclass
 class ValidationResult:
     """Tracks validation results for an agent."""
+
     agent_name: str
     module_path: str
     layer: str
@@ -45,9 +47,11 @@ class ValidationResult:
     external_touch: bool = False
     error: str | None = None
 
+
 @dataclass
 class ValidationReport:
     """Aggregated validation report."""
+
     total_core: int = 0
     testing_pass: int = 0
     healing_pass: int = 0
@@ -88,39 +92,46 @@ class SystemValidator:
             data = json.load(f)
 
         # Filter to core agents (L0-L5)
-        core_layers = {'L0', 'L1', 'L2', 'L3', 'L4', 'L5'}
-        core_agents = [a for a in data if a.get('layer') in core_layers]
+        core_layers = {"L0", "L1", "L2", "L3", "L4", "L5"}
+        core_agents = [a for a in data if a.get("layer") in core_layers]
         self.report.total_core = len(core_agents)
         return core_agents
 
     def check_has_healing(self, code: str) -> bool:
         """Check if code contains HealerMixin inheritance."""
-        return 'HealerMixin' in code or 'healer_mixin' in code
+        return "HealerMixin" in code or "healer_mixin" in code
 
     def check_has_testing(self, code: str) -> bool:
         """Check if code contains self-testing methods."""
-        return '_run_self_tests' in code or 'TesterMixin' in code
+        return "_run_self_tests" in code or "TesterMixin" in code
 
     def check_external_touch(self, code: str) -> bool:
         """Check if code touches external resources."""
         external_markers = [
-            'pinecone', 'Pinecone',
-            'redis', 'Redis',
-            'git', 'subprocess.run',
-            'requests.', 'httpx.', 'aiohttp.',
-            'fetch', 'http://', 'https://'
+            "pinecone",
+            "Pinecone",
+            "redis",
+            "Redis",
+            "git",
+            "subprocess.run",
+            "requests.",
+            "httpx.",
+            "aiohttp.",
+            "fetch",
+            "http://",
+            "https://",
         ]
         code_lower = code.lower()
         return any(marker.lower() in code_lower for marker in external_markers)
 
     def check_mcp_hardened(self, code: str) -> bool:
         """Check if code has MCPHardenedMixin."""
-        return 'MCPHardenedMixin' in code or 'mcp_hardened_mixin' in code
+        return "MCPHardenedMixin" in code or "mcp_hardened_mixin" in code
 
     def validate_syntax(self, file_path: Path) -> str | None:
         """Check file for syntax errors."""
         try:
-            with open(file_path, encoding='utf-8') as f:
+            with open(file_path, encoding="utf-8") as f:
                 code = f.read()
             ast.parse(code)
             return None
@@ -131,15 +142,11 @@ class SystemValidator:
 
     def validate_agent(self, agent: dict) -> ValidationResult:
         """Validate a single agent using discovery JSON data."""
-        agent_name = agent.get('class_name', 'Unknown')
-        module_path = agent.get('path', '')
-        layer = agent.get('layer', 'Unknown')
+        agent_name = agent.get("class_name", "Unknown")
+        module_path = agent.get("path", "")
+        layer = agent.get("layer", "Unknown")
 
-        result = ValidationResult(
-            agent_name=agent_name,
-            module_path=module_path,
-            layer=layer
-        )
+        result = ValidationResult(agent_name=agent_name, module_path=module_path, layer=layer)
 
         # Check file exists
         file_path = self.project_root / module_path
@@ -155,16 +162,16 @@ class SystemValidator:
 
         # Use discovery JSON data (already analyzed by scanner)
         # Testing: 'testing' field is 'Self' or 'Delegated'
-        result.testing_pass = agent.get('testing', 'None') != 'None'
+        result.testing_pass = agent.get("testing", "None") != "None"
 
         # Healing: 'has_healing' field from discovery
-        result.healing_pass = agent.get('has_healing', False)
+        result.healing_pass = agent.get("has_healing", False)
 
         # External touch: 'external_touch' field from discovery
-        result.external_touch = agent.get('external_touch', False)
+        result.external_touch = agent.get("external_touch", False)
 
         # MCP hardening: 'mcp_hardened' field from discovery
-        result.mcp_hardened = agent.get('mcp_hardened', False)
+        result.mcp_hardened = agent.get("mcp_hardened", False)
 
         return result
 
@@ -231,27 +238,28 @@ class SystemValidator:
         for result in r.results:
             layer = result.layer
             if layer not in layer_stats:
-                layer_stats[layer] = {'total': 0, 'testing': 0, 'healing': 0, 'mcp': 0}
-            layer_stats[layer]['total'] += 1
+                layer_stats[layer] = {"total": 0, "testing": 0, "healing": 0, "mcp": 0}
+            layer_stats[layer]["total"] += 1
             if result.testing_pass:
-                layer_stats[layer]['testing'] += 1
+                layer_stats[layer]["testing"] += 1
             if result.healing_pass:
-                layer_stats[layer]['healing'] += 1
+                layer_stats[layer]["healing"] += 1
             if result.mcp_hardened:
-                layer_stats[layer]['mcp'] += 1
+                layer_stats[layer]["mcp"] += 1
 
         for layer in sorted(layer_stats.keys()):
             stats = layer_stats[layer]
-            Logger.info(f"  {layer}: {stats['total']} agents | "
-                       f"Testing: {stats['testing']} | "
-                       f"Healing: {stats['healing']} | "
-                       f"MCP: {stats['mcp']}")
+            Logger.info(
+                f"  {layer}: {stats['total']} agents | "
+                f"Testing: {stats['testing']} | "
+                f"Healing: {stats['healing']} | "
+                f"MCP: {stats['mcp']}"
+            )
         Logger.info("")
 
         # Final verdict
         Logger.info("=" * 60)
-        if (testing_pct >= 80 and healing_pct >= 70 and
-            mcp_pct >= 80 and len(r.regressions) == 0):
+        if testing_pct >= 80 and healing_pct >= 70 and mcp_pct >= 80 and len(r.regressions) == 0:
             Logger.info("**SYSTEM VALIDATION: PASS — Ultra Zero-Loss Achieved**")
             Logger.info("Full sovereignty verified. Ready for production deployment.")
         elif len(r.regressions) > 0:
@@ -264,21 +272,25 @@ class SystemValidator:
         Logger.info("=" * 60)
 
         # Save report
-        report_path = self.project_root / 'validation_report.json'
+        report_path = self.project_root / "validation_report.json"
         report_data = {
-            'total_core': r.total_core,
-            'testing_pass': r.testing_pass,
-            'healing_pass': r.healing_pass,
-            'external_agents': r.external_agents,
-            'mcp_hardened': r.mcp_hardened,
-            'regressions': r.regressions,
-            'testing_pct': testing_pct,
-            'healing_pct': healing_pct,
-            'mcp_pct': mcp_pct,
-            'pass': (testing_pct >= 80 and healing_pct >= 70 and
-                    mcp_pct >= 80 and len(r.regressions) == 0)
+            "total_core": r.total_core,
+            "testing_pass": r.testing_pass,
+            "healing_pass": r.healing_pass,
+            "external_agents": r.external_agents,
+            "mcp_hardened": r.mcp_hardened,
+            "regressions": r.regressions,
+            "testing_pct": testing_pct,
+            "healing_pct": healing_pct,
+            "mcp_pct": mcp_pct,
+            "pass": (
+                testing_pct >= 80
+                and healing_pct >= 70
+                and mcp_pct >= 80
+                and len(r.regressions) == 0
+            ),
         }
-        with open(report_path, 'w') as f:
+        with open(report_path, "w") as f:
             json.dump(report_data, f, indent=2)
         Logger.info(f"\n[SAVED] {report_path}")
 
@@ -292,5 +304,5 @@ def main():
     validator.print_report()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

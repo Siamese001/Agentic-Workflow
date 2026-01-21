@@ -13,22 +13,15 @@ Scenarios:
 """
 
 import json
-import shutil
-import tempfile
-from pathlib import Path
-from unittest.mock import patch
 
 import pytest
 
 from agentic_core.L5_safety.core.ArchivalGatekeeper import (
     ArchivalGatekeeper,
-    ArchivalOperation,
-    ArchivalResult,
 )
 from agentic_core.L5_safety.validators.GovernanceAgent import GovernanceAgent
 from agentic_core.L5_safety.validators.HygieneGuardianAgent import (
     HygieneGuardianAgent,
-    HygieneViolation,
 )
 
 
@@ -77,8 +70,7 @@ class TestScenario1HappyPath:
 
         # Verify copy pattern was detected
         copy_violations = [
-            v for v in hygiene_agent.violations
-            if v.violation_type == 'copy_pattern'
+            v for v in hygiene_agent.violations if v.violation_type == "copy_pattern"
         ]
         assert len(copy_violations) == 1, "Should detect exactly one copy pattern violation"
         assert copy_violations[0].file_path == copy_file
@@ -99,14 +91,11 @@ class TestScenario1HappyPath:
         assert audit_log.exists(), "Audit log should exist"
 
         # Verify audit log contains the operation
-        with open(audit_log, 'r', encoding='utf-8') as f:
+        with open(audit_log, encoding="utf-8") as f:
             log_entries = [json.loads(line) for line in f.readlines()]
 
         # Find the entry for our file
-        relevant_entries = [
-            e for e in log_entries
-            if "module (1).py" in e.get("source_path", "")
-        ]
+        relevant_entries = [e for e in log_entries if "module (1).py" in e.get("source_path", "")]
         assert len(relevant_entries) >= 1, "Audit log should contain entry for archived file"
 
         entry = relevant_entries[-1]  # Get the most recent
@@ -127,8 +116,7 @@ class TestScenario1HappyPath:
 
         # Verify repeated filename was detected
         repeated_violations = [
-            v for v in hygiene_agent.violations
-            if v.violation_type == 'repeated_filename'
+            v for v in hygiene_agent.violations if v.violation_type == "repeated_filename"
         ]
         assert len(repeated_violations) == 1, "Should detect repeated filename violation"
 
@@ -140,12 +128,11 @@ class TestScenario1HappyPath:
 
         # Verify audit log entry
         audit_log = temp_project / "archives" / "gatekeeper" / "archival_audit.jsonl"
-        with open(audit_log, 'r', encoding='utf-8') as f:
+        with open(audit_log, encoding="utf-8") as f:
             log_entries = [json.loads(line) for line in f.readlines()]
 
         relevant_entries = [
-            e for e in log_entries
-            if "enums_enums_enums.py" in e.get("source_path", "")
+            e for e in log_entries if "enums_enums_enums.py" in e.get("source_path", "")
         ]
         assert len(relevant_entries) >= 1
 
@@ -229,9 +216,7 @@ class TestScenario2BlockedPath:
         try:
             # Directly call gatekeeper through governance
             result = governance.gatekeeper.safe_delete(
-                git_file,
-                "GovernanceAgent",
-                "Test deletion of protected file"
+                git_file, "GovernanceAgent", "Test deletion of protected file"
             )
 
             # Verify rejection was handled
@@ -292,9 +277,7 @@ class TestScenario3AuditTrail:
 
         # Perform delete operation
         result = gatekeeper.safe_delete(
-            test_file,
-            "HygieneGuardianAgent",
-            "Test deletion for audit verification"
+            test_file, "HygieneGuardianAgent", "Test deletion for audit verification"
         )
 
         assert result.success is True
@@ -303,13 +286,12 @@ class TestScenario3AuditTrail:
         audit_log = temp_project / "archives" / "gatekeeper" / "archival_audit.jsonl"
         assert audit_log.exists()
 
-        with open(audit_log, 'r', encoding='utf-8') as f:
+        with open(audit_log, encoding="utf-8") as f:
             log_entries = [json.loads(line) for line in f.readlines()]
 
         # Find our entry
         relevant_entries = [
-            e for e in log_entries
-            if "test_audit_file.py" in e.get("source_path", "")
+            e for e in log_entries if "test_audit_file.py" in e.get("source_path", "")
         ]
 
         assert len(relevant_entries) >= 1
@@ -327,22 +309,17 @@ class TestScenario3AuditTrail:
         test_file.write_text("# Test file for operation check")
 
         # Perform delete operation (soft delete)
-        result = gatekeeper.safe_delete(
-            test_file,
-            "TestAgent",
-            "Testing operation logging"
-        )
+        result = gatekeeper.safe_delete(test_file, "TestAgent", "Testing operation logging")
 
         assert result.success is True
 
         # Read audit log
         audit_log = temp_project / "archives" / "gatekeeper" / "archival_audit.jsonl"
-        with open(audit_log, 'r', encoding='utf-8') as f:
+        with open(audit_log, encoding="utf-8") as f:
             log_entries = [json.loads(line) for line in f.readlines()]
 
         relevant_entries = [
-            e for e in log_entries
-            if "test_operation_file.py" in e.get("source_path", "")
+            e for e in log_entries if "test_operation_file.py" in e.get("source_path", "")
         ]
 
         assert len(relevant_entries) >= 1
@@ -364,12 +341,11 @@ class TestScenario3AuditTrail:
 
         # Read audit log
         audit_log = temp_project / "archives" / "gatekeeper" / "archival_audit.jsonl"
-        with open(audit_log, 'r', encoding='utf-8') as f:
+        with open(audit_log, encoding="utf-8") as f:
             log_entries = [json.loads(line) for line in f.readlines()]
 
         relevant_entries = [
-            e for e in log_entries
-            if "test_timestamp_file.py" in e.get("source_path", "")
+            e for e in log_entries if "test_timestamp_file.py" in e.get("source_path", "")
         ]
 
         assert len(relevant_entries) >= 1
@@ -393,12 +369,11 @@ class TestScenario3AuditTrail:
 
         # Read audit log
         audit_log = temp_project / "archives" / "gatekeeper" / "archival_audit.jsonl"
-        with open(audit_log, 'r', encoding='utf-8') as f:
+        with open(audit_log, encoding="utf-8") as f:
             log_entries = [json.loads(line) for line in f.readlines()]
 
         relevant_entries = [
-            e for e in log_entries
-            if "test_reason_file.py" in e.get("source_path", "")
+            e for e in log_entries if "test_reason_file.py" in e.get("source_path", "")
         ]
 
         assert len(relevant_entries) >= 1
@@ -420,12 +395,11 @@ class TestScenario3AuditTrail:
 
         # Read audit log
         audit_log = temp_project / "archives" / "gatekeeper" / "archival_audit.jsonl"
-        with open(audit_log, 'r', encoding='utf-8') as f:
+        with open(audit_log, encoding="utf-8") as f:
             log_entries = [json.loads(line) for line in f.readlines()]
 
         relevant_entries = [
-            e for e in log_entries
-            if "test_destination_file.py" in e.get("source_path", "")
+            e for e in log_entries if "test_destination_file.py" in e.get("source_path", "")
         ]
 
         assert len(relevant_entries) >= 1
@@ -487,7 +461,7 @@ class TestIntegrationEndToEnd:
 
         # Verify audit log has entries
         audit_log = temp_project / "archives" / "gatekeeper" / "archival_audit.jsonl"
-        with open(audit_log, 'r', encoding='utf-8') as f:
+        with open(audit_log, encoding="utf-8") as f:
             entries = f.readlines()
 
         assert len(entries) >= 2, "Should have multiple audit entries"

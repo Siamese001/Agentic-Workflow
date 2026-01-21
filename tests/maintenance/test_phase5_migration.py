@@ -6,6 +6,7 @@ Tests verify that:
 - Legacy backup directories can be identified and removed
 - SSOT backup locations are used correctly
 """
+
 import sys
 from pathlib import Path
 
@@ -19,13 +20,13 @@ from agentic_core.utils.backup_manager import BackupManager
 
 def test_backup_manager_has_decommission_method():
     """Verify BackupManager has the decommission_legacy_backups method."""
-    assert hasattr(BackupManager, 'decommission_legacy_backups')
+    assert hasattr(BackupManager, "decommission_legacy_backups")
     assert callable(BackupManager.decommission_legacy_backups)
 
 
 def test_backup_manager_has_get_legacy_dirs_method():
     """Verify BackupManager has the get_legacy_backup_dirs method."""
-    assert hasattr(BackupManager, 'get_legacy_backup_dirs')
+    assert hasattr(BackupManager, "get_legacy_backup_dirs")
     assert callable(BackupManager.get_legacy_backup_dirs)
 
 
@@ -91,6 +92,7 @@ def test_migrate_imports_script_exists():
     """Verify the migration script was created."""
     # Use importlib to verify the module is importable
     import importlib.util
+
     spec = importlib.util.find_spec("agentic_core.L0_maintenance.scripts.migrate_imports")
     assert spec is not None, "Migration script module not found"
 

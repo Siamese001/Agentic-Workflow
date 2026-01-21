@@ -5,6 +5,7 @@ RCA: Dashboard Row Collapse Investigation
 Investigates why dashboard rows were collapsed from 29 to fewer rows
 and analyzes the health score calculation logic.
 """
+
 import json
 
 # Import SSOT for dashboard directory - NO HARDCODING
@@ -22,14 +23,14 @@ def investigate_row_collapse():
 
     # Load current dashboard
     dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
-    html = dashboard_path.read_text(encoding='utf-8')
+    html = dashboard_path.read_text(encoding="utf-8")
 
     # Extract dashboardData
-    start_marker = 'const dashboardData = ['
-    end_marker = '];'
+    start_marker = "const dashboardData = ["
+    end_marker = "];"
     start_idx = html.find(start_marker)
     end_idx = html.find(end_marker, start_idx) + len(end_marker)
-    json_str = html[start_idx+len(start_marker)-1:end_idx-1]
+    json_str = html[start_idx + len(start_marker) - 1 : end_idx - 1]
     data = json.loads(json_str)
 
     print("\n📊 Current Dashboard State:")
@@ -45,8 +46,8 @@ def investigate_row_collapse():
     print(f"   Territory rows: {len(territory_rows)}")
 
     # Check for empty territories
-    empty_territories = [r for r in territory_rows if r.get('Total', 0) == 0]
-    non_empty_territories = [r for r in territory_rows if r.get('Total', 0) > 0]
+    empty_territories = [r for r in territory_rows if r.get("Total", 0) == 0]
+    non_empty_territories = [r for r in territory_rows if r.get("Total", 0) > 0]
 
     print("\n📈 Territory Distribution:")
     print(f"   Non-empty territories: {len(non_empty_territories)}")
@@ -81,16 +82,16 @@ def investigate_row_collapse():
     print("TOTAL ROW CALCULATION ANALYSIS")
     print("=" * 70)
 
-    total_agents = total_row.get('Total', 0)
-    total_health = total_row.get('Health', 0)
+    total_agents = total_row.get("Total", 0)
+    total_health = total_row.get("Health", 0)
 
     print("\n📊 TOTAL Row:")
     print(f"   Total Agents: {total_agents}")
     print(f"   Health: {total_health}%")
 
     # Check if L6 observability rows are included
-    l6_rows = [r for r in territory_rows if 'L6_Observability' in r.get('Territory', '')]
-    l6_agents = sum(r.get('Total', 0) for r in l6_rows)
+    l6_rows = [r for r in territory_rows if "L6_Observability" in r.get("Territory", "")]
+    l6_agents = sum(r.get("Total", 0) for r in l6_rows)
 
     print("\n🔍 L6 Observability Rows:")
     print(f"   Count: {len(l6_rows)}")
@@ -99,14 +100,18 @@ def investigate_row_collapse():
     if l6_rows:
         print("   Territories:")
         for r in l6_rows:
-            print(f"      - {r.get('Territory')}: {r.get('Total', 0)} agents, Health: {r.get('Health', 0)}%")
+            print(
+                f"      - {r.get('Territory')}: {r.get('Total', 0)} agents, Health: {r.get('Health', 0)}%"
+            )
 
     # Verify weighted average calculation
     print("\n🧮 TOTAL Health Calculation:")
-    print("   Formula: weighted_avg(Health) = sum(territory_health * territory_agents) / total_agents")
+    print(
+        "   Formula: weighted_avg(Health) = sum(territory_health * territory_agents) / total_agents"
+    )
 
     # Calculate manually
-    manual_health_sum = sum(r.get('Health', 0) * r.get('Total', 0) for r in non_empty_territories)
+    manual_health_sum = sum(r.get("Health", 0) * r.get("Total", 0) for r in non_empty_territories)
     manual_health_avg = round(manual_health_sum / total_agents, 1) if total_agents > 0 else 0
 
     print(f"   Manual calculation: {manual_health_avg}%")
@@ -119,14 +124,15 @@ def investigate_row_collapse():
     print("   TOTAL calculation uses only non-empty rows (correct)")
 
     return {
-        'total_rows': len(data),
-        'expected_rows': 29,
-        'empty_territories': len(empty_territories),
-        'l6_rows': len(l6_rows),
-        'l6_agents': l6_agents,
-        'health_formula_correct': False,  # Uses 3 components, not 5
-        'total_calculation_correct': abs(manual_health_avg - total_health) < 0.1
+        "total_rows": len(data),
+        "expected_rows": 29,
+        "empty_territories": len(empty_territories),
+        "l6_rows": len(l6_rows),
+        "l6_agents": l6_agents,
+        "health_formula_correct": False,  # Uses 3 components, not 5
+        "total_calculation_correct": abs(manual_health_avg - total_health) < 0.1,
     }
+
 
 def analyze_health_formula():
     """Analyze the health formula in detail."""
@@ -138,7 +144,9 @@ def analyze_health_formula():
     print("   health = round((test_pct + heal_inv_pct + obs_pct) / 3, 1)")
 
     print("\n📋 Health Breakdown String (Line 288):")
-    print("   'Heal:{heal_cap_pct}+Inv:{heal_inv_pct}+Test:{test_pct}+Obs:{obs_pct}+CC:{complexity_health}'")
+    print(
+        "   'Heal:{heal_cap_pct}+Inv:{heal_inv_pct}+Test:{test_pct}+Obs:{obs_pct}+CC:{complexity_health}'"
+    )
 
     print("\n❌ MISMATCH DETECTED:")
     print("   Health Breakdown shows 5 components:")
@@ -160,6 +168,7 @@ def analyze_health_formula():
     print("\n   Or if current 3-component formula is correct:")
     print("   Update Health Breakdown to only show: 'Inv:XX+Test:XX+Obs:XX'")
 
+
 if __name__ == "__main__":
     results = investigate_row_collapse()
     analyze_health_formula()
@@ -180,10 +189,14 @@ if __name__ == "__main__":
 
     print("\n✅ TOTAL Row Calculation:")
     print(f"   Status: {'CORRECT' if results['total_calculation_correct'] else 'INCORRECT'}")
-    print(f"   L6 Observability rows: {results['l6_rows']} territories, {results['l6_agents']} agents")
+    print(
+        f"   L6 Observability rows: {results['l6_rows']} territories, {results['l6_agents']} agents"
+    )
     print("   These ARE included in TOTAL calculation (weighted by agent count)")
 
     print("\n📊 Current State:")
     print(f"   Total rows: {results['total_rows']}")
     print(f"   Expected: {results['expected_rows']}")
-    print(f"   Status: {'✅ CORRECT' if results['total_rows'] == results['expected_rows'] else '❌ INCORRECT'}")
+    print(
+        f"   Status: {'✅ CORRECT' if results['total_rows'] == results['expected_rows'] else '❌ INCORRECT'}"
+    )

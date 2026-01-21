@@ -8,6 +8,7 @@ injection prevention, and observability integration.
 Created: 2026-01-20
 Purpose: Harden all subprocess calls against shell injection attacks
 """
+
 from __future__ import annotations
 
 import logging
@@ -23,13 +24,14 @@ Logger = logging.getLogger(__name__)
 # Note: We only block these in contexts where they could be exploited
 # Python code passed via -c flag is safe because shell=False prevents shell interpretation
 SHELL_METACHARACTERS = {
-    '|': 'pipe operator',
-    '&&': 'AND operator',
-    '||': 'OR operator',
-    '`': 'backtick command substitution',
-    '$(': 'command substitution',
-    '&': 'background execution',
+    "|": "pipe operator",
+    "&&": "AND operator",
+    "||": "OR operator",
+    "`": "backtick command substitution",
+    "$(": "command substitution",
+    "&": "background execution",
 }
+
 
 def _is_shell_injection_risk(arg: str) -> bool:
     """
@@ -46,35 +48,37 @@ def _is_shell_injection_risk(arg: str) -> bool:
     """
     # Allow Python code strings (common pattern: python -c "code")
     # These are safe with shell=False
-    if arg.startswith('import ') or 'import ' in arg[:50]:
+    if arg.startswith("import ") or "import " in arg[:50]:
         return False
 
     # Check for shell metacharacters
-    if '|' in arg and '||' not in arg:  # Single pipe (not OR operator)
+    if "|" in arg and "||" not in arg:  # Single pipe (not OR operator)
         return True
-    if '&&' in arg:
+    if "&&" in arg:
         return True
-    if '||' in arg:
+    if "||" in arg:
         return True
-    if '`' in arg:
+    if "`" in arg:
         return True
-    if '$(' in arg:
+    if "$(" in arg:
         return True
-    if re.search(r'>\s*[/\\]', arg):  # Redirect to path
+    if re.search(r">\s*[/\\]", arg):  # Redirect to path
         return True
-    if re.search(r'<\s*[/\\]', arg):  # Redirect from path
+    if re.search(r"<\s*[/\\]", arg):  # Redirect from path
         return True
-    if arg.strip().endswith('&'):  # Background execution
+    if arg.strip().endswith("&"):  # Background execution
         return True
 
     return False
 
+
 # Legacy regex for backward compatibility (not used in main logic)
-INJECTION_REGEX = re.compile(r'\||&&|\|\||`|\$\(|>\s*[/\\]|<\s*[/\\]|&\s*$')
+INJECTION_REGEX = re.compile(r"\||&&|\|\||`|\$\(|>\s*[/\\]|<\s*[/\\]|&\s*$")
 
 
 class SecurityViolationError(Exception):
     """Raised when a security violation is detected in subprocess arguments."""
+
     pass
 
 
@@ -139,13 +143,11 @@ def safe_execute(
     # 2. Content validation: Check each argument for injection patterns
     for i, arg in enumerate(args):
         if not isinstance(arg, str):
-            raise TypeError(
-                f"Argument {i} must be str, got {type(arg).__name__}: {arg}"
-            )
+            raise TypeError(f"Argument {i} must be str, got {type(arg).__name__}: {arg}")
 
         # Scan for injection patterns using context-aware check
         if _is_shell_injection_risk(arg):
-            truncated = arg[:100] + '...' if len(arg) > 100 else arg
+            truncated = arg[:100] + "..." if len(arg) > 100 else arg
             raise SecurityViolationError(
                 f"Shell injection pattern detected in argument {i}: '{truncated}'\n"
                 f"Blocked patterns: | && || ` $( > /path < /path & (at end)\n"
@@ -164,7 +166,7 @@ def safe_execute(
     # ========================================================================
 
     # Log the command for audit trail
-    cmd_str = ' '.join(args)
+    cmd_str = " ".join(args)
     Logger.info(f"[Security] Executing safe command: {cmd_str}")
     if cwd:
         Logger.debug(f"[Security] Working directory: {cwd}")
@@ -190,8 +192,7 @@ def safe_execute(
 
         # Log success
         Logger.info(
-            f"[Security] Command completed successfully: {args[0]} "
-            f"(exit code: {result.returncode})"
+            f"[Security] Command completed successfully: {args[0]} (exit code: {result.returncode})"
         )
 
         return result
@@ -205,16 +206,11 @@ def safe_execute(
         raise
 
     except subprocess.TimeoutExpired:
-        Logger.error(
-            f"[Security] Command timeout after {timeout}s: {cmd_str}"
-        )
+        Logger.error(f"[Security] Command timeout after {timeout}s: {cmd_str}")
         raise
 
     except Exception as e:
-        Logger.error(
-            f"[Security] Unexpected error executing command: {cmd_str}\n"
-            f"Error: {e}"
-        )
+        Logger.error(f"[Security] Unexpected error executing command: {cmd_str}\nError: {e}")
         raise
 
 
@@ -255,21 +251,17 @@ def safe_popen(
     """
     # Reuse validation logic from safe_execute
     if not isinstance(args, list):
-        raise TypeError(
-            f"safe_popen requires args as List[str], got {type(args).__name__}"
-        )
+        raise TypeError(f"safe_popen requires args as List[str], got {type(args).__name__}")
 
     if not args:
         raise ValueError("safe_popen requires non-empty args list")
 
     for i, arg in enumerate(args):
         if not isinstance(arg, str):
-            raise TypeError(
-                f"Argument {i} must be str, got {type(arg).__name__}: {arg}"
-            )
+            raise TypeError(f"Argument {i} must be str, got {type(arg).__name__}: {arg}")
 
         if _is_shell_injection_risk(arg):
-            truncated = arg[:100] + '...' if len(arg) > 100 else arg
+            truncated = arg[:100] + "..." if len(arg) > 100 else arg
             raise SecurityViolationError(
                 f"Shell injection pattern detected in argument {i}: '{truncated}'"
             )
@@ -278,7 +270,7 @@ def safe_popen(
         cwd = str(Path(cwd))
 
     # Log the command
-    cmd_str = ' '.join(args)
+    cmd_str = " ".join(args)
     Logger.info(f"[Security] Starting Popen process: {cmd_str}")
 
     try:
@@ -324,19 +316,17 @@ def validate_command_whitelist(args: list[str], allowed_commands: list[str]) -> 
     command = args[0]
 
     # Handle full paths - extract basename
-    if '/' in command or '\\' in command:
+    if "/" in command or "\\" in command:
         command = Path(command).name
 
     # Handle .exe extension on Windows
-    if command.endswith('.exe'):
+    if command.endswith(".exe"):
         command = command[:-4]
 
     is_allowed = command in allowed_commands
 
     if not is_allowed:
-        Logger.warning(
-            f"[Security] Command '{command}' not in whitelist: {allowed_commands}"
-        )
+        Logger.warning(f"[Security] Command '{command}' not in whitelist: {allowed_commands}")
 
     return is_allowed
 
@@ -362,5 +352,5 @@ def safe_git_execute(
         >>> result = safe_git_execute(['status'])
         >>> result = safe_git_execute(['commit', '-m', 'message'], repo_root='/path/to/repo')
     """
-    args = ['git'] + git_args
+    args = ["git"] + git_args
     return safe_execute(args, cwd=repo_root, timeout=timeout)

@@ -9,6 +9,7 @@ SSOT PRINCIPLE:
     All L6 observability agents inherit from L6ObservabilityBaseAgent,
     which inherits from SovereignBaseAgent (the root of the MRO chain).
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -46,7 +47,7 @@ class L6ObservabilityBaseAgent(SovereignBaseAgent):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: set | None = None
+        _call_path: set | None = None,
     ) -> dict[str, int]:
         """
         L6 observability healing - validates metrics and telemetry.

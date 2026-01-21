@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, workflow
@@ -48,6 +47,7 @@ Logger = logging.getLogger(__name__)
 @dataclass
 class HealingRecord:
     """Record of a single healing operation."""
+
     file_path: str
     original_import: str
     healed_import: str
@@ -70,9 +70,10 @@ class GravityStateAgent(SubatomicTestingMixin, MCPHardenedMixin):
 
     STATE_FILE = "gravity_healing_state.json"
 
-
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -110,7 +111,7 @@ class GravityStateAgent(SubatomicTestingMixin, MCPHardenedMixin):
                     "created_at": datetime.now().isoformat(),
                     "last_updated": datetime.now().isoformat(),
                     "total_healings": 0,
-                }
+                },
             }
 
         try:
@@ -135,9 +136,9 @@ class GravityStateAgent(SubatomicTestingMixin, MCPHardenedMixin):
         to create a stable hash for comparison.
         """
         # Remove comments and collapse whitespace
-        normalized = re.sub(r'#.*$', '', import_line).strip()
-        normalized = re.sub(r'\s+', ' ', normalized)
-        return hashlib.sha256(normalized.encode('utf-8')).hexdigest()
+        normalized = re.sub(r"#.*$", "", import_line).strip()
+        normalized = re.sub(r"\s+", " ", normalized)
+        return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
 
     def record_healing(self, record: HealingRecord) -> None:
         """
@@ -216,10 +217,7 @@ class GravityStateAgent(SubatomicTestingMixin, MCPHardenedMixin):
         if file_key not in self.state["healed_files"]:
             return []
 
-        return [
-            HealingRecord(**healing)
-            for healing in self.state["healed_files"][file_key]
-        ]
+        return [HealingRecord(**healing) for healing in self.state["healed_files"][file_key]]
 
     def get_healing_summary(self) -> dict[str, Any]:
         """
@@ -262,7 +260,9 @@ class GravityStateAgent(SubatomicTestingMixin, MCPHardenedMixin):
         Returns:
             Path to the checkpoint file
         """
-        checkpoint_file = self.state_dir / f"checkpoint_{name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        checkpoint_file = (
+            self.state_dir / f"checkpoint_{name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        )
 
         try:
             with open(checkpoint_file, "w", encoding="utf-8") as f:
@@ -304,7 +304,7 @@ class GravityStateAgent(SubatomicTestingMixin, MCPHardenedMixin):
                 "created_at": datetime.now().isoformat(),
                 "last_updated": datetime.now().isoformat(),
                 "total_healings": 0,
-            }
+            },
         }
         self._save_state()
         self.logger.warning("Cleared all healing state")

@@ -14,6 +14,7 @@ Additional Tests:
 7. test_deprecation_warnings - Verify warnings are raised
 8. test_execution_stats - Verify statistics tracking
 """
+
 from __future__ import annotations
 
 import sys
@@ -111,7 +112,9 @@ class TestCachePersistence:
         )
 
         # Assert
-        assert task1.cache_key() != task2.cache_key(), "Different payloads should have different cache keys"
+        assert task1.cache_key() != task2.cache_key(), (
+            "Different payloads should have different cache keys"
+        )
 
 
 class TestRecoveryExhaustion:
@@ -156,10 +159,12 @@ class TestRecoveryExhaustion:
 
         # Assert
         assert not result.success, "Should fail after exhausting retries"
-        assert failing_strategy.attempt_count == max_retries, \
+        assert failing_strategy.attempt_count == max_retries, (
             f"Should attempt exactly {max_retries} times, got {failing_strategy.attempt_count}"
-        assert result.retries_used == max_retries, \
+        )
+        assert result.retries_used == max_retries, (
             f"retries_used should be {max_retries}, got {result.retries_used}"
+        )
         assert "Intentional failure" in result.error, "Error message should be preserved"
 
     @pytest.mark.asyncio
@@ -181,7 +186,9 @@ class TestRecoveryExhaustion:
                 self.attempt_count += 1
                 if self.attempt_count < 3:
                     raise Exception(f"Failure #{self.attempt_count}")
-                return Result(task_id=task.task_id, success=True, data={"attempt": self.attempt_count})
+                return Result(
+                    task_id=task.task_id, success=True, data={"attempt": self.attempt_count}
+                )
 
             def can_handle(self, task: Task) -> bool:
                 return True
@@ -248,8 +255,9 @@ class TestWorkflowDependencyGate:
         # Assert
         assert not is_valid, "Phase 6 should be blocked"
         assert error is not None, "Error message should be provided"
-        assert "LIC_PHASE_5_GENERATION" in error or "dependency" in error.lower(), \
+        assert "LIC_PHASE_5_GENERATION" in error or "dependency" in error.lower(), (
             f"Error should mention Phase 5 dependency: {error}"
+        )
 
     @pytest.mark.asyncio
     async def test_workflow_dependency_satisfied(self):
@@ -443,8 +451,14 @@ class TestWorkflowStateMachine:
         # Verify Phase 1 comes before Phase 2, etc.
         phase_indices = {p: i for i, p in enumerate(phases)}
 
-        assert phase_indices[WorkflowPhase.LIC_PHASE_1_PROFILE] < phase_indices[WorkflowPhase.LIC_PHASE_2_RESEARCH]
-        assert phase_indices[WorkflowPhase.LIC_PHASE_5_GENERATION] < phase_indices[WorkflowPhase.LIC_PHASE_6_VALIDATION]
+        assert (
+            phase_indices[WorkflowPhase.LIC_PHASE_1_PROFILE]
+            < phase_indices[WorkflowPhase.LIC_PHASE_2_RESEARCH]
+        )
+        assert (
+            phase_indices[WorkflowPhase.LIC_PHASE_5_GENERATION]
+            < phase_indices[WorkflowPhase.LIC_PHASE_6_VALIDATION]
+        )
 
 
 class TestExecutionStats:
@@ -478,6 +492,7 @@ class TestExecutionStats:
 # TEST RUNNER
 # =============================================================================
 
+
 def run_tests():
     """Run all tests and report results."""
 
@@ -486,12 +501,14 @@ def run_tests():
     print("=" * 70)
 
     # Run pytest
-    exit_code = pytest.main([
-        __file__,
-        "-v",
-        "--tb=short",
-        "-x",  # Stop on first failure for required tests
-    ])
+    exit_code = pytest.main(
+        [
+            __file__,
+            "-v",
+            "--tb=short",
+            "-x",  # Stop on first failure for required tests
+        ]
+    )
 
     if exit_code == 0:
         print("\n" + "=" * 70)

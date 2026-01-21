@@ -43,21 +43,41 @@ def check_dark_reasoning(filepath: Path) -> list[str]:
         tree = ast.parse(content)
 
         class DarkReasoningVisitor(ast.NodeVisitor):
-
             def __init__(self):
                 self.issues = []
-                self.reasoning_methods = {"think", "plan", "decide", "reason", "validate", "execute_plan"}
+                self.reasoning_methods = {
+                    "think",
+                    "plan",
+                    "decide",
+                    "reason",
+                    "validate",
+                    "execute_plan",
+                }
 
             def visit_Call(self, node):
-
                 # Check for calls to reasoning methods
-                if isinstance(node.func, ast.Attribute) and node.func.attr.lower() in self.reasoning_methods:
-                    self.issues.append(f"Dark Reasoning Violation: Unobserved reasoning call '{node.func.attr}' at line {node.lineno}")
+                if (
+                    isinstance(node.func, ast.Attribute)
+                    and node.func.attr.lower() in self.reasoning_methods
+                ):
+                    self.issues.append(
+                        f"Dark Reasoning Violation: Unobserved reasoning call '{node.func.attr}' at line {node.lineno}"
+                    )
 
                 # Check for direct LLM usage (L5 Bypass)
-                if isinstance(node.func, ast.Attribute) and node.func.attr in {"chat", "complete", "messages"}:
-                    if isinstance(node.func.value, ast.Name) and node.func.value.id in {"client", "openai", "anthropic"}:
-                        self.issues.append(f"Potential L5 Bypass: Direct LLM call at line {node.lineno}")
+                if isinstance(node.func, ast.Attribute) and node.func.attr in {
+                    "chat",
+                    "complete",
+                    "messages",
+                }:
+                    if isinstance(node.func.value, ast.Name) and node.func.value.id in {
+                        "client",
+                        "openai",
+                        "anthropic",
+                    }:
+                        self.issues.append(
+                            f"Potential L5 Bypass: Direct LLM call at line {node.lineno}"
+                        )
 
                 self.generic_visit(node)
 
@@ -69,6 +89,7 @@ def check_dark_reasoning(filepath: Path) -> list[str]:
         pass
 
     return issues
+
 
 def validate_observability_footprint(target_dir: str) -> tuple[float, list[str]]:
     """
@@ -85,8 +106,8 @@ def validate_observability_footprint(target_dir: str) -> tuple[float, list[str]]
 
     # Phase 6.8: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_python_files
-    for path in get_python_files(Path(target_dir)):
 
+    for path in get_python_files(Path(target_dir)):
         total_files += 1
         file_issues = check_dark_reasoning(path)
         # Use full path instead of just filename

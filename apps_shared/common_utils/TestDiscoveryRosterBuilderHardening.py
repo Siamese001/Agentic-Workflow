@@ -9,6 +9,7 @@ Tests the 5 detailed test cases for:
 4. Layer Sorting Verification
 5. Runtime Capability Check
 """
+
 import logging
 import sys
 from pathlib import Path
@@ -36,9 +37,9 @@ def test_1_strict_healer_filtering():
     Create a dummy entry for PassiveMonitorAgent that has no HealerMixin
     and no heal_repository method. Verify it is NOT in the returned list.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 1: Strict Healer Filtering")
-    print("="*60)
+    print("=" * 60)
 
     # Create test agents - one healer, one non-healer
     test_agents = [
@@ -73,12 +74,13 @@ def test_1_strict_healer_filtering():
     # Verify PassiveMonitorAgent is NOT in the result
     result_names = [a["class_name"] for a in result]
 
-    assert "PassiveMonitorAgent" not in result_names, \
+    assert "PassiveMonitorAgent" not in result_names, (
         f"PassiveMonitorAgent should be excluded, but found in {result_names}"
-    assert "ActiveHealerAgent" in result_names, \
-        "ActiveHealerAgent should be included"
-    assert "LegacyHealerAgent" in result_names, \
+    )
+    assert "ActiveHealerAgent" in result_names, "ActiveHealerAgent should be included"
+    assert "LegacyHealerAgent" in result_names, (
         "LegacyHealerAgent (SovereignHealer inheritance) should be included"
+    )
 
     print("✅ PASSED: Strict healer filtering working")
     print(f"   Filtered agents: {result_names}")
@@ -92,9 +94,9 @@ def test_2_abstract_class_exclusion():
 
     Ensure SovereignBaseAgent (an abstract base) is excluded from the roster.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 2: Abstract Class Exclusion")
-    print("="*60)
+    print("=" * 60)
 
     # Create test agents including abstract bases
     test_agents = [
@@ -132,16 +134,18 @@ def test_2_abstract_class_exclusion():
     result_names = [a["class_name"] for a in result]
 
     # Verify abstract bases are excluded
-    assert "SovereignBaseAgent" not in result_names, \
+    assert "SovereignBaseAgent" not in result_names, (
         "SovereignBaseAgent should be excluded (in SKIP_AGENTS)"
-    assert "L0MaintenanceBaseAgent" not in result_names, \
+    )
+    assert "L0MaintenanceBaseAgent" not in result_names, (
         "L0MaintenanceBaseAgent should be excluded (in SKIP_AGENTS)"
-    assert "AbstractValidator" not in result_names, \
+    )
+    assert "AbstractValidator" not in result_names, (
         "AbstractValidator should be excluded (starts with 'Abstract')"
+    )
 
     # Verify concrete agent is included
-    assert "ConcreteHealerAgent" in result_names, \
-        "ConcreteHealerAgent should be included"
+    assert "ConcreteHealerAgent" in result_names, "ConcreteHealerAgent should be included"
 
     print("✅ PASSED: Abstract class exclusion working")
     print(f"   Filtered agents: {result_names}")
@@ -157,9 +161,9 @@ def test_3_robust_instantiation():
     that raises ValueError in __init__. Verify the builder logs the error
     (Warning level) and continues without crashing.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 3: Robust Instantiation")
-    print("="*60)
+    print("=" * 60)
 
     # Create a mock module with a broken agent
     class BrokenAgent:
@@ -185,9 +189,12 @@ def test_3_robust_instantiation():
         warnings_logged.append(msg)
         original_warning(msg)
 
-    with patch('importlib.import_module', return_value=mock_module):
-        with patch.object(logging.getLogger('agentic_core.L3_orchestration.discovery_roster_builder'),
-                         'warning', capture_warning):
+    with patch("importlib.import_module", return_value=mock_module):
+        with patch.object(
+            logging.getLogger("agentic_core.L3_orchestration.discovery_roster_builder"),
+            "warning",
+            capture_warning,
+        ):
             result = instantiate_agent(agent_data, PROJECT_ROOT)
 
     # Verify instantiation returned None (failed gracefully)
@@ -195,8 +202,9 @@ def test_3_robust_instantiation():
 
     # Verify warning was logged
     assert len(warnings_logged) > 0, "Expected warning to be logged for constructor error"
-    assert any("BrokenAgent" in msg for msg in warnings_logged), \
+    assert any("BrokenAgent" in msg for msg in warnings_logged), (
         f"Warning should mention BrokenAgent: {warnings_logged}"
+    )
 
     print("✅ PASSED: Robust instantiation working")
     print("   BrokenAgent instantiation returned None (graceful failure)")
@@ -211,19 +219,54 @@ def test_4_layer_sorting_verification():
     Ensure the roster includes L0 and L5 agents, and verify L0 appears
     before L5 in the final list, respecting LAYER_PRIORITY.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 4: Layer Sorting Verification")
-    print("="*60)
+    print("=" * 60)
 
     # Create test agents in random order
     test_agents = [
-        {"class_name": "L5SafetyAgent", "layer": "L5", "inheritance": ["HealerMixin"], "key_methods": ["heal_repository"]},
-        {"class_name": "L2ExecutionAgent", "layer": "L2", "inheritance": ["HealerMixin"], "key_methods": ["heal_repository"]},
-        {"class_name": "L0BootstrapAgent", "layer": "L0", "inheritance": ["HealerMixin"], "key_methods": ["heal_repository"]},
-        {"class_name": "L6ObservabilityAgent", "layer": "L6", "inheritance": ["HealerMixin"], "key_methods": ["heal_repository"]},
-        {"class_name": "L3OrchestrationAgent", "layer": "L3", "inheritance": ["HealerMixin"], "key_methods": ["heal_repository"]},
-        {"class_name": "AppsAgent", "layer": "Apps", "inheritance": ["HealerMixin"], "key_methods": ["heal_repository"]},
-        {"class_name": "UtilsAgent", "layer": "Utils", "inheritance": ["HealerMixin"], "key_methods": ["heal_repository"]},
+        {
+            "class_name": "L5SafetyAgent",
+            "layer": "L5",
+            "inheritance": ["HealerMixin"],
+            "key_methods": ["heal_repository"],
+        },
+        {
+            "class_name": "L2ExecutionAgent",
+            "layer": "L2",
+            "inheritance": ["HealerMixin"],
+            "key_methods": ["heal_repository"],
+        },
+        {
+            "class_name": "L0BootstrapAgent",
+            "layer": "L0",
+            "inheritance": ["HealerMixin"],
+            "key_methods": ["heal_repository"],
+        },
+        {
+            "class_name": "L6ObservabilityAgent",
+            "layer": "L6",
+            "inheritance": ["HealerMixin"],
+            "key_methods": ["heal_repository"],
+        },
+        {
+            "class_name": "L3OrchestrationAgent",
+            "layer": "L3",
+            "inheritance": ["HealerMixin"],
+            "key_methods": ["heal_repository"],
+        },
+        {
+            "class_name": "AppsAgent",
+            "layer": "Apps",
+            "inheritance": ["HealerMixin"],
+            "key_methods": ["heal_repository"],
+        },
+        {
+            "class_name": "UtilsAgent",
+            "layer": "Utils",
+            "inheritance": ["HealerMixin"],
+            "key_methods": ["heal_repository"],
+        },
     ]
 
     # Filter first (all should pass)
@@ -243,8 +286,9 @@ def test_4_layer_sorting_verification():
     for i in range(len(expected_order) - 1):
         current_layer = expected_order[i]
         next_layer = expected_order[i + 1]
-        assert layer_positions[current_layer] < layer_positions[next_layer], \
+        assert layer_positions[current_layer] < layer_positions[next_layer], (
             f"{current_layer} should appear before {next_layer}"
+        )
 
     # Specifically verify L0 before L5
     l0_idx = sorted_names.index("L0BootstrapAgent")
@@ -266,13 +310,14 @@ def test_5_runtime_capability_check():
     is missing the actual heal_repository method on the runtime class.
     Verify instantiate_agent returns None after runtime verification.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 5: Runtime Capability Check")
-    print("="*60)
+    print("=" * 60)
 
     # Create a fake agent class that claims to be a healer but lacks the method
     class FakeHealerAgent:
         """Agent that claims HealerMixin in JSON but lacks heal_repository at runtime."""
+
         def __init__(self, project_root=None):
             self.project_root = project_root
 
@@ -291,7 +336,7 @@ def test_5_runtime_capability_check():
     mock_module = MagicMock()
     mock_module.FakeHealerAgent = FakeHealerAgent
 
-    with patch('importlib.import_module', return_value=mock_module):
+    with patch("importlib.import_module", return_value=mock_module):
         result = instantiate_agent(agent_data, PROJECT_ROOT)
 
     # Verify instantiation returned None (runtime check failed)
@@ -310,9 +355,9 @@ def test_has_healing_flag():
     Verify that agents with has_healing=True are included even if they
     don't have HealerMixin in inheritance or heal_repository in key_methods.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("BONUS TEST: has_healing Flag Support")
-    print("="*60)
+    print("=" * 60)
 
     test_agents = [
         {
@@ -336,10 +381,10 @@ def test_has_healing_flag():
     result = filter_healer_agents(test_agents)
     result_names = [a["class_name"] for a in result]
 
-    assert "FlagOnlyHealerAgent" in result_names, \
+    assert "FlagOnlyHealerAgent" in result_names, (
         "FlagOnlyHealerAgent should be included via has_healing flag"
-    assert "NoFlagAgent" not in result_names, \
-        "NoFlagAgent should be excluded"
+    )
+    assert "NoFlagAgent" not in result_names, "NoFlagAgent should be excluded"
 
     print("✅ PASSED: has_healing flag support working")
     print("   FlagOnlyHealerAgent included via has_healing=True")
@@ -348,9 +393,9 @@ def test_has_healing_flag():
 
 def run_all_tests():
     """Run all test cases."""
-    print("\n" + "#"*60)
+    print("\n" + "#" * 60)
     print("# Discovery Roster Builder Hardening Test Suite")
-    print("#"*60)
+    print("#" * 60)
 
     tests = [
         ("Test 1: Strict Healer Filtering", test_1_strict_healer_filtering),
@@ -376,12 +421,13 @@ def run_all_tests():
             print(f"❌ ERROR: {name}")
             print(f"   Exception: {e}")
             import traceback
+
             traceback.print_exc()
             failed += 1
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print(f"RESULTS: {passed}/{len(tests)} tests passed")
-    print("="*60)
+    print("=" * 60)
 
     if failed > 0:
         print(f"❌ {failed} test(s) FAILED")

@@ -14,6 +14,7 @@ This test suite ensures:
 3. Critical infrastructure files are never archived
 4. Depth validation logic is correct
 """
+
 import sys
 from pathlib import Path
 
@@ -46,15 +47,12 @@ VALID_VARIABLE_DEPTH_PATHS = [
     "agentic_core/utils/core_extensions/infrastructure_mixin.py",
     "agentic_core/utils/core_extensions/subatomic_testing_mixin.py",
     "agentic_core/utils/core_extensions/timeout_decorator.py",
-
     # config/blueprint_sovereign/* (depth 4)
     "agentic_core/config/blueprint_sovereign/structure_blueprint.py",
     "agentic_core/config/blueprint_sovereign/core_contracts.py",
     "agentic_core/config/blueprint_sovereign/canonical_truth.py",
-
     # common/healing/* (depth 4)
     "agentic_core/common/healing/healer_mixin.py",
-
     # L6_observability with variable depth
     "agentic_core/L6_observability/dashboards/index.html",
     "agentic_core/L6_observability/dashboards/js/table-renderer.js",
@@ -86,10 +84,13 @@ def test_variable_depth_subfolders_exist():
         from agentic_core.L5_safety.validators.structure_blueprint import VARIABLE_DEPTH_SUBFOLDERS
 
         if VARIABLE_DEPTH_SUBFOLDERS:
-            test_pass("DEFINED", f"VARIABLE_DEPTH_SUBFOLDERS exists with {len(VARIABLE_DEPTH_SUBFOLDERS)} entries")
+            test_pass(
+                "DEFINED",
+                f"VARIABLE_DEPTH_SUBFOLDERS exists with {len(VARIABLE_DEPTH_SUBFOLDERS)} entries",
+            )
 
             # Check expected subfolders are included
-            expected = {'utils', 'config', 'common', 'observability', 'L6_observability'}
+            expected = {"utils", "config", "common", "observability", "L6_observability"}
             missing = expected - VARIABLE_DEPTH_SUBFOLDERS
             if missing:
                 test_fail("COMPLETE", f"Missing subfolders: {missing}")
@@ -123,7 +124,10 @@ def test_variable_depth_paths_not_flagged():
             if is_valid:
                 test_pass(f"DEPTH-{Path(rel_path_str).stem[:20]}", f"{rel_path_str}")
             else:
-                test_fail(f"DEPTH-{Path(rel_path_str).stem[:20]}", f"{rel_path_str} incorrectly flagged: {msg}")
+                test_fail(
+                    f"DEPTH-{Path(rel_path_str).stem[:20]}",
+                    f"{rel_path_str} incorrectly flagged: {msg}",
+                )
 
     except Exception as e:
         test_fail("VALIDATION", f"Error during validation: {e}")
@@ -150,7 +154,10 @@ def test_standard_depth_paths_valid():
             if is_valid:
                 test_pass(f"STANDARD-{Path(rel_path_str).stem[:20]}", f"{rel_path_str}")
             else:
-                test_fail(f"STANDARD-{Path(rel_path_str).stem[:20]}", f"{rel_path_str} incorrectly flagged: {msg}")
+                test_fail(
+                    f"STANDARD-{Path(rel_path_str).stem[:20]}",
+                    f"{rel_path_str} incorrectly flagged: {msg}",
+                )
 
     except Exception as e:
         test_fail("VALIDATION", f"Error during validation: {e}")
@@ -225,7 +232,10 @@ def test_critical_files_not_archived():
             if is_valid:
                 test_pass(f"CRITICAL-{Path(rel_path_str).stem[:15]}", rel_path_str)
             else:
-                test_fail(f"CRITICAL-{Path(rel_path_str).stem[:15]}", f"WOULD BE ARCHIVED: {rel_path_str} - {msg}")
+                test_fail(
+                    f"CRITICAL-{Path(rel_path_str).stem[:15]}",
+                    f"WOULD BE ARCHIVED: {rel_path_str} - {msg}",
+                )
 
     except Exception as e:
         test_fail("VALIDATION", f"Error during validation: {e}")
@@ -253,7 +263,10 @@ def test_depth_calculation_accuracy():
         if actual_depth == expected_depth:
             test_pass(f"DEPTH-{expected_depth}", f"{path_str} = depth {actual_depth}")
         else:
-            test_fail(f"DEPTH-{expected_depth}", f"{path_str} expected {expected_depth}, got {actual_depth}")
+            test_fail(
+                f"DEPTH-{expected_depth}",
+                f"{path_str} expected {expected_depth}, got {actual_depth}",
+            )
 
 
 def main():
@@ -287,5 +300,5 @@ def main():
         return 1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

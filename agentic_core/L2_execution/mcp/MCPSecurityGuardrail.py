@@ -20,6 +20,7 @@ from typing import Any
 @dataclass
 class MCPSecurityViolation:
     """MCP security violation."""
+
     rule: str
     severity: str  # "warning", "error", "critical"
     tool_name: str
@@ -30,6 +31,7 @@ class MCPSecurityViolation:
 @dataclass
 class MCPSecurityResult:
     """Result of MCP security check."""
+
     allowed: bool
     violations: list[MCPSecurityViolation] = field(default_factory=list)
     sanitized_args: dict[str, Any] | None = None
@@ -55,12 +57,22 @@ class MCPSecurityGuardrail:
 
         # Tool whitelist
         self.tool_whitelist: set[str] = {
-            "read_file", "write_file", "edit", "run_command",
-            "grep_search", "find_by_name", "list_dir",
-            "git_status", "git_commit", "git_push",
-            "redis_get", "redis_set",
-            "http_get", "http_post",
-            "brave_search", "fetch_url",
+            "read_file",
+            "write_file",
+            "edit",
+            "run_command",
+            "grep_search",
+            "find_by_name",
+            "list_dir",
+            "git_status",
+            "git_commit",
+            "git_push",
+            "redis_get",
+            "redis_set",
+            "http_get",
+            "http_post",
+            "brave_search",
+            "fetch_url",
         }
 
         # Dangerous patterns
@@ -80,11 +92,7 @@ class MCPSecurityGuardrail:
         self.tools_blocked = 0
         self.args_sanitized = 0
 
-    async def validate_tool_call(
-        self,
-        tool_name: str,
-        args: dict[str, Any]
-    ) -> MCPSecurityResult:
+    async def validate_tool_call(self, tool_name: str, args: dict[str, Any]) -> MCPSecurityResult:
         """
         Validate MCP tool call.
 
@@ -101,13 +109,15 @@ class MCPSecurityGuardrail:
         # Check tool whitelist
         if "tool_validation" in self.enabled_rules:
             if not self._is_tool_allowed(tool_name):
-                violations.append(MCPSecurityViolation(
-                    rule="tool_validation",
-                    severity="error",
-                    tool_name=tool_name,
-                    description=f"Tool '{tool_name}' not in whitelist",
-                    blocked=True
-                ))
+                violations.append(
+                    MCPSecurityViolation(
+                        rule="tool_validation",
+                        severity="error",
+                        tool_name=tool_name,
+                        description=f"Tool '{tool_name}' not in whitelist",
+                        blocked=True,
+                    )
+                )
                 self.tools_blocked += 1
 
         # Check arguments for dangerous patterns
@@ -123,7 +133,7 @@ class MCPSecurityGuardrail:
         return MCPSecurityResult(
             allowed=not any(v.blocked for v in violations),
             violations=violations,
-            sanitized_args=sanitized
+            sanitized_args=sanitized,
         )
 
     def _is_tool_allowed(self, tool_name: str) -> bool:
@@ -148,13 +158,15 @@ class MCPSecurityGuardrail:
             if isinstance(value, str):
                 for pattern in self.dangerous_patterns:
                     if re.search(pattern, value, re.IGNORECASE):
-                        violations.append(MCPSecurityViolation(
-                            rule="mcp_hardening",
-                            severity="critical",
-                            tool_name=tool_name,
-                            description=f"Dangerous pattern in argument '{key}'",
-                            blocked=True
-                        ))
+                        violations.append(
+                            MCPSecurityViolation(
+                                rule="mcp_hardening",
+                                severity="critical",
+                                tool_name=tool_name,
+                                description=f"Dangerous pattern in argument '{key}'",
+                                blocked=True,
+                            )
+                        )
                         break
 
         return violations
@@ -196,5 +208,5 @@ class MCPSecurityGuardrail:
             "tools_blocked": self.tools_blocked,
             "args_sanitized": self.args_sanitized,
             "whitelist_size": len(self.tool_whitelist),
-            "enabled_rules": self.enabled_rules
+            "enabled_rules": self.enabled_rules,
         }

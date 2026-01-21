@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, orchestrator, validator, workflow
@@ -27,6 +26,7 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 # PDF parsing
 try:
     import fitz  # PyMuPDF
+
     PDF_SUPPORT = True
 except ImportError:
     PDF_SUPPORT = False
@@ -59,7 +59,7 @@ class IntelligenceLibrarianAgent(HealerMixin, SubatomicTestingMixin, MCPHardened
         self,
         search_client: Any | None = None,
         llm_client: Any | None = None,
-        memory_store: VectorMemoryStore | None = None
+        memory_store: VectorMemoryStore | None = None,
     ) -> None:
         """
         Initialize Librarian with API clients and vector store
@@ -85,7 +85,7 @@ class IntelligenceLibrarianAgent(HealerMixin, SubatomicTestingMixin, MCPHardened
         company_name: str,
         include_strategic_brief: bool = True,
         include_news: bool = True,
-        include_blog: bool = True
+        include_blog: bool = True,
     ) -> dict[str, Any]:
         """
         Deep research on a company - runs offline
@@ -99,13 +99,15 @@ class IntelligenceLibrarianAgent(HealerMixin, SubatomicTestingMixin, MCPHardened
         Returns:
             Dictionary with research findings and metadata
         """
-        print(f"\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[Librarian] Starting deep research on: {company_name}")
+        print(
+            f"\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[Librarian] Starting deep research on: {company_name}"
+        )
 
         findings = {
             "company_name": company_name,
             "timestamp": datetime.now().isoformat(),
             "research_duration_seconds": 0,
-            "sources": []
+            "sources": [],
         }
 
         start_time = datetime.now()
@@ -128,7 +130,9 @@ class IntelligenceLibrarianAgent(HealerMixin, SubatomicTestingMixin, MCPHardened
         findings["research_duration_seconds"] = (datetime.now() - start_time).total_seconds()
         findings["total_sources"] = len(findings["sources"])
 
-        print(f"[Librarian] Research complete: {findings['total_sources']} sources in {findings['research_duration_seconds']:.1f}s")
+        print(
+            f"[Librarian] Research complete: {findings['total_sources']} sources in {findings['research_duration_seconds']:.1f}s"
+        )
 
         # 4. Embed and store findings
         await self._embed_and_store(findings)
@@ -141,7 +145,7 @@ class IntelligenceLibrarianAgent(HealerMixin, SubatomicTestingMixin, MCPHardened
         company_name: str,
         include_linkedin: bool = True,
         include_recent_posts: bool = True,
-        include_presentations: bool = True
+        include_presentations: bool = True,
     ) -> dict[str, Any]:
         """
         Deep research on an executive - runs offline
@@ -163,7 +167,7 @@ class IntelligenceLibrarianAgent(HealerMixin, SubatomicTestingMixin, MCPHardened
             "company_name": company_name,
             "timestamp": datetime.now().isoformat(),
             "research_duration_seconds": 0,
-            "sources": []
+            "sources": [],
         }
 
         start_time = datetime.now()
@@ -186,7 +190,9 @@ class IntelligenceLibrarianAgent(HealerMixin, SubatomicTestingMixin, MCPHardened
         findings["research_duration_seconds"] = (datetime.now() - start_time).total_seconds()
         findings["total_sources"] = len(findings["sources"])
 
-        print(f"[Librarian] Research complete: {findings['total_sources']} sources in {findings['research_duration_seconds']:.1f}s")
+        print(
+            f"[Librarian] Research complete: {findings['total_sources']} sources in {findings['research_duration_seconds']:.1f}s"
+        )
 
         # 4. Embed and store findings
         await self._embed_and_store(findings)
@@ -203,7 +209,7 @@ class IntelligenceLibrarianAgent(HealerMixin, SubatomicTestingMixin, MCPHardened
             f"{company_name} strategic priorities 2025",
             f"{company_name} annual roadmap",
             f"{company_name} CEO vision statement",
-            f"{company_name} quarterly earnings strategic focus"
+            f"{company_name} quarterly earnings strategic focus",
         ]
 
         results = []
@@ -220,15 +226,17 @@ class IntelligenceLibrarianAgent(HealerMixin, SubatomicTestingMixin, MCPHardened
                     priorities = await self._extract_strategic_priorities(content, company_name)
 
                     if priorities:
-                        results.append({
-                            "SourceType": "STRATEGIC_BRIEF",
-                            "source_url": item.get("link", ""),
-                            "title": item.get("title", ""),
-                            "content": content,
-                            "strategic_priorities": priorities,
-                            "extracted_at": datetime.now().isoformat(),
-                            "age_days": 0  # Assume recent
-                        })
+                        results.append(
+                            {
+                                "SourceType": "STRATEGIC_BRIEF",
+                                "source_url": item.get("link", ""),
+                                "title": item.get("title", ""),
+                                "content": content,
+                                "strategic_priorities": priorities,
+                                "extracted_at": datetime.now().isoformat(),
+                                "age_days": 0,  # Assume recent
+                            }
+                        )
 
                 # Rate limit between queries
                 await asyncio.sleep(1)
@@ -248,7 +256,7 @@ class IntelligenceLibrarianAgent(HealerMixin, SubatomicTestingMixin, MCPHardened
         queries = [
             f"{company_name} news last 30 days",
             f"{company_name} latest announcement",
-            f"{company_name} recent funding partnership"
+            f"{company_name} recent funding partnership",
         ]
 
         results = []
@@ -260,14 +268,16 @@ class IntelligenceLibrarianAgent(HealerMixin, SubatomicTestingMixin, MCPHardened
                 for item in search_results:
                     content = self._extract_search_result_content(item)
 
-                    results.append({
-                        "SourceType": "NEWS_ARTICLE_COMPANY",
-                        "source_url": item.get("link", ""),
-                        "title": item.get("title", ""),
-                        "content": content,
-                        "extracted_at": datetime.now().isoformat(),
-                        "age_days": self._estimate_age_from_snippet(item.get("snippet", ""))
-                    })
+                    results.append(
+                        {
+                            "SourceType": "NEWS_ARTICLE_COMPANY",
+                            "source_url": item.get("link", ""),
+                            "title": item.get("title", ""),
+                            "content": content,
+                            "extracted_at": datetime.now().isoformat(),
+                            "age_days": self._estimate_age_from_snippet(item.get("snippet", "")),
+                        }
+                    )
 
                 await asyncio.sleep(1)
 
@@ -286,7 +296,7 @@ class IntelligenceLibrarianAgent(HealerMixin, SubatomicTestingMixin, MCPHardened
         queries = [
             f"site:{company_name.lower().replace(' ', '')}.com/blog",
             f"{company_name} blog latest posts",
-            f"{company_name} company announcements"
+            f"{company_name} company announcements",
         ]
 
         results = []
@@ -298,14 +308,16 @@ class IntelligenceLibrarianAgent(HealerMixin, SubatomicTestingMixin, MCPHardened
                 for item in search_results:
                     content = self._extract_search_result_content(item)
 
-                    results.append({
-                        "SourceType": "COMPANY_BLOG_ANNOUNCEMENT",
-                        "source_url": item.get("link", ""),
-                        "title": item.get("title", ""),
-                        "content": content,
-                        "extracted_at": datetime.now().isoformat(),
-                        "age_days": self._estimate_age_from_snippet(item.get("snippet", ""))
-                    })
+                    results.append(
+                        {
+                            "SourceType": "COMPANY_BLOG_ANNOUNCEMENT",
+                            "source_url": item.get("link", ""),
+                            "title": item.get("title", ""),
+                            "content": content,
+                            "extracted_at": datetime.now().isoformat(),
+                            "age_days": self._estimate_age_from_snippet(item.get("snippet", "")),
+                        }
+                    )
 
                 await asyncio.sleep(1)
 
@@ -316,9 +328,7 @@ class IntelligenceLibrarianAgent(HealerMixin, SubatomicTestingMixin, MCPHardened
         return results
 
     async def _research_linkedin_profile(
-        self,
-        executive_name: str,
-        company_name: str
+        self, executive_name: str, company_name: str
     ) -> list[dict[str, Any]]:
         """
         Research executive LinkedIn profile
@@ -336,15 +346,17 @@ class IntelligenceLibrarianAgent(HealerMixin, SubatomicTestingMixin, MCPHardened
                 if "linkedin.com/in/" in item.get("link", ""):
                     content = self._extract_search_result_content(item)
 
-                    results.append({
-                        "SourceType": "RECIPIENT_LINKEDIN_ABOUT",
-                        "source_url": item.get("link", ""),
-                        "title": item.get("title", ""),
-                        "content": content,
-                        "executive_name": executive_name,
-                        "extracted_at": datetime.now().isoformat(),
-                        "age_days": 0
-                    })
+                    results.append(
+                        {
+                            "SourceType": "RECIPIENT_LINKEDIN_ABOUT",
+                            "source_url": item.get("link", ""),
+                            "title": item.get("title", ""),
+                            "content": content,
+                            "executive_name": executive_name,
+                            "extracted_at": datetime.now().isoformat(),
+                            "age_days": 0,
+                        }
+                    )
 
         except Exception as e:
             print(f"[Librarian] Error searching LinkedIn: {e}")
@@ -353,9 +365,7 @@ class IntelligenceLibrarianAgent(HealerMixin, SubatomicTestingMixin, MCPHardened
         return results
 
     async def _research_executive_posts(
-        self,
-        executive_name: str,
-        company_name: str
+        self, executive_name: str, company_name: str
     ) -> list[dict[str, Any]]:
         """
         Research executive recent posts and articles
@@ -364,7 +374,7 @@ class IntelligenceLibrarianAgent(HealerMixin, SubatomicTestingMixin, MCPHardened
 
         queries = [
             f"{executive_name} {company_name} recent post",
-            f"{executive_name} article blog post"
+            f"{executive_name} article blog post",
         ]
 
         results = []
@@ -376,15 +386,17 @@ class IntelligenceLibrarianAgent(HealerMixin, SubatomicTestingMixin, MCPHardened
                 for item in search_results:
                     content = self._extract_search_result_content(item)
 
-                    results.append({
-                        "SourceType": "RECIPIENT_RECENT_POST",
-                        "source_url": item.get("link", ""),
-                        "title": item.get("title", ""),
-                        "content": content,
-                        "executive_name": executive_name,
-                        "extracted_at": datetime.now().isoformat(),
-                        "age_days": self._estimate_age_from_snippet(item.get("snippet", ""))
-                    })
+                    results.append(
+                        {
+                            "SourceType": "RECIPIENT_RECENT_POST",
+                            "source_url": item.get("link", ""),
+                            "title": item.get("title", ""),
+                            "content": content,
+                            "executive_name": executive_name,
+                            "extracted_at": datetime.now().isoformat(),
+                            "age_days": self._estimate_age_from_snippet(item.get("snippet", "")),
+                        }
+                    )
 
                 await asyncio.sleep(1)
 
@@ -395,9 +407,7 @@ class IntelligenceLibrarianAgent(HealerMixin, SubatomicTestingMixin, MCPHardened
         return results
 
     async def _research_presentations(
-        self,
-        executive_name: str,
-        company_name: str
+        self, executive_name: str, company_name: str
     ) -> list[dict[str, Any]]:
         """
         Research executive conference talks and presentations
@@ -414,15 +424,17 @@ class IntelligenceLibrarianAgent(HealerMixin, SubatomicTestingMixin, MCPHardened
             for item in search_results:
                 content = self._extract_search_result_content(item)
 
-                results.append({
-                    "SourceType": "CONFERENCE_TALK",
-                    "source_url": item.get("link", ""),
-                    "title": item.get("title", ""),
-                    "content": content,
-                    "executive_name": executive_name,
-                    "extracted_at": datetime.now().isoformat(),
-                    "age_days": self._estimate_age_from_snippet(item.get("snippet", ""))
-                })
+                results.append(
+                    {
+                        "SourceType": "CONFERENCE_TALK",
+                        "source_url": item.get("link", ""),
+                        "title": item.get("title", ""),
+                        "content": content,
+                        "executive_name": executive_name,
+                        "extracted_at": datetime.now().isoformat(),
+                        "age_days": self._estimate_age_from_snippet(item.get("snippet", "")),
+                    }
+                )
 
         except Exception as e:
             print(f"[Librarian] Error searching presentations: {e}")
@@ -430,11 +442,7 @@ class IntelligenceLibrarianAgent(HealerMixin, SubatomicTestingMixin, MCPHardened
         print(f"[Librarian] Found {len(results)} presentation sources")
         return results
 
-    async def _extract_strategic_priorities(
-        self,
-        content: str,
-        company_name: str
-    ) -> list[str]:
+    async def _extract_strategic_priorities(self, content: str, company_name: str) -> list[str]:
         """
         Use LLM to extract strategic priorities from content
         """
@@ -453,7 +461,8 @@ Output ONLY the JSON array, no explanation."""
 
             # Parse JSON response
             import re
-            json_match = re.search(r'\[.*?\]', response, re.DOTALL)
+
+            json_match = re.search(r"\[.*?\]", response, re.DOTALL)
             if json_match:
                 priorities = json.loads(json_match.group(0))
                 return priorities
@@ -508,9 +517,7 @@ Output ONLY the JSON array, no explanation."""
             # Generate embedding
             try:
                 embedding = genai.embed_content(
-                    model=self.embedding_model,
-                    content=text_to_embed,
-                    TaskType="retrieval_document"
+                    model=self.embedding_model, content=text_to_embed, TaskType="retrieval_document"
                 )["embedding"]
 
                 # Store in vector database
@@ -519,7 +526,7 @@ Output ONLY the JSON array, no explanation."""
                     "source_url": source["source_url"],
                     "title": source["title"],
                     "age_days": source["age_days"],
-                    "extracted_at": source["extracted_at"]
+                    "extracted_at": source["extracted_at"],
                 }
 
                 # Add company/executive name to metadata
@@ -529,9 +536,7 @@ Output ONLY the JSON array, no explanation."""
                     metadata["executive_name"] = findings["executive_name"]
 
                 self.memory_store.add_document(
-                    text=text_to_embed,
-                    embedding=embedding,
-                    metadata=metadata
+                    text=text_to_embed, embedding=embedding, metadata=metadata
                 )
 
             except Exception as e:
@@ -540,8 +545,8 @@ Output ONLY the JSON array, no explanation."""
         print("[Librarian] Storage complete")
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()
 
 
 async def run_intelligence_service(target_list_file: str = "research_targets.json") -> Any:
@@ -554,9 +559,9 @@ async def run_intelligence_service(target_list_file: str = "research_targets.jso
     Args:
         target_list_file: JSON file with list of targets to research
     """
-    print(f"\n{'='*80}")
+    print(f"\n{'=' * 80}")
     print("INTELLIGENCE SERVICE v13.0 - The Librarian")
-    print(f"{'='*80}\n")
+    print(f"{'=' * 80}\n")
 
     # Load target list
     if not os.path.exists(target_list_file):
@@ -597,16 +602,13 @@ async def run_intelligence_service(target_list_file: str = "research_targets.jso
     # Research executives
     for exec_info in targets.get("executives", []):
         try:
-            await librarian.research_executive(
-                exec_info["name"],
-                exec_info["company"]
-            )
+            await librarian.research_executive(exec_info["name"], exec_info["company"])
         except Exception as e:
             print(f"[ERROR] Failed to research {exec_info['name']}: {e}")
 
-    print(f"\n{'='*80}")
+    print(f"\n{'=' * 80}")
     print("Intelligence service complete")
-    print(f"{'='*80}\n")
+    print(f"{'=' * 80}\n")
 
 
 if __name__ == "__main__":

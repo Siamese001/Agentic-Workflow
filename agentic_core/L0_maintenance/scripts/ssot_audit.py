@@ -1,6 +1,7 @@
 """
 SSOT Audit Script - Scans approved folders for SSOT violations
 """
+
 import ast
 from collections import defaultdict
 from pathlib import Path
@@ -18,24 +19,27 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 
 # Approved folders only
 APPROVED_FOLDERS = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, SCRIPTS_DIR, TESTS_DIR]
-ROOT = Path('.')
+ROOT = Path(".")
 
 # REMOVED: get_layer() function - migrated to canonical_truth.py (Phase 3)
 # All layer inference now uses get_canonical_layer() from canonical_truth.py
+
 
 def find_duplicates():
     """Find duplicate filenames across approved folders."""
     # Phase 4.1: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_python_files
+
     files_by_name = defaultdict(list)
     for folder in APPROVED_FOLDERS:
         folder_path = ROOT / folder
         if folder_path.exists():
             for py_file in get_python_files(folder_path):
-                if py_file.name != '__init__.py':
+                if py_file.name != "__init__.py":
                     files_by_name[py_file.name].append(str(py_file))
 
     return {name: paths for name, paths in files_by_name.items() if len(paths) > 1}
+
 
 def find_gravity_violations():
     """Find upward import violations (higher layer importing from lower layer)."""
@@ -43,57 +47,62 @@ def find_gravity_violations():
 
     # Phase 4.1: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_python_files
+
     for py_file in get_python_files(ROOT / AGENTIC_CORE_DIR):
         file_layer = get_canonical_layer(py_file)
-        if not file_layer or file_layer == 'Unknown':
+        if not file_layer or file_layer == "Unknown":
             continue
         try:
-            content = py_file.read_text(encoding='utf-8')
+            content = py_file.read_text(encoding="utf-8")
             tree = ast.parse(content)
             for node in ast.walk(tree):
                 if isinstance(node, ast.ImportFrom) and node.module:
-                    import_path = node.module.replace('.', '/')
+                    import_path = node.module.replace(".", "/")
                     import_layer = get_canonical_layer(import_path)
                     # SSOT: Use canonical layer order from canonical_truth
-                    layer_order = {'L0': 0, 'L1': 1, 'L2': 2, 'L3': 3, 'L4': 4, 'L5': 5, 'L6': 6}
-                    if import_layer and layer_order.get(import_layer, 99) < layer_order.get(file_layer, 0):
-                        violations.append({
-                            'file': str(py_file),
-                            'file_layer': file_layer,
-                            'imports': node.module,
-                            'import_layer': import_layer
-                        })
+                    layer_order = {"L0": 0, "L1": 1, "L2": 2, "L3": 3, "L4": 4, "L5": 5, "L6": 6}
+                    if import_layer and layer_order.get(import_layer, 99) < layer_order.get(
+                        file_layer, 0
+                    ):
+                        violations.append(
+                            {
+                                "file": str(py_file),
+                                "file_layer": file_layer,
+                                "imports": node.module,
+                                "import_layer": import_layer,
+                            }
+                        )
         except Exception:
             pass
 
     return violations
 
+
 def find_syntax_errors():
     """Find files with syntax errors."""
     # Phase 4.1: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_python_files
+
     errors = []
     for folder in APPROVED_FOLDERS:
         folder_path = ROOT / folder
         if folder_path.exists():
             for py_file in get_python_files(folder_path):
                 try:
-                    content = py_file.read_text(encoding='utf-8')
+                    content = py_file.read_text(encoding="utf-8")
                     ast.parse(content)
                 except SyntaxError as e:
-                    errors.append({
-                        'file': str(py_file),
-                        'line': e.lineno,
-                        'message': str(e.msg)
-                    })
+                    errors.append({"file": str(py_file), "line": e.lineno, "message": str(e.msg)})
                 except Exception:
                     pass
     return errors
+
 
 def find_naming_violations():
     """Find files with naming convention violations."""
     # Phase 4.1: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_python_files
+
     violations = []
     for folder in APPROVED_FOLDERS:
         folder_path = ROOT / folder
@@ -101,20 +110,19 @@ def find_naming_violations():
             for py_file in get_python_files(folder_path):
                 name = py_file.stem
                 # Check for CamelCase in non-Agent files
-                if any(c.isupper() for c in name) and 'Agent' not in name and 'Mixin' not in name:
-                    violations.append({
-                        'file': str(py_file),
-                        'issue': 'CamelCase naming (should be snake_case)'
-                    })
+                if any(c.isupper() for c in name) and "Agent" not in name and "Mixin" not in name:
+                    violations.append(
+                        {"file": str(py_file), "issue": "CamelCase naming (should be snake_case)"}
+                    )
                 # Check for version suffixes
-                if any(suffix in name for suffix in ['_v1', '_v2', '_v3', '_old', '_new', '_backup']):
-                    violations.append({
-                        'file': str(py_file),
-                        'issue': 'Version suffix in filename'
-                    })
+                if any(
+                    suffix in name for suffix in ["_v1", "_v2", "_v3", "_old", "_new", "_backup"]
+                ):
+                    violations.append({"file": str(py_file), "issue": "Version suffix in filename"})
     return violations
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     print("=== SSOT AUDIT REPORT ===\n")
 
     # Duplicates
@@ -125,7 +133,7 @@ if __name__ == '__main__':
         for p in paths:
             print(f"    - {p}")
 
-    print(f"\n{'='*50}\n")
+    print(f"\n{'=' * 50}\n")
 
     # Gravity violations
     gravity = find_gravity_violations()
@@ -135,7 +143,7 @@ if __name__ == '__main__':
         print(f"    File: {v['file']}")
         print(f"    Imports: {v['imports']}")
 
-    print(f"\n{'='*50}\n")
+    print(f"\n{'=' * 50}\n")
 
     # Syntax errors
     syntax = find_syntax_errors()
@@ -143,7 +151,7 @@ if __name__ == '__main__':
     for e in syntax[:30]:
         print(f"  {e['file']}:{e['line']} - {e['message']}")
 
-    print(f"\n{'='*50}\n")
+    print(f"\n{'=' * 50}\n")
 
     # Naming violations
     naming = find_naming_violations()

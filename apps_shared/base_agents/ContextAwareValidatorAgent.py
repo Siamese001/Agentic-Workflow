@@ -88,9 +88,7 @@ class ContextAwareValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         REQUIRED OVERRIDE: Pure syntactic/semantic rule enforcement.
         Must return {"compliant": bool, "details": optional str}
         """
-        raise NotImplementedError(
-            f"{self.__class__.__name__} must implement _basic_rule_check"
-        )
+        raise NotImplementedError(f"{self.__class__.__name__} must implement _basic_rule_check")
 
     async def _analyze_violation_context(self, target: Path, rule: str) -> dict[str, Any]:
         """
@@ -113,7 +111,9 @@ class ContextAwareValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
             },
         }
 
-    async def _generate_contextual_fix(self, target: Path, rule: str, context: dict) -> dict[str, Any]:
+    async def _generate_contextual_fix(
+        self, target: Path, rule: str, context: dict
+    ) -> dict[str, Any]:
         """
         Generate intelligent, context-aware fix suggestion.
         Default: generic suggestion.
@@ -132,6 +132,7 @@ class ContextAwareValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         """Days since file creation."""
         try:
             import time
+
             return int((time.time() - target.stat().st_ctime) / 86400)
         except:
             return 0
@@ -140,6 +141,7 @@ class ContextAwareValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         """True if modified in last 7 days."""
         try:
             import time
+
             return (time.time() - target.stat().st_mtime) < (7 * 86400)
         except:
             return False
@@ -149,5 +151,5 @@ class ContextAwareValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         return {"healthy": True}
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()

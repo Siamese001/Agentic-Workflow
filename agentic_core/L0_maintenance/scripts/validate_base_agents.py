@@ -16,42 +16,44 @@ Fixes:
 - Suggests which to keep (canonical) vs deprecate
 - Can auto-deprecate non-canonical base agents
 """
+
 import json
 from collections import defaultdict
 
 # Load agent discovery
-data = json.load(open('agent_discovery_full.json'))
+data = json.load(open("agent_discovery_full.json"))
 
 # Layer definitions
-LAYERS = ['L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6']
+LAYERS = ["L0", "L1", "L2", "L3", "L4", "L5", "L6"]
 
 # Canonical base agent names per layer
 CANONICAL_BASE_AGENTS = {
-    'L0': 'L0MaintenanceBaseAgent',
-    'L1': 'L1CognitionBaseAgent',
-    'L2': 'L2Agent',
-    'L3': 'L3Agent',
-    'L4': 'L4Agent',
-    'L5': 'L5Agent',
-    'L6': 'L6ObservabilityBaseAgent'
+    "L0": "L0MaintenanceBaseAgent",
+    "L1": "L1CognitionBaseAgent",
+    "L2": "L2Agent",
+    "L3": "L3Agent",
+    "L4": "L4Agent",
+    "L5": "L5Agent",
+    "L6": "L6ObservabilityBaseAgent",
 }
+
 
 def find_base_agents() -> dict[str, list[dict]]:
     """Find all base agents grouped by layer."""
     base_agents_by_layer = defaultdict(list)
 
     for agent in data:
-        class_name = agent.get('class_name', '')
-        layer = agent.get('layer', '')
+        class_name = agent.get("class_name", "")
+        layer = agent.get("layer", "")
 
         # Identify base agents
         # 1. Has "BaseAgent" in name
         # 2. Or matches canonical pattern (L0MaintenanceBaseAgent, L1CognitionBaseAgent, etc.)
         # 3. Or in base_class directory
         is_base_agent = (
-            'BaseAgent' in class_name or
-            class_name in CANONICAL_BASE_AGENTS.values() or
-            'base_class' in agent.get('path', '').lower()
+            "BaseAgent" in class_name
+            or class_name in CANONICAL_BASE_AGENTS.values()
+            or "base_class" in agent.get("path", "").lower()
         )
 
         if is_base_agent and layer:
@@ -61,6 +63,7 @@ def find_base_agents() -> dict[str, list[dict]]:
                 base_agents_by_layer[layer_prefix].append(agent)
 
     return base_agents_by_layer
+
 
 def validate_base_agents() -> tuple[bool, list[str]]:
     """Validate base agent uniqueness per layer."""
@@ -84,7 +87,7 @@ def validate_base_agents() -> tuple[bool, list[str]]:
             print(f"   ⚠️  No base agent (expected {canonical})")
         elif len(agents) == 1:
             agent = agents[0]
-            name = agent['class_name']
+            name = agent["class_name"]
             if name == canonical:
                 print(f"   ✅ Canonical base agent: {name}")
             else:
@@ -97,12 +100,12 @@ def validate_base_agents() -> tuple[bool, list[str]]:
             print(f"   ❌ MULTIPLE BASE AGENTS FOUND: {len(agents)}")
 
             # Check if canonical exists
-            canonical_agent = next((a for a in agents if a['class_name'] == canonical), None)
+            canonical_agent = next((a for a in agents if a["class_name"] == canonical), None)
 
             for i, agent in enumerate(agents, 1):
-                name = agent['class_name']
-                path = agent['path']
-                is_canonical = (name == canonical)
+                name = agent["class_name"]
+                path = agent["path"]
+                is_canonical = name == canonical
                 marker = "👑 CANONICAL" if is_canonical else "🔴 DUPLICATE"
 
                 print(f"      {i}. {name} {marker}")
@@ -140,6 +143,7 @@ def validate_base_agents() -> tuple[bool, list[str]]:
 
     return is_valid, all_messages
 
+
 def suggest_fixes() -> list[str]:
     """Suggest fixes for base agent violations."""
     base_agents = find_base_agents()
@@ -150,20 +154,25 @@ def suggest_fixes() -> list[str]:
         canonical = CANONICAL_BASE_AGENTS.get(layer)
 
         if len(agents) > 1:
-            canonical_agent = next((a for a in agents if a['class_name'] == canonical), None)
+            canonical_agent = next((a for a in agents if a["class_name"] == canonical), None)
 
             if canonical_agent:
                 # Keep canonical, deprecate others
                 for agent in agents:
-                    if agent['class_name'] != canonical:
-                        fixes.append(f"Deprecate {agent['class_name']} at {agent['path']} (duplicate of canonical {canonical})")
+                    if agent["class_name"] != canonical:
+                        fixes.append(
+                            f"Deprecate {agent['class_name']} at {agent['path']} (duplicate of canonical {canonical})"
+                        )
             else:
                 # No canonical found - rename first, deprecate rest
-                fixes.append(f"Rename {agents[0]['class_name']} to {canonical} at {agents[0]['path']}")
+                fixes.append(
+                    f"Rename {agents[0]['class_name']} to {canonical} at {agents[0]['path']}"
+                )
                 for agent in agents[1:]:
                     fixes.append(f"Deprecate {agent['class_name']} at {agent['path']}")
 
     return fixes
+
 
 def main():
     """Main entry point."""
@@ -182,6 +191,8 @@ def main():
 
     return 0
 
+
 if __name__ == "__main__":
     import sys
+
     sys.exit(main())

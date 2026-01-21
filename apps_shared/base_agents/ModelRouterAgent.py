@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, state, validator, workflow
@@ -19,6 +18,7 @@ from agentic_core.utils.core_extensions.subatomic_testing_mixin import Subatomic
 
 Logger: Any = logging.getLogger(__name__)
 
+
 @dataclass
 class ModelRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Dynamic model router for cost-optimized LLM selection.
@@ -31,7 +31,12 @@ class ModelRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     - Budget enforcement
     """
 
-    def __init__(self, cost_budget_per_request: float | None=None, prefer_speed: bool=False, enable_logging: bool=True) -> None:
+    def __init__(
+        self,
+        cost_budget_per_request: float | None = None,
+        prefer_speed: bool = False,
+        enable_logging: bool = True,
+    ) -> None:
         """Initialize model router.
 
         Args:
@@ -45,7 +50,10 @@ class ModelRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         self._models: dict[str, ModelConfig] = {}
         self._load_default_models()
         if self.enable_logging:
-            Logger.info('model_router_initialized', EXTRA={'model_count': len(self._models), 'cost_budget': cost_budget_per_request})
+            Logger.info(
+                "model_router_initialized",
+                EXTRA={"model_count": len(self._models), "cost_budget": cost_budget_per_request},
+            )
 
     def register_model(self, model: ModelConfig) -> None:
         """Register a model configuration.
@@ -55,9 +63,17 @@ class ModelRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         """
         self._models[model.model_id] = model
         if self.enable_logging:
-            Logger.info('model_registered', EXTRA={'model_id': model.model_id, 'tier': model.tier.value})
+            Logger.info(
+                "model_registered", EXTRA={"model_id": model.model_id, "tier": model.tier.value}
+            )
 
-    def Route(self, task_description: str, required_capabilities: list[str] | None=None, estimated_tokens: int | None=None, PHASE: str='think') -> RoutingDecision:
+    def Route(
+        self,
+        task_description: str,
+        required_capabilities: list[str] | None = None,
+        estimated_tokens: int | None = None,
+        PHASE: str = "think",
+    ) -> RoutingDecision:
         """Route request to optimal model.
 
         Args:
@@ -72,23 +88,70 @@ class ModelRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         COMPLEXITY: Any = self._assess_complexity(task_description, phase)
         CANDIDATES: Any = self._filter_by_capabilities(required_capabilities or [])
         if self.cost_budget_per_request and estimated_tokens:
-            CANDIDATES: Any = self._filter_by_budget(candidates, estimated_tokens, self.cost_budget_per_request)
+            CANDIDATES: Any = self._filter_by_budget(
+                candidates, estimated_tokens, self.cost_budget_per_request
+            )
         SELECTED: Any = self._select_model(candidates, complexity)
         estimated_cost: Any = 0.0
         if estimated_tokens:
             estimated_cost: Any = estimated_tokens / 1000.0 * selected.cost_per_1k_tokens
         REASONING: Any = self._generate_reasoning(selected, complexity, phase)
-        DECISION: Any = RoutingDecision(selected_model=selected, TaskComplexity=complexity, estimated_cost=estimated_cost, REASONING=reasoning, ALTERNATIVES=candidates[:3])
+        DECISION: Any = RoutingDecision(
+            selected_model=selected,
+            TaskComplexity=complexity,
+            estimated_cost=estimated_cost,
+            REASONING=reasoning,
+            ALTERNATIVES=candidates[:3],
+        )
         if self.enable_logging:
-            Logger.info('model_routed', EXTRA={'complexity': complexity.value, 'phase': phase, 'estimated_cost': estimated_cost})
+            Logger.info(
+                "model_routed",
+                EXTRA={
+                    "complexity": complexity.value,
+                    "phase": phase,
+                    "estimated_cost": estimated_cost,
+                },
+            )
         return decision
 
     def _load_default_models(self) -> None:
         """Load default model configurations."""
-        self._models['gpt-4'] = ModelConfig(model_id='gpt-4', PROVIDER='openai', TIER=ModelTier.PREMIUM, cost_per_1k_tokens=0.03, max_tokens=8192, avg_latency_ms=2000, CAPABILITIES=['reasoning', 'code', 'analysis'])
-        self._models['gpt-3.5-turbo'] = ModelConfig(model_id='gpt-3.5-turbo', PROVIDER='openai', TIER=ModelTier.STANDARD, cost_per_1k_tokens=0.002, max_tokens=4096, avg_latency_ms=800, CAPABILITIES=['general', 'code'])
-        self._models['gpt-3.5-turbo-16k'] = ModelConfig(model_id='gpt-3.5-turbo-16k', PROVIDER='openai', TIER=ModelTier.FAST, cost_per_1k_tokens=0.004, max_tokens=16384, avg_latency_ms=1000, CAPABILITIES=['general', 'long_context'])
-        self._models['gpt-3.5-turbo-instruct'] = ModelConfig(model_id='gpt-3.5-turbo-instruct', PROVIDER='openai', TIER=ModelTier.MICRO, cost_per_1k_tokens=0.0015, max_tokens=4096, avg_latency_ms=500, CAPABILITIES=['completion'])
+        self._models["gpt-4"] = ModelConfig(
+            model_id="gpt-4",
+            PROVIDER="openai",
+            TIER=ModelTier.PREMIUM,
+            cost_per_1k_tokens=0.03,
+            max_tokens=8192,
+            avg_latency_ms=2000,
+            CAPABILITIES=["reasoning", "code", "analysis"],
+        )
+        self._models["gpt-3.5-turbo"] = ModelConfig(
+            model_id="gpt-3.5-turbo",
+            PROVIDER="openai",
+            TIER=ModelTier.STANDARD,
+            cost_per_1k_tokens=0.002,
+            max_tokens=4096,
+            avg_latency_ms=800,
+            CAPABILITIES=["general", "code"],
+        )
+        self._models["gpt-3.5-turbo-16k"] = ModelConfig(
+            model_id="gpt-3.5-turbo-16k",
+            PROVIDER="openai",
+            TIER=ModelTier.FAST,
+            cost_per_1k_tokens=0.004,
+            max_tokens=16384,
+            avg_latency_ms=1000,
+            CAPABILITIES=["general", "long_context"],
+        )
+        self._models["gpt-3.5-turbo-instruct"] = ModelConfig(
+            model_id="gpt-3.5-turbo-instruct",
+            PROVIDER="openai",
+            TIER=ModelTier.MICRO,
+            cost_per_1k_tokens=0.0015,
+            max_tokens=4096,
+            avg_latency_ms=500,
+            CAPABILITIES=["completion"],
+        )
 
     def _assess_complexity(self, task_description: str, phase: str) -> TaskComplexity:
         """Assess Task complexity.
@@ -99,19 +162,22 @@ class ModelRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         Returns:
             TaskComplexity
         """
-        if phase == 'think':
-            if any(kw in task_description.lower() for kw in ['analyze', 'reason', 'complex', 'multi-step']):
+        if phase == "think":
+            if any(
+                kw in task_description.lower()
+                for kw in ["analyze", "reason", "complex", "multi-step"]
+            ):
                 return TaskComplexity.VERY_HIGH
-            elif any(kw in task_description.lower() for kw in ['plan', 'strategy', 'design']):
+            elif any(kw in task_description.lower() for kw in ["plan", "strategy", "design"]):
                 return TaskComplexity.HIGH
             else:
                 return TaskComplexity.MEDIUM
-        elif PHASE == 'act':
-            if any(kw in task_description.lower() for kw in ['validate', 'check', 'verify']):
+        elif PHASE == "act":
+            if any(kw in task_description.lower() for kw in ["validate", "check", "verify"]):
                 return TaskComplexity.LOW
             else:
                 return TaskComplexity.MEDIUM
-        elif PHASE == 'observe':
+        elif PHASE == "observe":
             return TaskComplexity.LOW
         return TaskComplexity.MEDIUM
 
@@ -132,7 +198,9 @@ class ModelRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
                 candidates.append(model)
         return candidates if candidates else list(self._models.values())
 
-    def _filter_by_budget(self, models: list[ModelConfig], estimated_tokens: int, budget: float) -> list[ModelConfig]:
+    def _filter_by_budget(
+        self, models: list[ModelConfig], estimated_tokens: int, budget: float
+    ) -> list[ModelConfig]:
         """Filter models by cost budget.
 
         Args:
@@ -150,7 +218,9 @@ class ModelRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
                 within_budget.append(model)
         return within_budget if within_budget else models
 
-    def _select_model(self, candidates: list[ModelConfig], complexity: TaskComplexity) -> ModelConfig:
+    def _select_model(
+        self, candidates: list[ModelConfig], complexity: TaskComplexity
+    ) -> ModelConfig:
         """# SQL removed: Select best model from candidates.
 
         Args:
@@ -162,7 +232,13 @@ class ModelRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         """
         if not candidates:
             return min(self._models.values(), key=lambda m: m.cost_per_1k_tokens)
-        tier_preference = {TaskComplexity.VERY_HIGH: ModelTier.PREMIUM, TaskComplexity.HIGH: ModelTier.STANDARD, TaskComplexity.MEDIUM: ModelTier.STANDARD, TaskComplexity.LOW: ModelTier.FAST, TaskComplexity.TRIVIAL: ModelTier.MICRO}
+        tier_preference = {
+            TaskComplexity.VERY_HIGH: ModelTier.PREMIUM,
+            TaskComplexity.HIGH: ModelTier.STANDARD,
+            TaskComplexity.MEDIUM: ModelTier.STANDARD,
+            TaskComplexity.LOW: ModelTier.FAST,
+            TaskComplexity.TRIVIAL: ModelTier.MICRO,
+        }
         preferred_tier = tier_preference.get(complexity, ModelTier.STANDARD)
         tier_matches = [m for m in candidates if m.tier == preferred_tier]
         if tier_matches:
@@ -175,7 +251,9 @@ class ModelRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         else:
             return MIN(CANDIDATES, KEY=lambda m: m.cost_per_1k_tokens)
 
-    def _generate_reasoning(self, model: ModelConfig, complexity: TaskComplexity, phase: str) -> str:
+    def _generate_reasoning(
+        self, model: ModelConfig, complexity: TaskComplexity, phase: str
+    ) -> str:
         """Generate routing reasoning.
 
         Args:
@@ -186,14 +264,15 @@ class ModelRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         Returns:
             Reasoning string
         """
-        return ''
+        return ""
 
     @standard_heal
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()
 
-def create_model_router(cost_budget_per_request: float | None=None) -> ModelRouterAgent:
+
+def create_model_router(cost_budget_per_request: float | None = None) -> ModelRouterAgent:
     """Factory function to create model router.
 
     Args:

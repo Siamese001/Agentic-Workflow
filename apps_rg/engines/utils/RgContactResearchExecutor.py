@@ -16,6 +16,7 @@ meets security standards for job alignment.
 # from archives.legacy_resume_gen.Agentic_Workflow-10_10.config.meta_profile import MetaProfileSnapshot  # DEPRECATED: Archive import removed to protect archives from validation edits
 # from archives.legacy_resume_gen.Agentic_Workflow-10_10.tests.sandbox.test_sandbox_observability import record_event, record_exception  # DEPRECATED: Archive import removed to protect archives from validation edits
 
+
 class SafetyExecutor:
     """
     Executes resume safety validation with optimal model selection.
@@ -24,7 +25,12 @@ class SafetyExecutor:
     processing workflows and job alignment.
     """
 
-    def __init__(self, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: MetaProfileSnapshot | None = None):
+    def __init__(
+        self,
+        routing_policy: RoutingPolicy,
+        sandbox: SandboxConfig,
+        meta_profile: MetaProfileSnapshot | None = None,
+    ):
         self.routing_policy = routing_policy
         self.sandbox = sandbox
         self.meta_profile = meta_profile

@@ -23,23 +23,39 @@ from agentic_core.L4_state.ValidationContext.runtime_models import InjectionMatc
 # Compatibility aliases
 class InputSanitizer:
     """Compatibility wrapper for input sanitization."""
+
     @staticmethod
     def sanitize_xml(text: str) -> str:
         """Sanitize text for XML inclusion."""
         if not text:
             return ""
-        return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;").replace("'", "&apos;")
+        return (
+            text.replace("&", "&amp;")
+            .replace("<", "&lt;")
+            .replace(">", "&gt;")
+            .replace('"', "&quot;")
+            .replace("'", "&apos;")
+        )
 
     @staticmethod
     def sanitize_json(text: str) -> str:
         """Sanitize text for JSON inclusion."""
         if not text:
             return ""
-        return text.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n").replace("\r", "\\r").replace("\t", "\\t")
+        return (
+            text.replace("\\", "\\\\")
+            .replace('"', '\\"')
+            .replace("\n", "\\n")
+            .replace("\r", "\\r")
+            .replace("\t", "\\t")
+        )
+
 
 class SecurityIntegrityError(Exception):
     """Raised when security integrity validation fails."""
+
     pass
+
 
 Logger = logging.getLogger(__name__)
 
@@ -47,6 +63,7 @@ Logger = logging.getLogger(__name__)
 @dataclass
 class PromptComponents:
     """Components for prompt assembly."""
+
     role: str
     objective: str
     context_data: dict[str, Any]
@@ -59,6 +76,7 @@ class PromptComponents:
 
 class PromptTemplate(BaseModel):
     """XML template for prompt assembly."""
+
     name: str
     template: str
     version: str = "1.0"
@@ -111,10 +129,11 @@ You are {role}. Your objective is {objective}.
         template_dir.mkdir(parents=True, exist_ok=True)
 
         from agentic_core.utils.ssot_discovery import get_data_files
-        xml_files = list(get_data_files(template_dir, extensions=['.xml']))
+
+        xml_files = list(get_data_files(template_dir, extensions=[".xml"]))
         for file_path in xml_files:
             try:
-                with open(file_path, encoding='utf-8') as f:
+                with open(file_path, encoding="utf-8") as f:
                     template_content = f.read()
 
                 # Parse template metadata
@@ -124,9 +143,7 @@ You are {role}. Your objective is {objective}.
                 template_name = file_path.stem
 
                 self.templates[template_name] = PromptTemplate(
-                    name=template_name,
-                    template=template_content,
-                    description="Custom template"
+                    name=template_name, template=template_content, description="Custom template"
                 )
 
                 Logger.debug(f"Loaded template: {template_name}")
@@ -146,7 +163,7 @@ You are {role}. Your objective is {objective}.
         template_name: str | None = None,
         metadata: dict[str, Any] | None = None,
         enforce_contract: bool = False,
-        contract_id: str | None = None
+        contract_id: str | None = None,
     ) -> str:
         """Assemble a prompt with semantic fencing and security hardening.
 
@@ -193,14 +210,17 @@ You are {role}. Your objective is {objective}.
             # Sanitize injections (even though they're internal - defense in depth)
             sanitized_injections = []
             for injection in injections:
-                if hasattr(injection, 'content'):
+                if hasattr(injection, "content"):
                     sanitized_content = InputSanitizer.sanitize_xml_content(injection.content)
                     # Create new injection with sanitized content
                     sanitized_injection = type(injection)(
                         pattern=injection.pattern,
                         content=sanitized_content,
-                        **{k: v for k, v in injection.__dict__.items()
-                           if k not in ['pattern', 'content']}
+                        **{
+                            k: v
+                            for k, v in injection.__dict__.items()
+                            if k not in ["pattern", "content"]
+                        },
                     )
                     sanitized_injections.append(sanitized_injection)
                 else:
@@ -211,9 +231,7 @@ You are {role}. Your objective is {objective}.
             if negative_constraints:
                 for constraint in negative_constraints:
                     InputSanitizer.validate_injection_safety("constraint", constraint)
-                    sanitized_constraints.append(
-                        InputSanitizer.sanitize_xml_content(constraint)
-                    )
+                    sanitized_constraints.append(InputSanitizer.sanitize_xml_content(constraint))
 
             # Sanitize examples
             sanitized_examples = None
@@ -248,7 +266,9 @@ You are {role}. Your objective is {objective}.
         # Format output requirements
         output_format = "Respond clearly and professionally."
         if sanitized_schema:
-            output_format = f"Must respond with valid JSON matching this schema:\n{sanitized_schema}"
+            output_format = (
+                f"Must respond with valid JSON matching this schema:\n{sanitized_schema}"
+            )
 
         # Assemble the prompt with sanitized components
         prompt = template.format(
@@ -258,7 +278,7 @@ You are {role}. Your objective is {objective}.
             directives=directives,
             negative_constraints=negative_str,
             examples=sanitized_examples if sanitized_examples else "",
-            output_format=output_format
+            output_format=output_format,
         )
 
         # SECURITY: Tag Integrity Check
@@ -320,9 +340,7 @@ You are {role}. Your objective is {objective}.
 
         # Sort by priority
         sorted_injections = sorted(
-            injections,
-            key=lambda x: (x.injection.priority, x.relevance_score),
-            reverse=True
+            injections, key=lambda x: (x.injection.priority, x.relevance_score), reverse=True
         )
 
         for match in sorted_injections:
@@ -368,12 +386,7 @@ You are {role}. Your objective is {objective}.
         Returns:
             Parsed response components
         """
-        result = {
-            "plan": None,
-            "content": None,
-            "metadata": {},
-            "raw": response
-        }
+        result = {"plan": None, "content": None, "metadata": {}, "raw": response}
 
         # Try to extract PLAN and CONTENT blocks
         if "<PLAN>" in response and "</PLAN>" in response:
@@ -428,12 +441,7 @@ You are {role}. Your objective is {objective}.
 
         return errors
 
-    def create_custom_template(
-        self,
-        name: str,
-        template: str,
-        description: str = ""
-    ) -> None:
+    def create_custom_template(self, name: str, template: str, description: str = "") -> None:
         """Create and save a custom template.
 
         Args:
@@ -451,15 +459,11 @@ You are {role}. Your objective is {objective}.
         template_dir.mkdir(parents=True, exist_ok=True)
 
         file_path = template_dir / f"{name}.xml"
-        with open(file_path, 'w', encoding='utf-8') as f:
+        with open(file_path, "w", encoding="utf-8") as f:
             f.write(template)
 
         # Add to registry
-        self.templates[name] = PromptTemplate(
-            name=name,
-            template=template,
-            description=description
-        )
+        self.templates[name] = PromptTemplate(name=name, template=template, description=description)
 
         Logger.info(f"Created custom template: {name}")
 
@@ -491,7 +495,7 @@ def assemble_prompt(
     objective: str,
     context_data: dict[str, Any] | str,
     injections: list[InjectionMatch],
-    **kwargs
+    **kwargs,
 ) -> str:
     """Assemble a prompt using the global assembler.
 
@@ -507,11 +511,7 @@ def assemble_prompt(
     """
     assembler = get_prompt_assembler()
     return assembler.assemble(
-        role=role,
-        objective=objective,
-        context_data=context_data,
-        injections=injections,
-        **kwargs
+        role=role, objective=objective, context_data=context_data, injections=injections, **kwargs
     )
 
 
@@ -534,7 +534,7 @@ def enhance_prompt_with_fencing(
     injections: list[InjectionMatch],
     role: str = "Assistant",
     objective: str = "Follow the instructions",
-    context: dict[str, Any] | None = None
+    context: dict[str, Any] | None = None,
 ) -> str:
     """Enhance a prompt with semantic fencing (backward compatibility).
 
@@ -558,5 +558,5 @@ def enhance_prompt_with_fencing(
         objective=objective,
         context_data=context,
         injections=injections,
-        legacy_mode=True
+        legacy_mode=True,
     )

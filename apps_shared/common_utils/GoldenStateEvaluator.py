@@ -22,6 +22,7 @@ Logger = logging.getLogger(__name__)
 @dataclass
 class GoldenCase:
     """Golden test case."""
+
     id: str
     name: str
     category: str
@@ -49,6 +50,7 @@ class GoldenCase:
 @dataclass
 class GoldenOutput:
     """Output from agent execution."""
+
     case_id: str
     actual_output: str
     actions_taken: list[dict[str, Any]] = field(default_factory=list)
@@ -59,6 +61,7 @@ class GoldenOutput:
 @dataclass
 class EvaluationReport:
     """Evaluation report for a golden case."""
+
     case_id: str
     case_name: str
     passed: bool
@@ -116,17 +119,11 @@ class GoldenStateEvaluator:
                 self.golden_cases.append(case)
 
             if self.enable_logging:
-                Logger.info(
-                    "golden_cases_loaded",
-                    extra={"count": len(self.golden_cases)}
-                )
+                Logger.info("golden_cases_loaded", extra={"count": len(self.golden_cases)})
 
         except FileNotFoundError:
             if self.enable_logging:
-                Logger.warning(
-                    "golden_dataset_not_found",
-                    extra={"path": str(self.dataset_path)}
-                )
+                Logger.warning("golden_dataset_not_found", extra={"path": str(self.dataset_path)})
         except Exception as e:
             if self.enable_logging:
                 Logger.error(
@@ -165,7 +162,7 @@ class GoldenStateEvaluator:
             context={
                 "Task": case.mission,
                 "category": case.category,
-            }
+            },
         )
 
         # Evaluate action matching
@@ -182,11 +179,7 @@ class GoldenStateEvaluator:
         )
 
         # Determine pass/fail
-        passed = (
-            judge_result.passed
-            and action_match_score >= 0.5
-            and len(errors) == 0
-        )
+        passed = judge_result.passed and action_match_score >= 0.5 and len(errors) == 0
 
         report = EvaluationReport(
             case_id=case.id,
@@ -205,7 +198,7 @@ class GoldenStateEvaluator:
                     "passed": passed,
                     "judge_score": judge_result.overall_score,
                     "action_score": action_match_score,
-                }
+                },
             )
 
         return report
@@ -318,13 +311,15 @@ class GoldenStateEvaluator:
 
         pass_rate = passed / total if total > 0 else 0.0
 
-        avg_judge_score = sum(
-            r.judge_result.overall_score for r in reports.values()
-        ) / total if total > 0 else 0.0
+        avg_judge_score = (
+            sum(r.judge_result.overall_score for r in reports.values()) / total
+            if total > 0
+            else 0.0
+        )
 
-        avg_action_score = sum(
-            r.action_match_score for r in reports.values()
-        ) / total if total > 0 else 0.0
+        avg_action_score = (
+            sum(r.action_match_score for r in reports.values()) / total if total > 0 else 0.0
+        )
 
         failing_cases = [
             {"id": r.case_id, "name": r.case_name, "errors": r.errors}

@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: guardrail, memory, orchestrator, prompt, state, workflow
@@ -57,13 +56,16 @@ except ImportError:
 
 load_dotenv()
 
+
 # Placeholders (preserved from CanonBaseAgent)
 class _SubatomicEnginePlaceholder:
     def __init__(self, gemini_client: Any):
         self.client = gemini_client
 
+
 def get_subatomic_engine(gemini_client: Any) -> Any:
     return _SubatomicEnginePlaceholder(gemini_client)
+
 
 # Unified Base Class
 @dataclass
@@ -90,6 +92,7 @@ class L2ExecutionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
     - Redis caching (RedisCacheMixin) - with graceful degradation
     - Pinecone vectors (PineconeVectorMixin) - with graceful degradation
     """
+
     ctx: ValidationContext
     enable_gemini: bool = True  # Feature flag - True for former Canon agents, False for lightweight
 
@@ -101,18 +104,21 @@ class L2ExecutionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
     role: str = field(init=False)
     _client: Any | None = field(default=None, init=False)
     _subatomic_engine: Any | None = field(default=None, init=False)
-    BANNED_IMPORTS: list[str] = field(default_factory=lambda: ['base', 'context', 'L3_orchestration', 'ConversationalRepair'], init=False)
+    BANNED_IMPORTS: list[str] = field(
+        default_factory=lambda: ["base", "context", "L3_orchestration", "ConversationalRepair"],
+        init=False,
+    )
 
     def __post_init__(self) -> None:
         """Shared initialization logic with cooperative MRO."""
         # Initialize MRO chain - mixins first, then SovereignBaseAgent
         super().__init__(name=self.__class__.__name__)
 
-        self.role = re.sub('(?<!^)(?=[A-Z])', '_', self.name).lower()
+        self.role = re.sub("(?<!^)(?=[A-Z])", "_", self.name).lower()
 
         # Conditional Gemini + subatomic initialization
         if self.enable_gemini:
-            api_key = os.getenv('GOOGLE_API_KEY') or os.getenv('GEMINI_API_KEY')
+            api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
             if genai and api_key:
                 self._client = genai.Client(api_key=api_key)
                 self.log_info("connected to Gemini")
@@ -122,11 +128,13 @@ class L2ExecutionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
                 except Exception as e:
                     self.log_error(f"Failed to init Sub-Atomic Engine: {e}")
             else:
-                self.log_warning(f"Gemini not available (API key: {'found' if api_key else 'missing'})")
+                self.log_warning(
+                    f"Gemini not available (API key: {'found' if api_key else 'missing'})"
+                )
 
     def can_run(self) -> bool:
         """From SubAtomicAgent - default run unless critical failure."""
-        return 'CRITICAL_FAIL' not in self.ctx.signals
+        return "CRITICAL_FAIL" not in self.ctx.signals
 
     async def run_with_broadcast(self) -> Any:
         """From SubAtomicAgent - lifecycle broadcast wrapper."""
@@ -140,7 +148,7 @@ class L2ExecutionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
     @abstractmethod
     async def execute(self) -> Any:
         """Mandatory async execution - all L2 agents must implement."""
-        raise NotImplementedError(f'{self.name} must implement async execute()')
+        raise NotImplementedError(f"{self.name} must implement async execute()")
 
     def get_validation_keys(self) -> list[int]:
         """Optional for Canon-style agents - defaults to empty."""
@@ -153,9 +161,9 @@ class L2ExecutionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
             return True, []
         violations: list[str] = []
         for banned in self.BANNED_IMPORTS:
-            pattern = f'(?:import\\s+{re.escape(banned)}|from\\s+{re.escape(banned)}\\s+import|from\\s+{re.escape(banned)}\\.)'
+            pattern = f"(?:import\\s+{re.escape(banned)}|from\\s+{re.escape(banned)}\\s+import|from\\s+{re.escape(banned)}\\.)"
             if re.search(pattern, code):
-                violations.append(f'Banned import: {banned}')
+                violations.append(f"Banned import: {banned}")
         return (len(violations) == 0, violations)
 
     # run_subatomic_critique and related methods can be added here similarly if needed
@@ -196,7 +204,7 @@ class L2ExecutionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
             "results": results,
             "errors": errors,
             "success_count": sum(1 for r in results if r.get("success")),
-            "error_count": len(errors)
+            "error_count": len(errors),
         }
 
     async def act_async(self, plan: list[str]) -> dict[str, Any]:
@@ -215,7 +223,13 @@ class L2ExecutionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
                 result = await self._execute_tool_async(tool)
                 return {"tool": tool, "result": result, "success": True}
             except Exception as e:
-                return {"tool": tool, "result": None, "success": False, "error": str(e), "type": type(e).__name__}
+                return {
+                    "tool": tool,
+                    "result": None,
+                    "success": False,
+                    "error": str(e),
+                    "type": type(e).__name__,
+                }
 
         # Parallel execution
         results = await asyncio.gather(*[execute_one(t) for t in tools], return_exceptions=True)
@@ -224,7 +238,9 @@ class L2ExecutionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
         processed_results = []
         for i, r in enumerate(results):
             if isinstance(r, Exception):
-                processed_results.append({"tool": tools[i], "success": False, "error": str(r), "type": type(r).__name__})
+                processed_results.append(
+                    {"tool": tools[i], "success": False, "error": str(r), "type": type(r).__name__}
+                )
             else:
                 processed_results.append(r)
 
@@ -240,7 +256,7 @@ class L2ExecutionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
             "errors": errors,
             "clustered_errors": self.cluster_errors(errors) if errors else {},
             "success_count": sum(1 for r in processed_results if r.get("success")),
-            "error_count": len(errors)
+            "error_count": len(errors),
         }
 
     def cluster_errors(self, errors: list[dict[str, Any]]) -> dict[str, list[str]]:
@@ -253,6 +269,7 @@ class L2ExecutionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
             Dict mapping error types to list of error messages
         """
         from collections import defaultdict
+
         groups: dict[str, list[str]] = defaultdict(list)
 
         for e in errors:
@@ -284,7 +301,14 @@ class L2ExecutionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
         return {"executed": tool, "status": "placeholder", "async": True}
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """Shared healing stub - operational for L2."""
         if _call_path is None:
             _call_path = set()

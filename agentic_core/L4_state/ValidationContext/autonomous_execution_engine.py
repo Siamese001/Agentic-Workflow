@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: guardrail, healer, prompt
@@ -35,6 +34,7 @@ try:
     from agentic_core.L4_state.checkpoint_manager import create_autonomous_checkpoint_manager
 except ImportError:
     create_autonomous_checkpoint_manager = None
+
 
 # NAMING FIXED: AutonomousExecutionEngine → autonomous_execution_engine
 class autonomous_execution_engine:
@@ -94,10 +94,12 @@ class autonomous_execution_engine:
             data = {
                 "last_mission": self.last_mission_result,
                 "consecutive_failures": self.consecutive_failures,
-                "saved_at": datetime.utcnow().isoformat()
+                "saved_at": datetime.utcnow().isoformat(),
             }
             # Sovereign Pattern: Temp file + Atomic Rename
-            with tempfile.NamedTemporaryFile('w', delete=False, dir=self.state_path.parent, encoding='utf-8') as tf:
+            with tempfile.NamedTemporaryFile(
+                "w", delete=False, dir=self.state_path.parent, encoding="utf-8"
+            ) as tf:
                 json.dump(data, tf, indent=2)
                 temp_name = tf.name
             os.replace(temp_name, self.state_path)
@@ -117,14 +119,14 @@ class autonomous_execution_engine:
         try:
             # Check resource availability
             status = self.resource_manager.get_resource_status()
-            if status['global_budget_remaining'] < 10:
+            if status["global_budget_remaining"] < 10:
                 Logger.warning("L3: Low resource budget, skipping mission")
                 return
 
             # Create Checkpoint before mission
             checkpoint_id = await self.CheckpointManager.auto_checkpoint_if_needed(
                 state={"mission": "validation", "timestamp": datetime.utcnow().isoformat()},
-                files_to_track=[]
+                files_to_track=[],
             )
 
             Logger.info("L3: Starting validation mission")
@@ -142,7 +144,7 @@ class autonomous_execution_engine:
                 "status": "success",
                 "checkpoint_id": checkpoint_id,
                 "completed_at": datetime.utcnow().isoformat(),
-                "message": "Canon state verified"
+                "message": "Canon state verified",
             }
             self.consecutive_failures = 0
 
@@ -155,12 +157,14 @@ class autonomous_execution_engine:
             self.last_mission_result = {
                 "status": "failed",
                 "error": str(e),
-                "completed_at": datetime.utcnow().isoformat()
+                "completed_at": datetime.utcnow().isoformat(),
             }
 
             # Circuit breaker pattern
             if self.consecutive_failures > self.max_consecutive_failures:
-                Logger.critical(f"CIRCUIT BREAKER: {self.consecutive_failures} consecutive failures. Entering Safe Mode.")
+                Logger.critical(
+                    f"CIRCUIT BREAKER: {self.consecutive_failures} consecutive failures. Entering Safe Mode."
+                )
                 self.running = False
 
     async def eternal_execution_cycle(self):
@@ -190,10 +194,11 @@ class autonomous_execution_engine:
         """Get current execution status"""
         return {
             "running": self.running,
-            "execution_task_active": self._execution_task is not None and not self._execution_task.done(),
+            "execution_task_active": self._execution_task is not None
+            and not self._execution_task.done(),
             "consecutive_failures": self.consecutive_failures,
             "last_mission": self.last_mission_result,
-            "execution_interval": self.execution_interval
+            "execution_interval": self.execution_interval,
         }
 
     def reset_circuit_breaker(self):

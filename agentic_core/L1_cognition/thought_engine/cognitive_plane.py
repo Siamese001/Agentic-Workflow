@@ -15,6 +15,7 @@ from typing import Any
 
 class CognitiveCapability(Enum):
     """Capabilities provided by the cognitive plane."""
+
     PLANNING = "planning"
     REASONING = "reasoning"
     DECISION_MAKING = "decision_making"
@@ -26,6 +27,7 @@ class CognitiveCapability(Enum):
 @dataclass
 class PlanningRequest:
     """Request for cognitive planning."""
+
     Task: str
     context: dict[str, Any] = field(default_factory=dict)
     constraints: dict[str, Any] = field(default_factory=dict)
@@ -48,6 +50,7 @@ class PlanningRequest:
 @dataclass
 class PlanningResult:
     """Result from cognitive planning."""
+
     success: bool
     plan: list[dict[str, Any]]
     reasoning_trace: list[dict[str, Any]] = field(default_factory=list)

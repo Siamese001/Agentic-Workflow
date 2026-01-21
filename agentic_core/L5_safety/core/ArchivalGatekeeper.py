@@ -46,6 +46,7 @@ ARCHIVE_BATCH_ACCEPT_ENV = "ARCHIVE_BATCH_ACCEPT"
 
 class ArchivalOperation(Enum):
     """Types of archival operations."""
+
     MOVE = "MOVE"
     ARCHIVE = "ARCHIVE"
     DELETE = "DELETE"  # Soft delete - actually archives
@@ -54,6 +55,7 @@ class ArchivalOperation(Enum):
 @dataclass
 class ArchivalResult:
     """Result of an archival operation."""
+
     success: bool
     operation: ArchivalOperation
     source_path: Path
@@ -269,7 +271,9 @@ class ArchivalGatekeeper:
         # Check batch mode first
         if self._is_batch_mode():
             result.approval_status = "BATCH_APPROVED"
-            Logger.info(f"[ArchivalGatekeeper] BATCH_APPROVED: {result.operation.value} {result.source_path}")
+            Logger.info(
+                f"[ArchivalGatekeeper] BATCH_APPROVED: {result.operation.value} {result.source_path}"
+            )
             return True
 
         # Skip approval if disabled (for testing without mocking input)
@@ -296,17 +300,23 @@ class ArchivalGatekeeper:
 
             if approved:
                 result.approval_status = "APPROVED"
-                Logger.info(f"[ArchivalGatekeeper] User APPROVED: {result.operation.value} {result.source_path}")
+                Logger.info(
+                    f"[ArchivalGatekeeper] User APPROVED: {result.operation.value} {result.source_path}"
+                )
             else:
                 result.approval_status = "DENIED"
-                Logger.info(f"[ArchivalGatekeeper] User DENIED: {result.operation.value} {result.source_path}")
+                Logger.info(
+                    f"[ArchivalGatekeeper] User DENIED: {result.operation.value} {result.source_path}"
+                )
 
             return approved
 
         except (EOFError, KeyboardInterrupt):
             # Handle non-interactive environments gracefully
             result.approval_status = "DENIED"
-            Logger.warning(f"[ArchivalGatekeeper] Non-interactive environment, DENIED: {result.operation.value}")
+            Logger.warning(
+                f"[ArchivalGatekeeper] Non-interactive environment, DENIED: {result.operation.value}"
+            )
             return False
 
     def set_l4_ledger_hook(self, hook: Callable[[ArchivalResult], None]) -> None:

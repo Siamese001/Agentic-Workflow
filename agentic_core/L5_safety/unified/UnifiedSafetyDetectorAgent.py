@@ -14,6 +14,7 @@ Features:
 - Configurable detection thresholds
 - Real-time safety scoring
 """
+
 from __future__ import annotations
 
 import logging
@@ -29,6 +30,7 @@ Logger = logging.getLogger(__name__)
 
 class SafetyThreatType(Enum):
     """Types of safety threats."""
+
     BIAS = auto()
     HALLUCINATION = auto()
     PROMPT_INJECTION = auto()
@@ -38,6 +40,7 @@ class SafetyThreatType(Enum):
 
 class ThreatSeverity(Enum):
     """Severity levels for threats."""
+
     LOW = 0
     MEDIUM = 1
     HIGH = 2
@@ -47,6 +50,7 @@ class ThreatSeverity(Enum):
 @dataclass
 class SafetyThreat:
     """Represents a detected safety threat."""
+
     threat_type: SafetyThreatType
     severity: ThreatSeverity
     message: str
@@ -59,6 +63,7 @@ class SafetyThreat:
 @dataclass
 class SafetyConfig:
     """Configuration for safety detection."""
+
     enable_bias: bool = True
     enable_hallucination: bool = True
     enable_injection: bool = True
@@ -175,7 +180,8 @@ class UnifiedSafetyDetectorAgent:
                     "patterns_matched": matched_patterns,
                     "text_preview": text[:100] + "..." if len(text) > 100 else text,
                 },
-                blocked=self.config.block_high_severity and severity.value >= ThreatSeverity.HIGH.value,
+                blocked=self.config.block_high_severity
+                and severity.value >= ThreatSeverity.HIGH.value,
             )
             threats.append(threat)
             self._threats.append(threat)

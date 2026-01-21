@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt, state, validator, workflow
@@ -36,6 +35,7 @@ Logger = logging.getLogger(__name__)
 
 class CheckpointIntegrityError(Exception):
     """Raised when Checkpoint integrity validation fails."""
+
     pass
 
 
@@ -48,7 +48,7 @@ class SecureCheckpointManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
         hop_id: str,
         checkpoint_dir: Path,
         encryption_key: bytes | None = None,
-        integrity_key: bytes | None = None
+        integrity_key: bytes | None = None,
     ) -> None:
         """Initialize the secure Checkpoint manager.
 
@@ -106,11 +106,7 @@ class SecureCheckpointManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
         Returns:
             Hexadecimal HMAC digest
         """
-        return hmac.new(
-            self.integrity_key,
-            data,
-            hashlib.sha256
-        ).hexdigest()
+        return hmac.new(self.integrity_key, data, hashlib.sha256).hexdigest()
 
     def _verify_hmac(self, data: bytes, expected_hmac: str) -> bool:
         """Verify HMAC-SHA256 for data integrity.
@@ -150,14 +146,14 @@ class SecureCheckpointManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
                 "hop_id": self.hop_id,
                 "timestamp": time.time(),
                 "encrypted_data": base64.b64encode(encrypted_data).decode(),
-                "integrity_hmac": integrity_hmac
+                "integrity_hmac": integrity_hmac,
             }
 
             # Write to file with atomic operation
             checkpoint_file = self.checkpoint_dir / f"{self.hop_id}_{Checkpoint.stage.value}.secure"
             temp_file = checkpoint_file.with_suffix(".tmp")
 
-            with open(temp_file, 'w') as f:
+            with open(temp_file, "w") as f:
                 json.dump(secure_checkpoint, f, indent=2)
 
             # Atomic rename
@@ -183,8 +179,13 @@ class SecureCheckpointManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
 
         # Phase 6.6: Use ssot_discovery instead of glob
         from agentic_core.utils.ssot_discovery import get_data_files
+
         # Find all secure Checkpoint files
-        all_secure = [f for f in get_data_files(self.checkpoint_dir, extensions=['.secure']) if f.name.startswith(f"{self.hop_id}_")]
+        all_secure = [
+            f
+            for f in get_data_files(self.checkpoint_dir, extensions=[".secure"])
+            if f.name.startswith(f"{self.hop_id}_")
+        ]
         for checkpoint_file in all_secure:
             try:
                 Checkpoint = await self._load_checkpoint_file(checkpoint_file)
@@ -241,7 +242,9 @@ class SecureCheckpointManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
 
         # Validate hop ID matches
         if "hop_id" in checkpoint_dict and checkpoint_dict["hop_id"] != self.hop_id:
-            raise CheckpointIntegrityError(f"Checkpoint hop ID mismatch: {checkpoint_dict['hop_id']}")
+            raise CheckpointIntegrityError(
+                f"Checkpoint hop ID mismatch: {checkpoint_dict['hop_id']}"
+            )
 
         return MicroCheckpoint(**checkpoint_dict)
 
@@ -253,10 +256,15 @@ class SecureCheckpointManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
         """
         # Phase 6.6: Use ssot_discovery instead of glob
         from agentic_core.utils.ssot_discovery import get_data_files
+
         # Group checkpoints by stage
         stage_checkpoints = {}
 
-        all_secure = [f for f in get_data_files(self.checkpoint_dir, extensions=['.secure']) if f.name.startswith(f"{self.hop_id}_")]
+        all_secure = [
+            f
+            for f in get_data_files(self.checkpoint_dir, extensions=[".secure"])
+            if f.name.startswith(f"{self.hop_id}_")
+        ]
         for checkpoint_file in all_secure:
             stage = checkpoint_file.stem.split("_")[-1]
             if stage not in stage_checkpoints:
@@ -277,10 +285,15 @@ class SecureCheckpointManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
         """Quarantine all checkpoints for this hop (emergency measure)."""
         # Phase 6.6: Use ssot_discovery instead of glob
         from agentic_core.utils.ssot_discovery import get_data_files
+
         quarantine_dir = self.checkpoint_dir / "quarantine"
         quarantine_dir.mkdir(exist_ok=True)
 
-        all_secure = [f for f in get_data_files(self.checkpoint_dir, extensions=['.secure']) if f.name.startswith(f"{self.hop_id}_")]
+        all_secure = [
+            f
+            for f in get_data_files(self.checkpoint_dir, extensions=[".secure"])
+            if f.name.startswith(f"{self.hop_id}_")
+        ]
         for checkpoint_file in all_secure:
             quarantine_file = quarantine_dir / checkpoint_file.name
             checkpoint_file.replace(quarantine_file)
@@ -294,7 +307,7 @@ class SecureCheckpointManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: set | None = None
+        _call_path: set | None = None,
     ) -> dict[str, int]:
         """
         Secure Checkpoint Healing - Validates integrity and cleans up old snapshots.
@@ -304,7 +317,11 @@ class SecureCheckpointManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
         """
         # CRITICAL: Chain up to HealerMixin
         metrics = super().heal_repository(
-            dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path
+            dry_run=dry_run,
+            execute=execute,
+            depth=depth,
+            max_depth=max_depth,
+            _call_path=_call_path,
         )
         if not isinstance(metrics, dict):
             metrics = {"violations": 0, "fixed": 0, "errors": 0}
@@ -338,10 +355,7 @@ class CheckpointManagerFactory:
 
     @classmethod
     def get_manager(
-        cls,
-        hop_id: str,
-        checkpoint_dir: Path,
-        use_global_key: bool = True
+        cls, hop_id: str, checkpoint_dir: Path, use_global_key: bool = True
     ) -> SecureCheckpointManagerAgent:
         """Get or create a Checkpoint manager.
 
@@ -360,9 +374,7 @@ class CheckpointManagerFactory:
                     Logger.info("Generated global Checkpoint encryption key")
 
                 manager = SecureCheckpointManagerAgent(
-                    hop_id,
-                    checkpoint_dir,
-                    encryption_key=cls._global_key
+                    hop_id, checkpoint_dir, encryption_key=cls._global_key
                 )
             else:
                 manager = SecureCheckpointManagerAgent(hop_id, checkpoint_dir)
@@ -378,7 +390,10 @@ class CheckpointManagerFactory:
             if manager.checkpoint_dir == checkpoint_dir:
                 manager.quarantine_all_checkpoints()
 
-def get_secure_checkpoint_manager(checkpoint_dir: Path | None = None) -> SecureCheckpointManagerAgent:
+
+def get_secure_checkpoint_manager(
+    checkpoint_dir: Path | None = None,
+) -> SecureCheckpointManagerAgent:
     """Factory function to get secure checkpoint manager."""
     if checkpoint_dir is None:
         checkpoint_dir = Path("checkpoints")

@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, validator, workflow
@@ -29,7 +28,9 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # Legacy class removed - use SystemArchitectAgent instead
 @dataclass
-class SystemArchitectDeprecatedAgent(SubatomicTestingMixin, HealerMixin, CanonBaseAgentInterface, MCPHardenedMixin):
+class SystemArchitectDeprecatedAgent(
+    SubatomicTestingMixin, HealerMixin, CanonBaseAgentInterface, MCPHardenedMixin
+):
     """
     KEYS: 40 (Metaclasses), 41 (Deep Nesting), 49 (Directory Depth), 50 (Integrity)
     ROLE: The Gatekeeper. If this fails, the system is unstable.
@@ -91,10 +92,7 @@ class SystemArchitectDeprecatedAgent(SubatomicTestingMixin, HealerMixin, CanonBa
             with open(file_path, encoding="utf-8") as f:
                 return ast.parse(f.read(), filename=file_path)
         except (FileNotFoundError, SyntaxError, UnicodeDecodeError) as e:
-            print(
-                f"Warning: Could not parse {file_path} for check: {e}",
-                file=sys.stderr
-            )
+            print(f"Warning: Could not parse {file_path} for check: {e}", file=sys.stderr)
             return None
 
     def _has_metaclass_keyword(self, node: ast.ClassDef) -> bool:
@@ -141,7 +139,7 @@ class SystemArchitectDeprecatedAgent(SubatomicTestingMixin, HealerMixin, CanonBa
             - List[str]: A list of strings, each indicating a file path, line number,
                           scope, and depth where a Violation occurred.
         """
-        MAX_NESTING_DEPTH = int(os.getenv('MAX_NESTING_DEPTH', '4'))
+        MAX_NESTING_DEPTH = int(os.getenv("MAX_NESTING_DEPTH", "4"))
         violations = []
 
         for fp in self.ctx.python_files:
@@ -183,7 +181,9 @@ class SystemArchitectDeprecatedAgent(SubatomicTestingMixin, HealerMixin, CanonBa
                 root_folder = parts[0]
                 required_depth = DEPTH_MAP[root_folder]
                 if depth != required_depth:
-                    violations.append(f"{file_path} (Invalid depth: {depth} - {root_folder} requires depth {required_depth})")
+                    violations.append(
+                        f"{file_path} (Invalid depth: {depth} - {root_folder} requires depth {required_depth})"
+                    )
         return len(violations) == 0, violations
 
     def _has_definitions_in_tree(self, ast_tree: ast.AST) -> bool:
@@ -229,15 +229,20 @@ class SystemArchitectDeprecatedAgent(SubatomicTestingMixin, HealerMixin, CanonBa
 
     async def _handle_key_41_fix_attempts(self, details_41: list[str]) -> Any:
         """Helper to attempt smart fixes for Key 41 violations."""
-        unique_fps_to_fix = list(
-            {v.split(":")[0] for v in details_41}
-        )
+        unique_fps_to_fix = list({v.split(":")[0] for v in details_41})
         # Limit fixes to the first 3 files to avoid excessive calls
         for fp in unique_fps_to_fix[:3]:
             await self.smart_fix(fp, 41)
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L1 cognition agent - operational only."""
         super().heal_repository()
 

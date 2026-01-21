@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: orchestrator, state, validator, workflow
@@ -44,7 +43,7 @@ class LLMEngine(ABC):
         code: str,
         file_path: str,
         context: str = "",
-        fission_active: bool = False
+        fission_active: bool = False,
     ) -> str:
         """
         Generate code mutation using LLM.
@@ -100,7 +99,7 @@ class GeminiEngine(LLMEngine):
         # Lazy load SubAtomicEngine to avoid circular imports
         try:
             # GRAVITY FIXED (Upward Leak): from agentic_core.L3_orchestration.fission_logic.subatomic_engine import SubAtomicEngineImpl
-            _mod = importlib.import_module('agentic_core.L5_safety.guardrails.subatomic_engine')
+            _mod = importlib.import_module("agentic_core.L5_safety.guardrails.subatomic_engine")
             SubAtomicEngineImpl = _mod.SubAtomicEngineImpl
             self._engine = SubAtomicEngineImpl(project_root)
             Logger.info("[GeminiEngine] Initialized successfully")
@@ -113,7 +112,7 @@ class GeminiEngine(LLMEngine):
         code: str,
         file_path: str,
         context: str = "",
-        fission_active: bool = False
+        fission_active: bool = False,
     ) -> str:
         """
         Generate code mutation using Gemini.
@@ -137,7 +136,7 @@ class GeminiEngine(LLMEngine):
             Task=prompt,
             file_path=file_path,
             system_prompt=None,
-            fission_active=fission_active
+            fission_active=fission_active,
         )
 
     async def embed(self, text: str) -> list[float]:
@@ -154,7 +153,7 @@ class GeminiEngine(LLMEngine):
             raise RuntimeError("GeminiEngine not initialized")
 
         # Use SubAtomicEngine's embedding capability via Pinecone agent
-        if hasattr(self._engine, 'pinecone') and self._engine.pinecone:
+        if hasattr(self._engine, "pinecone") and self._engine.pinecone:
             return await self._engine.pinecone.get_embedding(text)
 
         # Fallback: return zero vector
@@ -180,7 +179,7 @@ class MultiProviderEngine:
         project_root: Path,
         primary: str = "gemini",
         secondary: str | None = None,
-        consistency_threshold: float = 0.95
+        consistency_threshold: float = 0.95,
     ):
         """
         Initialize multi-Provider engine.
@@ -204,7 +203,9 @@ class MultiProviderEngine:
         if secondary:
             try:
                 self.secondary = self._load_engine(secondary)
-                Logger.info(f"[MultiProviderEngine] Secondary: {secondary} (consistency mode enabled)")
+                Logger.info(
+                    f"[MultiProviderEngine] Secondary: {secondary} (consistency mode enabled)"
+                )
             except Exception as e:
                 Logger.warning(f"[MultiProviderEngine] Secondary engine failed to load: {e}")
                 self.consistency_mode = False
@@ -230,7 +231,7 @@ class MultiProviderEngine:
         code: str,
         file_path: str,
         context: str = "",
-        fission_active: bool = False
+        fission_active: bool = False,
     ) -> str:
         """
         [HARDENING 11] Generate code mutation with optional consistency check.
@@ -254,7 +255,7 @@ class MultiProviderEngine:
             code=code,
             file_path=file_path,
             context=context,
-            fission_active=fission_active
+            fission_active=fission_active,
         )
 
         # If consistency mode enabled, verify with secondary Provider
@@ -265,7 +266,7 @@ class MultiProviderEngine:
                     code=code,
                     file_path=file_path,
                     context=context,
-                    fission_active=fission_active
+                    fission_active=fission_active,
                 )
 
                 # Check consistency
@@ -307,9 +308,7 @@ class MultiProviderEngine:
 
         # Must have same number of non-empty lines
         if len(lines_a) != len(lines_b):
-            Logger.warning(
-                f"[CONSISTENCY] Line count mismatch: {len(lines_a)} vs {len(lines_b)}"
-            )
+            Logger.warning(f"[CONSISTENCY] Line count mismatch: {len(lines_a)} vs {len(lines_b)}")
             return False
 
         # Count matching lines

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Quick syntax check to identify the 3 remaining errors."""
+
 import sys
 from pathlib import Path
 
@@ -16,8 +17,9 @@ def main():
     print(f"Total errors: {result['total_violations']}")
     print()
 
-    for v in result.get('violations', []):
+    for v in result.get("violations", []):
         print(f"{v.file_path}:{v.line_number}:{v.column} - {v.error_message}")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

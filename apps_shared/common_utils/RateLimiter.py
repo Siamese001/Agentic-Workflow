@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 
 class RateLimitStrategy(str, Enum):
     """Rate limiting strategies."""
+
     TOKEN_BUCKET = "token_bucket"
     SLIDING_WINDOW = "sliding_window"
     FIXED_WINDOW = "fixed_window"
@@ -49,6 +50,7 @@ class RateLimitExceeded(Exception):
 @dataclass
 class RateLimitConfig:
     """Configuration for rate limiting."""
+
     limit: int  # Number of requests
     window: int  # Time window in seconds
     strategy: RateLimitStrategy = RateLimitStrategy.TOKEN_BUCKET
@@ -64,6 +66,7 @@ class RateLimitConfig:
 @dataclass
 class ClientState:
     """State for a rate-limited client."""
+
     identifier: str
     request_count: int = 0
     window_start: float = field(default_factory=time.time)
@@ -133,7 +136,7 @@ class TokenBucketRateLimiter(RateLimiter):
             "total_requests": 0,
             "allowed_requests": 0,
             "blocked_requests": 0,
-            "active_clients": 0
+            "active_clients": 0,
         }
 
         # Start cleanup task
@@ -168,8 +171,7 @@ class TokenBucketRateLimiter(RateLimiter):
             # Get or create client state
             if identifier not in self.clients:
                 self.clients[identifier] = ClientState(
-                    identifier=identifier,
-                    tokens=float(self.config.burst_size)
+                    identifier=identifier, tokens=float(self.config.burst_size)
                 )
 
             client = self.clients[identifier]
@@ -227,7 +229,8 @@ class TokenBucketRateLimiter(RateLimiter):
             cutoff = now - self.config.cleanup_interval
 
             inactive_clients = [
-                identifier for identifier, client in self.clients.items()
+                identifier
+                for identifier, client in self.clients.items()
                 if client.last_request < cutoff
             ]
 
@@ -241,6 +244,7 @@ class TokenBucketRateLimiter(RateLimiter):
 
     def _start_cleanup(self) -> None:
         """Start the cleanup task."""
+
         async def cleanup_loop():
             while True:
                 try:
@@ -281,7 +285,7 @@ class SlidingWindowRateLimiter(RateLimiter):
             "total_requests": 0,
             "allowed_requests": 0,
             "blocked_requests": 0,
-            "active_clients": 0
+            "active_clients": 0,
         }
 
         logger.debug(f"Initialized SlidingWindowRateLimiter: {config.limit}/{config.window}s")
@@ -394,11 +398,7 @@ class RateLimitManager:
 
             return limiter
 
-    async def check_limit(
-        self,
-        limiter_name: str,
-        identifier: str
-    ) -> tuple[bool, float]:
+    async def check_limit(self, limiter_name: str, identifier: str) -> tuple[bool, float]:
         """Check rate limit.
 
         Args:
@@ -463,7 +463,7 @@ class RateLimitManager:
                 limiter = self.limiters[name]
 
                 # Stop cleanup tasks if applicable
-                if hasattr(limiter, 'stop'):
+                if hasattr(limiter, "stop"):
                     await limiter.stop()
 
                 del self.limiters[name]
@@ -500,10 +500,7 @@ async def get_rate_limit_manager() -> RateLimitManager:
 
 
 # Decorators for rate limiting
-def rate_limit(
-    limiter_name: str,
-    identifier_extractor: Callable | None = None
-):
+def rate_limit(limiter_name: str, identifier_extractor: Callable | None = None):
     """Decorator to add rate limiting to functions.
 
     Args:
@@ -513,6 +510,7 @@ def rate_limit(
     Returns:
         Decorated function
     """
+
     def decorator(func):
         async def async_wrapper(*args, **kwargs):
             manager = await get_rate_limit_manager()
@@ -522,7 +520,7 @@ def rate_limit(
                 identifier = identifier_extractor(*args, **kwargs)
             else:
                 # Default: use first argument or 'default'
-                identifier = str(args[0]) if args else 'default'
+                identifier = str(args[0]) if args else "default"
 
             # Check rate limit
             allowed, retry_after = await manager.check_limit(limiter_name, identifier)
@@ -532,7 +530,7 @@ def rate_limit(
                     identifier,
                     manager.get_limiter(limiter_name).config.limit,
                     manager.get_limiter(limiter_name).config.window,
-                    retry_after
+                    retry_after,
                 )
 
             # Execute function
@@ -555,27 +553,12 @@ def rate_limit(
 
 # Predefined configurations
 RATE_LIMIT_CONFIGS = {
-    "api_default": RateLimitConfig(
-        limit=100,
-        window=60,
-        strategy=RateLimitStrategy.TOKEN_BUCKET
-    ),
+    "api_default": RateLimitConfig(limit=100, window=60, strategy=RateLimitStrategy.TOKEN_BUCKET),
     "api_heavy": RateLimitConfig(
-        limit=1000,
-        window=60,
-        strategy=RateLimitStrategy.TOKEN_BUCKET,
-        burst_size=2000
+        limit=1000, window=60, strategy=RateLimitStrategy.TOKEN_BUCKET, burst_size=2000
     ),
-    "api_strict": RateLimitConfig(
-        limit=10,
-        window=60,
-        strategy=RateLimitStrategy.SLIDING_WINDOW
-    ),
-    "upload": RateLimitConfig(
-        limit=5,
-        window=60,
-        strategy=RateLimitStrategy.TOKEN_BUCKET
-    )
+    "api_strict": RateLimitConfig(limit=10, window=60, strategy=RateLimitStrategy.SLIDING_WINDOW),
+    "upload": RateLimitConfig(limit=5, window=60, strategy=RateLimitStrategy.TOKEN_BUCKET),
 }
 
 

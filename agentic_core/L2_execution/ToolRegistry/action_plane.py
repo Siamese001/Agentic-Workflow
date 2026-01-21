@@ -15,6 +15,7 @@ from typing import Any
 
 class ActionCapability(Enum):
     """Capabilities provided by the action plane."""
+
     TOOL_EXECUTION = "tool_execution"
     API_CALLS = "api_calls"
     FILE_OPERATIONS = "file_operations"
@@ -27,6 +28,7 @@ class ActionCapability(Enum):
 @dataclass
 class ActionRequest:
     """Request for action execution."""
+
     action_type: str
     tool_name: str
     parameters: dict[str, Any] = field(default_factory=dict)
@@ -49,6 +51,7 @@ class ActionRequest:
 @dataclass
 class ActionResult:
     """Result from action execution."""
+
     success: bool
     output: Any = None
     error: str | None = None

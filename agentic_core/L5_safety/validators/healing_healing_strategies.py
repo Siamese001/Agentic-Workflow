@@ -15,6 +15,7 @@ from typing import Any
 
 Logger = logging.getLogger(__name__)
 
+
 # NAMING FIXED: HealingStrategy → HealingStrategy
 class HealingStrategy:
     """Base class for all healing strategies."""
@@ -57,7 +58,6 @@ class StructureHealing(HealingStrategy):
         super().__init__("Structure", priority=1)
 
     async def diagnose(self, issues: list[dict]) -> list[dict]:
-
         fixes = []
         for issue in issues:
             description = issue.get("description", "").lower()
@@ -71,14 +71,16 @@ class StructureHealing(HealingStrategy):
                 else:
                     target_dir = "agentic_core/L0_maintenance/scripts"
 
-                fixes.append({
-                    "action": "move",
-                    "source": str(source),
-                    "target": str(Path(target_dir) / source.name),
-                    "reason": "Forbidden root folder Violation",
-                    "priority": self.priority,
-                    "strategy": self.name
-                })
+                fixes.append(
+                    {
+                        "action": "move",
+                        "source": str(source),
+                        "target": str(Path(target_dir) / source.name),
+                        "reason": "Forbidden root folder Violation",
+                        "priority": self.priority,
+                        "strategy": self.name,
+                    }
+                )
         return fixes
 
     async def apply(self, fix: dict, ctx: Any = None) -> bool:
@@ -86,6 +88,7 @@ class StructureHealing(HealingStrategy):
         try:
             import shutil
             import sys
+
             source = Path(fix["source"])
             target = Path(fix["target"])
 
@@ -94,23 +97,25 @@ class StructureHealing(HealingStrategy):
 
             # SSOT COMPLIANCE: All moves require user approval
             if sys.stdin.isatty():
-                print(f"\n{'='*60}")
+                print(f"\n{'=' * 60}")
                 print("MOVE APPROVAL REQUIRED")
-                print(f"{'='*60}")
+                print(f"{'=' * 60}")
                 print(f"Source: {source}")
                 print(f"Target: {target}")
                 print("Reason: L0 Structure relocation")
-                print(f"{'='*60}")
+                print(f"{'=' * 60}")
                 try:
                     response = input("Approve? [y/n]: ").strip().lower()
-                    if response != 'y':
+                    if response != "y":
                         Logger.info(f"[L0 STRUCTURE] Skipped move of {source.name} - user declined")
                         return False
                 except (EOFError, KeyboardInterrupt):
                     Logger.info("[L0 STRUCTURE] Move cancelled by user")
                     return False
             else:
-                Logger.warning(f"[L0 STRUCTURE] Non-interactive mode - skipping move: {source.name}")
+                Logger.warning(
+                    f"[L0 STRUCTURE] Non-interactive mode - skipping move: {source.name}"
+                )
                 return False
 
             # Ensure target parent exists
@@ -133,7 +138,6 @@ class UnderscoreFieldHealing(HealingStrategy):
         super().__init__("UnderscoreFields", priority=2)
 
     async def diagnose(self, issues: list[dict]) -> list[dict]:
-
         fixes = []
         for issue in issues:
             description = issue.get("description", "").lower()
@@ -148,21 +152,24 @@ class UnderscoreFieldHealing(HealingStrategy):
                     pass
 
             if field_name and field_name.startswith("_") and not field_name.startswith("__"):
-                fixes.append({
-                    "action": "rename_field",
-                    "file": issue.get("file"),
-                    "old_name": field_name,
-                    "new_name": field_name.lstrip("_"),
-                    "reason": "Underscore field in SSOT model",
-                    "priority": self.priority,
-                    "strategy": self.name
-                })
+                fixes.append(
+                    {
+                        "action": "rename_field",
+                        "file": issue.get("file"),
+                        "old_name": field_name,
+                        "new_name": field_name.lstrip("_"),
+                        "reason": "Underscore field in SSOT model",
+                        "priority": self.priority,
+                        "strategy": self.name,
+                    }
+                )
         return fixes
 
     async def apply(self, fix: dict, ctx: Any = None) -> bool:
         """Rename illegal underscore fields in SSOT schema files."""
         try:
             import re
+
             file_path = Path(fix["file"])
             if not file_path.exists():
                 return False
@@ -192,19 +199,20 @@ class DarkReasoningHealing(HealingStrategy):
         super().__init__("DarkReasoning", priority=3)
 
     async def diagnose(self, issues: list[dict]) -> list[dict]:
-
         fixes = []
         for issue in issues:
             desc = issue.get("description", "").lower()
             if "dark reasoning" in desc or "l6 footprint" in desc:
-                fixes.append({
-                    "action": "inject_logging",
-                    "file": issue.get("file", ""),
-                    "line": issue.get("line"),
-                    "reason": "Dark Reasoning - Missing L6 observability footprint",
-                    "priority": self.priority,
-                    "strategy": self.name
-                })
+                fixes.append(
+                    {
+                        "action": "inject_logging",
+                        "file": issue.get("file", ""),
+                        "line": issue.get("line"),
+                        "reason": "Dark Reasoning - Missing L6 observability footprint",
+                        "priority": self.priority,
+                        "strategy": self.name,
+                    }
+                )
         return fixes
 
     async def apply(self, fix: dict, ctx: Any = None) -> bool:
@@ -216,11 +224,14 @@ class DarkReasoningHealing(HealingStrategy):
                 return False
 
             lines = file_path.read_text(encoding="utf-8").splitlines()
-            if line_num > len(lines): return False
+            if line_num > len(lines):
+                return False
 
             target_line = lines[line_num - 1]
             indent = len(target_line) - len(target_line.lstrip())
-            log_stmt = " " * indent + f'Logger.info("[L1 REASONING] Observed: {target_line.strip()}")'
+            log_stmt = (
+                " " * indent + f'Logger.info("[L1 REASONING] Observed: {target_line.strip()}")'
+            )
 
             lines.insert(line_num, log_stmt)
             file_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -252,14 +263,16 @@ class DddAlignmentHealing(HealingStrategy):
                     if len(parts) > 1:
                         module_info = parts[1].strip()
 
-                        fixes.append({
-                            "action": "refactor_import",
-                            "file": issue.get("file", ""),
-                            "module": module_info,
-                            "reason": "DDD Context Violation - illegal cross-layer import",
-                            "priority": self.priority,
-                            "strategy": self.name
-                        })
+                        fixes.append(
+                            {
+                                "action": "refactor_import",
+                                "file": issue.get("file", ""),
+                                "module": module_info,
+                                "reason": "DDD Context Violation - illegal cross-layer import",
+                                "priority": self.priority,
+                                "strategy": self.name,
+                            }
+                        )
 
         return fixes
 
@@ -286,14 +299,14 @@ class DddAlignmentHealing(HealingStrategy):
                 if "import" in line and any(part in line for part in module_info.split()):
                     # Check if already commented
                     if line.strip().startswith("#"):
-                        Logger.info(f"[L0 DDD HEALING] Import already commented at line {i+1}")
+                        Logger.info(f"[L0 DDD HEALING] Import already commented at line {i + 1}")
                         return True
 
                     # Comment out the import with explanation
                     indent = len(line) - len(line.lstrip())
                     lines[i] = " " * indent + f"# DDD VIOLATION: {line.lstrip()}"
                     modified = True
-                    Logger.info(f"[L0 DDD HEALING] Commented illegal import at {file_path}:{i+1}")
+                    Logger.info(f"[L0 DDD HEALING] Commented illegal import at {file_path}:{i + 1}")
                     break
 
             if modified:
@@ -325,7 +338,11 @@ class ObservabilityHealing(HealingStrategy):
             description = issue.get("description", "").lower()
 
             # Check if this is an observability footprint issue
-            if "observability footprint" in dimension.lower() or "dark reasoning" in description or "observability" in description:
+            if (
+                "observability footprint" in dimension.lower()
+                or "dark reasoning" in description
+                or "observability" in description
+            ):
                 # Extract function and line information if available
                 function_name = issue.get("function", "anonymous")
                 line_num = issue.get("line")
@@ -348,17 +365,19 @@ class ObservabilityHealing(HealingStrategy):
                     except (ValueError, IndexError):
                         pass
 
-                fixes.append({
-                    "action": "inject_logging",
-                    "file": issue.get("file", ""),
-                    "line": line_num,
-                    "function": function_name,
-                    "insert_start": f'        Logger.info("[REASONING START] Entering {function_name}")',
-                    "insert_end": f'        Logger.info("[REASONING END] Exiting {function_name}")',
-                    "reason": "Missing L6 observability footprint — bracketed logging required",
-                    "strategy": self.name,
-                    "priority": self.priority
-                })
+                fixes.append(
+                    {
+                        "action": "inject_logging",
+                        "file": issue.get("file", ""),
+                        "line": line_num,
+                        "function": function_name,
+                        "insert_start": f'        Logger.info("[REASONING START] Entering {function_name}")',
+                        "insert_end": f'        Logger.info("[REASONING END] Exiting {function_name}")',
+                        "reason": "Missing L6 observability footprint — bracketed logging required",
+                        "strategy": self.name,
+                        "priority": self.priority,
+                    }
+                )
 
         return fixes
 
@@ -408,34 +427,40 @@ class DirectRedisHealing(HealingStrategy):
         super().__init__("DirectRedis", priority=1)
 
     async def diagnose(self, issues: list[dict]) -> list[dict]:
-
         fixes = []
         for issue in issues:
             desc = issue.get("description", "").lower()
             # Handle both formats from auditor
             if "redis" in desc:
-                fixes.append({
-                    "action": "replace_redis",
-                    "file": issue["file"],
-                    "reason": "Direct redis-py usage — sovereignty breach",
-                    "priority": self.priority,
-                    "strategy": self.name
-                })
+                fixes.append(
+                    {
+                        "action": "replace_redis",
+                        "file": issue["file"],
+                        "reason": "Direct redis-py usage — sovereignty breach",
+                        "priority": self.priority,
+                        "strategy": self.name,
+                    }
+                )
         return fixes
 
     async def apply(self, fix: dict, ctx: Any = None) -> bool:
-
         try:
             import re
+
             file_path = Path(fix["file"])
-            if not file_path.exists(): return False
+            if not file_path.exists():
+                return False
 
             content = file_path.read_text(encoding="utf-8")
 
             # 1. Replace Imports
-            new_import = "from agentic_core.L4_state.caching.redis_mcp_client import get_redis_client"
+            new_import = (
+                "from agentic_core.L4_state.caching.redis_mcp_client import get_redis_client"
+            )
             content = re.sub(r"^\s*import\s+redis.*$", new_import, content, flags=re.MULTILINE)
-            content = re.sub(r"^\s*from\s+redis\s+import.*$", new_import, content, flags=re.MULTILINE)
+            content = re.sub(
+                r"^\s*from\s+redis\s+import.*$", new_import, content, flags=re.MULTILINE
+            )
 
             # 2. Replace Usage (redis.Redis(...) -> get_redis_client())
             content = re.sub(r"redis\.Redis\([^)]*\)", "get_redis_client()", content)
@@ -456,30 +481,33 @@ class DirectLlmHealing(HealingStrategy):
         super().__init__("DirectLLM", priority=1)
 
     async def diagnose(self, issues: list[dict]) -> list[dict]:
-
         fixes = []
         for issue in issues:
             desc = issue.get("description", "").lower()
             if any(sdk in desc for sdk in ["openai", "anthropic"]):
                 sdk_name = "OpenAI" if "openai" in desc else "Anthropic"
-                fixes.append({
-                    "action": "replace_llm_sdk",
-                    "file": issue["file"],
-                    "sdk": sdk_name,
-                    "new_client": "get_llm_router_client()",
-                    "import_path": "from agentic_core.L2_execution.mcp.llm_router_mcp_client import get_llm_router_client",
-                    "reason": "Direct LLM SDK call — bypasses L5 shield",
-                    "priority": self.priority,
-                    "strategy": self.name
-                })
+                fixes.append(
+                    {
+                        "action": "replace_llm_sdk",
+                        "file": issue["file"],
+                        "sdk": sdk_name,
+                        "new_client": "get_llm_router_client()",
+                        "import_path": "from agentic_core.L2_execution.mcp.llm_router_mcp_client import get_llm_router_client",
+                        "reason": "Direct LLM SDK call — bypasses L5 shield",
+                        "priority": self.priority,
+                        "strategy": self.name,
+                    }
+                )
         return fixes
 
     async def apply(self, fix: dict, ctx: Any = None) -> bool:
         """Replace direct OpenAI/Anthropic calls with sovereign LLM router."""
         try:
             import re
+
             file_path = Path(fix["file"])
-            if not file_path.exists(): return False
+            if not file_path.exists():
+                return False
 
             content = file_path.read_text(encoding="utf-8")
 
@@ -507,48 +535,50 @@ class FilesystemBypassHealing(HealingStrategy):
         super().__init__("FilesystemBypass", priority=2)
 
     async def diagnose(self, issues: list[dict]) -> list[dict]:
-
         fixes = []
         for issue in issues:
             desc = issue.get("description", "")
             message = issue.get("message", "")
-            if any(pattern in desc or pattern in message for pattern in ["Path(", "open(", "os.", "shutil."]):
-                fixes.append({
-                    "action": "replace_io",
-                    "file": issue["file"],
-                    "operation": desc,
-                    "new_client": "get_filesystem_client()",
-                    "import_path": "from agentic_core.L0_maintenance.P1_core.filesystem_mcp_client_1 import get_filesystem_client",
-                    "reason": "Direct file I/O — bypasses L5 validation",
-                    "priority": self.priority,
-                    "strategy": self.name
-                })
+            if any(
+                pattern in desc or pattern in message
+                for pattern in ["Path(", "open(", "os.", "shutil."]
+            ):
+                fixes.append(
+                    {
+                        "action": "replace_io",
+                        "file": issue["file"],
+                        "operation": desc,
+                        "new_client": "get_filesystem_client()",
+                        "import_path": "from agentic_core.L0_maintenance.P1_core.filesystem_mcp_client_1 import get_filesystem_client",
+                        "reason": "Direct file I/O — bypasses L5 validation",
+                        "priority": self.priority,
+                        "strategy": self.name,
+                    }
+                )
         return fixes
 
     async def apply(self, fix: dict, ctx: Any = None) -> bool:
         """Flag direct filesystem operations for MCP routing."""
         try:
             import re
+
             file_path = Path(fix["file"])
-            if not file_path.exists(): return False
+            if not file_path.exists():
+                return False
 
             content = file_path.read_text(encoding="utf-8")
 
             # Comment out direct file operations with sovereignty warnings
-            content = re.sub(
-                r"(\s*)(open\()",
-                r"\1# SOVEREIGNTY: Use filesystem MCP - \2",
-                content
-            )
+            content = re.sub(r"(\s*)(open\()", r"\1# SOVEREIGNTY: Use filesystem MCP - \2", content)
             content = re.sub(
                 r"(\s*)(Path\([^)]+\)\.(read_text|write_text|read_bytes|write_bytes)\()",
                 r"\1# SOVEREIGNTY: Use filesystem MCP - \2",
-                content
+                content,
             )
             content = re.sub(
                 r"(\s*)(shutil\.(copy|move|rmtree)\()",
                 r"\1# SOVEREIGNTY: Use filesystem MCP - \2",
-                content
+                content,
             )
 
             file_path.write_text(content, encoding="utf-8")
@@ -590,7 +620,7 @@ healing_strategies = [
     UnderscoreFieldHealing(),
     DarkReasoningHealing(),
     ObservabilityHealing(),  # Phase 10: Dark Reasoning Healing (Dec 26, 2025)
-    DDDAlignmentHealing()
+    DDDAlignmentHealing(),
 ]
 
 

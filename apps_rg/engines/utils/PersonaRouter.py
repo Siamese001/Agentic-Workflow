@@ -15,14 +15,16 @@ logger = logging.getLogger(__name__)
 
 class ArchetypeBase(str, Enum):
     """Base psychological archetypes for hiring managers."""
-    VISIONARY = "VISIONARY"   # Focus on Future, Disruption, 0-to-1
-    OPERATOR = "OPERATOR"     # Focus on Execution, Efficiency, Scale
-    GUARDIAN = "GUARDIAN"     # Focus on Risk, Stability, Compliance
-    SCALER = "SCALER"         # Focus on Growth, Metrics, Hiring
+
+    VISIONARY = "VISIONARY"  # Focus on Future, Disruption, 0-to-1
+    OPERATOR = "OPERATOR"  # Focus on Execution, Efficiency, Scale
+    GUARDIAN = "GUARDIAN"  # Focus on Risk, Stability, Compliance
+    SCALER = "SCALER"  # Focus on Growth, Metrics, Hiring
 
 
 class PsychometricProfile(BaseModel):
     """Psychometric profile derived from JD analysis."""
+
     risk_tolerance: float = Field(..., description="0.0 (Safe) to 1.0 (High Risk)")
     technical_depth: float = Field(..., description="0.0 (Generalist) to 1.0 (Deep Tech)")
     bureaucracy_level: float = Field(..., description="0.0 (Flat/Startup) to 1.0 (Corp)")
@@ -33,6 +35,7 @@ class PsychometricProfile(BaseModel):
 
 class ReaderPersona(BaseModel):
     """Generated reader persona for resume customization."""
+
     title: str  # e.g. "The Risk-Averse Enterprise Gatekeeper"
     tone_instruction: str  # "Use formal language. Emphasize governance."
     highlight_focus: list[str]  # ["Compliance", "Uptime", "Budget"]
@@ -49,71 +52,206 @@ class PersonaRouter:
         """Initialize persona router with keyword dictionaries."""
         # Risk tolerance keywords
         self.risk_high_keywords = [
-            "hacker", "ninja", "disrupt", "disruption", "greenfield", "mvp",
-            "fast-paced", "agile", "startup", "venture", "innovative",
-            "breakthrough", "game-changer", "revolutionary", "bold",
-            "fail fast", "iterate", "pivot", "unleash", "daring"
+            "hacker",
+            "ninja",
+            "disrupt",
+            "disruption",
+            "greenfield",
+            "mvp",
+            "fast-paced",
+            "agile",
+            "startup",
+            "venture",
+            "innovative",
+            "breakthrough",
+            "game-changer",
+            "revolutionary",
+            "bold",
+            "fail fast",
+            "iterate",
+            "pivot",
+            "unleash",
+            "daring",
         ]
 
         self.risk_low_keywords = [
-            "proven", "stable", "audit", "compliance", "iso27001", "sox",
-            "enterprise", "fortune", "regulated", "secure", "risk management",
-            "governance", "established", "mature", "reliable", "consistent",
-            "conservative", "methodical", "careful", "thorough", "process"
+            "proven",
+            "stable",
+            "audit",
+            "compliance",
+            "iso27001",
+            "sox",
+            "enterprise",
+            "fortune",
+            "regulated",
+            "secure",
+            "risk management",
+            "governance",
+            "established",
+            "mature",
+            "reliable",
+            "consistent",
+            "conservative",
+            "methodical",
+            "careful",
+            "thorough",
+            "process",
         ]
 
         # Technical depth keywords
         self.tech_deep_keywords = [
-            "kernel", "cuda", "latency", "distributed systems", "microservices",
-            "architecture", "scalability", "performance", "optimization",
-            "low-level", "systems programming", "algorithms", "data structures",
-            "concurrency", "parallel computing", "infrastructure", "devops",
-            "kubernetes", "aws", "gcp", "azure", "cloud native"
+            "kernel",
+            "cuda",
+            "latency",
+            "distributed systems",
+            "microservices",
+            "architecture",
+            "scalability",
+            "performance",
+            "optimization",
+            "low-level",
+            "systems programming",
+            "algorithms",
+            "data structures",
+            "concurrency",
+            "parallel computing",
+            "infrastructure",
+            "devops",
+            "kubernetes",
+            "aws",
+            "gcp",
+            "azure",
+            "cloud native",
         ]
 
         self.tech_general_keywords = [
-            "business", "strategy", "leadership", "management", "communication",
-            "collaboration", "teamwork", "project management", "stakeholder",
-            "cross-functional", "partnership", "relationship", "client facing",
-            "presentation", "negotiation", "influence", "persuade"
+            "business",
+            "strategy",
+            "leadership",
+            "management",
+            "communication",
+            "collaboration",
+            "teamwork",
+            "project management",
+            "stakeholder",
+            "cross-functional",
+            "partnership",
+            "relationship",
+            "client facing",
+            "presentation",
+            "negotiation",
+            "influence",
+            "persuade",
         ]
 
         # Bureaucracy level keywords
         self.bureaucracy_high_keywords = [
-            "approval process", "hierarchy", "reporting structure", "chain of command",
-            "corporate", "matrix organization", "cross-functional collaboration",
-            "stakeholder management", "executive", "board", "committee", "review board",
-            "policy", "procedure", "standard operating procedure", "sop", "compliance"
+            "approval process",
+            "hierarchy",
+            "reporting structure",
+            "chain of command",
+            "corporate",
+            "matrix organization",
+            "cross-functional collaboration",
+            "stakeholder management",
+            "executive",
+            "board",
+            "committee",
+            "review board",
+            "policy",
+            "procedure",
+            "standard operating procedure",
+            "sop",
+            "compliance",
         ]
 
         self.bureaucracy_low_keywords = [
-            "flat organization", "no bureaucracy", "direct access", "autonomy",
-            "ownership", "startup culture", "fast decision making", "lean",
-            "agile", "scrum", "sprints", "daily standup", "open door", "meritocracy"
+            "flat organization",
+            "no bureaucracy",
+            "direct access",
+            "autonomy",
+            "ownership",
+            "startup culture",
+            "fast decision making",
+            "lean",
+            "agile",
+            "scrum",
+            "sprints",
+            "daily standup",
+            "open door",
+            "meritocracy",
         ]
 
         # Archetype-specific keywords
         self.archetype_keywords = {
             ArchetypeBase.VISIONARY: [
-                "vision", "mission", "future", "transform", "reimagine", "pioneer",
-                "trailblazer", "innovate", "breakthrough", "disrupt", "revolution",
-                "next-generation", "paradigm shift", "game-changing"
+                "vision",
+                "mission",
+                "future",
+                "transform",
+                "reimagine",
+                "pioneer",
+                "trailblazer",
+                "innovate",
+                "breakthrough",
+                "disrupt",
+                "revolution",
+                "next-generation",
+                "paradigm shift",
+                "game-changing",
             ],
             ArchetypeBase.OPERATOR: [
-                "execute", "scale", "optimize", "efficiency", "process", "operations",
-                "deliver", "implement", "drive", "achieve", "metrics", "performance",
-                "productivity", "streamline", "operational excellence"
+                "execute",
+                "scale",
+                "optimize",
+                "efficiency",
+                "process",
+                "operations",
+                "deliver",
+                "implement",
+                "drive",
+                "achieve",
+                "metrics",
+                "performance",
+                "productivity",
+                "streamline",
+                "operational excellence",
             ],
             ArchetypeBase.GUARDIAN: [
-                "protect", "secure", "risk", "compliance", "governance", "stability",
-                "reliability", "safety", "audit", "control", "mitigate", "safeguard",
-                "ensure", "guarantee", "maintain", "preserve"
+                "protect",
+                "secure",
+                "risk",
+                "compliance",
+                "governance",
+                "stability",
+                "reliability",
+                "safety",
+                "audit",
+                "control",
+                "mitigate",
+                "safeguard",
+                "ensure",
+                "guarantee",
+                "maintain",
+                "preserve",
             ],
             ArchetypeBase.SCALER: [
-                "grow", "growth", "scale", "expand", "multiply", "accelerate",
-                "revenue", "market share", "user base", "hiring", "team building",
-                "recruitment", "onboarding", "training", "leadership pipeline"
-            ]
+                "grow",
+                "growth",
+                "scale",
+                "expand",
+                "multiply",
+                "accelerate",
+                "revenue",
+                "market share",
+                "user base",
+                "hiring",
+                "team building",
+                "recruitment",
+                "onboarding",
+                "training",
+                "leadership pipeline",
+            ],
         }
 
         logger.info("Initialized PersonaRouter with keyword dictionaries")
@@ -153,7 +291,7 @@ class PersonaRouter:
             bureaucracy_level=bureaucracy_score,
             dominant_archetype=archetype,
             keywords_detected=archetype_keywords,
-            confidence_score=self._calculate_confidence(risk_score, tech_score, bureaucracy_score)
+            confidence_score=self._calculate_confidence(risk_score, tech_score, bureaucracy_score),
         )
 
         # Generate reader persona
@@ -163,10 +301,7 @@ class PersonaRouter:
         return persona
 
     def _calculate_dimension_score(
-        self,
-        text: str,
-        high_keywords: list[str],
-        low_keywords: list[str]
+        self, text: str, high_keywords: list[str], low_keywords: list[str]
     ) -> float:
         """Calculate a 0.0-1.0 score for a dimension.
 
@@ -211,10 +346,7 @@ class PersonaRouter:
         return dominant_archetype, matched_keywords[dominant_archetype]
 
     def _calculate_confidence(
-        self,
-        risk_score: float,
-        tech_score: float,
-        bureaucracy_score: float
+        self, risk_score: float, tech_score: float, bureaucracy_score: float
     ) -> float:
         """Calculate confidence score for the profile.
 
@@ -228,9 +360,7 @@ class PersonaRouter:
         """
         # High confidence when scores are not neutral (close to 0.5)
         deviation_from_neutral = (
-            abs(risk_score - 0.5) +
-            abs(tech_score - 0.5) +
-            abs(bureaucracy_score - 0.5)
+            abs(risk_score - 0.5) + abs(tech_score - 0.5) + abs(bureaucracy_score - 0.5)
         ) / 3
 
         return min(deviation_from_neutral * 2, 1.0)
@@ -286,7 +416,7 @@ class PersonaRouter:
             avoid_topics=avoids,
             formatting_preferences={"style": "dynamic", "length": "concise"},
             archetype=ArchetypeBase.VISIONARY,
-            profile=profile
+            profile=profile,
         )
 
     def _generate_operator_persona(self, profile: PsychometricProfile) -> ReaderPersona:
@@ -316,7 +446,7 @@ class PersonaRouter:
             avoid_topics=avoids,
             formatting_preferences={"style": "structured", "length": "detailed"},
             archetype=ArchetypeBase.OPERATOR,
-            profile=profile
+            profile=profile,
         )
 
     def _generate_guardian_persona(self, profile: PsychometricProfile) -> ReaderPersona:
@@ -346,7 +476,7 @@ class PersonaRouter:
             avoid_topics=avoids,
             formatting_preferences={"style": "formal", "length": "thorough"},
             archetype=ArchetypeBase.GUARDIAN,
-            profile=profile
+            profile=profile,
         )
 
     def _generate_scaler_persona(self, profile: PsychometricProfile) -> ReaderPersona:
@@ -376,7 +506,7 @@ class PersonaRouter:
             avoid_topics=avoids,
             formatting_preferences={"style": "results-oriented", "length": "impact-focused"},
             archetype=ArchetypeBase.SCALER,
-            profile=profile
+            profile=profile,
         )
 
     def _generate_default_persona(self, profile: PsychometricProfile) -> ReaderPersona:
@@ -395,7 +525,7 @@ class PersonaRouter:
             avoid_topics=["Jargon", "Fluff"],
             formatting_preferences={"style": "professional", "length": "balanced"},
             archetype=profile.dominant_archetype,
-            profile=profile
+            profile=profile,
         )
 
     def route_resume(self, jd_text: str) -> ReaderPersona:
@@ -425,13 +555,13 @@ Tone Instructions:
 {persona.tone_instruction}
 
 Key Areas to Highlight:
-{', '.join(persona.highlight_focus)}
+{", ".join(persona.highlight_focus)}
 
 Topics to Avoid:
-{', '.join(persona.avoid_topics) if persona.avoid_topics else 'None'}
+{", ".join(persona.avoid_topics) if persona.avoid_topics else "None"}
 
 Formatting Preferences:
-{', '.join(f'{k}: {v}' for k, v in persona.formatting_preferences.items())}
+{", ".join(f"{k}: {v}" for k, v in persona.formatting_preferences.items())}
 
 Remember: This reader has the following psychometric profile:
 - Risk Tolerance: {persona.profile.risk_tolerance:.2f}

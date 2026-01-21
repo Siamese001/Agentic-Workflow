@@ -17,6 +17,7 @@ Features:
 - Layer sovereignty protection (L5 files protected from L3/L4 modification)
 - Signed exception support for cross-layer access
 """
+
 from __future__ import annotations
 
 import ast
@@ -34,6 +35,7 @@ Logger = logging.getLogger(__name__)
 
 class EnforcementType(Enum):
     """Types of code enforcement."""
+
     SSOT_SYNC = auto()
     CODE_STANDARDS = auto()
     PATTERN = auto()
@@ -43,6 +45,7 @@ class EnforcementType(Enum):
 
 class ViolationSeverity(Enum):
     """Severity levels for violations."""
+
     INFO = 0
     WARNING = 1
     ERROR = 2
@@ -52,6 +55,7 @@ class ViolationSeverity(Enum):
 @dataclass
 class CodeViolation:
     """Represents a code violation."""
+
     file_path: Path
     line_number: int
     enforcement_type: EnforcementType
@@ -64,6 +68,7 @@ class CodeViolation:
 @dataclass
 class SignedException:
     """Signed exception for cross-layer access."""
+
     exception_id: str
     source_layer: str
     target_layer: str
@@ -77,6 +82,7 @@ class SignedException:
 @dataclass
 class EnforcementConfig:
     """Configuration for code enforcement."""
+
     enable_ssot_sync: bool = True
     enable_standards: bool = True
     enable_patterns: bool = True
@@ -176,15 +182,17 @@ class UnifiedCodeEnforcerAgent:
             if match:
                 class_name = match.group(1)
                 if file_path.name.endswith("Agent.py") and not class_name.endswith("Agent"):
-                    violations.append(CodeViolation(
-                        file_path=file_path,
-                        line_number=i,
-                        enforcement_type=EnforcementType.CODE_STANDARDS,
-                        severity=ViolationSeverity.ERROR,
-                        message=f"Class '{class_name}' must end with 'Agent' suffix",
-                        suggested_fix=f"class {class_name}Agent",
-                        auto_fixable=True,
-                    ))
+                    violations.append(
+                        CodeViolation(
+                            file_path=file_path,
+                            line_number=i,
+                            enforcement_type=EnforcementType.CODE_STANDARDS,
+                            severity=ViolationSeverity.ERROR,
+                            message=f"Class '{class_name}' must end with 'Agent' suffix",
+                            suggested_fix=f"class {class_name}Agent",
+                            auto_fixable=True,
+                        )
+                    )
 
         return violations
 
@@ -196,13 +204,15 @@ class UnifiedCodeEnforcerAgent:
         for pattern_name, pattern in self._forbidden_patterns.items():
             for i, line in enumerate(lines, 1):
                 if pattern.search(line):
-                    violations.append(CodeViolation(
-                        file_path=file_path,
-                        line_number=i,
-                        enforcement_type=EnforcementType.PATTERN,
-                        severity=ViolationSeverity.WARNING,
-                        message=f"Forbidden pattern '{pattern_name}' detected",
-                    ))
+                    violations.append(
+                        CodeViolation(
+                            file_path=file_path,
+                            line_number=i,
+                            enforcement_type=EnforcementType.PATTERN,
+                            severity=ViolationSeverity.WARNING,
+                            message=f"Forbidden pattern '{pattern_name}' detected",
+                        )
+                    )
 
         return violations
 
@@ -219,13 +229,15 @@ class UnifiedCodeEnforcerAgent:
             if isinstance(node, ast.FunctionDef):
                 # Check return type hint
                 if node.returns is None and not node.name.startswith("_"):
-                    violations.append(CodeViolation(
-                        file_path=file_path,
-                        line_number=node.lineno,
-                        enforcement_type=EnforcementType.TYPE_HINTS,
-                        severity=ViolationSeverity.INFO,
-                        message=f"Function '{node.name}' missing return type hint",
-                    ))
+                    violations.append(
+                        CodeViolation(
+                            file_path=file_path,
+                            line_number=node.lineno,
+                            enforcement_type=EnforcementType.TYPE_HINTS,
+                            severity=ViolationSeverity.INFO,
+                            message=f"Function '{node.name}' missing return type hint",
+                        )
+                    )
 
         return violations
 
@@ -248,13 +260,15 @@ class UnifiedCodeEnforcerAgent:
             if isinstance(node, ast.Import | ast.ImportFrom):
                 import_layer = self._extract_layer_from_import(node)
                 if import_layer and self._is_sovereignty_violation(file_layer, import_layer):
-                    violations.append(CodeViolation(
-                        file_path=file_path,
-                        line_number=node.lineno,
-                        enforcement_type=EnforcementType.SOVEREIGNTY,
-                        severity=ViolationSeverity.CRITICAL,
-                        message=f"Sovereignty violation: {file_layer} importing from {import_layer}",
-                    ))
+                    violations.append(
+                        CodeViolation(
+                            file_path=file_path,
+                            line_number=node.lineno,
+                            enforcement_type=EnforcementType.SOVEREIGNTY,
+                            severity=ViolationSeverity.CRITICAL,
+                            message=f"Sovereignty violation: {file_layer} importing from {import_layer}",
+                        )
+                    )
 
         return violations
 
@@ -367,11 +381,14 @@ class UnifiedCodeEnforcerAgent:
 
             if self.config.ssot_registry_path.exists():
                 import json
+
                 try:
                     self._ssot_registry = json.loads(
                         self.config.ssot_registry_path.read_text(encoding="utf-8")
                     )
-                    Logger.info(f"SSOT registry synced: {len(self._ssot_registry.get('agents', []))} agents")
+                    Logger.info(
+                        f"SSOT registry synced: {len(self._ssot_registry.get('agents', []))} agents"
+                    )
                 except Exception as e:
                     Logger.error(f"Failed to sync SSOT registry: {e}")
 
@@ -386,6 +403,7 @@ class UnifiedCodeEnforcerAgent:
             self._ssot_registry.update(updates)
 
             import json
+
             try:
                 self.config.ssot_registry_path.write_text(
                     json.dumps(self._ssot_registry, indent=2),

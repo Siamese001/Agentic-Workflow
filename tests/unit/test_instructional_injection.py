@@ -15,6 +15,7 @@ import pytest
 def get_project_root() -> Path:
     """Get project root directory."""
     import os
+
     if "PROJECT_ROOT" in os.environ:
         return Path(os.environ["PROJECT_ROOT"])
 
@@ -54,6 +55,7 @@ class TestInstructionalInjectionMixin:
         from agentic_core.utils.core_extensions.instructional_injection_mixin import (
             InstructionalInjectionMixin,
         )
+
         assert InstructionalInjectionMixin is not None
 
     def test_mixin_has_30_patterns(self):
@@ -61,6 +63,7 @@ class TestInstructionalInjectionMixin:
         from agentic_core.utils.core_extensions.instructional_injection_mixin import (
             INSTRUCTIONAL_PATTERNS,
         )
+
         assert len(INSTRUCTIONAL_PATTERNS) == 30
 
     def test_patterns_cover_all_layers(self):
@@ -184,27 +187,27 @@ class TestAgentInstructionalInjection:
         """Verify NamingAgent has instructional injection."""
         from agentic_core.L5_safety.validators.NamingAgent import NamingAgent
 
-        assert hasattr(NamingAgent, 'inject_safety_layer')
-        assert hasattr(NamingAgent, 'inject_all_layers')
+        assert hasattr(NamingAgent, "inject_safety_layer")
+        assert hasattr(NamingAgent, "inject_all_layers")
 
     def test_location_agent_has_injection(self):
         """Verify LocationAgent has instructional injection."""
         from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
 
-        assert hasattr(LocationAgent, 'inject_safety_layer')
-        assert hasattr(LocationAgent, 'get_injection_summary')
+        assert hasattr(LocationAgent, "inject_safety_layer")
+        assert hasattr(LocationAgent, "get_injection_summary")
 
     def test_hierarchy_agent_has_injection(self):
         """Verify HierarchyAgent has instructional injection."""
         from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
 
-        assert hasattr(HierarchyAgent, 'inject_safety_layer')
+        assert hasattr(HierarchyAgent, "inject_safety_layer")
 
     def test_ddd_alignment_agent_has_injection(self):
         """Verify DDDAlignmentAgent has instructional injection."""
         from agentic_core.L5_safety.validators.DDDAlignmentAgent import DDDAlignmentAgent
 
-        assert hasattr(DDDAlignmentAgent, 'inject_safety_layer')
+        assert hasattr(DDDAlignmentAgent, "inject_safety_layer")
 
 
 if __name__ == "__main__":

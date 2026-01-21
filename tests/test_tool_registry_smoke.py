@@ -6,6 +6,7 @@ Verifies:
 2. Tools in archives/ are rejected
 3. Bulk registration works correctly
 """
+
 import sys
 from pathlib import Path
 
@@ -45,7 +46,7 @@ def test_sovereign_territory_acceptance():
             tool_name=f"valid_tool_{i}",
             tool_path=path,
             tool_func=dummy_tool,
-            description=f"Test tool from {path}"
+            description=f"Test tool from {path}",
         )
         if result:
             print(f"  ✅ ACCEPTED: {path}")
@@ -77,9 +78,7 @@ def test_archives_rejection():
     rejected = 0
     for i, path in enumerate(invalid_paths):
         result = registry.register_tool(
-            tool_name=f"rogue_tool_{i}",
-            tool_path=path,
-            tool_func=dummy_tool
+            tool_name=f"rogue_tool_{i}", tool_path=path, tool_func=dummy_tool
         )
         if not result:
             print(f"  ✅ REJECTED (correct): {path}")
@@ -117,7 +116,7 @@ def test_bulk_registration():
             tool_name=tool_name,
             tool_path=str(rel_path),
             tool_func=dummy_tool,
-            description=f"Auto-registered from {tool_path.name}"
+            description=f"Auto-registered from {tool_path.name}",
         )
         if result:
             registered += 1
@@ -141,7 +140,7 @@ def test_tool_retrieval():
         tool_name="retrieval_test",
         tool_path="agentic_core/L2_execution/ToolRegistry/tools.py",
         tool_func=dummy_tool,
-        description="Test retrieval"
+        description="Test retrieval",
     )
 
     # Retrieve it

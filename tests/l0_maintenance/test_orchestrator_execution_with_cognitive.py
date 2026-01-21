@@ -42,20 +42,22 @@ async def test_cognitive_recovery_in_execution():
     print("\n[TEST 2] Executing failing node (should trigger cognitive recovery after retries)")
 
     execution_state = {
-        'completed_nodes': set(),
-        'failed_nodes': set(),
-        'results': {},
-        'recovery_attempts': 0,
+        "completed_nodes": set(),
+        "failed_nodes": set(),
+        "results": {},
+        "recovery_attempts": 0,
     }
 
     success = await orchestrator._execute_node_with_retry(
         node=failing_node,
         node_id="test-node-001",
         initial_inputs={},
-        execution_state=execution_state
+        execution_state=execution_state,
     )
 
-    print(f"\n[TEST 3] Node execution result: {'✅ Success' if success else '❌ Failed (expected)'}")
+    print(
+        f"\n[TEST 3] Node execution result: {'✅ Success' if success else '❌ Failed (expected)'}"
+    )
     print(f"  Failed nodes: {len(execution_state['failed_nodes'])}")
     print(f"  Completed nodes: {len(execution_state['completed_nodes'])}")
 

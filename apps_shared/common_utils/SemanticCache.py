@@ -12,6 +12,7 @@ from typing import Any
 @dataclass
 class VectorSimilarityResult:
     """Result of vector similarity search."""
+
     cache_key: str
     similarity_score: float
     cached_content: str
@@ -26,6 +27,7 @@ class VectorSimilarityResult:
 @dataclass
 class CacheEntry:
     """Entry in the semantic cache."""
+
     key: str
     content: str
     embedding: list[float]
@@ -41,7 +43,9 @@ class CacheEntry:
 class EnhancedSemanticCache:
     """Enhanced semantic cache with similarity-based retrieval."""
 
-    def __init__(self, max_size: int = 1000, ttl_seconds: int = 3600, similarity_threshold: float = 0.8):
+    def __init__(
+        self, max_size: int = 1000, ttl_seconds: int = 3600, similarity_threshold: float = 0.8
+    ):
         """Initialize enhanced semantic cache.
 
         Args:
@@ -57,10 +61,9 @@ class EnhancedSemanticCache:
         self.similarity_threshold = similarity_threshold
         self.embedding_cache: dict[str, list[float]] = {}
 
-    def get(self,
-            query: str,
-            query_embedding: list[float] | None = None,
-            top_k: int = 5) -> list[VectorSimilarityResult]:
+    def get(
+        self, query: str, query_embedding: list[float] | None = None, top_k: int = 5
+    ) -> list[VectorSimilarityResult]:
         """Retrieve cached entries similar to query.
 
         Args:
@@ -90,7 +93,7 @@ class EnhancedSemanticCache:
                     similarity_score=similarity,
                     cached_content=entry.content,
                     metadata=entry.metadata,
-                    timestamp=entry.timestamp
+                    timestamp=entry.timestamp,
                 )
                 results.append(result)
 
@@ -98,12 +101,14 @@ class EnhancedSemanticCache:
         results.sort(key=lambda x: x.similarity_score, reverse=True)
         return results[:top_k]
 
-    def put(self,
-            query: str,
-            content: str,
-            metadata: dict[str, Any] | None = None,
-            embedding: list[float] | None = None,
-            ttl_seconds: int | None = None) -> str:
+    def put(
+        self,
+        query: str,
+        content: str,
+        metadata: dict[str, Any] | None = None,
+        embedding: list[float] | None = None,
+        ttl_seconds: int | None = None,
+    ) -> str:
         """Store content in semantic cache.
 
         Args:
@@ -130,7 +135,7 @@ class EnhancedSemanticCache:
             embedding=embedding,
             metadata=metadata or {},
             timestamp=datetime.now(),
-            ttl_seconds=ttl_seconds or self.default_ttl
+            ttl_seconds=ttl_seconds or self.default_ttl,
         )
 
         # Add to cache (evict if necessary)
@@ -151,10 +156,7 @@ class EnhancedSemanticCache:
         Returns:
             Number of entries removed
         """
-        expired_keys = [
-            key for key, entry in self.entries.items()
-            if entry.is_expired()
-        ]
+        expired_keys = [key for key, entry in self.entries.items() if entry.is_expired()]
 
         for key in expired_keys:
             del self.entries[key]
@@ -179,7 +181,7 @@ class EnhancedSemanticCache:
 
         for i in range(0, len(text_hash), 2):
             # Convert hex pairs to float values between -1 and 1
-            hex_pair = text_hash[i:i+2]
+            hex_pair = text_hash[i : i + 2]
             value = int(hex_pair, 16) / 255.0 * 2 - 1
             embedding.append(value)
 
@@ -201,7 +203,9 @@ class EnhancedSemanticCache:
 
         return dot_product / (norm1 * norm2)
 
-    def generate_fingerprint(self, prompt: str, model: str, temperature: float = 0.7, system_prompt: str | None = None) -> str:
+    def generate_fingerprint(
+        self, prompt: str, model: str, temperature: float = 0.7, system_prompt: str | None = None
+    ) -> str:
         """Generate fingerprint for cache lookup.
 
         Args:
@@ -217,10 +221,12 @@ class EnhancedSemanticCache:
         components = [
             prompt.strip() if isinstance(prompt, str) else str(prompt),
             model.strip() if isinstance(model, str) else str(model),
-            str(temperature)
+            str(temperature),
         ]
         if system_prompt is not None:
-            components.append(system_prompt.strip() if isinstance(system_prompt, str) else str(system_prompt))
+            components.append(
+                system_prompt.strip() if isinstance(system_prompt, str) else str(system_prompt)
+            )
         combined = "|".join(components)
         return hashlib.sha256(combined.encode()).hexdigest()
 
@@ -261,7 +267,7 @@ class EnhancedSemanticCache:
             embedding=[],  # Not used for fingerprint-based cache
             metadata={"stored_at": datetime.now().isoformat()},
             timestamp=datetime.now(),
-            ttl_seconds=ttl_seconds
+            ttl_seconds=ttl_seconds,
         )
 
         self.entries[fingerprint] = entry
@@ -284,7 +290,7 @@ class EnhancedSemanticCache:
             "stale_entries": stale_entries,
             "embedding_cache_size": len(self.embedding_cache),
             "max_entries": self.max_entries,
-            "ttl_seconds": self.ttl_seconds
+            "ttl_seconds": self.ttl_seconds,
         }
 
     def invalidate_by_pattern(self, pattern: str) -> int:

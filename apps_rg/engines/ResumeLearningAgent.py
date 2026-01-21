@@ -38,6 +38,7 @@ class ConfidenceLevel(Enum):
     - LOW: < 0.5
     - UNKNOWN: No logprobs available
     """
+
     HIGH = "high"  # >= 0.8
     MEDIUM = "medium"  # >= 0.5
     LOW = "low"  # < 0.5
@@ -47,6 +48,7 @@ class ConfidenceLevel(Enum):
 @dataclass
 class LearningExample:
     """A single learning example for few-shot recall."""
+
     id: str
     TaskType: str
     input_context: str
@@ -60,6 +62,7 @@ class LearningExample:
 @dataclass
 class ConfidenceResult:
     """Result of confidence scoring."""
+
     score: float
     level: ConfidenceLevel
     logprobs: list[float] | None = None
@@ -89,16 +92,14 @@ class ConfidenceResult:
             level = ConfidenceLevel.LOW
 
         return cls(
-            score=score,
-            level=level,
-            avg_logprob=avg_logprob,
-            should_retry=score < min_confidence
+            score=score, level=level, avg_logprob=avg_logprob, should_retry=score < min_confidence
         )
 
 
 @dataclass
 class Instruction:
     """A dynamic instruction for agent steering."""
+
     id: str
     source: str  # Agent or user that injected the instruction
     content: str
@@ -111,6 +112,7 @@ class Instruction:
 @dataclass
 class MemoryState:
     """Persistent memory state for resume validation."""
+
     file_hashes: dict[str, str] = field(default_factory=dict)
     skip_files: set[str] = field(default_factory=set)
     flapping_files: set[str] = field(default_factory=set)
@@ -167,7 +169,7 @@ class LearningLoop:
                     {"examples": [vars(ex) for ex in self._local_examples[-100:]]},  # Keep last 100
                     f,
                     indent=2,
-                    default=str
+                    default=str,
                 )
         except Exception:
             pass
@@ -336,20 +338,16 @@ class ConfidenceScorer:
 
         # Try to extract logprobs from response
         avg_logprob = None
-        if extract_logprobs and hasattr(response, 'candidates'):
+        if extract_logprobs and hasattr(response, "candidates"):
             candidates = response.candidates
-            if candidates and hasattr(candidates[0], 'avg_logprobs'):
+            if candidates and hasattr(candidates[0], "avg_logprobs"):
                 avg_logprob = candidates[0].avg_logprobs
 
         if avg_logprob is not None:
             result = ConfidenceResult.from_logprob(avg_logprob, self.min_confidence)
         else:
             # Default to medium confidence if no logprobs
-            result = ConfidenceResult(
-                score=0.6,
-                level=ConfidenceLevel.MEDIUM,
-                should_retry=False
-            )
+            result = ConfidenceResult(score=0.6, level=ConfidenceLevel.MEDIUM, should_retry=False)
 
         if result.level == ConfidenceLevel.HIGH:
             self.high_confidence_count += 1
@@ -403,11 +401,7 @@ class ConfidenceScorer:
         else:
             level = ConfidenceLevel.LOW
 
-        return ConfidenceResult(
-            score=score,
-            level=level,
-            should_retry=score < self.min_confidence
-        )
+        return ConfidenceResult(score=score, level=level, should_retry=score < self.min_confidence)
 
     async def retry_with_confidence(
         self,
@@ -433,7 +427,7 @@ class ConfidenceScorer:
                 result = await call_fn(*args, **kwargs)
 
                 # Score the result
-                if hasattr(result, 'candidates'):
+                if hasattr(result, "candidates"):
                     confidence = self.score_response(result)
                 elif isinstance(result, str):
                     confidence = self.score_from_text(result)
@@ -506,9 +500,7 @@ class InstructionInjector:
         """
         expires_at = None
         if ttl_seconds:
-            expires_at = (
-                datetime.now().timestamp() + ttl_seconds
-            ).__str__()
+            expires_at = (datetime.now().timestamp() + ttl_seconds).__str__()
 
         instruction = Instruction(
             id=f"inst_{int(time.time())}_{len(self._instructions)}",
@@ -600,10 +592,7 @@ class InstructionInjector:
     def clear(self, source: str | None = None) -> Any:
         """Clear instructions, optionally filtered by source."""
         if source:
-            self._instructions = [
-                inst for inst in self._instructions
-                if inst.source != source
-            ]
+            self._instructions = [inst for inst in self._instructions if inst.source != source]
         else:
             self._instructions.clear()
 
@@ -738,7 +727,7 @@ class MemoryPersistence:
 
         # Detect flapping
         if len(history) >= self.flapping_threshold:
-            recent = history[-self.flapping_threshold:]
+            recent = history[-self.flapping_threshold :]
             if len(set(recent)) > 1:  # Mixed results
                 self.state.flapping_files.add(file_id)
 
@@ -878,5 +867,5 @@ class ResumeLearningAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         }
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()

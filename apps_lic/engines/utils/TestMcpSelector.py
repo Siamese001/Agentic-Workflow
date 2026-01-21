@@ -73,7 +73,9 @@ def test_quarantined_tools_use_smaller_budget():
     selections = selector.discover("web_search")
     quarantined = next(sel for sel in selections if sel.spec.id == "web_search_v1")
     selector.mark_promoted("web_search_v1")
-    promoted = next(sel for sel in selector.discover("web_search") if sel.spec.id == "web_search_v1")
+    promoted = next(
+        sel for sel in selector.discover("web_search") if sel.spec.id == "web_search_v1"
+    )
     assert quarantined.budget_multiplier < promoted.budget_multiplier
 
 

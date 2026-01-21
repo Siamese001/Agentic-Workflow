@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, validator, workflow
@@ -33,6 +32,7 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger: Any = logging.getLogger(__name__)
 
+
 @dataclass
 class GitSafetyHandlerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
@@ -55,7 +55,7 @@ class GitSafetyHandlerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
             McpRouterAgent: MCPRouter instance for MCP calls
         """
         self.router: Any = McpRouterAgent
-        Logger.info('[OK] Git Safety Handler initialized')
+        Logger.info("[OK] Git Safety Handler initialized")
 
     async def create_rollback_point(self, file_path: str) -> str:
         """
@@ -67,15 +67,17 @@ class GitSafetyHandlerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
         Returns:
             Branch name created
         """
-        timestamp: str = datetime.now().strftime('%Y%m%d_%H%M%S')
-        branch_name: str = f'fission_backup_{timestamp}'
-        Logger.info(f'🛡️  Creating rollback point: {branch_name}')
+        timestamp: str = datetime.now().strftime("%Y%m%d_%H%M%S")
+        branch_name: str = f"fission_backup_{timestamp}"
+        Logger.info(f"🛡️  Creating rollback point: {branch_name}")
         try:
-            await self.router.call_mcp('gitkraken', {'action': 'create_branch', 'name': branch_name})
-            Logger.info(f'   [OK] Backup branch created: {branch_name}')
+            await self.router.call_mcp(
+                "gitkraken", {"action": "create_branch", "name": branch_name}
+            )
+            Logger.info(f"   [OK] Backup branch created: {branch_name}")
             return branch_name
         except Exception as e:
-            Logger.error(f'   [X] Failed to create backup branch: {e}')
+            Logger.error(f"   [X] Failed to create backup branch: {e}")
             raise
 
     async def verify_clean_state(self, file_path: str) -> bool:
@@ -88,17 +90,19 @@ class GitSafetyHandlerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
         Returns:
             True if working directory is clean, False otherwise
         """
-        Logger.info(f'[SCAN] Verifying clean state for {file_path}')
+        Logger.info(f"[SCAN] Verifying clean state for {file_path}")
         try:
-            result: Any = await self.router.call_mcp('gitkraken', {'action': 'status', 'file': file_path})
-            is_clean: Any = result.get('status') == 'clean'
+            result: Any = await self.router.call_mcp(
+                "gitkraken", {"action": "status", "file": file_path}
+            )
+            is_clean: Any = result.get("status") == "clean"
             if is_clean:
-                Logger.info('   [OK] Clean state verified')
+                Logger.info("   [OK] Clean state verified")
             else:
-                Logger.warning('   [!]  Uncommitted changes detected')
+                Logger.warning("   [!]  Uncommitted changes detected")
             return is_clean
         except Exception as e:
-            Logger.error(f'   [X] Failed to verify state: {e}')
+            Logger.error(f"   [X] Failed to verify state: {e}")
             return False
 
     async def stage_files(self, file_paths: list[str]) -> bool:
@@ -114,14 +118,14 @@ class GitSafetyHandlerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
         Returns:
             True if successful, False otherwise
         """
-        Logger.info(f'📦 Staging {len(file_paths)} files')
+        Logger.info(f"📦 Staging {len(file_paths)} files")
         try:
             for file_path in file_paths:
-                await self.router.call_mcp('gitkraken', {'action': 'stage', 'file': file_path})
-                Logger.info(f'   [OK] Staged: {file_path}')
+                await self.router.call_mcp("gitkraken", {"action": "stage", "file": file_path})
+                Logger.info(f"   [OK] Staged: {file_path}")
             return True
         except Exception as e:
-            Logger.error(f'   [X] Failed to stage files: {e}')
+            Logger.error(f"   [X] Failed to stage files: {e}")
             return False
 
     async def finalize_fission(self, original_file: str, new_files: list[str]) -> bool:
@@ -135,20 +139,25 @@ class GitSafetyHandlerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
         Returns:
             True if successful, False otherwise
         """
-        Logger.info(f'🏁 Finalizing fission for {original_file}')
+        Logger.info(f"🏁 Finalizing fission for {original_file}")
         try:
-            summary: Any = f'Hardened Fission: Decomposed {original_file} into {len(new_files)} modules'
+            summary: Any = (
+                f"Hardened Fission: Decomposed {original_file} into {len(new_files)} modules"
+            )
             all_files: Any = [original_file] + new_files
             if not await self.stage_files(all_files):
-                Logger.error('   [X] Failed to stage files')
+                Logger.error("   [X] Failed to stage files")
                 return False
-            await self.router.call_mcp('gitkraken', {'action': 'commit', 'message': summary})
-            Logger.info('   [OK] Hardened commit successful')
-            await self.router.call_mcp('redis', {'action': 'set', 'key': f'status:{original_file}', 'value': 'FISSION_COMPLETE'})
-            Logger.info('   [OK] Redis state updated')
+            await self.router.call_mcp("gitkraken", {"action": "commit", "message": summary})
+            Logger.info("   [OK] Hardened commit successful")
+            await self.router.call_mcp(
+                "redis",
+                {"action": "set", "key": f"status:{original_file}", "value": "FISSION_COMPLETE"},
+            )
+            Logger.info("   [OK] Redis state updated")
             return True
         except Exception as e:
-            Logger.error(f'   [X] Fission finalization failed: {e}')
+            Logger.error(f"   [X] Fission finalization failed: {e}")
             return False
 
     async def rollback_to_branch(self, branch_name: str) -> bool:
@@ -161,16 +170,16 @@ class GitSafetyHandlerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
         Returns:
             True if successful, False otherwise
         """
-        Logger.info(f'🔙 Rolling back to branch: {branch_name}')
+        Logger.info(f"🔙 Rolling back to branch: {branch_name}")
         try:
-            await self.router.call_mcp('gitkraken', {'action': 'checkout', 'branch': branch_name})
-            Logger.info('   [OK] Rollback successful')
+            await self.router.call_mcp("gitkraken", {"action": "checkout", "branch": branch_name})
+            Logger.info("   [OK] Rollback successful")
             return True
         except Exception as e:
-            Logger.error(f'   [X] Rollback failed: {e}')
+            Logger.error(f"   [X] Rollback failed: {e}")
             return False
 
-    async def get_commit_history(self, file_path: str, limit: int=10) -> list[dict]:
+    async def get_commit_history(self, file_path: str, limit: int = 10) -> list[dict]:
         """
         Get commit history for a file.
 
@@ -181,19 +190,28 @@ class GitSafetyHandlerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
         Returns:
             List of commit information
         """
-        Logger.info(f'📜 Getting commit history for {file_path}')
+        Logger.info(f"📜 Getting commit history for {file_path}")
         try:
-            result: Any = await self.router.call_mcp('gitkraken', {'action': 'log', 'file': file_path, 'limit': limit})
-            commits: Any = result.get('commits', [])
-            Logger.info(f'   [OK] Retrieved {len(commits)} commits')
+            result: Any = await self.router.call_mcp(
+                "gitkraken", {"action": "log", "file": file_path, "limit": limit}
+            )
+            commits: Any = result.get("commits", [])
+            Logger.info(f"   [OK] Retrieved {len(commits)} commits")
             return commits
         except Exception as e:
-            Logger.error(f'   [X] Failed to get commit history: {e}')
+            Logger.error(f"   [X] Failed to get commit history: {e}")
             return []
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L3 orchestration agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -209,6 +227,7 @@ class GitSafetyHandlerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
             return {"skipped": 1}
         finally:
             _call_path.discard(agent_name)
+
 
 def get_git_safety_handler(McpRouterAgent: Any) -> GitSafetyHandlerAgent:
     """

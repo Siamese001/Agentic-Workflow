@@ -19,7 +19,7 @@ class ConvergenceEngine:
         SSOT SNAPSHOTTING: Generates SHA256 hash for fission detection.
         """
         hasher = hashlib.sha256()
-        with open(file_path, 'rb') as f:
+        with open(file_path, "rb") as f:
             for chunk in iter(lambda: f.read(4096), b""):
                 hasher.update(chunk)
         return hasher.hexdigest()
@@ -45,19 +45,19 @@ class ConvergenceEngine:
             # Sort violations so Toxic Hubs (highest impact) are healed first
             # Formula: Impact = (100 - Metric) * (1 + ln(FanIn))
             prioritized_violations = sorted(
-                current_violations,
-                key=lambda v: v.get('impact_score', 0),
-                reverse=True
+                current_violations, key=lambda v: v.get("impact_score", 0), reverse=True
             )
 
             for violation in prioritized_violations:
                 # PHASE 5: Zombie Detection
                 # If an agent fails to heal over multiple cycles, escalate priority
-                if violation.get('audit_fail_count', 0) > 3:
-                    print(f"🧟 ZOMBIE DETECTED: {violation.get('path')} - Escalating to Sub-atomic Refactor...")
+                if violation.get("audit_fail_count", 0) > 3:
+                    print(
+                        f"🧟 ZOMBIE DETECTED: {violation.get('path')} - Escalating to Sub-atomic Refactor..."
+                    )
 
                 # Fission-Aware Healing: Snapshot before healing
-                file_path = Path(violation.get('path', ''))
+                file_path = Path(violation.get("path", ""))
                 pre_hash = None
                 file_size = 0
                 if file_path.exists():
@@ -71,7 +71,9 @@ class ConvergenceEngine:
                 if pre_hash and file_path.exists():
                     post_hash = self.get_file_hash(file_path)
                     if self.detect_fission(pre_hash, post_hash, file_size):
-                        print(f"⚛️ FISSION DETECTED: {violation.get('path')} unchanged after healing (>{file_size//1024}KB) - Terminating mission for this file.")
+                        print(
+                            f"⚛️ FISSION DETECTED: {violation.get('path')} unchanged after healing (>{file_size // 1024}KB) - Terminating mission for this file."
+                        )
 
             # Re-validate state
             current_violations = await validator.validate()

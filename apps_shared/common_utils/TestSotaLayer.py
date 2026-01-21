@@ -41,7 +41,7 @@ class SOTALayerTestSuite:
             "AWS Lambda functions cost $0.20 per 1M invocations",
             "The error rate decreased from 5% to 0.1% after fixes",
             "Machine learning model accuracy improved to 99.2%",
-            "Kubernetes cluster runs on 50 nodes with auto-scaling"
+            "Kubernetes cluster runs on 50 nodes with auto-scaling",
         ]
 
         # Test queries for semantic cache
@@ -51,42 +51,42 @@ class SOTALayerTestSuite:
                 "similar_queries": [
                     "What's our plan for the next quarter?",
                     "Describe our Q2 strategic initiatives",
-                    "What are our goals for the upcoming quarter?"
-                ]
+                    "What are our goals for the upcoming quarter?",
+                ],
             },
             {
                 "query": "How does the authentication system work?",
                 "similar_queries": [
                     "Explain the auth mechanism",
                     "Authentication flow documentation",
-                    "How do users log in to the system?"
-                ]
-            }
+                    "How do users log in to the system?",
+                ],
+            },
         ]
 
     def test_late_interaction_reranker(self):
         """Test the Late Interaction Reranker with various queries."""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("TESTING: Late Interaction Reranker")
-        print("="*60)
+        print("=" * 60)
 
         # Test queries with expected top documents
         test_cases = [
             {
                 "query": "RAG pipeline latency performance",
                 "expected_top_idx": 0,  # First doc is about RAG latency
-                "description": "Query should match RAG latency document"
+                "description": "Query should match RAG latency document",
             },
             {
                 "query": "financial industry benchmarks",
                 "expected_top_idx": 1,  # Second doc is about financial benchmarks
-                "description": "Query should match financial benchmarks"
+                "description": "Query should match financial benchmarks",
             },
             {
                 "query": "Python API performance",
                 "expected_top_idx": 5,  # Sixth doc is about Python API
-                "description": "Query should match Python API document"
-            }
+                "description": "Query should match Python API document",
+            },
         ]
 
         # Check if reranker is available
@@ -104,9 +104,7 @@ class SOTALayerTestSuite:
 
             start_time = time.time()
             reranked = self.reranker.rerank(
-                query=test_case['query'],
-                documents=self.sample_docs,
-                top_k=5
+                query=test_case["query"], documents=self.sample_docs, top_k=5
             )
             elapsed = time.time() - start_time
 
@@ -115,7 +113,7 @@ class SOTALayerTestSuite:
             # Check if expected document is at top
             if len(reranked) > 0:
                 top_doc = reranked[0]
-                expected_doc = self.sample_docs[test_case['expected_top_idx']]
+                expected_doc = self.sample_docs[test_case["expected_top_idx"]]
 
                 if top_doc == expected_doc:
                     print("   ✅ Correct document ranked #1")
@@ -132,9 +130,7 @@ class SOTALayerTestSuite:
             # Test with scores
             print("\n   Testing with scores:")
             scored_results = self.reranker.rerank_with_scores(
-                query=test_case['query'],
-                documents=self.sample_docs[:3],
-                top_k=3
+                query=test_case["query"], documents=self.sample_docs[:3], top_k=3
             )
 
             for doc, score in scored_results:
@@ -142,9 +138,9 @@ class SOTALayerTestSuite:
 
     def test_contrastive_semantic_cache(self):
         """Test the Contrastive Semantic Cache with semantic similarity."""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("TESTING: Contrastive Semantic Cache")
-        print("="*60)
+        print("=" * 60)
 
         # Check if cache is available
         if not self.cache.is_available:
@@ -161,7 +157,7 @@ class SOTALayerTestSuite:
 
             # Store original query with response
             original_response = f"Response for: {test_case['query']}"
-            success = self.cache.put(test_case['query'], original_response)
+            success = self.cache.put(test_case["query"], original_response)
 
             if success:
                 print("✅ Cached original query")
@@ -170,7 +166,7 @@ class SOTALayerTestSuite:
                 continue
 
             # Test similar queries
-            for j, similar_query in enumerate(test_case['similar_queries'], 1):
+            for j, similar_query in enumerate(test_case["similar_queries"], 1):
                 print(f"\n   Similar Query {j}: {similar_query}")
 
                 start_time = time.time()
@@ -178,7 +174,7 @@ class SOTALayerTestSuite:
                 elapsed = time.time() - start_time
 
                 if cached_response:
-                    print(f"   ✅ Cache hit in {elapsed*1000:.2f}ms")
+                    print(f"   ✅ Cache hit in {elapsed * 1000:.2f}ms")
                     if cached_response == original_response:
                         print("   ✅ Correct response retrieved")
                     else:
@@ -191,9 +187,9 @@ class SOTALayerTestSuite:
 
     def test_cache_features(self):
         """Test additional cache features."""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("TESTING: Cache Features")
-        print("="*60)
+        print("=" * 60)
 
         if not self.cache.is_available:
             print("\n⚠️  Cache not available, skipping feature tests")
@@ -236,7 +232,7 @@ class SOTALayerTestSuite:
         self.cache.put("export_test", "export_response")
 
         # Export to temp file
-        with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.json') as f:
+        with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".json") as f:
             temp_file = f.name
 
         try:
@@ -259,9 +255,9 @@ class SOTALayerTestSuite:
 
     def test_integration_scenario(self):
         """Test both components working together in a realistic scenario."""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("TESTING: Integration Scenario")
-        print("="*60)
+        print("=" * 60)
 
         # Simulate an executive query flow
         executive_query = "Compare our system performance against industry benchmarks"
@@ -276,11 +272,11 @@ class SOTALayerTestSuite:
         cache_time = time.time() - start_time
 
         if cached_result:
-            print(f"✅ Cache hit! Response served in {cache_time*1000:.2f}ms")
+            print(f"✅ Cache hit! Response served in {cache_time * 1000:.2f}ms")
             print(f"   Response: {cached_result[:100]}...")
             return
         else:
-            print(f"   Cache miss in {cache_time*1000:.2f}ms")
+            print(f"   Cache miss in {cache_time * 1000:.2f}ms")
 
         # Step 2: Simulate retrieval (mock results)
         print("\n2. Simulating document retrieval...")
@@ -292,9 +288,7 @@ class SOTALayerTestSuite:
         if self.reranker.is_available:
             start_time = time.time()
             reranked_docs = self.reranker.rerank(
-                query=executive_query,
-                documents=retrieved_docs,
-                top_k=3
+                query=executive_query, documents=retrieved_docs, top_k=3
             )
             rerank_time = time.time() - start_time
             print(f"   ✅ Reranked in {rerank_time:.3f}s")
@@ -325,16 +319,16 @@ class SOTALayerTestSuite:
         cache_time = time.time() - start_time
 
         if cached_result:
-            print(f"   ✅ Similar query hit cache in {cache_time*1000:.2f}ms")
+            print(f"   ✅ Similar query hit cache in {cache_time * 1000:.2f}ms")
             print(f"   Response: {cached_result[:100]}...")
         else:
             print("   ❌ Similar query missed cache")
 
     def test_fallback_modes(self):
         """Test fallback behavior when dependencies are missing."""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("TESTING: Fallback Modes")
-        print("="*60)
+        print("=" * 60)
 
         # Test PassThroughReranker
         print("\n1. Testing PassThroughReranker:")
@@ -356,7 +350,9 @@ class SOTALayerTestSuite:
 
         # Test get
         get_result = null_cache.get("test")
-        print(f"   Get operation: {'None' if get_result is None else 'Unexpectedly returned value'}")
+        print(
+            f"   Get operation: {'None' if get_result is None else 'Unexpectedly returned value'}"
+        )
 
         # Test stats
         stats = null_cache.get_stats()
@@ -364,16 +360,14 @@ class SOTALayerTestSuite:
 
     def test_convenience_functions(self):
         """Test convenience functions for direct usage."""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("TESTING: Convenience Functions")
-        print("="*60)
+        print("=" * 60)
 
         # Test rerank_documents function
         print("\n1. Testing rerank_documents() function:")
         result = rerank_documents(
-            query="Python API performance",
-            documents=self.sample_docs[:5],
-            top_k=3
+            query="Python API performance", documents=self.sample_docs[:5], top_k=3
         )
         print(f"   Reranked {len(result)} documents")
         if result:
@@ -394,15 +388,19 @@ class SOTALayerTestSuite:
     def run_all_tests(self):
         """Run all tests sequentially."""
         print("🚀 Starting Phase 3 SOTA Layer Test Suite")
-        print("="*60)
+        print("=" * 60)
 
         # Check dependencies
         print("\nChecking dependencies...")
         reranker_available = self.reranker.is_available
         cache_available = self.cache.is_available
 
-        print(f"  Late Interaction Reranker: {'✅ Available' if reranker_available else '⚠️  Fallback mode'}")
-        print(f"  Contrastive Semantic Cache: {'✅ Available' if cache_available else '⚠️  Fallback mode'}")
+        print(
+            f"  Late Interaction Reranker: {'✅ Available' if reranker_available else '⚠️  Fallback mode'}"
+        )
+        print(
+            f"  Contrastive Semantic Cache: {'✅ Available' if cache_available else '⚠️  Fallback mode'}"
+        )
 
         # Run tests
         self.test_late_interaction_reranker()
@@ -412,9 +410,9 @@ class SOTALayerTestSuite:
         self.test_fallback_modes()
         self.test_convenience_functions()
 
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("✅ ALL TESTS COMPLETED")
-        print("="*60)
+        print("=" * 60)
         print("\nPhase 3 SOTA Layer is ready for integration!")
         print("\nKey Benefits Achieved:")
         print("  • Google-quality ranking with Cross-Encoder reranking")

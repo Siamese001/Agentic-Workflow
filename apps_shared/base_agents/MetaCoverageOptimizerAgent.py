@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, healer, prompt, state, workflow
@@ -57,12 +56,16 @@ class MetaCoverageOptimizerAgent(SovereignBaseAgent):
         self.entropy_history.append(current_entropy)
         self.proportion_history.append(current_proportions.copy())
 
-        history_avg = sum(self.entropy_history) / len(self.entropy_history) if self.entropy_history else 0
+        history_avg = (
+            sum(self.entropy_history) / len(self.entropy_history) if self.entropy_history else 0
+        )
         report.append(f"Current entropy: {current_entropy:.2f} (history avg: {history_avg:.2f})")
 
         # Tune if interval met and history sufficient
-        if (len(self.entropy_history) == self.history_length and
-            time.time() - self.last_tune_time > 300):
+        if (
+            len(self.entropy_history) == self.history_length
+            and time.time() - self.last_tune_time > 300
+        ):
             adjustments = self._compute_parameter_adjustments(current_proportions)
             if adjustments:
                 self._apply_adjustments(adjustments)
@@ -82,17 +85,24 @@ class MetaCoverageOptimizerAgent(SovereignBaseAgent):
             return {}
 
         recent_avg = sum(list(self.entropy_history)[-10:]) / 10
-        prior_avg = sum(list(self.entropy_history)[:-10]) / 10 if len(self.entropy_history) > 10 else recent_avg
+        prior_avg = (
+            sum(list(self.entropy_history)[:-10]) / 10
+            if len(self.entropy_history) > 10
+            else recent_avg
+        )
         delta = recent_avg - prior_avg
 
         adjustments = {"log": [f"Entropy delta: {delta:.3f}"]}
 
         if delta < 0.02:
             adjustments["log"].append("Stagnation detected — increasing exploration")
-            new_weight = min(self.param_bounds["bias_weight"][1],
-                           self.coverage_agent.bias_weight + 0.5)
-            new_synth = min(self.param_bounds["synthetic_tasks_per_trigger"][1],
-                          self.coverage_agent.synthetic_tasks_per_trigger + 2)
+            new_weight = min(
+                self.param_bounds["bias_weight"][1], self.coverage_agent.bias_weight + 0.5
+            )
+            new_synth = min(
+                self.param_bounds["synthetic_tasks_per_trigger"][1],
+                self.coverage_agent.synthetic_tasks_per_trigger + 2,
+            )
             adjustments["bias_weight"] = new_weight
             adjustments["synthetic_tasks_per_trigger"] = new_synth
 
@@ -106,11 +116,10 @@ class MetaCoverageOptimizerAgent(SovereignBaseAgent):
             persistent_high = max(current_proportions, key=current_proportions.get)
             if current_proportions[persistent_high] > 0.5:
                 adjustments["log"].append(f"Overrepresentation: {persistent_high} — negative bias")
-                publish_event("coverage_negative_bias", {
-                    "layer": persistent_high,
-                    "weight": 0.5,
-                    "cycles": 20
-                })
+                publish_event(
+                    "coverage_negative_bias",
+                    {"layer": persistent_high, "weight": 0.5, "cycles": 20},
+                )
 
         return adjustments if len(adjustments) > 1 else {}
 
@@ -120,8 +129,12 @@ class MetaCoverageOptimizerAgent(SovereignBaseAgent):
             self.coverage_agent.bias_weight = adjustments["bias_weight"]
             adjustments["log"].append(f"Tuned bias_weight → {adjustments['bias_weight']}")
         if "synthetic_tasks_per_trigger" in adjustments:
-            self.coverage_agent.synthetic_tasks_per_trigger = adjustments["synthetic_tasks_per_trigger"]
-            adjustments["log"].append(f"Tuned synthetics → {adjustments['synthetic_tasks_per_trigger']}")
+            self.coverage_agent.synthetic_tasks_per_trigger = adjustments[
+                "synthetic_tasks_per_trigger"
+            ]
+            adjustments["log"].append(
+                f"Tuned synthetics → {adjustments['synthetic_tasks_per_trigger']}"
+            )
         publish_event("coverage_params_updated", adjustments)
 
     def _find_persistent_underrepresented(self, threshold: float = 0.15) -> str | None:
@@ -146,10 +159,12 @@ class MetaCoverageOptimizerAgent(SovereignBaseAgent):
             results["tests"].append({"name": "test_instantiation", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
+            results["tests"].append(
+                {"name": "test_instantiation", "status": "failed", "error": str(e)}
+            )
         return results
 
     @standard_heal
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()

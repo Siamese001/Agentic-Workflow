@@ -18,19 +18,40 @@ class TalentMetrics(BaseModel):
     """Metrics describing talent acquisition and management capabilities."""
 
     team_size: int = Field(..., ge=0, description="Size of team managed")
-    pedigree_keywords: list[str] = Field(default_factory=list, description="Prestige markers in team")
+    pedigree_keywords: list[str] = Field(
+        default_factory=list, description="Prestige markers in team"
+    )
     retention_rate: str | None = Field(None, description="Team retention rate")
     hiring_velocity: str | None = Field(None, description="Hiring speed metric")
 
-    @validator('pedigree_keywords')
+    @validator("pedigree_keywords")
     def validate_pedigree(cls, v):
         """Ensure pedigree keywords are prestigious markers."""
         prestigious_terms = {
-            'phd', 'masters', 'ex-google', 'ex-meta', 'ex-amazon', 'ex-apple',
-            'ex-microsoft', 'ex-netflix', 'researchers', 'contributors',
-            'senior', 'principal', 'staff', 'founding engineer',
-            'top-tier', 'fortune 500', 'ivy league', 'stanford', 'mit',
-            'cmu', 'berkeley', 'open-source', 'github', 'kaggle'
+            "phd",
+            "masters",
+            "ex-google",
+            "ex-meta",
+            "ex-amazon",
+            "ex-apple",
+            "ex-microsoft",
+            "ex-netflix",
+            "researchers",
+            "contributors",
+            "senior",
+            "principal",
+            "staff",
+            "founding engineer",
+            "top-tier",
+            "fortune 500",
+            "ivy league",
+            "stanford",
+            "mit",
+            "cmu",
+            "berkeley",
+            "open-source",
+            "github",
+            "kaggle",
         }
 
         filtered = [kw for kw in v if any(term in kw.lower() for term in prestigious_terms)]
@@ -63,7 +84,7 @@ class TalentSignalEnhancer:
                 r"mit",
                 r"cmu",
                 r"berkeley",
-                r"carnegie mellon"
+                r"carnegie mellon",
             ],
             "experience": [
                 r"ex-(google|meta|amazon|apple|microsoft|netflix|faang)",
@@ -71,7 +92,7 @@ class TalentSignalEnhancer:
                 r"previously at (google|meta|amazon|apple|microsoft|netflix)",
                 r"big tech",
                 r"fortune 500",
-                r"top-tier"
+                r"top-tier",
             ],
             "seniority": [
                 r"senior",
@@ -81,7 +102,7 @@ class TalentSignalEnhancer:
                 r"lead",
                 r"head of",
                 r"director",
-                r"vp"
+                r"vp",
             ],
             "achievement": [
                 r"researcher",
@@ -90,11 +111,13 @@ class TalentSignalEnhancer:
                 r"github",
                 r"kaggle",
                 r"published",
-                r"patented"
-            ]
+                r"patented",
+            ],
         }
 
-        logger.info(f"Initialized TalentSignalEnhancer with management experience: {self.has_management_experience}")
+        logger.info(
+            f"Initialized TalentSignalEnhancer with management experience: {self.has_management_experience}"
+        )
 
     def enhance_management_bullet(self, bullet_text: str) -> str:
         """Enhance a management bullet with talent signals.
@@ -125,21 +148,17 @@ class TalentSignalEnhancer:
                     pedigree_str = ", ".join(pedigree[:3])  # Limit to top 3
                     enhanced = enhanced.replace(
                         f"team of {team_size}",
-                        f"team of {team_size} (including **{pedigree_str}**)"
+                        f"team of {team_size} (including **{pedigree_str}**)",
                     )
                 else:
                     enhanced = enhanced.replace(
-                        f"team of {team_size}",
-                        f"high-performance team of {team_size}"
+                        f"team of {team_size}", f"high-performance team of {team_size}"
                     )
 
             # Add hiring velocity
             if hiring_metric:
                 if "hired" in enhanced.lower():
-                    enhanced = enhanced.replace(
-                        "hired",
-                        f"recruited **{hiring_metric}**"
-                    )
+                    enhanced = enhanced.replace("hired", f"recruited **{hiring_metric}**")
 
             # Add retention rate
             if retention_metric:
@@ -182,7 +201,9 @@ class TalentSignalEnhancer:
             # Generate hook
             hook = f"P.S. I have a specialized network of {role_network} {target_role}s who often follow me to new ventures. I could likely fill your open {target_role} roles within 60 days."
 
-            logger.info(f"Generated network hook for {target_role} with network size {role_network}")
+            logger.info(
+                f"Generated network hook for {target_role} with network size {role_network}"
+            )
 
             return hook
 
@@ -201,8 +222,14 @@ class TalentSignalEnhancer:
         """
         try:
             hiring_keywords = [
-                "hire", "hiring", "recruit", "build team", "scale team",
-                "grow team", "talent acquisition", "team building"
+                "hire",
+                "hiring",
+                "recruit",
+                "build team",
+                "scale team",
+                "grow team",
+                "talent acquisition",
+                "team building",
             ]
 
             jd_lower = job_description.lower()
@@ -273,7 +300,7 @@ class TalentSignalEnhancer:
                 r"(\d+) (?:people|engineers|developers|members)",
                 r"managed (\d+)",
                 r"led (\d+)",
-                r"built a team of (\d+)"
+                r"built a team of (\d+)",
             ]
 
             for pattern in patterns:
@@ -301,7 +328,7 @@ class TalentSignalEnhancer:
             patterns = [
                 r"hired (\d+) in (\d+) months?",
                 r"recruited (\d+) within (\d+) months?",
-                r"built team from (\d+) to (\d+) in (\d+) months?"
+                r"built team from (\d+) to (\d+) in (\d+) months?",
             ]
 
             for pattern in patterns:
@@ -331,11 +358,7 @@ class TalentSignalEnhancer:
         """
         try:
             # Look for retention percentages
-            patterns = [
-                r"(\d+)% retention",
-                r"retention of (\d+)%",
-                r"retained (\d+)%"
-            ]
+            patterns = [r"(\d+)% retention", r"retention of (\d+)%", r"retained (\d+)%"]
 
             for pattern in patterns:
                 match = re.search(pattern, text.lower())
@@ -343,7 +366,10 @@ class TalentSignalEnhancer:
                     return f"{match.group(1)}%"
 
             # Look for "no attrition", "zero turnover"
-            if any(phrase in text.lower() for phrase in ["no attrition", "zero turnover", "100% retained"]):
+            if any(
+                phrase in text.lower()
+                for phrase in ["no attrition", "zero turnover", "100% retained"]
+            ):
                 return "100%"
 
             return None
@@ -368,18 +394,15 @@ class TalentSignalEnhancer:
                 # Add prestige without making false claims
                 if team_size >= 20:
                     bullet = bullet.replace(
-                        f"team of {team_size}",
-                        f"team of {team_size} **senior engineers**"
+                        f"team of {team_size}", f"team of {team_size} **senior engineers**"
                     )
                 elif team_size >= 10:
                     bullet = bullet.replace(
-                        f"team of {team_size}",
-                        f"team of {team_size} **high-caliber engineers**"
+                        f"team of {team_size}", f"team of {team_size} **high-caliber engineers**"
                     )
                 else:
                     bullet = bullet.replace(
-                        f"team of {team_size}",
-                        f"team of {team_size} **specialized engineers**"
+                        f"team of {team_size}", f"team of {team_size} **specialized engineers**"
                     )
 
             # Add leadership emphasis
@@ -408,8 +431,7 @@ def create_talent_signal_enhancer(candidate_background: dict[str, Any]) -> Talen
 
 # Convenience function for quick enhancement
 def enhance_talent_signals(
-    bullets: list[str],
-    candidate_background: dict[str, Any]
+    bullets: list[str], candidate_background: dict[str, Any]
 ) -> tuple[list[str], str | None]:
     """Quickly enhance talent signals in bullets.
 

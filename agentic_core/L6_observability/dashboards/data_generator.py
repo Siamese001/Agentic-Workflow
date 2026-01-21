@@ -16,6 +16,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 
 log = logging.getLogger(__name__)
 
+
 class DashboardDataGenerator:
     def __init__(self, project_root: Path, territories: dict[str, Any]) -> None:
         self.project_root = project_root
@@ -35,12 +36,23 @@ class DashboardDataGenerator:
             log.error(f"Failed to load registry: {e}")
             return []
 
-    def compute_territory_metrics(self, agents: list[Path], used_stems: set, registry: dict[str, Any]) -> dict[str, Any]:
+    def compute_territory_metrics(
+        self, agents: list[Path], used_stems: set, registry: dict[str, Any]
+    ) -> dict[str, Any]:
         """Compute aggregate metrics for a specific agent group."""
         m = {
-            "total": len(agents), "compliant": 0, "heal_cap": 0, "heal_inv": 0,
-            "test": 0, "cc_sum": 0, "typed": 0, "doc": 0, "obs": 0, "used": 0,
-            "schema_strictness": 0.0, "proper_base": 0.0
+            "total": len(agents),
+            "compliant": 0,
+            "heal_cap": 0,
+            "heal_inv": 0,
+            "test": 0,
+            "cc_sum": 0,
+            "typed": 0,
+            "doc": 0,
+            "obs": 0,
+            "used": 0,
+            "schema_strictness": 0.0,
+            "proper_base": 0.0,
         }
         for agent in agents:
             rel_path = str(agent.relative_to(self.project_root)).replace("\\", "/")
@@ -61,13 +73,20 @@ class DashboardDataGenerator:
 
         return m
 
-    def build_territory_row(self, territory_name: str, metrics: dict[str, Any], priority: int, is_infrastructure: bool) -> dict[str, Any]:
+    def build_territory_row(
+        self, territory_name: str, metrics: dict[str, Any], priority: int, is_infrastructure: bool
+    ) -> dict[str, Any]:
         """Format raw metrics into a standardized dashboard row."""
         t = metrics["total"]
-        if t == 0: return {}
+        if t == 0:
+            return {}
 
         avg_cc = round(metrics["cc_sum"] / t, 1)
-        health = round(((metrics["test"]/t*100) + (metrics["heal_inv"]/t*100) + (metrics["obs"]/t)) / 3, 1)
+        health = round(
+            ((metrics["test"] / t * 100) + (metrics["heal_inv"] / t * 100) + (metrics["obs"] / t))
+            / 3,
+            1,
+        )
 
         return {
             "Territory": territory_name,
@@ -79,17 +98,24 @@ class DashboardDataGenerator:
             "Typed %": round(metrics["typed"] / t, 1),
             "Documented %": round(metrics["doc"] / t, 1),
             "Health": health,
-            "Risk": "HIGH" if avg_cc > 12 or health < 60 else "MED" if avg_cc > 8 or health < 80 else "LOW",
+            "Risk": "HIGH"
+            if avg_cc > 12 or health < 60
+            else "MED"
+            if avg_cc > 8 or health < 80
+            else "LOW",
             "Priority": priority,
             "Schema Strictness %": round(metrics["schema_strictness"] / t, 1),
-            "Proper Base %": round(metrics["proper_base"] / t, 1)
+            "Proper Base %": round(metrics["proper_base"] / t, 1),
         }
 
     def build_total_row(self, rows: list[dict[str, Any]]) -> dict[str, Any]:
         """Aggregate all territory rows into a system-wide total row."""
-        if not rows: return {}
+        if not rows:
+            return {}
         total_agents = sum(r["Total"] for r in rows)
-        def weighted_avg(key): return round(sum(r[key] * r["Total"] for r in rows) / total_agents, 1)
+
+        def weighted_avg(key):
+            return round(sum(r[key] * r["Total"] for r in rows) / total_agents, 1)
 
         health = weighted_avg("Health")
         return {
@@ -104,7 +130,7 @@ class DashboardDataGenerator:
             "Health": health,
             "Risk": "HIGH" if health < 70 else "MED" if health < 85 else "LOW",
             "Schema Strictness %": weighted_avg("Schema Strictness %"),
-            "Proper Base %": weighted_avg("Proper Base %")
+            "Proper Base %": weighted_avg("Proper Base %"),
         }
 
     def generate_full_report_data(self) -> tuple[list[dict[str, Any]], dict[str, Any]]:
@@ -112,6 +138,6 @@ class DashboardDataGenerator:
         self.load_registry()
         # Note: In production, this would involve full path scanning.
         # For brevity, this assumes a typical orchestrator call pattern.
-        rows = [] # Filled by caller using build_territory_row
+        rows = []  # Filled by caller using build_territory_row
         total_row = self.build_total_row(rows)
         return rows, total_row

@@ -46,19 +46,26 @@ from typing import Any
 # SSOT discovery - replaces rglob
 try:
     from agentic_core.utils.ssot_discovery import get_python_files
+
     SSOT_AVAILABLE = True
 except ImportError:
     SSOT_AVAILABLE = False
 
 # SSOT: Import territory name definitions
 sys.path.insert(0, str(Path(__file__).parent))
-sys.path.insert(0, str(Path(__file__).parent.parent / "agentic_core" / "L0_maintenance" / "scripts"))
+sys.path.insert(
+    0, str(Path(__file__).parent.parent / "agentic_core" / "L0_maintenance" / "scripts")
+)
 try:
     from territory_ssot_definitions import get_territory_from_path, refine_territory_by_ast
 except ImportError:
     # Fallback stubs if module not available
-    def get_territory_from_path(path): return "unknown"
-    def refine_territory_by_ast(path, territory): return territory
+    def get_territory_from_path(path):
+        return "unknown"
+
+    def refine_territory_by_ast(path, territory):
+        return territory
+
 
 # SSOT: Import field name constants for agent_discovery_full.json
 try:
@@ -120,6 +127,7 @@ if platform.system() == "Windows":
     except AttributeError:
         # Python < 3.7 fallback
         import codecs
+
         sys.stdout = codecs.getwriter("utf-8")(sys.stdout.buffer, errors="replace")
         sys.stderr = codecs.getwriter("utf-8")(sys.stderr.buffer, errors="replace")
 
@@ -136,8 +144,8 @@ AGENTIC_CORE = PROJECT_ROOT / AGENTIC_CORE_DIR
 CANONICAL_JSON = PROJECT_ROOT / AGENT_DISCOVERY_JSON
 MANIFEST_JSON = PROJECT_ROOT / AGENT_DISCOVERY_MANIFEST_JSON
 LEGACY_JSON = PROJECT_ROOT / AGENT_DISCOVERY_JSON
-MISTAKE_JSON = PROJECT_ROOT / 'agent_full.json'
-MISTAKE_JSON_2 = PROJECT_ROOT / 'agent_discovery_legacy.json'
+MISTAKE_JSON = PROJECT_ROOT / "agent_full.json"
+MISTAKE_JSON_2 = PROJECT_ROOT / "agent_discovery_legacy.json"
 OUTPUT_JSON = CANONICAL_JSON
 
 # ============================================================================
@@ -146,6 +154,7 @@ OUTPUT_JSON = CANONICAL_JSON
 # Import SSOT exclusions from structure_blueprint
 try:
     from agentic_core.L5_safety.validators.structure_blueprint import GLOBAL_EXCLUDED_DIRS
+
     SSOT_EXCLUDED = set(GLOBAL_EXCLUDED_DIRS)
 except ImportError:
     SSOT_EXCLUDED = set()
@@ -153,37 +162,68 @@ except ImportError:
 # These directories are NEVER scanned for agents (fast path exclusion)
 EXCLUDED_DIRS = {
     # Build/cache artifacts
-    '__pycache__', '.pytest_cache', 'build', 'dist', '.eggs', '*.egg-info',
+    "__pycache__",
+    ".pytest_cache",
+    "build",
+    "dist",
+    ".eggs",
+    "*.egg-info",
     # Version control
-    '.git', '.svn', '.hg',
+    ".git",
+    ".svn",
+    ".hg",
     # Virtual environments
-    '.venv', 'venv', 'env', '.env', 'node_modules',
+    ".venv",
+    "venv",
+    "env",
+    ".env",
+    "node_modules",
     # Coverage/test artifacts (CRITICAL: prevents HTML files from being scanned)
-    'coverage_html', 'htmlcov', '.coverage',
+    "coverage_html",
+    "htmlcov",
+    ".coverage",
     # Project-specific exclusions
-    'archives', '.sovereign_healing_backup', 'reports',
+    "archives",
+    ".sovereign_healing_backup",
+    "reports",
     # Test territory exclusion (CRITICAL: prevents test files from polluting manifest)
-    'tests',
+    "tests",
 } | SSOT_EXCLUDED
 
 # Filename patterns that indicate non-agent files (case-insensitive)
 EXCLUDED_FILENAME_PATTERNS = {
-    'mixin', '_mixin', 'utility', 'utils', 'helper', 'helpers',
-    'conftest', 'setup', '__init__', '__main__',
+    "mixin",
+    "_mixin",
+    "utility",
+    "utils",
+    "helper",
+    "helpers",
+    "conftest",
+    "setup",
+    "__init__",
+    "__main__",
 }
 
 # Path substrings that indicate non-agent locations
 EXCLUDED_PATH_PATTERNS = {
-    '/tests/', '/test/', '/examples/', '/example/', '/docs/', '/doc/',
-    '/fixtures/', '/mocks/', '/stubs/', '/fakes/',
+    "/tests/",
+    "/test/",
+    "/examples/",
+    "/example/",
+    "/docs/",
+    "/doc/",
+    "/fixtures/",
+    "/mocks/",
+    "/stubs/",
+    "/fakes/",
 }
 
 # PHASE 2: Special layer mappings for non-standard paths (fixes "Unknown" territories)
 SPECIAL_LAYER_MAPPINGS = {
-    'schemas': 'L1',  # Validation schemas are cognition-related
-    'prompt_governance': 'L1',  # Prompt management is cognition
-    'base_agents': 'Base',  # Special category for base agents
-    'utils': 'Utils',  # Utility category
+    "schemas": "L1",  # Validation schemas are cognition-related
+    "prompt_governance": "L1",  # Prompt management is cognition
+    "base_agents": "Base",  # Special category for base agents
+    "utils": "Utils",  # Utility category
 }
 
 
@@ -195,14 +235,14 @@ def should_exclude_path(path: Path) -> bool:
     2. Filename matches EXCLUDED_FILENAME_PATTERNS
     3. Path contains EXCLUDED_PATH_PATTERNS
     """
-    path_str = str(path).replace('\\', '/').lower()
+    path_str = str(path).replace("\\", "/").lower()
 
     # Factor 1: Directory exclusion
     if any(excluded.lower() in path.parts for excluded in EXCLUDED_DIRS):
         return True
 
     # Factor 2: Filename pattern exclusion
-    filename_lower = path.name.lower() if path.name else ''
+    filename_lower = path.name.lower() if path.name else ""
     if any(pattern in filename_lower for pattern in EXCLUDED_FILENAME_PATTERNS):
         return True
 
@@ -258,7 +298,7 @@ def should_exclude_file(py_file: Path) -> bool:
         True if ANY exclusion factor matches (aggressive OR for safety)
     """
     # Factor 0: Must be a .py file
-    if py_file.suffix.lower() != '.py':
+    if py_file.suffix.lower() != ".py":
         return True
 
     # Factor 1: Directory exclusion
@@ -271,20 +311,22 @@ def should_exclude_file(py_file: Path) -> bool:
     for pattern in EXCLUDED_FILENAME_PATTERNS:
         if pattern in filename_lower:
             # Exception: files like "mixin_agent.py" are allowed if they end with "agent"
-            if filename_lower.endswith('agent'):
+            if filename_lower.endswith("agent"):
                 continue
             return True
 
     # Factor 3: Path pattern exclusion
-    path_str = str(py_file).replace('\\', '/').lower()
+    path_str = str(py_file).replace("\\", "/").lower()
     # Note: We allow tests/ for test agent discovery, but exclude specific patterns
-    if '/fixtures/' in path_str or '/mocks/' in path_str or '/stubs/' in path_str:
+    if "/fixtures/" in path_str or "/mocks/" in path_str or "/stubs/" in path_str:
         return True
 
     return False
 
 
-def validate_agent_count(agent_count: int, previous_count: int | None = None) -> tuple[bool, list[str]]:
+def validate_agent_count(
+    agent_count: int, previous_count: int | None = None
+) -> tuple[bool, list[str]]:
     """
     HARDENING: Validate agent count against safety thresholds.
 
@@ -343,15 +385,15 @@ def get_previous_agent_count() -> int | None:
     # Try manifest first
     if MANIFEST_JSON.exists():
         try:
-            manifest = json.loads(MANIFEST_JSON.read_text(encoding='utf-8'))
-            return manifest.get('agent_count')
+            manifest = json.loads(MANIFEST_JSON.read_text(encoding="utf-8"))
+            return manifest.get("agent_count")
         except (json.JSONDecodeError, KeyError):
             pass
 
     # Fall back to counting agents in existing JSON
     if CANONICAL_JSON.exists():
         try:
-            agents = json.loads(CANONICAL_JSON.read_text(encoding='utf-8'))
+            agents = json.loads(CANONICAL_JSON.read_text(encoding="utf-8"))
             return len(agents)
         except json.JSONDecodeError:
             pass
@@ -371,62 +413,63 @@ def generate_manifest(agents: list[dict], scan_duration: float, parse_errors: li
     # Layer breakdown
     layer_counts = defaultdict(int)
     for a in agents:
-        layer_counts[a.get('layer', 'unknown')] += 1
+        layer_counts[a.get("layer", "unknown")] += 1
 
     manifest = {
-        'generated_at': datetime.utcnow().isoformat() + 'Z',
-        'scan_duration_seconds': round(scan_duration, 2),
-        'agent_count': len(agents),
-        'content_hash': f'sha256:{content_hash}',
-        'layer_breakdown': dict(layer_counts),
-        'parse_errors_count': len(parse_errors),
-        'minimum_agent_count': MINIMUM_AGENT_COUNT,
-        'expected_agent_count': EXPECTED_AGENT_COUNT,
-        'validation': {
-            'passed': len(agents) >= MINIMUM_AGENT_COUNT,
-            'threshold': MINIMUM_AGENT_COUNT
-        }
+        "generated_at": datetime.utcnow().isoformat() + "Z",
+        "scan_duration_seconds": round(scan_duration, 2),
+        "agent_count": len(agents),
+        "content_hash": f"sha256:{content_hash}",
+        "layer_breakdown": dict(layer_counts),
+        "parse_errors_count": len(parse_errors),
+        "minimum_agent_count": MINIMUM_AGENT_COUNT,
+        "expected_agent_count": EXPECTED_AGENT_COUNT,
+        "validation": {
+            "passed": len(agents) >= MINIMUM_AGENT_COUNT,
+            "threshold": MINIMUM_AGENT_COUNT,
+        },
     }
 
     return manifest
 
+
 # Healing-capable bases (for detection) - expanded for full MRO coverage
 HEALING_BASES = {
     # Core mixin
-    'HealerMixin',
+    "HealerMixin",
     # L1 bases
-    'CanonBaseAgent',
-    'CognitionCanonBaseAgent',
+    "CanonBaseAgent",
+    "CognitionCanonBaseAgent",
     # L2 bases (inherit from HealerMixin)
-    'SubAtomicAgent',
-    'ExecutionCanonBaseAgent',
-    'SubatomicTestingMixin',  # Often co-inherited with HealerMixin
+    "SubAtomicAgent",
+    "ExecutionCanonBaseAgent",
+    "SubatomicTestingMixin",  # Often co-inherited with HealerMixin
     # L3 bases
-    'L3OrchestrationBaseAgent',
-    'L3SubatomicTestingMixin',
+    "L3OrchestrationBaseAgent",
+    "L3SubatomicTestingMixin",
     # L4 bases
-    'L4StateBaseAgent',
-    'L4SubatomicTestingMixin',
+    "L4StateBaseAgent",
+    "L4SubatomicTestingMixin",
     # L5 bases
-    'L5SafetyBaseAgent',
+    "L5SafetyBaseAgent",
     # Common agent bases that have HealerMixin in their MRO
-    'ASTEnforcementMixin',  # Used by L5 validators
+    "ASTEnforcementMixin",  # Used by L5 validators
 }
 
 SELF_TESTING_BASES = {
-    'SubAtomicAgent',
-    'SubatomicTestingMixin',
-    'L3OrchestrationBaseAgent',
-    'L3SubatomicTestingMixin',
-    'L4StateBaseAgent',
-    'L4SubatomicTestingMixin',
-    'CanonBaseAgent',
+    "SubAtomicAgent",
+    "SubatomicTestingMixin",
+    "L3OrchestrationBaseAgent",
+    "L3SubatomicTestingMixin",
+    "L4StateBaseAgent",
+    "L4SubatomicTestingMixin",
+    "CanonBaseAgent",
 }
 
 DELEGATION_BASES = {
-    'MaintenanceBaseAgent',
-    'L0DelegationTestingMixin',
-    'L0DelegationMixin',
+    "MaintenanceBaseAgent",
+    "L0DelegationTestingMixin",
+    "L0DelegationMixin",
 }
 
 
@@ -496,7 +539,7 @@ def extract_imports(tree: ast.AST) -> tuple[list[str], list[str]]:
             for alias in node.names:
                 imports.append(alias.name)
         elif isinstance(node, ast.ImportFrom):
-            module = node.module or ''
+            module = node.module or ""
             for alias in node.names:
                 from_imports.append(f"{module}.{alias.name}")
     return imports, from_imports
@@ -510,12 +553,16 @@ def extract_method_signatures(node: ast.ClassDef) -> list[dict[str, Any]]:
             params = []
             for arg in item.args.args:
                 params.append(arg.arg)
-            methods.append({
-                'name': item.name,
-                'async': isinstance(item, ast.AsyncFunctionDef),
-                'params': params,
-                'decorators': [d.id if isinstance(d, ast.Name) else str(d) for d in item.decorator_list[:3]]
-            })
+            methods.append(
+                {
+                    "name": item.name,
+                    "async": isinstance(item, ast.AsyncFunctionDef),
+                    "params": params,
+                    "decorators": [
+                        d.id if isinstance(d, ast.Name) else str(d) for d in item.decorator_list[:3]
+                    ],
+                }
+            )
     return methods
 
 
@@ -598,26 +645,30 @@ def detect_invocation_status(class_node: ast.ClassDef) -> str:
     IMPORTANT: This checks the CLASS's heal_repository method specifically,
     not standalone module-level functions. This is the SSOT for invocation.
     """
-    heal_method = get_method(class_node, 'heal_repository')
+    heal_method = get_method(class_node, "heal_repository")
 
     if heal_method is None:
-        return 'Inherited'
+        return "Inherited"
 
     # Check if super().heal_repository() is called within the method
     for node in ast.walk(heal_method):
         if isinstance(node, ast.Call):
             # Look for super().heal_repository(...)
-            if isinstance(node.func, ast.Attribute) and node.func.attr == 'heal_repository':
+            if isinstance(node.func, ast.Attribute) and node.func.attr == "heal_repository":
                 if isinstance(node.func.value, ast.Call):
-                    if isinstance(node.func.value.func, ast.Name) and node.func.value.func.id == 'super':
-                        return 'Yes'
+                    if (
+                        isinstance(node.func.value.func, ast.Name)
+                        and node.func.value.func.id == "super"
+                    ):
+                        return "Yes"
 
-    return 'No (missing super)'
+    return "No (missing super)"
 
 
 # ============================================================================
 # SSOT METRICS: All dashboard metrics computed here (single AST pass)
 # ============================================================================
+
 
 def detect_has_tests(class_node: ast.ClassDef, source: str, class_name: str = None) -> bool:
     """Detect if class has ACTUAL test coverage (not inherited infrastructure).
@@ -638,10 +689,10 @@ def detect_has_tests(class_node: ast.ClassDef, source: str, class_name: str = No
     for item in class_node.body:
         if isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef):
             # Actual self-test method defined
-            if item.name == '_run_self_tests':
+            if item.name == "_run_self_tests":
                 return True
             # Test method pattern
-            if item.name.startswith('test_'):
+            if item.name.startswith("test_"):
                 return True
 
     # Check for SubatomicTestingMixin in direct bases (actual test mixin)
@@ -652,17 +703,23 @@ def detect_has_tests(class_node: ast.ClassDef, source: str, class_name: str = No
         elif isinstance(base, ast.Attribute):
             base_name = base.attr
         # Include all layer-specific testing mixins
-        if base_name in ('SubatomicTestingMixin', 'SubatomicAgent', 'L0DelegationTestingMixin',
-                         'L3SubatomicTestingMixin', 'L4SubatomicTestingMixin',
-                         'L5SubatomicTestingMixin', 'L6SubatomicTestingMixin'):
+        if base_name in (
+            "SubatomicTestingMixin",
+            "SubatomicAgent",
+            "L0DelegationTestingMixin",
+            "L3SubatomicTestingMixin",
+            "L4SubatomicTestingMixin",
+            "L5SubatomicTestingMixin",
+            "L6SubatomicTestingMixin",
+        ):
             return True
 
     # Check for explicit test framework imports with test methods
-    if 'import pytest' in source or 'from pytest' in source:
+    if "import pytest" in source or "from pytest" in source:
         # Only count if there are actual test_ methods
         for item in class_node.body:
             if isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef):
-                if item.name.startswith('test_'):
+                if item.name.startswith("test_"):
                     return True
 
     return False
@@ -712,7 +769,7 @@ def calculate_typing_coverage(class_node: ast.ClassDef) -> float:
     typed_methods = 0
     for method in methods:
         # Check if all parameters (except self) have annotations
-        params = [arg for arg in method.args.args if arg.arg != 'self']
+        params = [arg for arg in method.args.args if arg.arg != "self"]
         params_typed = all(arg.annotation is not None for arg in params) if params else True
         # Check if return type is annotated
         return_typed = method.returns is not None
@@ -735,9 +792,11 @@ def calculate_docstring_coverage(class_node: ast.ClassDef) -> float:
     documented_methods = 0
     for method in methods:
         # Check if method has a docstring (first statement is a string constant)
-        if (method.body and
-            isinstance(method.body[0], ast.Expr) and
-            isinstance(method.body[0].value, ast.Str | ast.Constant)):
+        if (
+            method.body
+            and isinstance(method.body[0], ast.Expr)
+            and isinstance(method.body[0].value, ast.Str | ast.Constant)
+        ):
             documented_methods += 1
 
     return round((documented_methods / len(methods)) * 100, 1)
@@ -763,12 +822,20 @@ def check_proper_base(class_node: ast.ClassDef, layer: str) -> bool:
     # Check for canonical architectural patterns
     canonical_patterns = {
         "SovereignBaseAgent",
-        "L0MaintenanceBaseAgent", "L1CognitionBaseAgent", "L2Agent", "L2ExecutionBaseAgent",
-        "L3Agent", "L3OrchestrationBaseAgent",
-        "L4Agent", "L4StateBaseAgent",
-        "L5Agent", "L5SafetyBaseAgent",
+        "L0MaintenanceBaseAgent",
+        "L1CognitionBaseAgent",
+        "L2Agent",
+        "L2ExecutionBaseAgent",
+        "L3Agent",
+        "L3OrchestrationBaseAgent",
+        "L4Agent",
+        "L4StateBaseAgent",
+        "L5Agent",
+        "L5SafetyBaseAgent",
         "L6ObservabilityBaseAgent",
-        "HealerMixin", "MCPHardenedMixin", "MCPShieldMixin"
+        "HealerMixin",
+        "MCPHardenedMixin",
+        "MCPShieldMixin",
     }
 
     # Agent follows proper architecture if it uses ANY canonical pattern
@@ -800,11 +867,11 @@ def calculate_schema_strictness(class_node: ast.ClassDef, source: str = "") -> f
     # Check for @dataclass decorator
     has_dataclass = False
     for decorator in class_node.decorator_list:
-        if isinstance(decorator, ast.Name) and decorator.id == 'dataclass':
+        if isinstance(decorator, ast.Name) and decorator.id == "dataclass":
             has_dataclass = True
             break
         elif isinstance(decorator, ast.Call):
-            if isinstance(decorator.func, ast.Name) and decorator.func.id == 'dataclass':
+            if isinstance(decorator.func, ast.Name) and decorator.func.id == "dataclass":
                 has_dataclass = True
                 break
 
@@ -813,19 +880,19 @@ def calculate_schema_strictness(class_node: ast.ClassDef, source: str = "") -> f
 
     # Check for Pydantic BaseModel inheritance
     bases = [get_base_name(base) for base in class_node.bases]
-    pydantic_bases = {'BaseModel', 'BaseSettings', 'GenericModel'}
+    pydantic_bases = {"BaseModel", "BaseSettings", "GenericModel"}
     if any(base in pydantic_bases for base in bases):
         return 100.0
 
     # Check source for Pydantic/dataclass imports and usage
     if source:
         # Check for Pydantic imports
-        if 'from pydantic import' in source or 'import pydantic' in source:
-            if 'BaseModel' in source or 'Field(' in source:
+        if "from pydantic import" in source or "import pydantic" in source:
+            if "BaseModel" in source or "Field(" in source:
                 return 100.0
 
         # Check for dataclass imports
-        if 'from dataclasses import' in source or '@dataclass' in source:
+        if "from dataclasses import" in source or "@dataclass" in source:
             return 100.0
 
     # Check if class has typed class-level attributes (field definitions)
@@ -872,41 +939,50 @@ def detect_agent_metadata(class_node: ast.ClassDef) -> bool:
 
 def detect_observability(class_node: ast.ClassDef, source: str) -> dict:
     """Detect observability indicators (logging, metrics, tracing)."""
-    obs = {'logging': False, 'metrics': False, 'tracing': False}
+    obs = {"logging": False, "metrics": False, "tracing": False}
 
     # Check imports
-    if 'import logging' in source or 'from logging' in source:
-        obs['logging'] = True
-    if 'observability' in source.lower():
-        obs['logging'] = True
-        obs['metrics'] = True
-    if 'opentelemetry' in source.lower() or 'otel' in source.lower():
-        obs['tracing'] = True
+    if "import logging" in source or "from logging" in source:
+        obs["logging"] = True
+    if "observability" in source.lower():
+        obs["logging"] = True
+        obs["metrics"] = True
+    if "opentelemetry" in source.lower() or "otel" in source.lower():
+        obs["tracing"] = True
 
     # Check for common observability method calls
-    if 'structured_log' in source or '.log(' in source or 'logger.' in source:
-        obs['logging'] = True
-    if 'log_metric' in source or 'emit_metric' in source:
-        obs['metrics'] = True
-    if 'start_span' in source or '.trace(' in source:
-        obs['tracing'] = True
+    if "structured_log" in source or ".log(" in source or "logger." in source:
+        obs["logging"] = True
+    if "log_metric" in source or "emit_metric" in source:
+        obs["metrics"] = True
+    if "start_span" in source or ".trace(" in source:
+        obs["tracing"] = True
 
     # HealerMixin provides built-in diagnostics and logging
-    if 'HealerMixin' in source or 'heal_repository' in source:
-        obs['logging'] = True
-        obs['metrics'] = True
+    if "HealerMixin" in source or "heal_repository" in source:
+        obs["logging"] = True
+        obs["metrics"] = True
 
     # MCPHardenedMixin provides validation metrics
-    if 'MCPHardenedMixin' in source or 'MCPShieldMixin' in source:
-        obs['metrics'] = True
+    if "MCPHardenedMixin" in source or "MCPShieldMixin" in source:
+        obs["metrics"] = True
 
     # Layer base agents include observability
-    base_agents = ['L0MaintenanceBaseAgent', 'L1CognitionBaseAgent', 'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent',
-                   'L5SafetyBaseAgent', 'L4StateBaseAgent', 'L3OrchestrationBaseAgent']
+    base_agents = [
+        "L0MaintenanceBaseAgent",
+        "L1CognitionBaseAgent",
+        "L2Agent",
+        "L3Agent",
+        "L4Agent",
+        "L5Agent",
+        "L5SafetyBaseAgent",
+        "L4StateBaseAgent",
+        "L3OrchestrationBaseAgent",
+    ]
     for base in base_agents:
         if base in source:
-            obs['logging'] = True
-            obs['metrics'] = True
+            obs["logging"] = True
+            obs["metrics"] = True
             break
 
     return obs
@@ -914,6 +990,7 @@ def detect_observability(class_node: ast.ClassDef, source: str) -> dict:
 
 class _CCVisitor(ast.NodeVisitor):
     """Visitor to calculate cyclomatic complexity."""
+
     def __init__(self):
         self.cc = 1  # Base complexity
 
@@ -978,7 +1055,7 @@ def count_loc(source: str) -> int:
             continue
         if in_docstring:
             continue
-        if not stripped or stripped.startswith('#'):
+        if not stripped or stripped.startswith("#"):
             continue
         count += 1
     return count
@@ -1005,15 +1082,23 @@ def is_agent_class(class_node: ast.ClassDef, bases: set[str], rel_path: Path | N
         True if class passes strict validation, False otherwise
     """
     name = class_node.name
-    path_str = str(rel_path).replace('\\', '/').lower() if rel_path else ''
+    path_str = str(rel_path).replace("\\", "/").lower() if rel_path else ""
 
     # =========================================================================
     # LAYER 0: BASE AGENT IDENTIFICATION (Highest Priority)
     # =========================================================================
     # Identify base agents FIRST before any exclusion logic
     # This ensures L0MaintenanceBaseAgent-L6Agent and *BaseAgent classes are always discoverable
-    is_l_series_base = name in {'L0MaintenanceBaseAgent', 'L1CognitionBaseAgent', 'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent', 'L6Agent'}
-    is_suffix_base = name.endswith('BaseAgent')
+    is_l_series_base = name in {
+        "L0MaintenanceBaseAgent",
+        "L1CognitionBaseAgent",
+        "L2Agent",
+        "L3Agent",
+        "L4Agent",
+        "L5Agent",
+        "L6Agent",
+    }
+    is_suffix_base = name.endswith("BaseAgent")
     is_base_agent = is_l_series_base or is_suffix_base
 
     # =========================================================================
@@ -1021,71 +1106,76 @@ def is_agent_class(class_node: ast.ClassDef, bases: set[str], rel_path: Path | N
     # =========================================================================
 
     # 1a. Mixin exclusion - class name contains 'Mixin' anywhere
-    if 'Mixin' in name:
+    if "Mixin" in name:
         log.debug(f"TRACE: {name} excluded - contains 'Mixin'")
         return False
 
     # 1b. Test/mock prefixes without 'Agent'
-    skip_patterns = ('Test', 'Mock', 'Stub', 'Fake', 'Dummy', 'Baseline', 'Sample', 'Example')
-    if name.startswith(skip_patterns) and 'Agent' not in name:
+    skip_patterns = ("Test", "Mock", "Stub", "Fake", "Dummy", "Baseline", "Sample", "Example")
+    if name.startswith(skip_patterns) and "Agent" not in name:
         log.debug(f"EXCLUDED {name}: test/mock prefix without 'Agent'")
         return False
 
     # 1c. Non-agent base classes (Protocol, ABC, etc.)
     # EXCEPTION: Base agents (L0MaintenanceBaseAgent-L6Agent, *BaseAgent) can inherit from ABC
     non_agent_bases = {
-        'Protocol', 'ABC',
-        'BaseModel', 'TypedDict',
-        'Enum',
-        'Exception', 'BaseException',
-        'TestCase',
+        "Protocol",
+        "ABC",
+        "BaseModel",
+        "TypedDict",
+        "Enum",
+        "Exception",
+        "BaseException",
+        "TestCase",
     }
     if bases & non_agent_bases:
         # Allow base agents to inherit from ABC (e.g., L6ObservabilityBaseAgent)
         if not is_base_agent:
-            log.debug(f"TRACE: {name} excluded - inherits from non-agent base {bases & non_agent_bases}")
+            log.debug(
+                f"TRACE: {name} excluded - inherits from non-agent base {bases & non_agent_bases}"
+            )
             return False
 
     # 1d. Data container suffixes without 'Agent'
-    data_container_suffixes = ('Config', 'Settings', 'Context', 'Options', 'Schema', 'State')
-    if name.endswith(data_container_suffixes) and 'Agent' not in name:
+    data_container_suffixes = ("Config", "Settings", "Context", "Options", "Schema", "State")
+    if name.endswith(data_container_suffixes) and "Agent" not in name:
         log.debug(f"EXCLUDED {name}: data container suffix without 'Agent'")
         return False
 
     # 1e. Non-agent infrastructure classes (CRITICAL FIX: these are NOT agents)
     # These classes may inherit from HealerMixin for self-repair but are NOT agents
     non_agent_suffixes = (
-        'Client',      # MCP clients: SovereignFilesystemMcpClient, SovereignGitKrakenMcpClient
-        'Factory',     # Infrastructure: AgentFactory, OutreachAgentFactory
-        'Registry',    # Infrastructure: AgentRegistry
-        'Info',        # Data classes: AgentInfo
-        'Serializer',  # Utilities: StateSerializer
-        'Gym',         # Infrastructure: AgentGym
-        'Card',        # Data: DummyAgentCard
-        'Blueprint',   # Data: WorkflowBlueprint
-        'Hop',         # Data: SubatomicHop
-        'Curator',     # Infrastructure: ContextCurator
-        'Blackboard',  # Infrastructure: AtomicBlackboard
-        'Ledger',      # Infrastructure: CachedStateLedger
-        'Lock',        # Infrastructure: RedisDistributedLock
-        'Cache',       # Infrastructure: RedisHotCache
-        'Guardrail',   # Guardrails are NOT agents (different from GuardrailAgent)
-        'Generator',   # Infrastructure: ResumeGenerator
-        'Executor',    # Infrastructure: BaseTaskExecutor (unless ends with Agent)
+        "Client",  # MCP clients: SovereignFilesystemMcpClient, SovereignGitKrakenMcpClient
+        "Factory",  # Infrastructure: AgentFactory, OutreachAgentFactory
+        "Registry",  # Infrastructure: AgentRegistry
+        "Info",  # Data classes: AgentInfo
+        "Serializer",  # Utilities: StateSerializer
+        "Gym",  # Infrastructure: AgentGym
+        "Card",  # Data: DummyAgentCard
+        "Blueprint",  # Data: WorkflowBlueprint
+        "Hop",  # Data: SubatomicHop
+        "Curator",  # Infrastructure: ContextCurator
+        "Blackboard",  # Infrastructure: AtomicBlackboard
+        "Ledger",  # Infrastructure: CachedStateLedger
+        "Lock",  # Infrastructure: RedisDistributedLock
+        "Cache",  # Infrastructure: RedisHotCache
+        "Guardrail",  # Guardrails are NOT agents (different from GuardrailAgent)
+        "Generator",  # Infrastructure: ResumeGenerator
+        "Executor",  # Infrastructure: BaseTaskExecutor (unless ends with Agent)
     )
-    if name.endswith(non_agent_suffixes) and not name.endswith('Agent'):
+    if name.endswith(non_agent_suffixes) and not name.endswith("Agent"):
         log.debug(f"EXCLUDED {name}: non-agent infrastructure suffix")
         return False
 
     # 1f. Sovereign infrastructure classes that aren't agents
-    if name.startswith('Sovereign') and not name.endswith('Agent'):
+    if name.startswith("Sovereign") and not name.endswith("Agent"):
         log.debug(f"EXCLUDED {name}: Sovereign* without Agent suffix")
         return False
 
     # 1g. Path-based mixin exclusion (backup check)
-    if rel_path and 'mixin' in str(rel_path).lower():
+    if rel_path and "mixin" in str(rel_path).lower():
         # Exception: allow files like "healer_mixin_agent.py" if class name ends with Agent
-        if not name.endswith('Agent'):
+        if not name.endswith("Agent"):
             log.debug(f"EXCLUDED {name}: path contains 'mixin' and name doesn't end with 'Agent'")
             return False
 
@@ -1095,15 +1185,27 @@ def is_agent_class(class_node: ast.ClassDef, bases: set[str], rel_path: Path | N
     # First determine if this is even an agent candidate before applying strict rules
 
     method_names = extract_methods(class_node)
-    in_tests = path_str.startswith('tests/') or '/tests/' in path_str
+    in_tests = path_str.startswith("tests/") or "/tests/" in path_str
 
     # Known agent base classes
     agent_bases = {
-        'L0MaintenanceBaseAgent', 'L1CognitionBaseAgent', 'L2Agent', 'L3Agent', 'L4Agent', 'L5Agent', 'L6Agent',
-        'L2ExecutionBaseAgent', 'L3OrchestrationBaseAgent', 'L4StateBaseAgent', 'L5SafetyBaseAgent',
-        'ExecutionCanonBaseAgent',
-        'CognitionCanonBaseAgent', 'CanonASTValidator', 'CanonBaseAgentInterface',
-        'BaseAgent', 'SovereignBaseAgent',
+        "L0MaintenanceBaseAgent",
+        "L1CognitionBaseAgent",
+        "L2Agent",
+        "L3Agent",
+        "L4Agent",
+        "L5Agent",
+        "L6Agent",
+        "L2ExecutionBaseAgent",
+        "L3OrchestrationBaseAgent",
+        "L4StateBaseAgent",
+        "L5SafetyBaseAgent",
+        "ExecutionCanonBaseAgent",
+        "CognitionCanonBaseAgent",
+        "CanonASTValidator",
+        "CanonBaseAgentInterface",
+        "BaseAgent",
+        "SovereignBaseAgent",
     }
 
     # Allow L-series (L0MaintenanceBaseAgent, etc) and *BaseAgent classes to pass through even if in agent_bases
@@ -1112,14 +1214,16 @@ def is_agent_class(class_node: ast.ClassDef, bases: set[str], rel_path: Path | N
         return False
 
     has_strong_positive_signal = (
-        name.endswith('Agent')
+        name.endswith("Agent")
         or bool(bases & agent_bases)
         or has_healing_in_chain(name, bases)  # MRO-aware healing is the gold standard
     )
 
     # If not an agent candidate, exclude early
     if not has_strong_positive_signal:
-        log.debug(f"TRACE: {name} excluded - not an agent candidate (no Agent suffix, base class, or healing)")
+        log.debug(
+            f"TRACE: {name} excluded - not an agent candidate (no Agent suffix, base class, or healing)"
+        )
         return False
 
     # =========================================================================
@@ -1127,19 +1231,23 @@ def is_agent_class(class_node: ast.ClassDef, bases: set[str], rel_path: Path | N
     # =========================================================================
 
     # STRICT REQUIREMENT 1: Must end with 'Agent' (for confirmed agent candidates)
-    if not name.endswith('Agent'):
-        log.info(f"VIOLATION {name} in {rel_path}: agent candidate lacks 'Agent' suffix. "
-                 f"Fix: Rename class to {name}Agent")
+    if not name.endswith("Agent"):
+        log.info(
+            f"VIOLATION {name} in {rel_path}: agent candidate lacks 'Agent' suffix. "
+            f"Fix: Rename class to {name}Agent"
+        )
         return False
 
     # STRICT REQUIREMENT 2: Class name MUST exactly match filename stem (1:1 enforcement)
     if rel_path:
         filename_stem = rel_path.stem
         if name != filename_stem:
-            log.info(f"VIOLATION {name} in {rel_path}: "
-                     f"class name '{name}' does not match filename stem '{filename_stem}'. "
-                     "Enforced: one canonical agent per file. "
-                     f"Fix: Move to {name}.py or rename class to {filename_stem}")
+            log.info(
+                f"VIOLATION {name} in {rel_path}: "
+                f"class name '{name}' does not match filename stem '{filename_stem}'. "
+                "Enforced: one canonical agent per file. "
+                f"Fix: Move to {name}.py or rename class to {filename_stem}"
+            )
             return False
 
     # REMOVED: Legacy role-suffix recovery block (Signal 4)
@@ -1148,7 +1256,11 @@ def is_agent_class(class_node: ast.ClassDef, bases: set[str], rel_path: Path | N
     decorators = extract_decorators(class_node)
     # Conditional negative: dataclass/attrs only disqualifies absent strong positive
     # Base agents bypass this check (is_base_agent set at Layer 0)
-    if any(d in {'dataclass', 'attrs', 'attr.s'} for d in decorators) and not has_strong_positive_signal and not is_base_agent:
+    if (
+        any(d in {"dataclass", "attrs", "attr.s"} for d in decorators)
+        and not has_strong_positive_signal
+        and not is_base_agent
+    ):
         log.debug(f"TRACE: {name} excluded - dataclass without strong signal or base agent flag")
         return False
 
@@ -1157,7 +1269,7 @@ def is_agent_class(class_node: ast.ClassDef, bases: set[str], rel_path: Path | N
     # TEST HARNESS REJECTION (Strongest in tests/, weaker elsewhere)
     # - In tests/: unconditionally reject obvious harness patterns (Test* name or test_* methods)
     # - Outside tests/: reject only if NO strong positive signal (allows real agents with test_ methods)
-    is_harness = name.startswith('Test') or any(m.startswith('test_') for m in method_names)
+    is_harness = name.startswith("Test") or any(m.startswith("test_") for m in method_names)
     if in_tests:
         if is_harness:
             return False  # Unconditional in tests/ — eliminates FP explosion
@@ -1170,7 +1282,7 @@ def is_agent_class(class_node: ast.ClassDef, bases: set[str], rel_path: Path | N
     # === ADDITIONAL VALIDATION FOR EMPTY INHERITANCE ===
     # Classes with NO bases are suspicious - require name ends with 'Agent'
     if not bases:
-        if not name.endswith('Agent'):
+        if not name.endswith("Agent"):
             log.debug(f"EXCLUDED {name}: empty inheritance without Agent suffix")
             return False
 
@@ -1196,7 +1308,11 @@ def main():
     # Parse command line args
     parser = argparse.ArgumentParser(description="Canonical Agent Discovery (SSOT)")
     parser.add_argument("--force", action="store_true", help="Force full scan ignoring validation")
-    parser.add_argument("--incremental", action="store_true", help="Best-effort incremental mode (requires previous JSON/manifest)")
+    parser.add_argument(
+        "--incremental",
+        action="store_true",
+        help="Best-effort incremental mode (requires previous JSON/manifest)",
+    )
     args = parser.parse_args()
     force_mode = args.force
     incremental_mode = args.incremental
@@ -1212,7 +1328,9 @@ def main():
     #
     log.info("=" * 80)
     log.info("FULL AGENT DISCOVERY STARTED")
-    log.info(f"Mode: {'INCREMENTAL' if incremental_mode else 'FULL'} {'(forced)' if force_mode else ''}")
+    log.info(
+        f"Mode: {'INCREMENTAL' if incremental_mode else 'FULL'} {'(forced)' if force_mode else ''}"
+    )
     log.info("=" * 80)
 
     # Get previous count BEFORE deleting files (for validation)
@@ -1249,7 +1367,9 @@ def main():
                 log.error(f"[INCREMENTAL] Failed to read JSON ({e}) → falling back to full scan")
                 incremental_mode = False
             except Exception as e:
-                log.error(f"[INCREMENTAL] Unexpected error loading JSON ({e}) → falling back to full scan")
+                log.error(
+                    f"[INCREMENTAL] Unexpected error loading JSON ({e}) → falling back to full scan"
+                )
                 incremental_mode = False
         else:
             log.warning("[INCREMENTAL] No previous JSON found → falling back to full scan")
@@ -1276,14 +1396,20 @@ def main():
 
                 old_hashes = old_manifest.get("file_hashes", {})
                 log.info(f"[INCREMENTAL] Loaded manifest with {len(old_hashes)} file hashes")
-                log.info(f"[INCREMENTAL] Manifest generated: {old_manifest.get('generated_at', 'unknown')}")
+                log.info(
+                    f"[INCREMENTAL] Manifest generated: {old_manifest.get('generated_at', 'unknown')}"
+                )
 
             except json.JSONDecodeError as e:
-                log.warning(f"[INCREMENTAL] Manifest JSON corrupted ({e}) → falling back to full scan")
+                log.warning(
+                    f"[INCREMENTAL] Manifest JSON corrupted ({e}) → falling back to full scan"
+                )
                 incremental_mode = False
                 old_hashes = {}
             except ValueError as e:
-                log.warning(f"[INCREMENTAL] Manifest validation failed ({e}) → falling back to full scan")
+                log.warning(
+                    f"[INCREMENTAL] Manifest validation failed ({e}) → falling back to full scan"
+                )
                 incremental_mode = False
                 old_hashes = {}
             except Exception as e:
@@ -1297,7 +1423,9 @@ def main():
 
         # Log final incremental mode status
         if incremental_mode:
-            log.info("[INCREMENTAL] ✓ Prerequisites validated - proceeding with hash-based change detection")
+            log.info(
+                "[INCREMENTAL] ✓ Prerequisites validated - proceeding with hash-based change detection"
+            )
         else:
             log.info("[FULL SCAN] Incremental mode disabled - performing complete repository scan")
 
@@ -1325,7 +1453,7 @@ def main():
     if SSOT_AVAILABLE:
         all_py_files = get_python_files(PROJECT_ROOT)
     else:
-        all_py_files = [p for p in PROJECT_ROOT.rglob('*.py') if not should_exclude_path(p)]
+        all_py_files = [p for p in PROJECT_ROOT.rglob("*.py") if not should_exclude_path(p)]
     log.info(f"Scanning {len(all_py_files)} Python files...")
     log.info("   -> Excluded vendor/cache dirs via should_exclude_path()")
 
@@ -1354,12 +1482,13 @@ def main():
                 hash_compute_errors += 1
 
         if hash_compute_errors > 0:
-            log.warning(f"[INCREMENTAL] {hash_compute_errors} files had hash errors → marked as changed")
+            log.warning(
+                f"[INCREMENTAL] {hash_compute_errors} files had hash errors → marked as changed"
+            )
 
         # Detect changed files (hash mismatch)
         changed_files = {
-            rel for rel, new_hash in current_hashes.items()
-            if old_hashes.get(rel) != new_hash
+            rel for rel, new_hash in current_hashes.items() if old_hashes.get(rel) != new_hash
         }
 
         # Detect new files (not in old manifest)
@@ -1382,13 +1511,16 @@ def main():
         # Retain agents from unchanged files
         # Filter out agents from changed/removed files
         retained_agents = [
-            a for a in previous_agents
+            a
+            for a in previous_agents
             if a.get("path", "") not in changed_rel_paths
             and a.get("path", "") not in removed_rel_paths
         ]
 
         agents = retained_agents
-        log.info(f"[INCREMENTAL] Retained {len(agents)} agents from {len(previous_agents) - len(agents)} unchanged files")
+        log.info(
+            f"[INCREMENTAL] Retained {len(agents)} agents from {len(previous_agents) - len(agents)} unchanged files"
+        )
 
         # Validate retained agent integrity
         if len(agents) > EXPECTED_AGENT_COUNT:
@@ -1406,7 +1538,7 @@ def main():
         if should_exclude_file(py_file):
             continue
         try:
-            source = py_file.read_text(encoding='utf-8', errors='replace')
+            source = py_file.read_text(encoding="utf-8", errors="replace")
             tree = safe_parse(source, py_file)
             if tree:
                 build_inheritance_map(tree)
@@ -1418,10 +1550,17 @@ def main():
     # Second pass: Detect agents with full MRO healing detection
     # INCREMENTAL: Only process changed files for extraction
     target_py_files = (
-        [p for p in parsed_files if str(p.relative_to(PROJECT_ROOT)).replace("\\", "/") in changed_rel_paths]
-        if incremental_mode else list(parsed_files.keys())
+        [
+            p
+            for p in parsed_files
+            if str(p.relative_to(PROJECT_ROOT)).replace("\\", "/") in changed_rel_paths
+        ]
+        if incremental_mode
+        else list(parsed_files.keys())
     )
-    log.info(f"[PASS 2] Extracting from {len(target_py_files)} files ({'incremental' if incremental_mode else 'full'})")
+    log.info(
+        f"[PASS 2] Extracting from {len(target_py_files)} files ({'incremental' if incremental_mode else 'full'})"
+    )
 
     for py_file in target_py_files:
         source, tree = parsed_files[py_file]
@@ -1429,7 +1568,7 @@ def main():
         layer = get_canonical_layer(py_file)
 
         # Phase 3.1: Override layer for special paths (schemas, prompt_governance, base_agents)
-        path_str = str(rel_path).replace('\\', '/').lower()
+        path_str = str(rel_path).replace("\\", "/").lower()
         for pattern, special_layer in SPECIAL_LAYER_MAPPINGS.items():
             if pattern in path_str:
                 layer = special_layer
@@ -1451,7 +1590,7 @@ def main():
             # Skip lowercase/snake_case (aliases)
             if node.name.islower():
                 continue
-            if '_' in node.name and not node.name[0].isupper():
+            if "_" in node.name and not node.name[0].isupper():
                 continue
 
             # Known higher-level abstract bases that are NOT concrete agents and should be excluded
@@ -1469,19 +1608,19 @@ def main():
             #   - L5: L5SafetyBaseAgent
             #   - L6: L6ObservabilityBaseAgent
             skip_names = {
-                'SubAtomicAgent',
-                'CanonBaseAgent',
-                'MaintenanceBaseAgent',
-                'IActionPlane',
-                'ValidationProtocol',
-                'Protocol',
+                "SubAtomicAgent",
+                "CanonBaseAgent",
+                "MaintenanceBaseAgent",
+                "IActionPlane",
+                "ValidationProtocol",
+                "Protocol",
                 # NOTE: ABC removed - L6ObservabilityBaseAgent inherits from ABC
                 # Phase 3.2: Test fixtures (not production agents)
-                'TestContentQualityAgent',
-                'TestLeadQualityAgent',
-                'TestOutreachProactiveAgent',
-                'TestProactiveAgent',
-                'TestResumeLearningAgent',
+                "TestContentQualityAgent",
+                "TestLeadQualityAgent",
+                "TestOutreachProactiveAgent",
+                "TestProactiveAgent",
+                "TestResumeLearningAgent",
             }
             if node.name in skip_names:
                 continue
@@ -1495,37 +1634,58 @@ def main():
             methods = extract_methods(node)
 
             # Determine testing type
-            has_self_test = has_method(node, '_run_self_tests') or bool(bases & SELF_TESTING_BASES)
-            has_delegation = has_method(node, '_delegate_tests') or bool(bases & DELEGATION_BASES)
+            has_self_test = has_method(node, "_run_self_tests") or bool(bases & SELF_TESTING_BASES)
+            has_delegation = has_method(node, "_delegate_tests") or bool(bases & DELEGATION_BASES)
             if has_self_test:
-                testing = 'Self'
+                testing = "Self"
             elif has_delegation:
-                testing = 'Delegated'
+                testing = "Delegated"
             else:
-                testing = 'None'
+                testing = "None"
 
             # Determine healing (MRO-aware detection)
-            has_heal = has_method(node, 'heal') or has_method(node, 'apply_fix') or has_method(node, 'heal_violation') or has_method(node, 'heal_repository')
+            has_heal = (
+                has_method(node, "heal")
+                or has_method(node, "apply_fix")
+                or has_method(node, "heal_violation")
+                or has_method(node, "heal_repository")
+            )
             inherits_healing = has_healing_in_chain(node.name, bases)
             has_healing = has_heal or inherits_healing
 
             # Check for tools/memory markers
-            has_tools = 'tool' in source.lower() or 'mcp' in source.lower()
-            has_memory = 'pinecone' in source.lower() or 'redis' in source.lower()
+            has_tools = "tool" in source.lower() or "mcp" in source.lower()
+            has_memory = "pinecone" in source.lower() or "redis" in source.lower()
 
             # Check for external resource touch (Phase 5 validation)
-            external_markers = ['pinecone', 'redis', 'git', 'subprocess', 'requests.', 'httpx', 'aiohttp', 'http://', 'https://']
+            external_markers = [
+                "pinecone",
+                "redis",
+                "git",
+                "subprocess",
+                "requests.",
+                "httpx",
+                "aiohttp",
+                "http://",
+                "https://",
+            ]
             external_touch = any(marker in source.lower() for marker in external_markers)
             # MCP hardening detection - MRO-aware (check direct import OR inheritance from hardened base)
             mcp_hardened_bases = {
-                'SovereignBaseAgent', 'L0MaintenanceBaseAgent', 'L1CognitionBaseAgent',
-                'L2ExecutionBaseAgent', 'L3OrchestrationBaseAgent', 'L4StateBaseAgent',
-                'L5SafetyBaseAgent', 'L6ObservabilityBaseAgent', 'MCPHardenedMixin'
+                "SovereignBaseAgent",
+                "L0MaintenanceBaseAgent",
+                "L1CognitionBaseAgent",
+                "L2ExecutionBaseAgent",
+                "L3OrchestrationBaseAgent",
+                "L4StateBaseAgent",
+                "L5SafetyBaseAgent",
+                "L6ObservabilityBaseAgent",
+                "MCPHardenedMixin",
             }
             mcp_hardened = (
-                'mcphardenedmixin' in source.lower() or
-                'mcp_hardened_mixin' in source.lower() or
-                bool(bases & mcp_hardened_bases)  # Inherits from MCP-hardened base
+                "mcphardenedmixin" in source.lower()
+                or "mcp_hardened_mixin" in source.lower()
+                or bool(bases & mcp_hardened_bases)  # Inherits from MCP-hardened base
             )
 
             # Detect invocation status (SSOT - checks CLASS method, not module functions)
@@ -1548,18 +1708,16 @@ def main():
             # CRITICAL FIX: Base classes get dedicated "Base Class" sub-territory
             # Phase 3.2: Only canonical *BaseAgent classes are base classes, not L-series alternatives
             # L0MaintenanceBaseAgent and L1CognitionBaseAgent are exceptions (they are canonical for their layers)
-            is_base_class = (
-                node.name.endswith('BaseAgent') or
-                node.name in {'L0MaintenanceBaseAgent', 'L1CognitionBaseAgent', 'L6ObservabilityBaseAgent'}
-            )
+            is_base_class = node.name.endswith("BaseAgent") or node.name in {
+                "L0MaintenanceBaseAgent",
+                "L1CognitionBaseAgent",
+                "L6ObservabilityBaseAgent",
+            }
 
             # SSOT: Use centralized territory name function
-            path_str = str(rel_path).replace('\\', '/').lower()
+            path_str = str(rel_path).replace("\\", "/").lower()
             territory = get_territory_from_path(
-                layer=layer,
-                path_str=path_str,
-                is_base_class=is_base_class,
-                class_name=node.name
+                layer=layer, path_str=path_str, is_base_class=is_base_class, class_name=node.name
             )
 
             # SSOT: Refine high-count territories using AST analysis
@@ -1569,55 +1727,67 @@ def main():
                 territory=territory,
                 class_name=node.name,
                 docstring=agent_docstring,
-                path_str=path_str
+                path_str=path_str,
             )
 
             # SSOT: Categorize agent using canonical function (Phase 3 Migration)
             # Extract base class names for categorization
-            base_class_names = [b.id if isinstance(b, ast.Name) else b.attr if isinstance(b, ast.Attribute) else str(b) for b in node.bases]
+            base_class_names = [
+                b.id
+                if isinstance(b, ast.Name)
+                else b.attr
+                if isinstance(b, ast.Attribute)
+                else str(b)
+                for b in node.bases
+            ]
             category = categorize_agent(
                 class_name=node.name,
                 base_classes=base_class_names,
-                docstring=ast.get_docstring(node)
+                docstring=ast.get_docstring(node),
             )
 
-            agents.append({
-                FIELD_CLASS_NAME: node.name,
-                FIELD_PATH: str(rel_path),
-                FIELD_LAYER: layer,
-                FIELD_TERRITORY: territory,  # NEW: Territory assignment with base class handling
-                FIELD_CATEGORY: category,  # NEW: Agent category from canonical_truth.py (Phase 3)
-                FIELD_INHERITANCE: list(bases),
-                'key_methods': methods[:10],  # Top 10 methods (not used in dashboard)
-                FIELD_HAS_TOOLS: has_tools,
-                FIELD_HAS_MEMORY: has_memory,
-                FIELD_HAS_HEALING: has_healing,
-                FIELD_INVOCATION: invocation,  # SSOT for heal_repository invocation
-                'testing': testing,  # Legacy field (not used in dashboard)
-                'has_subatomic': 'SubAtomicAgent' in bases or 'subatomic' in source.lower(),  # Legacy
-                'loc': loc,  # Legacy field (not used in dashboard)
-                'class_count': class_count,  # Legacy field (not used in dashboard)
-                'description': get_docstring(node),  # Legacy field (not used in dashboard)
-                'pascal_compliant': node.name[0].isupper() and '_' not in node.name,  # Legacy
-                'external_touch': external_touch,  # Legacy field (not used in dashboard)
-                FIELD_MCP_HARDENED: mcp_hardened,
-                # NEW SSOT METRICS (dashboard consumes these directly)
-                FIELD_HAS_TESTS: has_tests,
-                FIELD_TYPED_PCT: typed_pct,
-                FIELD_DOCUMENTED_PCT: documented_pct,
-                'observability': observability,  # Not yet in SSOT (future)
-                FIELD_CYCLOMATIC_COMPLEXITY: cyclomatic_complexity,
-                FIELD_PROPER_BASE_CLASS: proper_base_class,  # Gravity signal
-                FIELD_SCHEMA_STRICTNESS: schema_strictness,  # Hardened signal
-                'has_metadata': has_metadata,  # PHASE 3: Metadata compliance (not yet in SSOT)
-            })
+            agents.append(
+                {
+                    FIELD_CLASS_NAME: node.name,
+                    FIELD_PATH: str(rel_path),
+                    FIELD_LAYER: layer,
+                    FIELD_TERRITORY: territory,  # NEW: Territory assignment with base class handling
+                    FIELD_CATEGORY: category,  # NEW: Agent category from canonical_truth.py (Phase 3)
+                    FIELD_INHERITANCE: list(bases),
+                    "key_methods": methods[:10],  # Top 10 methods (not used in dashboard)
+                    FIELD_HAS_TOOLS: has_tools,
+                    FIELD_HAS_MEMORY: has_memory,
+                    FIELD_HAS_HEALING: has_healing,
+                    FIELD_INVOCATION: invocation,  # SSOT for heal_repository invocation
+                    "testing": testing,  # Legacy field (not used in dashboard)
+                    "has_subatomic": "SubAtomicAgent" in bases
+                    or "subatomic" in source.lower(),  # Legacy
+                    "loc": loc,  # Legacy field (not used in dashboard)
+                    "class_count": class_count,  # Legacy field (not used in dashboard)
+                    "description": get_docstring(node),  # Legacy field (not used in dashboard)
+                    "pascal_compliant": node.name[0].isupper() and "_" not in node.name,  # Legacy
+                    "external_touch": external_touch,  # Legacy field (not used in dashboard)
+                    FIELD_MCP_HARDENED: mcp_hardened,
+                    # NEW SSOT METRICS (dashboard consumes these directly)
+                    FIELD_HAS_TESTS: has_tests,
+                    FIELD_TYPED_PCT: typed_pct,
+                    FIELD_DOCUMENTED_PCT: documented_pct,
+                    "observability": observability,  # Not yet in SSOT (future)
+                    FIELD_CYCLOMATIC_COMPLEXITY: cyclomatic_complexity,
+                    FIELD_PROPER_BASE_CLASS: proper_base_class,  # Gravity signal
+                    FIELD_SCHEMA_STRICTNESS: schema_strictness,  # Hardened signal
+                    "has_metadata": has_metadata,  # PHASE 3: Metadata compliance (not yet in SSOT)
+                }
+            )
 
     if incremental_mode:
-        log.info(f"[INCREMENTAL] Complete: {len(agents)} agents ({len(agents) - previous_count} new/extracted)")
+        log.info(
+            f"[INCREMENTAL] Complete: {len(agents)} agents ({len(agents) - previous_count} new/extracted)"
+        )
         log.warning("NOTE: Cross-file inheritance changes may not propagate until next full scan")
 
     # Sort by layer then name
-    agents.sort(key=lambda x: (x['layer'], x['class_name']))
+    agents.sort(key=lambda x: (x["layer"], x["class_name"]))
 
     # ========================================================================
     # HARDENING: Validate agent count BEFORE saving
@@ -1691,15 +1861,15 @@ def main():
     healing_count = 0
     testing_count = 0
     for a in agents:
-        layers[a['layer']] += 1
-        top_dirs[a.get('top_dir', '')] += 1
-        sub_dirs[a.get('sub_dir', '')] += 1
-        if a['has_healing']:
+        layers[a["layer"]] += 1
+        top_dirs[a.get("top_dir", "")] += 1
+        sub_dirs[a.get("sub_dir", "")] += 1
+        if a["has_healing"]:
             healing_count += 1
-        if a['testing'] != 'None':
+        if a["testing"] != "None":
             testing_count += 1
 
-    core_layers = ['L0', 'L1', 'L2', 'L3', 'L4', 'L5']
+    core_layers = ["L0", "L1", "L2", "L3", "L4", "L5"]
     core_count = sum(layers.get(l, 0) for l in core_layers)
 
     log.info("=" * 80)
@@ -1715,16 +1885,20 @@ def main():
 
     log.info("By top-level folder (baseline location):")
     for k, v in sorted(top_dirs.items(), key=lambda kv: kv[1], reverse=True):
-        label = k or '(root)'
+        label = k or "(root)"
         log.info(f"  {label}: {v}")
 
     log.info("Top 15 subfolders (top_dir/second_dir):")
     for k, v in sorted(sub_dirs.items(), key=lambda kv: kv[1], reverse=True)[:15]:
-        label = k or '(root)'
+        label = k or "(root)"
         log.info(f"  {label}: {v}")
 
-    log.info(f"Healing: {healing_count}/{len(agents)} ({100*healing_count//len(agents) if agents else 0}%)")
-    log.info(f"Testing: {testing_count}/{len(agents)} ({100*testing_count//len(agents) if agents else 0}%)")
+    log.info(
+        f"Healing: {healing_count}/{len(agents)} ({100 * healing_count // len(agents) if agents else 0}%)"
+    )
+    log.info(
+        f"Testing: {testing_count}/{len(agents)} ({100 * testing_count // len(agents) if agents else 0}%)"
+    )
 
     if parse_errors:
         log.warning(f"Parse errors (skipped): {len(parse_errors)}")
@@ -1737,7 +1911,9 @@ def main():
     log.info("=" * 80)
     log.info("VALIDATION SUMMARY")
     log.info("=" * 80)
-    log.info(f"Agent count: {len(agents)} (minimum: {MINIMUM_AGENT_COUNT}, expected: {EXPECTED_AGENT_COUNT})")
+    log.info(
+        f"Agent count: {len(agents)} (minimum: {MINIMUM_AGENT_COUNT}, expected: {EXPECTED_AGENT_COUNT})"
+    )
     if previous_count:
         delta = len(agents) - previous_count
         delta_str = f"+{delta}" if delta >= 0 else str(delta)
@@ -1771,7 +1947,7 @@ def check_compliance_gate(agents: list[dict], parse_errors: list[str]) -> int:
     # Check 1: Duplicate agent names
     name_counts = defaultdict(int)
     for agent in agents:
-        name_counts[agent['class_name']] += 1
+        name_counts[agent["class_name"]] += 1
 
     duplicates = {name: count for name, count in name_counts.items() if count > 1}
     if duplicates:
@@ -1780,10 +1956,10 @@ def check_compliance_gate(agents: list[dict], parse_errors: list[str]) -> int:
             log.warning(f"  - {name}: {count} instances")
 
     # Check 2: Unknown layers
-    valid_layers = {'Base', 'L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'Apps', 'Utils'}
+    valid_layers = {"Base", "L0", "L1", "L2", "L3", "L4", "L5", "L6", "Apps", "Utils"}
     unknown_layers = set()
     for agent in agents:
-        layer = agent.get('layer', '')
+        layer = agent.get("layer", "")
         if layer and layer not in valid_layers:
             unknown_layers.add(layer)
 
@@ -1794,22 +1970,22 @@ def check_compliance_gate(agents: list[dict], parse_errors: list[str]) -> int:
 
     # Check 3: Orphaned agents (no proper base class)
     proper_bases = {
-        'SovereignBaseAgent',
-        'L0MaintenanceBaseAgent',
-        'L1CognitionBaseAgent',
-        'L2ExecutionBaseAgent',
-        'L3OrchestrationBaseAgent',
-        'L4StateBaseAgent',
-        'L5SafetyBaseAgent',
-        'L6ObservabilityBaseAgent'
+        "SovereignBaseAgent",
+        "L0MaintenanceBaseAgent",
+        "L1CognitionBaseAgent",
+        "L2ExecutionBaseAgent",
+        "L3OrchestrationBaseAgent",
+        "L4StateBaseAgent",
+        "L5SafetyBaseAgent",
+        "L6ObservabilityBaseAgent",
     }
 
     orphans = []
     for agent in agents:
-        inheritance = agent.get('inheritance', [])
+        inheritance = agent.get("inheritance", [])
         has_proper_base = any(base in proper_bases for base in inheritance)
-        if not has_proper_base and agent.get('layer') not in ['Apps', 'Utils']:
-            orphans.append(agent['class_name'])
+        if not has_proper_base and agent.get("layer") not in ["Apps", "Utils"]:
+            orphans.append(agent["class_name"])
 
     # Note: Apps agents inheriting from mixins is a known architectural pattern
     # Only flag core layer agents (L0-L6) as orphans
@@ -1836,7 +2012,7 @@ def check_compliance_gate(agents: list[dict], parse_errors: list[str]) -> int:
         return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     agents, parse_errors = main()
 
     # Phase 3.3: Run compliance gate

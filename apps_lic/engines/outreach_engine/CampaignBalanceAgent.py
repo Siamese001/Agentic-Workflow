@@ -4,6 +4,7 @@ CampaignBalanceAgent - Extracted for one-class-per-file pattern.
 Originally from: LeadQualityAgent.py
 Extracted: 2026-01-06 (Surgical Extraction)
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -65,7 +66,9 @@ class CampaignBalanceAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin,
             self.record_result(True, "Campaign balanced")
             print(f"   [{self.name}] ✅ Campaign balanced")
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, int]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict[str, int]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 

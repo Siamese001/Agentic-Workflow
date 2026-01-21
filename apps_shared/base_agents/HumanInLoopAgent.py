@@ -44,7 +44,9 @@ class VirtualReviewerPersonaAgent(BaseAgent):
     - escalation_recommended (boolean)
     """
 
-    def __init__(self, context: "WorkflowContext", persona: str, focus: str, debug_mode: bool = False):
+    def __init__(
+        self, context: "WorkflowContext", persona: str, focus: str, debug_mode: bool = False
+    ):
         super().__init__(context, debug_mode)
         self.persona = persona
         self.focus = focus
@@ -154,9 +156,7 @@ class VirtualReviewerCouncilAgent(BaseAgent):
 
         persona_decisions = await asyncio.gather(*persona_tasks)
         approvals = sum(1 for decision in persona_decisions if decision.approval)
-        escalations = any(
-            decision.escalation_recommended for decision in persona_decisions
-        )
+        escalations = any(decision.escalation_recommended for decision in persona_decisions)
         approved = approvals >= math.ceil(len(persona_decisions) / 2)
 
         negotiated_actions: list[str] = []
@@ -165,11 +165,7 @@ class VirtualReviewerCouncilAgent(BaseAgent):
                 if action not in negotiated_actions:
                     negotiated_actions.append(action)
 
-        rationale = (
-            "Consensus approved"
-            if approved
-            else "Consensus blocked by persona concerns"
-        )
+        rationale = "Consensus approved" if approved else "Consensus blocked by persona concerns"
 
         consensus = PersonaConsensus(
             approved=approved,
@@ -232,9 +228,7 @@ class HILFeedbackSummarizerAgent(BaseAgent):
             self.SummarizerOutput,
         )
         if error:
-            self.log_warning(
-                f"Summarizer validation failed: {error}. Using default routing."
-            )
+            self.log_warning(f"Summarizer validation failed: {error}. Using default routing.")
             output = self.SummarizerOutput()
         else:
             output = validated_output
@@ -315,9 +309,7 @@ class HILReconciliationAgent(BaseAgent):
             HILReconciliationResult,
         )
         if error:
-            self.log_warning(
-                f"Reconciliation validation failed: {error}. Returning fallback."
-            )
+            self.log_warning(f"Reconciliation validation failed: {error}. Returning fallback.")
             fallback = HILReconciliationResult(
                 integrated_text=json.dumps(draft_sections),
                 change_log=[f"Reconciliation failed validation: {error}"],
@@ -374,9 +366,7 @@ class HILAmbiguityDetectorAgent(BaseAgent):
             HILAmbiguityReport,
         )
         if error:
-            raise PydanticSchemaError(
-                f"HILAmbiguityDetector failed validation: {error}"
-            )
+            raise PydanticSchemaError(f"HILAmbiguityDetector failed validation: {error}")
 
         self.log_feedback(
             workflow_id,
@@ -417,9 +407,7 @@ class HILFeedbackRouterAgent(BaseAgent):
             self.log_error(f"Failed to log HIL preference feedback: {exc}")
 
         if not human_feedback.strip():
-            self.log_warning(
-                "No human feedback supplied. Defaulting to drafting continuation."
-            )
+            self.log_warning("No human feedback supplied. Defaulting to drafting continuation.")
             default_route = HILFeedbackRoute(next_step="DRAFTING", payload=None)
             return default_route.model_dump()
 
@@ -454,15 +442,10 @@ class HILFeedbackRouterAgent(BaseAgent):
 
         next_step = summary_output.recommended_node or "DRAFTING"
         if not persona_consensus.approved:
-            self.log_info(
-                "Persona consensus blocked. Routing to strategy for clarification."
-            )
+            self.log_info("Persona consensus blocked. Routing to strategy for clarification.")
             next_step = "STRATEGY"
 
-        elif (
-            delegation_score >= delegation_threshold
-            and delegated_specialists
-        ):
+        elif delegation_score >= delegation_threshold and delegated_specialists:
             self.log_info(
                 "Delegation threshold met (%s >= %s). Escalating to specialists.",
                 f"{delegation_score:.2f}",
@@ -471,12 +454,9 @@ class HILFeedbackRouterAgent(BaseAgent):
             next_step = "DELEGATE_SPECIALIST"
 
         elif (
-            delegation_score >= strategy_threshold
-            and summary_output.recommended_node == "STRATEGY"
+            delegation_score >= strategy_threshold and summary_output.recommended_node == "STRATEGY"
         ):
-            self.log_info(
-                "Strategy adjustments recommended based on delegation score."
-            )
+            self.log_info("Strategy adjustments recommended based on delegation score.")
             next_step = "STRATEGY"
 
         payload = None

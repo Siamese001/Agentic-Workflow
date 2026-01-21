@@ -13,6 +13,7 @@ Author: Cascade
 Date: January 19, 2026
 Phase: 6.3 - Aggressive rglob Reduction
 """
+
 import sys
 from pathlib import Path
 
@@ -28,22 +29,24 @@ def test_tc32_structural_healer_key_compliance():
     Verify StructuralHealerAgent returns violations_found and violations_fixed
     instead of legacy 'violations' and 'fixed' keys.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-32: StructuralHealerAgent Key Compliance")
-    print("="*60)
+    print("=" * 60)
 
-    structural_healer = PROJECT_ROOT / "agentic_core" / "L5_safety" / "gravity" / "StructuralHealerAgent.py"
+    structural_healer = (
+        PROJECT_ROOT / "agentic_core" / "L5_safety" / "gravity" / "StructuralHealerAgent.py"
+    )
 
     if not structural_healer.exists():
         print("⚠️  WARNING: StructuralHealerAgent.py not found")
         return True
 
     try:
-        content = structural_healer.read_text(encoding='utf-8')
+        content = structural_healer.read_text(encoding="utf-8")
 
         # Check for standardized keys in heal_repository return
-        has_violations_found = 'violations_found' in content
-        has_violations_fixed = 'violations_fixed' in content
+        has_violations_found = "violations_found" in content
+        has_violations_fixed = "violations_fixed" in content
 
         print(f"   File: {structural_healer.name}")
         print(f"   Has 'violations_found': {'✓' if has_violations_found else '✗'}")
@@ -51,6 +54,7 @@ def test_tc32_structural_healer_key_compliance():
 
         # Check that the return statement uses standardized keys
         import re
+
         return_pattern = r'return\s*{\s*["\']violations_found["\']'
         has_standardized_return = bool(re.search(return_pattern, content))
 
@@ -78,9 +82,9 @@ def test_tc33_rglob_count_reduction():
 
     Verify the rglob count has dropped below 200 (target achieved: 227).
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-33: rglob Count Reduction")
-    print("="*60)
+    print("=" * 60)
 
     # Import the CI check
     sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
@@ -97,7 +101,7 @@ def test_tc33_rglob_count_reduction():
     reduction = baseline - total_count
 
     print(f"   Baseline (Phase 6): {baseline}")
-    print(f"   Reduction: {reduction} calls ({reduction/baseline*100:.1f}%)")
+    print(f"   Reduction: {reduction} calls ({reduction / baseline * 100:.1f}%)")
 
     if total_count >= 200:
         print(f"⚠️  INFO: Count is {total_count}, target was < 200")
@@ -124,9 +128,9 @@ def test_tc34_discovery_integrity():
 
     Verify that ssot_discovery functions work correctly after refactoring.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-34: Discovery Integrity")
-    print("="*60)
+    print("=" * 60)
 
     from agentic_core.utils.ssot_discovery import (
         get_agent_files,
@@ -168,7 +172,7 @@ def test_tc34_discovery_integrity():
         print(f"⚠️  WARNING: Few Markdown files discovered ({len(md_files)})")
 
     # Verify no backup files in results
-    backup_patterns = ['.sovereign_healing_backup', '__pycache__']
+    backup_patterns = [".sovereign_healing_backup", "__pycache__"]
     leaked = []
 
     for f in py_files[:100]:  # Sample first 100
@@ -193,9 +197,9 @@ def test_phase6_combined_results():
     """
     Bonus Test: Verify combined Phase 6 achievements.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("BONUS: Phase 6 Combined Results")
-    print("="*60)
+    print("=" * 60)
 
     # Check all Phase 6 test files exist
     phase6_tests = [
@@ -219,10 +223,10 @@ def test_phase6_combined_results():
 
     for py_file in get_python_files(PROJECT_ROOT / "agentic_core")[:50]:  # Sample
         try:
-            content = py_file.read_text(encoding='utf-8', errors='ignore')
-            if 'violations_found' in content:
+            content = py_file.read_text(encoding="utf-8", errors="ignore")
+            if "violations_found" in content:
                 files_with_violations_found += 1
-            if 'violations_fixed' in content:
+            if "violations_fixed" in content:
                 files_with_violations_fixed += 1
         except:
             pass
@@ -236,9 +240,9 @@ def test_phase6_combined_results():
 
 def main():
     """Run all Phase 6.3 Zero-Loss test cases."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("PHASE 6.3 ZERO-LOSS VERIFICATION TEST SUITE")
-    print("="*70)
+    print("=" * 70)
     print(f"Project Root: {PROJECT_ROOT}")
 
     tests = [
@@ -256,13 +260,14 @@ def main():
         except Exception as e:
             print(f"\n❌ EXCEPTION in {test_name}: {e}")
             import traceback
+
             traceback.print_exc()
             results.append((test_name, False))
 
     # Summary
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST SUMMARY")
-    print("="*70)
+    print("=" * 70)
 
     passed_count = sum(1 for _, passed in results if passed)
     total_count = len(results)
@@ -275,7 +280,7 @@ def main():
         status = "✅ PASS" if passed else "❌ FAIL"
         print(f"{status}: {test_name}")
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print(f"CORE TESTS: {core_passed}/3 passed")
     print(f"TOTAL: {passed_count}/{total_count} tests passed")
 

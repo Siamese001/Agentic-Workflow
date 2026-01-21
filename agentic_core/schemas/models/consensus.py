@@ -14,16 +14,25 @@ from pydantic import BaseModel, Field
 
 class ConsensusVerdict(BaseModel):
     """Result of a consensus deliberation across multiple models."""
+
     chosen_plan: str = Field(..., description="The definitive plan agreed upon by the collective")
-    consensus_score: float = Field(..., ge=0.0, le=1.0, description="Level of agreement (0.0 to 1.0)")
-    dissenting_opinions: list[str] = Field(default_factory=list, description="Summary of non-concurring views")
+    consensus_score: float = Field(
+        ..., ge=0.0, le=1.0, description="Level of agreement (0.0 to 1.0)"
+    )
+    dissenting_opinions: list[str] = Field(
+        default_factory=list, description="Summary of non-concurring views"
+    )
     reasoning: str = Field(..., description="The logic used to synthesize the final Verdict")
     safe_to_proceed: bool = Field(..., description="Final gate check based on consensus risks")
 
+
 class ModelOpinion(BaseModel):
     """Individual model's opinion on a proposed plan."""
+
     model_name: str = Field(..., description="The identifier of the contributing model")
     plan: str = Field(..., description="The specific plan being evaluated")
     reasoning: str = Field(..., description="Individual model's logic for its stance")
     risk_assessment: str = Field(..., description="LOW, MEDIUM, HIGH, or CRITICAL")
-    confidence: float = Field(..., ge=0.0, le=1.0, description="Confidence in this specific opinion")
+    confidence: float = Field(
+        ..., ge=0.0, le=1.0, description="Confidence in this specific opinion"
+    )

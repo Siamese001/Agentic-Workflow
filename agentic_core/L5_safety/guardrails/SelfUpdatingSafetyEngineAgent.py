@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: guardrail, orchestrator, prompt, state, validator, workflow
@@ -25,23 +24,29 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger: Any = logging.getLogger(__name__)
 
+
 class ThreatLevel(Enum):
     """Threat Severity levels."""
-    LOW: Any = 'low'
-    MEDIUM: Any = 'medium'
-    HIGH: Any = 'high'
-    CRITICAL: Any = 'critical'
+
+    LOW: Any = "low"
+    MEDIUM: Any = "medium"
+    HIGH: Any = "high"
+    CRITICAL: Any = "critical"
+
 
 class RuleType(Enum):
     """Types of safety rules."""
-    PATTERN_MATCH: Any = 'pattern_match'
-    SEMANTIC_ANALYSIS: Any = 'semantic_analysis'
-    BEHAVIORAL: Any = 'behavioral'
-    CONTEXTUAL: Any = 'contextual'
+
+    PATTERN_MATCH: Any = "pattern_match"
+    SEMANTIC_ANALYSIS: Any = "semantic_analysis"
+    BEHAVIORAL: Any = "behavioral"
+    CONTEXTUAL: Any = "contextual"
+
 
 @dataclass
 class ThreatPattern:
     """Represents a detected threat pattern."""
+
     pattern_id: str
     pattern_type: RuleType
     pattern_signature: str
@@ -59,9 +64,11 @@ class ThreatPattern:
             return 0.5
         return self.detection_count / total
 
+
 @dataclass
 class SafetyRule:
     """Represents a safety rule."""
+
     rule_id: str
     RuleType: RuleType
     pattern: str
@@ -83,21 +90,48 @@ class SafetyRule:
 
     def to_dict(self) -> dict[str, Any]:
         """Convert rule to dictionary."""
-        return {'rule_id': self.rule_id, 'RuleType': self.RuleType.value, 'pattern': self.pattern, 'description': self.description, 'ThreatLevel': self.ThreatLevel.value, 'enabled': self.enabled, 'auto_generated': self.auto_generated, 'created_at': self.created_at.isoformat(), 'last_triggered': self.last_triggered.isoformat() if self.last_triggered else None, 'trigger_count': self.trigger_count}
+        return {
+            "rule_id": self.rule_id,
+            "RuleType": self.RuleType.value,
+            "pattern": self.pattern,
+            "description": self.description,
+            "ThreatLevel": self.ThreatLevel.value,
+            "enabled": self.enabled,
+            "auto_generated": self.auto_generated,
+            "created_at": self.created_at.isoformat(),
+            "last_triggered": self.last_triggered.isoformat() if self.last_triggered else None,
+            "trigger_count": self.trigger_count,
+        }
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> SafetyRule:
         """Create rule from dictionary."""
-        return cls(rule_id=data['rule_id'], RuleType=RuleType(data['RuleType']), pattern=data['pattern'], description=data['description'], ThreatLevel=ThreatLevel(data['ThreatLevel']), enabled=data.get('enabled', True), auto_generated=data.get('auto_generated', False), created_at=datetime.fromisoformat(data['created_at']), last_triggered=datetime.fromisoformat(data['last_triggered']) if data.get('last_triggered') else None, trigger_count=data.get('trigger_count', 0))
+        return cls(
+            rule_id=data["rule_id"],
+            RuleType=RuleType(data["RuleType"]),
+            pattern=data["pattern"],
+            description=data["description"],
+            ThreatLevel=ThreatLevel(data["ThreatLevel"]),
+            enabled=data.get("enabled", True),
+            auto_generated=data.get("auto_generated", False),
+            created_at=datetime.fromisoformat(data["created_at"]),
+            last_triggered=datetime.fromisoformat(data["last_triggered"])
+            if data.get("last_triggered")
+            else None,
+            trigger_count=data.get("trigger_count", 0),
+        )
+
 
 @dataclass
 class ThreatDetection:
     """Result of threat detection."""
+
     detected: bool
     ThreatLevel: ThreatLevel
     matched_rules: list[SafetyRule]
     confidence: float
     recommendations: list[str]
+
 
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.L5_safety.validators.decorators import standard_heal
@@ -118,51 +152,99 @@ class SelfUpdatingSafetyEngineAgent(SubatomicTestingMixin, HealerMixin, MCPHarde
     - Rule effectiveness tracking
     """
 
-    def __init__(self, rules_storage_path: str | None=None) -> None:
+    def __init__(self, rules_storage_path: str | None = None) -> None:
         """Initialize the self-updating safety engine."""
-        self.rules_storage_path = rules_storage_path or os.path.join(os.getcwd(), '.canon_memory', 'safety_rules.json')
+        self.rules_storage_path = rules_storage_path or os.path.join(
+            os.getcwd(), ".canon_memory", "safety_rules.json"
+        )
         self.rules: dict[str, SafetyRule] = {}
         self.threat_patterns: dict[str, ThreatPattern] = {}
         self.detection_history: list[dict[str, Any]] = []
         self.false_positive_feedback: dict[str, int] = {}
         self._initialize_base_rules()
         self._load_rules()
-        Logger.info('Self-Updating Safety Engine initialized')
+        Logger.info("Self-Updating Safety Engine initialized")
 
     def _initialize_base_rules(self) -> Any:
         """Initialize base safety rules."""
-        base_rules = [SafetyRule(rule_id='base_001', RuleType=RuleType.PATTERN_MATCH, pattern='(?i)(api[_-]?key|secret[_-]?key|password|token)\\s*[=:]\\s*[\'\\"][^\'\\"]{8,}[\'\\"]', description='Hardcoded secrets detection', ThreatLevel=ThreatLevel.CRITICAL, auto_generated=False), SafetyRule(rule_id='base_002', RuleType=RuleType.PATTERN_MATCH, pattern='(?i)eval\\s*\\(|exec\\s*\\(', description='Dangerous code execution', ThreatLevel=ThreatLevel.HIGH, auto_generated=False), SafetyRule(rule_id='base_003', RuleType=RuleType.PATTERN_MATCH, pattern='(?i)__import__\\s*\\(\\s*[\'\\"]os[\'\\"]|subprocess\\.call', description='System command execution', ThreatLevel=ThreatLevel.HIGH, auto_generated=False), SafetyRule(rule_id='base_004', RuleType=RuleType.PATTERN_MATCH, pattern='(?i)DROP\\s+TABLE|DELETE\\s+FROM.*WHERE\\s+1\\s*=\\s*1', description='SQL injection patterns', ThreatLevel=ThreatLevel.CRITICAL, auto_generated=False), SafetyRule(rule_id='base_005', RuleType=RuleType.PATTERN_MATCH, pattern='(?i)<script[^>]*>.*?</script>|javascript:', description='XSS attack patterns', ThreatLevel=ThreatLevel.HIGH, auto_generated=False)]
+        base_rules = [
+            SafetyRule(
+                rule_id="base_001",
+                RuleType=RuleType.PATTERN_MATCH,
+                pattern="(?i)(api[_-]?key|secret[_-]?key|password|token)\\s*[=:]\\s*['\\\"][^'\\\"]{8,}['\\\"]",
+                description="Hardcoded secrets detection",
+                ThreatLevel=ThreatLevel.CRITICAL,
+                auto_generated=False,
+            ),
+            SafetyRule(
+                rule_id="base_002",
+                RuleType=RuleType.PATTERN_MATCH,
+                pattern="(?i)eval\\s*\\(|exec\\s*\\(",
+                description="Dangerous code execution",
+                ThreatLevel=ThreatLevel.HIGH,
+                auto_generated=False,
+            ),
+            SafetyRule(
+                rule_id="base_003",
+                RuleType=RuleType.PATTERN_MATCH,
+                pattern="(?i)__import__\\s*\\(\\s*['\\\"]os['\\\"]|subprocess\\.call",
+                description="System command execution",
+                ThreatLevel=ThreatLevel.HIGH,
+                auto_generated=False,
+            ),
+            SafetyRule(
+                rule_id="base_004",
+                RuleType=RuleType.PATTERN_MATCH,
+                pattern="(?i)DROP\\s+TABLE|DELETE\\s+FROM.*WHERE\\s+1\\s*=\\s*1",
+                description="SQL injection patterns",
+                ThreatLevel=ThreatLevel.CRITICAL,
+                auto_generated=False,
+            ),
+            SafetyRule(
+                rule_id="base_005",
+                RuleType=RuleType.PATTERN_MATCH,
+                pattern="(?i)<script[^>]*>.*?</script>|javascript:",
+                description="XSS attack patterns",
+                ThreatLevel=ThreatLevel.HIGH,
+                auto_generated=False,
+            ),
+        ]
         for rule in base_rules:
             self.rules[rule.rule_id] = rule
 
     def _load_rules(self) -> Any:
         """Load rules from storage."""
         if not os.path.exists(self.rules_storage_path):
-            Logger.info('No existing rules found, using base rules only')
+            Logger.info("No existing rules found, using base rules only")
             return
         try:
-            with open(self.rules_storage_path, encoding='utf-8') as f:
+            with open(self.rules_storage_path, encoding="utf-8") as f:
                 data = json.load(f)
-            for rule_data in data.get('rules', []):
-                if rule_data['auto_generated']:
+            for rule_data in data.get("rules", []):
+                if rule_data["auto_generated"]:
                     rule = SafetyRule.from_dict(rule_data)
                     self.rules[rule.rule_id] = rule
-            Logger.info(f'Loaded {len(self.rules)} safety rules')
+            Logger.info(f"Loaded {len(self.rules)} safety rules")
         except Exception as e:
-            Logger.error(f'Failed to load rules: {e}')
+            Logger.error(f"Failed to load rules: {e}")
 
     def _save_rules(self) -> Any:
         """Save rules to storage."""
         try:
             os.makedirs(os.path.dirname(self.rules_storage_path), exist_ok=True)
-            data = {'rules': [rule.to_dict() for rule in self.rules.values()], 'last_updated': datetime.now().isoformat()}
-            with open(self.rules_storage_path, 'w', encoding='utf-8') as f:
+            data = {
+                "rules": [rule.to_dict() for rule in self.rules.values()],
+                "last_updated": datetime.now().isoformat(),
+            }
+            with open(self.rules_storage_path, "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=2)
-            Logger.debug(f'Saved {len(self.rules)} rules')
+            Logger.debug(f"Saved {len(self.rules)} rules")
         except Exception as e:
-            Logger.error(f'Failed to save rules: {e}')
+            Logger.error(f"Failed to save rules: {e}")
 
-    async def detect_threats(self, text: str, context: dict[str, Any] | None=None) -> ThreatDetection:
+    async def detect_threats(
+        self, text: str, context: dict[str, Any] | None = None
+    ) -> ThreatDetection:
         """
         Detect threats in text.
 
@@ -184,10 +266,25 @@ class SelfUpdatingSafetyEngineAgent(SubatomicTestingMixin, HealerMixin, MCPHarde
                     max_threat_level: Any = rule.ThreatLevel
         confidence: Any = 0.0
         if matched_rules:
-            confidence: Any = sum(1.0 if not rule.auto_generated else 0.8 for rule in matched_rules) / len(matched_rules)
+            confidence: Any = sum(
+                1.0 if not rule.auto_generated else 0.8 for rule in matched_rules
+            ) / len(matched_rules)
         recommendations: Any = self._generate_recommendations(matched_rules)
-        detection: Any = ThreatDetection(detected=len(matched_rules) > 0, ThreatLevel=max_threat_level, matched_rules=matched_rules, confidence=confidence, recommendations=recommendations)
-        self.detection_history.append({'timestamp': datetime.now().isoformat(), 'detected': detection.detected, 'ThreatLevel': detection.ThreatLevel.value, 'rules_matched': len(matched_rules)})
+        detection: Any = ThreatDetection(
+            detected=len(matched_rules) > 0,
+            ThreatLevel=max_threat_level,
+            matched_rules=matched_rules,
+            confidence=confidence,
+            recommendations=recommendations,
+        )
+        self.detection_history.append(
+            {
+                "timestamp": datetime.now().isoformat(),
+                "detected": detection.detected,
+                "ThreatLevel": detection.ThreatLevel.value,
+                "rules_matched": len(matched_rules),
+            }
+        )
         if detection.detected:
             await self._learn_from_detection(text, matched_rules)
         return detection
@@ -195,9 +292,14 @@ class SelfUpdatingSafetyEngineAgent(SubatomicTestingMixin, HealerMixin, MCPHarde
     async def _learn_from_detection(self, text: str, matched_rules: list[SafetyRule]) -> Any:
         """Learn from a threat detection."""
         for rule in matched_rules:
-            pattern_id = f'pattern_{rule.rule_id}'
+            pattern_id = f"pattern_{rule.rule_id}"
             if pattern_id not in self.threat_patterns:
-                self.threat_patterns[pattern_id] = ThreatPattern(pattern_id=pattern_id, pattern_type=rule.RuleType, pattern_signature=rule.pattern, ThreatLevel=rule.ThreatLevel)
+                self.threat_patterns[pattern_id] = ThreatPattern(
+                    pattern_id=pattern_id,
+                    pattern_type=rule.RuleType,
+                    pattern_signature=rule.pattern,
+                    ThreatLevel=rule.ThreatLevel,
+                )
             pattern = self.threat_patterns[pattern_id]
             pattern.detection_count += 1
             pattern.last_detected = datetime.now()
@@ -213,16 +315,23 @@ class SelfUpdatingSafetyEngineAgent(SubatomicTestingMixin, HealerMixin, MCPHarde
             if pattern.detection_count < 5:
                 continue
             existing_rule_ids = {rule.rule_id for rule in self.rules.values()}
-            new_rule_id = f'auto_{pattern.pattern_id}'
+            new_rule_id = f"auto_{pattern.pattern_id}"
             if new_rule_id in existing_rule_ids:
                 continue
             variations = self._generate_pattern_variations(pattern)
             for i, variation in enumerate(variations[:3]):
-                rule_id = f'{new_rule_id}_v{i}'
+                rule_id = f"{new_rule_id}_v{i}"
                 if rule_id not in existing_rule_ids:
-                    new_rule = SafetyRule(rule_id=rule_id, RuleType=pattern.pattern_type, pattern=variation, description=f'Auto-generated rule from pattern {pattern.pattern_id}', ThreatLevel=pattern.ThreatLevel, auto_generated=True)
+                    new_rule = SafetyRule(
+                        rule_id=rule_id,
+                        RuleType=pattern.pattern_type,
+                        pattern=variation,
+                        description=f"Auto-generated rule from pattern {pattern.pattern_id}",
+                        ThreatLevel=pattern.ThreatLevel,
+                        auto_generated=True,
+                    )
                     self.rules[rule_id] = new_rule
-                    Logger.info(f'Generated new safety rule: {rule_id}')
+                    Logger.info(f"Generated new safety rule: {rule_id}")
         self._save_rules()
 
     def _generate_pattern_variations(self, pattern: ThreatPattern) -> list[str]:
@@ -230,8 +339,8 @@ class SelfUpdatingSafetyEngineAgent(SubatomicTestingMixin, HealerMixin, MCPHarde
         base_pattern = pattern.pattern_signature
         variations = [base_pattern]
         if pattern.pattern_type == RuleType.PATTERN_MATCH:
-            variations.append(base_pattern.replace('\\s*', '\\s+'))
-            variations.append(base_pattern.replace('[\'\\"]', '[\'\\"`]'))
+            variations.append(base_pattern.replace("\\s*", "\\s+"))
+            variations.append(base_pattern.replace("['\\\"]", "['\\\"`]"))
         return variations
 
     def report_false_positive(self, rule_id: str, text: str) -> Any:
@@ -243,24 +352,29 @@ class SelfUpdatingSafetyEngineAgent(SubatomicTestingMixin, HealerMixin, MCPHarde
             text: Text that was incorrectly flagged
         """
         if rule_id not in self.rules:
-            Logger.warning(f'Rule {rule_id} not found for false positive report')
+            Logger.warning(f"Rule {rule_id} not found for false positive report")
             return
         self.false_positive_feedback[rule_id] = self.false_positive_feedback.get(rule_id, 0) + 1
         rule: Any = self.rules[rule_id]
-        pattern_id: Any = f'pattern_{rule_id}'
+        pattern_id: Any = f"pattern_{rule_id}"
         if pattern_id in self.threat_patterns:
             self.threat_patterns[pattern_id].false_positive_count += 1
         if self.false_positive_feedback[rule_id] >= 5:
             if rule.auto_generated:
                 rule.enabled = False
-                Logger.info(f'Disabled rule {rule_id} due to high false positive rate')
+                Logger.info(f"Disabled rule {rule_id} due to high false positive rate")
             else:
-                Logger.warning(f'Base rule {rule_id} has high false positive rate')
+                Logger.warning(f"Base rule {rule_id} has high false positive rate")
         self._save_rules()
 
     def _compare_threat_levels(self, level1: ThreatLevel, level2: ThreatLevel) -> int:
         """Compare two threat levels."""
-        order = {ThreatLevel.LOW: 1, ThreatLevel.MEDIUM: 2, ThreatLevel.HIGH: 3, ThreatLevel.CRITICAL: 4}
+        order = {
+            ThreatLevel.LOW: 1,
+            ThreatLevel.MEDIUM: 2,
+            ThreatLevel.HIGH: 3,
+            ThreatLevel.CRITICAL: 4,
+        }
         return order[level1] - order[level2]
 
     def _generate_recommendations(self, matched_rules: list[SafetyRule]) -> list[str]:
@@ -268,11 +382,11 @@ class SelfUpdatingSafetyEngineAgent(SubatomicTestingMixin, HealerMixin, MCPHarde
         recommendations = []
         for rule in matched_rules:
             if rule.ThreatLevel == ThreatLevel.CRITICAL:
-                recommendations.append(f'CRITICAL: {rule.description} - Immediate action required')
+                recommendations.append(f"CRITICAL: {rule.description} - Immediate action required")
             elif rule.ThreatLevel == ThreatLevel.HIGH:
-                recommendations.append(f'HIGH: {rule.description} - Review and fix urgently')
+                recommendations.append(f"HIGH: {rule.description} - Review and fix urgently")
             elif rule.ThreatLevel == ThreatLevel.MEDIUM:
-                recommendations.append(f'MEDIUM: {rule.description} - Should be addressed')
+                recommendations.append(f"MEDIUM: {rule.description} - Should be addressed")
         return recommendations
 
     def escalate_threat_level(self, rule_id: str) -> Any:
@@ -291,7 +405,7 @@ class SelfUpdatingSafetyEngineAgent(SubatomicTestingMixin, HealerMixin, MCPHarde
             rule.ThreatLevel = ThreatLevel.HIGH
         elif rule.ThreatLevel == ThreatLevel.HIGH:
             rule.ThreatLevel = ThreatLevel.CRITICAL
-        Logger.info(f'Escalated threat level for rule {rule_id} to {rule.ThreatLevel.value}')
+        Logger.info(f"Escalated threat level for rule {rule_id} to {rule.ThreatLevel.value}")
         self._save_rules()
 
     def get_rule_effectiveness(self) -> dict[str, Any]:
@@ -300,24 +414,54 @@ class SelfUpdatingSafetyEngineAgent(SubatomicTestingMixin, HealerMixin, MCPHarde
         enabled_rules: Any = sum(1 for rule in self.rules.values() if rule.enabled)
         auto_generated: Any = sum(1 for rule in self.rules.values() if rule.auto_generated)
         total_triggers: Any = sum(rule.trigger_count for rule in self.rules.values())
-        most_triggered: Any = sorted(self.rules.values(), key=lambda r: r.trigger_count, reverse=True)[:5]
-        return {'total_rules': total_rules, 'enabled_rules': enabled_rules, 'auto_generated_rules': auto_generated, 'total_triggers': total_triggers, 'most_triggered_rules': [{'rule_id': rule.rule_id, 'description': rule.description, 'trigger_count': rule.trigger_count, 'ThreatLevel': rule.ThreatLevel.value} for rule in most_triggered], 'false_positive_reports': sum(self.false_positive_feedback.values())}
+        most_triggered: Any = sorted(
+            self.rules.values(), key=lambda r: r.trigger_count, reverse=True
+        )[:5]
+        return {
+            "total_rules": total_rules,
+            "enabled_rules": enabled_rules,
+            "auto_generated_rules": auto_generated,
+            "total_triggers": total_triggers,
+            "most_triggered_rules": [
+                {
+                    "rule_id": rule.rule_id,
+                    "description": rule.description,
+                    "trigger_count": rule.trigger_count,
+                    "ThreatLevel": rule.ThreatLevel.value,
+                }
+                for rule in most_triggered
+            ],
+            "false_positive_reports": sum(self.false_positive_feedback.values()),
+        }
 
     def get_threat_statistics(self) -> dict[str, Any]:
         """Get threat detection statistics."""
         total_detections: Any = len(self.detection_history)
         if total_detections == 0:
-            return {'total_detections': 0, 'threat_distribution': {}, 'detection_rate': 0.0}
+            return {"total_detections": 0, "threat_distribution": {}, "detection_rate": 0.0}
         threat_counts: Any = {}
         for detection in self.detection_history:
-            level: Any = detection['ThreatLevel']
+            level: Any = detection["ThreatLevel"]
             threat_counts[level] = threat_counts.get(level, 0) + 1
-        detected_count: Any = sum(1 for d in self.detection_history if d['detected'])
-        return {'total_detections': total_detections, 'threats_detected': detected_count, 'detection_rate': detected_count / total_detections, 'threat_distribution': threat_counts, 'unique_patterns': len(self.threat_patterns)}
+        detected_count: Any = sum(1 for d in self.detection_history if d["detected"])
+        return {
+            "total_detections": total_detections,
+            "threats_detected": detected_count,
+            "detection_rate": detected_count / total_detections,
+            "threat_distribution": threat_counts,
+            "unique_patterns": len(self.threat_patterns),
+        }
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L5 safety agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -334,7 +478,10 @@ class SelfUpdatingSafetyEngineAgent(SubatomicTestingMixin, HealerMixin, MCPHarde
         finally:
             _call_path.discard(agent_name)
 
-def create_self_updating_safety_engine(rules_storage_path: str | None=None) -> SelfUpdatingSafetyEngine:
+
+def create_self_updating_safety_engine(
+    rules_storage_path: str | None = None,
+) -> SelfUpdatingSafetyEngine:
     """Factory function to create self-updating safety engine."""
     # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
     super().heal_repository()

@@ -19,16 +19,18 @@ from pathlib import Path
 # CONFIGURATION
 # ============================================================================
 
-APPS_DIRS = ['apps_rg', 'apps_lic', 'apps_shared']
-SKIP_FILES = {'__init__.py', 'conftest.py'}
+APPS_DIRS = ["apps_rg", "apps_lic", "apps_shared"]
+SKIP_FILES = {"__init__.py", "conftest.py"}
 
 # ============================================================================
 # DATA STRUCTURES
 # ============================================================================
 
+
 @dataclass
 class ClassInfo:
     """Information about a class."""
+
     name: str
     file_path: str
     bases: list[str]
@@ -40,9 +42,11 @@ class ClassInfo:
     is_agent: bool
     content_hash: str  # Hash of class body for exact duplicate detection
 
+
 @dataclass
 class FunctionInfo:
     """Information about a function."""
+
     name: str
     file_path: str
     params: list[str]
@@ -50,9 +54,11 @@ class FunctionInfo:
     has_docstring: bool
     content_hash: str
 
+
 @dataclass
 class FileInfo:
     """Information about a file."""
+
     path: str
     classes: list[ClassInfo]
     functions: list[FunctionInfo]
@@ -60,18 +66,21 @@ class FileInfo:
     content_hash: str
     quality_score: float  # Based on docstrings, type hints, etc.
 
+
 # ============================================================================
 # AST ANALYSIS
 # ============================================================================
+
 
 def get_node_source(node: ast.AST, source_lines: list[str]) -> str:
     """Get source code for an AST node."""
     try:
         start = node.lineno - 1
-        end = getattr(node, 'end_lineno', start + 1)
-        return '\n'.join(source_lines[start:end])
+        end = getattr(node, "end_lineno", start + 1)
+        return "\n".join(source_lines[start:end])
     except:
         return ""
+
 
 def analyze_class(node: ast.ClassDef, file_path: str, source_lines: list[str]) -> ClassInfo:
     """Analyze a class definition."""
@@ -100,16 +109,19 @@ def analyze_class(node: ast.ClassDef, file_path: str, source_lines: list[str]) -
         bases=bases,
         methods=methods,
         method_count=len(methods),
-        loc=getattr(node, 'end_lineno', node.lineno) - node.lineno,
+        loc=getattr(node, "end_lineno", node.lineno) - node.lineno,
         has_docstring=bool(docstring),
         docstring_len=len(docstring),
-        is_agent=node.name.endswith('Agent'),
-        content_hash=content_hash
+        is_agent=node.name.endswith("Agent"),
+        content_hash=content_hash,
     )
 
-def analyze_function(node: ast.FunctionDef, file_path: str, source_lines: list[str]) -> FunctionInfo:
+
+def analyze_function(
+    node: ast.FunctionDef, file_path: str, source_lines: list[str]
+) -> FunctionInfo:
     """Analyze a function definition."""
-    params = [arg.arg for arg in node.args.args if arg.arg != 'self']
+    params = [arg.arg for arg in node.args.args if arg.arg != "self"]
     docstring = ast.get_docstring(node) or ""
 
     func_source = get_node_source(node, source_lines)
@@ -119,15 +131,16 @@ def analyze_function(node: ast.FunctionDef, file_path: str, source_lines: list[s
         name=node.name,
         file_path=file_path,
         params=params,
-        loc=getattr(node, 'end_lineno', node.lineno) - node.lineno,
+        loc=getattr(node, "end_lineno", node.lineno) - node.lineno,
         has_docstring=bool(docstring),
-        content_hash=content_hash
+        content_hash=content_hash,
     )
+
 
 def analyze_file(file_path: Path) -> FileInfo | None:
     """Analyze a Python file."""
     try:
-        content = file_path.read_text(encoding='utf-8', errors='replace')
+        content = file_path.read_text(encoding="utf-8", errors="replace")
         source_lines = content.splitlines()
         tree = ast.parse(content)
     except:
@@ -140,15 +153,17 @@ def analyze_file(file_path: Path) -> FileInfo | None:
         if isinstance(node, ast.ClassDef):
             classes.append(analyze_class(node, str(file_path), source_lines))
         elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
-            if not node.name.startswith('_'):
+            if not node.name.startswith("_"):
                 functions.append(analyze_function(node, str(file_path), source_lines))
 
     # Calculate quality score
-    has_docstrings = sum(1 for c in classes if c.has_docstring) + sum(1 for f in functions if f.has_docstring)
+    has_docstrings = sum(1 for c in classes if c.has_docstring) + sum(
+        1 for f in functions if f.has_docstring
+    )
     total_entities = len(classes) + len(functions)
     docstring_ratio = has_docstrings / max(total_entities, 1)
 
-    has_types = 'typing' in content or ': ' in content
+    has_types = "typing" in content or ": " in content
     quality_score = (docstring_ratio * 50) + (30 if has_types else 0) + min(len(content) / 100, 20)
 
     return FileInfo(
@@ -157,12 +172,14 @@ def analyze_file(file_path: Path) -> FileInfo | None:
         functions=functions,
         loc=len(source_lines),
         content_hash=hashlib.md5(content.encode()).hexdigest()[:12],
-        quality_score=quality_score
+        quality_score=quality_score,
     )
+
 
 # ============================================================================
 # DUPLICATE DETECTION
 # ============================================================================
+
 
 def find_duplicate_classes(all_files: list[FileInfo]) -> dict[str, list[ClassInfo]]:
     """Find classes with the same name across files."""
@@ -175,6 +192,7 @@ def find_duplicate_classes(all_files: list[FileInfo]) -> dict[str, list[ClassInf
     # Filter to only duplicates
     return {name: classes for name, classes in class_map.items() if len(classes) > 1}
 
+
 def find_duplicate_functions(all_files: list[FileInfo]) -> dict[str, list[FunctionInfo]]:
     """Find functions with the same name across files."""
     func_map = defaultdict(list)
@@ -184,9 +202,13 @@ def find_duplicate_functions(all_files: list[FileInfo]) -> dict[str, list[Functi
             func_map[func.name].append(func)
 
     # Filter to only duplicates (ignore common names)
-    common_names = {'main', 'test', 'run', 'execute', 'process', 'validate', 'init'}
-    return {name: funcs for name, funcs in func_map.items()
-            if len(funcs) > 1 and name not in common_names}
+    common_names = {"main", "test", "run", "execute", "process", "validate", "init"}
+    return {
+        name: funcs
+        for name, funcs in func_map.items()
+        if len(funcs) > 1 and name not in common_names
+    }
+
 
 def find_exact_duplicate_files(all_files: list[FileInfo]) -> dict[str, list[FileInfo]]:
     """Find files with identical content."""
@@ -196,6 +218,7 @@ def find_exact_duplicate_files(all_files: list[FileInfo]) -> dict[str, list[File
         hash_map[file_info.content_hash].append(file_info)
 
     return {h: files for h, files in hash_map.items() if len(files) > 1}
+
 
 def select_best_version(duplicates: list[ClassInfo]) -> tuple[ClassInfo, list[ClassInfo]]:
     """Select the best version of a duplicate class."""
@@ -208,9 +231,9 @@ def select_best_version(duplicates: list[ClassInfo]) -> tuple[ClassInfo, list[Cl
         score += 20 if cls.has_docstring else 0
         score += cls.docstring_len * 0.1
         # Prefer files in base_agents or engines over utils
-        if 'base_agents' in cls.file_path:
+        if "base_agents" in cls.file_path:
             score += 10
-        elif 'engines' in cls.file_path and 'utils' not in cls.file_path:
+        elif "engines" in cls.file_path and "utils" not in cls.file_path:
             score += 5
         scored.append((score, cls))
 
@@ -220,9 +243,11 @@ def select_best_version(duplicates: list[ClassInfo]) -> tuple[ClassInfo, list[Cl
 
     return best, others
 
+
 # ============================================================================
 # MAIN
 # ============================================================================
+
 
 def main():
     print("=" * 80)
@@ -236,8 +261,8 @@ def main():
     for apps_dir in APPS_DIRS:
         if not Path(apps_dir).exists():
             continue
-        for py_file in Path(apps_dir).rglob('*.py'):
-            if py_file.name in SKIP_FILES or '__pycache__' in str(py_file):
+        for py_file in Path(apps_dir).rglob("*.py"):
+            if py_file.name in SKIP_FILES or "__pycache__" in str(py_file):
                 continue
             file_info = analyze_file(py_file)
             if file_info:
@@ -337,5 +362,6 @@ def main():
         print(f"\n  NOTE: {len(classes_to_remove)} duplicate classes in multi-class files")
         print("  These require manual review or more complex AST manipulation to remove.")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

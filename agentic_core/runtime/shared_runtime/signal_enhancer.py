@@ -19,16 +19,18 @@ Logger = logging.getLogger(__name__)
 
 class SignalQuality(Enum):
     """Signal quality levels."""
+
     EXCELLENT = "excellent"  # >= 0.9
-    HIGH = "high"           # >= 0.75
-    GOOD = "good"           # >= 0.6
-    MARGINAL = "marginal"   # >= 0.4
-    POOR = "poor"          # < 0.4
+    HIGH = "high"  # >= 0.75
+    GOOD = "good"  # >= 0.6
+    MARGINAL = "marginal"  # >= 0.4
+    POOR = "poor"  # < 0.4
 
 
 @dataclass
 class QualityThresholds:
     """Strict quality thresholds for different aspects."""
+
     # Composite score thresholds
     EXCELLENT_MIN: float = 0.9
     HIGH_MIN: float = 0.75
@@ -37,9 +39,9 @@ class QualityThresholds:
 
     # Individual component thresholds
     MIN_RELEVANCE: float = 0.7  # Increased from 0.5
-    MIN_AUTHORITY: float = 0.6   # Increased from 0.4
-    MIN_SPECIFICITY: float = 0.5 # Increased from 0.3
-    MIN_COHERENCE: float = 0.6   # Increased from 0.4
+    MIN_AUTHORITY: float = 0.6  # Increased from 0.4
+    MIN_SPECIFICITY: float = 0.5  # Increased from 0.3
+    MIN_COHERENCE: float = 0.6  # Increased from 0.4
 
     # Content quality thresholds
     MAX_HALLUCINATION_RISK: float = 0.2
@@ -51,6 +53,7 @@ class QualityThresholds:
 @dataclass
 class ClaimAnalysis:
     """Analysis of claims within content."""
+
     Claim: str
     confidence: float
     verifiable: bool
@@ -61,6 +64,7 @@ class ClaimAnalysis:
 @dataclass
 class SignalAssessment:
     """Comprehensive signal quality assessment."""
+
     content: str
     content_hash: str
     timestamp: datetime
@@ -102,13 +106,14 @@ class SignalAssessment:
             SignalQuality.MARGINAL: 1,
             SignalQuality.GOOD: 2,
             SignalQuality.HIGH: 3,
-            SignalQuality.EXCELLENT: 4
+            SignalQuality.EXCELLENT: 4,
         }
 
-        return (quality_hierarchy[self.quality_level] >=
-                quality_hierarchy[min_quality] and
-                self.hallucination_risk < QualityThresholds.MAX_HALLUCINATION_RISK and
-                self.factual_accuracy >= QualityThresholds.MIN_FACT_VERIFICATION)
+        return (
+            quality_hierarchy[self.quality_level] >= quality_hierarchy[min_quality]
+            and self.hallucination_risk < QualityThresholds.MAX_HALLUCINATION_RISK
+            and self.factual_accuracy >= QualityThresholds.MIN_FACT_VERIFICATION
+        )
 
 
 class SignalEnhancer:
@@ -130,15 +135,13 @@ class SignalEnhancer:
             "accepted": 0,
             "rejected": 0,
             "average_quality": 0.0,
-            "flag_distribution": {}
+            "flag_distribution": {},
         }
 
         Logger.debug(f"Initialized SignalEnhancer: {name}")
 
     def assess_signal(
-        self,
-        content: str,
-        context: dict[str, Any] | None = None
+        self, content: str, context: dict[str, Any] | None = None
     ) -> SignalAssessment:
         """Assess the quality of content signal.
 
@@ -161,12 +164,7 @@ class SignalEnhancer:
         coherence = self._assess_coherence(content)
 
         # Calculate composite score
-        composite = (
-            relevance * 0.3 +
-            authority * 0.3 +
-            specificity * 0.2 +
-            coherence * 0.2
-        )
+        composite = relevance * 0.3 + authority * 0.3 + specificity * 0.2 + coherence * 0.2
 
         # Determine quality level
         if composite >= self.thresholds.EXCELLENT_MIN:
@@ -214,7 +212,7 @@ class SignalEnhancer:
             repetition_ratio=repetition,
             claim_analyses=claims,
             flags=flags,
-            recommendations=recommendations
+            recommendations=recommendations,
         )
 
         # Update statistics
@@ -248,11 +246,17 @@ class SignalEnhancer:
 
         # Semantic indicators
         relevance_indicators = [
-            "specifically", "directly", "addresses", "answers",
-            "relevant", "pertinent", "applicable"
+            "specifically",
+            "directly",
+            "addresses",
+            "answers",
+            "relevant",
+            "pertinent",
+            "applicable",
         ]
-        semantic_score = sum(1 for indicator in relevance_indicators
-                           if indicator in content_lower) / len(relevance_indicators)
+        semantic_score = sum(
+            1 for indicator in relevance_indicators if indicator in content_lower
+        ) / len(relevance_indicators)
 
         # Calculate score
         score = min(1.0, (exact_matches * 0.3 + word_overlap * 0.05 + semantic_score * 0.2))
@@ -278,15 +282,24 @@ class SignalEnhancer:
 
         # Authority indicators
         high_authority_domains = [
-            "edu", "gov", "org", "nature", "science", "ieee",
-            "acm", "pubmed", "arxiv", "scholar"
+            "edu",
+            "gov",
+            "org",
+            "nature",
+            "science",
+            "ieee",
+            "acm",
+            "pubmed",
+            "arxiv",
+            "scholar",
         ]
 
         authority_score = 0.0
         for source in sources:
             # Check domain authority
-            domain_score = 0.3 if any(domain in source.lower()
-                                    for domain in high_authority_domains) else 0.1
+            domain_score = (
+                0.3 if any(domain in source.lower() for domain in high_authority_domains) else 0.1
+            )
 
             # Check for citations
             citation_score = 0.2 if "doi:" in source.lower() or "isbn:" in source.lower() else 0.0
@@ -316,13 +329,20 @@ class SignalEnhancer:
             r"\b\d{1,2}(?:st|nd|rd|th)\b",  # Ordinals
         ]
 
-        specificity_count = sum(len(re.findall(pattern, content, re.IGNORECASE))
-                              for pattern in specific_patterns)
+        specificity_count = sum(
+            len(re.findall(pattern, content, re.IGNORECASE)) for pattern in specific_patterns
+        )
 
         # Technical terms
         technical_words = [
-            "algorithm", "methodology", "analysis", "implementation",
-            "architecture", "framework", "protocol", "specification"
+            "algorithm",
+            "methodology",
+            "analysis",
+            "implementation",
+            "architecture",
+            "framework",
+            "protocol",
+            "specification",
         ]
         tech_count = sum(1 for word in technical_words if word in content.lower())
 
@@ -345,7 +365,7 @@ class SignalEnhancer:
         Returns:
             Coherence score (0-1)
         """
-        sentences = re.split(r'[.!?]+', content)
+        sentences = re.split(r"[.!?]+", content)
         sentences = [s.strip() for s in sentences if s.strip()]
 
         if len(sentences) < 2:
@@ -353,11 +373,16 @@ class SignalEnhancer:
 
         # Check for logical connectors
         connectors = [
-            "however", "therefore", "furthermore", "moreover",
-            "consequently", "nevertheless", "thus", "hence"
+            "however",
+            "therefore",
+            "furthermore",
+            "moreover",
+            "consequently",
+            "nevertheless",
+            "thus",
+            "hence",
         ]
-        connector_count = sum(1 for connector in connectors
-                            if connector in content.lower())
+        connector_count = sum(1 for connector in connectors if connector in content.lower())
 
         # Check sentence length variation (good coherence has variation)
         lengths = [len(s.split()) for s in sentences]
@@ -380,9 +405,7 @@ class SignalEnhancer:
 
         # Combine scores
         coherence_score = (
-            (connector_count / len(sentences)) * 0.3 +
-            length_score * 0.3 +
-            consistency_score * 0.4
+            (connector_count / len(sentences)) * 0.3 + length_score * 0.3 + consistency_score * 0.4
         )
 
         return min(1.0, coherence_score)
@@ -398,15 +421,36 @@ class SignalEnhancer:
         """
         # Signal: informative words
         signal_words = {
-            "because", "therefore", "result", "conclusion", "evidence",
-            "data", "analysis", "research", "study", "finding",
-            "method", "approach", "technique", "algorithm", "system"
+            "because",
+            "therefore",
+            "result",
+            "conclusion",
+            "evidence",
+            "data",
+            "analysis",
+            "research",
+            "study",
+            "finding",
+            "method",
+            "approach",
+            "technique",
+            "algorithm",
+            "system",
         }
 
         # Noise: filler words
         noise_words = {
-            "um", "uh", "like", "you know", "sort of", "kind of",
-            "probably", "maybe", "perhaps", "basically", "actually"
+            "um",
+            "uh",
+            "like",
+            "you know",
+            "sort of",
+            "kind of",
+            "probably",
+            "maybe",
+            "perhaps",
+            "basically",
+            "actually",
         }
 
         words = content.lower().split()
@@ -429,9 +473,36 @@ class SignalEnhancer:
         """
         # Remove common words
         common_words = {
-            "the", "a", "an", "and", "or", "but", "in", "on", "at", "to", "for",
-            "of", "with", "by", "is", "are", "was", "were", "be", "been", "have",
-            "has", "had", "do", "does", "did", "will", "would", "could", "should"
+            "the",
+            "a",
+            "an",
+            "and",
+            "or",
+            "but",
+            "in",
+            "on",
+            "at",
+            "to",
+            "for",
+            "of",
+            "with",
+            "by",
+            "is",
+            "are",
+            "was",
+            "were",
+            "be",
+            "been",
+            "have",
+            "has",
+            "had",
+            "do",
+            "does",
+            "did",
+            "will",
+            "would",
+            "could",
+            "should",
         }
 
         words = content.lower().split()
@@ -457,20 +528,27 @@ class SignalEnhancer:
             r"\d{4}",  # Years
             r"\b\d+(?:\.\d+)?%",  # Percentages
             r"\$\d+(?:,\d{3})*(?:\.\d+)?",  # Money
-            r"(?:according to|research shows|studies indicate|data suggests)"
+            r"(?:according to|research shows|studies indicate|data suggests)",
         ]
 
-        factual_count = sum(len(re.findall(pattern, content, re.IGNORECASE))
-                          for pattern in factual_indicators)
+        factual_count = sum(
+            len(re.findall(pattern, content, re.IGNORECASE)) for pattern in factual_indicators
+        )
 
         # Look for uncertainty indicators
         uncertainty_words = [
-            "might", "could", "possibly", "perhaps", "maybe",
-            "seems", "appears", "suggests", "potentially"
+            "might",
+            "could",
+            "possibly",
+            "perhaps",
+            "maybe",
+            "seems",
+            "appears",
+            "suggests",
+            "potentially",
         ]
 
-        uncertainty_count = sum(1 for word in uncertainty_words
-                               if word in content.lower())
+        uncertainty_count = sum(1 for word in uncertainty_words if word in content.lower())
 
         # Calculate accuracy based on factual vs uncertainty ratio
         total_indicators = factual_count + uncertainty_count
@@ -490,15 +568,18 @@ class SignalEnhancer:
         """
         # Check for common phrases
         common_phrases = [
-            "in conclusion", "as mentioned above", "it is important to note",
-            "on the other hand", "at the end of the day", "when all is said and done"
+            "in conclusion",
+            "as mentioned above",
+            "it is important to note",
+            "on the other hand",
+            "at the end of the day",
+            "when all is said and done",
         ]
 
-        phrase_count = sum(1 for phrase in common_phrases
-                         if phrase in content.lower())
+        phrase_count = sum(1 for phrase in common_phrases if phrase in content.lower())
 
         # Check sentence variety
-        sentences = re.split(r'[.!?]+', content)
+        sentences = re.split(r"[.!?]+", content)
         sentences = [s.strip() for s in sentences if s.strip()]
 
         if len(sentences) < 2:
@@ -507,8 +588,7 @@ class SignalEnhancer:
         # Calculate sentence length variation
         lengths = [len(s) for s in sentences]
         avg_length = sum(lengths) / len(lengths)
-        variety = sum(1 for length in lengths
-                     if abs(length - avg_length) > avg_length * 0.3)
+        variety = sum(1 for length in lengths if abs(length - avg_length) > avg_length * 0.3)
 
         variety_score = variety / len(sentences)
         phrase_penalty = min(0.5, phrase_count * 0.1)
@@ -528,20 +608,26 @@ class SignalEnhancer:
         risk_patterns = [
             r"\b(?:I believe|I think|In my opinion|Personally)\b",
             r"\b(?:obviously|clearly|certainly|definitely)\b",
-            r"\b(?:everyone knows|it goes without saying)\b"
+            r"\b(?:everyone knows|it goes without saying)\b",
         ]
 
-        risk_count = sum(len(re.findall(pattern, content, re.IGNORECASE))
-                        for pattern in risk_patterns)
+        risk_count = sum(
+            len(re.findall(pattern, content, re.IGNORECASE)) for pattern in risk_patterns
+        )
 
         # Check for unsupported claims
         unsupported_indicators = [
-            "never", "always", "only", "best", "worst",
-            "impossible", "perfect", "flawless"
+            "never",
+            "always",
+            "only",
+            "best",
+            "worst",
+            "impossible",
+            "perfect",
+            "flawless",
         ]
 
-        unsupported_count = sum(1 for word in unsupported_indicators
-                               if word in content.lower())
+        unsupported_count = sum(1 for word in unsupported_indicators if word in content.lower())
 
         # Calculate risk
         word_count = len(content.split())
@@ -587,7 +673,7 @@ class SignalEnhancer:
         # Simplified Claim extraction
         claim_patterns = [
             r"([^.]*(?:is|are|shows|indicates|proves|demonstrates)[^.]*\.)",
-            r"([^.]*(?:according to|research|study|data)[^.]*\.)"
+            r"([^.]*(?:according to|research|study|data)[^.]*\.)",
         ]
 
         claims = []
@@ -603,7 +689,7 @@ class SignalEnhancer:
                     confidence=confidence,
                     verifiable=verifiable,
                     sources=[],  # Would extract in real implementation
-                    risk_level="low" if confidence > 0.7 else "medium"
+                    risk_level="low" if confidence > 0.7 else "medium",
                 )
                 claims.append(Claim)
 
@@ -615,7 +701,7 @@ class SignalEnhancer:
         composite_score: float,
         hallucination_risk: float,
         repetition_ratio: float,
-        claims: list[ClaimAnalysis]
+        claims: list[ClaimAnalysis],
     ) -> tuple[list[str], list[str]]:
         """Generate flags and recommendations.
 
@@ -679,8 +765,8 @@ class SignalEnhancer:
         total = self._stats["assessments"]
         current_avg = self._stats["average_quality"]
         self._stats["average_quality"] = (
-            (current_avg * (total - 1) + assessment.composite_score) / total
-        )
+            current_avg * (total - 1) + assessment.composite_score
+        ) / total
 
         # Update flag distribution
         for flag in assessment.flags:
@@ -707,7 +793,9 @@ class SignalEnhancer:
 _enhancers: dict[str, SignalEnhancer] = {}
 
 
-def get_signal_enhancer(name: str = "default", thresholds: QualityThresholds | None = None) -> SignalEnhancer:
+def get_signal_enhancer(
+    name: str = "default", thresholds: QualityThresholds | None = None
+) -> SignalEnhancer:
     """Get or create a signal enhancer.
 
     Args:

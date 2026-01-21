@@ -15,7 +15,6 @@ to ensure the AI system degrades gracefully under adverse conditions.
 # Suggested keywords to add in docstring/code: orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-
 from __future__ import annotations
 
 import logging
@@ -86,12 +85,14 @@ class ChaosEngineeringAgent(HealerMixin, MCPHardenedMixin):
                 if test_result.get("failure_detected"):
                     results["failures_detected"] += 1
 
-                results["scenarios_tested"].append({
-                    "scenario": scenario,
-                    "failure_detected": test_result.get("failure_detected", False),
-                    "recovery_time_ms": test_result.get("recovery_time_ms", 0),
-                    "severity": test_result.get("severity", "medium"),
-                })
+                results["scenarios_tested"].append(
+                    {
+                        "scenario": scenario,
+                        "failure_detected": test_result.get("failure_detected", False),
+                        "recovery_time_ms": test_result.get("recovery_time_ms", 0),
+                        "severity": test_result.get("severity", "medium"),
+                    }
+                )
 
             # Calculate recovery metrics
             recovery_times = [s.get("recovery_time_ms", 0) for s in results["scenarios_tested"]]
@@ -105,11 +106,14 @@ class ChaosEngineeringAgent(HealerMixin, MCPHardenedMixin):
             self.tests_executed = results["tests_executed"]
             self.failures_detected = results["failures_detected"]
 
-            log_event("chaos_engineering_test", {
-                TESTS_DIR: results["tests_executed"],
-                "failures": results["failures_detected"],
-                "avg_recovery_ms": results["recovery_metrics"].get("avg_recovery_ms", 0),
-            })
+            log_event(
+                "chaos_engineering_test",
+                {
+                    TESTS_DIR: results["tests_executed"],
+                    "failures": results["failures_detected"],
+                    "avg_recovery_ms": results["recovery_metrics"].get("avg_recovery_ms", 0),
+                },
+            )
 
             return results
 

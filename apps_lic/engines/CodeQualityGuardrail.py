@@ -27,6 +27,7 @@ from typing import Any
 @dataclass
 class CodeIssue:
     """Represents a code quality issue."""
+
     rule: str
     severity: str  # "info", "warning", "error"
     message: str
@@ -38,6 +39,7 @@ class CodeIssue:
 @dataclass
 class QualityResult:
     """Result of code quality check."""
+
     valid: bool
     issues: list[CodeIssue] = field(default_factory=list)
     metrics: dict[str, Any] = field(default_factory=dict)
@@ -122,10 +124,7 @@ class CodeQualityGuardrail:
         return QualityResult(
             valid=not any(i.severity == "error" for i in issues),
             issues=issues,
-            metrics={
-                "line_count": len(code.splitlines()),
-                "issue_count": len(issues)
-            }
+            metrics={"line_count": len(code.splitlines()), "issue_count": len(issues)},
         )
 
     def _check_formatting(self, code: str, file_path: str | None) -> list[CodeIssue]:
@@ -136,35 +135,41 @@ class CodeQualityGuardrail:
         # Check line length
         for i, line in enumerate(lines, 1):
             if len(line) > self.max_line_length:
-                issues.append(CodeIssue(
-                    rule="formatting",
-                    severity="warning",
-                    message=f"Line exceeds {self.max_line_length} characters ({len(line)})",
-                    file_path=file_path,
-                    line_number=i,
-                    suggestion="Consider breaking this line"
-                ))
+                issues.append(
+                    CodeIssue(
+                        rule="formatting",
+                        severity="warning",
+                        message=f"Line exceeds {self.max_line_length} characters ({len(line)})",
+                        file_path=file_path,
+                        line_number=i,
+                        suggestion="Consider breaking this line",
+                    )
+                )
 
         # Check file length
         if len(lines) > self.max_file_length:
-            issues.append(CodeIssue(
-                rule="formatting",
-                severity="warning",
-                message=f"File exceeds {self.max_file_length} lines ({len(lines)})",
-                file_path=file_path,
-                suggestion="Consider splitting into multiple files"
-            ))
+            issues.append(
+                CodeIssue(
+                    rule="formatting",
+                    severity="warning",
+                    message=f"File exceeds {self.max_file_length} lines ({len(lines)})",
+                    file_path=file_path,
+                    suggestion="Consider splitting into multiple files",
+                )
+            )
 
         # Check trailing whitespace
         for i, line in enumerate(lines, 1):
             if line != line.rstrip():
-                issues.append(CodeIssue(
-                    rule="formatting",
-                    severity="info",
-                    message="Trailing whitespace",
-                    file_path=file_path,
-                    line_number=i
-                ))
+                issues.append(
+                    CodeIssue(
+                        rule="formatting",
+                        severity="info",
+                        message="Trailing whitespace",
+                        file_path=file_path,
+                        line_number=i,
+                    )
+                )
 
         return issues
 
@@ -175,19 +180,21 @@ class CodeQualityGuardrail:
 
         # Check for duplicate blocks
         for i in range(len(lines) - self.min_duplicate_lines):
-            block = "\n".join(lines[i:i + self.min_duplicate_lines])
+            block = "\n".join(lines[i : i + self.min_duplicate_lines])
             block_hash = hashlib.md5(block.encode()).hexdigest()
 
             if block_hash in self.code_hashes:
                 if file_path not in self.code_hashes[block_hash]:
-                    issues.append(CodeIssue(
-                        rule="duplication",
-                        severity="warning",
-                        message="Duplicate code block detected",
-                        file_path=file_path,
-                        line_number=i + 1,
-                        suggestion="Consider extracting to shared function"
-                    ))
+                    issues.append(
+                        CodeIssue(
+                            rule="duplication",
+                            severity="warning",
+                            message="Duplicate code block detected",
+                            file_path=file_path,
+                            line_number=i + 1,
+                            suggestion="Consider extracting to shared function",
+                        )
+                    )
             else:
                 self.code_hashes[block_hash] = []
 
@@ -204,14 +211,16 @@ class CodeQualityGuardrail:
         for i, line in enumerate(lines, 1):
             for pattern in self.unused_patterns:
                 if re.search(pattern, line, re.IGNORECASE):
-                    issues.append(CodeIssue(
-                        rule="unused_code",
-                        severity="info",
-                        message="Potential cleanup needed",
-                        file_path=file_path,
-                        line_number=i,
-                        suggestion="Review and remove if no longer needed"
-                    ))
+                    issues.append(
+                        CodeIssue(
+                            rule="unused_code",
+                            severity="info",
+                            message="Potential cleanup needed",
+                            file_path=file_path,
+                            line_number=i,
+                            suggestion="Review and remove if no longer needed",
+                        )
+                    )
 
         return issues
 
@@ -230,26 +239,27 @@ class CodeQualityGuardrail:
         # Check for bad patterns
         for pattern in self.bad_commit_patterns:
             if re.match(pattern, message.lower().strip()):
-                issues.append(CodeIssue(
-                    rule="git_hygiene",
-                    severity="error",
-                    message="Commit message too short or unclear",
-                    suggestion="Use descriptive commit messages"
-                ))
+                issues.append(
+                    CodeIssue(
+                        rule="git_hygiene",
+                        severity="error",
+                        message="Commit message too short or unclear",
+                        suggestion="Use descriptive commit messages",
+                    )
+                )
 
         # Check minimum length
         if len(message.strip()) < 10:
-            issues.append(CodeIssue(
-                rule="git_hygiene",
-                severity="warning",
-                message="Commit message is too short",
-                suggestion="Add more context to the commit message"
-            ))
+            issues.append(
+                CodeIssue(
+                    rule="git_hygiene",
+                    severity="warning",
+                    message="Commit message is too short",
+                    suggestion="Add more context to the commit message",
+                )
+            )
 
-        return QualityResult(
-            valid=not any(i.severity == "error" for i in issues),
-            issues=issues
-        )
+        return QualityResult(valid=not any(i.severity == "error" for i in issues), issues=issues)
 
     def validate_dependencies(self, dependencies: list[str], used: set[str]) -> QualityResult:
         """
@@ -266,20 +276,19 @@ class CodeQualityGuardrail:
         unused = set(dependencies) - used
 
         for dep in unused:
-            issues.append(CodeIssue(
-                rule="dependencies",
-                severity="warning",
-                message=f"Unused dependency: {dep}",
-                suggestion="Consider removing from dependencies"
-            ))
+            issues.append(
+                CodeIssue(
+                    rule="dependencies",
+                    severity="warning",
+                    message=f"Unused dependency: {dep}",
+                    suggestion="Consider removing from dependencies",
+                )
+            )
 
         return QualityResult(
             valid=len(issues) == 0,
             issues=issues,
-            metrics={
-                "total_dependencies": len(dependencies),
-                "unused_dependencies": len(unused)
-            }
+            metrics={"total_dependencies": len(dependencies), "unused_dependencies": len(unused)},
         )
 
     def get_statistics(self) -> dict[str, Any]:
@@ -287,5 +296,5 @@ class CodeQualityGuardrail:
         return {
             "checks_performed": self.checks_performed,
             "issues_found": self.issues_found,
-            "enabled_rules": self.enabled_rules
+            "enabled_rules": self.enabled_rules,
         }

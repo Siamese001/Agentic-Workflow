@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, state, workflow
@@ -49,8 +48,11 @@ def timeout(seconds=0, minutes=0, hours=0):
             except TimeoutError as e:
                 raise e
             return result
+
         return wrapper
+
     return decorator
+
 
 @dataclass
 class DriftDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
@@ -99,12 +101,25 @@ class DriftDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """Utils/core_extensions - operational only."""
         if _call_path is None:
             _call_path = set()
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
-        super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+        super().heal_repository(
+            dry_run=dry_run,
+            execute=execute,
+            depth=depth,
+            max_depth=max_depth,
+            _call_path=_call_path,
+        )
 
         agent_name = "DriftDetectorAgent"
         if agent_name in _call_path:
@@ -117,6 +132,7 @@ class DriftDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
             return {"skipped": 1}
         finally:
             _call_path.discard(agent_name)
+
 
 def get_drift_detector(project_root: Path) -> DriftDetectorAgent:
     """Factory function to get drift detector."""

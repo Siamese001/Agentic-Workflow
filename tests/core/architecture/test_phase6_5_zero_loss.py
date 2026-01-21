@@ -13,6 +13,7 @@ Author: Cascade
 Date: January 19, 2026
 Phase: 6.5 - Core Guardian Refactoring
 """
+
 import sys
 from pathlib import Path
 
@@ -28,12 +29,13 @@ def test_tc38_hierarchy_agent_integrity():
     Verify HierarchyAgent correctly identifies the L0-L6 layers using
     the refactored ssot_discovery methods.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-38: HierarchyAgent Integrity")
-    print("="*60)
+    print("=" * 60)
 
     try:
         from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+
         # Create hierarchy agent
         agent = HierarchyAgent(PROJECT_ROOT, healing_enabled=False)
     except ImportError as e:
@@ -52,7 +54,15 @@ def test_tc38_hierarchy_agent_integrity():
     agentic_core = PROJECT_ROOT / "agentic_core"
     if agentic_core.exists():
         layers_found = []
-        for layer in ["L0_maintenance", "L1_cognition", "L2_execution", "L3_orchestration", "L4_state", "L5_safety", "L6_observability"]:
+        for layer in [
+            "L0_maintenance",
+            "L1_cognition",
+            "L2_execution",
+            "L3_orchestration",
+            "L4_state",
+            "L5_safety",
+            "L6_observability",
+        ]:
             layer_path = agentic_core / layer
             if layer_path.exists():
                 layers_found.append(layer)
@@ -76,27 +86,33 @@ def test_tc39_checkpoint_manager_recovery():
     Verify CheckpointManagerAgent uses ssot_discovery methods correctly
     by checking the code directly.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-39: CheckpointManager Recovery")
-    print("="*60)
+    print("=" * 60)
 
-    checkpoint_manager = PROJECT_ROOT / "agentic_core" / "L4_state" / "ValidationContext" / "CheckpointManagerAgent.py"
+    checkpoint_manager = (
+        PROJECT_ROOT
+        / "agentic_core"
+        / "L4_state"
+        / "ValidationContext"
+        / "CheckpointManagerAgent.py"
+    )
 
     if not checkpoint_manager.exists():
         print("⚠️  WARNING: CheckpointManagerAgent.py not found")
         return True
 
     try:
-        content = checkpoint_manager.read_text(encoding='utf-8')
+        content = checkpoint_manager.read_text(encoding="utf-8")
 
         # Check for ssot_discovery import
-        has_ssot_import = 'from agentic_core.utils.ssot_discovery import get_data_files' in content
+        has_ssot_import = "from agentic_core.utils.ssot_discovery import get_data_files" in content
 
         # Check for glob usage (should be none)
-        glob_count = content.count('.glob(')
+        glob_count = content.count(".glob(")
 
         # Check that _validate_checkpoints uses get_data_files
-        uses_get_data_files = 'get_data_files(self.checkpoint_dir' in content
+        uses_get_data_files = "get_data_files(self.checkpoint_dir" in content
 
         print("   CheckpointManagerAgent.py:")
         print(f"      Uses ssot_discovery: {'✓' if has_ssot_import else '✗'}")
@@ -130,25 +146,27 @@ def test_tc40_unified_validator_compliance():
     Verify UnifiedValidator uses ssot_discovery for all validation
     operations.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-40: UnifiedValidator Compliance")
-    print("="*60)
+    print("=" * 60)
 
-    unified_validator = PROJECT_ROOT / "agentic_core" / "L5_safety" / "gravity" / "unified_validator.py"
+    unified_validator = (
+        PROJECT_ROOT / "agentic_core" / "L5_safety" / "gravity" / "unified_validator.py"
+    )
 
     if not unified_validator.exists():
         print("⚠️  WARNING: unified_validator.py not found")
         return True
 
     try:
-        content = unified_validator.read_text(encoding='utf-8')
+        content = unified_validator.read_text(encoding="utf-8")
 
         # Check for ssot_discovery import
-        has_ssot_import = 'from agentic_core.utils.ssot_discovery import' in content
+        has_ssot_import = "from agentic_core.utils.ssot_discovery import" in content
 
         # Check for rglob usage (should be minimal or none)
-        rglob_count = content.count('.rglob(')
-        glob_count = content.count('.glob(')
+        rglob_count = content.count(".rglob(")
+        glob_count = content.count(".glob(")
 
         print("   unified_validator.py:")
         print(f"      Uses ssot_discovery: {'✓' if has_ssot_import else '✗'}")
@@ -174,9 +192,9 @@ def test_phase6_5_reduction():
     """
     Bonus Test: Verify Phase 6.5 rglob reduction achievement.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("BONUS: Phase 6.5 Reduction Achievement")
-    print("="*60)
+    print("=" * 60)
 
     # Import the CI check
     sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
@@ -193,7 +211,7 @@ def test_phase6_5_reduction():
     reduction = baseline - total_count
 
     print(f"   Baseline (Phase 6.4): {baseline}")
-    print(f"   Reduction: {reduction} calls ({reduction/baseline*100:.1f}%)")
+    print(f"   Reduction: {reduction} calls ({reduction / baseline * 100:.1f}%)")
 
     # Show refactored files
     refactored_files = [
@@ -210,8 +228,11 @@ def test_phase6_5_reduction():
     for py_file in get_python_files(PROJECT_ROOT / "agentic_core"):
         if py_file.name in refactored_files:
             try:
-                content = py_file.read_text(encoding='utf-8', errors='ignore')
-                if 'from agentic_core.utils.ssot_discovery import' in content or 'ssot_discovery' in content:
+                content = py_file.read_text(encoding="utf-8", errors="ignore")
+                if (
+                    "from agentic_core.utils.ssot_discovery import" in content
+                    or "ssot_discovery" in content
+                ):
                     files_using_ssot += 1
                     print(f"   ✓ {py_file.name}")
             except:
@@ -229,9 +250,9 @@ def test_phase6_5_reduction():
 
 def main():
     """Run all Phase 6.5 Zero-Loss test cases."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("PHASE 6.5 ZERO-LOSS VERIFICATION TEST SUITE")
-    print("="*70)
+    print("=" * 70)
     print(f"Project Root: {PROJECT_ROOT}")
 
     tests = [
@@ -249,13 +270,14 @@ def main():
         except Exception as e:
             print(f"\n❌ EXCEPTION in {test_name}: {e}")
             import traceback
+
             traceback.print_exc()
             results.append((test_name, False))
 
     # Summary
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST SUMMARY")
-    print("="*70)
+    print("=" * 70)
 
     passed_count = sum(1 for _, passed in results if passed)
     total_count = len(results)
@@ -268,7 +290,7 @@ def main():
         status = "✅ PASS" if passed else "❌ FAIL"
         print(f"{status}: {test_name}")
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print(f"CORE TESTS: {core_passed}/3 passed")
     print(f"TOTAL: {passed_count}/{total_count} tests passed")
 

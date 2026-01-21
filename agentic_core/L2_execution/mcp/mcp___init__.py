@@ -11,7 +11,9 @@ except ImportError:
     class MCPClient:
         def __init__(self, *args, **kwargs):
             print("   [STUB] L2 MCPClient active — fallback fetch enabled")
+
         def fetch(self, resource_id, **kwargs):
             return {"status": "fallback", "data": None}
+
 
 print("   [OK] agentic_core.L2_execution.tool_registry package initialized (stub mode)")

@@ -3,17 +3,18 @@
 Audit validation parity between Table 1 and Table 2.
 Identifies what validations exist for each table and gaps.
 """
+
 from pathlib import Path
 
 project_root = Path(__file__).parent.parent
 
-print("\n" + "="*70)
+print("\n" + "=" * 70)
 print("TABLE VALIDATION PARITY AUDIT")
-print("="*70)
+print("=" * 70)
 
-print("\n" + "="*70)
+print("\n" + "=" * 70)
 print("TABLE 1 (Territory Summary) - Current Validations")
-print("="*70)
+print("=" * 70)
 
 table1_validations = [
     "✅ Sort order validation (TOTAL at top, canonical order)",
@@ -28,9 +29,9 @@ table1_validations = [
 for v in table1_validations:
     print(f"  {v}")
 
-print("\n" + "="*70)
+print("\n" + "=" * 70)
 print("TABLE 2 (Code Quality) - Current Validations")
-print("="*70)
+print("=" * 70)
 
 table2_validations = [
     "✅ Sort order validation (TOTAL at top, canonical order)",
@@ -45,9 +46,9 @@ table2_validations = [
 for v in table2_validations:
     print(f"  {v}")
 
-print("\n" + "="*70)
+print("\n" + "=" * 70)
 print("VALIDATION GAPS - Table 2 Missing")
-print("="*70)
+print("=" * 70)
 
 gaps = [
     "1. Field value validation",
@@ -75,9 +76,9 @@ gaps = [
 for gap in gaps:
     print(f"  {gap}")
 
-print("\n" + "="*70)
+print("\n" + "=" * 70)
 print("RECOMMENDED ENHANCEMENTS")
-print("="*70)
+print("=" * 70)
 
 recommendations = [
     "1. Add Table 2 field validation to test_mcp_hardening_all_territories.py",
@@ -101,9 +102,9 @@ recommendations = [
 for rec in recommendations:
     print(f"  {rec}")
 
-print("\n" + "="*70)
+print("\n" + "=" * 70)
 print("IMPLEMENTATION PRIORITY")
-print("="*70)
+print("=" * 70)
 print("\n  HIGH: Add field presence validation (deployment blocker)")
 print("  HIGH: Add value range validation (deployment blocker)")
 print("  MEDIUM: Add Code Quality Score calculation verification")

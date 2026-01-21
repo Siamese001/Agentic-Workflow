@@ -17,6 +17,7 @@ Author: Cascade
 Date: January 19, 2026
 Phase: 1 - Foundation & Zero-Loss Protocols
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -29,6 +30,7 @@ if TYPE_CHECKING:
 
 class ExecutionPhase(str, Enum):
     """Execution phases for orchestrator lifecycle."""
+
     PLANNING = "planning"
     VALIDATION = "validation"
     EXECUTION = "execution"
@@ -44,6 +46,7 @@ class ExecutionContext:
 
     Provides shared state and configuration for mission execution.
     """
+
     dry_run: bool = True
     execute: bool = False
     max_depth: int = 3
@@ -61,7 +64,7 @@ class ExecutionContext:
             current_depth=new_depth,
             phase=self.phase,
             call_path=self.call_path.copy(),
-            metadata=self.metadata.copy()
+            metadata=self.metadata.copy(),
         )
 
     def with_phase(self, new_phase: ExecutionPhase) -> ExecutionContext:
@@ -73,7 +76,7 @@ class ExecutionContext:
             current_depth=self.current_depth,
             phase=new_phase,
             call_path=self.call_path.copy(),
-            metadata=self.metadata.copy()
+            metadata=self.metadata.copy(),
         )
 
 
@@ -84,6 +87,7 @@ class AgentResult:
 
     Provides consistent return format for orchestrator coordination.
     """
+
     agent_name: str
     success: bool
     violations_found: int = 0
@@ -105,7 +109,7 @@ class AgentResult:
             "skipped": self.skipped,
             "status": self.status,
             "message": self.message,
-            "metadata": self.metadata
+            "metadata": self.metadata,
         }
 
 
@@ -116,6 +120,7 @@ class MissionResult:
 
     Combines results from multiple agents into a unified summary.
     """
+
     success: bool
     total_agents: int
     successful_agents: int
@@ -139,7 +144,7 @@ class MissionResult:
             "total_errors": self.total_errors,
             "agent_results": [r.to_dict() for r in self.agent_results],
             "phase": self.phase.value,
-            "metadata": self.metadata
+            "metadata": self.metadata,
         }
 
 
@@ -169,7 +174,7 @@ class IOrchestratorAgent(Protocol):
         agents: list[str],
         dry_run: bool = True,
         execute: bool = False,
-        context: ExecutionContext | None = None
+        context: ExecutionContext | None = None,
     ) -> MissionResult:
         """
         Execute a mission across multiple agents.
@@ -186,10 +191,7 @@ class IOrchestratorAgent(Protocol):
         ...
 
     def run_agent(
-        self,
-        agent_name: str,
-        dry_run: bool = True,
-        context: ExecutionContext | None = None
+        self, agent_name: str, dry_run: bool = True, context: ExecutionContext | None = None
     ) -> AgentResult:
         """
         Execute a single agent with standardized result.
@@ -213,11 +215,7 @@ class IOrchestratorAgent(Protocol):
         """
         ...
 
-    def validate_mission(
-        self,
-        agents: list[str],
-        context: ExecutionContext | None = None
-    ) -> bool:
+    def validate_mission(self, agents: list[str], context: ExecutionContext | None = None) -> bool:
         """
         Pre-flight validation before mission execution.
 
@@ -250,7 +248,7 @@ class IHealable(Protocol):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        **kwargs
+        **kwargs,
     ) -> dict[str, Any]:
         """
         Repository-level healing method.
@@ -274,5 +272,5 @@ __all__ = [
     "ExecutionPhase",
     "ExecutionContext",
     "AgentResult",
-    "MissionResult"
+    "MissionResult",
 ]

@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, prompt, workflow
@@ -43,12 +42,12 @@ Logger = logging.getLogger(__name__)
 # These are the ONLY patterns that indicate true SSOT drift
 DRIFT_PATTERNS = [
     # Full layer paths - these should use SSOT constants
-    r'agentic_core/L\d+_\w+',
-    r'agentic_core\\L\d+_\w+',
+    r"agentic_core/L\d+_\w+",
+    r"agentic_core\\L\d+_\w+",
     # App paths with subfolders
-    r'apps_rg/\w+',
-    r'apps_lic/\w+',
-    r'apps_shared/\w+',
+    r"apps_rg/\w+",
+    r"apps_lic/\w+",
+    r"apps_shared/\w+",
     # Hardcoded root + subfolder combinations
     r'"agentic_core".*"L\d+_',
     r"'agentic_core'.*'L\d+_",
@@ -100,7 +99,13 @@ class CodeSSOTEnforcerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
     def __init__(self, project_root: Path) -> None:
         """Initialize the instance."""
         self.project_root = project_root.resolve()
-        self.ssot_file = self.project_root / "agentic_core" / "config" / "blueprint_sovereign" / "structure_blueprint.py"
+        self.ssot_file = (
+            self.project_root
+            / "agentic_core"
+            / "config"
+            / "blueprint_sovereign"
+            / "structure_blueprint.py"
+        )
 
     def _should_skip_file(self, py_file: Path) -> bool:
         """Check if file should be skipped entirely."""
@@ -129,7 +134,7 @@ class CodeSSOTEnforcerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
                     continue
 
                 value = node.value
-                lineno = getattr(node, 'lineno', 0)
+                lineno = getattr(node, "lineno", 0)
 
                 # Only include if it matches drift patterns
                 if self._matches_drift_pattern(value):
@@ -144,8 +149,10 @@ class CodeSSOTEnforcerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
         """Check if a string constant is a docstring."""
         # Simple heuristic: if it's the first child of a module/class/function body
         for parent in ast.walk(tree):
-            if isinstance(parent, (ast.Module, ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)):
-                body = getattr(parent, 'body', [])
+            if isinstance(
+                parent, (ast.Module, ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)
+            ):
+                body = getattr(parent, "body", [])
                 if body and isinstance(body[0], ast.Expr):
                     if isinstance(body[0].value, ast.Constant):
                         if body[0].value is node:
@@ -174,7 +181,9 @@ class CodeSSOTEnforcerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
             return True
 
         # Allow Path() construction with variables
-        if "Path(" in context and ("/" not in context or ".parent" in context or ".resolve" in context):
+        if "Path(" in context and (
+            "/" not in context or ".parent" in context or ".resolve" in context
+        ):
             return True
 
         # Allow logging/print statements (informational)
@@ -213,6 +222,7 @@ class CodeSSOTEnforcerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
 
         # Phase 6.9: Use ssot_discovery instead of rglob
         from agentic_core.utils.ssot_discovery import get_python_files
+
         for py_file in get_python_files(self.project_root):
             if self._should_skip_file(py_file):
                 continue
@@ -233,14 +243,16 @@ class CodeSSOTEnforcerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
                     continue
 
                 # This is a TRUE Violation - hard-coded path in string literal
-                violations.append({
-                    "file": str(py_file.relative_to(self.project_root)),
-                    "line": lineno,
-                    "value": value[:100],  # Truncate long strings
-                    "context": context[:150],
-                    "Severity": "high",
-                    "suggestion": "Replace with SSOT import from structure_blueprint.py"
-                })
+                violations.append(
+                    {
+                        "file": str(py_file.relative_to(self.project_root)),
+                        "line": lineno,
+                        "value": value[:100],  # Truncate long strings
+                        "context": context[:150],
+                        "Severity": "high",
+                        "suggestion": "Replace with SSOT import from structure_blueprint.py",
+                    }
+                )
 
         # Deduplicate by file+line
         seen = set()
@@ -258,7 +270,7 @@ class CodeSSOTEnforcerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
             "files_scanned": files_scanned,
             "violations": unique_violations[:50],  # Limit output
             "status": status,
-            "summary": f"SSOT drift scan: {len(unique_violations)} true violations in {files_scanned} files"
+            "summary": f"SSOT drift scan: {len(unique_violations)} true violations in {files_scanned} files",
         }
 
     async def detect_violations(self, file_path: str) -> list[dict[str, Any]]:
@@ -281,12 +293,14 @@ class CodeSSOTEnforcerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
             if self._is_legitimate_context(context):
                 continue
 
-            violations.append({
-                "type": "ssot_drift",
-                "line": lineno,
-                "value": value[:100],
-                "context": context[:150],
-            })
+            violations.append(
+                {
+                    "type": "ssot_drift",
+                    "line": lineno,
+                    "value": value[:100],
+                    "context": context[:150],
+                }
+            )
 
         return violations
 
@@ -296,7 +310,14 @@ class CodeSSOTEnforcerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """Autonomous code SSOT enforcement."""
         if _call_path is None:
             _call_path = set()
@@ -314,7 +335,11 @@ class CodeSSOTEnforcerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
             violations = result.get("violations_found", 0)
             print(f"[CodeSSOTEnforcer HEAL @ depth {depth}] Found {violations} violations")
             # Code SSOT violations require manual review - informational only
-            return {"violations_found": violations, "fixed": 0, "manual_review_required": violations}
+            return {
+                "violations_found": violations,
+                "fixed": 0,
+                "manual_review_required": violations,
+            }
         finally:
             _call_path.discard(self.__class__.__name__)
 

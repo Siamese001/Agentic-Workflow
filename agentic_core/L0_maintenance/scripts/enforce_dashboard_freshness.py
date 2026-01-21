@@ -14,6 +14,7 @@ Features:
 Usage:
     python scripts/enforce_dashboard_freshness.py [--check-only]
 """
+
 import logging
 import sys
 from datetime import datetime
@@ -65,7 +66,10 @@ def check_dashboard_freshness() -> tuple[bool, str]:
         json_mtime = get_json_mtime()
 
         if json_mtime and dashboard_mtime < json_mtime:
-            return False, f"Dashboard ({dashboard_mtime}) is older than discovery JSON ({json_mtime})"
+            return (
+                False,
+                f"Dashboard ({dashboard_mtime}) is older than discovery JSON ({json_mtime})",
+            )
     except Exception as e:
         return False, f"Failed to check dashboard mtime: {e}"
 
@@ -82,10 +86,12 @@ def regenerate_dashboard() -> bool:
     try:
         log.info("🔄 Regenerating discovery JSON...")
         from scripts.smart_discovery import ensure_fresh_discovery
+
         ensure_fresh_discovery()
 
         log.info("🔄 Regenerating dashboard...")
         from agentic_core.L5_safety.validators.AutonomyGuardianAgent import AutonomyGuardianAgent
+
         agent = AutonomyGuardianAgent(PROJECT_ROOT)
         agent.generate_compliance_report(markdown=True)
 

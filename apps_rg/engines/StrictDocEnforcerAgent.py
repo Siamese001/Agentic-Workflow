@@ -35,6 +35,7 @@ class DependencyStatus(Enum):
     Defines the health status of dependencies including healthy,
     warning, conflict, and missing states.
     """
+
     HEALTHY = "healthy"
     WARNING = "warning"
     CONFLICT = "conflict"
@@ -48,6 +49,7 @@ class DocComplianceLevel(Enum):
     Defines the levels of documentation completeness from none to
     complete with type hints and comprehensive docstrings.
     """
+
     NONE = "none"
     BASIC = "basic"
     TYPED = "typed"
@@ -61,6 +63,7 @@ class PromptRisk(Enum):
     Defines the risk levels for AI prompt security issues from
     low to critical severity.
     """
+
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
@@ -70,6 +73,7 @@ class PromptRisk(Enum):
 @dataclass
 class DependencyIssue:
     """A dependency issue found during scanning."""
+
     issue_id: str
     status: DependencyStatus
     package: str
@@ -80,6 +84,7 @@ class DependencyIssue:
 @dataclass
 class DocViolation:
     """A documentation Violation."""
+
     file_path: str
     function_name: str
     ViolationType: str
@@ -91,6 +96,7 @@ class DocViolation:
 @dataclass
 class PromptIssue:
     """A prompt security issue."""
+
     file_path: str
     variable_name: str
     line_number: int
@@ -102,6 +108,7 @@ class PromptIssue:
 @dataclass
 class CostPrediction:
     """Cost prediction result."""
+
     estimated_tokens: int
     estimated_cost: float
     budget_remaining: float
@@ -122,11 +129,35 @@ class DependencyArbiter:
 
     # Standard library modules (subset for checking)
     STDLIB_MODULES = {
-        "os", "sys", "re", "json", "time", "datetime", "pathlib",
-        "typing", "collections", "itertools", "functools", "operator",
-        "math", "random", "hashlib", "base64", "copy", "io", "abc",
-        "dataclasses", "enum", "asyncio", "subprocess", "threading",
-        "multiprocessing", "logging", "unittest", "pytest", "ast",
+        "os",
+        "sys",
+        "re",
+        "json",
+        "time",
+        "datetime",
+        "pathlib",
+        "typing",
+        "collections",
+        "itertools",
+        "functools",
+        "operator",
+        "math",
+        "random",
+        "hashlib",
+        "base64",
+        "copy",
+        "io",
+        "abc",
+        "dataclasses",
+        "enum",
+        "asyncio",
+        "subprocess",
+        "threading",
+        "multiprocessing",
+        "logging",
+        "unittest",
+        "pytest",
+        "ast",
     }
 
     def __init__(self, ctx: ResumeEngineContext) -> None:
@@ -169,7 +200,9 @@ class DependencyArbiter:
 
             if result.returncode != 0:
                 # Parse pip check output
-                for line in result.stdout.split("\nimport logging\n\nLogger = logging.getLogger(__name__)\n"):
+                for line in result.stdout.split(
+                    "\nimport logging\n\nLogger = logging.getLogger(__name__)\n"
+                ):
                     if line.strip():
                         issue = DependencyIssue(
                             issue_id=hashlib.sha256(line.encode()).hexdigest()[:12],
@@ -180,21 +213,25 @@ class DependencyArbiter:
                         )
                         issues.append(issue)
         except subprocess.TimeoutExpired:
-            issues.append(DependencyIssue(
-                issue_id="pip_timeout",
-                status=DependencyStatus.WARNING,
-                package="pip",
-                description="pip check timed out",
-                Recommendation="Run pip check manually",
-            ))
+            issues.append(
+                DependencyIssue(
+                    issue_id="pip_timeout",
+                    status=DependencyStatus.WARNING,
+                    package="pip",
+                    description="pip check timed out",
+                    Recommendation="Run pip check manually",
+                )
+            )
         except Exception as e:
-            issues.append(DependencyIssue(
-                issue_id="pip_error",
-                status=DependencyStatus.WARNING,
-                package="pip",
-                description=f"pip check failed: {e}",
-                Recommendation="Verify pip is installed correctly",
-            ))
+            issues.append(
+                DependencyIssue(
+                    issue_id="pip_error",
+                    status=DependencyStatus.WARNING,
+                    package="pip",
+                    description=f"pip check failed: {e}",
+                    Recommendation="Verify pip is installed correctly",
+                )
+            )
 
         return issues
 
@@ -204,13 +241,15 @@ class DependencyArbiter:
 
         req_path = Path("requirements.txt")
         if not req_path.exists():
-            issues.append(DependencyIssue(
-                issue_id="missing_requirements",
-                status=DependencyStatus.MISSING,
-                package="requirements.txt",
-                description="requirements.txt not found",
-                Recommendation="Create requirements.txt with pip freeze",
-            ))
+            issues.append(
+                DependencyIssue(
+                    issue_id="missing_requirements",
+                    status=DependencyStatus.MISSING,
+                    package="requirements.txt",
+                    description="requirements.txt not found",
+                    Recommendation="Create requirements.txt with pip freeze",
+                )
+            )
         else:
             # Check for common issues
             content = req_path.read_text()
@@ -221,13 +260,15 @@ class DependencyArbiter:
                 if line and not line.startswith("#"):
                     if "==" not in line and ">=" not in line and "<=" not in line:
                         if line and not line.startswith("-"):
-                            issues.append(DependencyIssue(
-                                issue_id=hashlib.sha256(line.encode()).hexdigest()[:12],
-                                status=DependencyStatus.WARNING,
-                                package=line,
-                                description=f"Unpinned version: {line}",
-                                Recommendation="Pin version with ==",
-                            ))
+                            issues.append(
+                                DependencyIssue(
+                                    issue_id=hashlib.sha256(line.encode()).hexdigest()[:12],
+                                    status=DependencyStatus.WARNING,
+                                    package=line,
+                                    description=f"Unpinned version: {line}",
+                                    Recommendation="Pin version with ==",
+                                )
+                            )
 
         return issues
 
@@ -279,8 +320,7 @@ class DependencyArbiter:
             "checks_performed": self._checks_performed,
             "total_issues": len(self._issues),
             "by_status": {
-                s.value: sum(1 for i in self._issues if i.status == s)
-                for s in DependencyStatus
+                s.value: sum(1 for i in self._issues if i.status == s) for s in DependencyStatus
             },
         }
 
@@ -363,8 +403,7 @@ class StrictDocEnforcerAgent(MCPHardenedMixin, HealerMixin):
 
         # Check if function has return statement
         has_return_stmt = any(
-            isinstance(n, ast.Return) and n.value is not None
-            for n in ast.walk(node)
+            isinstance(n, ast.Return) and n.value is not None for n in ast.walk(node)
         )
 
         missing_return = has_return_stmt and not has_return
@@ -430,13 +469,17 @@ class StrictDocEnforcerAgent(MCPHardenedMixin, HealerMixin):
         """Get enforcer statistics."""
         return {
             "total_violations": len(self._violations),
-            "missing_docstrings": sum(1 for v in self._violations if v.ViolationType == "missing_docstring"),
-            "incomplete_docstrings": sum(1 for v in self._violations if v.ViolationType == "incomplete_docstring"),
+            "missing_docstrings": sum(
+                1 for v in self._violations if v.ViolationType == "missing_docstring"
+            ),
+            "incomplete_docstrings": sum(
+                1 for v in self._violations if v.ViolationType == "incomplete_docstring"
+            ),
         }
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()
 
 
 class DashboardGenerator:
@@ -523,7 +566,7 @@ class DashboardGenerator:
             <div class="Metric-card"><div class="Metric-value">{total}</div><div class="Metric-label">Total Checks</div></div>
             <div class="Metric-card"><div class="Metric-value success">{passed}</div><div class="Metric-label">Passed</div></div>
             <div class="Metric-card"><div class="Metric-value failure">{failed}</div><div class="Metric-label">Failed</div></div>
-            <div class="Metric-card"><div class="Metric-value {'success' if success_rate >= 80 else 'warning' if success_rate >= 50 else 'failure'}">{success_rate:.1f}%</div><div class="Metric-label">Success Rate</div></div>
+            <div class="Metric-card"><div class="Metric-value {"success" if success_rate >= 80 else "warning" if success_rate >= 50 else "failure"}">{success_rate:.1f}%</div><div class="Metric-label">Success Rate</div></div>
         </div>
         <div class="section"><h2>📡 Active Signals</h2><div>{self._render_signals(signals)}</div></div>
         <div class="section"><h2>📊 Agent Results</h2><table><thead><tr><th>Agent</th><th>Status</th><th>Details</th></tr></thead><tbody>{self._render_results_table(results)}</tbody></table></div>
@@ -575,7 +618,7 @@ class DashboardGenerator:
         # Add connections (simplified flow)
         agents = list(results.keys())
         for i in range(len(agents) - 1):
-            graph += f"    A{i} --> A{i+1}\n"
+            graph += f"    A{i} --> A{i + 1}\n"
 
         return graph
 
@@ -649,14 +692,15 @@ class PromptGovernor:
 
         return issues
 
-    def _check_assignment(self, node: ast.Assign, target: ast.Name, file_path: str) -> PromptIssue | None:
+    def _check_assignment(
+        self, node: ast.Assign, target: ast.Name, file_path: str
+    ) -> PromptIssue | None:
         """Check an assignment for prompt issues."""
         var_name = target.id
 
         # Check if variable name suggests a prompt
         is_prompt_var = any(
-            re.search(pattern, f"{var_name} =", re.IGNORECASE)
-            for pattern in self.PROMPT_PATTERNS
+            re.search(pattern, f"{var_name} =", re.IGNORECASE) for pattern in self.PROMPT_PATTERNS
         )
 
         if not is_prompt_var:
@@ -675,7 +719,9 @@ class PromptGovernor:
                 line_number=node.lineno,
                 risk_level=risk,
                 description=f"Hardcoded prompt in variable '{var_name}'",
-                prompt_preview=prompt_value[:100] + "..." if len(prompt_value) > 100 else prompt_value,
+                prompt_preview=prompt_value[:100] + "..."
+                if len(prompt_value) > 100
+                else prompt_value,
             )
 
         return None
@@ -694,14 +740,16 @@ class PromptGovernor:
                         if self._looks_like_prompt(node.value):
                             risk = self._assess_risk(node.value)
 
-                            issues.append(PromptIssue(
-                                file_path=file_path,
-                                variable_name="<inline>",
-                                line_number=node.lineno if hasattr(node, 'lineno') else 0,
-                                risk_level=risk,
-                                description="Large inline string that appears to be a prompt",
-                                prompt_preview=node.value[:100] + "...",
-                            ))
+                            issues.append(
+                                PromptIssue(
+                                    file_path=file_path,
+                                    variable_name="<inline>",
+                                    line_number=node.lineno if hasattr(node, "lineno") else 0,
+                                    risk_level=risk,
+                                    description="Large inline string that appears to be a prompt",
+                                    prompt_preview=node.value[:100] + "...",
+                                )
+                            )
 
         except SyntaxError:
             pass
@@ -711,9 +759,17 @@ class PromptGovernor:
     def _looks_like_prompt(self, text: str) -> bool:
         """Check if text looks like an LLM prompt."""
         prompt_indicators = [
-            "you are", "your Task", "please", "generate",
-            "respond", "answer", "role:", "context:",
-            "instructions:", "Task:", "system:",
+            "you are",
+            "your Task",
+            "please",
+            "generate",
+            "respond",
+            "answer",
+            "role:",
+            "context:",
+            "instructions:",
+            "Task:",
+            "system:",
         ]
 
         text_lower = text.lower()
@@ -725,8 +781,12 @@ class PromptGovernor:
 
         # Critical risk indicators
         critical_patterns = [
-            "ignore previous", "ignore all", "disregard",
-            "pretend you are", "act as if", "bypass",
+            "ignore previous",
+            "ignore all",
+            "disregard",
+            "pretend you are",
+            "act as if",
+            "bypass",
         ]
 
         if any(p in prompt_lower for p in critical_patterns):
@@ -734,8 +794,12 @@ class PromptGovernor:
 
         # High risk indicators
         high_patterns = [
-            "execute", "run command", "system access",
-            "password", "secret", "api key",
+            "execute",
+            "run command",
+            "system access",
+            "password",
+            "secret",
+            "api key",
         ]
 
         if any(p in prompt_lower for p in high_patterns):
@@ -760,8 +824,7 @@ class PromptGovernor:
         return {
             "total_issues": len(self._issues),
             "by_risk": {
-                r.value: sum(1 for i in self._issues if i.risk_level == r)
-                for r in PromptRisk
+                r.value: sum(1 for i in self._issues if i.risk_level == r) for r in PromptRisk
             },
         }
 
@@ -829,7 +892,9 @@ class PredictiveBudgetManager:
 
         # Generate Recommendation
         if will_exceed:
-            Recommendation = f"Reduce scope or increase budget by ${estimated_cost - budget_remaining:.4f}"
+            Recommendation = (
+                f"Reduce scope or increase budget by ${estimated_cost - budget_remaining:.4f}"
+            )
         elif estimated_cost > budget_remaining * 0.8:
             Recommendation = "Approaching budget limit - consider reducing scope"
         else:

@@ -68,15 +68,16 @@ class ExecutionOrchestrator:
     """
 
     BANNED_LOG_PHRASES = [
-        "I will now", "Processing", "Analyzing", "Let me",
-        "I'm going to", "Next, I'll", "Working on"
+        "I will now",
+        "Processing",
+        "Analyzing",
+        "Let me",
+        "I'm going to",
+        "Next, I'll",
+        "Working on",
     ]
 
-    def __init__(
-        self,
-        output_dir: Path | None = None,
-        silent_mode: bool = True
-    ):
+    def __init__(self, output_dir: Path | None = None, silent_mode: bool = True):
         self.output_dir = output_dir or Path("./output")
         self.silent_mode = silent_mode
         self.current_trace: ExecutionTrace | None = None
@@ -97,7 +98,7 @@ class ExecutionOrchestrator:
             temperature_log=[],
             validation_failures=[],
             artifacts=[],
-            success=False
+            success=False,
         )
 
         if not self.silent_mode:
@@ -113,29 +114,23 @@ class ExecutionOrchestrator:
                 decision_entry = f"{decision} | {json.dumps(details, separators=(',', ':'))}"
             self.current_trace.decision_path.append(decision_entry)
 
-    def record_temperature_adjustment(
-        self,
-        recovery_loop: AdaptiveRecoveryLoop
-    ) -> None:
+    def record_temperature_adjustment(self, recovery_loop: AdaptiveRecoveryLoop) -> None:
         """Record temperature adjustments from recovery loop"""
         if self.current_trace:
-            self.current_trace.temperature_log.extend(
-                recovery_loop.get_temperature_log()
-            )
+            self.current_trace.temperature_log.extend(recovery_loop.get_temperature_log())
 
-    def record_validation_failure(
-        self,
-        gate_executor: IntegrityGateExecutor
-    ) -> None:
+    def record_validation_failure(self, gate_executor: IntegrityGateExecutor) -> None:
         """Record validation failures from gate executor"""
         if self.current_trace:
             failed_results = [
                 {
-                    'gate_id': r.gate_id,
-                    'message': r.message,
-                    'severity': r.severity.value if hasattr(r.severity, 'value') else str(r.severity),
-                    'details': r.details,
-                    'timestamp': time.time()
+                    "gate_id": r.gate_id,
+                    "message": r.message,
+                    "severity": r.severity.value
+                    if hasattr(r.severity, "value")
+                    else str(r.severity),
+                    "details": r.details,
+                    "timestamp": time.time(),
                 }
                 for r in gate_executor.results
                 if not r.passed
@@ -143,16 +138,11 @@ class ExecutionOrchestrator:
             self.current_trace.validation_failures.extend(failed_results)
 
     def add_artifact(
-        self,
-        artifact_type: str,
-        content: str,
-        metadata: dict[str, Any] | None = None
+        self, artifact_type: str, content: str, metadata: dict[str, Any] | None = None
     ) -> None:
         """Add generated artifact to execution trace"""
         artifact = ExecutionArtifact(
-            artifact_type=artifact_type,
-            content=content,
-            metadata=metadata or {}
+            artifact_type=artifact_type, content=content, metadata=metadata or {}
         )
 
         self.artifacts.append(artifact)
@@ -160,11 +150,7 @@ class ExecutionOrchestrator:
         if self.current_trace:
             self.current_trace.artifacts.append(artifact)
 
-    def complete_execution(
-        self,
-        success: bool,
-        error: str | None = None
-    ) -> ExecutionTrace:
+    def complete_execution(self, success: bool, error: str | None = None) -> ExecutionTrace:
         """
         Complete execution and generate audit.json.
         Returns final execution trace.
@@ -226,34 +212,34 @@ class ExecutionOrchestrator:
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
         audit_data = {
-            'run_sha': trace.run_sha,
-            'timestamp': datetime.fromtimestamp(trace.start_time).isoformat(),
-            'duration_seconds': (trace.end_time - trace.start_time) if trace.end_time else None,
-            'success': trace.success,
-            'error': trace.error,
-            'decision_path': trace.decision_path,
-            'temperature_log': trace.temperature_log,
-            'validation_failures': trace.validation_failures,
-            'artifacts': [
+            "run_sha": trace.run_sha,
+            "timestamp": datetime.fromtimestamp(trace.start_time).isoformat(),
+            "duration_seconds": (trace.end_time - trace.start_time) if trace.end_time else None,
+            "success": trace.success,
+            "error": trace.error,
+            "decision_path": trace.decision_path,
+            "temperature_log": trace.temperature_log,
+            "validation_failures": trace.validation_failures,
+            "artifacts": [
                 {
-                    'type': a.artifact_type,
-                    'length': len(a.content),
-                    'metadata': a.metadata,
-                    'timestamp': datetime.fromtimestamp(a.timestamp).isoformat()
+                    "type": a.artifact_type,
+                    "length": len(a.content),
+                    "metadata": a.metadata,
+                    "timestamp": datetime.fromtimestamp(a.timestamp).isoformat(),
                 }
                 for a in trace.artifacts
             ],
-            'stats': {
-                'total_decisions': len(trace.decision_path),
-                'total_temp_adjustments': len(trace.temperature_log),
-                'total_validation_failures': len(trace.validation_failures),
-                'total_artifacts': len(trace.artifacts)
-            }
+            "stats": {
+                "total_decisions": len(trace.decision_path),
+                "total_temp_adjustments": len(trace.temperature_log),
+                "total_validation_failures": len(trace.validation_failures),
+                "total_artifacts": len(trace.artifacts),
+            },
         }
 
         audit_path = self.output_dir / f"audit_{trace.run_sha}.json"
 
-        with open(audit_path, 'w', encoding='utf-8') as f:
+        with open(audit_path, "w", encoding="utf-8") as f:
             json.dump(audit_data, f, indent=2, ensure_ascii=False)
 
         return audit_path
@@ -274,8 +260,7 @@ class ExecutionOrchestrator:
 
 
 def create_execution_orchestrator(
-    output_dir: Path | None = None,
-    silent_mode: bool = True
+    output_dir: Path | None = None, silent_mode: bool = True
 ) -> ExecutionOrchestrator:
     """Factory function to create ExecutionOrchestrator instance"""
     return ExecutionOrchestrator(output_dir=output_dir, silent_mode=silent_mode)

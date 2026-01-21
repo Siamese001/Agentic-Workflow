@@ -26,6 +26,7 @@ logger = logging.getLogger(__name__)
 
 class CheckpointStorage(str, Enum):
     """Types of checkpoint storage backends."""
+
     FILE = "file"
     REDIS = "redis"
     MEMORY = "memory"
@@ -33,6 +34,7 @@ class CheckpointStorage(str, Enum):
 
 class CheckpointConfig(BaseModel):
     """Configuration for checkpoint manager."""
+
     storage_type: CheckpointStorage = CheckpointStorage.FILE
     storage_path: str = "./checkpoints"
     redis_url: str = "redis://localhost:6379"
@@ -158,7 +160,7 @@ class FileCheckpointStorage(CheckpointStorageBackend):
             # Add metadata
             data["_checkpoint_metadata"] = {
                 "saved_at": datetime.utcnow().isoformat(),
-                "version": "1.0"
+                "version": "1.0",
             }
 
             # Serialize
@@ -166,7 +168,7 @@ class FileCheckpointStorage(CheckpointStorageBackend):
 
             # Write atomically
             temp_path = path.with_suffix(".tmp")
-            async with aiofiles.open(temp_path, 'w') as f:
+            async with aiofiles.open(temp_path, "w") as f:
                 await f.write(content)
 
             # Atomic rename
@@ -345,7 +347,7 @@ class RedisCheckpointStorage(CheckpointStorageBackend):
             # Add metadata
             data["_checkpoint_metadata"] = {
                 "saved_at": datetime.utcnow().isoformat(),
-                "version": "1.0"
+                "version": "1.0",
             }
 
             # Serialize and save
@@ -559,12 +561,7 @@ class CheckpointManager:
         """
         self.config = config
         self.storage = self._create_storage()
-        self._stats = {
-            "saves": 0,
-            "loads": 0,
-            "deletes": 0,
-            "errors": 0
-        }
+        self._stats = {"saves": 0, "loads": 0, "deletes": 0, "errors": 0}
 
         logger.info(f"Initialized CheckpointManager with {config.storage_type} storage")
 
@@ -575,15 +572,10 @@ class CheckpointManager:
             Storage backend instance
         """
         if self.config.storage_type == CheckpointStorage.FILE:
-            return FileCheckpointStorage(
-                self.config.storage_path,
-                self.config.compression
-            )
+            return FileCheckpointStorage(self.config.storage_path, self.config.compression)
         elif self.config.storage_type == CheckpointStorage.REDIS:
             return RedisCheckpointStorage(
-                self.config.redis_url,
-                self.config.redis_prefix,
-                self.config.ttl_seconds
+                self.config.redis_url, self.config.redis_prefix, self.config.ttl_seconds
             )
         else:  # MEMORY
             return MemoryCheckpointStorage(self.config.max_checkpoints)
@@ -651,9 +643,7 @@ class CheckpointManager:
             return False
 
     async def resume_from_checkpoint(
-        self,
-        trace_id: str,
-        stages: list[str]
+        self, trace_id: str, stages: list[str]
     ) -> SignalEnvelope | None:
         """Resume pipeline from checkpoint.
 
@@ -722,7 +712,7 @@ class CheckpointManager:
             return {
                 "status": "healthy",
                 "storage_type": self.config.storage_type,
-                "stats": self.get_stats()
+                "stats": self.get_stats(),
             }
 
         except Exception as e:

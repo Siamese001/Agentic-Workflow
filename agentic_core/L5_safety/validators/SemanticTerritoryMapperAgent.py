@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: memory, orchestrator, prompt, state, workflow
@@ -74,8 +73,8 @@ class SemanticTerritoryMapperAgent(HealerMixin, MCPHardenedMixin):
 
     def _run_self_tests(self) -> bool:
         """Phase 1: Self-testing for L3 compliance."""
-        assert hasattr(self, 'project_root'), "Missing project_root"
-        assert hasattr(self, 'pinecone'), "Missing pinecone"
+        assert hasattr(self, "project_root"), "Missing project_root"
+        assert hasattr(self, "pinecone"), "Missing pinecone"
         return True
 
     def _seed_territory_examples(self) -> Any:
@@ -87,15 +86,13 @@ class SemanticTerritoryMapperAgent(HealerMixin, MCPHardenedMixin):
             # Create embedding for the example
             embedding = self.get_embedding(example)
             if embedding:
-                vectors.append({
-                    "id": f"territory:{territory}",
-                    "values": embedding,
-                    "metadata": {
-                        "type": "territory",
-                        "path": territory,
-                        "example": example
+                vectors.append(
+                    {
+                        "id": f"territory:{territory}",
+                        "values": embedding,
+                        "metadata": {"type": "territory", "path": territory, "example": example},
                     }
-                })
+                )
 
         if vectors:
             self.index.upsert(vectors)
@@ -125,7 +122,7 @@ class SemanticTerritoryMapperAgent(HealerMixin, MCPHardenedMixin):
         """
         if not content:
             try:
-                with open(file_path, encoding='utf-8', errors='ignore') as f:
+                with open(file_path, encoding="utf-8", errors="ignore") as f:
                     content = f.read()
             except:
                 return "unknown", 0.0
@@ -138,16 +135,14 @@ class SemanticTerritoryMapperAgent(HealerMixin, MCPHardenedMixin):
         # Search for similar territories
         try:
             results = self.pinecone.index.query(
-                vector=content_embedding,
-                top_k=5,
-                include_metadata=True
+                vector=content_embedding, top_k=5, include_metadata=True
             )
 
-            if results and results.get('matches'):
-                best_match = results['matches'][0]
-                if best_match['score'] > 0.90:  # Eternal threshold — 90%+ confidence only
-                    territory = best_match['metadata'].get('path', 'unknown')
-                    confidence = best_match['score']
+            if results and results.get("matches"):
+                best_match = results["matches"][0]
+                if best_match["score"] > 0.90:  # Eternal threshold — 90%+ confidence only
+                    territory = best_match["metadata"].get("path", "unknown")
+                    confidence = best_match["score"]
 
                     # [L4 REFINEMENT] Can we go deeper?
                     deepest = territory
@@ -158,7 +153,10 @@ class SemanticTerritoryMapperAgent(HealerMixin, MCPHardenedMixin):
                     for l3, l4_list in CORE_L4_SUBFOLDER_MAP.items():
                         if l3 in deepest:
                             for l4 in l4_list:
-                                if l4.lower() in content.lower() or l4.lower() in file_path.name.lower():
+                                if (
+                                    l4.lower() in content.lower()
+                                    or l4.lower() in file_path.name.lower()
+                                ):
                                     deepest = f"{deepest}/{l4}"
                                     break
 
@@ -174,7 +172,7 @@ class SemanticTerritoryMapperAgent(HealerMixin, MCPHardenedMixin):
         Returns suggested path or None if current location is appropriate.
         """
         try:
-            content = file_path.read_text(encoding='utf-8', errors='ignore')
+            content = file_path.read_text(encoding="utf-8", errors="ignore")
         except:
             return None
 
@@ -196,26 +194,33 @@ class SemanticTerritoryMapperAgent(HealerMixin, MCPHardenedMixin):
             "total_files": 0,
             "mapped_files": 0,
             "territory_distribution": {},
-            "unmapped_files": []
+            "unmapped_files": [],
         }
 
         # Scan all Python files using SSOT discovery
         for py_file in get_python_files(self.project_root):
-
             stats["total_files"] += 1
             territory, confidence = self.map_file_to_territory(py_file)
 
             if territory != "unknown":
                 stats["mapped_files"] += 1
-                stats["territory_distribution"][territory] = \
+                stats["territory_distribution"][territory] = (
                     stats["territory_distribution"].get(territory, 0) + 1
+                )
             else:
                 stats["unmapped_files"].append(str(py_file.relative_to(self.project_root)))
 
         return stats
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L3 orchestration agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -240,24 +245,26 @@ class SemanticTerritoryMapperAgent(HealerMixin, MCPHardenedMixin):
         Main execution entry point.
         Analyzes and reports on territory mapping across the codebase.
         """
-        print("\nimport logging\n\nLogger = logging.getLogger(__name__)\n   [*] SemanticTerritoryMapperAgent: Analyzing territory coverage...")
+        print(
+            "\nimport logging\n\nLogger = logging.getLogger(__name__)\n   [*] SemanticTerritoryMapperAgent: Analyzing territory coverage..."
+        )
 
         stats = self.analyze_territory_coverage()
 
         print("   [✓] Analysis complete:")
         print(f"      - Total files: {stats['total_files']}")
         print(f"      - Mapped files: {stats['mapped_files']}")
-        print(f"      - Coverage: {stats['mapped_files']/stats['total_files']*100:.1f}%")
+        print(f"      - Coverage: {stats['mapped_files'] / stats['total_files'] * 100:.1f}%")
 
         print("\n   Territory Distribution:")
-        for territory, count in sorted(stats['territory_distribution'].items()):
+        for territory, count in sorted(stats["territory_distribution"].items()):
             print(f"      - {territory}: {count} files")
 
-        if stats['unmapped_files']:
+        if stats["unmapped_files"]:
             print(f"\n   [!] Unmapped files ({len(stats['unmapped_files'])}):")
-            for file_path in stats['unmapped_files'][:5]:
+            for file_path in stats["unmapped_files"][:5]:
                 print(f"      - {file_path}")
-            if len(stats['unmapped_files']) > 5:
+            if len(stats["unmapped_files"]) > 5:
                 print(f"      ... and {len(stats['unmapped_files']) - 5} more")
 
         return stats

@@ -7,6 +7,7 @@ to the new google.genai package.
 
 CONSTRAINT: 100% PASSING MANDATORY.
 """
+
 import ast
 import re
 import sys
@@ -18,10 +19,12 @@ sys.path.insert(0, str(PROJECT_ROOT))
 PASSED = 0
 FAILED = 0
 
+
 def test_pass(test_id: str, msg: str):
     global PASSED
     PASSED += 1
     print(f"  ✅ {test_id}: {msg}")
+
 
 def test_fail(test_id: str, msg: str):
     global FAILED
@@ -36,12 +39,12 @@ def test_no_deprecated_imports():
     print("=" * 70)
 
     agentic_core = PROJECT_ROOT / "agentic_core"
-    deprecated_pattern = re.compile(r'import\s+google\.generativeai|from\s+google\.generativeai')
+    deprecated_pattern = re.compile(r"import\s+google\.generativeai|from\s+google\.generativeai")
 
     violations = []
     for py_file in agentic_core.rglob("*.py"):
         try:
-            content = py_file.read_text(encoding='utf-8')
+            content = py_file.read_text(encoding="utf-8")
             matches = deprecated_pattern.findall(content)
             if matches:
                 rel_path = py_file.relative_to(PROJECT_ROOT)
@@ -70,7 +73,7 @@ def test_new_genai_imports():
         "agentic_core/L2_execution/ToolRegistry/L2ExecutionBaseAgent.py",
     ]
 
-    new_pattern = re.compile(r'from\s+google\s+import\s+genai')
+    new_pattern = re.compile(r"from\s+google\s+import\s+genai")
 
     for rel_path in target_files:
         full_path = PROJECT_ROOT / rel_path
@@ -78,7 +81,7 @@ def test_new_genai_imports():
             test_fail(f"FILE_EXISTS-{Path(rel_path).stem}", f"File not found: {rel_path}")
             continue
 
-        content = full_path.read_text(encoding='utf-8')
+        content = full_path.read_text(encoding="utf-8")
         if new_pattern.search(content):
             test_pass(f"NEW_IMPORT-{Path(rel_path).stem}", "Uses google.genai")
         else:
@@ -92,12 +95,12 @@ def test_genai_client_usage():
     print("=" * 70)
 
     agentic_core = PROJECT_ROOT / "agentic_core"
-    deprecated_configure = re.compile(r'genai\.configure\s*\(')
+    deprecated_configure = re.compile(r"genai\.configure\s*\(")
 
     violations = []
     for py_file in agentic_core.rglob("*.py"):
         try:
-            content = py_file.read_text(encoding='utf-8')
+            content = py_file.read_text(encoding="utf-8")
             if deprecated_configure.search(content):
                 rel_path = py_file.relative_to(PROJECT_ROOT)
                 violations.append(str(rel_path))
@@ -122,7 +125,7 @@ def test_pyproject_dependency():
         test_fail("PYPROJECT_EXISTS", "pyproject.toml not found")
         return
 
-    content = pyproject.read_text(encoding='utf-8')
+    content = pyproject.read_text(encoding="utf-8")
 
     if "google-genai" in content:
         test_pass("PYPROJECT_NEW_DEP", "google-genai dependency present")
@@ -146,7 +149,7 @@ def test_provider_modules():
         test_fail("ARCHIVE_PROVIDERS", "archive_providers.py not found")
         return
 
-    content = archive_providers.read_text(encoding='utf-8')
+    content = archive_providers.read_text(encoding="utf-8")
 
     if '"google": "google.genai"' in content:
         test_pass("PROVIDER_MODULE", "Google provider uses google.genai")
@@ -177,7 +180,7 @@ def test_syntax_validation():
             continue
 
         try:
-            content = full_path.read_text(encoding='utf-8')
+            content = full_path.read_text(encoding="utf-8")
             ast.parse(content)
             test_pass(f"SYNTAX-{Path(rel_path).stem}", "Valid Python syntax")
         except SyntaxError as e:
@@ -195,7 +198,7 @@ def test_gemini_embedder_class():
         test_fail("EMBEDDER_EXISTS", "gemini_embedder.py not found")
         return
 
-    content = embedder_file.read_text(encoding='utf-8')
+    content = embedder_file.read_text(encoding="utf-8")
 
     # Check for new Client usage
     if "genai.Client(" in content:
@@ -227,7 +230,7 @@ def test_guard_deprecation_check():
         test_fail("GUARD_EXISTS", "guard_no_hardcoded_config.py not found")
         return
 
-    content = guard_file.read_text(encoding='utf-8')
+    content = guard_file.read_text(encoding="utf-8")
 
     if "Deprecated google.generativeai" in content or "use google.genai" in content:
         test_pass("GUARD_DEPRECATION", "Guard checks for deprecated imports")
@@ -266,5 +269,6 @@ def main():
         print(f"\n  ❌ {FAILED} TESTS FAILED")
         return 1
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     sys.exit(main())

@@ -2,6 +2,7 @@
 """
 Test script to run SSOT Orchestration after syntax remediation.
 """
+
 import sys
 from pathlib import Path
 
@@ -44,10 +45,13 @@ def main():
     print("=" * 60)
 
     # Meta-Learning status
-    if result.get('status') == 'PASS' and result.get('violations_fixed', 0) > 0:
-        print(f"\n✅ Meta-Learning Enabled: {result.get('violations_fixed')} fixes recorded to L4 State.")
+    if result.get("status") == "PASS" and result.get("violations_fixed", 0) > 0:
+        print(
+            f"\n✅ Meta-Learning Enabled: {result.get('violations_fixed')} fixes recorded to L4 State."
+        )
 
-    return 0 if result.get('status') == 'PASS' else 1
+    return 0 if result.get("status") == "PASS" else 1
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     sys.exit(main())

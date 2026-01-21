@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: orchestrator, prompt, state, workflow
@@ -8,9 +7,9 @@ from __future__ import annotations
 
 import hashlib
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
-'Brief description of functionality and purpose.'
+"Brief description of functionality and purpose."
 import json
 import logging
 import os
@@ -20,11 +19,11 @@ from typing import Any
 try:
     from connection_manager import ConnectionManager
 except ImportError:
-    ConnectionManager = type('ConnectionManager', (), {})
+    ConnectionManager = type("ConnectionManager", (), {})
 try:
     from schemas_connectivity import CanonEntry, CanonMetadata
 except ImportError:
-    CanonEntry = CanonMetadata = type('Stub', (), {})
+    CanonEntry = CanonMetadata = type("Stub", (), {})
 Logger: Any = logging.getLogger(__name__)
 
 # Extracted to L1 canonical agent_logic.py (2026-01-06)
@@ -42,12 +41,15 @@ class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
     Uses a 2-stage cache (L1 Redis Hot, L2 Pinecone Cold) to validate incoming patterns.
     HARDENED: Uses compound cache keys to prevent stale cache hits.
     """
+
     REDIS_CACHE_EXPIRY_SECONDS: Any = 3600
     FAILURE_THRESHOLD: Any = 0.5
     SUCCESS_THRESHOLD: Any = 0.8
     MAX_PATTERNS: Any = 1000
 
-    def __init__(self, similarity_threshold: float=0.75, manifest_path: str='active_manifest.json') -> None:
+    def __init__(
+        self, similarity_threshold: float = 0.75, manifest_path: str = "active_manifest.json"
+    ) -> None:
         """
         Initializes the UnifiedCodeValidatorAgent with connection managers and cache settings.
 
@@ -82,10 +84,10 @@ class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         to achieve the same filtering and assignment, reducing the effective nesting depth to 4.
         """
         lookup = {}
-        files = manifest_data.get('files', [])
+        files = manifest_data.get("files", [])
         for file_info in files:
-            if isinstance(file_info, dict) and 'absolute_path' in file_info:
-                lookup[file_info['absolute_path']] = file_info
+            if isinstance(file_info, dict) and "absolute_path" in file_info:
+                lookup[file_info["absolute_path"]] = file_info
         return lookup
 
     def _perform_manifest_update(self, new_mtime: float):
@@ -93,7 +95,7 @@ class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         self.manifest_cache = self._load_manifest_data()
         self.manifest_lookup = self._build_manifest_lookup(self.manifest_cache)
         self.last_manifest_load = new_mtime
-        Logger.debug('Manifest reloaded for cache coherence.')
+        Logger.debug("Manifest reloaded for cache coherence.")
 
     def _refresh_manifest(self):
         """
@@ -103,12 +105,12 @@ class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         try:
             current_mtime = os.path.getmtime(self.manifest_path)
         except FileNotFoundError:
-            Logger.warning('Manifest not found. Cache invalidation may be disabled.')
+            Logger.warning("Manifest not found. Cache invalidation may be disabled.")
             self.manifest_cache = {}
             self.manifest_lookup = {}
             return
         except Exception as e:
-            Logger.error(f'Error refreshing manifest: {e}')
+            Logger.error(f"Error refreshing manifest: {e}")
             self.manifest_cache = {}
             self.manifest_lookup = {}
             return
@@ -123,8 +125,8 @@ class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         self._refresh_manifest()
         file_entry = self.manifest_lookup.get(file_path)
         if file_entry and isinstance(file_entry, dict):
-            return file_entry.get('content_hash', 'unknown_hash')
-        return 'global_context'
+            return file_entry.get("content_hash", "unknown_hash")
+        return "global_context"
 
     def _is_file_in_manifest(self, file_path: str) -> bool:
         """
@@ -133,7 +135,9 @@ class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         self._refresh_manifest()
         return file_path in self.manifest_lookup
 
-    def _generate_compound_key(self, query_content: str, context_file_path: str | None=None) -> str:
+    def _generate_compound_key(
+        self, query_content: str, context_file_path: str | None = None
+    ) -> str:
         """
         [HARDENED 6b] Generates a cache key that binds the query to the SPECIFIC file version.
 
@@ -142,10 +146,10 @@ class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         """
         if context_file_path:
             code_version_hash = self._get_file_hash(context_file_path)
-            raw_key = f'{query_content}||{code_version_hash}'
+            raw_key = f"{query_content}||{code_version_hash}"
         else:
             raw_key = query_content
-        return hashlib.sha256(raw_key.encode('utf-8')).hexdigest()
+        return hashlib.sha256(raw_key.encode("utf-8")).hexdigest()
 
     def process_entry(self, entry: CanonEntry) -> dict[str, Any]:
         """
@@ -159,18 +163,18 @@ class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
             try:
                 entry.embedding = self.embedding_fn(entry.code_snippet)
             except Exception as e:
-                Logger.error(f'Embedding generation failed: {e}')
-                return {'status': 'error', 'message': str(e)}
+                Logger.error(f"Embedding generation failed: {e}")
+                return {"status": "error", "message": str(e)}
         l1_match: Any = self._check_l1_cache(entry)
         if l1_match:
-            l1_match['similarity'] = 1.0
-            return self._format_result(l1_match, 'l1_exact_match', start_time)
+            l1_match["similarity"] = 1.0
+            return self._format_result(l1_match, "l1_exact_match", start_time)
         l2_match: Any = self._check_l2_cache(entry)
         if l2_match:
-            return self._format_result(l2_match, 'l2_semantic_match', start_time)
+            return self._format_result(l2_match, "l2_semantic_match", start_time)
         return self._ingest_new_entry(entry, start_time)
 
-    def check_and_learn(self, code: str, context: dict[str, Any] | None=None) -> dict[str, Any]:
+    def check_and_learn(self, code: str, context: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Compatibility method for simulation script.
         Accepts raw string input and converts to CanonEntry.
@@ -178,24 +182,33 @@ class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         try:
             embedding: Any = self.embedding_fn(code)
         except Exception as e:
-            Logger.error(f'Embedding generation failed: {e}')
-            return {'status': 'error', 'message': str(e)}
-        project_context_val: Any = 'default'
-        canon_rule_id_val: Any = 'unknown'
+            Logger.error(f"Embedding generation failed: {e}")
+            return {"status": "error", "message": str(e)}
+        project_context_val: Any = "default"
+        canon_rule_id_val: Any = "unknown"
         file_path_val: str | None = None
         if context:
-            project_context_val: Any = context.get('project_context', 'default')
-            canon_rule_id_val: Any = context.get('type', 'unknown')
-            file_path_val: Any = context.get('file_path')
-        entry: Any = CanonEntry(code_snippet=code, ast_structure={'type': 'module'}, embedding=embedding, metadata=CanonMetadata(project_context=project_context_val, canon_rule_id=canon_rule_id_val, file_path=file_path_val))
+            project_context_val: Any = context.get("project_context", "default")
+            canon_rule_id_val: Any = context.get("type", "unknown")
+            file_path_val: Any = context.get("file_path")
+        entry: Any = CanonEntry(
+            code_snippet=code,
+            ast_structure={"type": "module"},
+            embedding=embedding,
+            metadata=CanonMetadata(
+                project_context=project_context_val,
+                canon_rule_id=canon_rule_id_val,
+                file_path=file_path_val,
+            ),
+        )
         result: Any = self.process_entry(entry)
-        if result.get('status') == 'ingested':
-            result['is_valid'] = True
-            result['source'] = 'no_match'
-        if result.get('status') == 'duplicate' and 'source' not in result:
-            result['source'] = 'l1_match'
-        elif result.get('status') == 'similar' and 'source' not in result:
-            result['source'] = 'l2_match'
+        if result.get("status") == "ingested":
+            result["is_valid"] = True
+            result["source"] = "no_match"
+        if result.get("status") == "duplicate" and "source" not in result:
+            result["source"] = "l1_match"
+        elif result.get("status") == "similar" and "source" not in result:
+            result["source"] = "l2_match"
         return result
 
     def _check_l1_cache(self, entry: CanonEntry) -> dict[str, Any] | None:
@@ -209,13 +222,13 @@ class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         try:
             cached_data = self.redis_client.get(cache_key)
         except Exception as e:
-            Logger.error(f'Redis lookup failed: {e}')
-            Logger.info('Reasoning cache miss due to Redis error.')
+            Logger.error(f"Redis lookup failed: {e}")
+            Logger.info("Reasoning cache miss due to Redis error.")
             return None
         if cached_data:
             Logger.info(f"🟢 L1 Cache Hit for {file_path or 'global'}")
             return json.loads(cached_data)
-        Logger.info('Reasoning cache miss - Code version may have changed.')
+        Logger.info("Reasoning cache miss - Code version may have changed.")
         return None
 
     def upsert_l1_cache(self, entry: CanonEntry, result: dict[str, Any]) -> Any:
@@ -228,33 +241,42 @@ class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         try:
             self.redis_client.setex(cache_key, self.REDIS_CACHE_EXPIRY_SECONDS, json.dumps(result))
         except Exception as e:
-            Logger.error(f'Redis upsert failed: {e}')
+            Logger.error(f"Redis upsert failed: {e}")
 
-    def _process_pinecone_match(self, best_match: dict[str, Any], score: float) -> dict[str, Any] | None:
+    def _process_pinecone_match(
+        self, best_match: dict[str, Any], score: float
+    ) -> dict[str, Any] | None:
         """
         Helper to process a Pinecone match, apply similarity threshold, and format the result.
         Reduces nesting depth in _check_l2_cache.
         """
         if score < self.similarity_threshold:
             return None
-        metadata = best_match.get('metadata', {})
-        return {'id': best_match['id'], 'content': metadata.get('code_snippet', 'Content not in metadata'), 'similarity': score, 'metadata': metadata}
+        metadata = best_match.get("metadata", {})
+        return {
+            "id": best_match["id"],
+            "content": metadata.get("code_snippet", "Content not in metadata"),
+            "similarity": score,
+            "metadata": metadata,
+        }
 
     def _check_l2_cache(self, entry: CanonEntry) -> dict[str, Any] | None:
         """
         Queries Pinecone for semantic similarity.
         """
         try:
-            Logger.info(f'Querying Pinecone with embedding dimension: {len(entry.embedding)}')
-            results = self.pinecone_index.query(vector=entry.embedding, top_k=1, include_metadata=True)
-            Logger.info(f'Pinecone raw response: {results}')
-            if results and results.get('matches'):
-                best_match = results['matches'][0]
-                score = best_match['score']
+            Logger.info(f"Querying Pinecone with embedding dimension: {len(entry.embedding)}")
+            results = self.pinecone_index.query(
+                vector=entry.embedding, top_k=1, include_metadata=True
+            )
+            Logger.info(f"Pinecone raw response: {results}")
+            if results and results.get("matches"):
+                best_match = results["matches"][0]
+                score = best_match["score"]
                 Logger.info(f"Best match: ID={best_match['id']}, score={score}")
                 return self._process_pinecone_match(best_match, score)
         except Exception as e:
-            Logger.error(f'Pinecone query failed: {e}')
+            Logger.error(f"Pinecone query failed: {e}")
         return None
 
     def _ingest_new_entry(self, entry: CanonEntry, start_time: float) -> dict[str, Any]:
@@ -265,25 +287,51 @@ class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         file_path = entry.metadata.file_path if entry.metadata else None
         if not (file_path and self._is_file_in_manifest(file_path)):
             Logger.warning(f"[!]  Skipping indexing for non-manifest file: {file_path or 'N/A'}")
-            skipped_result = {'status': 'skipped', 'is_valid': False, 'confidence': 0.0, 'source': 'not_in_manifest', 'matched_pattern': None, 'processing_time': time.time() - start_time, 'message': 'File not in active manifest - indexing skipped'}
+            skipped_result = {
+                "status": "skipped",
+                "is_valid": False,
+                "confidence": 0.0,
+                "source": "not_in_manifest",
+                "matched_pattern": None,
+                "processing_time": time.time() - start_time,
+                "message": "File not in active manifest - indexing skipped",
+            }
             return skipped_result
         try:
-            current_hash = self._get_file_hash(file_path) if file_path else 'unknown'
+            current_hash = self._get_file_hash(file_path) if file_path else "unknown"
             redis_data = entry.to_redis_dict()
             self.redis_index.load([redis_data])
-            Logger.info(f'[OK] Stored new pattern in Redis: {entry.id}')
+            Logger.info(f"[OK] Stored new pattern in Redis: {entry.id}")
             pinecone_record = entry.to_pinecone_record()
-            metadata = pinecone_record.setdefault('metadata', {})
-            metadata['content_hash'] = current_hash
-            metadata['file_path'] = file_path
+            metadata = pinecone_record.setdefault("metadata", {})
+            metadata["content_hash"] = current_hash
+            metadata["file_path"] = file_path
             self.pinecone_index.upsert(vectors=[pinecone_record])
             Logger.info(f"[OK] Indexed {file_path or 'unknown'} (Hash: {current_hash[:8]})")
-            return {'status': 'ingested', 'is_valid': True, 'confidence': 1.0, 'source': 'no_match', 'matched_pattern': None, 'ast_match': False, 'Recommendation': 'New code pattern - stored in Canon', 'pattern_id': entry.id, 'query_time_ms': (time.time() - start_time) * 1000}
+            return {
+                "status": "ingested",
+                "is_valid": True,
+                "confidence": 1.0,
+                "source": "no_match",
+                "matched_pattern": None,
+                "ast_match": False,
+                "Recommendation": "New code pattern - stored in Canon",
+                "pattern_id": entry.id,
+                "query_time_ms": (time.time() - start_time) * 1000,
+            }
         except Exception as e:
-            Logger.error(f'Ingestion failed: {e}')
-            return {'status': 'error', 'is_valid': False, 'confidence': 0.0, 'message': f'Ingestion failed: {str(e)}', 'query_time_ms': (time.time() - start_time) * 1000}
+            Logger.error(f"Ingestion failed: {e}")
+            return {
+                "status": "error",
+                "is_valid": False,
+                "confidence": 0.0,
+                "message": f"Ingestion failed: {str(e)}",
+                "query_time_ms": (time.time() - start_time) * 1000,
+            }
 
-    def query_semantic_memory(self, query: str, context_file: str | None=None, top_k: int=5) -> dict[str, Any] | None:
+    def query_semantic_memory(
+        self, query: str, context_file: str | None = None, top_k: int = 5
+    ) -> dict[str, Any] | None:
         """
         [HARDENED] Retrieval that ignores 'Ghost' vectors.
         """
@@ -291,12 +339,14 @@ class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         metadata_filter: dict[str, Any] = {}
         if context_file:
             active_hash: Any = self._get_file_hash(context_file)
-            metadata_filter: Any = {'file_path': context_file, 'content_hash': active_hash}
+            metadata_filter: Any = {"file_path": context_file, "content_hash": active_hash}
         try:
-            results: Any = self.pinecone_index.query(vector=query_vector, filter=metadata_filter, top_k=top_k, include_metadata=True)
+            results: Any = self.pinecone_index.query(
+                vector=query_vector, filter=metadata_filter, top_k=top_k, include_metadata=True
+            )
             return results
         except Exception as e:
-            Logger.error(f'Semantic query failed: {e}')
+            Logger.error(f"Semantic query failed: {e}")
             return None
 
     def update_learning(self, pattern_id: str, is_valid: bool) -> Any:
@@ -304,22 +354,53 @@ class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         Stub method for updating learning based on validation results.
         TODO: Implement actual learning mechanism.
         """
-        Logger.info(f"Learning update: Pattern {pattern_id} is {('valid' if is_valid else 'invalid')}")
+        Logger.info(
+            f"Learning update: Pattern {pattern_id} is {('valid' if is_valid else 'invalid')}"
+        )
 
     def get_stats(self) -> dict[str, Any]:
         """
         Return validation statistics.
         TODO: Implement actual stats collection.
         """
-        return {'redis_stats': {'total_checks': 0, 'hits': 0, 'misses': 0}, 'pinecone_stats': {'total_queries': 0, 'matches_found': 0, 'vectors_stored': 0}, 'thresholds': {'similarity_threshold': self.similarity_threshold, 'failure_threshold': self.FAILURE_THRESHOLD, 'success_threshold': self.SUCCESS_THRESHOLD, 'max_patterns': self.MAX_PATTERNS}, 'total_validations': 0, 'valid_count': 0, 'invalid_count': 0, 'duplicate_count': 0, 'error_count': 0}
+        return {
+            "redis_stats": {"total_checks": 0, "hits": 0, "misses": 0},
+            "pinecone_stats": {"total_queries": 0, "matches_found": 0, "vectors_stored": 0},
+            "thresholds": {
+                "similarity_threshold": self.similarity_threshold,
+                "failure_threshold": self.FAILURE_THRESHOLD,
+                "success_threshold": self.SUCCESS_THRESHOLD,
+                "max_patterns": self.MAX_PATTERNS,
+            },
+            "total_validations": 0,
+            "valid_count": 0,
+            "invalid_count": 0,
+            "duplicate_count": 0,
+            "error_count": 0,
+        }
 
-    def _format_result(self, match: dict[str, Any], source: str, start_time: float) -> dict[str, Any]:
+    def _format_result(
+        self, match: dict[str, Any], source: str, start_time: float
+    ) -> dict[str, Any]:
         """
         Helper to format a 'Duplicate Found' or 'Similar Found' response.
         """
-        status = 'duplicate' if source == 'l1_exact_match' else 'similar'
-        content = match.get('content') or match.get('metadata', {}).get('code_snippet', 'Content not available')
-        return {'status': status, 'is_valid': True, 'confidence': match.get('similarity', 1.0 if source == 'l1_exact_match' else 0.0), 'source': source, 'matched_pattern': match.get('id'), 'ast_match': source == 'l1_exact_match', 'Recommendation': 'Use existing pattern', 'metadata': match.get('metadata'), 'query_time_ms': (time.time() - start_time) * 1000, 'content': content}
+        status = "duplicate" if source == "l1_exact_match" else "similar"
+        content = match.get("content") or match.get("metadata", {}).get(
+            "code_snippet", "Content not available"
+        )
+        return {
+            "status": status,
+            "is_valid": True,
+            "confidence": match.get("similarity", 1.0 if source == "l1_exact_match" else 0.0),
+            "source": source,
+            "matched_pattern": match.get("id"),
+            "ast_match": source == "l1_exact_match",
+            "Recommendation": "Use existing pattern",
+            "metadata": match.get("metadata"),
+            "query_time_ms": (time.time() - start_time) * 1000,
+            "content": content,
+        }
 
     @timeout(180)
     @standard_heal
@@ -329,7 +410,7 @@ class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: set | None = None
+        _call_path: set | None = None,
     ) -> dict[str, int]:
         """
         Wired Legacy Validation - Checks for structural drift in legacy canon files.
@@ -353,13 +434,13 @@ class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
 
         try:
             # 1. Legacy Structural Validation
-            if hasattr(self, '_validate_legacy_structure'):
+            if hasattr(self, "_validate_legacy_structure"):
                 struct_results = self._validate_legacy_structure(dry_run=dry_run)
                 metrics["violations"] += struct_results.get("violations", 0)
                 metrics["fixed"] += struct_results.get("fixed", 0)
 
             # 2. Path Reconciliation
-            if hasattr(self, '_reconcile_import_paths'):
+            if hasattr(self, "_reconcile_import_paths"):
                 import_results = self._reconcile_import_paths(dry_run=dry_run)
                 metrics["violations"] += import_results.get("violations", 0)
                 metrics["fixed"] += import_results.get("fixed", 0)

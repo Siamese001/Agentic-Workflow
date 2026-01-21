@@ -19,7 +19,9 @@ class CompressionResult(BaseModel):
     original_length: int = Field(..., description="Original text length in characters")
     compressed_length: int = Field(..., description="Compressed text length in characters")
     compressed_text: str = Field(..., description="Compressed text content")
-    compression_ratio: float = Field(..., ge=0.0, le=1.0, description="Compression ratio (compressed/original)")
+    compression_ratio: float = Field(
+        ..., ge=0.0, le=1.0, description="Compression ratio (compressed/original)"
+    )
 
 
 class ContextualCompressor:
@@ -41,19 +43,20 @@ class ContextualCompressor:
 
         # Simple sentence tokenizer using regex
         self.sentence_pattern = re.compile(
-            r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?|\!)\s',
-            re.MULTILINE
+            r"(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?|\!)\s", re.MULTILINE
         )
 
         # Named entity patterns (simple keyword-based)
         self.entity_patterns = {
-            'person': r'\b([A-Z][a-z]+ [A-Z][a-z]+)\b',
-            'organization': r'\b([A-Z]{2,})\b',
-            'metric': r'\b(\d+(?:\.\d+)?%|\d+(?:,\d{3})*(?:\.\d+)?[kmb]?)\b',
-            'date': r'\b(\d{4}|\d{1,2}/\d{1,2}/\d{2,4})\b'
+            "person": r"\b([A-Z][a-z]+ [A-Z][a-z]+)\b",
+            "organization": r"\b([A-Z]{2,})\b",
+            "metric": r"\b(\d+(?:\.\d+)?%|\d+(?:,\d{3})*(?:\.\d+)?[kmb]?)\b",
+            "date": r"\b(\d{4}|\d{1,2}/\d{1,2}/\d{2,4})\b",
         }
 
-        logger.info(f"Initialized ContextualCompressor: threshold={similarity_threshold}, llm={use_llm}")
+        logger.info(
+            f"Initialized ContextualCompressor: threshold={similarity_threshold}, llm={use_llm}"
+        )
 
     def _split_into_sentences(self, text: str) -> list[str]:
         """Split text into sentences using regex.
@@ -85,8 +88,8 @@ class ContextualCompressor:
         words2 = set(word.lower().strip('.,!?;:"()[]{}') for word in text2.split())
 
         # Remove empty strings
-        words1.discard('')
-        words2.discard('')
+        words1.discard("")
+        words2.discard("")
 
         # Calculate intersection and union
         intersection = words1.intersection(words2)
@@ -152,42 +155,44 @@ class ContextualCompressor:
             sentence_words = set(word.lower() for word in sentence.split())
             keyword_match = bool(query_words.intersection(sentence_words))
 
-            sentence_scores.append({
-                'index': i,
-                'sentence': sentence,
-                'similarity': similarity,
-                'entity_match': entity_match,
-                'keyword_match': keyword_match
-            })
+            sentence_scores.append(
+                {
+                    "index": i,
+                    "sentence": sentence,
+                    "similarity": similarity,
+                    "entity_match": entity_match,
+                    "keyword_match": keyword_match,
+                }
+            )
 
         # Select sentences based on criteria
         for i, score in enumerate(sentence_scores):
             should_include = False
 
             # Include if similarity threshold met
-            if score['similarity'] >= self.similarity_threshold:
+            if score["similarity"] >= self.similarity_threshold:
                 should_include = True
 
             # Include if entity match
-            elif score['entity_match']:
+            elif score["entity_match"]:
                 should_include = True
 
             # Include if keyword match (lower threshold)
-            elif score['keyword_match'] and score['similarity'] >= 0.05:
+            elif score["keyword_match"] and score["similarity"] >= 0.05:
                 should_include = True
 
             # Add buffer sentence (preceding) if included
             if should_include and i > 0:
-                prev_index = sentence_scores[i-1]['index']
-                if prev_index not in [s['index'] for s in selected_sentences]:
-                    selected_sentences.append(sentence_scores[i-1])
+                prev_index = sentence_scores[i - 1]["index"]
+                if prev_index not in [s["index"] for s in selected_sentences]:
+                    selected_sentences.append(sentence_scores[i - 1])
 
             if should_include:
                 selected_sentences.append(score)
 
         # Sort by original order and extract sentences
-        selected_sentences.sort(key=lambda x: x['index'])
-        compressed_text = ' '.join(s['sentence'] for s in selected_sentences)
+        selected_sentences.sort(key=lambda x: x["index"])
+        compressed_text = " ".join(s["sentence"] for s in selected_sentences)
 
         # Log performance
         elapsed = time.time() - start_time
@@ -206,7 +211,7 @@ class ContextualCompressor:
             Compressed text
         """
         # Combine all chunks
-        full_text = '\n\n'.join(chunks)
+        full_text = "\n\n".join(chunks)
 
         # Import LLM client
         try:
@@ -226,7 +231,7 @@ Extracted sentences:"""
                 model="claude-3-5-sonnet-20241022",
                 max_tokens=1000,
                 temperature=0.1,
-                messages=[{"role": "user", "content": prompt}]
+                messages=[{"role": "user", "content": prompt}],
             )
 
             return response.content[0].text.strip()
@@ -236,7 +241,9 @@ Extracted sentences:"""
             # Fallback to heuristic
             return self._compress_heuristic(chunks, query)
 
-    def compress(self, chunks: list[str], query: str, use_llm: bool | None = None) -> CompressionResult:
+    def compress(
+        self, chunks: list[str], query: str, use_llm: bool | None = None
+    ) -> CompressionResult:
         """Compress retrieved chunks to extract relevant sentences.
 
         Args:
@@ -248,7 +255,7 @@ Extracted sentences:"""
             CompressionResult with compressed text and metrics
         """
         # Calculate original length
-        original_text = ' '.join(chunks)
+        original_text = " ".join(chunks)
         original_length = len(original_text)
 
         # Determine compression mode
@@ -258,6 +265,7 @@ Extracted sentences:"""
         if should_use_llm:
             # For LLM mode, we need to run async
             import asyncio
+
             compressed_text = asyncio.run(self._compress_llm(chunks, query))
         else:
             compressed_text = self._compress_heuristic(chunks, query)
@@ -272,8 +280,10 @@ Extracted sentences:"""
         compression_ratio = compressed_length / original_length if original_length > 0 else 1.0
 
         # Log compression ratio for monitoring
-        logger.info(f"Compression ratio: {compression_ratio:.2f} "
-                   f"({original_length} -> {compressed_length} chars)")
+        logger.info(
+            f"Compression ratio: {compression_ratio:.2f} "
+            f"({original_length} -> {compressed_length} chars)"
+        )
 
         # Alert if ratio is unusual
         if compression_ratio > 0.95:
@@ -285,7 +295,7 @@ Extracted sentences:"""
             original_length=original_length,
             compressed_length=compressed_length,
             compressed_text=compressed_text,
-            compression_ratio=compression_ratio
+            compression_ratio=compression_ratio,
         )
 
 

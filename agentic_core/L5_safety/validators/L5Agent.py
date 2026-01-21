@@ -47,14 +47,19 @@ class L5Agent(HealerMixin, MCPHardenedMixin):
     - Basic Self-Testing: YES (validation checks)
     - Delegation to TestSovereigntyAgent: NO (L5 IS the validator)
     """
+
     name: str = "L5Agent"
     layer: str = "L5"
 
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, **kwargs) -> HealResult:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, depth: int = 0, **kwargs
+    ) -> HealResult:
         """Override in subclass to implement healing logic."""
         super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, **kwargs)
-        return self._normalize_result({"status": "SKIPPED", "agent": self.name, "violations_found": 0, "violations_fixed": 0})
+        return self._normalize_result(
+            {"status": "SKIPPED", "agent": self.name, "violations_found": 0, "violations_fixed": 0}
+        )
 
     def _run_self_tests(self) -> dict[str, Any]:
         """Override in subclass to implement self-tests."""

@@ -73,7 +73,7 @@ class DependencyPruningAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixi
                 text=True,
                 cwd=self.project_root,
                 check=False,
-                timeout=60
+                timeout=60,
             )
             if result.returncode == 0:
                 data: dict[str, Any] = json.loads(result.stdout)
@@ -120,9 +120,7 @@ class DependencyPruningAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixi
                 new_lines.append(line)
 
         if removed > 0 and not self.dry_run:
-            self.requirements_path.write_text(
-                "\n".join(new_lines) + "\n", encoding="utf-8"
-            )
+            self.requirements_path.write_text("\n".join(new_lines) + "\n", encoding="utf-8")
 
         return {"removed": removed, "file": "requirements.txt"}
 
@@ -134,7 +132,7 @@ class DependencyPruningAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixi
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: set[str] | None = None
+        _call_path: set[str] | None = None,
     ) -> dict[str, int]:
         """Execute L5 safety healing operations.
 
@@ -182,9 +180,7 @@ class DependencyPruningAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixi
             print("   [✓] No unused dependencies detected")
             return {"unused_found": 0, "removed": 0}
 
-        print(
-            f"   [!] Found {len(unused)} potentially unused packages: {', '.join(unused[:5])}"
-        )
+        print(f"   [!] Found {len(unused)} potentially unused packages: {', '.join(unused[:5])}")
         if len(unused) > 5:
             print(f"       ... and {len(unused) - 5} more")
 

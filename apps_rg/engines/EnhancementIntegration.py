@@ -56,14 +56,12 @@ class ResumeEnhancementOrchestrator:
         """Setup event subscriptions for component coordination."""
         # Subscribe to resume generation events
         await self.infrastructure.event_bus.subscribe(
-            "events.resume_generation_started",
-            self._handle_resume_generation_started
+            "events.resume_generation_started", self._handle_resume_generation_started
         )
 
         # Subscribe to persona analysis events
         await self.infrastructure.event_bus.subscribe(
-            "events.persona_analyzed",
-            self._handle_persona_analyzed
+            "events.persona_analyzed", self._handle_persona_analyzed
         )
 
         logger.info("Setup resume enhancement event subscriptions")
@@ -93,10 +91,10 @@ class ResumeEnhancementOrchestrator:
                     payload={
                         "persona_title": persona.title,
                         "archetype": persona.archetype.value,
-                        "risk_tolerance": persona.profile.risk_tolerance
+                        "risk_tolerance": persona.profile.risk_tolerance,
                     },
-                    causation_id=event.id
-                )
+                    causation_id=event.id,
+                ),
             )
 
             # Analyze competitive fit
@@ -116,10 +114,10 @@ class ResumeEnhancementOrchestrator:
                                 "target_company": target_company,
                                 "position": recon_signal.position.value,
                                 "competitor": recon_signal.competitor_detected,
-                                "strategy": recon_signal.strategy_recommendation
+                                "strategy": recon_signal.strategy_recommendation,
                             },
-                            causation_id=event.id
-                        )
+                            causation_id=event.id,
+                        ),
                     )
 
         except Exception as e:
@@ -137,7 +135,9 @@ class ResumeEnhancementOrchestrator:
 
             # This could trigger additional persona-specific logic
             # For now, just log the analysis
-            logger.info(f"Persona analyzed: {payload.get('persona_title')} ({payload.get('archetype')})")
+            logger.info(
+                f"Persona analyzed: {payload.get('persona_title')} ({payload.get('archetype')})"
+            )
 
         except Exception as e:
             logger.error(f"Failed to handle persona analyzed: {e}")
@@ -159,7 +159,7 @@ class ResumeEnhancementOrchestrator:
             r"Join\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)",
             r"About\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)",
             r"at\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s+we're",
-            r"([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s+is\s+(?:hiring|looking|seeking)"
+            r"([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s+is\s+(?:hiring|looking|seeking)",
         ]
 
         for pattern in patterns:
@@ -178,7 +178,7 @@ class ResumeEnhancementOrchestrator:
         candidate_history: list[str],
         resume_bullets: list[str],
         evidence_library_path: str | None = None,
-        trace_id: str | None = None
+        trace_id: str | None = None,
     ) -> dict[str, Any]:
         """Generate enhanced resume with all enhancements.
 
@@ -198,6 +198,7 @@ class ResumeEnhancementOrchestrator:
         # Generate trace ID if not provided
         if not trace_id:
             import uuid
+
             trace_id = str(uuid.uuid4())
 
         # Start enhancement process
@@ -210,9 +211,9 @@ class ResumeEnhancementOrchestrator:
                 payload={
                     "jd_length": len(job_description),
                     "bullet_count": len(resume_bullets),
-                    "history_count": len(candidate_history)
-                }
-            )
+                    "history_count": len(candidate_history),
+                },
+            ),
         )
 
         try:
@@ -237,7 +238,9 @@ class ResumeEnhancementOrchestrator:
 
             # 6. Add competitive insights to prompt if available
             if recon_signal and recon_signal.position.value != "UNRELATED":
-                prompt_template += f"\n\nCompetitive Intelligence:\n{recon_signal.strategy_recommendation}"
+                prompt_template += (
+                    f"\n\nCompetitive Intelligence:\n{recon_signal.strategy_recommendation}"
+                )
 
             # 7. Generate final resume through infrastructure
             result = await self.infrastructure.execute_with_infrastructure(
@@ -245,7 +248,7 @@ class ResumeEnhancementOrchestrator:
                 prompt_template,
                 sources=[(b, "resume_bullet", 1.0) for b in enhanced_bullets],
                 complexity_score=self._calculate_complexity(persona, recon_signal),
-                trace_id=trace_id
+                trace_id=trace_id,
             )
 
             # Publish completion event
@@ -259,10 +262,12 @@ class ResumeEnhancementOrchestrator:
                         "persona": persona.title,
                         "enhanced_bullets": len(enhanced_bullets),
                         "links_injected": self.evidence_injector._links_used,
-                        "competitive_insights": recon_signal.position.value if recon_signal else None
+                        "competitive_insights": recon_signal.position.value
+                        if recon_signal
+                        else None,
                     },
-                    causation_id=trace_id
-                )
+                    causation_id=trace_id,
+                ),
             )
 
             return {
@@ -275,8 +280,8 @@ class ResumeEnhancementOrchestrator:
                     "model_used": result["model_used"],
                     "tier": result["tier"],
                     "execution_time": result["execution_time"],
-                    "lineage": result.get("lineage")
-                }
+                    "lineage": result.get("lineage"),
+                },
             }
 
         except Exception as e:
@@ -288,16 +293,14 @@ class ResumeEnhancementOrchestrator:
                     trace_id=trace_id,
                     source_component="ResumeEnhancementOrchestrator",
                     payload={"error": str(e)},
-                    causation_id=trace_id
-                )
+                    causation_id=trace_id,
+                ),
             )
 
             raise
 
     def _calculate_complexity(
-        self,
-        persona: ReaderPersona,
-        recon_signal: ReconSignal | None
+        self, persona: ReaderPersona, recon_signal: ReconSignal | None
     ) -> int:
         """Calculate task complexity based on persona and signals.
 
@@ -337,8 +340,10 @@ class ResumeEnhancementOrchestrator:
             "evidence_injector": self.evidence_injector.get_stats(),
             "recon_agent": {
                 "companies_in_db": len(self.recon_agent.competitor_db),
-                "industries_covered": len(set(c.industry for c in self.recon_agent.competitor_db.values()))
-            }
+                "industries_covered": len(
+                    set(c.industry for c in self.recon_agent.competitor_db.values())
+                ),
+            },
         }
 
 
@@ -357,6 +362,7 @@ async def get_resume_enhancement_orchestrator() -> ResumeEnhancementOrchestrator
 
     if _orchestrator_lock is None:
         import asyncio
+
         _orchestrator_lock = asyncio.Lock()
 
     async with _orchestrator_lock:
@@ -373,7 +379,7 @@ async def enhance_resume(
     candidate_history: list[str],
     resume_bullets: list[str],
     evidence_library_path: str | None = None,
-    trace_id: str | None = None
+    trace_id: str | None = None,
 ) -> dict[str, Any]:
     """Enhance resume with all available enhancements.
 
@@ -389,9 +395,5 @@ async def enhance_resume(
     """
     orchestrator = await get_resume_enhancement_orchestrator()
     return await orchestrator.generate_enhanced_resume(
-        job_description,
-        candidate_history,
-        resume_bullets,
-        evidence_library_path,
-        trace_id
+        job_description, candidate_history, resume_bullets, evidence_library_path, trace_id
     )

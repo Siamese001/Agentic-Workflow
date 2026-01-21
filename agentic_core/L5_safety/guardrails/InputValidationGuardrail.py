@@ -24,19 +24,23 @@ class InputValidationGuardrail(HealerMixin):
     """
 
     debug_mode: bool = False
-    enabled_rules: list[str] = field(default_factory=lambda: [
-        "pii_detection",
-        "prompt_injection",
-        "bias_detection",
-        "format_validation",
-    ])
+    enabled_rules: list[str] = field(
+        default_factory=lambda: [
+            "pii_detection",
+            "prompt_injection",
+            "bias_detection",
+            "format_validation",
+        ]
+    )
 
     def __post_init__(self):
         self.name = "InputValidationGuardrail"
         self.validation_count = 0
         self.violations_found = 0
 
-    async def validate(self, input_text: str, context: dict[str, Any] | None = None) -> dict[str, Any]:
+    async def validate(
+        self, input_text: str, context: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """Validate input against enabled rules."""
         logger.info(f"[{self.name}] Validating input")
 
@@ -69,7 +73,9 @@ class InputValidationGuardrail(HealerMixin):
                 "error": str(e),
             }
 
-    async def _apply_rule(self, rule: str, input_text: str, context: dict | None = None) -> dict[str, Any]:
+    async def _apply_rule(
+        self, rule: str, input_text: str, context: dict | None = None
+    ) -> dict[str, Any]:
         """Apply a specific validation rule."""
         if rule == "pii_detection":
             return self._detect_pii(input_text)
@@ -86,28 +92,34 @@ class InputValidationGuardrail(HealerMixin):
         violations = []
 
         # Email pattern
-        if re.search(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', text):
-            violations.append({
-                "type": "pii_email",
-                "severity": "high",
-                "message": "Email address detected in input",
-            })
+        if re.search(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b", text):
+            violations.append(
+                {
+                    "type": "pii_email",
+                    "severity": "high",
+                    "message": "Email address detected in input",
+                }
+            )
 
         # Phone pattern
-        if re.search(r'\b\d{3}[-.]?\d{3}[-.]?\d{4}\b', text):
-            violations.append({
-                "type": "pii_phone",
-                "severity": "high",
-                "message": "Phone number detected in input",
-            })
+        if re.search(r"\b\d{3}[-.]?\d{3}[-.]?\d{4}\b", text):
+            violations.append(
+                {
+                    "type": "pii_phone",
+                    "severity": "high",
+                    "message": "Phone number detected in input",
+                }
+            )
 
         # SSN pattern
-        if re.search(r'\b\d{3}-\d{2}-\d{4}\b', text):
-            violations.append({
-                "type": "pii_ssn",
-                "severity": "critical",
-                "message": "Social security number detected in input",
-            })
+        if re.search(r"\b\d{3}-\d{2}-\d{4}\b", text):
+            violations.append(
+                {
+                    "type": "pii_ssn",
+                    "severity": "critical",
+                    "message": "Social security number detected in input",
+                }
+            )
 
         return {
             "valid": len(violations) == 0,
@@ -127,11 +139,13 @@ class InputValidationGuardrail(HealerMixin):
 
         for pattern in injection_patterns:
             if re.search(pattern, text, re.IGNORECASE):
-                violations.append({
-                    "type": "prompt_injection",
-                    "severity": "high",
-                    "message": f"Potential prompt injection detected: {pattern}",
-                })
+                violations.append(
+                    {
+                        "type": "prompt_injection",
+                        "severity": "high",
+                        "message": f"Potential prompt injection detected: {pattern}",
+                    }
+                )
 
         return {
             "valid": len(violations) == 0,
@@ -148,11 +162,13 @@ class InputValidationGuardrail(HealerMixin):
 
         for pattern, bias_type in bias_patterns.items():
             if re.search(pattern, text, re.IGNORECASE):
-                violations.append({
-                    "type": f"bias_{bias_type}",
-                    "severity": "low",
-                    "message": f"Potential bias detected: {bias_type}",
-                })
+                violations.append(
+                    {
+                        "type": f"bias_{bias_type}",
+                        "severity": "low",
+                        "message": f"Potential bias detected: {bias_type}",
+                    }
+                )
 
         return {
             "valid": len(violations) == 0,
@@ -164,18 +180,22 @@ class InputValidationGuardrail(HealerMixin):
         violations = []
 
         if not text or len(text.strip()) == 0:
-            violations.append({
-                "type": "empty_input",
-                "severity": "medium",
-                "message": "Input is empty",
-            })
+            violations.append(
+                {
+                    "type": "empty_input",
+                    "severity": "medium",
+                    "message": "Input is empty",
+                }
+            )
 
         if len(text) > 1000000:
-            violations.append({
-                "type": "oversized_input",
-                "severity": "high",
-                "message": "Input exceeds maximum length",
-            })
+            violations.append(
+                {
+                    "type": "oversized_input",
+                    "severity": "high",
+                    "message": "Input exceeds maximum length",
+                }
+            )
 
         return {
             "valid": len(violations) == 0,

@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, orchestrator, workflow
@@ -27,19 +26,22 @@ from agentic_core.L5_safety.validators.decorators import standard_heal
 # - Intentional variants for domain-specific planning
 # - Documented 2026-01-06
 
+
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
 class RgStrategicPlannerAgent(SovereignBaseAgent):
     """
     ROLE: High-level strategist.
     Analyzes aggregated signals/violations and generates multi-step refactor plans.
     """
+
     def __init__(self, ctx) -> None:
         super().__init__(ctx)
         self.name = "StrategicPlannerAgent"
 
     async def execute(self) -> None:
-
-        print(f"\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Formulating Strategic Plan...")
+        print(
+            f"\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Formulating Strategic Plan..."
+        )
         if not self.ctx.intelligence_enabled:
             return
 
@@ -48,7 +50,11 @@ class RgStrategicPlannerAgent(SovereignBaseAgent):
         print(f"   🕸️ Code Graph: {len(self.ctx.code_graph.graph)} files mapped.")
 
         # 1. Aggregate State
-        violations = [f"Key {k}: {v.get('details','')}..." for k, v in self.ctx.results.items() if not v.get('passed')]
+        violations = [
+            f"Key {k}: {v.get('details', '')}..."
+            for k, v in self.ctx.results.items()
+            if not v.get("passed")
+        ]
         signals = list(self.ctx.signals)
 
         # LEVEL 6: Dynamic Instruction Watcher (Telepathy Interface)
@@ -69,7 +75,9 @@ class RgStrategicPlannerAgent(SovereignBaseAgent):
                     self.ctx.modified_files.add("FORCE_STYLE_CHECK")
 
                 # Mark handled
-                instruction_file.write_text(f"# DONE (Cycle {len(self.ctx.successful_traces)})\n" + instructions)
+                instruction_file.write_text(
+                    f"# DONE (Cycle {len(self.ctx.successful_traces)})\n" + instructions
+                )
 
         # LEVEL 6: Analyze Dependency Graph for Blast Radius
         if self.ctx.modified_files:
@@ -86,14 +94,14 @@ class RgStrategicPlannerAgent(SovereignBaseAgent):
 
         # 2. Generate Plan with L5+ Few-Shot Strategic Injection
         prompt = f"""
-{getattr(self.ctx, 'FEW_SHOT_STRATEGIC', '')}
+{getattr(self.ctx, "FEW_SHOT_STRATEGIC", "")}
 
 You are a Codebase Architect.
 Current State:
 - Signals: {signals}
 - Violations: {json.dumps(violations[:10])}
 - Modified files: {len(self.ctx.modified_files)}
-- Cycle: {getattr(self.ctx, 'current_cycle', 1)}
+- Cycle: {getattr(self.ctx, "current_cycle", 1)}
 
 Task: Generate a strategic refactor plan.
 - If tests are failing, prioritize root cause analysis.
@@ -118,8 +126,8 @@ Output ONLY the plan in Markdown.
 
     @standard_heal
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()
 
 
 # DUPLICATE ACCEPTED: App-specific customization valid

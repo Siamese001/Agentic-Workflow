@@ -16,6 +16,7 @@ Expected violations:
 
 Total expected violations: 17
 """
+
 from __future__ import annotations
 
 import pdb
@@ -23,6 +24,7 @@ import pdb
 # =============================================================================
 # KEY 3: DEBUGGER STATEMENTS (3 violations expected)
 # =============================================================================
+
 
 def function_with_breakpoint():
     """Contains breakpoint() - should be detected."""
@@ -48,6 +50,7 @@ def another_breakpoint_usage():
 # KEY 4: EMPTY EXCEPT BLOCKS (2 violations expected)
 # =============================================================================
 
+
 def function_with_empty_except():
     """Contains empty except block - should be detected."""
     try:
@@ -67,6 +70,7 @@ def another_empty_except():
 # =============================================================================
 # KEY 5: BARE EXCEPT STATEMENTS (2 violations expected)
 # =============================================================================
+
 
 def function_with_bare_except():
     """Contains bare except - should be detected."""
@@ -88,6 +92,7 @@ def another_bare_except():
 # KEY 6: EVAL/EXEC CALLS (3 violations expected)
 # =============================================================================
 
+
 def function_with_eval():
     """Contains eval() - should be detected."""
     result = eval("2 + 2")  # VIOLATION: Key 6 - forbidden eval()
@@ -108,6 +113,7 @@ def dynamic_code_execution():
 # =============================================================================
 # KEY 42: DANGEROUS BUILTINS (5 violations expected)
 # =============================================================================
+
 
 def function_with_globals():
     """Contains globals() - should be detected."""
@@ -135,13 +141,14 @@ def function_with_vars():
 
 def function_with_dunder_import():
     """Contains __import__() - should be detected."""
-    os_module = __import__('os')  # VIOLATION: Key 42 - dangerous builtin __import__()
+    os_module = __import__("os")  # VIOLATION: Key 42 - dangerous builtin __import__()
     return os_module
 
 
 # =============================================================================
 # CLEAN FUNCTIONS (should NOT trigger violations)
 # =============================================================================
+
 
 def clean_function():
     """This function has no violations."""

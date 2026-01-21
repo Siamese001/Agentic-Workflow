@@ -28,9 +28,7 @@ class AllProvidersDownError(Exception):
     def __init__(self, tier: str, providers: list[Provider]):
         self.tier = tier
         self.providers = providers
-        super().__init__(
-            f"All providers down for tier '{tier}': {[p.value for p in providers]}"
-        )
+        super().__init__(f"All providers down for tier '{tier}': {[p.value for p in providers]}")
 
 
 class HardenedRouter:
@@ -97,8 +95,7 @@ class HardenedRouter:
 
         if tier_name not in self.configs:
             raise ValueError(
-                f"Unknown routing tier: {tier_name}. "
-                f"Available tiers: {list(self.configs.keys())}"
+                f"Unknown routing tier: {tier_name}. Available tiers: {list(self.configs.keys())}"
             )
 
         return self.configs[tier_name]
@@ -118,10 +115,10 @@ class HardenedRouter:
             return False
 
         # Check circuit breaker state
-        if hasattr(executor, 'circuit_breaker'):
+        if hasattr(executor, "circuit_breaker"):
             state = executor.circuit_breaker.state
             return state == CircuitBreakerState.CLOSED
-        elif hasattr(executor, 'get_circuit_breaker_state'):
+        elif hasattr(executor, "get_circuit_breaker_state"):
             state_str = executor.get_circuit_breaker_state()
             return state_str == "CLOSED"
 
@@ -212,13 +209,11 @@ class HardenedRouter:
                 )
             except Exception as e:
                 logger.warning(
-                    f"Primary provider {primary.value} failed: {e}. "
-                    f"Attempting fallback..."
+                    f"Primary provider {primary.value} failed: {e}. Attempting fallback..."
                 )
         else:
             logger.warning(
-                f"Primary provider {primary.value} circuit breaker is OPEN. "
-                f"Routing to fallback..."
+                f"Primary provider {primary.value} circuit breaker is OPEN. Routing to fallback..."
             )
             self._log_routing_event(
                 tier_name,
@@ -254,13 +249,11 @@ class HardenedRouter:
                     )
                 except Exception as e:
                     logger.warning(
-                        f"Fallback provider {fallback.value} failed: {e}. "
-                        f"Trying next fallback..."
+                        f"Fallback provider {fallback.value} failed: {e}. Trying next fallback..."
                     )
             else:
                 logger.warning(
-                    f"Fallback provider {fallback.value} circuit breaker is OPEN. "
-                    f"Skipping..."
+                    f"Fallback provider {fallback.value} circuit breaker is OPEN. Skipping..."
                 )
 
         # All providers failed
@@ -302,13 +295,13 @@ class HardenedRouter:
         model_override = config.get_model_for_provider(provider)
 
         # Update executor config if model override specified
-        if model_override and hasattr(executor, 'config'):
+        if model_override and hasattr(executor, "config"):
             executor.config.model = model_override
 
         # Execute based on provider type
         if provider == Provider.GOOGLE:
             # Gemini executor uses different method signature
-            if hasattr(executor, 'execute_k_node'):
+            if hasattr(executor, "execute_k_node"):
                 # Build messages
                 msg_list = messages or [AgentMessage(role="user", content=prompt)]
                 return await executor.execute_k_node(
@@ -317,7 +310,7 @@ class HardenedRouter:
                 )
 
         # OpenAI and Anthropic use run_llm
-        if hasattr(executor, 'run_llm'):
+        if hasattr(executor, "run_llm"):
             return await executor.run_llm(
                 prompt=prompt,
                 system_prompt=system_prompt,
@@ -337,9 +330,9 @@ class HardenedRouter:
         health = {}
         for provider, executor in self.executors.items():
             state = "UNKNOWN"
-            if hasattr(executor, 'circuit_breaker'):
+            if hasattr(executor, "circuit_breaker"):
                 state = executor.circuit_breaker.state.value
-            elif hasattr(executor, 'get_circuit_breaker_state'):
+            elif hasattr(executor, "get_circuit_breaker_state"):
                 state = executor.get_circuit_breaker_state()
 
             health[provider.value] = {
@@ -352,5 +345,5 @@ class HardenedRouter:
     def reset_all_circuit_breakers(self) -> None:
         """Reset all circuit breakers (for testing)."""
         for executor in self.executors.values():
-            if hasattr(executor, 'reset_circuit_breaker'):
+            if hasattr(executor, "reset_circuit_breaker"):
                 executor.reset_circuit_breaker()

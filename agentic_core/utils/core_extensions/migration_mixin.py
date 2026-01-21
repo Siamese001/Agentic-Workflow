@@ -6,7 +6,9 @@ from typing import Any
 
 class MigrationError(Exception):
     """Raised when a schema migration fails or is invalid."""
+
     pass
+
 
 class MigrationMixin:
     """
@@ -57,13 +59,15 @@ class MigrationMixin:
         # Expected naming: migrate_v1_0_to_next
         while current_v != target_version:
             # Simple version string normalization for method lookup (1.0 -> 1_0)
-            v_norm = current_v.replace('.', '_')
+            v_norm = current_v.replace(".", "_")
             migration_method_name = f"migrate_v{v_norm}_to_next"
 
             migration_func = getattr(self, migration_method_name, None)
 
             if not migration_func:
-                error_msg = f"No migration path found from {current_v}. Missing {migration_method_name}."
+                error_msg = (
+                    f"No migration path found from {current_v}. Missing {migration_method_name}."
+                )
                 self._mm_logger.error(error_msg)
                 raise MigrationError(error_msg)
 
@@ -77,13 +81,11 @@ class MigrationMixin:
                 # Here we assume the migration function returns data for the NEXT version.
                 current_v = data.get("_new_version_id", target_version)
 
-                self._migration_history.append({
-                    "from": old_v,
-                    "to": current_v,
-                    "timestamp": datetime.utcnow().isoformat()
-                })
+                self._migration_history.append(
+                    {"from": old_v, "to": current_v, "timestamp": datetime.utcnow().isoformat()}
+                )
 
-                if hasattr(self, '_validate_after_migration_step'):
+                if hasattr(self, "_validate_after_migration_step"):
                     hook = self._validate_after_migration_step
                     hook_result = hook(data, current_v)
                     if inspect.isawaitable(hook_result):
@@ -91,7 +93,7 @@ class MigrationMixin:
             except Exception as e:
                 self._mm_logger.error(f"Rollback triggered at {old_v}: {e}")
                 data = pre_step_snapshot
-                if hasattr(self, 'emit_event'):
+                if hasattr(self, "emit_event"):
                     self.emit_event(
                         "migration.rollback",
                         {"from_version": old_v, "to_version": current_v, "error": str(e)},

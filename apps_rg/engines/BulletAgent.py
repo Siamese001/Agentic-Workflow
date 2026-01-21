@@ -105,9 +105,7 @@ class BulletMetricsEnrichmentAgent(BaseAgent):
     CURRENCY_PATTERN = re.compile(r"\$[\d,]+(?:\.\d+)?")
 
     @track_metrics("run_bullet_metrics_enrichment")
-    async def run_async(
-        self, bullet_id: str, bullet_text: str, workflow_id: str
-    ) -> dict[str, Any]:
+    async def run_async(self, bullet_id: str, bullet_text: str, workflow_id: str) -> dict[str, Any]:
         text = bullet_text or ""
         metrics: dict[str, list[str]] = defaultdict(list)
         raw_numbers: list[str] = []
@@ -156,9 +154,7 @@ class BulletNarrativeSynthesisAgent(BaseAgent):
         workflow_id: str,
     ) -> dict[str, Any]:
         text = bullet_text or ""
-        fragments = [
-            frag.strip() for frag in re.split(r"[.;]", text) if frag.strip()
-        ]
+        fragments = [frag.strip() for frag in re.split(r"[.;]", text) if frag.strip()]
         tone = "impact" if metrics_payload.get("has_metric") else "descriptive"
         if not fragments:
             fragments = [text.strip()] if text else []
@@ -266,13 +262,9 @@ class BulletCoordinatorAgent(BaseAgent):
             text = bullet.get("text", "")
             experience = bullet.get("experience", {})
 
-            entities = await self.entity_agent.run_async(
-                bullet_id, text, experience, workflow_id
-            )
+            entities = await self.entity_agent.run_async(bullet_id, text, experience, workflow_id)
             metrics = await self.metrics_agent.run_async(bullet_id, text, workflow_id)
-            narrative = await self.narrative_agent.run_async(
-                bullet_id, text, metrics, workflow_id
-            )
+            narrative = await self.narrative_agent.run_async(bullet_id, text, metrics, workflow_id)
             evidence = await self.evidence_agent.run_async(
                 bullet_id,
                 text,
@@ -316,14 +308,10 @@ class BulletProvenanceAuditorAgent(BaseAgent):
     ) -> dict[str, Any]:
         self.log_info("Auditing bullet provenance...")
         missing_evidence = [
-            bullet["id"]
-            for bullet in bullets
-            if not bullet.get("evidence", {}).get("evidence")
+            bullet["id"] for bullet in bullets if not bullet.get("evidence", {}).get("evidence")
         ]
         duplicates = [
-            item
-            for item, count in Counter(b["text"] for b in bullets).items()
-            if count > 1
+            item for item, count in Counter(b["text"] for b in bullets).items() if count > 1
         ]
         return {
             "missing_evidence": missing_evidence,
@@ -346,7 +334,7 @@ class AsyncBulletGeneratorAgent(BaseAgent):
         {client.top_failures}
         -------------------
         MODE: CREATIVE
-        TASK: {prompt}\nCustomize these bullets:\n{json.dumps(experience.get('bullet_pool', []))}
+        TASK: {prompt}\nCustomize these bullets:\n{json.dumps(experience.get("bullet_pool", []))}
         REFLECTION: Are these bullets customized to the prompt?
         Output: JSON array of 2-3 achievement bullets.
         """
@@ -372,7 +360,7 @@ class AsyncBulletGeneratorAgent(BaseAgent):
         {client.top_failures}
         -------------------
         MODE: CREATIVE
-        TASK: {prompt}\nExperience (no bullets):\n{json.dumps({'title': experience.get('title'), 'company': experience.get('company')})}
+        TASK: {prompt}\nExperience (no bullets):\n{json.dumps({"title": experience.get("title"), "company": experience.get("company")})}
         REFLECTION: Are these bullets new and metrics-driven?
         Output: JSON array of 2 new achievement bullets.
         """
@@ -400,9 +388,7 @@ class AsyncBulletGeneratorAgent(BaseAgent):
     ) -> list[str]:
         self.log_info("Fact-checking bullets (v10.7)...")
 
-        prompt_template = self.prompt_manager.get_template(
-            "bullet_generation_fact_check"
-        )
+        prompt_template = self.prompt_manager.get_template("bullet_generation_fact_check")
 
         prompt = await _format_prompt_with_defaults(
             prompt_template,
@@ -424,9 +410,7 @@ class AsyncBulletGeneratorAgent(BaseAgent):
 
         validated_output, error = self.validator.validate(response["content"], BulletList)
         if error:
-            self.log_warning(
-                f"Fact-check validation failed: {error}. Returning original bullets."
-            )
+            self.log_warning(f"Fact-check validation failed: {error}. Returning original bullets.")
             return bullets
 
         return validated_output.verified_bullets
@@ -462,7 +446,10 @@ class AsyncBulletGeneratorAgent(BaseAgent):
         flat_generated = [bullet for result in generated_results for bullet in result]
 
         fact_checked = await self.run_fact_check(
-            flat_generated, resume_experience[0] if resume_experience else {}, strategy, fact_check_client
+            flat_generated,
+            resume_experience[0] if resume_experience else {},
+            strategy,
+            fact_check_client,
         )
 
         enriched_payload = await self.coordinator.run_async(

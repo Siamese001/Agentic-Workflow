@@ -2,6 +2,7 @@
 file: tests/maintenance/test_tool_registry.py
 description: Test cases for the ToolRegistry to verify tool safety and discovery.
 """
+
 from pathlib import Path
 
 import pytest
@@ -19,6 +20,7 @@ def disable_path_shield():
 def tool_registry(disable_path_shield):
     """Provides a fresh ToolRegistry instance for each test."""
     from apps_shared.utils.tool_registry import ToolRegistry
+
     ToolRegistry.reset_instance()
     return ToolRegistry.get_instance()
 
@@ -31,13 +33,14 @@ class TestToolSafetyVerification:
         TC-001: Attempt to register a tool located in archives/.
         Expected: Registry must reject it.
         """
+
         def rogue_func():
             return "rogue"
 
         result = tool_registry.register_tool(
             tool_name="rogue_tool",
             tool_path="archives/void_violations/rogue_tool.py",
-            tool_func=rogue_func
+            tool_func=rogue_func,
         )
 
         assert result is False, "Registry should reject tools in archives/"
@@ -48,13 +51,12 @@ class TestToolSafetyVerification:
         TC-002: Attempt to register a tool located in /tmp or temp folder.
         Expected: Registry must reject it.
         """
+
         def temp_func():
             return "temp"
 
         result = tool_registry.register_tool(
-            tool_name="temp_tool",
-            tool_path="/tmp/temp_tool.py",
-            tool_func=temp_func
+            tool_name="temp_tool", tool_path="/tmp/temp_tool.py", tool_func=temp_func
         )
 
         assert result is False, "Registry should reject tools in /tmp/"
@@ -65,6 +67,7 @@ class TestToolSafetyVerification:
         TC-003: Register a tool in valid agentic_core location.
         Expected: Registry must accept it.
         """
+
         def valid_func():
             return "valid"
 
@@ -72,7 +75,7 @@ class TestToolSafetyVerification:
             tool_name="valid_tool",
             tool_path="agentic_core/L2_execution/ToolRegistry/file_io_tools.py",
             tool_func=valid_func,
-            description="File I/O operations"
+            description="File I/O operations",
         )
 
         assert result is True, "Registry should accept tools in agentic_core/"
@@ -89,13 +92,14 @@ class TestToolSafetyVerification:
         TC-004: Register a tool in apps_shared/utils.
         Expected: Registry must accept it.
         """
+
         def shared_func():
             return "shared"
 
         result = tool_registry.register_tool(
             tool_name="shared_tool",
             tool_path="apps_shared/utils/tool_registry.py",
-            tool_func=shared_func
+            tool_func=shared_func,
         )
 
         assert result is True, "Registry should accept tools in apps_shared/"
@@ -116,8 +120,9 @@ class TestToolDiscovery:
 
         # Verify at least one known tool file is found
         tool_names = [p.name for p in discovered]
-        assert any("tools" in name for name in tool_names), \
+        assert any("tools" in name for name in tool_names), (
             f"Should find tool files, got: {tool_names}"
+        )
 
 
 class TestToolRetrieval:
@@ -128,13 +133,14 @@ class TestToolRetrieval:
         TC-006: Retrieve tool function by name.
         Expected: Should return the callable function.
         """
+
         def my_tool():
             return "executed"
 
         tool_registry.register_tool(
             tool_name="my_tool",
             tool_path="agentic_core/L2_execution/ToolRegistry/tools.py",
-            tool_func=my_tool
+            tool_func=my_tool,
         )
 
         func = tool_registry.get_tool_func("my_tool")
@@ -155,13 +161,17 @@ class TestToolRetrieval:
         TC-008: List all registered tools.
         Expected: Should return list of tool names.
         """
+
         def tool1():
             pass
+
         def tool2():
             pass
 
         tool_registry.register_tool("tool1", "agentic_core/utils/sovereign_index.py", tool1)
-        tool_registry.register_tool("tool2", "agentic_core/L2_execution/ToolRegistry/tools.py", tool2)
+        tool_registry.register_tool(
+            "tool2", "agentic_core/L2_execution/ToolRegistry/tools.py", tool2
+        )
 
         tools = tool_registry.list_tools()
         assert "tool1" in tools
@@ -177,13 +187,12 @@ class TestToolUnregistration:
         TC-009: Unregister a previously registered tool.
         Expected: Tool should be removed from registry.
         """
+
         def temp_tool():
             pass
 
         tool_registry.register_tool(
-            "temp_tool",
-            "agentic_core/L2_execution/ToolRegistry/tools.py",
-            temp_tool
+            "temp_tool", "agentic_core/L2_execution/ToolRegistry/tools.py", temp_tool
         )
         assert "temp_tool" in tool_registry
 
@@ -202,4 +211,5 @@ class TestToolUnregistration:
 
 if __name__ == "__main__":
     import sys
+
     sys.exit(pytest.main(["-v", __file__]))

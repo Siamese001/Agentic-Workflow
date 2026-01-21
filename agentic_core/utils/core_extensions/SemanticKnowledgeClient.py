@@ -45,7 +45,9 @@ class SemanticKnowledgeClient:
         try:
             from pinecone import Pinecone
         except ImportError as e:
-            raise ImportError("pinecone-client not installed. Run: pip install pinecone-client") from e
+            raise ImportError(
+                "pinecone-client not installed. Run: pip install pinecone-client"
+            ) from e
 
         self.api_key = os.getenv("PINECONE_API_KEY")
         self.index_name = os.getenv("PINECONE_INDEX_NAME", "agentic-semantic-search")

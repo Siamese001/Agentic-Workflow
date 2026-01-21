@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from rank_bm25 import BM25Okapi
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
-'Brief description of functionality and purpose.'
+"Brief description of functionality and purpose."
 from typing import Any
 
 
@@ -25,10 +25,10 @@ class Bm25Store:
         if not self.documents:
             self.bm25 = None
             return
-        tokenized = [doc['text'].lower().split() for doc in self.documents]
+        tokenized = [doc["text"].lower().split() for doc in self.documents]
         self.bm25 = BM25Okapi(tokenized)
 
-    def query(self, query: str, top_k: int=5) -> list[dict]:
+    def query(self, query: str, top_k: int = 5) -> list[dict]:
         """BM25 keyword search."""
         if not self.bm25 or not self.documents:
             return []
@@ -40,10 +40,20 @@ class Bm25Store:
             if score == 0:
                 continue
             doc: Any = self.documents[idx]
-            results.append({'source': 'bm25', 'content': doc['text'], 'score': float(score), 'id': doc['id'], 'metadata': doc.get('metadata', {})})
+            results.append(
+                {
+                    "source": "bm25",
+                    "content": doc["text"],
+                    "score": float(score),
+                    "id": doc["id"],
+                    "metadata": doc.get("metadata", {}),
+                }
+            )
         return results
 
+
 _bm25_store: Any = Bm25Store()
+
 
 def get_bm25_store() -> BM25Store:
     """Brief description of functionality and purpose."""

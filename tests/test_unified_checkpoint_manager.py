@@ -14,6 +14,7 @@ Usage:
     python scripts/test_unified_checkpoint_manager.py --recovery-test
     python scripts/test_unified_checkpoint_manager.py --benchmark
 """
+
 from __future__ import annotations
 
 import argparse
@@ -117,7 +118,9 @@ def test_mode_switching() -> dict[str, Any]:
             auto_path = base_path / "autonomous_checkpoints"
             auto_manager = get_checkpoint_manager(mode="AUTONOMOUS", storage_path=auto_path)
 
-            assert auto_manager.mode == "AUTONOMOUS", f"Expected AUTONOMOUS mode, got {auto_manager.mode}"
+            assert auto_manager.mode == "AUTONOMOUS", (
+                f"Expected AUTONOMOUS mode, got {auto_manager.mode}"
+            )
             assert auto_manager.mirror_path.exists(), "Mirror path not created"
 
             # Create checkpoint
@@ -217,7 +220,9 @@ def test_corruption_recovery() -> dict[str, Any]:
                 with open(primary_file) as f:
                     restored_data = json.load(f)
 
-                results["data_intact"] = restored_data.get("state_snapshot", {}).get("important_value") == 42
+                results["data_intact"] = (
+                    restored_data.get("state_snapshot", {}).get("important_value") == 42
+                )
             else:
                 results["primary_restored"] = False
                 results["status"] = "FAIL"
@@ -426,46 +431,52 @@ def test_state_integrity() -> dict[str, Any]:
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Test UnifiedCheckpointManagerAgent')
-    parser.add_argument('--self-test', action='store_true', help='Run only self-tests')
-    parser.add_argument('--mode-test', action='store_true', help='Run only mode switching test')
-    parser.add_argument('--recovery-test', action='store_true', help='Run only corruption recovery test')
-    parser.add_argument('--benchmark', action='store_true', help='Run only performance benchmark')
-    parser.add_argument('--integrity-test', action='store_true', help='Run only state integrity test')
-    parser.add_argument('--output-dir', type=str, default='test_results', help='Output directory')
+    parser = argparse.ArgumentParser(description="Test UnifiedCheckpointManagerAgent")
+    parser.add_argument("--self-test", action="store_true", help="Run only self-tests")
+    parser.add_argument("--mode-test", action="store_true", help="Run only mode switching test")
+    parser.add_argument(
+        "--recovery-test", action="store_true", help="Run only corruption recovery test"
+    )
+    parser.add_argument("--benchmark", action="store_true", help="Run only performance benchmark")
+    parser.add_argument(
+        "--integrity-test", action="store_true", help="Run only state integrity test"
+    )
+    parser.add_argument("--output-dir", type=str, default="test_results", help="Output directory")
     args = parser.parse_args()
 
     output_dir = PROJECT_ROOT / args.output_dir
     output_dir.mkdir(exist_ok=True)
 
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
     print("=" * 60)
     print("UnifiedCheckpointManagerAgent Test Suite (Priority 2)")
     print("=" * 60)
 
     results = {
-        'timestamp': timestamp,
-        'tests': {},
+        "timestamp": timestamp,
+        "tests": {},
     }
 
     all_passed = True
-    run_all = not any([args.self_test, args.mode_test, args.recovery_test, args.benchmark, args.integrity_test])
+    run_all = not any(
+        [args.self_test, args.mode_test, args.recovery_test, args.benchmark, args.integrity_test]
+    )
 
     # Self-tests
     if args.self_test or run_all:
         print("\n[1/5] Running self-tests...")
         try:
             self_test_results = run_self_tests()
-            results['tests']['self_tests'] = self_test_results
-            passed = self_test_results.get('passed', 0)
-            failed = self_test_results.get('failed', 0)
+            results["tests"]["self_tests"] = self_test_results
+            passed = self_test_results.get("passed", 0)
+            failed = self_test_results.get("failed", 0)
             print(f"  ✓ Self-tests: {passed} passed, {failed} failed")
             if failed > 0:
                 all_passed = False
         except Exception as e:
             print(f"  ✗ Self-tests failed: {e}")
-            results['tests']['self_tests'] = {'error': str(e)}
+            results["tests"]["self_tests"] = {"error": str(e)}
             all_passed = False
 
     # Mode switching test
@@ -473,9 +484,9 @@ def main():
         print("\n[2/5] Running mode switching test...")
         try:
             mode_results = test_mode_switching()
-            results['tests']['mode_switching'] = mode_results
+            results["tests"]["mode_switching"] = mode_results
 
-            if mode_results.get('status') == 'PASS':
+            if mode_results.get("status") == "PASS":
                 print("  ✓ Mode switching PASSED")
                 print(f"    SYNC: {mode_results['sync_test']['status']}")
                 print(f"    ASYNC: {mode_results['async_test']['status']}")
@@ -485,7 +496,7 @@ def main():
                 all_passed = False
         except Exception as e:
             print(f"  ✗ Mode switching test failed: {e}")
-            results['tests']['mode_switching'] = {'error': str(e)}
+            results["tests"]["mode_switching"] = {"error": str(e)}
             all_passed = False
 
     # Corruption recovery test
@@ -493,9 +504,9 @@ def main():
         print("\n[3/5] Running corruption recovery test...")
         try:
             recovery_results = test_corruption_recovery()
-            results['tests']['corruption_recovery'] = recovery_results
+            results["tests"]["corruption_recovery"] = recovery_results
 
-            if recovery_results.get('status') == 'PASS':
+            if recovery_results.get("status") == "PASS":
                 print("  ✓ Corruption recovery PASSED")
                 print(f"    Checkpoint created: {recovery_results['checkpoint_created']}")
                 print(f"    Mirror created: {recovery_results['mirror_created']}")
@@ -505,7 +516,7 @@ def main():
                 all_passed = False
         except Exception as e:
             print(f"  ✗ Corruption recovery test failed: {e}")
-            results['tests']['corruption_recovery'] = {'error': str(e)}
+            results["tests"]["corruption_recovery"] = {"error": str(e)}
             all_passed = False
 
     # Performance benchmark
@@ -513,7 +524,7 @@ def main():
         print("\n[4/5] Running performance benchmark...")
         try:
             bench_results = test_performance_benchmark()
-            results['tests']['performance'] = bench_results
+            results["tests"]["performance"] = bench_results
 
             print("  ✓ Performance benchmark completed")
             print(f"    SYNC create avg: {bench_results['sync_stats']['avg']:.2f}ms")
@@ -521,11 +532,11 @@ def main():
             print(f"    Retrieval avg: {bench_results['retrieval_stats']['avg']:.2f}ms")
             print(f"    Verify avg: {bench_results['verify_stats']['avg']:.2f}ms")
 
-            if 'performance_warning' in bench_results:
+            if "performance_warning" in bench_results:
                 print(f"    ⚠ {bench_results['performance_warning']}")
         except Exception as e:
             print(f"  ✗ Performance benchmark failed: {e}")
-            results['tests']['performance'] = {'error': str(e)}
+            results["tests"]["performance"] = {"error": str(e)}
             all_passed = False
 
     # State integrity test
@@ -533,12 +544,14 @@ def main():
         print("\n[5/5] Running state integrity test...")
         try:
             integrity_results = test_state_integrity()
-            results['tests']['state_integrity'] = integrity_results
+            results["tests"]["state_integrity"] = integrity_results
 
-            if integrity_results.get('status') == 'PASS':
+            if integrity_results.get("status") == "PASS":
                 print("  ✓ State integrity PASSED")
                 print(f"    Save/Load cycle: {integrity_results['save_load_cycle']['status']}")
-                print(f"    Multiple checkpoints: {integrity_results['multiple_checkpoints']['status']}")
+                print(
+                    f"    Multiple checkpoints: {integrity_results['multiple_checkpoints']['status']}"
+                )
                 print(f"    Rollback: {integrity_results['rollback']['status']}")
                 print(f"    Index integrity: {integrity_results['index_integrity']['status']}")
             else:
@@ -546,12 +559,12 @@ def main():
                 all_passed = False
         except Exception as e:
             print(f"  ✗ State integrity test failed: {e}")
-            results['tests']['state_integrity'] = {'error': str(e)}
+            results["tests"]["state_integrity"] = {"error": str(e)}
             all_passed = False
 
     # Save results
-    output_file = output_dir / f'unified_checkpoint_manager_test_{timestamp}.json'
-    with open(output_file, 'w', encoding='utf-8') as f:
+    output_file = output_dir / f"unified_checkpoint_manager_test_{timestamp}.json"
+    with open(output_file, "w", encoding="utf-8") as f:
         json.dump(results, f, indent=2, default=str)
 
     print(f"\n{'=' * 60}")
@@ -565,5 +578,5 @@ def main():
         return 1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

@@ -19,6 +19,7 @@ Key Features:
 Territory: agentic_core/L4_state/ValidationContext/
 Canon Alignment: L4 state persistence and recovery
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -43,6 +44,7 @@ Logger = logging.getLogger(__name__)
 @dataclass
 class Checkpoint:
     """Represents a state checkpoint with metadata."""
+
     checkpoint_id: str
     timestamp: datetime
     state_snapshot: dict[str, Any]
@@ -54,32 +56,33 @@ class Checkpoint:
     def to_dict(self) -> dict[str, Any]:
         """Convert Checkpoint to dictionary for serialization."""
         return {
-            'checkpoint_id': self.checkpoint_id,
-            'timestamp': self.timestamp.isoformat(),
-            'state_snapshot': self.state_snapshot,
-            'file_hashes': self.file_hashes,
-            'metadata': self.metadata,
-            'is_valid': self.is_valid,
-            'recovery_count': self.recovery_count,
+            "checkpoint_id": self.checkpoint_id,
+            "timestamp": self.timestamp.isoformat(),
+            "state_snapshot": self.state_snapshot,
+            "file_hashes": self.file_hashes,
+            "metadata": self.metadata,
+            "is_valid": self.is_valid,
+            "recovery_count": self.recovery_count,
         }
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> Checkpoint:
         """Create Checkpoint from dictionary."""
         return cls(
-            checkpoint_id=data['checkpoint_id'],
-            timestamp=datetime.fromisoformat(data['timestamp']),
-            state_snapshot=data.get('state_snapshot', {}),
-            file_hashes=data.get('file_hashes', {}),
-            metadata=data.get('metadata', {}),
-            is_valid=data.get('is_valid', True),
-            recovery_count=data.get('recovery_count', 0),
+            checkpoint_id=data["checkpoint_id"],
+            timestamp=datetime.fromisoformat(data["timestamp"]),
+            state_snapshot=data.get("state_snapshot", {}),
+            file_hashes=data.get("file_hashes", {}),
+            metadata=data.get("metadata", {}),
+            is_valid=data.get("is_valid", True),
+            recovery_count=data.get("recovery_count", 0),
         )
 
 
 @dataclass
 class RecoveryResult:
     """Result of a recovery operation."""
+
     success: bool
     checkpoint_id: str
     files_restored: int = 0
@@ -90,11 +93,14 @@ class RecoveryResult:
 
 def timeout(seconds: int) -> Callable:
     """Timeout decorator for long-running operations."""
+
     def decorator(func: Callable) -> Callable:
         @wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
             return func(*args, **kwargs)
+
         return wrapper
+
     return decorator
 
 
@@ -162,7 +168,9 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
         # Load existing checkpoints
         self._load_checkpoints()
 
-        Logger.info(f"UnifiedCheckpointManager initialized in {self.mode} mode at {self.storage_path}")
+        Logger.info(
+            f"UnifiedCheckpointManager initialized in {self.mode} mode at {self.storage_path}"
+        )
 
     # =========================================================================
     # CHECKPOINT CREATION (Hybrid Sync/Async)
@@ -173,7 +181,7 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
         state_data: dict[str, Any],
         label: str = "manual",
         file_hashes: dict[str, str] | None = None,
-        metadata: dict[str, Any] | None = None
+        metadata: dict[str, Any] | None = None,
     ) -> str:
         """
         Create a checkpoint (synchronous entry point for backward compatibility).
@@ -212,7 +220,7 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
         state_data: dict[str, Any],
         label: str = "manual",
         file_hashes: dict[str, str] | None = None,
-        metadata: dict[str, Any] | None = None
+        metadata: dict[str, Any] | None = None,
     ) -> str:
         """
         Create a checkpoint (async entry point).
@@ -232,8 +240,7 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
             # Run sync in executor to not block
             loop = asyncio.get_event_loop()
             await loop.run_in_executor(
-                None,
-                lambda: self._save_sync(checkpoint_id, state_data, file_hashes, metadata)
+                None, lambda: self._save_sync(checkpoint_id, state_data, file_hashes, metadata)
             )
             return checkpoint_id
         else:
@@ -241,7 +248,7 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
 
     def _generate_checkpoint_id(self, label: str) -> str:
         """Generate a unique checkpoint ID."""
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S_%f')
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
         return f"chk_{timestamp}_{label}"
 
     def _save_sync(
@@ -249,7 +256,7 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
         checkpoint_id: str,
         state_data: dict[str, Any],
         file_hashes: dict[str, str] | None = None,
-        metadata: dict[str, Any] | None = None
+        metadata: dict[str, Any] | None = None,
     ) -> str:
         """
         Synchronous save logic (migrated from legacy CheckpointManagerAgent).
@@ -274,7 +281,7 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
         file_path = self.storage_path / f"{checkpoint_id}.json"
 
         try:
-            with open(file_path, 'w', encoding='utf-8') as f:
+            with open(file_path, "w", encoding="utf-8") as f:
                 json.dump(checkpoint.to_dict(), f, indent=2, default=str)
 
             self.checkpoints[checkpoint_id] = checkpoint
@@ -298,7 +305,7 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
         checkpoint_id: str,
         state_data: dict[str, Any],
         file_hashes: dict[str, str] | None = None,
-        metadata: dict[str, Any] | None = None
+        metadata: dict[str, Any] | None = None,
     ) -> str:
         """
         Asynchronous save logic (migrated from AutonomousCheckpointManager).
@@ -315,8 +322,7 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
         # Offload I/O to thread pool
         loop = asyncio.get_event_loop()
         file_path = await loop.run_in_executor(
-            None,
-            lambda: self._save_sync(checkpoint_id, state_data, file_hashes, metadata)
+            None, lambda: self._save_sync(checkpoint_id, state_data, file_hashes, metadata)
         )
 
         # Trigger background mirroring in AUTONOMOUS mode
@@ -365,11 +371,7 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
             True if mirroring succeeded
         """
         loop = asyncio.get_event_loop()
-        return await loop.run_in_executor(
-            None,
-            self._mirror_checkpoint_sync,
-            primary_path
-        )
+        return await loop.run_in_executor(None, self._mirror_checkpoint_sync, primary_path)
 
     # =========================================================================
     # INTEGRITY VERIFICATION
@@ -400,7 +402,9 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
                 m_hash = hashlib.md5(mirror.read_bytes()).hexdigest()
 
                 if p_hash != m_hash:
-                    Logger.warning(f"Hash mismatch for {checkpoint_id}: primary={p_hash}, mirror={m_hash}")
+                    Logger.warning(
+                        f"Hash mismatch for {checkpoint_id}: primary={p_hash}, mirror={m_hash}"
+                    )
                     return False
 
                 return True
@@ -464,7 +468,7 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
         file_path = self.storage_path / f"{checkpoint_id}.json"
         if file_path.exists():
             try:
-                with open(file_path, encoding='utf-8') as f:
+                with open(file_path, encoding="utf-8") as f:
                     data = json.load(f)
                 checkpoint = Checkpoint.from_dict(data)
                 self.checkpoints[checkpoint_id] = checkpoint
@@ -490,10 +494,10 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
         """List all available checkpoints."""
         return [
             {
-                'checkpoint_id': cp.checkpoint_id,
-                'timestamp': cp.timestamp.isoformat(),
-                'is_valid': cp.is_valid,
-                'recovery_count': cp.recovery_count,
+                "checkpoint_id": cp.checkpoint_id,
+                "timestamp": cp.timestamp.isoformat(),
+                "is_valid": cp.is_valid,
+                "recovery_count": cp.recovery_count,
             }
             for cp in sorted(self.checkpoints.values(), key=lambda c: c.timestamp, reverse=True)
         ]
@@ -554,12 +558,12 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
 
         if index_path.exists():
             try:
-                with open(index_path, encoding='utf-8') as f:
+                with open(index_path, encoding="utf-8") as f:
                     index_data = json.load(f)
 
-                self.current_checkpoint_id = index_data.get('current_checkpoint_id')
+                self.current_checkpoint_id = index_data.get("current_checkpoint_id")
 
-                for cp_id in index_data.get('checkpoints', []):
+                for cp_id in index_data.get("checkpoints", []):
                     checkpoint = self.get_checkpoint(cp_id)
                     if checkpoint:
                         self.checkpoints[cp_id] = checkpoint
@@ -573,13 +577,13 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
         index_path = self.storage_path / "index.json"
 
         index_data = {
-            'current_checkpoint_id': self.current_checkpoint_id,
-            'checkpoints': list(self.checkpoints.keys()),
-            'updated_at': datetime.now().isoformat(),
+            "current_checkpoint_id": self.current_checkpoint_id,
+            "checkpoints": list(self.checkpoints.keys()),
+            "updated_at": datetime.now().isoformat(),
         }
 
         try:
-            with open(index_path, 'w', encoding='utf-8') as f:
+            with open(index_path, "w", encoding="utf-8") as f:
                 json.dump(index_data, f, indent=2)
         except Exception as e:
             Logger.error(f"Failed to save checkpoint index: {e}")
@@ -590,10 +594,7 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
             return
 
         # Sort by timestamp, oldest first
-        sorted_checkpoints = sorted(
-            self.checkpoints.values(),
-            key=lambda c: c.timestamp
-        )
+        sorted_checkpoints = sorted(self.checkpoints.values(), key=lambda c: c.timestamp)
 
         # Remove oldest checkpoints
         to_remove = len(self.checkpoints) - self.max_checkpoints
@@ -634,7 +635,7 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: set[str] | None = None
+        _call_path: set[str] | None = None,
     ) -> dict[str, Any]:
         """
         Repository-wide checkpoint healing.
@@ -655,7 +656,7 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
             execute=execute,
             depth=depth,
             max_depth=max_depth,
-            _call_path=_call_path
+            _call_path=_call_path,
         )
 
         if _call_path is None:
@@ -714,7 +715,9 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
             results["tests"].append({"name": "test_instantiation", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
+            results["tests"].append(
+                {"name": "test_instantiation", "status": "failed", "error": str(e)}
+            )
 
         # Test 2: Checkpoint ID generation
         try:
@@ -725,7 +728,9 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
             results["tests"].append({"name": "test_checkpoint_id_generation", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append({"name": "test_checkpoint_id_generation", "status": "failed", "error": str(e)})
+            results["tests"].append(
+                {"name": "test_checkpoint_id_generation", "status": "failed", "error": str(e)}
+            )
 
         # Test 3: Checkpoint serialization
         try:
@@ -742,7 +747,9 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
             results["tests"].append({"name": "test_checkpoint_serialization", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append({"name": "test_checkpoint_serialization", "status": "failed", "error": str(e)})
+            results["tests"].append(
+                {"name": "test_checkpoint_serialization", "status": "failed", "error": str(e)}
+            )
 
         return results
 
@@ -751,9 +758,9 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
 # FACTORY FUNCTIONS
 # =========================================================================
 
+
 def get_checkpoint_manager(
-    mode: str = "ASYNC",
-    storage_path: Path | None = None
+    mode: str = "ASYNC", storage_path: Path | None = None
 ) -> UnifiedCheckpointManagerAgent:
     """
     Factory function to get UnifiedCheckpointManagerAgent instance.
@@ -780,7 +787,9 @@ def get_sync_checkpoint_manager(storage_path: Path | None = None) -> UnifiedChec
     return get_checkpoint_manager(mode="SYNC", storage_path=storage_path)
 
 
-def get_autonomous_checkpoint_manager(storage_path: Path | None = None) -> UnifiedCheckpointManagerAgent:
+def get_autonomous_checkpoint_manager(
+    storage_path: Path | None = None,
+) -> UnifiedCheckpointManagerAgent:
     """Get an autonomous checkpoint manager with mirroring."""
     return get_checkpoint_manager(mode="AUTONOMOUS", storage_path=storage_path)
 
@@ -801,8 +810,8 @@ if __name__ == "__main__":
     if args.self_test:
         results = manager._run_self_tests()
         print(f"Self-tests: {results['passed']} passed, {results['failed']} failed")
-        for test in results['tests']:
-            status = "✓" if test['status'] == 'passed' else "✗"
+        for test in results["tests"]:
+            status = "✓" if test["status"] == "passed" else "✗"
             print(f"  {status} {test['name']}")
 
     elif args.list:
@@ -818,7 +827,6 @@ if __name__ == "__main__":
     else:
         # Demo: Create a test checkpoint
         cp_id = manager.create_checkpoint(
-            state_data={"demo": "checkpoint", "timestamp": datetime.now().isoformat()},
-            label="demo"
+            state_data={"demo": "checkpoint", "timestamp": datetime.now().isoformat()}, label="demo"
         )
         print(f"Created checkpoint: {cp_id}")

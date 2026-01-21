@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: memory, orchestrator, prompt, workflow
@@ -30,6 +29,7 @@ Logger = logging.getLogger(__name__)
 # CRITICAL ARCHITECTURAL REFACTOR: Removed import from APPS_SHARED_DIR.
 # The signal bus functionality is now provided via dependency injection.
 
+
 # Define a local Protocol for the signal bus interface.
 # This allows dependency injection of a signal bus without direct import
 # from downstream layers like APPS_SHARED_DIR.
@@ -40,15 +40,16 @@ class SignalBusInterface(Protocol):
     An object conforming to this protocol can be injected into the executor
     to enable signal emission.
     """
-    def emit(self, signal_type: Any, message: str, source: str, Severity: str) -> None:
 
-        ...
+    def emit(self, signal_type: Any, message: str, source: str, Severity: str) -> None: ...
+
 
 # Define local Enum for the specific signal types used by this executor.
 # This replaces the need to import SignalType from APPS_SHARED_DIR.
 # NAMING FIXED: L5SignalType → L5SignalType
 class L5SignalType(str, Enum):
     """Specific signal types emitted by the L5IntegrityGateExecutor."""
+
     VALIDATION_FAILURE = "validation_failure"
     QUALITY_BELOW_THRESHOLD = "quality_below_threshold"
 
@@ -58,10 +59,10 @@ class ValidationSeverity(str, Enum):
     """Severity levels for validation issues."""
 
     CRITICAL = "critical"  # Blocks output
-    HIGH = "high"          # Should fix before use
-    MEDIUM = "medium"      # Recommended fix
-    LOW = "low"            # Minor issue
-    INFO = "info"          # Informational only
+    HIGH = "high"  # Should fix before use
+    MEDIUM = "medium"  # Recommended fix
+    LOW = "low"  # Minor issue
+    INFO = "info"  # Informational only
 
 
 # NAMING FIXED: ValidationCategory → ValidationCategory
@@ -112,14 +113,16 @@ class ValidationResult:
         pass_detected: int = 1,
     ) -> None:
         """Add a validation issue."""
-        self.issues.append(ValidationIssue(
-            category=category,
-            Severity=Severity,
-            message=message,
-            location=location,
-            suggestion=suggestion,
-            pass_detected=pass_detected,
-        ))
+        self.issues.append(
+            ValidationIssue(
+                category=category,
+                Severity=Severity,
+                message=message,
+                location=location,
+                suggestion=suggestion,
+                pass_detected=pass_detected,
+            )
+        )
 
         # Update passed status based on Severity
         if Severity in [ValidationSeverity.CRITICAL, ValidationSeverity.HIGH]:
@@ -158,7 +161,7 @@ class ValidationResult:
                     "suggestion": i.suggestion,
                 }
                 for i in self.issues
-            ]
+            ],
         }
 
 
@@ -190,40 +193,73 @@ class L5IntegrityGateExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
 
     # Fluff words that indicate vague language
     FLUFF_WORDS = {
-        "cutting-edge", "innovative", "world-class", "leading", "premier",
-        "revolutionary", "groundbreaking", "state-of-the-art", "best-in-class",
-        "industry-leading", "next-generation", "advanced", "sophisticated",
-        "robust", "powerful", "comprehensive", "extensive", "significant",
-        "leverage", "synergy", "paradigm", "holistic", "scalable",
+        "cutting-edge",
+        "innovative",
+        "world-class",
+        "leading",
+        "premier",
+        "revolutionary",
+        "groundbreaking",
+        "state-of-the-art",
+        "best-in-class",
+        "industry-leading",
+        "next-generation",
+        "advanced",
+        "sophisticated",
+        "robust",
+        "powerful",
+        "comprehensive",
+        "extensive",
+        "significant",
+        "leverage",
+        "synergy",
+        "paradigm",
+        "holistic",
+        "scalable",
     }
 
     # Technical nouns that can follow fluff words acceptably
     TECHNICAL_NOUNS = {
-        "architecture", "model", "algorithm", "framework", "platform",
-        "system", "infrastructure", "stack", "pipeline", "engine",
-        "service", "API", "database", "network", "protocol",
-        "implementation", "solution", "approach", "methodology",
+        "architecture",
+        "model",
+        "algorithm",
+        "framework",
+        "platform",
+        "system",
+        "infrastructure",
+        "stack",
+        "pipeline",
+        "engine",
+        "service",
+        "API",
+        "database",
+        "network",
+        "protocol",
+        "implementation",
+        "solution",
+        "approach",
+        "methodology",
     }
 
     # Patterns for Metric detection
     METRIC_PATTERNS = [
-        r'\$[\d,]+(?:\.\d+)?[KMB]?',           # Dollar amounts
-        r'\d+(?:\.\d+)?%',                      # Percentages
-        r'\d+(?:\.\d+)?[xX]',                   # Multipliers
-        r'\d+(?:,\d{3})*(?:\.\d+)?',           # Plain numbers
+        r"\$[\d,]+(?:\.\d+)?[KMB]?",  # Dollar amounts
+        r"\d+(?:\.\d+)?%",  # Percentages
+        r"\d+(?:\.\d+)?[xX]",  # Multipliers
+        r"\d+(?:,\d{3})*(?:\.\d+)?",  # Plain numbers
     ]
 
     # Patterns for vague claims
     VAGUE_PATTERNS = [
-        r'\bsignificant(?:ly)?\b',
-        r'\bsubstantial(?:ly)?\b',
-        r'\bmany\b',
-        r'\bseveral\b',
-        r'\bvarious\b',
-        r'\bnumerous\b',
-        r'\bimproved?\b(?!\s+by\s+\d)',
-        r'\bincreased?\b(?!\s+by\s+\d)',
-        r'\breduced?\b(?!\s+by\s+\d)',
+        r"\bsignificant(?:ly)?\b",
+        r"\bsubstantial(?:ly)?\b",
+        r"\bmany\b",
+        r"\bseveral\b",
+        r"\bvarious\b",
+        r"\bnumerous\b",
+        r"\bimproved?\b(?!\s+by\s+\d)",
+        r"\bincreased?\b(?!\s+by\s+\d)",
+        r"\breduced?\b(?!\s+by\s+\d)",
     ]
 
     def __init__(
@@ -278,7 +314,9 @@ class L5IntegrityGateExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
         self._run_fast_checks(content, result)
 
         result.pass1_duration_ms = (datetime.utcnow() - pass1_start).total_seconds() * 1000
-        Logger.debug(f"Pass 1 completed in {result.pass1_duration_ms:.1f}ms, found {len(result.issues)} issues")
+        Logger.debug(
+            f"Pass 1 completed in {result.pass1_duration_ms:.1f}ms, found {len(result.issues)} issues"
+        )
 
         # Check if we should skip Pass 2
         if self.skip_pass2_on_critical and result.has_critical_issues():
@@ -319,6 +357,7 @@ class L5IntegrityGateExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
         self._emit_validation_signal(result)
 
         return result
+
     def _run_fast_checks(self, content: dict[str, Any], result: ValidationResult) -> None:
         """
         Pass 1: Fast regex-based checks.
@@ -329,7 +368,9 @@ class L5IntegrityGateExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
         # Run all fast validation checks
         self._execute_fast_validation_checks(content, text_content, result)
 
-    def _execute_fast_validation_checks(self, content: dict[str, Any], text_content: str, result: ValidationResult) -> None:
+    def _execute_fast_validation_checks(
+        self, content: dict[str, Any], text_content: str, result: ValidationResult
+    ) -> None:
         """Execute all fast validation checks."""
         self._check_required_fields(content, result)
         self._check_fluff_language_fast(text_content, result)
@@ -354,13 +395,13 @@ class L5IntegrityGateExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
 
         # Check for orphaned claims
         self._check_orphaned_claims_deep(content, result)
+
     def _extract_text_content(self, content: dict[str, Any]) -> str:
         """Extract all text content for analysis."""
 
         text_parts = []
 
         def extract_recursive(obj: Any, depth: int = 0) -> None:
-
             if depth > 10:  # Prevent infinite recursion
                 return
 
@@ -394,12 +435,12 @@ class L5IntegrityGateExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
     def _check_fluff_language_fast(self, text: str, result: ValidationResult) -> None:
         """Fast check for fluff language using regex."""
 
-        words = re.findall(r'\b[\w-]+\b', text.lower())
+        words = re.findall(r"\b[\w-]+\b", text.lower())
 
         for i, word in enumerate(words):
             if word in self.FLUFF_WORDS:
                 # Check if followed by technical noun
-                next_words = words[i+1:i+3] if i+1 < len(words) else []
+                next_words = words[i + 1 : i + 3] if i + 1 < len(words) else []
 
                 if not any(nw in self.TECHNICAL_NOUNS for nw in next_words):
                     # Get context
@@ -428,9 +469,7 @@ class L5IntegrityGateExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
                 context = text[start:end]
 
                 # Check if there's a Metric nearby
-                has_metric = any(
-                    re.search(mp, context) for mp in self.METRIC_PATTERNS
-                )
+                has_metric = any(re.search(mp, context) for mp in self.METRIC_PATTERNS)
 
                 if not has_metric:
                     result.add_issue(
@@ -519,7 +558,9 @@ class L5IntegrityGateExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
                             pass_detected=2,
                         )
 
-    def _check_citation_coverage_deep(self, content: dict[str, Any], result: ValidationResult) -> None:
+    def _check_citation_coverage_deep(
+        self, content: dict[str, Any], result: ValidationResult
+    ) -> None:
         """Deep check for citation coverage."""
 
         content.get("citations", [])
@@ -557,7 +598,9 @@ class L5IntegrityGateExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
             # Check if same Metric appears with different values
             # (simplified check - real implementation would be more sophisticated)
 
-    def _check_orphaned_claims_deep(self, content: dict[str, Any], result: ValidationResult) -> None:
+    def _check_orphaned_claims_deep(
+        self, content: dict[str, Any], result: ValidationResult
+    ) -> None:
         """Deep check for orphaned claims."""
 
         claims = content.get("claims", [])
@@ -633,22 +676,29 @@ class L5IntegrityGateExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
 
         if result.has_critical_issues():
             self._signal_bus.emit(
-                L5SignalType.VALIDATION_FAILURE, # Using local L5SignalType
+                L5SignalType.VALIDATION_FAILURE,  # Using local L5SignalType
                 f"Critical validation issues: {len(result.get_issues_by_severity(ValidationSeverity.CRITICAL))}",
                 source="L5IntegrityGateExecutor",
-                Severity="error"
+                Severity="error",
             )
         elif not result.passed:
             self._signal_bus.emit(
-                L5SignalType.QUALITY_BELOW_THRESHOLD, # Using local L5SignalType
+                L5SignalType.QUALITY_BELOW_THRESHOLD,  # Using local L5SignalType
                 f"Quality below threshold: {result.quality_score:.2f}",
                 source="L5IntegrityGateExecutor",
-                Severity="warning"
+                Severity="warning",
             )
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L5 safety agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:

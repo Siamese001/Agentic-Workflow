@@ -203,6 +203,7 @@ class TestBatchMode:
 
         # Set up a mock input that should NOT be called
         input_called = []
+
         def mock_input(prompt):
             input_called.append(prompt)
             return "n"  # Would deny if called
@@ -229,6 +230,7 @@ class TestBatchMode:
 
         # Set up a mock input that will be called
         input_called = []
+
         def mock_input(prompt):
             input_called.append(prompt)
             return "y"
@@ -252,6 +254,7 @@ class TestBatchMode:
         test_file.write_text("# Empty batch test")
 
         input_called = []
+
         def mock_input(prompt):
             input_called.append(prompt)
             return "y"
@@ -291,6 +294,7 @@ class TestL4LedgerIntegration:
 
         # Set up mock L4 ledger hook
         ledger_entries = []
+
         def mock_ledger_hook(result: ArchivalResult):
             ledger_entries.append(result)
 
@@ -313,6 +317,7 @@ class TestL4LedgerIntegration:
 
         # Set up mock L4 ledger hook
         ledger_entries = []
+
         def mock_ledger_hook(result: ArchivalResult):
             ledger_entries.append(result)
 
@@ -335,6 +340,7 @@ class TestL4LedgerIntegration:
 
         # Set up mock L4 ledger hook
         ledger_entries = []
+
         def mock_ledger_hook(result: ArchivalResult):
             ledger_entries.append(result)
 
@@ -429,6 +435,7 @@ class TestRequireApprovalSetting:
         test_file.write_text("# No approval test")
 
         input_called = []
+
         def mock_input(prompt):
             input_called.append(prompt)
             return "n"
@@ -445,5 +452,5 @@ class TestRequireApprovalSetting:
         assert result.approval_status == "APPROVED"
 
 
-if __name__ == '__main__':
-    pytest.main([__file__, '-v', '--tb=short'])
+if __name__ == "__main__":
+    pytest.main([__file__, "-v", "--tb=short"])

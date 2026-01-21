@@ -3,6 +3,7 @@
 Extract agent duplicates from find_duplicate_agents.py output.
 Filters to actual agent files only (excludes tests).
 """
+
 import json
 import sys
 from datetime import datetime
@@ -24,8 +25,9 @@ def infer_rationale(canonical: str, dup_path: str, action: str) -> str:
     if "blueprint_sovereign" in dup_path:
         return "Leftover blueprint template — production version is canonical"
 
-    if ("validators" in canonical and "agents" in dup_path) or \
-       ("agents" in canonical and "validators" in dup_path):
+    if ("validators" in canonical and "agents" in dup_path) or (
+        "agents" in canonical and "validators" in dup_path
+    ):
         return "Location overlap: same agent in agents/ vs validators/ directories"
 
     if action == "REVIEW":
@@ -50,15 +52,17 @@ for item in data:
         if not is_agent_file(dup_path):
             continue
 
-        results.append({
-            "agent_name": Path(canonical).stem,
-            "canonical": canonical,
-            "duplicate": dup_path,
-            "action": item["action"],
-            "canonical_quality": item["canonical_quality"]["quality_score"],
-            "duplicate_quality": dup["quality"]["quality_score"],
-            "rationale": infer_rationale(canonical, dup_path, item["action"])
-        })
+        results.append(
+            {
+                "agent_name": Path(canonical).stem,
+                "canonical": canonical,
+                "duplicate": dup_path,
+                "action": item["action"],
+                "canonical_quality": item["canonical_quality"]["quality_score"],
+                "duplicate_quality": dup["quality"]["quality_score"],
+                "rationale": infer_rationale(canonical, dup_path, item["action"]),
+            }
+        )
 
 # Sort: DELETE first, then by agent name
 results.sort(key=lambda x: (0 if x["action"] == "DELETE" else 1, x["agent_name"]))
@@ -76,9 +80,11 @@ print("| Agent Name | Canonical Path | Duplicate Path | Action | Quality (C/D) |
 print("| --- | --- | --- | --- | --- | --- |")
 
 for r in results:
-    print(f"| {r['agent_name']} | `{r['canonical']}` | `{r['duplicate']}` | "
-          f"**{r['action']}** | {r['canonical_quality']}/{r['duplicate_quality']} | "
-          f"{r['rationale']} |")
+    print(
+        f"| {r['agent_name']} | `{r['canonical']}` | `{r['duplicate']}` | "
+        f"**{r['action']}** | {r['canonical_quality']}/{r['duplicate_quality']} | "
+        f"{r['rationale']} |"
+    )
 
 print("\n---\n")
 print("## Quick Actions\n")
@@ -93,6 +99,6 @@ print("### Review Required (Manual Diff)")
 print("```bash")
 for r in results:
     if r["action"] == "REVIEW":
-        print(f'# {r["agent_name"]}')
+        print(f"# {r['agent_name']}")
         print(f'code --diff "{r["canonical"]}" "{r["duplicate"]}"\n')
 print("```")

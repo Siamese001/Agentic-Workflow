@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 
 class EventType(str, Enum):
     """System event types."""
+
     # Lifecycle Events
     WORKFLOW_STARTED = "WORKFLOW_STARTED"
     WORKFLOW_COMPLETED = "WORKFLOW_COMPLETED"
@@ -57,6 +58,7 @@ class EventType(str, Enum):
 
 class SystemEvent(BaseModel):
     """Immutable system event."""
+
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     trace_id: str
     type: EventType
@@ -64,7 +66,7 @@ class SystemEvent(BaseModel):
     payload: dict[str, Any]
     timestamp: float = Field(default_factory=time.time)
     correlation_id: str | None = None  # Links related events
-    causation_id: str | None = None   # The event that caused this one
+    causation_id: str | None = None  # The event that caused this one
 
     class Config:
         frozen = True  # Events are immutable
@@ -83,7 +85,7 @@ class SystemEvent(BaseModel):
             "payload": self.payload,
             "timestamp": self.timestamp,
             "correlation_id": self.correlation_id,
-            "causation_id": self.causation_id
+            "causation_id": self.causation_id,
         }
 
     @classmethod
@@ -104,7 +106,7 @@ class SystemEvent(BaseModel):
             payload=data["payload"],
             timestamp=data["timestamp"],
             correlation_id=data.get("correlation_id"),
-            causation_id=data.get("causation_id")
+            causation_id=data.get("causation_id"),
         )
 
 
@@ -128,9 +130,7 @@ class EventBus(ABC):
 
     @abstractmethod
     async def subscribe(
-        self,
-        channel: str,
-        callback: Callable[[SystemEvent], Awaitable[None]]
+        self, channel: str, callback: Callable[[SystemEvent], Awaitable[None]]
     ) -> None:
         """Subscribe to events on a channel.
 
@@ -177,7 +177,7 @@ class MemoryEventBus(EventBus):
             "events_published": 0,
             "events_processed": 0,
             "subscriber_errors": 0,
-            "channels": 0
+            "channels": 0,
         }
 
         logger.info("Initialized MemoryEventBus")
@@ -214,16 +214,12 @@ class MemoryEventBus(EventBus):
 
         # Start worker if needed
         if channel not in self._workers:
-            self._workers[channel] = asyncio.create_task(
-                self._worker_loop(channel)
-            )
+            self._workers[channel] = asyncio.create_task(self._worker_loop(channel))
 
         logger.debug(f"Published event {event.id} to channel {channel}")
 
     async def subscribe(
-        self,
-        channel: str,
-        callback: Callable[[SystemEvent], Awaitable[None]]
+        self, channel: str, callback: Callable[[SystemEvent], Awaitable[None]]
     ) -> None:
         """Subscribe to events on a channel.
 
@@ -277,7 +273,7 @@ class MemoryEventBus(EventBus):
             "channels": len(self._queues),
             "subscribers": sum(len(subs) for subs in self._subscribers.values()),
             "queue_sizes": {ch: q.qsize() for ch, q in self._queues.items()},
-            "stats": self._stats.copy()
+            "stats": self._stats.copy(),
         }
 
     async def _worker_loop(self, channel: str) -> None:
@@ -306,11 +302,7 @@ class MemoryEventBus(EventBus):
             except Exception as e:
                 logger.error(f"Worker error for channel {channel}: {e}")
 
-    async def _notify_subscribers(
-        self,
-        event: SystemEvent,
-        subscribers: list[Callable]
-    ) -> None:
+    async def _notify_subscribers(self, event: SystemEvent, subscribers: list[Callable]) -> None:
         """Notify all subscribers of an event.
 
         Args:
@@ -328,9 +320,7 @@ class MemoryEventBus(EventBus):
             await asyncio.gather(*tasks, return_exceptions=True)
 
     async def _safe_notify(
-        self,
-        callback: Callable[[SystemEvent], Awaitable[None]],
-        event: SystemEvent
+        self, callback: Callable[[SystemEvent], Awaitable[None]], event: SystemEvent
     ) -> None:
         """Safely notify a subscriber.
 
@@ -352,7 +342,7 @@ class RedisEventBus(EventBus):
         self,
         connection_string: str,
         consumer_group: str = "agentic_workflow",
-        consumer_name: str | None = None
+        consumer_name: str | None = None,
     ):
         """Initialize Redis event bus.
 
@@ -374,7 +364,7 @@ class RedisEventBus(EventBus):
             "events_processed": 0,
             "subscriber_errors": 0,
             "reconnections": 0,
-            "channels": 0
+            "channels": 0,
         }
 
         logger.info(f"Initialized RedisEventBus for {connection_string}")
@@ -390,7 +380,7 @@ class RedisEventBus(EventBus):
                 decode_responses=True,
                 retry_on_timeout=True,
                 socket_keepalive=True,
-                socket_keepalive_options={}
+                socket_keepalive_options={},
             )
 
             # Test connection
@@ -426,7 +416,7 @@ class RedisEventBus(EventBus):
             await self.redis.xadd(
                 channel,
                 event.to_dict(),
-                maxlen=10000  # Trim stream to 10k entries
+                maxlen=10000,  # Trim stream to 10k entries
             )
 
             self._stats["events_published"] += 1
@@ -438,9 +428,7 @@ class RedisEventBus(EventBus):
             raise
 
     async def subscribe(
-        self,
-        channel: str,
-        callback: Callable[[SystemEvent], Awaitable[None]]
+        self, channel: str, callback: Callable[[SystemEvent], Awaitable[None]]
     ) -> None:
         """Subscribe to a Redis stream.
 
@@ -453,12 +441,7 @@ class RedisEventBus(EventBus):
 
         # Create consumer group if it doesn't exist
         try:
-            await self.redis.xgroup_create(
-                channel,
-                self.consumer_group,
-                id="0",
-                mkstream=True
-            )
+            await self.redis.xgroup_create(channel, self.consumer_group, id="0", mkstream=True)
         except Exception as e:
             # Group might already exist
             if "BUSYGROUP" not in str(e):
@@ -470,9 +453,7 @@ class RedisEventBus(EventBus):
             self._stats["channels"] += 1
 
             # Start reader task
-            self._readers[channel] = asyncio.create_task(
-                self._reader_loop(channel)
-            )
+            self._readers[channel] = asyncio.create_task(self._reader_loop(channel))
 
         self._subscribers[channel].append(callback)
         logger.debug(f"Subscribed to Redis stream {channel}")
@@ -529,7 +510,7 @@ class RedisEventBus(EventBus):
                 "connection": self.connection_string,
                 "consumer_group": self.consumer_group,
                 "channels": len(self._subscribers),
-                "stats": self._stats.copy()
+                "stats": self._stats.copy(),
             }
 
         except Exception as e:
@@ -537,7 +518,7 @@ class RedisEventBus(EventBus):
                 "status": "unhealthy",
                 "type": "redis",
                 "error": str(e),
-                "stats": self._stats.copy()
+                "stats": self._stats.copy(),
             }
 
     async def _reader_loop(self, channel: str) -> None:
@@ -556,7 +537,7 @@ class RedisEventBus(EventBus):
                     self.consumer_name,
                     {channel: ">"},
                     count=10,
-                    block=1000  # 1 second timeout
+                    block=1000,  # 1 second timeout
                 )
 
                 for stream, msgs in messages:
@@ -585,11 +566,7 @@ class RedisEventBus(EventBus):
                 logger.error(f"Reader error for stream {channel}: {e}")
                 await asyncio.sleep(1)  # Brief pause before retry
 
-    async def _notify_subscribers(
-        self,
-        event: SystemEvent,
-        subscribers: list[Callable]
-    ) -> None:
+    async def _notify_subscribers(self, event: SystemEvent, subscribers: list[Callable]) -> None:
         """Notify all subscribers of an event.
 
         Args:
@@ -607,9 +584,7 @@ class RedisEventBus(EventBus):
             await asyncio.gather(*tasks, return_exceptions=True)
 
     async def _safe_notify(
-        self,
-        callback: Callable[[SystemEvent], Awaitable[None]],
-        event: SystemEvent
+        self, callback: Callable[[SystemEvent], Awaitable[None]], event: SystemEvent
     ) -> None:
         """Safely notify a subscriber.
 
@@ -634,7 +609,7 @@ class RedisEventBus(EventBus):
         # Try to reconnect
         for attempt in range(3):
             try:
-                await asyncio.sleep(2 ** attempt)  # Exponential backoff
+                await asyncio.sleep(2**attempt)  # Exponential backoff
                 await self.connect()
                 self._stats["reconnections"] += 1
                 logger.info("Redis reconnected successfully")
@@ -684,7 +659,7 @@ async def publish_event(
     payload: dict[str, Any],
     trace_id: str | None = None,
     correlation_id: str | None = None,
-    causation_id: str | None = None
+    causation_id: str | None = None,
 ) -> None:
     """Publish a system event.
 
@@ -702,7 +677,7 @@ async def publish_event(
         payload=payload,
         trace_id=trace_id or str(uuid.uuid4()),
         correlation_id=correlation_id,
-        causation_id=causation_id
+        causation_id=causation_id,
     )
 
     bus = await get_event_bus()
@@ -711,10 +686,7 @@ async def publish_event(
 
 
 # Decorator for event publishing
-def event_publisher(
-    event_type: EventType,
-    channel: str | None = None
-):
+def event_publisher(event_type: EventType, channel: str | None = None):
     """Decorator to automatically publish events.
 
     Args:
@@ -724,11 +696,12 @@ def event_publisher(
     Returns:
         Decorated function
     """
+
     def decorator(func):
         async def async_wrapper(*args, **kwargs):
             # Extract trace_id from first argument if it's a SignalEnvelope
             trace_id = None
-            if args and hasattr(args[0], 'trace_id'):
+            if args and hasattr(args[0], "trace_id"):
                 trace_id = args[0].trace_id
 
             # Publish start event
@@ -736,7 +709,7 @@ def event_publisher(
                 event_type,
                 func.__module__ + "." + func.__name__,
                 {"status": "started", "args_count": len(args)},
-                trace_id=trace_id
+                trace_id=trace_id,
             )
 
             try:
@@ -749,7 +722,7 @@ def event_publisher(
                     func.__module__ + "." + func.__name__,
                     {"status": "completed", "success": True},
                     trace_id=trace_id,
-                    causation_id=trace_id
+                    causation_id=trace_id,
                 )
 
                 return result
@@ -761,9 +734,10 @@ def event_publisher(
                     func.__module__ + "." + func.__name__,
                     {"status": "failed", "error": str(e)},
                     trace_id=trace_id,
-                    causation_id=trace_id
+                    causation_id=trace_id,
                 )
                 raise
 
         return async_wrapper
+
     return decorator

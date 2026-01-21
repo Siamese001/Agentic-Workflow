@@ -2,6 +2,7 @@
 file: tests/maintenance/verify_manifest_purity.py
 description: Verifies that no files from tests/ or archives/ exist in the discovery manifest.
 """
+
 import json
 import sys
 from pathlib import Path
@@ -15,8 +16,9 @@ MANIFEST_PATH = PROJECT_ROOT / "agent_discovery_full.json"
 def _load_manifest():
     """Load manifest directly, bypassing any test fixtures."""
     import builtins
+
     original_open = builtins.open
-    with original_open(MANIFEST_PATH, 'r', encoding='utf-8') as f:
+    with original_open(MANIFEST_PATH, "r", encoding="utf-8") as f:
         return json.load(f)
 
 
@@ -38,17 +40,19 @@ class TestManifestPurity:
         # Check for test files in the manifest
         violations = []
         for entry in data:
-            path = entry.get('path', '')
+            path = entry.get("path", "")
             # Normalize path separators
-            normalized_path = path.replace('\\', '/')
+            normalized_path = path.replace("\\", "/")
 
             # Check if path starts with tests/ or contains /tests/
-            if normalized_path.startswith('tests/') or '/tests/' in normalized_path:
+            if normalized_path.startswith("tests/") or "/tests/" in normalized_path:
                 violations.append(path)
 
         if violations:
-            pytest.fail(f"Manifest contains {len(violations)} test files:\n" +
-                       "\n".join(f"  - {v}" for v in violations))
+            pytest.fail(
+                f"Manifest contains {len(violations)} test files:\n"
+                + "\n".join(f"  - {v}" for v in violations)
+            )
 
     def test_no_test_prefixed_files_in_manifest(self, disable_path_shield):
         """
@@ -58,24 +62,26 @@ class TestManifestPurity:
 
         # Legitimate test-related agents that should be in manifest
         legitimate_test_agents = {
-            'TestSovereigntyAgent.py',  # Actual agent for testing sovereignty
-            'TestCoverageGuardianAgent.py',  # Actual guardian agent
-            'TestGeneratorAgent.py',  # Actual test generator
-            'TestPilotAgent.py',  # Actual pilot agent
+            "TestSovereigntyAgent.py",  # Actual agent for testing sovereignty
+            "TestCoverageGuardianAgent.py",  # Actual guardian agent
+            "TestGeneratorAgent.py",  # Actual test generator
+            "TestPilotAgent.py",  # Actual pilot agent
         }
 
         violations = []
         for entry in data:
-            path = entry.get('path', '')
+            path = entry.get("path", "")
             filename = Path(path).name
 
             # Check if filename starts with test_ (lowercase)
-            if filename.startswith('test_'):
+            if filename.startswith("test_"):
                 violations.append(path)
 
         if violations:
-            pytest.fail(f"Manifest contains {len(violations)} test_*.py files:\n" +
-                       "\n".join(f"  - {v}" for v in violations))
+            pytest.fail(
+                f"Manifest contains {len(violations)} test_*.py files:\n"
+                + "\n".join(f"  - {v}" for v in violations)
+            )
 
     def test_no_archives_in_manifest(self, disable_path_shield):
         """
@@ -85,15 +91,17 @@ class TestManifestPurity:
 
         violations = []
         for entry in data:
-            path = entry.get('path', '')
-            normalized_path = path.replace('\\', '/')
+            path = entry.get("path", "")
+            normalized_path = path.replace("\\", "/")
 
-            if 'archives/' in normalized_path or normalized_path.startswith('archives'):
+            if "archives/" in normalized_path or normalized_path.startswith("archives"):
                 violations.append(path)
 
         if violations:
-            pytest.fail(f"Manifest contains {len(violations)} archive files:\n" +
-                       "\n".join(f"  - {v}" for v in violations))
+            pytest.fail(
+                f"Manifest contains {len(violations)} archive files:\n"
+                + "\n".join(f"  - {v}" for v in violations)
+            )
 
     def test_no_scripts_test_files_in_manifest(self, disable_path_shield):
         """
@@ -103,22 +111,24 @@ class TestManifestPurity:
 
         violations = []
         for entry in data:
-            path = entry.get('path', '')
-            normalized_path = path.replace('\\', '/')
+            path = entry.get("path", "")
+            normalized_path = path.replace("\\", "/")
             filename = Path(path).name
 
             # Check if it's a test file in scripts/
-            if normalized_path.startswith('scripts/') and filename.startswith('test_'):
+            if normalized_path.startswith("scripts/") and filename.startswith("test_"):
                 violations.append(path)
 
         if violations:
-            pytest.fail(f"Manifest contains {len(violations)} test files from scripts/:\n" +
-                       "\n".join(f"  - {v}" for v in violations))
+            pytest.fail(
+                f"Manifest contains {len(violations)} test files from scripts/:\n"
+                + "\n".join(f"  - {v}" for v in violations)
+            )
 
 
 def clean_manifest():
     """Utility function to remove test artifacts from the manifest."""
-    with open(MANIFEST_PATH, encoding='utf-8') as f:
+    with open(MANIFEST_PATH, encoding="utf-8") as f:
         data = json.load(f)
 
     original_count = len(data)
@@ -128,29 +138,29 @@ def clean_manifest():
     removed = []
 
     for entry in data:
-        path = entry.get('path', '')
-        normalized_path = path.replace('\\', '/')
+        path = entry.get("path", "")
+        normalized_path = path.replace("\\", "/")
         filename = Path(path).name
 
         # Skip tests/ directory
-        if normalized_path.startswith('tests/') or '/tests/' in normalized_path:
+        if normalized_path.startswith("tests/") or "/tests/" in normalized_path:
             removed.append(path)
             continue
 
         # Skip test_*.py files in scripts/
-        if normalized_path.startswith('scripts/') and filename.startswith('test_'):
+        if normalized_path.startswith("scripts/") and filename.startswith("test_"):
             removed.append(path)
             continue
 
         # Skip archives/
-        if 'archives/' in normalized_path:
+        if "archives/" in normalized_path:
             removed.append(path)
             continue
 
         cleaned.append(entry)
 
     # Write cleaned manifest
-    with open(MANIFEST_PATH, 'w', encoding='utf-8') as f:
+    with open(MANIFEST_PATH, "w", encoding="utf-8") as f:
         json.dump(cleaned, f, indent=2)
 
     print(f"✅ Manifest cleaned: {original_count} -> {len(cleaned)} entries")

@@ -48,8 +48,9 @@ async def test_key_42_fission_execution():
 
         # 3. VERIFICATION: Check physical changes
         # The original file should be gone (or transformed into a shim)
-        assert not test_file.exists() or len(test_file.read_text().splitlines()) < 1000, \
+        assert not test_file.exists() or len(test_file.read_text().splitlines()) < 1000, (
             "Original file should be removed or reduced after fission"
+        )
 
         # Check for new sub-modules (FissionManagerAgent creates these)
         new_modules = list(target_dir.glob("test_fission_subject_*.py"))
@@ -65,6 +66,7 @@ async def test_key_42_fission_execution():
             os.remove(test_file)
         for mod in target_dir.glob("test_fission_subject_*.py"):
             os.remove(mod)
+
 
 if __name__ == "__main__":
     asyncio.run(test_key_42_fission_execution())

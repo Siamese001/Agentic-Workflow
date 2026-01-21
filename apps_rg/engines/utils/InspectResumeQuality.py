@@ -12,9 +12,6 @@ from shared.result_types import DiagnosticReport
 Logger = logging.getLogger(__name__)
 
 
-
-
-
 class InspectResumeQuality:
     """Diagnostics for resume domain."""
 

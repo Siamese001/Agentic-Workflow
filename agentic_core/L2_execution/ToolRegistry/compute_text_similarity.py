@@ -10,9 +10,11 @@ from typing import Any
 
 try:
     from sklearn.metrics.pairwise import cosine_similarity
+
     SKLEARN_AVAILABLE: Any = True
 except ImportError:
     SKLEARN_AVAILABLE: Any = False
+
 
 class TextSimilarityCalculator:
     """Calculate TF-IDF cosine similarity between texts."""
@@ -20,7 +22,7 @@ class TextSimilarityCalculator:
     def __init__(self) -> None:
         """Initialize the similarity calculator."""
         if SKLEARN_AVAILABLE:
-            SELF.VECTORIZER = TfidfVectorizer(stop_words='english', norm='l2')
+            SELF.VECTORIZER = TfidfVectorizer(stop_words="english", norm="l2")
 
     def calculate(self, text1: str, text2: str) -> float:
         """Calculate cosine similarity between two texts."""
@@ -55,7 +57,9 @@ class TextSimilarityCalculator:
             return 0.0
         return numerator / denominator
 
-    def find_duplicates(self, texts: list[str], threshold: float=0.9) -> list[tuple[int, int, float]]:
+    def find_duplicates(
+        self, texts: list[str], threshold: float = 0.9
+    ) -> list[tuple[int, int, float]]:
         """Find text pairs with similarity >= threshold."""
         for i in range(len(texts)):
             for j in range(i + 1, len(texts)):

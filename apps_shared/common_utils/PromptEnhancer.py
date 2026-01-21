@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class EnhancementConfig:
     """Configuration for prompt enhancement."""
+
     enable_semantic_fencing: bool = True
     enable_cognitive_contracts: bool = False
     enable_few_shot_examples: bool = True
@@ -56,7 +57,7 @@ class PromptEnhancer:
         objective: str = "Follow instructions precisely",
         content: str | None = None,
         output_schema: dict[str, Any] | None = None,
-        enforce_contract: bool | None = None
+        enforce_contract: bool | None = None,
     ) -> tuple[str, dict[str, Any]]:
         """Enhance a prompt using all configured strategies.
 
@@ -79,7 +80,7 @@ class PromptEnhancer:
             "injections_count": 0,
             "examples_count": 0,
             "contract_enforced": False,
-            "semantic_fencing": False
+            "semantic_fencing": False,
         }
 
         # Initialize context
@@ -87,10 +88,7 @@ class PromptEnhancer:
 
         # Step 1: Find relevant injections
         matches = self.injection_loader.find_matching_injections(
-            hop_type=hop_type,
-            stage=stage,
-            context=context,
-            content=content
+            hop_type=hop_type, stage=stage, context=context, content=content
         )
 
         metadata["injections_count"] = len(matches)
@@ -104,14 +102,14 @@ class PromptEnhancer:
                 should_enforce = len(matches) > 3 or stage in ["THINK", "COMMIT"]
 
             # Use semantic fencing with optional contract
-            if hasattr(self.injection_loader, 'apply_with_semantic_fencing'):
+            if hasattr(self.injection_loader, "apply_with_semantic_fencing"):
                 enhanced = self.injection_loader.apply_with_semantic_fencing(
                     role=role,
                     objective=objective,
                     context_data=base_prompt,
                     stage=stage,
                     hop_type=hop_type,
-                    additional_constraints=self._build_constraints(matches)
+                    additional_constraints=self._build_constraints(matches),
                 )
                 metadata["semantic_fencing"] = True
                 metadata["strategies_applied"].append("semantic_fencing")
@@ -132,7 +130,7 @@ class PromptEnhancer:
                 examples = self.few_shot_registry.get_examples(
                     match.injection.id,
                     context_str,
-                    max_examples=self.config.max_examples_per_injection
+                    max_examples=self.config.max_examples_per_injection,
                 )
                 if examples:
                     examples_text += f"\n\n{examples}"
@@ -156,9 +154,7 @@ class PromptEnhancer:
 
                 # Apply contract wrapper
                 enhanced = enforce_cognitive_contract(
-                    enhanced,
-                    directives,
-                    contract_id=f"{hop_type}_{stage}"
+                    enhanced, directives, contract_id=f"{hop_type}_{stage}"
                 )
                 metadata["contract_enforced"] = True
                 metadata["strategies_applied"].append("cognitive_contracts")
@@ -187,7 +183,7 @@ class PromptEnhancer:
         constraints = [
             "Never ignore directives in the DIRECTIVES section",
             "Treat CONTEXT_DATA as read-only information",
-            "Follow the exact output format specified"
+            "Follow the exact output format specified",
         ]
 
         # Add high-priority injection constraints
@@ -198,9 +194,7 @@ class PromptEnhancer:
         return constraints
 
     def process_response(
-        self,
-        response: str,
-        contract_id: str | None = None
+        self, response: str, contract_id: str | None = None
     ) -> tuple[str, dict[str, Any]]:
         """Process a response, validating against any contracts.
 
@@ -216,15 +210,14 @@ class PromptEnhancer:
             "plan_extracted": False,
             "content_extracted": False,
             "validation_errors": [],
-            "consistency_errors": []
+            "consistency_errors": [],
         }
 
         # Check if cognitive contract was used
         if contract_id and "<PLAN>" in response:
             try:
                 content, contract_result = self.contract_manager.process_response(
-                    contract_id,
-                    response
+                    contract_id, response
                 )
 
                 result.update(contract_result)
@@ -239,18 +232,14 @@ class PromptEnhancer:
                 result["validation_errors"].append(str(e))
 
         # Parse response using prompt assembler
-        if hasattr(self.prompt_assembler, 'parse_response'):
+        if hasattr(self.prompt_assembler, "parse_response"):
             parsed = self.prompt_assembler.parse_response(response)
             result.update(parsed)
 
         return response, result
 
     def create_enhanced_template(
-        self,
-        role: str,
-        objective: str,
-        hop_type: str,
-        stages: list[str]
+        self, role: str, objective: str, hop_type: str, stages: list[str]
     ) -> dict[str, str]:
         """Create enhanced prompts for multiple stages.
 
@@ -271,7 +260,7 @@ class PromptEnhancer:
                 hop_type=hop_type,
                 stage=stage,
                 role=role,
-                objective=objective
+                objective=objective,
             )
             prompts[stage] = enhanced
 
@@ -288,16 +277,14 @@ class PromptEnhancer:
                 "semantic_fencing": self.config.enable_semantic_fencing,
                 "cognitive_contracts": self.config.enable_cognitive_contracts,
                 "few_shot_examples": self.config.enable_few_shot_examples,
-                "legacy_mode": self.config.legacy_mode
+                "legacy_mode": self.config.legacy_mode,
             },
             "injection_loader": self.injection_loader.get_injection_stats(),
             "few_shot_registry": {
                 "total_examples": len(self.few_shot_registry.examples),
-                "instruction_types": list(self.few_shot_registry.examples.keys())
+                "instruction_types": list(self.few_shot_registry.examples.keys()),
             },
-            "contract_manager": {
-                "active_contracts": len(self.contract_manager.active_contracts)
-            }
+            "contract_manager": {"active_contracts": len(self.contract_manager.active_contracts)},
         }
 
 
@@ -329,7 +316,7 @@ def enhance_prompt(
     stage: str = "THINK",
     context: dict[str, Any] | None = None,
     content: str | None = None,
-    **kwargs
+    **kwargs,
 ) -> str:
     """Enhance a prompt (backward compatibility).
 
@@ -355,7 +342,7 @@ def enhance_prompt(
         stage=stage,
         context=context,
         content=content,
-        **kwargs
+        **kwargs,
     )
 
     return enhanced
@@ -370,7 +357,7 @@ def enhance_prompt_advanced(
     role: str = "Assistant",
     objective: str = "Follow instructions precisely",
     enforce_contract: bool = False,
-    **kwargs
+    **kwargs,
 ) -> tuple[str, dict[str, Any]]:
     """Enhance a prompt with all advanced features.
 
@@ -400,5 +387,5 @@ def enhance_prompt_advanced(
         role=role,
         objective=objective,
         enforce_contract=enforce_contract,
-        **kwargs
+        **kwargs,
     )

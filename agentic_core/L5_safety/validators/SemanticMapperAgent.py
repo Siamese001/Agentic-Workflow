@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, state, validator, workflow
@@ -30,8 +29,9 @@ class SemanticMapperAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         """
         Performs semantic analysis to identify refactoring opportunities.
         """
-        print(f'\n[>>>] {self.agent.name} ACTIVATED: Semantic Analysis...')
-        print('   ℹ No refactoring opportunities identified.')
+        print(f"\n[>>>] {self.agent.name} ACTIVATED: Semantic Analysis...")
+        print("   ℹ No refactoring opportunities identified.")
+
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()

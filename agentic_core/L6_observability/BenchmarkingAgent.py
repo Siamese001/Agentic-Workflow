@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, state, validator, workflow
@@ -35,9 +34,22 @@ PERFORMANCE_DEGRADATION_THRESHOLD = 0.5  # 50% slower than average
 # NAMING FIXED: BenchmarkResult → BenchmarkResult
 class BenchmarkResult:
     """BenchmarkResult agent for autonomous operations."""
+
     pass
 
-BenchmarkSuite = type("BenchmarkSuite", (), {"name": "", "add_result": lambda s,r: None, "is_degraded": lambda s: False, "stats": {"avg_ms": 0, "count": 0}, "get_summary": lambda s: {}})
+
+BenchmarkSuite = type(
+    "BenchmarkSuite",
+    (),
+    {
+        "name": "",
+        "add_result": lambda s, r: None,
+        "is_degraded": lambda s: False,
+        "stats": {"avg_ms": 0, "count": 0},
+        "get_summary": lambda s: {},
+    },
+)
+
 
 class BenchmarkResultActual:
     """Result of a single benchmark measurement."""
@@ -54,7 +66,7 @@ class BenchmarkResultActual:
             "name": self.name,
             "duration_ms": self.duration_ms,
             "metadata": self.metadata,
-            "timestamp": self.timestamp.isoformat()
+            "timestamp": self.timestamp.isoformat(),
         }
 
 
@@ -68,9 +80,9 @@ class BenchmarkSuite:
         self.stats = {
             "count": 0,
             "avg_ms": 0.0,
-            "min_ms": float('inf'),
+            "min_ms": float("inf"),
             "max_ms": 0.0,
-            "std_dev": 0.0
+            "std_dev": 0.0,
         }
 
     def add_result(self, result: BenchmarkResult) -> Any:
@@ -124,7 +136,7 @@ class BenchmarkSuite:
             "name": self.name,
             "statistics": self.stats.copy(),
             "is_degraded": self.is_degraded(),
-            "last_result": self.results[-1].to_dict() if self.results else None
+            "last_result": self.results[-1].to_dict() if self.results else None,
         }
 
 
@@ -144,9 +156,10 @@ class BenchmarkingAgent(HealerMixin):
     - Comparative analysis
     """
 
-
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -180,13 +193,17 @@ class BenchmarkingAgent(HealerMixin):
         Returns:
             Decorated function
         """
+
         def decorator(func: Callable) -> Callable:
             """Execute decorator operation."""
+
             @wraps(func)
             def wrapper(*args, **kwargs) -> Any:
                 """Execute wrapper operation."""
                 return self.time_function(name, func, metadata, *args, **kwargs)
+
             return wrapper
+
         return decorator
 
     def benchmark_async(self, name: str, metadata: dict = None) -> Any:
@@ -200,13 +217,17 @@ class BenchmarkingAgent(HealerMixin):
         Returns:
             Decorated function
         """
+
         def decorator(func: Callable) -> Callable:
             """Execute decorator operation."""
+
             @wraps(func)
             async def wrapper(*args, **kwargs) -> Any:
                 """Execute wrapper operation."""
                 return await self.time_function_async(name, func, metadata, *args, **kwargs)
+
             return wrapper
+
         return decorator
 
     def start_timer(self, name: str) -> Any:
@@ -243,7 +264,9 @@ class BenchmarkingAgent(HealerMixin):
 
         return duration_ms
 
-    def time_function(self, name: str, func: Callable, metadata: dict = None, *args, **kwargs) -> Any:
+    def time_function(
+        self, name: str, func: Callable, metadata: dict = None, *args, **kwargs
+    ) -> Any:
         """
         Time a function execution.
 
@@ -268,7 +291,9 @@ class BenchmarkingAgent(HealerMixin):
 
         return result
 
-    async def time_function_async(self, name: str, func: Callable, metadata: dict = None, *args, **kwargs) -> Any:
+    async def time_function_async(
+        self, name: str, func: Callable, metadata: dict = None, *args, **kwargs
+    ) -> Any:
         """
         Time an async function execution.
 
@@ -328,9 +353,12 @@ class BenchmarkingAgent(HealerMixin):
             "benchmark_name": name,
             "current_duration_ms": result.duration_ms,
             "historical_avg_ms": suite.stats["avg_ms"],
-            "degradation_percent": ((result.duration_ms - suite.stats["avg_ms"]) / suite.stats["avg_ms"]) * 100,
+            "degradation_percent": (
+                (result.duration_ms - suite.stats["avg_ms"]) / suite.stats["avg_ms"]
+            )
+            * 100,
             "threshold_percent": PERFORMANCE_DEGRADATION_THRESHOLD * 100,
-            "timestamp": result.timestamp.isoformat()
+            "timestamp": result.timestamp.isoformat(),
         }
 
         Logger.warning(f"[!] Performance degradation detected: {name}")
@@ -355,7 +383,7 @@ class BenchmarkingAgent(HealerMixin):
             if len(alerts) > 50:
                 alerts = alerts[-50:]
 
-            with open(alert_file, 'w') as f:
+            with open(alert_file, "w") as f:
                 json.dump(alerts, f, indent=2)
         except Exception as e:
             Logger.error(f"Failed to save performance alert: {e}")
@@ -385,15 +413,15 @@ class BenchmarkingAgent(HealerMixin):
             "benchmark_1": {
                 "name": name1,
                 "avg_ms": suite1.stats["avg_ms"],
-                "count": suite1.stats["count"]
+                "count": suite1.stats["count"],
             },
             "benchmark_2": {
                 "name": name2,
                 "avg_ms": suite2.stats["avg_ms"],
-                "count": suite2.stats["count"]
+                "count": suite2.stats["count"],
             },
             "ratio": ratio,
-            "faster": name1 if ratio < 1 else name2
+            "faster": name1 if ratio < 1 else name2,
         }
 
     def reset_benchmark(self, name: str) -> Any:
@@ -439,8 +467,10 @@ def get_benchmarking_agent() -> BenchmarkingAgent:
         _benchmarking_agent = BenchmarkingAgent()
     return _benchmarking_agent
 
+
 # Aliases for discovery
 BenchmarkContext = benchmark_context_manager = type("benchmark_context_manager", (), {})
+
 
 def initialize_benchmarking() -> Any:
     """Initialize the BenchmarkingAgent system."""

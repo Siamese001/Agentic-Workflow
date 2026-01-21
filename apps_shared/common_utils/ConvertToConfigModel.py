@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 
 class ConfigFormat(Enum):
     """Supported configuration formats."""
+
     JSON = "json"
     YAML = "yaml"
     DICT = "dict"
@@ -27,6 +28,7 @@ class ConfigFormat(Enum):
 
 class ConversionMode(Enum):
     """Modes for configuration conversion."""
+
     STRICT = "strict"
     LENIENT = "lenient"
     VALIDATE_ONLY = "validate_only"
@@ -35,6 +37,7 @@ class ConversionMode(Enum):
 @dataclass
 class ConfigField:
     """Definition of a configuration field."""
+
     name: str
     type: str
     required: bool = False
@@ -47,6 +50,7 @@ class ConfigField:
 @dataclass
 class ConfigModel:
     """Configuration model definition."""
+
     name: str
     version: str
     fields: dict[str, ConfigField]
@@ -56,6 +60,7 @@ class ConfigModel:
 @dataclass
 class ConversionConfig:
     """Configuration for conversion operations."""
+
     mode: ConversionMode = ConversionMode.LENIENT
     preserve_unknown: bool = True
     convert_types: bool = True
@@ -65,6 +70,7 @@ class ConversionConfig:
 @dataclass
 class ConversionResult:
     """Result of configuration conversion."""
+
     config_model: ConfigModel
     converted_data: dict[str, Any]
     errors: list[str] = field(default_factory=list)
@@ -80,9 +86,9 @@ class ConfigModelConverter:
         self.logger = logging.getLogger(self.__class__.__name__)
         self._type_converters = self._initialize_type_converters()
 
-    def convert_to_model(self, data: str | dict[str, Any],
-                        source_format: ConfigFormat,
-                        model: ConfigModel) -> ConversionResult:
+    def convert_to_model(
+        self, data: str | dict[str, Any], source_format: ConfigFormat, model: ConfigModel
+    ) -> ConversionResult:
         """Convert data to configuration model.
 
         Args:
@@ -124,20 +130,19 @@ class ConfigModelConverter:
                 metadata={
                     "converted_at": datetime.utcnow().isoformat(),
                     "source_format": source_format.value,
-                    "conversion_mode": self.config.mode.value
-                }
+                    "conversion_mode": self.config.mode.value,
+                },
             )
 
-            self.logger.info(f"Conversion completed with {len(errors)} errors and {len(warnings)} warnings")
+            self.logger.info(
+                f"Conversion completed with {len(errors)} errors and {len(warnings)} warnings"
+            )
             return result
 
         except Exception as e:
             self.logger.error(f"Conversion failed: {str(e)}")
             return ConversionResult(
-                config_model=model,
-                converted_data={},
-                errors=[str(e)],
-                metadata={"error": str(e)}
+                config_model=model, converted_data={}, errors=[str(e)], metadata={"error": str(e)}
             )
 
     def convert_from_dict(self, data: dict[str, Any], model: ConfigModel) -> ConversionResult:
@@ -176,7 +181,9 @@ class ConfigModelConverter:
         """
         return self.convert_to_model(yaml_str, ConfigFormat.YAML, model)
 
-    def convert_from_env(self, env_data: str | dict[str, str], model: ConfigModel) -> ConversionResult:
+    def convert_from_env(
+        self, env_data: str | dict[str, str], model: ConfigModel
+    ) -> ConversionResult:
         """Convert environment variables to configuration model.
 
         Args:
@@ -206,8 +213,9 @@ class ConfigModelConverter:
 
         return result
 
-    def export_to_json(self, model: ConfigModel, include_defaults: bool = True,
-                      indent: int = 2) -> str:
+    def export_to_json(
+        self, model: ConfigModel, include_defaults: bool = True, indent: int = 2
+    ) -> str:
         """Export configuration model to JSON string.
 
         Args:
@@ -257,10 +265,10 @@ class ConfigModelConverter:
         if isinstance(data, str):
             # Parse .env format string
             env_dict = {}
-            for line in data.strip().split('\n'):
-                if '=' in line and not line.startswith('#'):
-                    key, value = line.split('=', 1)
-                    env_dict[key.strip()] = value.strip().strip('"\'')
+            for line in data.strip().split("\n"):
+                if "=" in line and not line.startswith("#"):
+                    key, value = line.split("=", 1)
+                    env_dict[key.strip()] = value.strip().strip("\"'")
             return env_dict
         elif isinstance(data, dict):
             return data
@@ -275,7 +283,9 @@ class ConfigModelConverter:
             return data[field_def.env_var]
         return None
 
-    def _handle_missing_value(self, field_name: str, field_def: ConfigField, errors: list[str], warnings: list[str]) -> Any:
+    def _handle_missing_value(
+        self, field_name: str, field_def: ConfigField, errors: list[str], warnings: list[str]
+    ) -> Any:
         """Handle missing field value."""
         if field_def.required:
             if self.config.mode == ConversionMode.STRICT:
@@ -291,7 +301,14 @@ class ConfigModelConverter:
             return field_def.default_value
         return None
 
-    def _convert_field_type(self, value: Any, field_name: str, field_def: ConfigField, errors: list[str], warnings: list[str]) -> Any:
+    def _convert_field_type(
+        self,
+        value: Any,
+        field_name: str,
+        field_def: ConfigField,
+        errors: list[str],
+        warnings: list[str],
+    ) -> Any:
         """Convert field type with error handling."""
         if not self.config.convert_types:
             return value
@@ -305,7 +322,14 @@ class ConfigModelConverter:
                 warnings.append(f"Type conversion failed for {field_name}: {str(e)}")
             return field_def.default_value
 
-    def _validate_field_value(self, value: Any, field_name: str, field_def: ConfigField, errors: list[str], warnings: list[str]) -> None:
+    def _validate_field_value(
+        self,
+        value: Any,
+        field_name: str,
+        field_def: ConfigField,
+        errors: list[str],
+        warnings: list[str],
+    ) -> None:
         """Validate field value."""
         if value is None or not field_def.validator:
             return
@@ -316,8 +340,9 @@ class ConfigModelConverter:
             else:
                 warnings.append(f"Validation failed for field: {field_name}")
 
-    def _convert_to_model(self, data: dict[str, Any],
-                         model: ConfigModel) -> tuple[dict[str, Any], list[str], list[str]]:
+    def _convert_to_model(
+        self, data: dict[str, Any], model: ConfigModel
+    ) -> tuple[dict[str, Any], list[str], list[str]]:
         """Convert data to match configuration model."""
         converted = {}
         errors = []
@@ -368,7 +393,9 @@ class ConfigModelConverter:
         elif validator == "email":
             return isinstance(value, str) and "@" in value
         elif validator == "url":
-            return isinstance(value, str) and (value.startswith("http://") or value.startswith("https://"))
+            return isinstance(value, str) and (
+                value.startswith("http://") or value.startswith("https://")
+            )
         else:
             # Could support custom validators here
             return True
@@ -390,9 +417,11 @@ class ConfigModelConverter:
             "string": str,
             "int": int,
             "float": float,
-            "bool": lambda x: str(x).lower() in ("true", "1", "yes", "on") if isinstance(x, str) else bool(x),
+            "bool": lambda x: str(x).lower() in ("true", "1", "yes", "on")
+            if isinstance(x, str)
+            else bool(x),
             "list": lambda x: list(x) if not isinstance(x, list) else x,
-            "dict": lambda x: dict(x) if not isinstance(x, dict) else x
+            "dict": lambda x: dict(x) if not isinstance(x, dict) else x,
         }
 
 
@@ -401,14 +430,14 @@ def create_config_model_converter(
     mode: str = "lenient",
     preserve_unknown: bool = True,
     convert_types: bool = True,
-    **kwargs: object
+    **kwargs: object,
 ) -> ConfigModelConverter:
     """Create a configured config model converter."""
     config = ConversionConfig(
         mode=ConversionMode(mode),
         preserve_unknown=preserve_unknown,
         convert_types=convert_types,
-        **kwargs
+        **kwargs,
     )
     return ConfigModelConverter(config)
 
@@ -418,7 +447,7 @@ def convert_to_config_model(
     data: str | dict[str, Any],
     model_definition: dict[str, Any],
     source_format: str = "dict",
-    mode: str = "lenient"
+    mode: str = "lenient",
 ) -> dict[str, Any]:
     """Convert data to configuration model.
 
@@ -443,14 +472,14 @@ def convert_to_config_model(
             default_value=field_def.get("default"),
             description=field_def.get("description", ""),
             env_var=field_def.get("env_var"),
-            validator=field_def.get("validator")
+            validator=field_def.get("validator"),
         )
 
     model = ConfigModel(
         name=model_definition.get("name", "unnamed"),
         version=model_definition.get("version", "1.0"),
         fields=fields,
-        metadata=model_definition.get("metadata", {})
+        metadata=model_definition.get("metadata", {}),
     )
 
     # Convert
@@ -460,10 +489,10 @@ def convert_to_config_model(
         "config_model": {
             "name": result.config_model.name,
             "version": result.config_model.version,
-            "metadata": result.config_model.metadata
+            "metadata": result.config_model.metadata,
         },
         "converted_data": result.converted_data,
         "errors": result.errors,
         "warnings": result.warnings,
-        "metadata": result.metadata
+        "metadata": result.metadata,
     }

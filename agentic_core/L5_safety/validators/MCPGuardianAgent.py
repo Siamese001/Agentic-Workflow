@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, state, validator, workflow
@@ -59,10 +58,7 @@ class MCPGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         self.violations: list[dict[str, Any]] = []
 
     async def audit_mcp_call(
-        self,
-        operation: str,
-        client_name: str,
-        config: dict[str, Any]
+        self, operation: str, client_name: str, config: dict[str, Any]
     ) -> bool:
         """
         Audit a single MCP call for compliance.
@@ -79,34 +75,40 @@ class MCPGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
         # Check for hardcoded credentials
         if self._has_hardcoded_credentials(config):
-            violations.append({
-                "Severity": "CRITICAL",
-                "type": "HARDCODED_CREDENTIALS",
-                "operation": operation,
-                "client": client_name,
-                "message": "Hardcoded credentials detected in MCP call"
-            })
+            violations.append(
+                {
+                    "Severity": "CRITICAL",
+                    "type": "HARDCODED_CREDENTIALS",
+                    "operation": operation,
+                    "client": client_name,
+                    "message": "Hardcoded credentials detected in MCP call",
+                }
+            )
 
         # Check for Missing timeout
         if "timeout" not in config and "timeout_seconds" not in config:
-            violations.append({
-                "Severity": "MEDIUM",
-                "type": "MISSING_TIMEOUT",
-                "operation": operation,
-                "client": client_name,
-                "message": "No timeout configured for MCP call"
-            })
+            violations.append(
+                {
+                    "Severity": "MEDIUM",
+                    "type": "MISSING_TIMEOUT",
+                    "operation": operation,
+                    "client": client_name,
+                    "message": "No timeout configured for MCP call",
+                }
+            )
 
         # Check for SSL enforcement (Redis, Neo4j)
         if client_name.lower() in ["redis", "neo4j"]:
             if not config.get("ssl", False) and not config.get("use_ssl", False):
-                violations.append({
-                    "Severity": "HIGH",
-                    "type": "SSL_NOT_ENFORCED",
-                    "operation": operation,
-                    "client": client_name,
-                    "message": f"{client_name} connection without SSL/TLS"
-                })
+                violations.append(
+                    {
+                        "Severity": "HIGH",
+                        "type": "SSL_NOT_ENFORCED",
+                        "operation": operation,
+                        "client": client_name,
+                        "message": f"{client_name} connection without SSL/TLS",
+                    }
+                )
 
         if violations:
             self.violations.extend(violations)
@@ -126,7 +128,7 @@ class MCPGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             "files_scanned": 0,
             "violations": [],
             "compliant_files": [],
-            "non_compliant_files": []
+            "non_compliant_files": [],
         }
 
         # Scan for hardcoded credentials
@@ -137,6 +139,7 @@ class MCPGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         ]
 
         from agentic_core.utils.ssot_discovery import get_python_files
+
         for py_file in get_python_files(self.project_root):
             if "test" in str(py_file) or "__pycache__" in str(py_file):
                 continue
@@ -148,13 +151,18 @@ class MCPGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             for pattern, ViolationType in hardcoded_patterns:
                 matches = re.finditer(pattern, content, re.IGNORECASE)
                 for match in matches:
-                    file_violations.append({
-                        "file": str(py_file.relative_to(self.project_root)),
-                        "line": content[:match.start()].count("\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\n") + 1,
-                        "type": ViolationType,
-                        "Severity": "CRITICAL",
-                        "match": match.group(0)
-                    })
+                    file_violations.append(
+                        {
+                            "file": str(py_file.relative_to(self.project_root)),
+                            "line": content[: match.start()].count(
+                                "\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\n"
+                            )
+                            + 1,
+                            "type": ViolationType,
+                            "Severity": "CRITICAL",
+                            "match": match.group(0),
+                        }
+                    )
 
             if file_violations:
                 results["violations"].extend(file_violations)
@@ -201,12 +209,10 @@ class MCPGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
         try:
             from agentic_core.L6_observability.telemetry.sovereign_events import emit_event
+
             emit_event(
                 "MCP_GUARDIAN_CRITIQUE",
-                {
-                    "violations": violations,
-                    "total_violations": len(violations)
-                }
+                {"violations": violations, "total_violations": len(violations)},
             )
         except ImportError:
             pass
@@ -230,10 +236,10 @@ class MCPGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         report.append(f"Non-Compliant Files: {len(scan_results['non_compliant_files'])}")
         report.append("")
 
-        if scan_results['violations']:
+        if scan_results["violations"]:
             report.append("VIOLATIONS:")
             report.append("-" * 80)
-            for Violation in scan_results['violations']:
+            for Violation in scan_results["violations"]:
                 report.append(
                     f"[{Violation['Severity']}] {Violation['type']} in "
                     f"{Violation['file']}:{Violation['line']}"
@@ -247,7 +253,14 @@ class MCPGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         return "\n".join(report)
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L5 safety agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:

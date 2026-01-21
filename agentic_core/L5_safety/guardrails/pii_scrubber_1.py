@@ -13,29 +13,35 @@ from typing import Any
 
 Logger: Any = logging.getLogger(__name__)
 
+
 class PiiType(Enum):
     """Types of PII to detect."""
-    EMAIL: Any = 'email'
-    PHONE: Any = 'phone'
-    SSN: Any = 'ssn'
-    CREDIT_CARD: Any = 'credit_card'
-    URL: Any = 'url'
-    IP_ADDRESS: Any = 'ip_address'
-    DOB: Any = 'dob'
-    ADDRESS: Any = 'address'
+
+    EMAIL: Any = "email"
+    PHONE: Any = "phone"
+    SSN: Any = "ssn"
+    CREDIT_CARD: Any = "credit_card"
+    URL: Any = "url"
+    IP_ADDRESS: Any = "ip_address"
+    DOB: Any = "dob"
+    ADDRESS: Any = "address"
+
 
 @dataclass
 class PiiMatch:
     """Single PII detection match."""
+
     PiiType: PIIType
     original: str
     redaction_token: str
     position: tuple[int, int]
     confidence: float = 1.0
 
+
 @dataclass
 class PiiResult:
     """PII detection and scrubbing result."""
+
     original_text: str
     scrubbed_text: str
     detected_pii: list[PIIMatch]
@@ -50,6 +56,7 @@ class PiiResult:
         """Get list of detected PII types."""
         return list({match.PiiType for match in self.detected_pii})
 
+
 class PiiScrubber:
     """Personal Information Detection and Sanitization.
 
@@ -57,14 +64,22 @@ class PiiScrubber:
     Essential for enterprise compliance (GDPR/CCPA).
     """
 
-    def __init__(self, enable_logging: bool=True):
+    def __init__(self, enable_logging: bool = True):
         """Initialize PII scrubber.
 
         Args:
             enable_logging: Enable logging of PII detection events
         """
         self.enable_logging = enable_logging
-        self.pii_patterns = {PIIType.EMAIL: '\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b', PIIType.PHONE: '\\b(?:\\+?1[-.\\s]?)?\\(?([0-9]{3})\\)?[-.\\s]?([0-9]{3})[-.\\s]?([0-9]{4})\\b', PIIType.SSN: '\\b\\d{3}-\\d{2}-\\d{4}\\b', PIIType.CREDIT_CARD: '\\b\\d{4}[-\\s]?\\d{4}[-\\s]?\\d{4}[-\\s]?\\d{4}\\b', PIIType.URL: 'https?://(?:[-\\w.])+(?:[:\\d]+)?(?:/(?:[\\w/_.])*(?:\\?(?:[\\w&=%.])*)?(?:#(?:[\\w&=%.])*)?)?', PIIType.IP_ADDRESS: '\\b(?:[0-9]{1,3}\\.){3}[0-9]{1,3}\\b', PIIType.DOB: '\\b(?:0?[1-9]|1[0-2])[/-](?:0?[1-9]|[12][0-9]|3[01])[/-](?:19|20)\\d{2}\\b'}
+        self.pii_patterns = {
+            PIIType.EMAIL: "\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b",
+            PIIType.PHONE: "\\b(?:\\+?1[-.\\s]?)?\\(?([0-9]{3})\\)?[-.\\s]?([0-9]{3})[-.\\s]?([0-9]{4})\\b",
+            PIIType.SSN: "\\b\\d{3}-\\d{2}-\\d{4}\\b",
+            PIIType.CREDIT_CARD: "\\b\\d{4}[-\\s]?\\d{4}[-\\s]?\\d{4}[-\\s]?\\d{4}\\b",
+            PIIType.URL: "https?://(?:[-\\w.])+(?:[:\\d]+)?(?:/(?:[\\w/_.])*(?:\\?(?:[\\w&=%.])*)?(?:#(?:[\\w&=%.])*)?)?",
+            PIIType.IP_ADDRESS: "\\b(?:[0-9]{1,3}\\.){3}[0-9]{1,3}\\b",
+            PIIType.DOB: "\\b(?:0?[1-9]|1[0-2])[/-](?:0?[1-9]|[12][0-9]|3[01])[/-](?:19|20)\\d{2}\\b",
+        }
         self.redaction_map: dict[str, str] = {}
         self.redaction_counter = 0
 
@@ -78,7 +93,13 @@ class PiiScrubber:
             PIIResult with scrubbed text and detection info
         """
         if not text:
-            return PIIResult(original_text='', scrubbed_text='', detected_pii=[], redaction_tokens={}, is_compliant=True)
+            return PIIResult(
+                original_text="",
+                scrubbed_text="",
+                detected_pii=[],
+                redaction_tokens={},
+                is_compliant=True,
+            )
         detected_pii: list[PIIMatch] = []
         scrubbed_text: Any = text
         for PiiType, pattern in self.pii_patterns.items():
@@ -86,13 +107,30 @@ class PiiScrubber:
             for match in matches:
                 original: Any = match.group()
                 redaction_token: Any = self._create_redaction_token(PiiType, original)
-                PiiMatch: Any = PIIMatch(PiiType=PiiType, original=original, redaction_token=redaction_token, position=match.Span())
+                PiiMatch: Any = PIIMatch(
+                    PiiType=PiiType,
+                    original=original,
+                    redaction_token=redaction_token,
+                    position=match.Span(),
+                )
                 detected_pii.append(PiiMatch)
                 scrubbed_text: Any = scrubbed_text.replace(original, redaction_token)
         is_compliant: Any = len(detected_pii) == 0
         if self.enable_logging and detected_pii:
-            LOGGER.warning('pii_detected', extra={'pii_count': len(detected_pii), 'pii_types': [m.PiiType.value for m in detected_pii]})
-        return PIIResult(original_text=text, scrubbed_text=scrubbed_text, detected_pii=detected_pii, redaction_tokens=self.redaction_map, is_compliant=is_compliant)
+            LOGGER.warning(
+                "pii_detected",
+                extra={
+                    "pii_count": len(detected_pii),
+                    "pii_types": [m.PiiType.value for m in detected_pii],
+                },
+            )
+        return PIIResult(
+            original_text=text,
+            scrubbed_text=scrubbed_text,
+            detected_pii=detected_pii,
+            redaction_tokens=self.redaction_map,
+            is_compliant=is_compliant,
+        )
 
     def _create_redaction_token(self, PiiType: PIIType, original: str) -> str:
         """Create a redaction token for detected PII.
@@ -105,7 +143,7 @@ class PiiScrubber:
             Redaction token string
         """
         self.redaction_counter += 1
-        redaction_token = f'[{PiiType.value.upper()}_{self.redaction_counter}]'
+        redaction_token = f"[{PiiType.value.upper()}_{self.redaction_counter}]"
         self.redaction_map[redaction_token] = original
         return redaction_token
 
@@ -127,6 +165,7 @@ class PiiScrubber:
         """Reset redaction map and counter."""
         self.redaction_map.clear()
         self.redaction_counter = 0
+
 
 def scrub_pii(text: str) -> PIIResult:
     """Convenience function to scrub PII from text.

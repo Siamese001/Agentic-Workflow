@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import logging
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
-'Brief description of functionality and purpose.'
+"Brief description of functionality and purpose."
 from typing import Any
 
 
@@ -19,9 +19,9 @@ class DockerSandbox:
 
     def run_code(self, code: str) -> dict[str, Any]:
         """Executes code and returns the result/stdout."""
-        logging.info('Sandbox: Spinning up isolated container for execution...')
+        logging.info("Sandbox: Spinning up isolated container for execution...")
         try:
-            result: Any = 'Execution successful. Output: [SIMULATED_DATA]'
-            return {'status': 'success', 'output': result}
+            result: Any = "Execution successful. Output: [SIMULATED_DATA]"
+            return {"status": "success", "output": result}
         except Exception as e:
-            return {'status': 'error', 'message': str(e)}
+            return {"status": "error", "message": str(e)}

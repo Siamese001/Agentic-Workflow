@@ -3,6 +3,7 @@
 Generate test files for agents missing test coverage.
 This script creates comprehensive test files for all agents without tests.
 """
+
 import json
 from pathlib import Path
 from typing import Any
@@ -10,32 +11,34 @@ from typing import Any
 PROJECT_ROOT = Path(__file__).parent.parent
 TESTS_DIR = PROJECT_ROOT / "tests"
 
+
 def load_agents_without_tests() -> list[dict[str, Any]]:
     """Load list of agents without tests from discovery data."""
     discovery_path = PROJECT_ROOT / "agent_discovery_full.json"
-    with open(discovery_path, encoding='utf-8') as f:
+    with open(discovery_path, encoding="utf-8") as f:
         agents = json.load(f)
 
-    return [a for a in agents if not a.get('has_tests', False)]
+    return [a for a in agents if not a.get("has_tests", False)]
+
 
 def generate_test_content(agent: dict[str, Any]) -> str:
     """Generate test file content for an agent."""
-    class_name = agent['class_name']
-    path = agent['path']
-    layer = agent['layer']
-    territory = agent['territory']
+    class_name = agent["class_name"]
+    path = agent["path"]
+    layer = agent["layer"]
+    territory = agent["territory"]
 
     # Determine import path
-    if path.startswith('apps_'):
-        module_path = path.replace('\\', '.').replace('.py', '')
+    if path.startswith("apps_"):
+        module_path = path.replace("\\", ".").replace(".py", "")
     else:
-        module_path = path.replace('\\', '.').replace('.py', '')
+        module_path = path.replace("\\", ".").replace(".py", "")
 
     # Determine test directory
     if layer == "Apps":
         pass
     else:
-        layer.lower().replace(' ', '_').split('/')[0]
+        layer.lower().replace(" ", "_").split("/")[0]
 
     test_content = f'''"""
 Test suite for {class_name}
@@ -183,22 +186,23 @@ class Test{class_name}Integration:
     def test_agent_file_exists(self):
         """Test that agent file exists."""
         # Path: {path}
-        agent_path = Path(__file__).parent.parent.parent / "{path.replace(chr(92), '/')}"
+        agent_path = Path(__file__).parent.parent.parent / "{path.replace(chr(92), "/")}"
         assert agent_path.exists(), f"Agent file not found: {{agent_path}}"
 '''
 
     return test_content
 
+
 def create_test_file(agent: dict[str, Any]) -> Path:
     """Create test file for an agent."""
-    class_name = agent['class_name']
-    layer = agent['layer']
+    class_name = agent["class_name"]
+    layer = agent["layer"]
 
     # Determine test directory
     if layer == "Apps":
         test_dir = TESTS_DIR / "apps"
     else:
-        layer_code = layer.lower().replace(' ', '_').split('/')[0]
+        layer_code = layer.lower().replace(" ", "_").split("/")[0]
         test_dir = TESTS_DIR / layer_code
 
     test_dir.mkdir(parents=True, exist_ok=True)
@@ -211,10 +215,11 @@ def create_test_file(agent: dict[str, Any]) -> Path:
         return test_file
 
     content = generate_test_content(agent)
-    test_file.write_text(content, encoding='utf-8')
+    test_file.write_text(content, encoding="utf-8")
     print(f"  [CREATED] {test_file}")
 
     return test_file
+
 
 def main():
     """Main execution."""
@@ -228,8 +233,8 @@ def main():
     created_files = []
 
     for agent in agents_without_tests:
-        class_name = agent['class_name']
-        territory = agent['territory']
+        class_name = agent["class_name"]
+        territory = agent["territory"]
         print(f"\n{class_name} ({territory}):")
 
         try:
@@ -246,6 +251,7 @@ def main():
     print("1. Review generated test files")
     print("2. Run: pytest tests/ -v")
     print("3. Verify 100% coverage achieved")
+
 
 if __name__ == "__main__":
     main()

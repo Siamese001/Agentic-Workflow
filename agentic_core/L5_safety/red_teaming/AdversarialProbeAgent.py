@@ -9,7 +9,6 @@ and strategic attack patterns designed to expose vulnerabilities.
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-
 from __future__ import annotations
 
 import logging
@@ -78,20 +77,30 @@ class AdversarialProbeAgent(HealerMixin, MCPHardenedMixin):
                 if probe_result.get("vulnerability_exposed"):
                     results["vulnerabilities_exposed"] += 1
 
-                results["attack_results"].append({
-                    "pattern": pattern,
-                    "vulnerable": probe_result.get("vulnerability_exposed", False),
-                    "success_rate": probe_result.get("success_rate", 0.0),
-                    "threat_level": probe_result.get("threat_level", "low"),
-                    "description": probe_result.get("description", ""),
-                })
+                results["attack_results"].append(
+                    {
+                        "pattern": pattern,
+                        "vulnerable": probe_result.get("vulnerability_exposed", False),
+                        "success_rate": probe_result.get("success_rate", 0.0),
+                        "threat_level": probe_result.get("threat_level", "low"),
+                        "description": probe_result.get("description", ""),
+                    }
+                )
 
             # Calculate threat assessment
-            high_threat = sum(1 for r in results["attack_results"] if r.get("threat_level") == "high")
-            critical_threat = sum(1 for r in results["attack_results"] if r.get("threat_level") == "critical")
+            high_threat = sum(
+                1 for r in results["attack_results"] if r.get("threat_level") == "high"
+            )
+            critical_threat = sum(
+                1 for r in results["attack_results"] if r.get("threat_level") == "critical"
+            )
 
             results["threat_assessment"] = {
-                "overall_threat_level": "critical" if critical_threat > 0 else "high" if high_threat > 0 else "medium",
+                "overall_threat_level": "critical"
+                if critical_threat > 0
+                else "high"
+                if high_threat > 0
+                else "medium",
                 "critical_vulnerabilities": critical_threat,
                 "high_vulnerabilities": high_threat,
                 "total_vulnerabilities": results["vulnerabilities_exposed"],
@@ -100,11 +109,16 @@ class AdversarialProbeAgent(HealerMixin, MCPHardenedMixin):
             self.probes_executed = results["probes_executed"]
             self.vulnerabilities_exposed = results["vulnerabilities_exposed"]
 
-            log_event("adversarial_probing", {
-                "probes": results["probes_executed"],
-                "vulnerabilities": results["vulnerabilities_exposed"],
-                "threat_level": results["threat_assessment"].get("overall_threat_level", "unknown"),
-            })
+            log_event(
+                "adversarial_probing",
+                {
+                    "probes": results["probes_executed"],
+                    "vulnerabilities": results["vulnerabilities_exposed"],
+                    "threat_level": results["threat_assessment"].get(
+                        "overall_threat_level", "unknown"
+                    ),
+                },
+            )
 
             return results
 

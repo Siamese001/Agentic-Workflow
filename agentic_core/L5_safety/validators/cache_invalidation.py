@@ -13,6 +13,7 @@ Usage:
             # Healing logic...
             return {"success": True}
 """
+
 from __future__ import annotations
 
 import functools
@@ -36,6 +37,7 @@ def heal_invalidate_cache(pattern: str = ""):
         async def heal_repository(self) -> dict:
             ...
     """
+
     def decorator(func: Callable):
         @functools.wraps(func)
         async def wrapper(self, *args, **kwargs) -> Any:
@@ -51,12 +53,16 @@ def heal_invalidate_cache(pattern: str = ""):
             if success and hasattr(self, "cache_invalidate"):
                 try:
                     invalidated = await self.cache_invalidate(pattern)
-                    log.info(f"Cache invalidated for pattern '{pattern}' after heal ({invalidated} keys)")
+                    log.info(
+                        f"Cache invalidated for pattern '{pattern}' after heal ({invalidated} keys)"
+                    )
                 except Exception as e:
                     log.debug(f"Cache invalidation failed: {e}")
 
             return result
+
         return wrapper
+
     return decorator
 
 
@@ -72,6 +78,7 @@ def invalidate_on_file_change(file_path_arg: str = "file_path"):
         async def modify_file(self, file_path: Path) -> dict:
             ...
     """
+
     def decorator(func: Callable):
         @functools.wraps(func)
         async def wrapper(self, *args, **kwargs) -> Any:
@@ -82,6 +89,7 @@ def invalidate_on_file_change(file_path_arg: str = "file_path"):
             if file_path is None and args:
                 # Try to get from positional args based on function signature
                 import inspect
+
                 sig = inspect.signature(func)
                 params = list(sig.parameters.keys())
                 if file_path_arg in params:
@@ -99,7 +107,9 @@ def invalidate_on_file_change(file_path_arg: str = "file_path"):
                     log.debug(f"File cache invalidation failed: {e}")
 
             return result
+
         return wrapper
+
     return decorator
 
 

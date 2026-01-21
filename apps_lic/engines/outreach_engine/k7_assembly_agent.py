@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class K7Output:
     """K.7 assembly output."""
+
     final_message: str
     header_block: str
     body_block: str

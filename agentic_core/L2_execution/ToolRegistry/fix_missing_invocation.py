@@ -5,6 +5,7 @@ This script matches the dashboard's detection logic:
 2. Check the FIRST one for super().heal_repository() call
 3. If found -> "Yes", if has method but no super -> "No (missing super)", else "Inherited"
 """
+
 import ast
 import json
 from pathlib import Path
@@ -22,7 +23,10 @@ def has_super_heal_call(func_node: ast.FunctionDef) -> bool:
         if isinstance(node, ast.Call):
             if isinstance(node.func, ast.Attribute) and node.func.attr == "heal_repository":
                 if isinstance(node.func.value, ast.Call):
-                    if isinstance(node.func.value.func, ast.Name) and node.func.value.func.id == "super":
+                    if (
+                        isinstance(node.func.value.func, ast.Name)
+                        and node.func.value.func.id == "super"
+                    ):
                         return True
     return False
 
@@ -38,7 +42,9 @@ def check_invocation_status_dashboard(source: str) -> tuple[str, ast.FunctionDef
         return "Inherited", None
 
     # Dashboard logic: find ALL heal_repository functions, check FIRST one
-    heal_methods = [n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef) and n.name == "heal_repository"]
+    heal_methods = [
+        n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef) and n.name == "heal_repository"
+    ]
 
     if not heal_methods:
         return "Inherited", None
@@ -55,7 +61,7 @@ def is_method_in_class(func_node: ast.FunctionDef, tree: ast.Module) -> bool:
     if not func_node.args.args:
         return False
     first_arg = func_node.args.args[0]
-    return first_arg.arg == 'self'
+    return first_arg.arg == "self"
 
 
 def find_insertion_point(func_node: ast.FunctionDef, lines: list[str]) -> tuple[int, str]:
@@ -67,9 +73,12 @@ def find_insertion_point(func_node: ast.FunctionDef, lines: list[str]) -> tuple[
 
     # Check if first statement is a docstring
     is_docstring = (
-        isinstance(first_stmt, ast.Expr) and
-        isinstance(first_stmt.value, ast.Constant | ast.Str) and
-        (isinstance(first_stmt.value, ast.Str) or isinstance(getattr(first_stmt.value, 'value', None), str))
+        isinstance(first_stmt, ast.Expr)
+        and isinstance(first_stmt.value, ast.Constant | ast.Str)
+        and (
+            isinstance(first_stmt.value, ast.Str)
+            or isinstance(getattr(first_stmt.value, "value", None), str)
+        )
     )
 
     if is_docstring and len(func_node.body) > 1:
@@ -84,7 +93,7 @@ def find_insertion_point(func_node: ast.FunctionDef, lines: list[str]) -> tuple[
 
     # Calculate indentation
     indent = len(ref_line) - len(ref_line.lstrip())
-    indent_str = ' ' * indent
+    indent_str = " " * indent
 
     return insert_line, indent_str
 
@@ -97,7 +106,9 @@ def add_super_call(source: str) -> str:
         return source
 
     # Find first heal_repository function (matching dashboard logic)
-    heal_methods = [n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef) and n.name == "heal_repository"]
+    heal_methods = [
+        n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef) and n.name == "heal_repository"
+    ]
 
     if not heal_methods:
         return source
@@ -112,15 +123,15 @@ def add_super_call(source: str) -> str:
     if not is_method_in_class(func_node, tree):
         return source
 
-    lines = source.split('\n')
+    lines = source.split("\n")
     insert_line, indent_str = find_insertion_point(func_node, lines)
 
     if insert_line < 0:
         return source
 
     # Build args from function signature (excluding self)
-    args = [arg.arg for arg in func_node.args.args if arg.arg != 'self']
-    args_str = ', '.join(args)
+    args = [arg.arg for arg in func_node.args.args if arg.arg != "self"]
+    args_str = ", ".join(args)
 
     # Create super call line
     super_call = f"{indent_str}super().heal_repository({args_str})"
@@ -128,22 +139,22 @@ def add_super_call(source: str) -> str:
     # Insert the line
     lines.insert(insert_line, super_call)
 
-    return '\n'.join(lines)
+    return "\n".join(lines)
 
 
 def main():
     # Load agent registry
-    with open(PROJECT_ROOT / AGENT_DISCOVERY_JSON, encoding='utf-8') as f:
+    with open(PROJECT_ROOT / AGENT_DISCOVERY_JSON, encoding="utf-8") as f:
         agents = json.load(f)
 
     print(f"Loaded {len(agents)} agents from registry")
 
     # Analyze all agents using dashboard logic
-    status_counts = {'Yes': 0, 'No (missing super)': 0, 'Inherited': 0}
+    status_counts = {"Yes": 0, "No (missing super)": 0, "Inherited": 0}
     missing_invocation = []
 
     for agent in agents:
-        path_str = agent.get('path', '')
+        path_str = agent.get("path", "")
         if not path_str:
             continue
 
@@ -152,15 +163,12 @@ def main():
             continue
 
         try:
-            content = path.read_text(encoding='utf-8', errors='ignore')
+            content = path.read_text(encoding="utf-8", errors="ignore")
             status, _ = check_invocation_status_dashboard(content)
             status_counts[status] += 1
 
             if status == "No (missing super)":
-                missing_invocation.append({
-                    'path': str(path),
-                    'rel_path': path_str
-                })
+                missing_invocation.append({"path": str(path), "rel_path": path_str})
         except Exception as e:
             print(f"Error reading {path}: {e}")
 
@@ -169,11 +177,13 @@ def main():
         print(f"  {status}: {count}")
 
     total = sum(status_counts.values())
-    invocation_pct = (status_counts['Yes'] + status_counts['Inherited']) / total * 100 if total else 0
+    invocation_pct = (
+        (status_counts["Yes"] + status_counts["Inherited"]) / total * 100 if total else 0
+    )
     print(f"\nCurrent Invocation %: {invocation_pct:.1f}%")
 
     print(f"\n=== Agents needing fix ({len(missing_invocation)}) ===\n")
-    for agent in sorted(missing_invocation, key=lambda x: x['rel_path']):
+    for agent in sorted(missing_invocation, key=lambda x: x["rel_path"]):
         print(f"  {agent['rel_path']}")
 
     # Fix mode
@@ -183,9 +193,9 @@ def main():
         skipped_count = 0
 
         for agent in missing_invocation:
-            path = Path(agent['path'])
+            path = Path(agent["path"])
             try:
-                content = path.read_text(encoding='utf-8')
+                content = path.read_text(encoding="utf-8")
                 new_content = add_super_call(content)
 
                 if new_content == content:
@@ -202,20 +212,28 @@ def main():
 
                 # Verify the fix works
                 verify_status, _ = check_invocation_status_dashboard(new_content)
-                if verify_status != 'Yes':
-                    print(f"  ✗ Fix failed verification: {agent['rel_path']} (status: {verify_status})")
+                if verify_status != "Yes":
+                    print(
+                        f"  ✗ Fix failed verification: {agent['rel_path']} (status: {verify_status})"
+                    )
                     continue
 
-                path.write_text(new_content, encoding='utf-8')
+                path.write_text(new_content, encoding="utf-8")
                 print(f"  ✓ Fixed: {agent['rel_path']}")
                 fixed_count += 1
 
             except Exception as e:
                 print(f"  ✗ Error fixing {agent['rel_path']}: {e}")
 
-        print(f"\nFixed {fixed_count}/{len(missing_invocation)} files (skipped {skipped_count} non-methods)")
+        print(
+            f"\nFixed {fixed_count}/{len(missing_invocation)} files (skipped {skipped_count} non-methods)"
+        )
 
-        new_invocation_pct = (status_counts['Yes'] + fixed_count + status_counts['Inherited']) / total * 100 if total else 0
+        new_invocation_pct = (
+            (status_counts["Yes"] + fixed_count + status_counts["Inherited"]) / total * 100
+            if total
+            else 0
+        )
         print(f"New Invocation %: {new_invocation_pct:.1f}%")
 
 

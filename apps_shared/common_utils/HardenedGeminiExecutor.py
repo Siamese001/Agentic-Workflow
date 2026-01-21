@@ -29,11 +29,13 @@ logger = logging.getLogger(__name__)
 # Custom Exceptions
 class ContextOverflowError(Exception):
     """Raised when input exceeds context window safety threshold."""
+
     pass
 
 
 class CircuitBreakerOpenError(Exception):
     """Raised when circuit breaker is open due to sustained failures."""
+
     pass
 
 
@@ -81,6 +83,7 @@ class HardenedGeminiConfig:
 @dataclass
 class InteractionTelemetry:
     """Telemetry data for interaction logging."""
+
     interaction_id: str | None
     model: str
     input_tokens: int
@@ -94,6 +97,7 @@ class InteractionTelemetry:
 @dataclass
 class CircuitBreakerState:
     """State tracking for circuit breaker."""
+
     failure_count: int = 0
     last_failure_time: float | None = None
     state: str = "CLOSED"  # CLOSED, OPEN, HALF_OPEN
@@ -110,7 +114,7 @@ class CircuitBreaker:
         self,
         failure_threshold: int = 5,
         recovery_timeout: float = 60.0,
-        half_open_max_calls: int = 3
+        half_open_max_calls: int = 3,
     ):
         """Initialize circuit breaker.
 
@@ -170,9 +174,7 @@ class CircuitBreaker:
         elif self.state.state == "CLOSED":
             # Open if threshold reached
             if self.state.failure_count >= self.failure_threshold:
-                logger.error(
-                    f"Circuit breaker opening after {self.state.failure_count} failures"
-                )
+                logger.error(f"Circuit breaker opening after {self.state.failure_count} failures")
                 self.state.state = "OPEN"
 
     def raise_if_open(self):
@@ -187,6 +189,7 @@ class CircuitBreaker:
 @dataclass
 class InteractionTelemetry:
     """Telemetry data for interaction logging."""
+
     interaction_id: str | None
     model: str
     input_tokens: int
@@ -210,9 +213,7 @@ class HardenedGeminiExecutor:
         self._client = None
         self._setup_client()
         self._circuit_breaker = CircuitBreaker(
-            failure_threshold=5,
-            recovery_timeout=60.0,
-            half_open_max_calls=3
+            failure_threshold=5, recovery_timeout=60.0, half_open_max_calls=3
         )
 
     def _setup_client(self):
@@ -221,7 +222,7 @@ class HardenedGeminiExecutor:
 
         try:
             self._client = get_client(Provider.GOOGLE)
-            if not hasattr(self._client, 'interactions'):
+            if not hasattr(self._client, "interactions"):
                 raise ImportError("google-genai v1beta not available")
         except Exception as e:
             logger.error(f"Failed to initialize hardened Gemini client: {e}")
@@ -239,47 +240,32 @@ class HardenedGeminiExecutor:
 
             return [
                 types.SafetySetting(
-                    category="HARM_CATEGORY_DANGEROUS_CONTENT",
-                    threshold="BLOCK_ONLY_HIGH"
+                    category="HARM_CATEGORY_DANGEROUS_CONTENT", threshold="BLOCK_ONLY_HIGH"
                 ),
                 types.SafetySetting(
                     category="HARM_CATEGORY_HARASSMENT",
-                    threshold="BLOCK_NONE"  # Allow robust professional critique
+                    threshold="BLOCK_NONE",  # Allow robust professional critique
                 ),
                 types.SafetySetting(
-                    category="HARM_CATEGORY_HATE_SPEECH",
-                    threshold="BLOCK_MEDIUM_AND_ABOVE"
+                    category="HARM_CATEGORY_HATE_SPEECH", threshold="BLOCK_MEDIUM_AND_ABOVE"
                 ),
                 types.SafetySetting(
-                    category="HARM_CATEGORY_SEXUALLY_EXPLICIT",
-                    threshold="BLOCK_MEDIUM_AND_ABOVE"
+                    category="HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold="BLOCK_MEDIUM_AND_ABOVE"
                 ),
             ]
         except ImportError:
             # Fallback for legacy or different API
             return [
-                {
-                    "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
-                    "threshold": "BLOCK_ONLY_HIGH"
-                },
-                {
-                    "category": "HARM_CATEGORY_HARASSMENT",
-                    "threshold": "BLOCK_NONE"
-                },
-                {
-                    "category": "HARM_CATEGORY_HATE_SPEECH",
-                    "threshold": "BLOCK_MEDIUM_AND_ABOVE"
-                },
+                {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_ONLY_HIGH"},
+                {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
+                {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
                 {
                     "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-                    "threshold": "BLOCK_MEDIUM_AND_ABOVE"
+                    "threshold": "BLOCK_MEDIUM_AND_ABOVE",
                 },
             ]
 
-    async def validate_context_budget(
-        self,
-        input_payload: list[dict[str, Any]]
-    ) -> int:
+    async def validate_context_budget(self, input_payload: list[dict[str, Any]]) -> int:
         """Pre-flight check to ensure payload doesn't exceed context limit.
 
         Args:
@@ -293,10 +279,9 @@ class HardenedGeminiExecutor:
         """
         try:
             # Try v1beta count_tokens API
-            if hasattr(self._client, 'models'):
+            if hasattr(self._client, "models"):
                 token_resp = await self._client.aio.models.count_tokens(
-                    model=self.config.model,
-                    contents=input_payload
+                    model=self.config.model, contents=input_payload
                 )
                 token_count = token_resp.total_tokens
             else:
@@ -330,9 +315,7 @@ class HardenedGeminiExecutor:
         return total_chars // 4
 
     def _build_payload(
-        self,
-        messages: list[AgentMessage],
-        system_prompt: str | None = None
+        self, messages: list[AgentMessage], system_prompt: str | None = None
     ) -> list[dict[str, Any]]:
         """Build payload for interactions.create.
 
@@ -352,10 +335,7 @@ class HardenedGeminiExecutor:
 
         # Add messages
         for msg in messages:
-            payload.append({
-                "role": msg.role,
-                "content": msg.content
-            })
+            payload.append({"role": msg.role, "content": msg.content})
 
         return payload
 
@@ -364,7 +344,7 @@ class HardenedGeminiExecutor:
         model: str,
         config: dict[str, Any],
         input_payload: list[dict[str, Any]],
-        previous_interaction_id: str | None = None
+        previous_interaction_id: str | None = None,
     ) -> Any:
         """Execute with exponential backoff retry and circuit breaker.
 
@@ -383,6 +363,7 @@ class HardenedGeminiExecutor:
         # Import errors based on available SDK
         try:
             from google.genai import errors
+
             retry_exception = errors.ClientError
         except ImportError:
             # Fallback to generic exception
@@ -392,32 +373,26 @@ class HardenedGeminiExecutor:
             retry=retry_if_exception_type(retry_exception),
             stop=stop_after_attempt(self.config.max_retries),
             wait=wait_exponential(
-                multiplier=1,
-                min=self.config.retry_min_wait,
-                max=self.config.retry_max_wait
+                multiplier=1, min=self.config.retry_min_wait, max=self.config.retry_max_wait
             ),
-            before_sleep=lambda _: logger.warning("Retrying due to rate limit or server error")
+            before_sleep=lambda _: logger.warning("Retrying due to rate limit or server error"),
         )
         async def _execute():
-            request_params = {
-                "model": model,
-                "input": input_payload,
-                "config": config
-            }
+            request_params = {"model": model, "input": input_payload, "config": config}
 
             if previous_interaction_id:
                 request_params["previous_interaction_id"] = previous_interaction_id
 
             # Try async API first, fallback to sync
-            if hasattr(self._client, 'aio'):
+            if hasattr(self._client, "aio"):
                 return await self._client.aio.interactions.create(**request_params)
             else:
                 # Wrap sync call in executor to avoid blocking
                 import asyncio
+
                 loop = asyncio.get_event_loop()
                 return await loop.run_in_executor(
-                    None,
-                    lambda: self._client.interactions.create(**request_params)
+                    None, lambda: self._client.interactions.create(**request_params)
                 )
 
         try:
@@ -428,10 +403,7 @@ class HardenedGeminiExecutor:
             self._circuit_breaker.record_failure()
             raise
 
-    async def log_interaction_telemetry(
-        self,
-        telemetry: InteractionTelemetry
-    ):
+    async def log_interaction_telemetry(self, telemetry: InteractionTelemetry):
         """Log structured telemetry for observability.
 
         Args:
@@ -494,17 +466,14 @@ class HardenedGeminiExecutor:
 
             # 4. Execute with Retry
             response = self._execute_with_retry(
-                self.config.model,
-                config,
-                payload,
-                previous_interaction_id
+                self.config.model, config, payload, previous_interaction_id
             )
 
             # 5. Extract response
             content = ""
-            if hasattr(response, 'candidates') and response.candidates:
+            if hasattr(response, "candidates") and response.candidates:
                 candidate = response.candidates[0]
-                if hasattr(candidate, 'content') and candidate.content:
+                if hasattr(candidate, "content") and candidate.content:
                     content = candidate.content.parts[0].text if candidate.content.parts else ""
 
             # 6. Calculate telemetry
@@ -512,7 +481,7 @@ class HardenedGeminiExecutor:
 
             # Extract usage if available
             output_tokens = 0
-            if hasattr(response, 'usage_metadata'):
+            if hasattr(response, "usage_metadata"):
                 output_tokens = response.usage_metadata.candidates_token_count
             else:
                 # Estimate output tokens
@@ -520,12 +489,12 @@ class HardenedGeminiExecutor:
 
             # 7. Log telemetry
             telemetry = InteractionTelemetry(
-                interaction_id=getattr(response, 'id', None),
+                interaction_id=getattr(response, "id", None),
                 model=self.config.model,
                 input_tokens=input_tokens,
                 output_tokens=output_tokens,
                 total_tokens=input_tokens + output_tokens,
-                latency_ms=latency_ms
+                latency_ms=latency_ms,
             )
 
             await self.log_interaction_telemetry(telemetry)
@@ -542,7 +511,7 @@ class HardenedGeminiExecutor:
                 output_tokens=0,
                 total_tokens=0,
                 latency_ms=latency_ms,
-                error=str(e)
+                error=str(e),
             )
 
             await self.log_interaction_telemetry(telemetry)
@@ -577,20 +546,22 @@ class HardenedGeminiExecutor:
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 future = executor.submit(
                     asyncio.run,
-                    self.execute_k_node(messages, system_prompt, response_schema, previous_interaction_id)
+                    self.execute_k_node(
+                        messages, system_prompt, response_schema, previous_interaction_id
+                    ),
                 )
                 return future.result()
         else:
             return asyncio.run(
-                self.execute_k_node(messages, system_prompt, response_schema, previous_interaction_id)
+                self.execute_k_node(
+                    messages, system_prompt, response_schema, previous_interaction_id
+                )
             )
 
 
 # Factory function for backward compatibility
 def create_hardened_gemini_executor(
-    model: str = "gemini-3-pro-preview",
-    temperature: float = 0.3,
-    **kwargs
+    model: str = "gemini-3-pro-preview", temperature: float = 0.3, **kwargs
 ) -> HardenedGeminiExecutor:
     """Create a hardened Gemini executor.
 
@@ -628,9 +599,7 @@ def create_agent_executor(
     """
     if provider == Provider.GOOGLE and hardened:
         return create_hardened_gemini_executor(
-            model=model or "gemini-3-pro-preview",
-            temperature=temperature,
-            **kwargs
+            model=model or "gemini-3-pro-preview", temperature=temperature, **kwargs
         )
 
     # Use standard executor for other providers

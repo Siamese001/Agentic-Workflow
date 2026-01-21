@@ -32,65 +32,67 @@ PrintColors = None  # Will be set after Colors class definition
 
 class Colors:
     """ANSI color codes for terminal output."""
+
     # Reset
-    RESET = '\033[0m'
-    BOLD = '\033[1m'
-    DIM = '\033[2m'
+    RESET = "\033[0m"
+    BOLD = "\033[1m"
+    DIM = "\033[2m"
 
     # Standard colors
-    BLACK = '\033[30m'
-    RED = '\033[31m'
-    GREEN = '\033[32m'
-    YELLOW = '\033[33m'
-    BLUE = '\033[34m'
-    MAGENTA = '\033[35m'
-    CYAN = '\033[36m'
-    WHITE = '\033[37m'
+    BLACK = "\033[30m"
+    RED = "\033[31m"
+    GREEN = "\033[32m"
+    YELLOW = "\033[33m"
+    BLUE = "\033[34m"
+    MAGENTA = "\033[35m"
+    CYAN = "\033[36m"
+    WHITE = "\033[37m"
 
     # Bright colors
-    BRIGHT_RED = '\033[91m'
-    BRIGHT_GREEN = '\033[92m'
-    BRIGHT_YELLOW = '\033[93m'
-    BRIGHT_BLUE = '\033[94m'
-    BRIGHT_MAGENTA = '\033[95m'
-    BRIGHT_CYAN = '\033[96m'
-    BRIGHT_WHITE = '\033[97m'
+    BRIGHT_RED = "\033[91m"
+    BRIGHT_GREEN = "\033[92m"
+    BRIGHT_YELLOW = "\033[93m"
+    BRIGHT_BLUE = "\033[94m"
+    BRIGHT_MAGENTA = "\033[95m"
+    BRIGHT_CYAN = "\033[96m"
+    BRIGHT_WHITE = "\033[97m"
 
     # Background colors
-    BG_BLACK = '\033[40m'
-    BG_RED = '\033[41m'
-    BG_GREEN = '\033[42m'
-    BG_YELLOW = '\033[43m'
-    BG_BLUE = '\033[44m'
-    BG_MAGENTA = '\033[45m'
-    BG_CYAN = '\033[46m'
-    BG_WHITE = '\033[47m'
+    BG_BLACK = "\033[40m"
+    BG_RED = "\033[41m"
+    BG_GREEN = "\033[42m"
+    BG_YELLOW = "\033[43m"
+    BG_BLUE = "\033[44m"
+    BG_MAGENTA = "\033[45m"
+    BG_CYAN = "\033[46m"
+    BG_WHITE = "\033[47m"
 
 
 # Status symbols
 SYMBOLS = {
-    'success': '✓',
-    'error': '✗',
-    'warning': '⚠',
-    'info': 'ℹ',
-    'running': '▶',
-    'pending': '○',
-    'complete': '●',
-    'arrow': '→',
-    'bar_full': '█',
-    'bar_empty': '░',
-    'spinner': ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'],
+    "success": "✓",
+    "error": "✗",
+    "warning": "⚠",
+    "info": "ℹ",
+    "running": "▶",
+    "pending": "○",
+    "complete": "●",
+    "arrow": "→",
+    "bar_full": "█",
+    "bar_empty": "░",
+    "spinner": ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"],
 }
 
 
 def _ensure_utf8():
     """Ensure terminal supports UTF-8."""
-    if sys.platform.startswith('win'):
+    if sys.platform.startswith("win"):
         try:
             from agentic_core.utils.security import safe_execute
+
             # Replace os.system with safe_execute for security
-            safe_execute(['chcp', '65001'], capture_output=True, check=False)
-            sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+            safe_execute(["chcp", "65001"], capture_output=True, check=False)
+            sys.stdout.reconfigure(encoding="utf-8", errors="replace")
         except:
             pass
 
@@ -100,7 +102,7 @@ _ensure_utf8()
 
 def colorize(text: str, color: str, bold: bool = False) -> str:
     """Apply color to text."""
-    prefix = Colors.BOLD if bold else ''
+    prefix = Colors.BOLD if bold else ""
     return f"{prefix}{color}{text}{Colors.RESET}"
 
 
@@ -124,23 +126,18 @@ def print_info(msg: str):
     print(f"{Colors.BRIGHT_CYAN}{SYMBOLS['info']} {msg}{Colors.RESET}")
 
 
-def status_bar(
-    label: str,
-    status: str,
-    width: int = 60,
-    show_time: bool = True
-) -> str:
+def status_bar(label: str, status: str, width: int = 60, show_time: bool = True) -> str:
     """Generate a color-coded status bar."""
     status_colors = {
-        'running': (Colors.BRIGHT_YELLOW, Colors.BG_YELLOW, SYMBOLS['running']),
-        'success': (Colors.BRIGHT_GREEN, Colors.BG_GREEN, SYMBOLS['success']),
-        'error': (Colors.BRIGHT_RED, Colors.BG_RED, SYMBOLS['error']),
-        'warning': (Colors.BRIGHT_YELLOW, Colors.BG_YELLOW, SYMBOLS['warning']),
-        'pending': (Colors.DIM, Colors.BG_BLACK, SYMBOLS['pending']),
-        'info': (Colors.BRIGHT_CYAN, Colors.BG_CYAN, SYMBOLS['info']),
+        "running": (Colors.BRIGHT_YELLOW, Colors.BG_YELLOW, SYMBOLS["running"]),
+        "success": (Colors.BRIGHT_GREEN, Colors.BG_GREEN, SYMBOLS["success"]),
+        "error": (Colors.BRIGHT_RED, Colors.BG_RED, SYMBOLS["error"]),
+        "warning": (Colors.BRIGHT_YELLOW, Colors.BG_YELLOW, SYMBOLS["warning"]),
+        "pending": (Colors.DIM, Colors.BG_BLACK, SYMBOLS["pending"]),
+        "info": (Colors.BRIGHT_CYAN, Colors.BG_CYAN, SYMBOLS["info"]),
     }
 
-    fg_color, bg_color, symbol = status_colors.get(status, status_colors['info'])
+    fg_color, bg_color, symbol = status_colors.get(status, status_colors["info"])
 
     timestamp = f"[{datetime.now().strftime('%H:%M:%S')}] " if show_time else ""
     status_text = f" {status.upper()} "
@@ -157,7 +154,7 @@ def progress_bar(
     label: str = "",
     width: int = 40,
     show_percent: bool = True,
-    show_count: bool = True
+    show_count: bool = True,
 ) -> str:
     """Generate a color-coded progress bar."""
     if total == 0:
@@ -196,14 +193,14 @@ def phase_header(
     phase_name: str,
     phase_num: int | None = None,
     total_phases: int | None = None,
-    status: str = "running"
+    status: str = "running",
 ) -> str:
     """Generate a prominent phase/tier header."""
     status_colors = {
-        'running': Colors.BRIGHT_YELLOW,
-        'success': Colors.BRIGHT_GREEN,
-        'error': Colors.BRIGHT_RED,
-        'pending': Colors.DIM,
+        "running": Colors.BRIGHT_YELLOW,
+        "success": Colors.BRIGHT_GREEN,
+        "error": Colors.BRIGHT_RED,
+        "pending": Colors.DIM,
     }
     color = status_colors.get(status, Colors.BRIGHT_CYAN)
 
@@ -230,18 +227,18 @@ def agent_status(
     status: str,
     fixes: int = 0,
     violations: int = 0,
-    duration_ms: int | None = None
+    duration_ms: int | None = None,
 ) -> str:
     """Generate agent execution status line."""
     status_styles = {
-        'running': (Colors.BRIGHT_YELLOW, SYMBOLS['running'], 'RUNNING'),
-        'success': (Colors.BRIGHT_GREEN, SYMBOLS['success'], 'SUCCESS'),
-        'error': (Colors.BRIGHT_RED, SYMBOLS['error'], 'ERROR'),
-        'skipped': (Colors.DIM, SYMBOLS['pending'], 'SKIPPED'),
-        'healing': (Colors.BRIGHT_MAGENTA, SYMBOLS['running'], 'HEALING'),
+        "running": (Colors.BRIGHT_YELLOW, SYMBOLS["running"], "RUNNING"),
+        "success": (Colors.BRIGHT_GREEN, SYMBOLS["success"], "SUCCESS"),
+        "error": (Colors.BRIGHT_RED, SYMBOLS["error"], "ERROR"),
+        "skipped": (Colors.DIM, SYMBOLS["pending"], "SKIPPED"),
+        "healing": (Colors.BRIGHT_MAGENTA, SYMBOLS["running"], "HEALING"),
     }
 
-    color, symbol, label = status_styles.get(status, status_styles['running'])
+    color, symbol, label = status_styles.get(status, status_styles["running"])
 
     metrics = []
     if fixes > 0:
@@ -259,7 +256,9 @@ def agent_status(
 
     metrics_str = f" [{', '.join(metrics)}]" if metrics else ""
 
-    return f"  {color}{symbol} {agent_name}{Colors.RESET} {color}[{label}]{Colors.RESET}{metrics_str}"
+    return (
+        f"  {color}{symbol} {agent_name}{Colors.RESET} {color}[{label}]{Colors.RESET}{metrics_str}"
+    )
 
 
 def tier_summary(
@@ -269,16 +268,16 @@ def tier_summary(
     total_fixes: int,
     total_violations: int,
     duration_sec: float,
-    passed: bool
+    passed: bool,
 ) -> str:
     """Generate tier execution summary."""
     if passed:
         status_color = Colors.BRIGHT_GREEN
-        status_symbol = SYMBOLS['success']
+        status_symbol = SYMBOLS["success"]
         status_text = "PASSED"
     else:
         status_color = Colors.BRIGHT_RED
-        status_symbol = SYMBOLS['error']
+        status_symbol = SYMBOLS["error"]
         status_text = "FAILED"
 
     border = "─" * 58
@@ -316,7 +315,7 @@ def mission_summary(
     total_violations: int,
     total_errors: int,
     duration_sec: float,
-    success: bool
+    success: bool,
 ) -> str:
     """Generate mission completion summary."""
     if success:
@@ -346,7 +345,7 @@ def mission_summary(
 
 def heartbeat(iteration: int) -> str:
     """Generate a heartbeat indicator to show process is alive."""
-    spinner = SYMBOLS['spinner']
+    spinner = SYMBOLS["spinner"]
     return f"{Colors.BRIGHT_CYAN}{spinner[iteration % len(spinner)]}{Colors.RESET}"
 
 
@@ -355,21 +354,23 @@ def log_status(level: str, message: str, **kwargs):
     timestamp = f"[{datetime.now().strftime('%H:%M:%S')}]"
 
     level_styles = {
-        'info': (Colors.BRIGHT_CYAN, 'INFO'),
-        'success': (Colors.BRIGHT_GREEN, 'OK'),
-        'warning': (Colors.BRIGHT_YELLOW, 'WARN'),
-        'error': (Colors.BRIGHT_RED, 'ERR'),
-        'debug': (Colors.DIM, 'DBG'),
-        'trace': (Colors.DIM, 'TRC'),
+        "info": (Colors.BRIGHT_CYAN, "INFO"),
+        "success": (Colors.BRIGHT_GREEN, "OK"),
+        "warning": (Colors.BRIGHT_YELLOW, "WARN"),
+        "error": (Colors.BRIGHT_RED, "ERR"),
+        "debug": (Colors.DIM, "DBG"),
+        "trace": (Colors.DIM, "TRC"),
     }
 
-    color, label = level_styles.get(level, level_styles['info'])
+    color, label = level_styles.get(level, level_styles["info"])
 
     context = ""
     if kwargs:
         context = f" {Colors.DIM}({', '.join(f'{k}={v}' for k, v in kwargs.items())}){Colors.RESET}"
 
-    print(f"{Colors.DIM}{timestamp}{Colors.RESET} {color}[{label}]{Colors.RESET} {message}{context}")
+    print(
+        f"{Colors.DIM}{timestamp}{Colors.RESET} {color}[{label}]{Colors.RESET} {message}{context}"
+    )
 
 
 # Backward compatibility alias - PrintColors is an alias for Colors

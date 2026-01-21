@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: orchestrator, prompt, state, workflow
@@ -9,9 +8,9 @@ from __future__ import annotations
 import asyncio
 from dataclasses import dataclass
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
-'Brief description of functionality and purpose.'
+"Brief description of functionality and purpose."
 import logging
 from typing import Any
 
@@ -31,11 +30,13 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 Logger: Any = logging.getLogger(__name__)
 
+
 class AgentInfo(HealerMixin):
     """Simple agent information container."""
 
-
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -55,7 +56,30 @@ class AgentInfo(HealerMixin):
         self.phase = phase
         self.capabilities = capabilities
 
-sovereign_agents: Any = [AgentInfo('Historian', 'integrity_seq', ['reasoning']), AgentInfo('ArchitectureGovernor', 'integrity_seq', ['reasoning']), AgentInfo('DependencySentinelAgent', 'integrity_seq', ['reasoning']), AgentInfo('HygieneGuardian', 'curation_seq', ['reasoning']), AgentInfo('CodeStyleGuardian', 'curation_seq', ['reasoning']), AgentInfo('TestPilot', 'test_seq', ['reasoning']), AgentInfo('TheCartographer', 'memory_parallel', ['reasoning']), AgentInfo('TheOmniContext', 'memory_parallel', ['reasoning']), AgentInfo('SafetyInspectorAgent', 'resilience_parallel', ['reasoning']), AgentInfo('SecurityEnforcer', 'resilience_parallel', ['reasoning']), AgentInfo('PerformanceEnforcer', 'resilience_parallel', ['reasoning']), AgentInfo('ConcurrencyGuardianAgent', 'resource_safety_parallel', ['reasoning']), AgentInfo('StructuralEngineer', 'engineering_parallel', ['reasoning']), AgentInfo('PatternEnforcerAgent', 'engineering_parallel', ['reasoning']), AgentInfo('ToolsmithAgent', 'engineering_parallel', ['reasoning', 'tool_creation']), AgentInfo('NamingEnforcer', 'refinement_parallel', ['reasoning']), AgentInfo('DocEnforcer', 'refinement_parallel', ['reasoning']), AgentInfo('TypeEnforcer', 'refinement_parallel', ['reasoning']), AgentInfo('BenchmarkingAgent', 'benchmarking_seq', ['reasoning']), AgentInfo('TheStrategist', 'optimization_conditional', ['reasoning'])]
+
+sovereign_agents: Any = [
+    AgentInfo("Historian", "integrity_seq", ["reasoning"]),
+    AgentInfo("ArchitectureGovernor", "integrity_seq", ["reasoning"]),
+    AgentInfo("DependencySentinelAgent", "integrity_seq", ["reasoning"]),
+    AgentInfo("HygieneGuardian", "curation_seq", ["reasoning"]),
+    AgentInfo("CodeStyleGuardian", "curation_seq", ["reasoning"]),
+    AgentInfo("TestPilot", "test_seq", ["reasoning"]),
+    AgentInfo("TheCartographer", "memory_parallel", ["reasoning"]),
+    AgentInfo("TheOmniContext", "memory_parallel", ["reasoning"]),
+    AgentInfo("SafetyInspectorAgent", "resilience_parallel", ["reasoning"]),
+    AgentInfo("SecurityEnforcer", "resilience_parallel", ["reasoning"]),
+    AgentInfo("PerformanceEnforcer", "resilience_parallel", ["reasoning"]),
+    AgentInfo("ConcurrencyGuardianAgent", "resource_safety_parallel", ["reasoning"]),
+    AgentInfo("StructuralEngineer", "engineering_parallel", ["reasoning"]),
+    AgentInfo("PatternEnforcerAgent", "engineering_parallel", ["reasoning"]),
+    AgentInfo("ToolsmithAgent", "engineering_parallel", ["reasoning", "tool_creation"]),
+    AgentInfo("NamingEnforcer", "refinement_parallel", ["reasoning"]),
+    AgentInfo("DocEnforcer", "refinement_parallel", ["reasoning"]),
+    AgentInfo("TypeEnforcer", "refinement_parallel", ["reasoning"]),
+    AgentInfo("BenchmarkingAgent", "benchmarking_seq", ["reasoning"]),
+    AgentInfo("TheStrategist", "optimization_conditional", ["reasoning"]),
+]
+
 
 def _run_self_tests() -> dict:
     """Run internal self-tests."""
@@ -69,11 +93,14 @@ def _run_self_tests() -> dict:
         results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
     return results
 
+
 @dataclass
 class SovereignCognitivePlaneAgent(SubatomicTestingMixin, ICognitivePlane, MCPHardenedMixin):
     """Sovereign cognitive plane with in-memory agent registry and L5 streaming."""
 
-    def __init__(self, enable_streaming: bool=True, streamer_factory: callable | None=None) -> None:
+    def __init__(
+        self, enable_streaming: bool = True, streamer_factory: callable | None = None
+    ) -> None:
         """
         Initialize with sovereign agents.
 
@@ -92,11 +119,17 @@ class SovereignCognitivePlaneAgent(SubatomicTestingMixin, ICognitivePlane, MCPHa
             if streamer_factory:
                 try:
                     self._streamer = streamer_factory()
-                    LOGGER.info('L5 Streamer integrated with SovereignCognitivePlaneAgent via factory')
+                    LOGGER.info(
+                        "L5 Streamer integrated with SovereignCognitivePlaneAgent via factory"
+                    )
                 except Exception as e:
-                    LOGGER.warning(f'Failed to initialize L5 Streamer via factory: {e} - reasoning broadcast disabled')
+                    LOGGER.warning(
+                        f"Failed to initialize L5 Streamer via factory: {e} - reasoning broadcast disabled"
+                    )
             else:
-                LOGGER.warning('L5 Streamer not provided via factory - reasoning broadcast disabled')
+                LOGGER.warning(
+                    "L5 Streamer not provided via factory - reasoning broadcast disabled"
+                )
 
     async def start_streaming(self) -> Any:
         """Start the L5 streamer if enabled."""
@@ -112,7 +145,7 @@ class SovereignCognitivePlaneAgent(SubatomicTestingMixin, ICognitivePlane, MCPHa
         """Initialize agents in memory."""
         for agent in SOVEREIGN_AGENTS:
             self._agents[agent.name] = agent
-            LOGGER.info(f'Registered sovereign agent: {agent.name}')
+            LOGGER.info(f"Registered sovereign agent: {agent.name}")
 
     def get_capabilities(self) -> list[Any]:
         """Get available cognitive capabilities."""
@@ -125,11 +158,18 @@ class SovereignCognitivePlaneAgent(SubatomicTestingMixin, ICognitivePlane, MCPHa
     async def plan(self, request: PlanningRequest) -> PlanningResult:
         """Async plan implementation replacing blocking logic."""
         if self._streamer:
-            await self._streamer.broadcast_reasoning(f'Processing planning request: {request.task_id}')
+            await self._streamer.broadcast_reasoning(
+                f"Processing planning request: {request.task_id}"
+            )
         await asyncio.sleep(0)
-        return PlanningResult(plan_id=f'sovereign_{request.task_id}', steps=['analyze_context', 'select_agents', 'generate_strategy'])
+        return PlanningResult(
+            plan_id=f"sovereign_{request.task_id}",
+            steps=["analyze_context", "select_agents", "generate_strategy"],
+        )
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict[str, Any]:
         """Autonomous healing implementation as per Canon Key 51."""
         super().heal_repository(dry_run=dry_run, execute=execute, **kwargs)
         return {"violations": 0, "fixed": 0, "errors": 0}

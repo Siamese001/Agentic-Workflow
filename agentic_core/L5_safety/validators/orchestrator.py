@@ -105,10 +105,7 @@ class IHealable(Protocol):
 
     @standard_heal
     def heal_repository(
-        self,
-        dry_run: bool = True,
-        execute: bool = False,
-        **kwargs: Any
+        self, dry_run: bool = True, execute: bool = False, **kwargs: Any
     ) -> dict[str, Any]:
         """
         Heal repository issues within this agent's domain.

@@ -9,6 +9,7 @@ SSOT PRINCIPLE:
     All L3 orchestration agents inherit from L3OrchestrationBaseAgent,
     which inherits from SovereignBaseAgent (the root of the MRO chain).
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -45,7 +46,7 @@ class L3OrchestrationBaseAgent(SovereignBaseAgent):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: set | None = None
+        _call_path: set | None = None,
     ) -> dict[str, int]:
         """
         L3 orchestration healing - coordinates healing across agents.

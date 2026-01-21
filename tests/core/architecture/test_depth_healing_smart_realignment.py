@@ -15,6 +15,7 @@ Test Cases:
 NOTE: Tests use actual project directory with proper cleanup to avoid
 LocationAgent's project root validation issues.
 """
+
 import atexit
 import shutil
 import sys
@@ -39,6 +40,7 @@ def cleanup():
         except Exception:
             pass
 
+
 atexit.register(cleanup)
 
 
@@ -57,7 +59,7 @@ def test_fail(test_id: str, msg: str):
 def create_test_file(path: Path, content: str = "# Test file\nclass TestAgent:\n    pass\n"):
     """Create a test file with directories."""
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(content, encoding='utf-8')
+    path.write_text(content, encoding="utf-8")
     return path
 
 
@@ -70,14 +72,14 @@ def test_heal_depth_violation_exists():
     try:
         from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
 
-        if hasattr(LocationAgent, '_heal_depth_violation'):
+        if hasattr(LocationAgent, "_heal_depth_violation"):
             test_pass("METHOD_EXISTS", "_heal_depth_violation method exists")
         else:
             test_fail("METHOD_EXISTS", "_heal_depth_violation method NOT found")
             return False
 
         # Check HEALING_STRATEGIES has the new entries
-        if hasattr(LocationAgent, 'HEALING_STRATEGIES'):
+        if hasattr(LocationAgent, "HEALING_STRATEGIES"):
             strategies = LocationAgent.HEALING_STRATEGIES
             if "SHALLOW VIOLATION" in strategies and "DEEP VIOLATION" in strategies:
                 test_pass("STRATEGIES", "SHALLOW and DEEP VIOLATION in HEALING_STRATEGIES")
@@ -112,7 +114,9 @@ def test_deep_violation_flattening():
     test_root = PROJECT_ROOT
 
     # Create the deep file (depth 5) - use _test_ prefix to identify test files
-    deep_dir = test_root / "agentic_core" / "L5_safety" / "validators" / "_test_extra" / "_test_deep"
+    deep_dir = (
+        test_root / "agentic_core" / "L5_safety" / "validators" / "_test_extra" / "_test_deep"
+    )
     deep_file = deep_dir / "DeepTestAgent.py"
     expected_target = test_root / "agentic_core" / "L5_safety" / "validators" / "DeepTestAgent.py"
 
@@ -149,8 +153,11 @@ def test_deep_violation_flattening():
         msg = f"DEEP VIOLATION (agentic_core): depth {current_depth} != {expected_depth}"
 
         result = agent._heal_depth_violation(
-            deep_file, msg, dry_run=True,
-            affected_paths=affected_paths, import_touched_paths=import_touched_paths
+            deep_file,
+            msg,
+            dry_run=True,
+            affected_paths=affected_paths,
+            import_touched_paths=import_touched_paths,
         )
 
         if "FLATTENED" in result.get("action_taken", ""):
@@ -162,8 +169,11 @@ def test_deep_violation_flattening():
         # Run actual healing
         affected_paths = []
         result = agent._heal_depth_violation(
-            deep_file, msg, dry_run=False,
-            affected_paths=affected_paths, import_touched_paths=import_touched_paths
+            deep_file,
+            msg,
+            dry_run=False,
+            affected_paths=affected_paths,
+            import_touched_paths=import_touched_paths,
         )
 
         if result.get("applied"):
@@ -193,6 +203,7 @@ def test_deep_violation_flattening():
     except Exception as e:
         test_fail("EXCEPTION", f"Test failed with exception: {e}")
         import traceback
+
         traceback.print_exc()
 
 
@@ -214,7 +225,9 @@ def test_shallow_violation_nesting():
 
     # Create the shallow file (depth 1) - use _test_ suffix to identify test files
     shallow_file = test_root / "agentic_core" / "ShallowTestAgent.py"
-    expected_nested = test_root / "agentic_core" / "depth_aligned" / "depth_aligned" / "ShallowTestAgent.py"
+    expected_nested = (
+        test_root / "agentic_core" / "depth_aligned" / "depth_aligned" / "ShallowTestAgent.py"
+    )
 
     # Register for cleanup
     CLEANUP_PATHS.append(shallow_file)
@@ -230,7 +243,9 @@ def test_shallow_violation_nesting():
 
         # Verify initial state
         if shallow_file.exists():
-            test_pass("SETUP", f"Shallow file created at depth 1: {shallow_file.relative_to(test_root)}")
+            test_pass(
+                "SETUP", f"Shallow file created at depth 1: {shallow_file.relative_to(test_root)}"
+            )
         else:
             test_fail("SETUP", "Failed to create shallow test file")
             return
@@ -242,7 +257,10 @@ def test_shallow_violation_nesting():
         expected_depth = SOVEREIGN_REGISTRY.get("agentic_core", {}).get("depth", 3)
         deficit = expected_depth - current_depth
 
-        test_pass("DEPTH_CALC", f"Current depth: {current_depth}, Expected: {expected_depth}, Deficit: {deficit}")
+        test_pass(
+            "DEPTH_CALC",
+            f"Current depth: {current_depth}, Expected: {expected_depth}, Deficit: {deficit}",
+        )
 
         # Run depth healing
         affected_paths = []
@@ -251,8 +269,11 @@ def test_shallow_violation_nesting():
 
         # Dry run first
         result = agent._heal_depth_violation(
-            shallow_file, msg, dry_run=True,
-            affected_paths=affected_paths, import_touched_paths=import_touched_paths
+            shallow_file,
+            msg,
+            dry_run=True,
+            affected_paths=affected_paths,
+            import_touched_paths=import_touched_paths,
         )
 
         if "NESTED" in result.get("action_taken", ""):
@@ -264,8 +285,11 @@ def test_shallow_violation_nesting():
         # Run actual healing
         affected_paths = []
         result = agent._heal_depth_violation(
-            shallow_file, msg, dry_run=False,
-            affected_paths=affected_paths, import_touched_paths=import_touched_paths
+            shallow_file,
+            msg,
+            dry_run=False,
+            affected_paths=affected_paths,
+            import_touched_paths=import_touched_paths,
         )
 
         if result.get("applied"):
@@ -300,6 +324,7 @@ def test_shallow_violation_nesting():
     except Exception as e:
         test_fail("EXCEPTION", f"Test failed with exception: {e}")
         import traceback
+
         traceback.print_exc()
 
 
@@ -346,12 +371,18 @@ def test_idempotency():
         msg = f"SHALLOW VIOLATION (agentic_core): depth {current_depth} != {expected_depth}"
 
         result1 = agent._heal_depth_violation(
-            correct_file, msg, dry_run=False,
-            affected_paths=affected_paths, import_touched_paths=import_touched_paths
+            correct_file,
+            msg,
+            dry_run=False,
+            affected_paths=affected_paths,
+            import_touched_paths=import_touched_paths,
         )
 
         if "SKIPPED" in result1.get("action_taken", "") or current_depth == expected_depth:
-            test_pass("FIRST_RUN", f"First run correctly handled: {result1.get('action_taken', 'depth correct')}")
+            test_pass(
+                "FIRST_RUN",
+                f"First run correctly handled: {result1.get('action_taken', 'depth correct')}",
+            )
         else:
             test_pass("FIRST_RUN", f"First run moved file: {result1.get('action_taken')}")
 
@@ -371,8 +402,11 @@ def test_idempotency():
 
         affected_paths = []
         result2 = agent._heal_depth_violation(
-            current_file, msg, dry_run=False,
-            affected_paths=affected_paths, import_touched_paths=import_touched_paths
+            current_file,
+            msg,
+            dry_run=False,
+            affected_paths=affected_paths,
+            import_touched_paths=import_touched_paths,
         )
 
         if "SKIPPED" in result2.get("action_taken", ""):
@@ -397,6 +431,7 @@ def test_idempotency():
     except Exception as e:
         test_fail("EXCEPTION", f"Test failed with exception: {e}")
         import traceback
+
         traceback.print_exc()
 
 
@@ -438,5 +473,5 @@ def main():
         return 1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

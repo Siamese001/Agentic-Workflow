@@ -26,8 +26,9 @@ class TestAgentCategorization(unittest.TestCase):
         for agent in test_agents:
             cat = self._categorize(agent)
             self.assertEqual(
-                cat, "Validation & Compliance",
-                f"{agent} should be in Validation & Compliance, got {cat}"
+                cat,
+                "Validation & Compliance",
+                f"{agent} should be in Validation & Compliance, got {cat}",
             )
 
     def test_self_healing_category(self):
@@ -45,8 +46,9 @@ class TestAgentCategorization(unittest.TestCase):
         for agent in test_agents:
             cat = self._categorize(agent)
             self.assertEqual(
-                cat, "Self-Healing & Recovery",
-                f"{agent} should be in Self-Healing & Recovery, got {cat}"
+                cat,
+                "Self-Healing & Recovery",
+                f"{agent} should be in Self-Healing & Recovery, got {cat}",
             )
 
     def test_safety_security_category(self):
@@ -67,8 +69,7 @@ class TestAgentCategorization(unittest.TestCase):
         for agent in test_agents:
             cat = self._categorize(agent)
             self.assertEqual(
-                cat, "Safety & Security",
-                f"{agent} should be in Safety & Security, got {cat}"
+                cat, "Safety & Security", f"{agent} should be in Safety & Security, got {cat}"
             )
 
     def test_code_quality_category(self):
@@ -89,8 +90,9 @@ class TestAgentCategorization(unittest.TestCase):
         for agent in test_agents:
             cat = self._categorize(agent)
             self.assertEqual(
-                cat, "Code Quality & Analysis",
-                f"{agent} should be in Code Quality & Analysis, got {cat}"
+                cat,
+                "Code Quality & Analysis",
+                f"{agent} should be in Code Quality & Analysis, got {cat}",
             )
 
     def test_governance_category(self):
@@ -109,8 +111,9 @@ class TestAgentCategorization(unittest.TestCase):
         for agent in test_agents:
             cat = self._categorize(agent)
             self.assertEqual(
-                cat, "Governance & Architecture",
-                f"{agent} should be in Governance & Architecture, got {cat}"
+                cat,
+                "Governance & Architecture",
+                f"{agent} should be in Governance & Architecture, got {cat}",
             )
 
     def test_orchestration_category(self):
@@ -127,8 +130,9 @@ class TestAgentCategorization(unittest.TestCase):
         for agent in test_agents:
             cat = self._categorize(agent)
             self.assertEqual(
-                cat, "Orchestration & Routing",
-                f"{agent} should be in Orchestration & Routing, got {cat}"
+                cat,
+                "Orchestration & Routing",
+                f"{agent} should be in Orchestration & Routing, got {cat}",
             )
 
     def test_observability_category(self):
@@ -146,8 +150,9 @@ class TestAgentCategorization(unittest.TestCase):
         for agent in test_agents:
             cat = self._categorize(agent)
             self.assertEqual(
-                cat, "Observability & Monitoring",
-                f"{agent} should be in Observability & Monitoring, got {cat}"
+                cat,
+                "Observability & Monitoring",
+                f"{agent} should be in Observability & Monitoring, got {cat}",
             )
 
     def test_testing_category(self):
@@ -164,8 +169,9 @@ class TestAgentCategorization(unittest.TestCase):
         for agent in test_agents:
             cat = self._categorize(agent)
             self.assertEqual(
-                cat, "Testing & Verification",
-                f"{agent} should be in Testing & Verification, got {cat}"
+                cat,
+                "Testing & Verification",
+                f"{agent} should be in Testing & Verification, got {cat}",
             )
 
     def test_non_overlapping_exclusions(self):
@@ -194,8 +200,12 @@ class TestAgentCategorization(unittest.TestCase):
             # Check for expected categories
             category_names = set(categories.keys())
             self.assertTrue(
-                len(category_names & {"Safety & Security", "Self-Healing & Recovery", "Code Quality & Analysis"}) > 0,
-                "Should have expected categories"
+                len(
+                    category_names
+                    & {"Safety & Security", "Self-Healing & Recovery", "Code Quality & Analysis"}
+                )
+                > 0,
+                "Should have expected categories",
             )
 
     def test_l5_safety_validators_folder(self):
@@ -230,42 +240,125 @@ class TestAgentCategorization(unittest.TestCase):
         patterns = [
             {
                 "name": "Validation & Compliance",
-                "patterns": [r"Validator", r"Validation", r"Compliance", r"Enforce", r"Check", r"Audit"],
+                "patterns": [
+                    r"Validator",
+                    r"Validation",
+                    r"Compliance",
+                    r"Enforce",
+                    r"Check",
+                    r"Audit",
+                ],
                 "exclude": [r"Heal", r"Repair", r"Fix", r"Guard", r"Protect", r"Safety", r"Test"],
             },
             {
                 "name": "Self-Healing & Recovery",
-                "patterns": [r"Healer", r"Healing", r"Repair", r"Fix", r"Recovery", r"Reconcile", r"Restore"],
+                "patterns": [
+                    r"Healer",
+                    r"Healing",
+                    r"Repair",
+                    r"Fix",
+                    r"Recovery",
+                    r"Reconcile",
+                    r"Restore",
+                ],
                 "exclude": [r"Validator", r"Compliance"],
             },
             {
                 "name": "Safety & Security",
-                "patterns": [r"Guardian", r"Guard", r"Safety", r"Security", r"Protect", r"Defense", r"Sentinel", r"Watchdog", r"Immune", r"Threat"],
+                "patterns": [
+                    r"Guardian",
+                    r"Guard",
+                    r"Safety",
+                    r"Security",
+                    r"Protect",
+                    r"Defense",
+                    r"Sentinel",
+                    r"Watchdog",
+                    r"Immune",
+                    r"Threat",
+                ],
                 "exclude": [r"Validator", r"Healer"],
             },
             {
                 "name": "Code Quality & Analysis",
-                "patterns": [r"Analyzer", r"Analysis", r"Detector", r"Detection", r"Hunter", r"Finder", r"Formatter", r"Format", r"Deduplicat", r"Duplicate", r"Cleanup", r"Clean", r"Unused", r"Prune"],
+                "patterns": [
+                    r"Analyzer",
+                    r"Analysis",
+                    r"Detector",
+                    r"Detection",
+                    r"Hunter",
+                    r"Finder",
+                    r"Formatter",
+                    r"Format",
+                    r"Deduplicat",
+                    r"Duplicate",
+                    r"Cleanup",
+                    r"Clean",
+                    r"Unused",
+                    r"Prune",
+                ],
                 "exclude": [r"Validator", r"Healer", r"Guardian"],
             },
             {
                 "name": "Governance & Architecture",
-                "patterns": [r"Governor", r"Governance", r"Architect", r"Architecture", r"Hierarchy", r"Hierarchical", r"Location", r"Territory", r"Import", r"Gravity"],
+                "patterns": [
+                    r"Governor",
+                    r"Governance",
+                    r"Architect",
+                    r"Architecture",
+                    r"Hierarchy",
+                    r"Hierarchical",
+                    r"Location",
+                    r"Territory",
+                    r"Import",
+                    r"Gravity",
+                ],
                 "exclude": [r"Validator", r"Healer", r"Guardian"],
             },
             {
                 "name": "Orchestration & Routing",
-                "patterns": [r"Orchestrator", r"Orchestration", r"Router", r"Route", r"Routing", r"Conductor", r"Coordinate", r"Scheduler", r"Schedule"],
+                "patterns": [
+                    r"Orchestrator",
+                    r"Orchestration",
+                    r"Router",
+                    r"Route",
+                    r"Routing",
+                    r"Conductor",
+                    r"Coordinate",
+                    r"Scheduler",
+                    r"Schedule",
+                ],
                 "exclude": [r"Validator", r"Healer"],
             },
             {
                 "name": "Observability & Monitoring",
-                "patterns": [r"Monitor", r"Monitoring", r"Metric", r"Metrics", r"Telemetry", r"Trace", r"Tracing", r"Logger", r"Logging", r"Report", r"Reporting"],
+                "patterns": [
+                    r"Monitor",
+                    r"Monitoring",
+                    r"Metric",
+                    r"Metrics",
+                    r"Telemetry",
+                    r"Trace",
+                    r"Tracing",
+                    r"Logger",
+                    r"Logging",
+                    r"Report",
+                    r"Reporting",
+                ],
                 "exclude": [r"Validator", r"Healer"],
             },
             {
                 "name": "Testing & Verification",
-                "patterns": [r"Test", r"Testing", r"Oracle", r"Prophecy", r"Regression", r"Coverage", r"Verify", r"Verification"],
+                "patterns": [
+                    r"Test",
+                    r"Testing",
+                    r"Oracle",
+                    r"Prophecy",
+                    r"Regression",
+                    r"Coverage",
+                    r"Verify",
+                    r"Verification",
+                ],
                 "exclude": [r"Validator", r"Healer", r"Compliance"],
             },
         ]

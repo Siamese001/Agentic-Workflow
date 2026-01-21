@@ -17,6 +17,7 @@ NEW_IMPORT = "from apps_shared.utils.DuplicateCodeDetectorAgent import Duplicate
 OLD_MODULE = r"import apps_lic\.engines\.DuplicateCodeDetectorAgent"
 NEW_MODULE = "import apps_shared.utils.DuplicateCodeDetectorAgent"
 
+
 def fix_imports():
     print("--- Starting Global Import Repair for DuplicateCodeDetectorAgent ---")
     count = 0
@@ -32,23 +33,26 @@ def fix_imports():
                 file_path = Path(root) / file
 
                 # Skip the agent itself at its new location
-                if "apps_shared/utils/DuplicateCodeDetectorAgent.py" in str(file_path).replace("\\", "/"):
+                if "apps_shared/utils/DuplicateCodeDetectorAgent.py" in str(file_path).replace(
+                    "\\", "/"
+                ):
                     continue
 
                 try:
-                    content = file_path.read_text(encoding='utf-8', errors='ignore')
+                    content = file_path.read_text(encoding="utf-8", errors="ignore")
 
                     if re.search(OLD_IMPORT, content) or re.search(OLD_MODULE, content):
                         new_content = re.sub(OLD_IMPORT, NEW_IMPORT, content)
                         new_content = re.sub(OLD_MODULE, NEW_MODULE, new_content)
 
-                        file_path.write_text(new_content, encoding='utf-8')
+                        file_path.write_text(new_content, encoding="utf-8")
                         print(f"✅ Repaired: {file_path}")
                         count += 1
                 except Exception as e:
                     print(f"❌ Error processing {file_path}: {e}")
 
     print(f"--- Finished. Total files repaired: {count} ---")
+
 
 if __name__ == "__main__":
     fix_imports()

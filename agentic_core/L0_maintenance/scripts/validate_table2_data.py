@@ -12,6 +12,7 @@ Checks:
 3. renderCodeQualityTable function exists and is called
 4. codeQualityGrid element exists in HTML
 """
+
 import json
 import sys
 from pathlib import Path
@@ -30,16 +31,17 @@ def main():
     print("Check 1: Dashboard data structure")
     print("-" * 80)
 
-    dashboard_path = Path('agentic_core/L6_observability/dashboards/autonomy_dashboard.html')
+    dashboard_path = Path("agentic_core/L6_observability/dashboards/autonomy_dashboard.html")
     if not dashboard_path.exists():
         errors.append("Dashboard HTML not found")
         print("   ❌ Dashboard HTML not found")
     else:
-        html = dashboard_path.read_text(encoding='utf-8')
+        html = dashboard_path.read_text(encoding="utf-8")
 
         # Extract dashboardData
         import re
-        data_match = re.search(r'const dashboardData = (\[.*?\]);', html, re.DOTALL)
+
+        data_match = re.search(r"const dashboardData = (\[.*?\]);", html, re.DOTALL)
         if not data_match:
             errors.append("dashboardData not found in HTML")
             print("   ❌ dashboardData not found")
@@ -52,11 +54,11 @@ def main():
                 total_row = dashboard_data[0] if dashboard_data else {}
 
                 table2_fields = [
-                    'Typed %',
-                    'Documented %',
-                    'Schema Strictness %',
-                    'Proper Base %',
-                    'Code Quality Score'
+                    "Typed %",
+                    "Documented %",
+                    "Schema Strictness %",
+                    "Proper Base %",
+                    "Code Quality Score",
                 ]
 
                 missing_fields = [f for f in table2_fields if f not in total_row]
@@ -83,16 +85,19 @@ def main():
     print("-" * 80)
 
     if dashboard_path.exists():
-        html = dashboard_path.read_text(encoding='utf-8')
+        html = dashboard_path.read_text(encoding="utf-8")
 
-        if 'function renderCodeQualityTable' not in html:
+        if "function renderCodeQualityTable" not in html:
             errors.append("renderCodeQualityTable function missing")
             print("   ❌ renderCodeQualityTable function not found")
         else:
             print("   ✅ renderCodeQualityTable function exists")
 
             # Check if it's being called
-            if 'renderCodeQualityTable(dashboardData)' not in html and 'renderCodeQualityTable(territoryData)' not in html:
+            if (
+                "renderCodeQualityTable(dashboardData)" not in html
+                and "renderCodeQualityTable(territoryData)" not in html
+            ):
                 warnings.append("renderCodeQualityTable may not be called")
                 print("   ⚠️  renderCodeQualityTable might not be invoked")
             else:
@@ -105,7 +110,7 @@ def main():
     print("-" * 80)
 
     if dashboard_path.exists():
-        html = dashboard_path.read_text(encoding='utf-8')
+        html = dashboard_path.read_text(encoding="utf-8")
 
         if 'id="codeQualityGrid"' not in html:
             errors.append("codeQualityGrid element missing")
@@ -119,15 +124,15 @@ def main():
     print("Check 4: Dashboard generator produces Table 2 fields")
     print("-" * 80)
 
-    gen_script = Path('agentic_core/L6_observability/dashboards/generate_dashboard.py')
+    gen_script = Path("agentic_core/L6_observability/dashboards/generate_dashboard.py")
     if gen_script.exists():
-        gen_code = gen_script.read_text(encoding='utf-8')
+        gen_code = gen_script.read_text(encoding="utf-8")
 
         table2_field_names = [
             '"Typed %"',
             '"Documented %"',
             '"Schema Strictness %"',
-            '"Code Quality Score"'
+            '"Code Quality Score"',
         ]
 
         missing_in_gen = [f for f in table2_field_names if f not in gen_code]
@@ -170,6 +175,7 @@ def main():
         print("❌ TABLE 2 VALIDATION FAILED")
         print("   Fix errors above to enable Table 2")
         return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

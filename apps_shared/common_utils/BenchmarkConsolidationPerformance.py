@@ -12,6 +12,7 @@ Expected Results:
 - Reduced memory footprint (fewer class definitions)
 - Faster import times (consolidated modules)
 """
+
 from __future__ import annotations
 
 import gc
@@ -96,9 +97,9 @@ def count_unified_agents() -> dict[str, int]:
         counts["L2_execution_unified"] = len(list(l2_unified.glob("*.py")))
 
     counts["total_unified"] = (
-        counts["L3_orchestration_unified"] +
-        counts["L5_safety_unified"] +
-        counts["L2_execution_unified"]
+        counts["L3_orchestration_unified"]
+        + counts["L5_safety_unified"]
+        + counts["L2_execution_unified"]
     )
 
     return counts
@@ -128,7 +129,7 @@ def main():
     print("1. REGISTRY INITIALIZATION")
     print("-" * 40)
     reg_time, total_mappings = measure_registry_init()
-    print(f"   Initialization time: {reg_time*1000:.2f} ms")
+    print(f"   Initialization time: {reg_time * 1000:.2f} ms")
     print(f"   Total legacy mappings: {total_mappings}")
     print()
 
@@ -158,11 +159,17 @@ def main():
     # 4. Consolidation ratio
     print("4. CONSOLIDATION RATIO")
     print("-" * 40)
-    if unified_counts['total_unified'] > 0:
-        ratio = archived_count / unified_counts['total_unified']
-        print(f"   {archived_count} legacy agents -> {unified_counts['total_unified']} unified agents")
+    if unified_counts["total_unified"] > 0:
+        ratio = archived_count / unified_counts["total_unified"]
+        print(
+            f"   {archived_count} legacy agents -> {unified_counts['total_unified']} unified agents"
+        )
         print(f"   Consolidation ratio: {ratio:.1f}:1")
-        reduction = ((archived_count - unified_counts['total_unified']) / archived_count) * 100 if archived_count > 0 else 0
+        reduction = (
+            ((archived_count - unified_counts["total_unified"]) / archived_count) * 100
+            if archived_count > 0
+            else 0
+        )
         print(f"   Agent count reduction: {reduction:.0f}%")
     print()
 
@@ -182,17 +189,17 @@ def main():
     for module in unified_modules:
         elapsed, success = measure_import_time(module)
         status = "OK" if success else "FAIL"
-        print(f"   {module.split('.')[-1]}: {elapsed*1000:.1f} ms [{status}]")
+        print(f"   {module.split('.')[-1]}: {elapsed * 1000:.1f} ms [{status}]")
         total_import_time += elapsed
 
-    print(f"   Total import time: {total_import_time*1000:.1f} ms")
+    print(f"   Total import time: {total_import_time * 1000:.1f} ms")
     print()
 
     # Summary
     print("=" * 70)
     print("BENCHMARK SUMMARY")
     print("=" * 70)
-    print(f"   Registry init: {reg_time*1000:.2f} ms")
+    print(f"   Registry init: {reg_time * 1000:.2f} ms")
     print(f"   Memory footprint: {memory['peak_mb']:.2f} MB")
     print(f"   Unified agents: {unified_counts['total_unified']}")
     print(f"   Archived agents: {archived_count}")

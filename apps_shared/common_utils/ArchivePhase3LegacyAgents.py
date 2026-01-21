@@ -12,6 +12,7 @@ Usage:
     python scripts/archive_phase3_legacy_agents.py --dry-run
     python scripts/archive_phase3_legacy_agents.py
 """
+
 from __future__ import annotations
 
 import argparse
@@ -28,12 +29,10 @@ LEGACY_MANAGERS: list[str] = [
     "BudgetManagerAgent.py",
     "ProactiveResourceManagerAgent.py",
     "FallbackManagerAgent.py",
-
     # Security Managers -> UnifiedSecurityManagerAgent
     "AgentPermissionManagerAgent.py",
     "SecureCheckpointManagerAgent.py",
     "SecureConfigManagerAgent.py",
-
     # Other Managers
     "McpConnectionManagerAgent.py",
     "FileManagerAgent.py",
@@ -48,7 +47,6 @@ LEGACY_ENFORCERS: list[str] = [
     "PatternEnforcerAgent.py",
     "TypeEnforcerAgent.py",
     "PythonFileSovereigntyEnforcerAgent.py",
-
     # Structure Enforcers -> UnifiedStructureEnforcerAgent
     "GravityEnforcerAgent.py",
     "HierarchyEnforcerAgent.py",
@@ -56,7 +54,6 @@ LEGACY_ENFORCERS: list[str] = [
     "DocEnforcerAgent.py",
     "ASCIIEnforcerAgent.py",
     "StrictDocEnforcerAgent.py",
-
     # Additional enforcers
     "PascalSovereigntyEnforcerAgent.py",
 ]
@@ -67,7 +64,11 @@ def find_agent(filename: str) -> Path | None:
     # Search in agentic_core
     for path in (PROJECT_ROOT / "agentic_core").rglob(filename):
         path_str = str(path).lower()
-        if "__pycache__" not in path_str and "archive" not in path_str and "unified" not in path_str:
+        if (
+            "__pycache__" not in path_str
+            and "archive" not in path_str
+            and "unified" not in path_str
+        ):
             return path
 
     # Search in apps_lic
@@ -99,8 +100,8 @@ def archive_file(source: Path, category: str, dry_run: bool = False) -> tuple[bo
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Archive Phase 3 legacy agents')
-    parser.add_argument('--dry-run', action='store_true', help='Show what would be done')
+    parser = argparse.ArgumentParser(description="Archive Phase 3 legacy agents")
+    parser.add_argument("--dry-run", action="store_true", help="Show what would be done")
     args = parser.parse_args()
 
     print("=" * 70)

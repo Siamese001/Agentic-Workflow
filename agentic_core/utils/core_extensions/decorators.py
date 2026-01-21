@@ -19,6 +19,7 @@ USAGE:
             # Your healing logic here
             return {"renamed": 5}  # Legacy format - will be normalized
 """
+
 from __future__ import annotations
 
 import functools
@@ -53,7 +54,6 @@ LEGACY_KEY_MAPPINGS = {
     "problems": "violations_found",
     "findings": "violations_found",
     "count": "violations_found",
-
     # violations_fixed mappings
     "fixed": "violations_fixed",
     "repaired": "violations_fixed",
@@ -63,11 +63,9 @@ LEGACY_KEY_MAPPINGS = {
     "moved": "violations_fixed",
     "deleted": "violations_fixed",
     "created": "violations_fixed",
-
     # errors mappings
     "error_count": "errors",
     "failures": "errors",
-
     # skipped mappings
     "skip_count": "skipped",
     "ignored": "skipped",
@@ -166,9 +164,7 @@ def _normalize_heal_result(result: Any, execution_time_ms: float) -> dict[str, A
     return normalized
 
 
-def _normalize_heal_inputs(
-    kwargs: dict[str, Any]
-) -> tuple[bool, bool, dict[str, Any]]:
+def _normalize_heal_inputs(kwargs: dict[str, Any]) -> tuple[bool, bool, dict[str, Any]]:
     """
     Normalize heal_repository inputs.
 
@@ -217,6 +213,7 @@ def standard_heal(func: F) -> F:
     Returns:
         Decorated function with standardized behavior
     """
+
     @functools.wraps(func)
     def wrapper(self: Any, *args: Any, **kwargs: Any) -> dict[str, Any]:
         start_time = time.time()
@@ -282,6 +279,7 @@ def standard_heal_async(func: F) -> F:
                 # Your async healing logic
                 return {"renamed": 5}
     """
+
     @functools.wraps(func)
     async def wrapper(self: Any, *args: Any, **kwargs: Any) -> dict[str, Any]:
         start_time = time.time()

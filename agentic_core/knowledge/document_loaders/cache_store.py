@@ -4,6 +4,7 @@ Research Cache - File-based cache for RAG results.
 Restored: 2026-01-13 | Version: 2.0.0
 Original: archives/unmapped_drift/20260107/agentic_core/knowledge/document_loaders/cache_store.py
 """
+
 from __future__ import annotations
 
 import json
@@ -18,19 +19,19 @@ class ResearchCache:
     def __init__(self, cache_dir: Path):
         self.cache_dir = Path(cache_dir)
         self.cache_dir.mkdir(parents=True, exist_ok=True)
-        self.cache_file = self.cache_dir / 'ResearchCache.jsonl'
+        self.cache_file = self.cache_dir / "ResearchCache.jsonl"
 
     def store(self, query: str, content: str, metadata: dict[str, Any] | None = None) -> None:
         """Atomically store a research result with metadata."""
         entry: dict[str, Any] = {
-            'query': query.lower(),
-            'content': content,
-            'metadata': metadata or {},
-            'timestamp': datetime.now().isoformat()
+            "query": query.lower(),
+            "content": content,
+            "metadata": metadata or {},
+            "timestamp": datetime.now().isoformat(),
         }
-        with self.cache_file.open('a', encoding='utf-8') as f:
+        with self.cache_file.open("a", encoding="utf-8") as f:
             json.dump(entry, f)
-            f.write('\n')
+            f.write("\n")
 
     def query(self, query: str, top_k: int = 3) -> list[str]:
         """Performs simple keyword-matching retrieval from the research cache."""
@@ -40,14 +41,14 @@ class ResearchCache:
         if not self.cache_file.exists():
             return results
 
-        with self.cache_file.open('r', encoding='utf-8') as f:
+        with self.cache_file.open("r", encoding="utf-8") as f:
             for line in f:
                 if not line.strip():
                     continue
                 try:
                     entry: dict[str, Any] = json.loads(line)
-                    if query_lower in entry['query']:
-                        results.append(entry['content'])
+                    if query_lower in entry["query"]:
+                        results.append(entry["content"])
                 except json.JSONDecodeError:
                     continue
                 if len(results) >= top_k:
@@ -62,7 +63,7 @@ class ResearchCache:
         if not self.cache_file.exists():
             return entries
 
-        with self.cache_file.open('r', encoding='utf-8') as f:
+        with self.cache_file.open("r", encoding="utf-8") as f:
             for line in f:
                 if not line.strip():
                     continue

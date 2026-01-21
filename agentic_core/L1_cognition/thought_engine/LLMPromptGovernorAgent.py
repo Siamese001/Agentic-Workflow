@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, orchestrator, validator, workflow
@@ -100,11 +99,7 @@ QUALITY REQUIREMENTS:
 - Keep import statements at the top of each file""".strip()
 
     def build_healing_prompt(
-        self,
-        Task: str,
-        code: str,
-        file_path: str = "unknown",
-        context: str = ""
+        self, Task: str, code: str, file_path: str = "unknown", context: str = ""
     ) -> dict[str, str]:
         """
         Build a hardened healing prompt with safety guards.
@@ -135,10 +130,7 @@ QUALITY REQUIREMENTS:
 
         user_prompt = "\n\n".join(user_prompt_parts)
 
-        return {
-            "system": self.system_template,
-            "user": user_prompt
-        }
+        return {"system": self.system_template, "user": user_prompt}
 
     def build_fission_prompt(self, code: str, file_path: str) -> dict[str, str]:
         """
@@ -164,10 +156,7 @@ CODE:
 Return ONLY JSON in this format:
 {{"file_part1.py": "content", "file_part2.py": "content", "file_part3.py": "content"}}"""
 
-        return {
-            "system": self.fission_template,
-            "user": user_prompt
-        }
+        return {"system": self.fission_template, "user": user_prompt}
 
     def enforce_output_format(self, raw_response: str) -> str:
         """
@@ -183,15 +172,17 @@ Return ONLY JSON in this format:
             ValueError: If response doesn't contain valid fenced code block
         """
         # Try to extract fenced Python code block
-        match = re.search(r'```python\n(.*?)\n```', raw_response, re.DOTALL)
+        match = re.search(r"```python\n(.*?)\n```", raw_response, re.DOTALL)
 
         if not match:
             # Try without language specifier
-            match = re.search(r'```\n(.*?)\n```', raw_response, re.DOTALL)
+            match = re.search(r"```\n(.*?)\n```", raw_response, re.DOTALL)
 
         if not match:
             Logger.error("[PROMPT_GOVERNOR] LLM output Missing required fenced code block")
-            raise ValueError("LLM output Missing required fenced code block - response may be malformed")
+            raise ValueError(
+                "LLM output Missing required fenced code block - response may be malformed"
+            )
 
         code = match.group(1)
 
@@ -221,15 +212,15 @@ Return ONLY JSON in this format:
 
         # Remove potential prompt injection markers
         injection_patterns = [
-            r'<\|im_start\|>',
-            r'<\|im_end\|>',
-            r'###\s*SYSTEM',
-            r'###\s*ASSISTANT',
-            r'###\s*USER',
+            r"<\|im_start\|>",
+            r"<\|im_end\|>",
+            r"###\s*SYSTEM",
+            r"###\s*ASSISTANT",
+            r"###\s*USER",
         ]
 
         for pattern in injection_patterns:
-            text = re.sub(pattern, '', text, flags=re.IGNORECASE)
+            text = re.sub(pattern, "", text, flags=re.IGNORECASE)
 
         return text
 
@@ -244,17 +235,17 @@ Return ONLY JSON in this format:
             True if dangerous patterns found, False otherwise
         """
         dangerous_patterns = [
-            r'\bexec\s*\(',
-            r'\beval\s*\(',
-            r'\b__import__\s*\(',
-            r'\bcompile\s*\(',
-            r'os\.system\s*\(',
-            r'subprocess\.(call|run|Popen)',
+            r"\bexec\s*\(",
+            r"\beval\s*\(",
+            r"\b__import__\s*\(",
+            r"\bcompile\s*\(",
+            r"os\.system\s*\(",
+            r"subprocess\.(call|run|Popen)",
             r'open\s*\([^)]*["\']w["\']',  # File writes
-            r'shutil\.(rmtree|move)',
-            r'Path\([^)]*\)\.unlink',
-            r'pickle\.(loads?|dumps?)',
-            r'marshal\.(loads?|dumps?)',
+            r"shutil\.(rmtree|move)",
+            r"Path\([^)]*\)\.unlink",
+            r"pickle\.(loads?|dumps?)",
+            r"marshal\.(loads?|dumps?)",
         ]
 
         for pattern in dangerous_patterns:
@@ -274,18 +265,27 @@ Return ONLY JSON in this format:
         Returns:
             SHA256 hash of combined prompt
         """
-        combined = prompt_dict.get('system', '') + '\n\n' + prompt_dict.get('user', '')
-        return hashlib.sha256(combined.encode('utf-8')).hexdigest()
+        combined = prompt_dict.get("system", "") + "\n\n" + prompt_dict.get("user", "")
+        return hashlib.sha256(combined.encode("utf-8")).hexdigest()
 
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, int]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict[str, int]:
         """Autonomous healing implementation as per Canon Key 51."""
         super().heal_repository()
 
         return {"violations_found": 0, "violations_fixed": 0, "errors": 0}
 
+
 @timeout(300)
-def heal_repository_old(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+def heal_repository_old(
+    dry_run: bool = True,
+    execute: bool = False,
+    depth: int = 0,
+    max_depth: int = 3,
+    _call_path: set | None = None,
+) -> dict[str, int]:
     """Prompt governance - operational only."""
     if _call_path is None:
         _call_path = set()

@@ -33,9 +33,7 @@ async def _initialize_pipeline() -> TitaniumRAGPipeline:
         try:
             logger.info("Initializing Titanium RAG Pipeline...")
             _TITANIUM_PIPELINE = create_titanium_pipeline(
-                enable_all=True,
-                max_retrieved_docs=20,
-                top_k_final=5
+                enable_all=True, max_retrieved_docs=20, top_k_final=5
             )
 
             # Test availability
@@ -43,8 +41,10 @@ async def _initialize_pipeline() -> TitaniumRAGPipeline:
             logger.info("Pipeline initialized successfully:")
             logger.info("  - Phase 1 (Precision): Available")
             logger.info("  - Phase 2 (Reasoning): Available")
-            logger.info(f"  - Phase 3 (SOTA): Reranker={component_info['phase_3_sota']['reranker_available']}, "
-                       f"Cache={component_info['phase_3_sota']['cache_available']}")
+            logger.info(
+                f"  - Phase 3 (SOTA): Reranker={component_info['phase_3_sota']['reranker_available']}, "
+                f"Cache={component_info['phase_3_sota']['cache_available']}"
+            )
 
             return _TITANIUM_PIPELINE
 
@@ -70,15 +70,12 @@ async def _create_fallback_pipeline() -> TitaniumRAGPipeline:
         enable_compression=False,
         enable_decomposition=False,
         enable_reranking=False,
-        enable_caching=False
+        enable_caching=False,
     )
 
 
 async def get_titanium_search_tool(
-    query: str,
-    context: str | None = None,
-    max_results: int = 5,
-    include_metadata: bool = False
+    query: str, context: str | None = None, max_results: int = 5, include_metadata: bool = False
 ) -> str:
     """
     The new gold-standard retrieval function for all Agents.
@@ -114,22 +111,21 @@ async def get_titanium_search_tool(
                 vector_store = get_vector_store()
 
                 # Perform semantic search
-                results = await vector_store.similarity_search(
-                    query=query,
-                    n_results=max_docs
-                )
+                results = await vector_store.similarity_search(query=query, n_results=max_docs)
 
                 # Convert to document format expected by pipeline
                 documents = []
                 metadatas = []
 
                 for i, doc in enumerate(results):
-                    documents.append(doc.page_content if hasattr(doc, 'page_content') else str(doc))
-                    metadatas.append({
-                        'text': documents[-1],
-                        'source': getattr(doc, 'metadata', {}).get('source', f'doc_{i}'),
-                        'doc_id': f'doc_{i}'
-                    })
+                    documents.append(doc.page_content if hasattr(doc, "page_content") else str(doc))
+                    metadatas.append(
+                        {
+                            "text": documents[-1],
+                            "source": getattr(doc, "metadata", {}).get("source", f"doc_{i}"),
+                            "doc_id": f"doc_{i}",
+                        }
+                    )
 
                 return documents, metadatas
 
@@ -139,48 +135,45 @@ async def get_titanium_search_tool(
                 return [], []
 
         # Execute the full pipeline (Gate -> Decompose -> Search -> Rerank)
-        results = await pipeline.query(
-            query=query,
-            retrieval_function=actual_retrieval
-        )
+        results = await pipeline.query(query=query, retrieval_function=actual_retrieval)
 
         # Format results for LLM consumption
-        if not results or not results.get('documents'):
+        if not results or not results.get("documents"):
             return f"No relevant information found for: {query}"
 
         formatted_results = []
-        docs = results['documents'][:max_results]
+        docs = results["documents"][:max_results]
 
         for i, doc in enumerate(docs, 1):
             # Extract text content
             text_content = ""
-            if hasattr(doc, 'metadata') and 'text' in doc.metadata:
-                text_content = doc.metadata['text']
-            elif hasattr(doc, 'text'):
+            if hasattr(doc, "metadata") and "text" in doc.metadata:
+                text_content = doc.metadata["text"]
+            elif hasattr(doc, "text"):
                 text_content = doc.text
-            elif hasattr(doc, 'content'):
+            elif hasattr(doc, "content"):
                 text_content = doc.content
 
             # Format result
             result = f"[Source {i}]: {text_content}"
 
             # Add metadata if requested
-            if include_metadata and hasattr(doc, 'metadata'):
+            if include_metadata and hasattr(doc, "metadata"):
                 metadata = doc.metadata
-                if 'source' in metadata:
+                if "source" in metadata:
                     result += f"\n  Source: {metadata['source']}"
-                if 'date' in metadata:
+                if "date" in metadata:
                     result += f"\n  Date: {metadata['date']}"
 
             formatted_results.append(result)
 
         # Add pipeline metadata
-        metadata = results.get('metadata', {})
-        if metadata.get('cached'):
+        metadata = results.get("metadata", {})
+        if metadata.get("cached"):
             formatted_results.append("\n[Results retrieved from semantic cache]")
-        if metadata.get('decomposed'):
+        if metadata.get("decomposed"):
             formatted_results.append("\n[Query was decomposed for better results]")
-        if metadata.get('reranked'):
+        if metadata.get("reranked"):
             formatted_results.append("\n[Results reranked for precision]")
 
         return "\n\n".join(formatted_results)
@@ -191,8 +184,7 @@ async def get_titanium_search_tool(
 
 
 async def get_titanium_search_with_sources(
-    query: str,
-    context: str | None = None
+    query: str, context: str | None = None
 ) -> dict[str, Any]:
     """
     Get search results with full source information.
@@ -221,22 +213,21 @@ async def get_titanium_search_with_sources(
                 vector_store = get_vector_store()
 
                 # Perform semantic search
-                results = await vector_store.similarity_search(
-                    query=query,
-                    n_results=max_docs
-                )
+                results = await vector_store.similarity_search(query=query, n_results=max_docs)
 
                 # Convert to document format expected by pipeline
                 documents = []
                 metadatas = []
 
                 for i, doc in enumerate(results):
-                    documents.append(doc.page_content if hasattr(doc, 'page_content') else str(doc))
-                    metadatas.append({
-                        'text': documents[-1],
-                        'source': getattr(doc, 'metadata', {}).get('source', f'doc_{i}'),
-                        'doc_id': f'doc_{i}'
-                    })
+                    documents.append(doc.page_content if hasattr(doc, "page_content") else str(doc))
+                    metadatas.append(
+                        {
+                            "text": documents[-1],
+                            "source": getattr(doc, "metadata", {}).get("source", f"doc_{i}"),
+                            "doc_id": f"doc_{i}",
+                        }
+                    )
 
                 return documents, metadatas
 
@@ -245,44 +236,33 @@ async def get_titanium_search_with_sources(
                 # Fallback to empty results
                 return [], []
 
-        results = await pipeline.query(
-            query=query,
-            retrieval_function=actual_retrieval
-        )
+        results = await pipeline.query(query=query, retrieval_function=actual_retrieval)
 
         # Extract sources
         sources = []
-        for doc in results.get('documents', []):
-            source_info = {
-                'content': '',
-                'metadata': {}
-            }
+        for doc in results.get("documents", []):
+            source_info = {"content": "", "metadata": {}}
 
-            if hasattr(doc, 'metadata'):
-                source_info['content'] = doc.metadata.get('text', '')
-                source_info['metadata'] = {k: v for k, v in doc.metadata.items() if k != 'text'}
-            elif hasattr(doc, 'text'):
-                source_info['content'] = doc.text
-            elif hasattr(doc, 'content'):
-                source_info['content'] = doc.content
+            if hasattr(doc, "metadata"):
+                source_info["content"] = doc.metadata.get("text", "")
+                source_info["metadata"] = {k: v for k, v in doc.metadata.items() if k != "text"}
+            elif hasattr(doc, "text"):
+                source_info["content"] = doc.text
+            elif hasattr(doc, "content"):
+                source_info["content"] = doc.content
 
             sources.append(source_info)
 
         return {
-            'query': query,
-            'sources': sources,
-            'metadata': results.get('metadata', {}),
-            'response': results.get('response')
+            "query": query,
+            "sources": sources,
+            "metadata": results.get("metadata", {}),
+            "response": results.get("response"),
         }
 
     except Exception as e:
         logger.error(f"Search with sources failed: {e}")
-        return {
-            'query': query,
-            'sources': [],
-            'metadata': {'error': str(e)},
-            'response': None
-        }
+        return {"query": query, "sources": [], "metadata": {"error": str(e)}, "response": None}
 
 
 def get_pipeline_stats() -> dict[str, Any]:
@@ -294,19 +274,15 @@ def get_pipeline_stats() -> dict[str, Any]:
     global _TITANIUM_PIPELINE
 
     if _TITANIUM_PIPELINE is None:
-        return {'status': 'not_initialized'}
+        return {"status": "not_initialized"}
 
     try:
         stats = _TITANIUM_PIPELINE.get_stats()
         component_info = _TITANIUM_PIPELINE.get_component_info()
 
-        return {
-            'status': 'active',
-            'statistics': stats,
-            'components': component_info
-        }
+        return {"status": "active", "statistics": stats, "components": component_info}
     except Exception as e:
-        return {'status': 'error', 'error': str(e)}
+        return {"status": "error", "error": str(e)}
 
 
 async def clear_cache():
@@ -315,7 +291,7 @@ async def clear_cache():
     Useful for testing or when fresh results are needed.
     """
     pipeline = await _initialize_pipeline()
-    if hasattr(pipeline, 'cache') and pipeline.cache:
+    if hasattr(pipeline, "cache") and pipeline.cache:
         pipeline.cache.clear()
         logger.info("Semantic cache cleared")
 
@@ -377,15 +353,15 @@ TOOL_REGISTRY = {
             "query": {"type": "string", "required": True},
             "context": {"type": "string", "required": False},
             "max_results": {"type": "integer", "required": False, "default": 5},
-            "include_metadata": {"type": "boolean", "required": False, "default": False}
-        }
+            "include_metadata": {"type": "boolean", "required": False, "default": False},
+        },
     },
     "titanium_search_with_sources": {
         "function": get_titanium_search_with_sources,
         "description": "Search with full source information for citations",
         "parameters": {
             "query": {"type": "string", "required": True},
-            "context": {"type": "string", "required": False}
-        }
-    }
+            "context": {"type": "string", "required": False},
+        },
+    },
 }

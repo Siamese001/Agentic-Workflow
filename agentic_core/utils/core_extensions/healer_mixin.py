@@ -22,6 +22,7 @@ SSOT Consolidation (Jan 20, 2026):
 - Moved from L5_safety/validators/ to utils/core_extensions/ as the single source of truth
 - All other locations now re-export from this module with deprecation warnings
 """
+
 from __future__ import annotations
 
 import ast
@@ -53,6 +54,7 @@ class HealResult(TypedDict):
     Phase 1 Enhancement: This TypedDict provides type safety and
     documentation for the canonical healing return format.
     """
+
     violations_found: int
     violations_fixed: int
     status: str  # 'PASS', 'FAIL', 'ERROR', 'SKIPPED', 'UNKNOWN'
@@ -136,11 +138,14 @@ class HealerMixin(InstructionalInjectionMixin):
         # 2. Severity optimization (skip heavy MCP audit for LOW)
         # Import at runtime to avoid circular dependency
         from agentic_core.schemas.models.anomaly_report import AnomalySeverity
+
         lightweight = anomaly and anomaly.severity == AnomalySeverity.LOW
         if lightweight:
             success = self._perform_healing(anomaly) if anomaly else False
             if success:
-                Logger.debug(f"[HEALING] Low severity heal success: {anomaly.type if anomaly else 'unknown'}")
+                Logger.debug(
+                    f"[HEALING] Low severity heal success: {anomaly.type if anomaly else 'unknown'}"
+                )
             return success
 
         # Budget check
@@ -159,14 +164,14 @@ class HealerMixin(InstructionalInjectionMixin):
             Logger.debug(f"[HEALING] {self.__class__.__name__}: Prerequisites not met")
             return False
 
-        file_path = Path(violation.get('path', ''))
+        file_path = Path(violation.get("path", ""))
         if not file_path.exists():
             Logger.warning(f"[HEALING] File not found: {file_path}")
             return False
 
         try:
             # Read before state
-            before_code = file_path.read_text(encoding='utf-8')
+            before_code = file_path.read_text(encoding="utf-8")
 
             try:
                 before_ast = parse(before_code)
@@ -181,7 +186,7 @@ class HealerMixin(InstructionalInjectionMixin):
                 return False
 
             try:
-                if hasattr(ast, 'validate'):
+                if hasattr(ast, "validate"):
                     ast.validate(fixed_ast)
             except Exception as e:
                 Logger.error(f"Post-heal AST validation failed: {e}")
@@ -190,16 +195,16 @@ class HealerMixin(InstructionalInjectionMixin):
             fixed_code = unparse(fixed_ast)
 
             try:
-                compile(fixed_code, str(file_path), 'exec')
+                compile(fixed_code, str(file_path), "exec")
             except Exception as e:
                 Logger.error(f"Post-heal static compile failed: {e}")
                 return False
 
             # Atomic write
-            file_path.write_text(fixed_code, encoding='utf-8')
+            file_path.write_text(fixed_code, encoding="utf-8")
 
             # Verify via self-test (leverages Phase 1)
-            if hasattr(self, '_run_self_tests'):
+            if hasattr(self, "_run_self_tests"):
                 try:
                     if self._run_self_tests():
                         self._log_healing_success(violation)
@@ -215,15 +220,15 @@ class HealerMixin(InstructionalInjectionMixin):
 
             # Rollback on failed verify
             Logger.warning(f"[HEALING] Rolling back {file_path} - verification failed")
-            file_path.write_text(before_code, encoding='utf-8')
+            file_path.write_text(before_code, encoding="utf-8")
             return False
 
         except Exception as e:
             Logger.error(f"[HEALING] Failed on {file_path}: {e}")
             # Attempt rollback if we have before_code
             try:
-                if 'before_code' in locals():
-                    file_path.write_text(before_code, encoding='utf-8')
+                if "before_code" in locals():
+                    file_path.write_text(before_code, encoding="utf-8")
             except Exception:
                 pass
             return False
@@ -241,14 +246,20 @@ class HealerMixin(InstructionalInjectionMixin):
             # Optional audited emit (zero-loss safe)
             if hasattr(self, "_mcp_audit") and self._healer_metrics["count"] > 0:
                 avg_time = self._healer_metrics["total_time"] / self._healer_metrics["count"]
-                self._mcp_audit("healing_metrics", payload={
-                    "duration": duration,
-                    "success": success,
-                    "avg_time": avg_time,
-                    "success_rate": self._healer_metrics["success_count"] / self._healer_metrics["count"]
-                })
+                self._mcp_audit(
+                    "healing_metrics",
+                    payload={
+                        "duration": duration,
+                        "success": success,
+                        "avg_time": avg_time,
+                        "success_rate": self._healer_metrics["success_count"]
+                        / self._healer_metrics["count"],
+                    },
+                )
 
-    async def heal_async(self, violation: dict[str, Any], anomaly: AnomalyReport | None = None) -> bool:
+    async def heal_async(
+        self, violation: dict[str, Any], anomaly: AnomalyReport | None = None
+    ) -> bool:
         """Non-blocking heal for orchestrators/state agents."""
         return await asyncio.to_thread(self.heal, violation, anomaly)
 
@@ -258,7 +269,7 @@ class HealerMixin(InstructionalInjectionMixin):
         return {
             "count": count,
             "avg_time": (self._healer_metrics["total_time"] / count) if count else 0,
-            "success_rate": (self._healer_metrics["success_count"] / count) if count else 1.0
+            "success_rate": (self._healer_metrics["success_count"] / count) if count else 1.0,
         }
 
     def _perform_healing(self, anomaly: AnomalyReport) -> bool:
@@ -291,9 +302,9 @@ class HealerMixin(InstructionalInjectionMixin):
 
     def _log_healing_success(self, violation: dict[str, Any]) -> None:
         """Log successful healing for observability."""
-        class_name = violation.get('class_name', 'Unknown')
-        path = violation.get('path', 'Unknown')
-        violation_type = violation.get('violation_type', 'Unknown')
+        class_name = violation.get("class_name", "Unknown")
+        path = violation.get("path", "Unknown")
+        violation_type = violation.get("violation_type", "Unknown")
         Logger.info(f"[HEALED] {class_name} in {path} ({violation_type})")
         print(f"HEALED: {class_name} in {path}")
 
@@ -330,15 +341,15 @@ class HealerMixin(InstructionalInjectionMixin):
         """
         # Preserve original counts while mapping to new schema
         # Priority order ensures we capture data from any legacy format
-        found = result.get('violations_found') or result.get('violations') or 0
-        fixed = result.get('violations_fixed') or result.get('fixed') or result.get('renamed') or 0
+        found = result.get("violations_found") or result.get("violations") or 0
+        fixed = result.get("violations_fixed") or result.get("fixed") or result.get("renamed") or 0
 
         return HealResult(
             violations_found=found,
             violations_fixed=fixed,
-            status=result.get('status', 'UNKNOWN'),
-            errors=result.get('errors', 0),
-            skipped=result.get('skipped', 0),
+            status=result.get("status", "UNKNOWN"),
+            errors=result.get("errors", 0),
+            skipped=result.get("skipped", 0),
         )
 
     def heal_repository(
@@ -348,7 +359,7 @@ class HealerMixin(InstructionalInjectionMixin):
         depth: int = 0,
         max_depth: int = 3,
         _call_path: set[str] | None = None,
-        **kwargs  # Essential for dynamic orchestrator calls
+        **kwargs,  # Essential for dynamic orchestrator calls
     ) -> HealResult:
         """
         Repository-level healing method (Canon Key 51 compliance).
@@ -377,44 +388,58 @@ class HealerMixin(InstructionalInjectionMixin):
         # Cycle detection
         if agent_name in _call_path:
             Logger.warning(f"[HEAL_REPOSITORY] Cycle detected: {agent_name}")
-            return self._normalize_result({"violations": 0, "fixed": 0, "errors": 0, "skipped": 1, "status": "SKIPPED"})
+            return self._normalize_result(
+                {"violations": 0, "fixed": 0, "errors": 0, "skipped": 1, "status": "SKIPPED"}
+            )
 
         # Depth limiting
         if depth > max_depth:
             Logger.warning(f"[HEAL_REPOSITORY] Max depth {max_depth} exceeded for {agent_name}")
-            return self._normalize_result({"violations": 0, "fixed": 0, "errors": 0, "skipped": 1, "status": "SKIPPED"})
+            return self._normalize_result(
+                {"violations": 0, "fixed": 0, "errors": 0, "skipped": 1, "status": "SKIPPED"}
+            )
 
         # Check if healing is enabled
         if not self._healing_enabled:
             Logger.debug(f"[HEAL_REPOSITORY] {agent_name}: Healing disabled")
-            return self._normalize_result({"violations": 0, "fixed": 0, "errors": 0, "skipped": 1, "status": "SKIPPED"})
+            return self._normalize_result(
+                {"violations": 0, "fixed": 0, "errors": 0, "skipped": 1, "status": "SKIPPED"}
+            )
 
         # Budget check
         if self._healing_count >= self._max_healing_per_session:
             Logger.warning(f"[HEAL_REPOSITORY] {agent_name}: Budget exhausted")
-            return self._normalize_result({"violations": 0, "fixed": 0, "errors": 1, "skipped": 0, "status": "ERROR"})
+            return self._normalize_result(
+                {"violations": 0, "fixed": 0, "errors": 1, "skipped": 0, "status": "ERROR"}
+            )
 
         # Add to call path
         _call_path.add(agent_name)
 
         try:
             # Base implementation - subclasses override to add specific logic
-            Logger.debug(f"[HEAL_REPOSITORY] {agent_name}: Base heal_repository invoked (dry_run={dry_run})")
+            Logger.debug(
+                f"[HEAL_REPOSITORY] {agent_name}: Base heal_repository invoked (dry_run={dry_run})"
+            )
 
             # Reset metrics for this healing session if at root
             # [FIX] Ensure _healer_metrics exists (defensive for agents not calling super().__init__)
-            if not hasattr(self, '_healer_metrics'):
+            if not hasattr(self, "_healer_metrics"):
                 self._healer_metrics = {"count": 0, "total_time": 0.0, "success_count": 0}
             if depth == 0:
                 self._healer_metrics["count"] = 0
                 self._healer_metrics["total_time"] = 0.0
                 self._healer_metrics["success_count"] = 0
 
-            return self._normalize_result({"violations": 0, "fixed": 0, "errors": 0, "skipped": 0, "status": "PASS"})
+            return self._normalize_result(
+                {"violations": 0, "fixed": 0, "errors": 0, "skipped": 0, "status": "PASS"}
+            )
 
         except Exception as e:
             Logger.error(f"[HEAL_REPOSITORY] {agent_name} failed: {e}")
-            return self._normalize_result({"violations": 0, "fixed": 0, "errors": 1, "status": "ERROR"})
+            return self._normalize_result(
+                {"violations": 0, "fixed": 0, "errors": 1, "status": "ERROR"}
+            )
         finally:
             _call_path.discard(agent_name)
 
@@ -424,7 +449,7 @@ class HealerMixin(InstructionalInjectionMixin):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: set[str] | None = None
+        _call_path: set[str] | None = None,
     ) -> dict[str, int]:
         """Non-blocking heal_repository for orchestrators/async agents."""
         return await asyncio.to_thread(

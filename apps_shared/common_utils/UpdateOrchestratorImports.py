@@ -17,6 +17,7 @@ Usage:
     python scripts/update_orchestrator_imports.py --dry-run
     python scripts/update_orchestrator_imports.py
 """
+
 from __future__ import annotations
 
 import argparse
@@ -29,7 +30,6 @@ PROJECT_ROOT = Path(__file__).parent.parent
 # Import replacement mapping
 IMPORT_REPLACEMENTS: dict[str, tuple[str, str]] = {
     # Legacy orchestrator -> (unified module, unified class)
-
     # L3 Orchestrators -> CoreOrchestrationAgent
     "CachedOrchestratorAgent": (
         "agentic_core.L3_orchestration.unified.CoreOrchestrationAgent",
@@ -71,7 +71,6 @@ IMPORT_REPLACEMENTS: dict[str, tuple[str, str]] = {
         "agentic_core.L3_orchestration.unified.CoreOrchestrationAgent",
         "CoreOrchestrationAgent",
     ),
-
     # Apps Orchestrators -> AppWorkflowOrchestratorAgent
     "LicWorkflowOrchestratorAgent": (
         "agentic_core.L3_orchestration.unified.AppWorkflowOrchestratorAgent",
@@ -158,8 +157,8 @@ def update_imports_in_file(file_path: Path, dry_run: bool = False) -> list[str]:
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Update legacy orchestrator imports')
-    parser.add_argument('--dry-run', action='store_true', help='Show what would be done')
+    parser = argparse.ArgumentParser(description="Update legacy orchestrator imports")
+    parser.add_argument("--dry-run", action="store_true", help="Show what would be done")
     args = parser.parse_args()
 
     print("=" * 70)

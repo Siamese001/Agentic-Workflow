@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
 from dataclasses import dataclass
 from enum import Enum

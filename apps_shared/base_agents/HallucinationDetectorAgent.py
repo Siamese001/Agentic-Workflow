@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, state, validator, workflow
@@ -9,9 +8,9 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
 from typing import Any
 
@@ -22,6 +21,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger = logging.getLogger(__name__)
+
 
 # NAMING FIXED: HallucinationDetectorAgent → HallucinationDetectorAgent
 @dataclass
@@ -45,8 +45,9 @@ class HallucinationDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, Healer
 
     @standard_heal
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()
+
 
 def check(self: Any, text: str, context: dict[str, Any]) -> dict[str, Any]:
     """

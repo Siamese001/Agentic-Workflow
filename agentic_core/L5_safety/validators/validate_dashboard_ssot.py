@@ -4,6 +4,7 @@ DASHBOARD SSOT VALIDATOR
 Enforces that all files use DASHBOARD_DIR from structure_blueprint.py
 Detects hardcoded dashboard paths and reports violations.
 """
+
 import re
 from pathlib import Path
 
@@ -23,22 +24,24 @@ HARDCODED_PATTERNS = [
 
 # Files/directories to exclude from validation
 EXCLUDE_PATTERNS = [
-    '.git',
-    '__pycache__',
-    '.venv',
-    'venv',
-    'node_modules',
-    'archives',
-    'legacy_',
-    '.pytest_cache',
-    'structure_blueprint.py',  # SSOT definition file itself
-    'validate_dashboard_ssot.py',  # This file
+    ".git",
+    "__pycache__",
+    ".venv",
+    "venv",
+    "node_modules",
+    "archives",
+    "legacy_",
+    ".pytest_cache",
+    "structure_blueprint.py",  # SSOT definition file itself
+    "validate_dashboard_ssot.py",  # This file
 ]
+
 
 def should_exclude(file_path: Path) -> bool:
     """Check if file should be excluded from validation."""
     path_str = str(file_path)
     return any(pattern in path_str for pattern in EXCLUDE_PATTERNS)
+
 
 def check_file_for_hardcoded_paths(file_path: Path) -> list[tuple[int, str]]:
     """
@@ -48,14 +51,14 @@ def check_file_for_hardcoded_paths(file_path: Path) -> list[tuple[int, str]]:
     violations = []
 
     try:
-        content = file_path.read_text(encoding='utf-8')
-        lines = content.split('\n')
+        content = file_path.read_text(encoding="utf-8")
+        lines = content.split("\n")
 
         for line_num, line in enumerate(lines, 1):
             # Skip lines that import DASHBOARD_DIR (legitimate usage)
-            if 'from agentic_core.L5_safety.validators.structure_blueprint import' in line:
+            if "from agentic_core.L5_safety.validators.structure_blueprint import" in line:
                 continue
-            if 'DASHBOARD_DIR' in line and 'import' in line:
+            if "DASHBOARD_DIR" in line and "import" in line:
                 continue
 
             # Check for hardcoded patterns
@@ -68,6 +71,7 @@ def check_file_for_hardcoded_paths(file_path: Path) -> list[tuple[int, str]]:
         print(f"⚠️  Error reading {file_path}: {e}")
 
     return violations
+
 
 def validate_dashboard_ssot() -> tuple[bool, list[str]]:
     """
@@ -88,6 +92,7 @@ def validate_dashboard_ssot() -> tuple[bool, list[str]]:
     # Scan all Python files
     # Final True 20: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_python_files
+
     for py_file in get_python_files(project_root):
         if should_exclude(py_file):
             continue
@@ -118,6 +123,7 @@ def validate_dashboard_ssot() -> tuple[bool, list[str]]:
         print("  dashboard_path = project_root / DASHBOARD_DIR")
         print("=" * 80)
         return False, violations_report
+
 
 if __name__ == "__main__":
     is_valid, violations = validate_dashboard_ssot()

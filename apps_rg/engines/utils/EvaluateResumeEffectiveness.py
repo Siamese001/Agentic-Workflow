@@ -12,9 +12,6 @@ from shared.result_types import ScoreResult
 Logger = logging.getLogger(__name__)
 
 
-
-
-
 class EvaluateResumeEffectiveness:
     """Scorer for resume domain."""
 

@@ -9,6 +9,7 @@ This script finds all classes ending in 'Agent' and runs comprehensive MRO audit
 Usage:
     python scripts/audit_all_agents_mro.py
 """
+
 import importlib.util
 import inspect
 import sys
@@ -34,6 +35,7 @@ def find_all_agent_classes(root_dir: Path) -> list[tuple[str, type]]:
     agents = []
     # Phase 6.9: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_agent_files
+
     agents = list(get_agent_files(root_dir))
 
     for py_file in agents:
@@ -103,7 +105,7 @@ def main():
             # Try dynamic audit (may fail for some agents)
             try:
                 # Attempt instantiation with minimal args
-                if hasattr(agent_cls, '__dataclass_fields__'):
+                if hasattr(agent_cls, "__dataclass_fields__"):
                     # Dataclass - try with name only
                     instance = agent_cls(name=f"Test{agent_name}")
                 else:

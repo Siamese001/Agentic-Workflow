@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, healer, memory, orchestrator, prompt, workflow
@@ -29,6 +28,7 @@ Consolidated 2026-01-06: Blueprint now imports from canonical L5 implementation
 # Legacy class definition removed - use canonical L5 version above
 # Original implementation preserved in: L5_safety/validators/bias_auditor.py
 
+
 class _LegacyBiasAuditorAgent:
     """Lightweight Bias Detection for Content Quality.
 
@@ -36,9 +36,10 @@ class _LegacyBiasAuditorAgent:
     and content quality assurance.
     """
 
-
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> Dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -61,35 +62,35 @@ class _LegacyBiasAuditorAgent:
 
         self.bias_patterns = {
             BiasType.GENDER: [
-                r'\b(he|she|him|her|his|hers|himself|herself)\b',
-                r'\b(male|female|man|woman|men|women)\b',
-                r'\b(guy|girl|boy|lady|gentleman)\b',
+                r"\b(he|she|him|her|his|hers|himself|herself)\b",
+                r"\b(male|female|man|woman|men|women)\b",
+                r"\b(guy|girl|boy|lady|gentleman)\b",
             ],
             BiasType.AGE: [
-                r'\b(young|old|elderly|senior|junior)\b',
-                r'\b(\d{2,}\s*(years?|years?-old|y\.?o\.?))\b',
-                r'\b(millennial|boomer|gen-?[xz])\b',
+                r"\b(young|old|elderly|senior|junior)\b",
+                r"\b(\d{2,}\s*(years?|years?-old|y\.?o\.?))\b",
+                r"\b(millennial|boomer|gen-?[xz])\b",
             ],
             BiasType.RACE: [
-                r'\b(white|black|asian|hispanic|latino|african)\b',
-                r'\b(minority|majority|ethnic)\b',
-                r'\b(caucasian|african-american)\b',
+                r"\b(white|black|asian|hispanic|latino|african)\b",
+                r"\b(minority|majority|ethnic)\b",
+                r"\b(caucasian|african-american)\b",
             ],
             BiasType.DISABILITY: [
-                r'\b(disabled|handicapped|impaired|crippled)\b',
-                r'\b(special needs|wheelchair-bound)\b',
+                r"\b(disabled|handicapped|impaired|crippled)\b",
+                r"\b(special needs|wheelchair-bound)\b",
             ],
             BiasType.AFFILIATION: [
-                r'\b(republican|democrat|liberal|conservative)\b',
-                r'\b(christian|muslim|jewish|hindu|buddhist|atheist)\b',
+                r"\b(republican|democrat|liberal|conservative)\b",
+                r"\b(christian|muslim|jewish|hindu|buddhist|atheist)\b",
             ],
             BiasType.SOCIOECONOMIC: [
-                r'\b(poor|rich|wealthy|underprivileged)\b',
-                r'\b(lower class|upper class|working class)\b',
+                r"\b(poor|rich|wealthy|underprivileged)\b",
+                r"\b(lower class|upper class|working class)\b",
             ],
             BiasType.APPEARANCE: [
-                r'\b(attractive|ugly|beautiful|handsome)\b',
-                r'\b(overweight|obese|skinny|fat)\b',
+                r"\b(attractive|ugly|beautiful|handsome)\b",
+                r"\b(overweight|obese|skinny|fat)\b",
             ],
         }
 
@@ -126,12 +127,14 @@ class _LegacyBiasAuditorAgent:
                     context = self._extract_context(content, match.Span())
                     Severity = self._calculate_severity(BiasType, phrase)
 
-                    matches.append(BiasMatch(
-                        BiasType=BiasType,
-                        phrase=phrase,
-                        context=context,
-                        Severity=Severity,
-                    ))
+                    matches.append(
+                        BiasMatch(
+                            BiasType=BiasType,
+                            phrase=phrase,
+                            context=context,
+                            Severity=Severity,
+                        )
+                    )
 
         has_bias = len(detected_bias_types) > 0
         confidence_score = min(len(flagged_phrases) / 10.0, 1.0)
@@ -145,7 +148,7 @@ class _LegacyBiasAuditorAgent:
                     "bias_types": [bt.value for bt in detected_bias_types],
                     "phrase_count": len(flagged_phrases),
                     "confidence": confidence_score,
-                }
+                },
             )
 
         return BiasResult(
@@ -184,8 +187,13 @@ class _LegacyBiasAuditorAgent:
             Severity score (0.0-1.0)
         """
         high_severity_terms = {
-            "crippled", "handicapped", "retarded", "illegal alien",
-            "oriental", "colored", "negro",
+            "crippled",
+            "handicapped",
+            "retarded",
+            "illegal alien",
+            "oriental",
+            "colored",
+            "negro",
         }
 
         if phrase.lower() in high_severity_terms:
@@ -218,7 +226,9 @@ class _LegacyBiasAuditorAgent:
             BiasType.APPEARANCE: "Remove appearance-based descriptors",
         }
 
-        recommendations = [bias_recommendations.get(bt, "") for bt in bias_types if bt in bias_recommendations]
+        recommendations = [
+            bias_recommendations.get(bt, "") for bt in bias_types if bt in bias_recommendations
+        ]
 
         if not recommendations:
             recommendations.append("Content appears neutral and inclusive")
@@ -247,5 +257,7 @@ def audit_bias(content: str) -> BiasResult:
             results[TESTS_DIR].append({"name": "test_instantiation", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results[TESTS_DIR].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
+            results[TESTS_DIR].append(
+                {"name": "test_instantiation", "status": "failed", "error": str(e)}
+            )
         return results

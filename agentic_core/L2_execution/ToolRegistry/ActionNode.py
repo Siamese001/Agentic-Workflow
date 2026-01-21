@@ -59,7 +59,7 @@ class ActionNode:
             "tools_used": [t["name"] for t in tools],
             "tool_count": len(tools),
             "execution_time": execution_time,
-            "success": True
+            "success": True,
         }
 
         return action_result
@@ -81,18 +81,10 @@ class ActionNode:
         tools = self._select_tools(reasoning["plan"])
 
         # Execute tools asynchronously
-        results = await asyncio.to_thread(
-            self._execute_tools,
-            tools,
-            reasoning
-        )
+        results = await asyncio.to_thread(self._execute_tools, tools, reasoning)
 
         # Format output
-        output = await asyncio.to_thread(
-            self._format_output,
-            results,
-            reasoning
-        )
+        output = await asyncio.to_thread(self._format_output, results, reasoning)
 
         execution_time = time.time() - start_time
         self.total_execution_time += execution_time
@@ -102,7 +94,7 @@ class ActionNode:
             "tools_used": [t["name"] for t in tools],
             "tool_count": len(tools),
             "execution_time": execution_time,
-            "success": True
+            "success": True,
         }
 
         return action_result
@@ -132,7 +124,7 @@ class ActionNode:
             "tool_count": 0,
             "execution_time": execution_time,
             "success": True,
-            "simple": True
+            "simple": True,
         }
 
     def _select_tools(self, plan: dict[str, Any]) -> list[dict[str, Any]]:
@@ -152,25 +144,19 @@ class ActionNode:
 
         if step_count > 0:
             # Primary tool
-            tools.append({
-                "name": "primary_executor",
-                "type": "execution",
-                "priority": 1
-            })
+            tools.append({"name": "primary_executor", "type": "execution", "priority": 1})
             self.tools_used += 1
 
         if step_count > 2:
             # Secondary tool for complex plans
-            tools.append({
-                "name": "secondary_executor",
-                "type": "support",
-                "priority": 2
-            })
+            tools.append({"name": "secondary_executor", "type": "support", "priority": 2})
             self.tools_used += 1
 
         return tools
 
-    def _execute_tools(self, tools: list[dict[str, Any]], reasoning: dict[str, Any]) -> list[dict[str, Any]]:
+    def _execute_tools(
+        self, tools: list[dict[str, Any]], reasoning: dict[str, Any]
+    ) -> list[dict[str, Any]]:
         """
         Execute selected tools.
 
@@ -190,8 +176,8 @@ class ActionNode:
                 "output": f"Executed {tool['name']}",
                 "metadata": {
                     "type": tool.get("type", "unknown"),
-                    "priority": tool.get("priority", 0)
-                }
+                    "priority": tool.get("priority", 0),
+                },
             }
             results.append(result)
 
@@ -228,14 +214,12 @@ class ActionNode:
     def get_statistics(self) -> dict[str, Any]:
         """Get action statistics."""
         avg_execution_time = (
-            self.total_execution_time / self.actions_executed
-            if self.actions_executed > 0
-            else 0.0
+            self.total_execution_time / self.actions_executed if self.actions_executed > 0 else 0.0
         )
 
         return {
             "actions_executed": self.actions_executed,
             "tools_used": self.tools_used,
             "total_execution_time": self.total_execution_time,
-            "avg_execution_time": avg_execution_time
+            "avg_execution_time": avg_execution_time,
         }

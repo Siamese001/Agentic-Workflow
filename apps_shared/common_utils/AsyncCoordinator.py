@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 
 class TaskState(Enum):
     """States for async tasks."""
+
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"
@@ -28,6 +29,7 @@ class TaskState(Enum):
 @dataclass
 class TaskInfo:
     """Information about a managed task."""
+
     task_id: str
     task: asyncio.Task
     created_at: float
@@ -108,7 +110,7 @@ class AsyncCoordinator:
         coro: Awaitable,
         timeout: float | None = None,
         parent_id: str | None = None,
-        cleanup_callback: Callable | None = None
+        cleanup_callback: Callable | None = None,
     ) -> str:
         """Create and manage a new task.
 
@@ -137,7 +139,7 @@ class AsyncCoordinator:
             created_at=time.time(),
             timeout=timeout,
             parent_id=parent_id,
-            cleanup_callback=cleanup_callback
+            cleanup_callback=cleanup_callback,
         )
 
         # Register task
@@ -154,12 +156,7 @@ class AsyncCoordinator:
         logger.debug(f"Created task: {task_id} (timeout: {timeout})")
         return task_id
 
-    async def _run_with_timeout(
-        self,
-        coro: Awaitable,
-        timeout: float | None,
-        task_id: str
-    ) -> Any:
+    async def _run_with_timeout(self, coro: Awaitable, timeout: float | None, task_id: str) -> Any:
         """Run a coroutine with timeout handling.
 
         Args:
@@ -332,7 +329,7 @@ class AsyncCoordinator:
                     "created_at": task_info.created_at,
                     "timeout": task_info.timeout,
                     "parent_id": task_info.parent_id,
-                    "children_count": len(task_info.children_ids)
+                    "children_count": len(task_info.children_ids),
                 }
             return result
 
@@ -348,8 +345,11 @@ class AsyncCoordinator:
 
                 async with self._lock:
                     for task_id, task_info in self._tasks.items():
-                        if (task_info.state in (TaskState.COMPLETED, TaskState.CANCELLED, TaskState.FAILED)
-                            and task_info.created_at < cutoff_time):
+                        if (
+                            task_info.state
+                            in (TaskState.COMPLETED, TaskState.CANCELLED, TaskState.FAILED)
+                            and task_info.created_at < cutoff_time
+                        ):
                             tasks_to_remove.append(task_id)
 
                 for task_id in tasks_to_remove:
@@ -370,7 +370,7 @@ class AsyncCoordinator:
         self,
         coro: Awaitable,
         timeout: float | None = None,
-        cleanup_callback: Callable | None = None
+        cleanup_callback: Callable | None = None,
     ):
         """Context manager for a managed task.
 
@@ -426,7 +426,7 @@ async def shutdown_all_coordinators() -> None:
 def managed(
     coordinator_name: str = "default",
     timeout: float | None = None,
-    cleanup_callback: Callable | None = None
+    cleanup_callback: Callable | None = None,
 ):
     """Decorator to run functions in a managed async context.
 
@@ -438,24 +438,23 @@ def managed(
     Returns:
         Decorated function
     """
+
     def decorator(func):
         async def wrapper(*args, **kwargs):
             coordinator = await get_coordinator(coordinator_name)
             async with coordinator.managed_task(
-                func(*args, **kwargs),
-                timeout=timeout,
-                cleanup_callback=cleanup_callback
+                func(*args, **kwargs), timeout=timeout, cleanup_callback=cleanup_callback
             ) as task_id:
                 return await coordinator.wait_for_task(task_id)
+
         return wrapper
+
     return decorator
 
 
 # Safe timeout wrapper that prevents orphaned tasks
 async def safe_wait_for(
-    coro: Awaitable,
-    timeout: float,
-    coordinator_name: str = "timeout_coordinator"
+    coro: Awaitable, timeout: float, coordinator_name: str = "timeout_coordinator"
 ) -> Any:
     """Wait for a coroutine with timeout, preventing orphaned tasks.
 

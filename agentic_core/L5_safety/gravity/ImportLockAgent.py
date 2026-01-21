@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: healer, memory, orchestrator, prompt
@@ -46,6 +45,7 @@ class SovereigntyError(ImportError):
     This error is raised when a lower-layer module attempts to import from
     a higher layer, violating the SSOT architectural principles.
     """
+
     pass
 
 
@@ -74,8 +74,9 @@ class ImportLockAgent(SubatomicTestingMixin, MCPHardenedMixin, MetaPathFinder):
         # Violations will raise SovereigntyError
     """
 
-
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -141,10 +142,7 @@ class ImportLockAgent(SubatomicTestingMixin, MCPHardenedMixin, MetaPathFinder):
         return False
 
     def find_spec(
-        self,
-        fullname: str,
-        path: list[str] | None = None,
-        target: Any | None = None
+        self, fullname: str, path: list[str] | None = None, target: Any | None = None
     ) -> ModuleSpec | None:
         """
         Intercept import attempts and validate architectural compliance.
@@ -193,7 +191,7 @@ class ImportLockAgent(SubatomicTestingMixin, MCPHardenedMixin, MetaPathFinder):
                     "caller": caller_name,
                     "caller_layer": caller_layer,
                     "target": fullname,
-                    "target_layer": target_layer
+                    "target_layer": target_layer,
                 }
                 self.violations_caught.append(violation)
 
@@ -239,7 +237,7 @@ class ImportLockAgent(SubatomicTestingMixin, MCPHardenedMixin, MetaPathFinder):
 
                 if module and module.__name__ != __name__:
                     # Skip importlib internals
-                    if not module.__name__.startswith('importlib'):
+                    if not module.__name__.startswith("importlib"):
                         return module
 
             return None
@@ -284,7 +282,7 @@ class ImportLockAgent(SubatomicTestingMixin, MCPHardenedMixin, MetaPathFinder):
             ValueError: If module is not in a ranked layer
         """
         # Extract layer number (e.g., "L3" -> 3)
-        match = re.search(r'L(\d)', module_name)
+        match = re.search(r"L(\d)", module_name)
         if match:
             return int(match.group(1))
 
@@ -372,13 +370,9 @@ def main() -> Any:
     """CLI entry point for testing the Import Lock Agent."""
     import argparse
 
-    parser = argparse.ArgumentParser(
-        description="Import Lock Agent - Runtime import validation"
-    )
+    parser = argparse.ArgumentParser(description="Import Lock Agent - Runtime import validation")
     parser.add_argument(
-        "--test",
-        action="store_true",
-        help="Run a test import to verify the lock works"
+        "--test", action="store_true", help="Run a test import to verify the lock works"
     )
 
     args = parser.parse_args()

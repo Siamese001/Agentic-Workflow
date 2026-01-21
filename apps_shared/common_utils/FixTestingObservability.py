@@ -8,6 +8,7 @@ This script:
 3. For each agent without observability: adds logging import and logger
 4. This maximizes testing % and observable % in the dashboard
 """
+
 import json
 import re
 from pathlib import Path
@@ -26,14 +27,14 @@ TESTING_IMPORT = "from agentic_core.L3_orchestration.fission_logic.subatomic_tes
 
 def load_agents() -> list[dict]:
     """Load all agents from discovery JSON."""
-    with open(DISCOVERY_JSON, encoding='utf-8') as f:
+    with open(DISCOVERY_JSON, encoding="utf-8") as f:
         return json.load(f)
 
 
 def add_logging_to_file(file_path: Path) -> bool:
     """Add logging import and logger initialization to a file."""
     try:
-        source = file_path.read_text(encoding='utf-8')
+        source = file_path.read_text(encoding="utf-8")
     except Exception as e:
         print(f"  [ERROR] Cannot read {file_path}: {e}")
         return False
@@ -41,22 +42,22 @@ def add_logging_to_file(file_path: Path) -> bool:
     modified = False
 
     # Check if logging already imported
-    if 'import logging' not in source and 'from logging' not in source:
+    if "import logging" not in source and "from logging" not in source:
         # Find the first import line and add logging before it
         lines = source.splitlines()
         insert_idx = 0
         for i, line in enumerate(lines):
-            if line.startswith('import ') or line.startswith('from '):
+            if line.startswith("import ") or line.startswith("from "):
                 insert_idx = i
                 break
 
         # Add logging import
         lines.insert(insert_idx, LOGGING_IMPORT)
         modified = True
-        source = '\n'.join(lines)
+        source = "\n".join(lines)
 
     # Check if logger already initialized
-    if 'logger = logging.getLogger' not in source and 'Logger = logging.getLogger' not in source:
+    if "logger = logging.getLogger" not in source and "Logger = logging.getLogger" not in source:
         # Find position after imports (first non-import, non-comment, non-docstring line)
         lines = source.splitlines()
         insert_idx = 0
@@ -68,23 +69,23 @@ def add_logging_to_file(file_path: Path) -> bool:
                 continue
             if in_docstring:
                 continue
-            if stripped.startswith('#'):
+            if stripped.startswith("#"):
                 continue
-            if stripped.startswith('import ') or stripped.startswith('from '):
+            if stripped.startswith("import ") or stripped.startswith("from "):
                 insert_idx = i + 1
                 continue
-            if stripped and not stripped.startswith('import') and not stripped.startswith('from'):
+            if stripped and not stripped.startswith("import") and not stripped.startswith("from"):
                 break
 
         # Add logger init after imports
-        lines.insert(insert_idx, '')
+        lines.insert(insert_idx, "")
         lines.insert(insert_idx + 1, LOGGER_INIT)
         modified = True
-        source = '\n'.join(lines)
+        source = "\n".join(lines)
 
     if modified:
         try:
-            file_path.write_text(source, encoding='utf-8')
+            file_path.write_text(source, encoding="utf-8")
             return True
         except Exception as e:
             print(f"  [ERROR] Cannot write {file_path}: {e}")
@@ -96,13 +97,13 @@ def add_logging_to_file(file_path: Path) -> bool:
 def add_testing_mixin_to_class(file_path: Path, class_name: str) -> bool:
     """Add SubatomicTestingMixin to a class's bases."""
     try:
-        source = file_path.read_text(encoding='utf-8')
+        source = file_path.read_text(encoding="utf-8")
     except Exception as e:
         print(f"  [ERROR] Cannot read {file_path}: {e}")
         return False
 
     # Check if SubatomicTestingMixin already in file
-    if 'SubatomicTestingMixin' in source:
+    if "SubatomicTestingMixin" in source:
         return False  # Already has it
 
     # Add import if not present
@@ -111,15 +112,15 @@ def add_testing_mixin_to_class(file_path: Path, class_name: str) -> bool:
         # Find last import line
         last_import_idx = 0
         for i, line in enumerate(lines):
-            if line.startswith('import ') or line.startswith('from '):
+            if line.startswith("import ") or line.startswith("from "):
                 last_import_idx = i
 
         lines.insert(last_import_idx + 1, TESTING_IMPORT)
-        source = '\n'.join(lines)
+        source = "\n".join(lines)
 
     # Add SubatomicTestingMixin to class bases using regex
     # Match: class ClassName(Base1, Base2):
-    pattern = rf'(class\s+{re.escape(class_name)}\s*\()([^)]*?)(\)\s*:)'
+    pattern = rf"(class\s+{re.escape(class_name)}\s*\()([^)]*?)(\)\s*:)"
 
     def add_mixin(match):
         prefix = match.group(1)
@@ -137,7 +138,7 @@ def add_testing_mixin_to_class(file_path: Path, class_name: str) -> bool:
 
     if count > 0:
         try:
-            file_path.write_text(new_source, encoding='utf-8')
+            file_path.write_text(new_source, encoding="utf-8")
             return True
         except Exception as e:
             print(f"  [ERROR] Cannot write {file_path}: {e}")
@@ -157,8 +158,8 @@ def main():
     # Group by file
     by_file: dict[str, list[str]] = {}
     for agent in agents:
-        path = agent.get('path', '')
-        class_name = agent.get('class_name', '')
+        path = agent.get("path", "")
+        class_name = agent.get("class_name", "")
         if path and class_name:
             full_path = str(PROJECT_ROOT / path)
             if full_path not in by_file:
@@ -187,7 +188,9 @@ def main():
                 print(f"[TESTING] {class_name} in {file_path.name}")
 
     print("\n" + "=" * 80)
-    print(f"SUMMARY: Logging added to {logging_added} files | Testing mixin added to {testing_added} classes")
+    print(
+        f"SUMMARY: Logging added to {logging_added} files | Testing mixin added to {testing_added} classes"
+    )
     print("=" * 80)
 
 

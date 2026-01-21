@@ -80,5 +80,5 @@ class RgReflectionAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
         return passed / total_agents
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()

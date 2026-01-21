@@ -4,6 +4,7 @@ Pytest Configuration for Dashboard Tests
 
 Shared fixtures and configuration for all dashboard tests.
 """
+
 import json
 import sys
 from pathlib import Path
@@ -20,6 +21,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 def disable_path_shield():
     """Disable path_shield for all dashboard tests - we need real file access."""
     pass
+
 
 @pytest.fixture(scope="session")
 def project_root() -> Path:
@@ -44,7 +46,7 @@ def html_content(html_file) -> str:
     """Load the dashboard HTML content."""
     if not html_file.exists():
         pytest.skip(f"Dashboard HTML not found: {html_file}")
-    return html_file.read_text(encoding='utf-8')
+    return html_file.read_text(encoding="utf-8")
 
 
 @pytest.fixture(scope="session")
@@ -53,7 +55,7 @@ def agent_discovery_data(project_root) -> list[dict[str, Any]]:
     discovery_file = project_root / "agent_discovery_full.json"
     if not discovery_file.exists():
         pytest.skip(f"Agent discovery file not found: {discovery_file}")
-    with open(discovery_file, encoding='utf-8') as f:
+    with open(discovery_file, encoding="utf-8") as f:
         return json.load(f)
 
 
@@ -64,9 +66,9 @@ def dashboard_data(dashboard_dir) -> list[dict[str, Any]]:
     if not data_file.exists():
         pytest.skip(f"Dashboard data file not found: {data_file}")
 
-    content = data_file.read_text(encoding='utf-8')
-    lines = [l for l in content.split('\n') if not l.strip().startswith('//')]
-    content_clean = '\n'.join(lines).replace('window.dashboardData = ', '').strip().rstrip(';')
+    content = data_file.read_text(encoding="utf-8")
+    lines = [l for l in content.split("\n") if not l.strip().startswith("//")]
+    content_clean = "\n".join(lines).replace("window.dashboardData = ", "").strip().rstrip(";")
     return json.loads(content_clean)
 
 
@@ -84,12 +86,6 @@ def css_dir(dashboard_dir) -> Path:
 
 def pytest_configure(config):
     """Register custom markers."""
-    config.addinivalue_line(
-        "markers", "dashboard: mark test as a dashboard test"
-    )
-    config.addinivalue_line(
-        "markers", "slow: mark test as slow (requires browser)"
-    )
-    config.addinivalue_line(
-        "markers", "playwright: mark test as requiring Playwright"
-    )
+    config.addinivalue_line("markers", "dashboard: mark test as a dashboard test")
+    config.addinivalue_line("markers", "slow: mark test as slow (requires browser)")
+    config.addinivalue_line("markers", "playwright: mark test as requiring Playwright")

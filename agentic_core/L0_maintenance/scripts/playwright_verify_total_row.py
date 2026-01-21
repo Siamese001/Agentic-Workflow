@@ -3,6 +3,7 @@
 Playwright verification script to confirm TOTAL row is at the top of both tables.
 Forces cache clearing and takes screenshots for visual confirmation.
 """
+
 import subprocess
 import sys
 import time
@@ -38,7 +39,7 @@ def main():
         [sys.executable, "-m", "http.server", "8765"],
         cwd=str(dashboard_dir),
         stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE
+        stderr=subprocess.PIPE,
     )
 
     # Wait for server to start
@@ -51,13 +52,16 @@ def main():
             # Launch with cache disabled to force fresh load
             browser = p.chromium.launch(
                 headless=False,
-                args=['--disable-cache', '--disable-application-cache', '--disable-offline-load-stale-cache']
+                args=[
+                    "--disable-cache",
+                    "--disable-application-cache",
+                    "--disable-offline-load-stale-cache",
+                ],
             )
 
             # Create context with no cache
             context = browser.new_context(
-                viewport={'width': 1920, 'height': 1080},
-                ignore_https_errors=True
+                viewport={"width": 1920, "height": 1080}, ignore_https_errors=True
             )
 
             # Disable cache at context level
@@ -83,10 +87,10 @@ def main():
             print("\n6. Verifying Table 1 (Territory Summary)...")
             try:
                 # Get the first data row in the table body
-                first_row = page.locator('#kpiGrid table tbody tr').first
+                first_row = page.locator("#kpiGrid table tbody tr").first
                 first_row_text = first_row.text_content()
 
-                if 'TOTAL' in first_row_text:
+                if "TOTAL" in first_row_text:
                     print("   ✅ Table 1: TOTAL row is at the TOP")
                     table1_pass = True
                 else:
@@ -94,12 +98,12 @@ def main():
                     table1_pass = False
 
                     # Debug: Get all rows to see order
-                    all_rows = page.locator('#kpiGrid table tbody tr').all()
+                    all_rows = page.locator("#kpiGrid table tbody tr").all()
                     print(f"   📋 Table 1 has {len(all_rows)} rows")
                     for i, row in enumerate(all_rows[:3]):  # Show first 3 rows
                         text = row.text_content()
                         territory = text.split()[0] if text else "N/A"
-                        print(f"      Row {i+1}: {territory}")
+                        print(f"      Row {i + 1}: {territory}")
 
             except Exception as e:
                 print(f"   ❌ Table 1: Error checking - {e}")
@@ -109,10 +113,10 @@ def main():
             print("\n7. Verifying Table 2 (Code Quality)...")
             try:
                 # Get the first data row in the table body
-                first_row = page.locator('#codeQualityGrid table tbody tr').first
+                first_row = page.locator("#codeQualityGrid table tbody tr").first
                 first_row_text = first_row.text_content()
 
-                if 'TOTAL' in first_row_text:
+                if "TOTAL" in first_row_text:
                     print("   ✅ Table 2: TOTAL row is at the TOP")
                     table2_pass = True
                 else:
@@ -120,12 +124,12 @@ def main():
                     table2_pass = False
 
                     # Debug: Get all rows to see order
-                    all_rows = page.locator('#codeQualityGrid table tbody tr').all()
+                    all_rows = page.locator("#codeQualityGrid table tbody tr").all()
                     print(f"   📋 Table 2 has {len(all_rows)} rows")
                     for i, row in enumerate(all_rows[:3]):  # Show first 3 rows
                         text = row.text_content()
                         territory = text.split()[0] if text else "N/A"
-                        print(f"      Row {i+1}: {territory}")
+                        print(f"      Row {i + 1}: {territory}")
 
             except Exception as e:
                 print(f"   ❌ Table 2: Error checking - {e}")

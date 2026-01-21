@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, prompt, validator
@@ -70,9 +69,9 @@ class HOP7GateDecisionAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin
             FactualGapError: If factual failure detected (triggers S6->S2 loop)
             ValueError: If creative failure detected (halts workflow)
         """
-        print(f"\nimport logging\n\nLogger = logging.getLogger(__name__)\n{'='*80}")
+        print(f"\nimport logging\n\nLogger = logging.getLogger(__name__)\n{'=' * 80}")
         print("HOP-7: GATE DECISION")
-        print(f"{'='*80}\n")
+        print(f"{'=' * 80}\n")
 
         # Read HOP-6 validation results
         validation_state = state_mgr.read_state("HOP-6")
@@ -89,7 +88,7 @@ class HOP7GateDecisionAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin
                 "decision": decision,
                 "reasoning": reasoning,
                 "factual_loop_count": self.factual_loop_count,
-                "creative_retry_count": self.creative_retry_count
+                "creative_retry_count": self.creative_retry_count,
             }
 
             output_path = state_mgr.write_state("HOP-7", output_state)
@@ -101,7 +100,8 @@ class HOP7GateDecisionAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin
 
         # Validation failed - classify failures
         critical_failures = [
-            r for r in validation_results
+            r
+            for r in validation_results
             if r.get("Severity") in ["CRITICAL", "HIGH"] and not r.get("passed", True)
         ]
 
@@ -114,7 +114,7 @@ class HOP7GateDecisionAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin
                 "decision": decision,
                 "reasoning": reasoning,
                 "factual_loop_count": self.factual_loop_count,
-                "creative_retry_count": self.creative_retry_count
+                "creative_retry_count": self.creative_retry_count,
             }
 
             output_path = state_mgr.write_state("HOP-7", output_state)
@@ -141,7 +141,7 @@ class HOP7GateDecisionAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin
                     "decision": decision,
                     "reasoning": reasoning,
                     "factual_loop_count": self.factual_loop_count,
-                    "failure_message": failure_message
+                    "failure_message": failure_message,
                 }
 
                 output_path = state_mgr.write_state("HOP-7", output_state)
@@ -159,7 +159,7 @@ class HOP7GateDecisionAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin
                 "reasoning": reasoning,
                 "factual_loop_count": self.factual_loop_count,
                 "failure_message": failure_message,
-                "action": "LOOP_TO_HOP2"
+                "action": "LOOP_TO_HOP2",
             }
 
             output_path = state_mgr.write_state("HOP-7", output_state)
@@ -180,7 +180,7 @@ class HOP7GateDecisionAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin
                     "decision": decision,
                     "reasoning": reasoning,
                     "creative_retry_count": self.creative_retry_count,
-                    "failure_message": failure_message
+                    "failure_message": failure_message,
                 }
 
                 output_path = state_mgr.write_state("HOP-7", output_state)
@@ -198,7 +198,7 @@ class HOP7GateDecisionAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin
                 "reasoning": reasoning,
                 "creative_retry_count": self.creative_retry_count,
                 "failure_message": failure_message,
-                "action": "RETRY_HOP5"
+                "action": "RETRY_HOP5",
             }
 
             output_path = state_mgr.write_state("HOP-7", output_state)
@@ -209,8 +209,7 @@ class HOP7GateDecisionAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin
             return output_path
 
     def _classify_failure(
-        self,
-        failures: list[dict[str, Any]]
+        self, failures: list[dict[str, Any]]
     ) -> tuple[FailureClassifierAgent, str]:
         """
         Classify failure type to determine retry strategy
@@ -226,21 +225,43 @@ class HOP7GateDecisionAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin
 
             # Check if this is a factual failure rule
             if rule_id in self.factual_failure_rules:
-                return FailureClassifierAgent.FACTUAL_FAILURE, f"({rule_id}) {failure.get('message', '')}"
+                return (
+                    FailureClassifierAgent.FACTUAL_FAILURE,
+                    f"({rule_id}) {failure.get('message', '')}",
+                )
 
             # Check details for override
             details = failure.get("details", {})
             if details.get("failure_classifier") == "FACTUAL_FAILURE":
-                return FailureClassifierAgent.FACTUAL_FAILURE, f"({rule_id}) {failure.get('message', '')}"
+                return (
+                    FailureClassifierAgent.FACTUAL_FAILURE,
+                    f"({rule_id}) {failure.get('message', '')}",
+                )
 
         # Default to creative failure
-        return FailureClassifierAgent.CREATIVE_FAILURE, f"({failures[0].get('rule_id', '')}) {failures[0].get('message', '')}"
+        return (
+            FailureClassifierAgent.CREATIVE_FAILURE,
+            f"({failures[0].get('rule_id', '')}) {failures[0].get('message', '')}",
+        )
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set = None,
+    ) -> dict[str, int]:
         """Operational agent - invoke shared healing chain."""
         if _call_path is None:
             _call_path = set()
-        super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+        super().heal_repository(
+            dry_run=dry_run,
+            execute=execute,
+            depth=depth,
+            max_depth=max_depth,
+            _call_path=_call_path,
+        )
         print(f"[{self.__class__.__name__}] Operational agent - healing chain invoked")
         return {"skipped": 1}

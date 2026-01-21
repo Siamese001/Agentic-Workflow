@@ -14,6 +14,7 @@ Author: Cascade
 Date: January 19, 2026
 Phase: 4.1 - Scaled Refactoring & CI Enforcement
 """
+
 import sys
 import tempfile
 import time
@@ -31,9 +32,9 @@ def test_tc17_scaled_discovery():
     Compare the list of files returned by ssot_discovery against
     a filtered rglob output. Delta must be zero.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-17: Scaled Discovery")
-    print("="*60)
+    print("=" * 60)
 
     from agentic_core.utils.ssot_discovery import DEFAULT_EXCLUDE_DIRS, get_python_files
 
@@ -47,11 +48,12 @@ def test_tc17_scaled_discovery():
     rglob_files = []
     # Phase 6.8: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_python_files
+
     for py_file in get_python_files(agentic_core):
         path_parts = py_file.parts
         skip = False
         for part in path_parts:
-            if part in DEFAULT_EXCLUDE_DIRS or part.startswith('.'):
+            if part in DEFAULT_EXCLUDE_DIRS or part.startswith("."):
                 skip = True
                 break
         if skip:
@@ -90,9 +92,9 @@ def test_tc18_ci_enforcement():
 
     Run check_rglob_usage.py and verify it accurately reports the current count.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-18: CI Enforcement")
-    print("="*60)
+    print("=" * 60)
 
     # Import the CI check functions
     sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
@@ -138,9 +140,9 @@ def test_tc19_auto_invalidation():
     Touch a new file in agentic_core/L2_execution/. Verify get_python_files_cached()
     detects the change without manual invalidation.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-19: Auto-Invalidation")
-    print("="*60)
+    print("=" * 60)
 
     from agentic_core.utils.ssot_discovery import FileCache, get_python_files
 
@@ -192,9 +194,9 @@ def test_tc20_no_backup_leak():
     Verify that no files from .sovereign_healing_backup or archives
     appear in the discovery list after the scaled refactor.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-20: No Backup Leak")
-    print("="*60)
+    print("=" * 60)
 
     from agentic_core.utils.ssot_discovery import get_python_files
 
@@ -202,12 +204,7 @@ def test_tc20_no_backup_leak():
     files = get_python_files(PROJECT_ROOT)
 
     # Check for backup directory files
-    backup_patterns = [
-        ".sovereign_healing_backup",
-        "archives",
-        "__pycache__",
-        ".git"
-    ]
+    backup_patterns = [".sovereign_healing_backup", "archives", "__pycache__", ".git"]
 
     leaked_files = []
     for f in files:
@@ -233,9 +230,9 @@ def test_rglob_reduction():
     """
     Bonus Test: Verify rglob count has been reduced from baseline.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("BONUS: rglob Reduction Progress")
-    print("="*60)
+    print("=" * 60)
 
     sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
     from check_rglob_usage import MAX_ALLOWED_RGLOB, scan_for_rglob_usage
@@ -265,9 +262,9 @@ def test_rglob_reduction():
 
 def main():
     """Run all Phase 4.1 Zero-Loss test cases."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("PHASE 4.1 ZERO-LOSS VERIFICATION TEST SUITE")
-    print("="*70)
+    print("=" * 70)
     print(f"Project Root: {PROJECT_ROOT}")
 
     tests = [
@@ -286,13 +283,14 @@ def main():
         except Exception as e:
             print(f"\n❌ EXCEPTION in {test_name}: {e}")
             import traceback
+
             traceback.print_exc()
             results.append((test_name, False))
 
     # Summary
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST SUMMARY")
-    print("="*70)
+    print("=" * 70)
 
     passed_count = sum(1 for _, passed in results if passed)
     total_count = len(results)
@@ -305,7 +303,7 @@ def main():
         status = "✅ PASS" if passed else "❌ FAIL"
         print(f"{status}: {test_name}")
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print(f"CORE TESTS: {core_passed}/4 passed")
     print(f"TOTAL: {passed_count}/{total_count} tests passed")
 

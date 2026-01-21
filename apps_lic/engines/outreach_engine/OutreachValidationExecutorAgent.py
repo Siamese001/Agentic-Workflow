@@ -18,8 +18,11 @@ from validation_gate_executor import (  # Assuming this import is correct
 
 LOGGER = logging.getLogger(__name__)
 
+
 @dataclass
-class OutreachValidationExecutorAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin, ValidationGateExecutor):
+class OutreachValidationExecutorAgent(
+    HealerMixin, MCPHardenedMixin, SubatomicTestingMixin, ValidationGateExecutor
+):
     """Extended validation executor for outreach-specific rules.
 
     Implements LIC-specific validation gates:
@@ -126,10 +129,18 @@ class OutreachValidationExecutorAgent(HealerMixin, MCPHardenedMixin, SubatomicTe
             RuleFailure if placeholders found
         """
         placeholder_patterns = [
-            r'\[NAME\]', r'\[COMPANY\]', r'\[TITLE\]',
-            r'\{name\}', r'\{company\}', r'\{title\}',
-            r'<NAME>', r'<COMPANY>', r'<TITLE>',
-            r'PLACEHOLDER', r'TODO', r'TBD',
+            r"\[NAME\]",
+            r"\[COMPANY\]",
+            r"\[TITLE\]",
+            r"\{name\}",
+            r"\{company\}",
+            r"\{title\}",
+            r"<NAME>",
+            r"<COMPANY>",
+            r"<TITLE>",
+            r"PLACEHOLDER",
+            r"TODO",
+            r"TBD",
         ]
 
         found_placeholders = []
@@ -229,9 +240,9 @@ class OutreachValidationExecutorAgent(HealerMixin, MCPHardenedMixin, SubatomicTe
 
         # Extract metrics from content (numbers with %, $, or units)
         metric_patterns = [
-            r'\d+%',
-            r'\$\d+[KMB]?',
-            r'\d+[KMB]?\+?\s+(?:users|customers|engineers|deployments)',
+            r"\d+%",
+            r"\$\d+[KMB]?",
+            r"\d+[KMB]?\+?\s+(?:users|customers|engineers|deployments)",
         ]
 
         found_metrics = []
@@ -280,7 +291,7 @@ class OutreachValidationExecutorAgent(HealerMixin, MCPHardenedMixin, SubatomicTe
             return None
 
         # Extract metrics
-        metric_patterns = [r'\d+%', r'\$\d+[KMB]?']
+        metric_patterns = [r"\d+%", r"\$\d+[KMB]?"]
         found_metrics = []
         for pattern in metric_patterns:
             matches = re.findall(pattern, content)
@@ -400,7 +411,9 @@ class OutreachValidationExecutorAgent(HealerMixin, MCPHardenedMixin, SubatomicTe
             RuleFailure if signature format violated
         """
         # Extract signature block (last 4 lines before fence end)
-        lines = content.split("\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\n")
+        lines = content.split(
+            "\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\n"
+        )
 
         # Find signature (look for "Regards,")
         regards_index = -1
@@ -474,5 +487,5 @@ class OutreachValidationExecutorAgent(HealerMixin, MCPHardenedMixin, SubatomicTe
         return len(intersection) / len(union)
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()

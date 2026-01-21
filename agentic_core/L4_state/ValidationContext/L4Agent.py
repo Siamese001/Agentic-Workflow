@@ -47,6 +47,7 @@ class L4Agent(HealerMixin, MCPHardenedMixin):
     - Basic Self-Testing: YES (state consistency, idempotency)
     - Delegation to TestSovereigntyAgent: YES (on failure)
     """
+
     name: str = "L4Agent"
     layer: str = "L4"
 

@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, validator, workflow
@@ -34,6 +33,7 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 @dataclass
 class PolicyNeuralAutoImmuneAgent(SubatomicTestingMixin, NeuralAutoImmuneAgent, MCPHardenedMixin):
     """PolicyNeuralAutoImmuneAgent agent for autonomous operations."""
+
     def __init__(self, project_root: Path) -> None:
         """Initialize the instance."""
         self.redis = RedisSovereignAgent(project_root).get_client()
@@ -47,7 +47,14 @@ class PolicyNeuralAutoImmuneAgent(SubatomicTestingMixin, NeuralAutoImmuneAgent, 
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L5 safety agent - operational only."""
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository()

@@ -16,10 +16,11 @@ from typing import Any
 
 class AnomalySeverity(Enum):
     """Severity levels for anomalies."""
-    LOW = "low"           # Cosmetic/drift, auto-heal
-    MEDIUM = "medium"     # Functional impairment, local heal
-    HIGH = "high"         # Sovereignty risk, escalate
-    CRITICAL = "critical" # Immediate shutdown/escalate to L0
+
+    LOW = "low"  # Cosmetic/drift, auto-heal
+    MEDIUM = "medium"  # Functional impairment, local heal
+    HIGH = "high"  # Sovereignty risk, escalate
+    CRITICAL = "critical"  # Immediate shutdown/escalate to L0
 
 
 @dataclass(frozen=True)
@@ -39,6 +40,7 @@ class AnomalyReport:
         timestamp: Auto-timestamp
         provenance_id: MCP chain ID if available
     """
+
     type: str
     severity: AnomalySeverity
     description: str

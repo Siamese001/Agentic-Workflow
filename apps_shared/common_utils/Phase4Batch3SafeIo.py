@@ -14,6 +14,7 @@ Usage:
     python scripts/phase4_batch3_safe_io.py --dry-run
     python scripts/phase4_batch3_safe_io.py --execute
 """
+
 from __future__ import annotations
 
 import argparse
@@ -45,13 +46,13 @@ EXCLUDED_DIRS = {
 # or: with open(path, encoding='utf-8') as f:\n    content = f.read()
 SIMPLE_READ_PATTERN = re.compile(
     r"with open\(([^,]+),\s*['\"]r['\"]\s*,\s*encoding\s*=\s*['\"]utf-8['\"]\)\s*as\s+(\w+):\s*\n\s+(\w+)\s*=\s*\2\.read\(\)",
-    re.MULTILINE
+    re.MULTILINE,
 )
 
 # Alternative pattern without 'r' mode (defaults to read)
 SIMPLE_READ_PATTERN_ALT = re.compile(
     r"with open\(([^,]+),\s*encoding\s*=\s*['\"]utf-8['\"]\)\s*as\s+(\w+):\s*\n\s+(\w+)\s*=\s*\2\.read\(\)",
-    re.MULTILINE
+    re.MULTILINE,
 )
 
 SAFE_IO_IMPORT = "from agentic_core.utils.file_utils import safe_read_file"
@@ -81,7 +82,7 @@ def already_has_safe_io_import(content: str) -> bool:
 
 def find_import_insertion_point(content: str) -> int:
     """Find the best line to insert the import statement."""
-    lines = content.split('\n')
+    lines = content.split("\n")
     last_import_line = 0
     in_docstring = False
     docstring_char = None
@@ -101,7 +102,7 @@ def find_import_insertion_point(content: str) -> int:
                 in_docstring = False
             continue
 
-        if stripped.startswith('import ') or stripped.startswith('from '):
+        if stripped.startswith("import ") or stripped.startswith("from "):
             last_import_line = i
 
     return last_import_line
@@ -143,7 +144,7 @@ def process_file(file_path: Path, dry_run: bool = True) -> dict:
     }
 
     try:
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
     except Exception as e:
         result["skipped"] = True
         result["reason"] = f"Read error: {e}"
@@ -168,14 +169,14 @@ def process_file(file_path: Path, dry_run: bool = True) -> dict:
     # Add import if missing and we made replacements
     if not already_has_safe_io_import(content):
         insert_line = find_import_insertion_point(modified_content)
-        lines = modified_content.split('\n')
+        lines = modified_content.split("\n")
         lines.insert(insert_line + 1, SAFE_IO_IMPORT)
-        modified_content = '\n'.join(lines)
+        modified_content = "\n".join(lines)
         result["import_added"] = True
 
     if not dry_run:
         try:
-            file_path.write_text(modified_content, encoding='utf-8')
+            file_path.write_text(modified_content, encoding="utf-8")
         except Exception as e:
             result["skipped"] = True
             result["reason"] = f"Write error: {e}"

@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, healer, memory, orchestrator, prompt, state, validator, workflow
@@ -34,9 +33,10 @@ class RuntimeTelemetryAgent(L6ObservabilityBaseAgent):
     Monitors agent initialization latency to enforce the 2x Gospel limit.
     """
 
-
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -59,7 +59,9 @@ class RuntimeTelemetryAgent(L6ObservabilityBaseAgent):
         self.metrics: dict[str, float] = {}
         self.logger = logging.getLogger("SovereignTelemetry")
 
-    def benchmark_startup(self, agent_init_func: Callable, *args: Any, **kwargs: Any) -> tuple[Any, float]:
+    def benchmark_startup(
+        self, agent_init_func: Callable, *args: Any, **kwargs: Any
+    ) -> tuple[Any, float]:
         """
         Measures the initialization time of a specific agent with high precision.
         Returns the agent instance and the duration in seconds.
@@ -72,7 +74,11 @@ class RuntimeTelemetryAgent(L6ObservabilityBaseAgent):
         finally:
             end_time = time.perf_counter()
             duration = end_time - start_time
-            agent_name = getattr(agent_instance, "__class__", type("UnknownAgent", (), {})).__name__ if agent_instance else "UnknownAgent"
+            agent_name = (
+                getattr(agent_instance, "__class__", type("UnknownAgent", (), {})).__name__
+                if agent_instance
+                else "UnknownAgent"
+            )
             self.metrics[agent_name] = duration
 
         return agent_instance, duration
@@ -90,13 +96,11 @@ class RuntimeTelemetryAgent(L6ObservabilityBaseAgent):
         if overhead_ratio > self.limit_multiplier:
             status = "☢️ CRITICAL OVERHEAD"
             is_breached = True
-            self.logger.warning(f"SOVEREIGN ALERT: Performance overhead ratio {overhead_ratio:.2f}x exceeds Gospel limit.")
+            self.logger.warning(
+                f"SOVEREIGN ALERT: Performance overhead ratio {overhead_ratio:.2f}x exceeds Gospel limit."
+            )
 
-        return {
-            "ratio": round(overhead_ratio, 3),
-            "status": status,
-            "breach": is_breached
-        }
+        return {"ratio": round(overhead_ratio, 3), "status": status, "breach": is_breached}
 
     def report_performance(self) -> None:
         """
@@ -106,19 +110,20 @@ class RuntimeTelemetryAgent(L6ObservabilityBaseAgent):
             print("⚠️  No metrics captured. Run benchmarks first.")
             return
 
-        print(f"\n{'='*40}")
+        print(f"\n{'=' * 40}")
         print(" SOVEREIGN RUNTIME TELEMETRY REPORT")
-        print(f"{'='*40}")
+        print(f"{'=' * 40}")
         for agent, duration in self.metrics.items():
             print(f"Agent: {agent}")
-            print(f"Startup Time: {duration*1000:.3f} ms")
-            print(f"{'-'*40}")
+            print(f"Startup Time: {duration * 1000:.3f} ms")
+            print(f"{'-' * 40}")
 
 
 if __name__ == "__main__":
     # Self-test logic for immediate verification in Windsurf
     class MockSovereignAgent:
         """MockSovereignAgent agent for autonomous operations."""
+
         def __init__(self) -> None:
             time.sleep(0.05)  # Simulate 50ms startup
 

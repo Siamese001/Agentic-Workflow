@@ -8,6 +8,7 @@ Tests the skeptical analyst framework with strict validation:
 2. PerformanceAnalystAgent: Async event loop integrity
 3. L6ObservabilityBaseAgent: Skeptical grading accuracy
 """
+
 import asyncio
 import json
 import tempfile
@@ -34,6 +35,7 @@ class TestRuntimeTelemetryAgent:
         ACTION: audit_security_overhead(0.04, 0.10)
         EXPECTATION: Status = "☢️ CRITICAL OVERHEAD", breach = True, warning logged
         """
+
         # Setup
         class MockSovereignAgent:
             def __init__(self):
@@ -51,14 +53,16 @@ class TestRuntimeTelemetryAgent:
 
         # Action: Audit against 40ms baseline
         baseline_time = 0.04  # 40ms
-        current_time = 0.10   # 100ms (2.5x baseline)
+        current_time = 0.10  # 100ms (2.5x baseline)
 
         result = telemetry.audit_security_overhead(baseline_time, current_time)
 
         # Expectations
-        assert result['breach'] is True, "Breach should be detected for 2.5x overhead"
-        assert result['status'] == "☢️ CRITICAL OVERHEAD", f"Expected critical status, got: {result['status']}"
-        assert result['ratio'] >= 2.0, f"Ratio {result['ratio']} should exceed 2.0x Gospel limit"
+        assert result["breach"] is True, "Breach should be detected for 2.5x overhead"
+        assert result["status"] == "☢️ CRITICAL OVERHEAD", (
+            f"Expected critical status, got: {result['status']}"
+        )
+        assert result["ratio"] >= 2.0, f"Ratio {result['ratio']} should exceed 2.0x Gospel limit"
 
         print("✅ Test 1 PASSED: Gospel violation correctly detected")
         print(f"   Ratio: {result['ratio']}x (exceeds 2.0x limit)")
@@ -72,14 +76,15 @@ class TestRuntimeTelemetryAgent:
         # 30ms agent against 20ms baseline = 1.5x (within 2x limit)
         result = telemetry.audit_security_overhead(0.02, 0.03)
 
-        assert result['breach'] is False, "Should not breach for 1.5x overhead"
-        assert result['status'] == "✅ OPTIMAL"
-        assert result['ratio'] == 1.5
+        assert result["breach"] is False, "Should not breach for 1.5x overhead"
+        assert result["status"] == "✅ OPTIMAL"
+        assert result["ratio"] == 1.5
 
         print("✅ Gospel compliance test PASSED: 1.5x overhead accepted")
 
     def test_benchmark_exception_handling(self):
         """Verify benchmark handles agent init failures gracefully."""
+
         class FailingAgent:
             def __init__(self):
                 raise RuntimeError("Init failed")
@@ -111,22 +116,24 @@ class TestPerformanceAnalystAgent:
         # Create mock discovery data with 1000 agents
         mock_agents = []
         for i in range(1000):
-            mock_agents.append({
-                'class_name': f'TestAgent{i}',
-                'layer': f'L{i % 6}',
-                'has_healing': i % 2 == 0,
-                'invocation': 'Yes' if i % 3 == 0 else 'No',
-                'has_tests': i % 4 == 0,
-                'typed_pct': 75.0,
-                'documented_pct': 60.0,
-                'cyclomatic_complexity': 5 + (i % 10),
-                'mcp_hardened': i % 5 == 0,
-                'observability': {'logging': True} if i % 3 == 0 else {},
-                'path': f'/mock/path/L{i % 6}/agent{i}.py'
-            })
+            mock_agents.append(
+                {
+                    "class_name": f"TestAgent{i}",
+                    "layer": f"L{i % 6}",
+                    "has_healing": i % 2 == 0,
+                    "invocation": "Yes" if i % 3 == 0 else "No",
+                    "has_tests": i % 4 == 0,
+                    "typed_pct": 75.0,
+                    "documented_pct": 60.0,
+                    "cyclomatic_complexity": 5 + (i % 10),
+                    "mcp_hardened": i % 5 == 0,
+                    "observability": {"logging": True} if i % 3 == 0 else {},
+                    "path": f"/mock/path/L{i % 6}/agent{i}.py",
+                }
+            )
 
         # Write mock data to temp file
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
             json.dump(mock_agents, f)
             temp_path = Path(f.name)
 
@@ -152,8 +159,12 @@ class TestPerformanceAnalystAgent:
             duration = end_time - start_time
 
             # Expectations
-            assert result['status'] == 'completed', f"Analysis should complete, got: {result['status']}"
-            assert result['metrics_collected'] == 1000, f"Should collect 1000 metrics, got: {result['metrics_collected']}"
+            assert result["status"] == "completed", (
+                f"Analysis should complete, got: {result['status']}"
+            )
+            assert result["metrics_collected"] == 1000, (
+                f"Should collect 1000 metrics, got: {result['metrics_collected']}"
+            )
             assert duration < 5.0, f"Analysis took {duration}s, should be < 5s (non-blocking)"
 
             # Verify critiques were generated
@@ -189,11 +200,11 @@ class TestPerformanceAnalystAgent:
             results = await asyncio.gather(
                 analyst.run_async_analysis(),
                 analyst.run_async_analysis(),
-                analyst.run_async_analysis()
+                analyst.run_async_analysis(),
             )
 
             # All should complete successfully
-            assert all(r['status'] == 'completed' for r in results)
+            assert all(r["status"] == "completed" for r in results)
 
             print(f"✅ Concurrent analysis test PASSED: {len(results)} analyses completed")
 
@@ -213,10 +224,11 @@ class TestL6ObservabilityBaseAgent:
         ACTION: _critique_single_agent(metric)
         EXPECTATION: Grade = F (below 0.6 critical threshold), "IMMEDIATE ACTION" recommendation
         """
+
         # Create a concrete test implementation
         class TestAnalyst(L6ObservabilityBaseAgent):
             async def analyze(self) -> dict[str, Any]:
-                return {'status': 'test'}
+                return {"status": "test"}
 
         analyst = TestAnalyst()
 
@@ -228,35 +240,41 @@ class TestL6ObservabilityBaseAgent:
             mcp_hardened=False,  # Missing MCP - critical
             complexity_score=25,  # Very high - critical
             success_rate=0.0,  # No healing - critical
-            heal_invocations=0  # No invocation
+            heal_invocations=0,  # No invocation
         )
 
         # Action: Critique the agent
         critique = await analyst._critique_single_agent(metric)
 
         # Expectations: Strict grading, no mercy for failing agent
-        assert critique.overall_grade == 'F', f"Expected F grade for critically failing agent, got: {critique.overall_grade}"
-        assert len(critique.critical_issues) >= 3, f"Should have multiple critical issues, got {len(critique.critical_issues)}"
+        assert critique.overall_grade == "F", (
+            f"Expected F grade for critically failing agent, got: {critique.overall_grade}"
+        )
+        assert len(critique.critical_issues) >= 3, (
+            f"Should have multiple critical issues, got {len(critique.critical_issues)}"
+        )
 
         # Check for "IMMEDIATE ACTION REQUIRED" in recommendations
         immediate_action_found = any(
-            "IMMEDIATE ACTION REQUIRED" in rec
-            for rec in critique.recommendations
+            "IMMEDIATE ACTION REQUIRED" in rec for rec in critique.recommendations
         )
         assert immediate_action_found, "Should recommend immediate action for F grade"
 
         # Verify data points show multiple failures
-        assert critique.data_points['test_coverage'] == "40.0%"
-        assert critique.data_points['mcp_hardened'] == False
-        overall_score = float(critique.data_points['overall_score'].rstrip('%'))
+        assert critique.data_points["test_coverage"] == "40.0%"
+        assert critique.data_points["mcp_hardened"] == False
+        overall_score = float(critique.data_points["overall_score"].rstrip("%"))
         assert overall_score < 60.0, f"Overall score {overall_score}% should be < 60%"
 
         # Check skeptical commentary tone
-        assert "fails basic standards" in critique.skeptical_commentary.lower() or \
-               "complete rework" in critique.skeptical_commentary.lower(), \
-               "Commentary should be harsh for failing agent"
+        assert (
+            "fails basic standards" in critique.skeptical_commentary.lower()
+            or "complete rework" in critique.skeptical_commentary.lower()
+        ), "Commentary should be harsh for failing agent"
 
-        print("✅ Test 3 PASSED: Skeptical grading correctly assigned F for critically failing agent")
+        print(
+            "✅ Test 3 PASSED: Skeptical grading correctly assigned F for critically failing agent"
+        )
         print(f"   Grade: {critique.overall_grade}")
         print(f"   Overall Score: {critique.data_points['overall_score']}")
         print(f"   Critical Issues: {len(critique.critical_issues)}")
@@ -266,9 +284,10 @@ class TestL6ObservabilityBaseAgent:
     @pytest.mark.asyncio
     async def test_grading_scale_accuracy(self):
         """Verify grading scale works monotonically (worse metrics = worse grade)."""
+
         class TestAnalyst(L6ObservabilityBaseAgent):
             async def analyze(self) -> dict[str, Any]:
-                return {'status': 'test'}
+                return {"status": "test"}
 
         analyst = TestAnalyst()
 
@@ -289,7 +308,14 @@ class TestL6ObservabilityBaseAgent:
         grades = []
         scores = []
 
-        for test_coverage, mcp_hardened, complexity, success_rate, heal_invocations, description in test_cases:
+        for (
+            test_coverage,
+            mcp_hardened,
+            complexity,
+            success_rate,
+            heal_invocations,
+            description,
+        ) in test_cases:
             metric = AgentPerformanceMetrics(
                 agent_name=description,
                 layer="L3",
@@ -297,26 +323,27 @@ class TestL6ObservabilityBaseAgent:
                 mcp_hardened=mcp_hardened,
                 complexity_score=complexity,
                 success_rate=success_rate,
-                heal_invocations=heal_invocations
+                heal_invocations=heal_invocations,
             )
 
             critique = await analyst._critique_single_agent(metric)
             grade = critique.overall_grade
-            score = float(critique.data_points['overall_score'].rstrip('%'))
+            score = float(critique.data_points["overall_score"].rstrip("%"))
 
             grades.append(grade)
             scores.append(score)
 
         # Verify scores decrease monotonically (each worse than previous)
         for i in range(len(scores) - 1):
-            assert scores[i] >= scores[i+1], \
-                f"Scores not monotonic: {scores[i]}% >= {scores[i+1]}%"
+            assert scores[i] >= scores[i + 1], (
+                f"Scores not monotonic: {scores[i]}% >= {scores[i + 1]}%"
+            )
 
         # Verify worst case gets F
-        assert grades[-1] == 'F', f"Worst case should be F, got {grades[-1]}"
+        assert grades[-1] == "F", f"Worst case should be F, got {grades[-1]}"
 
         # Verify grades are from valid set
-        valid_grades = {'A', 'B', 'C', 'D', 'F'}
+        valid_grades = {"A", "B", "C", "D", "F"}
         for grade in grades:
             assert grade in valid_grades, f"Invalid grade: {grade}"
 
@@ -327,14 +354,15 @@ class TestL6ObservabilityBaseAgent:
     @pytest.mark.asyncio
     async def test_no_bias_in_grading(self):
         """Verify grading is unbiased regardless of agent layer or name."""
+
         class TestAnalyst(L6ObservabilityBaseAgent):
             async def analyze(self) -> dict[str, Any]:
-                return {'status': 'test'}
+                return {"status": "test"}
 
         analyst = TestAnalyst()
 
         # Same metrics, different layers - should get same grade
-        layers = ['L0', 'L1', 'L2', 'L3', 'L4', 'L5']
+        layers = ["L0", "L1", "L2", "L3", "L4", "L5"]
         grades = []
         scores = []
 
@@ -346,12 +374,12 @@ class TestL6ObservabilityBaseAgent:
                 mcp_hardened=True,
                 complexity_score=5,
                 success_rate=1.0,
-                heal_invocations=1
+                heal_invocations=1,
             )
 
             critique = await analyst._critique_single_agent(metric)
             grades.append(critique.overall_grade)
-            scores.append(critique.data_points['overall_score'])
+            scores.append(critique.data_points["overall_score"])
 
         # All grades should be identical (no bias by layer)
         assert len(set(grades)) == 1, f"Grades vary by layer: {dict(zip(layers, grades))}"

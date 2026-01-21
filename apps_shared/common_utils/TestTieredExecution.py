@@ -9,6 +9,7 @@ Verifies all 5 test cases for the Controlled Burns feature:
 4. Burn Verification - Execute mode works correctly
 5. State Integrity - Strategy correctly filters tiers
 """
+
 import subprocess
 import sys
 from pathlib import Path
@@ -19,15 +20,18 @@ sys.path.insert(0, str(PROJECT_ROOT))
 PASSED = 0
 FAILED = 0
 
+
 def test_pass(test_id: str, msg: str):
     global PASSED
     PASSED += 1
     print(f"  ✅ {test_id}: {msg}")
 
+
 def test_fail(test_id: str, msg: str):
     global FAILED
     FAILED += 1
     print(f"  ❌ {test_id}: {msg}")
+
 
 # =============================================================================
 # Test 1: Isolation Test
@@ -51,7 +55,11 @@ def test_isolation():
     if not tier0_should_run and tier1_should_run and not tier2_should_run:
         test_pass("TEST-1", "Isolation - Only Tier 1 runs when target_tier=1")
     else:
-        test_fail("TEST-1", f"Isolation failed: Tier0={tier0_should_run}, Tier1={tier1_should_run}, Tier2={tier2_should_run}")
+        test_fail(
+            "TEST-1",
+            f"Isolation failed: Tier0={tier0_should_run}, Tier1={tier1_should_run}, Tier2={tier2_should_run}",
+        )
+
 
 # =============================================================================
 # Test 2: Default Behavior
@@ -74,12 +82,19 @@ def test_default_behavior():
     tier3_should_run = strategy.should_run_tier("Tier 3: Dynamic")
     tier4_should_run = strategy.should_run_tier("Tier 4: Final Gate")
 
-    all_run = tier0_should_run and tier1_should_run and tier2_should_run and tier3_should_run and tier4_should_run
+    all_run = (
+        tier0_should_run
+        and tier1_should_run
+        and tier2_should_run
+        and tier3_should_run
+        and tier4_should_run
+    )
 
     if all_run:
         test_pass("TEST-2", "Default behavior - All 5 tiers run when target_tier=None")
     else:
         test_fail("TEST-2", "Default behavior failed: Not all tiers run")
+
 
 # =============================================================================
 # Test 3: Out-of-Bounds
@@ -94,13 +109,14 @@ def test_out_of_bounds():
         [sys.executable, "canon_validator_agentic_v2_thin.py", "--tier", "9"],
         cwd=PROJECT_ROOT,
         capture_output=True,
-        text=True
+        text=True,
     )
 
     if result.returncode != 0 and "invalid choice: 9" in result.stderr:
         test_pass("TEST-3", "Out-of-bounds - argparse rejects --tier 9")
     else:
         test_fail("TEST-3", "Out-of-bounds not rejected properly")
+
 
 # =============================================================================
 # Test 4: Burn Verification (Structural)
@@ -129,6 +145,7 @@ def test_burn_verification():
     else:
         test_fail("TEST-4b", f"Skip message incorrect: {skip_msg}")
 
+
 # =============================================================================
 # Test 5: State Integrity
 # =============================================================================
@@ -148,9 +165,7 @@ def test_state_integrity():
     # Verify the orchestrator can be created with the strategy
     try:
         orchestrator = UnifiedOrchestratorAgent(
-            strategy=strategy,
-            project_root=PROJECT_ROOT,
-            name="TestOrchestrator"
+            strategy=strategy, project_root=PROJECT_ROOT, name="TestOrchestrator"
         )
         test_pass("TEST-5a", "State integrity - Orchestrator created with filtered strategy")
     except Exception as e:
@@ -158,10 +173,11 @@ def test_state_integrity():
         return
 
     # Verify the strategy's should_run_tier is accessible from orchestrator
-    if hasattr(orchestrator.strategy, 'should_run_tier'):
+    if hasattr(orchestrator.strategy, "should_run_tier"):
         test_pass("TEST-5b", "State integrity - should_run_tier method accessible")
     else:
         test_fail("TEST-5b", "should_run_tier method not accessible")
+
 
 # =============================================================================
 # Main
@@ -193,5 +209,6 @@ def main():
         print(f"\n  ❌ {FAILED} TESTS FAILED - REQUIRES ATTENTION")
         return 1
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     sys.exit(main())

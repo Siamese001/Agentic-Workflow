@@ -29,6 +29,7 @@ from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
 
 class ThreatLevel(Enum):
     """Threat severity levels."""
+
     NONE = "none"
     LOW = "low"
     MEDIUM = "medium"
@@ -38,6 +39,7 @@ class ThreatLevel(Enum):
 
 class ThreatType(Enum):
     """Types of threats."""
+
     ADVERSARIAL = "adversarial"
     INJECTION = "injection"
     EVASION = "evasion"
@@ -49,6 +51,7 @@ class ThreatType(Enum):
 @dataclass
 class ThreatIndicator:
     """Indicator of a potential threat."""
+
     threat_type: ThreatType
     level: ThreatLevel
     description: str
@@ -60,6 +63,7 @@ class ThreatIndicator:
 @dataclass
 class ThreatAnalysisResult:
     """Result of threat analysis."""
+
     safe: bool
     threat_level: ThreatLevel
     indicators: list[ThreatIndicator] = field(default_factory=list)
@@ -131,7 +135,9 @@ class ThreatDetectionGuardrail(HealerMixin, MCPHardenedMixin, RedisCacheMixin, P
         self.threats_detected = 0
         self.threats_blocked = 0
 
-    async def analyze(self, input_data: str, context: dict[str, Any] | None = None) -> ThreatAnalysisResult:
+    async def analyze(
+        self, input_data: str, context: dict[str, Any] | None = None
+    ) -> ThreatAnalysisResult:
         """
         Analyze input for threats.
 
@@ -171,7 +177,7 @@ class ThreatDetectionGuardrail(HealerMixin, MCPHardenedMixin, RedisCacheMixin, P
             threat_level=threat_level,
             indicators=indicators,
             response_action=response,
-            analysis_time_ms=(time.time() - start_time) * 1000
+            analysis_time_ms=(time.time() - start_time) * 1000,
         )
 
     def _detect_adversarial(self, input_data: str) -> list[ThreatIndicator]:
@@ -182,35 +188,41 @@ class ThreatDetectionGuardrail(HealerMixin, MCPHardenedMixin, RedisCacheMixin, P
         # Check adversarial patterns
         for pattern in self.adversarial_patterns:
             if re.search(pattern, input_lower, re.IGNORECASE):
-                indicators.append(ThreatIndicator(
-                    threat_type=ThreatType.ADVERSARIAL,
-                    level=ThreatLevel.HIGH,
-                    description="Adversarial prompt injection attempt",
-                    confidence=0.9,
-                    pattern_matched=pattern
-                ))
+                indicators.append(
+                    ThreatIndicator(
+                        threat_type=ThreatType.ADVERSARIAL,
+                        level=ThreatLevel.HIGH,
+                        description="Adversarial prompt injection attempt",
+                        confidence=0.9,
+                        pattern_matched=pattern,
+                    )
+                )
 
         # Check injection patterns
         for pattern in self.injection_patterns:
             if re.search(pattern, input_data, re.IGNORECASE):
-                indicators.append(ThreatIndicator(
-                    threat_type=ThreatType.INJECTION,
-                    level=ThreatLevel.CRITICAL,
-                    description="Code injection attempt",
-                    confidence=0.95,
-                    pattern_matched=pattern
-                ))
+                indicators.append(
+                    ThreatIndicator(
+                        threat_type=ThreatType.INJECTION,
+                        level=ThreatLevel.CRITICAL,
+                        description="Code injection attempt",
+                        confidence=0.95,
+                        pattern_matched=pattern,
+                    )
+                )
 
         # Check evasion patterns
         for pattern in self.evasion_patterns:
             if re.search(pattern, input_lower, re.IGNORECASE):
-                indicators.append(ThreatIndicator(
-                    threat_type=ThreatType.EVASION,
-                    level=ThreatLevel.MEDIUM,
-                    description="Potential evasion technique",
-                    confidence=0.7,
-                    pattern_matched=pattern
-                ))
+                indicators.append(
+                    ThreatIndicator(
+                        threat_type=ThreatType.EVASION,
+                        level=ThreatLevel.MEDIUM,
+                        description="Potential evasion technique",
+                        confidence=0.7,
+                        pattern_matched=pattern,
+                    )
+                )
 
         return indicators
 
@@ -221,13 +233,15 @@ class ThreatDetectionGuardrail(HealerMixin, MCPHardenedMixin, RedisCacheMixin, P
         # Check evolved patterns
         for pattern in self.evolved_patterns:
             if re.search(pattern, input_data, re.IGNORECASE):
-                indicators.append(ThreatIndicator(
-                    threat_type=ThreatType.UNKNOWN,
-                    level=ThreatLevel.MEDIUM,
-                    description="Evolved threat pattern detected",
-                    confidence=0.6,
-                    pattern_matched=pattern
-                ))
+                indicators.append(
+                    ThreatIndicator(
+                        threat_type=ThreatType.UNKNOWN,
+                        level=ThreatLevel.MEDIUM,
+                        description="Evolved threat pattern detected",
+                        confidence=0.6,
+                        pattern_matched=pattern,
+                    )
+                )
 
         return indicators
 
@@ -242,7 +256,7 @@ class ThreatDetectionGuardrail(HealerMixin, MCPHardenedMixin, RedisCacheMixin, P
             ThreatLevel.HIGH: 3,
             ThreatLevel.MEDIUM: 2,
             ThreatLevel.LOW: 1,
-            ThreatLevel.NONE: 0
+            ThreatLevel.NONE: 0,
         }
 
         max_level = max(indicators, key=lambda x: level_priority[x.level])
@@ -284,7 +298,7 @@ class ThreatDetectionGuardrail(HealerMixin, MCPHardenedMixin, RedisCacheMixin, P
         return {
             "action": "learned",
             "pattern_added": indicator.pattern_matched,
-            "threat_type": indicator.threat_type.value
+            "threat_type": indicator.threat_type.value,
         }
 
     def get_statistics(self) -> dict[str, Any]:
@@ -295,5 +309,7 @@ class ThreatDetectionGuardrail(HealerMixin, MCPHardenedMixin, RedisCacheMixin, P
             "threats_blocked": self.threats_blocked,
             "evolved_patterns": len(self.evolved_patterns),
             "threat_history_size": len(self.threat_history),
-            "detection_rate": (self.threats_detected / self.scans_performed * 100) if self.scans_performed > 0 else 0
+            "detection_rate": (self.threats_detected / self.scans_performed * 100)
+            if self.scans_performed > 0
+            else 0,
         }

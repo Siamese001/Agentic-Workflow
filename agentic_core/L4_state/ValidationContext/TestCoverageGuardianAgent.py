@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: memory, orchestrator, prompt, workflow
@@ -69,7 +68,7 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
         self.mutation_hints: bool = True
         self.property_testing_enabled: bool = True
         # [FIX] distinct scope for coverage vs. root
-        self.target_scope = getattr(ctx, 'target_scope', AGENTIC_CORE_DIR)
+        self.target_scope = getattr(ctx, "target_scope", AGENTIC_CORE_DIR)
 
     def _load_history(self) -> list[dict[str, Any]]:
         """
@@ -96,9 +95,7 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
         history = self._load_history()
         history.append(entry)
         # Keep only last 30 entries
-        self.history_file.write_text(
-            json.dumps(history[-30:], indent=2), encoding="utf-8"
-        )
+        self.history_file.write_text(json.dumps(history[-30:], indent=2), encoding="utf-8")
 
     def _run_advanced_coverage(self) -> dict[str, Any]:
         """Run pytest with branch coverage and generate reports."""
@@ -123,16 +120,14 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
 
             # Generate JSON report
             safe_execute(
-                ["coverage", "json", "-o", "coverage.json"],
-                cwd=self.project_root,
-                check=False
+                ["coverage", "json", "-o", "coverage.json"], cwd=self.project_root, check=False
             )
 
             # Generate HTML report
             safe_execute(
                 ["coverage", "html", "-d", str(self.html_report_dir)],
                 cwd=self.project_root,
-                check=False
+                check=False,
             )
 
             # Read JSON report
@@ -142,9 +137,7 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
 
         except FileNotFoundError:
             if hasattr(self.ctx, "report"):
-                self.ctx.report(
-                    "TestCoverageGuardianAgent", 0, False, "coverage not installed"
-                )
+                self.ctx.report("TestCoverageGuardianAgent", 0, False, "coverage not installed")
         except Exception as e:
             if hasattr(self.ctx, "report"):
                 self.ctx.report(
@@ -162,6 +155,7 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
 
         # Phase 6.5: Use ssot_discovery instead of rglob
         from agentic_core.utils.ssot_discovery import get_python_files
+
         for py_file in get_python_files(core_path):
             if "__init__" in str(py_file):
                 continue
@@ -170,7 +164,9 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
             try:
                 module = importlib.import_module(module_name)
                 for name, obj in inspect.getmembers(module):
-                    if (inspect.isfunction(obj) or inspect.isclass(obj)) and not name.startswith("_"):
+                    if (inspect.isfunction(obj) or inspect.isclass(obj)) and not name.startswith(
+                        "_"
+                    ):
                         try:
                             sig = inspect.signature(obj)
                             params = [
@@ -221,7 +217,9 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
             # Advanced strategy mapping
             if "path" in p_type.lower() or "pathlib" in p_type.lower():
                 strategies.append(f"{param}=st.from_type(pathlib.Path)")
-                invariant_hints.append(f"# - Path safety: {param} must be handled without escaping root")
+                invariant_hints.append(
+                    f"# - Path safety: {param} must be handled without escaping root"
+                )
             elif "datetime" in p_type.lower():
                 strategies.append(f"{param}=st.datetimes(min_value=datetime(2020,1,1))")
             elif "uuid" in p_type.lower():
@@ -249,12 +247,12 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
 
         body = textwrap.dedent(
             f"""
-            def test_property_{candidate['name']}({', '.join(candidate['params'])}):
-                \"\"\"Advanced property test for {candidate['name']}\"\"\"
+            def test_property_{candidate["name"]}({", ".join(candidate["params"])}):
+                \"\"\"Advanced property test for {candidate["name"]}\"\"\"
                 assume(True)  # Filter invalid states
 
                 try:
-                    result = {candidate['name']}({', '.join(candidate['params'])})
+                    result = {candidate["name"]}({", ".join(candidate["params"])})
                 except Exception:
                     assume(False)  # Ignore unexpected but non-critical failures
 
@@ -271,6 +269,7 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
         target_layers = ["L4_state", "L3_orchestration", "L2_execution"]
         # Phase 6.5: Use ssot_discovery instead of rglob
         from agentic_core.utils.ssot_discovery import get_python_files
+
         for py_file in get_python_files(self.project_root / AGENTIC_CORE_DIR):
             if not any(layer in str(py_file) for layer in target_layers):
                 continue
@@ -344,7 +343,7 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
                 capture_output=True,
                 text=True,
                 cwd=self.project_root,
-                check=False
+                check=False,
             )
 
             # Get results
@@ -353,7 +352,7 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
                 capture_output=True,
                 text=True,
                 cwd=self.project_root,
-                check=False
+                check=False,
             )
 
             # Parse mutation score (simplified)
@@ -364,6 +363,7 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
                 output = results_output.stdout
                 # Simple parsing - in production, use proper JSON output
                 import re
+
                 killed_match = re.search(r"Killed:\s*(\d+)", output)
                 survived_match = re.search(r"Survived:\s*(\d+)", output)
                 if killed_match:
@@ -381,7 +381,9 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
             return {"score": 0, "survived": 0, "examples": []}
         except Exception as e:
             if hasattr(self.ctx, "report"):
-                self.ctx.report("TestCoverageGuardianAgent", 0, False, f"Mutation testing failed: {e}")
+                self.ctx.report(
+                    "TestCoverageGuardianAgent", 0, False, f"Mutation testing failed: {e}"
+                )
             return {"score": 0, "survived": 0, "examples": []}
 
     async def execute(self) -> dict:
@@ -424,7 +426,17 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
             line_cov >= self.min_line_coverage
             and branch_cov >= self.min_branch_coverage
             and mut_score >= self.min_mutation_score
-            and (state_gen > 0 or len([f for f in get_python_files(self.test_dir) if f.name.startswith("test_stateful_")]) > 0)
+            and (
+                state_gen > 0
+                or len(
+                    [
+                        f
+                        for f in get_python_files(self.test_dir)
+                        if f.name.startswith("test_stateful_")
+                    ]
+                )
+                > 0
+            )
         )
 
         # Save history
@@ -432,7 +444,9 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
             {
                 "timestamp": datetime.now().isoformat(),
                 "line_coverage": round(line_cov, 1),
-                "branch_coverage": round(branch_cov, 1) if isinstance(branch_cov, int | float) else 0,
+                "branch_coverage": round(branch_cov, 1)
+                if isinstance(branch_cov, int | float)
+                else 0,
                 "mutation_score": round(mut_score, 1),
                 "property_tests": prop_gen,
                 "property_candidates": total_candidates,
@@ -456,12 +470,25 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L5 safety/guardrails - operational only."""
         if _call_path is None:
             _call_path = set()
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
-        super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+        super().heal_repository(
+            dry_run=dry_run,
+            execute=execute,
+            depth=depth,
+            max_depth=max_depth,
+            _call_path=_call_path,
+        )
 
         agent_name = "TestCoverageGuardianAgent"
         if agent_name in _call_path:

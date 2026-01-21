@@ -13,6 +13,7 @@ This script consolidates:
 - regenerate_dashboard_full.py (--full)
 - regenerate_dashboard_data.py (--data-only)
 """
+
 import argparse
 import os
 import sys
@@ -21,8 +22,8 @@ from pathlib import Path
 # Windows UTF-8 support
 if sys.platform.startswith("win"):
     os.system("chcp 65001 >nul 2>&1")
-    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
-    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 # Setup project root
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -36,7 +37,13 @@ def regenerate_full():
     print("=" * 70)
 
     # Import and run the full regeneration script
-    script_path = PROJECT_ROOT / "agentic_core" / "L0_maintenance" / "scripts" / "regenerate_dashboard_full.py"
+    script_path = (
+        PROJECT_ROOT
+        / "agentic_core"
+        / "L0_maintenance"
+        / "scripts"
+        / "regenerate_dashboard_full.py"
+    )
 
     if not script_path.exists():
         print(f"❌ Script not found: {script_path}")
@@ -44,10 +51,9 @@ def regenerate_full():
 
     # Execute the script
     import subprocess
+
     result = subprocess.run(
-        [sys.executable, str(script_path)],
-        cwd=str(PROJECT_ROOT),
-        capture_output=False
+        [sys.executable, str(script_path)], cwd=str(PROJECT_ROOT), capture_output=False
     )
 
     return result.returncode
@@ -113,7 +119,7 @@ def regenerate_data_only():
         print("   Run: python scripts/full_agent_discovery.py")
         return 1
 
-    with open(discovery_file, encoding='utf-8') as f:
+    with open(discovery_file, encoding="utf-8") as f:
         agents = json.load(f)
 
     print(f"Loaded {len(agents)} agents from discovery")
@@ -121,7 +127,7 @@ def regenerate_data_only():
     # Group by territory
     territories = defaultdict(list)
     for agent in agents:
-        territory = agent.get(FIELD_TERRITORY, 'Unknown')
+        territory = agent.get(FIELD_TERRITORY, "Unknown")
         territories[territory].append(agent)
 
     # Build TOTAL row
@@ -145,7 +151,7 @@ def regenerate_data_only():
         FIELD_TYPED_PCT: total_typed_pct,
         FIELD_DOCUMENTED_PCT: total_documented_pct,
         FIELD_SCHEMA_STRICTNESS: total_schema_pct,
-        FIELD_PROPER_BASE_CLASS: total_canonical_pct
+        FIELD_PROPER_BASE_CLASS: total_canonical_pct,
     }
 
     total_health = get_canonical_health_score(total_metrics, is_l0=False)
@@ -165,7 +171,7 @@ def regenerate_data_only():
         COL_SCHEMA_STRICTNESS: total_schema_pct,
         COL_CANONICAL_INHERITANCE: total_canonical_pct,
         COL_CODE_QUALITY: total_code_quality,
-        COL_HEALTH: total_health
+        COL_HEALTH: total_health,
     }
 
     # Build territory rows
@@ -193,7 +199,7 @@ def regenerate_data_only():
             FIELD_TYPED_PCT: typed_pct,
             FIELD_DOCUMENTED_PCT: documented_pct,
             FIELD_SCHEMA_STRICTNESS: schema_pct,
-            FIELD_PROPER_BASE_CLASS: canonical_pct
+            FIELD_PROPER_BASE_CLASS: canonical_pct,
         }
 
         is_l0 = is_l0_territory(territory)
@@ -214,7 +220,7 @@ def regenerate_data_only():
             COL_SCHEMA_STRICTNESS: schema_pct,
             COL_CANONICAL_INHERITANCE: canonical_pct,
             COL_CODE_QUALITY: code_quality,
-            COL_HEALTH: health
+            COL_HEALTH: health,
         }
         rows.append(row)
 
@@ -223,10 +229,19 @@ def regenerate_data_only():
     print(f"Test Coverage %: {total_row[COL_TEST]:.1f}%")
 
     # Write to dashboard_data.js
-    dashboard_data_file = PROJECT_ROOT / "agentic_core" / "L6_observability" / "dashboards" / "data" / "dashboard_data.js"
-    with open(dashboard_data_file, 'w', encoding='utf-8') as f:
+    dashboard_data_file = (
+        PROJECT_ROOT
+        / "agentic_core"
+        / "L6_observability"
+        / "dashboards"
+        / "data"
+        / "dashboard_data.js"
+    )
+    with open(dashboard_data_file, "w", encoding="utf-8") as f:
         f.write("// Auto-generated dashboard data\n")
-        f.write("// DO NOT EDIT MANUALLY - regenerate with scripts/regenerate_dashboard.py --data-only\n\n")
+        f.write(
+            "// DO NOT EDIT MANUALLY - regenerate with scripts/regenerate_dashboard.py --data-only\n\n"
+        )
         f.write("window.dashboardData = ")
         json.dump(rows, f, indent=2)
         f.write(";\n")
@@ -245,12 +260,12 @@ def main():
 Examples:
   python scripts/regenerate_dashboard.py --full        # Full regeneration (HTML + data)
   python scripts/regenerate_dashboard.py --data-only   # Regenerate data files only
-        """
+        """,
     )
 
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('--full', action='store_true', help='Full regeneration (HTML + data)')
-    group.add_argument('--data-only', action='store_true', help='Regenerate data files only')
+    group.add_argument("--full", action="store_true", help="Full regeneration (HTML + data)")
+    group.add_argument("--data-only", action="store_true", help="Regenerate data files only")
 
     args = parser.parse_args()
 

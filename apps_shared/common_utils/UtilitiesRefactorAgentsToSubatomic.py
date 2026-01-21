@@ -22,6 +22,7 @@ agent_files = [
 # NAMING FIXED: AGENTS_DIR → agents_dir
 agents_dir = Path("c:/Git/Agentic-Workflow/agentic_core/agents")
 
+
 def add_subatomic_imports(content: str) -> str:
     """Add Sub-Atomic Engine imports if not present."""
     import_line = "from apps_shared.canon_validator_agentic_v2_1 import get_subatomic_engine, get_safety_guardrail, get_fission_manager"
@@ -30,38 +31,41 @@ def add_subatomic_imports(content: str) -> str:
         return content
 
     # Find the last import statement
-    lines = content.split('\n')
+    lines = content.split("\n")
     last_import_idx = -1
 
     for i, line in enumerate(lines):
-        if line.strip().startswith(('import ', 'from ')) and 'import' in line:
+        if line.strip().startswith(("import ", "from ")) and "import" in line:
             last_import_idx = i
 
     if last_import_idx >= 0:
         lines.insert(last_import_idx + 1, import_line)
-        return '\n'.join(lines)
+        return "\n".join(lines)
 
     return content
+
 
 def remove_thinking_budget_over_limit(content: str) -> str:
     """Replace thinking_budget values over 24576 with 24576."""
     # Pattern: thinking_budget=<number>
-    pattern = r'thinking_budget\s*=\s*(\d+)'
+    pattern = r"thinking_budget\s*=\s*(\d+)"
 
     def replace_budget(match):
-
         budget = int(match.group(1))
         if budget > 24576:
             print(f"   Fixing thinking_budget: {budget} -> 24576")
-            return 'thinking_budget=24576'
+            return "thinking_budget=24576"
         return match.group(0)
 
     return re.sub(pattern, replace_budget, content)
 
+
 def add_engine_initialization(content: str, class_name: str) -> str:
     """Add engine initialization to __init__ method."""
     # Find __init__ method
-    init_pattern = rf'(class {class_name}.*?def __init__\(self.*?\):.*?(?:super\(\).__init__\(.*?\)|pass))'
+    init_pattern = (
+        rf"(class {class_name}.*?def __init__\(self.*?\):.*?(?:super\(\).__init__\(.*?\)|pass))"
+    )
 
     engine_init = """
         # Initialize shared Sub-Atomic Engine components
@@ -82,24 +86,22 @@ def add_engine_initialization(content: str, class_name: str) -> str:
 """
 
     # Check if already initialized
-    if 'self.engine = get_subatomic_engine' in content:
+    if "self.engine = get_subatomic_engine" in content:
         return content
 
     # Try to add after super().__init__() or at end of __init__
-    if 'super().__init__' in content:
-        content = content.replace(
-            'super().__init__(ctx)',
-            f'super().__init__(ctx){engine_init}'
-        )
+    if "super().__init__" in content:
+        content = content.replace("super().__init__(ctx)", f"super().__init__(ctx){engine_init}")
 
     return content
+
 
 def process_agent_file(file_path: Path) -> bool:
     """Process a single agent file."""
     print(f"\n📝 Processing: {file_path.name}")
 
     try:
-        with open(file_path, encoding='utf-8') as f:
+        with open(file_path, encoding="utf-8") as f:
             content = f.read()
 
         original_content = content
@@ -111,14 +113,14 @@ def process_agent_file(file_path: Path) -> bool:
         content = remove_thinking_budget_over_limit(content)
 
         # Step 3: Add engine initialization (detect class name)
-        class_match = re.search(r'class\s+(\w+)\s*\(', content)
+        class_match = re.search(r"class\s+(\w+)\s*\(", content)
         if class_match:
             class_name = class_match.group(1)
             content = add_engine_initialization(content, class_name)
 
         # Only write if changed
         if content != original_content:
-            with open(file_path, 'w', encoding='utf-8') as f:
+            with open(file_path, "w", encoding="utf-8") as f:
                 f.write(content)
             print(f"   ✅ Updated {file_path.name}")
             return True
@@ -129,6 +131,7 @@ def process_agent_file(file_path: Path) -> bool:
     except Exception as e:
         print(f"   ❌ Error processing {file_path.name}: {e}")
         return False
+
 
 def main():
     """Main refactoring execution."""
@@ -149,6 +152,7 @@ def main():
     print("\n" + "=" * 60)
     print(f"✅ Refactoring Complete: {updated_count} files updated")
     print("=" * 60)
+
 
 if __name__ == "__main__":
     main()

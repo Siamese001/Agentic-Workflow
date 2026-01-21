@@ -4,8 +4,8 @@ import sys
 
 if sys.platform.startswith("win"):
     os.system("chcp 65001 >nul 2>&1")
-    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
-    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 """
 Regenerate FULL dashboard data from agent_discovery_full.json.
 
@@ -31,9 +31,13 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
-PROJECT_ROOT = Path(__file__).parent.parent.parent.parent  # agentic_core/L0_maintenance/scripts -> project root
-DISCOVERY_PATH = PROJECT_ROOT / 'agent_discovery_full.json'
-DASHBOARD_PATH = PROJECT_ROOT / 'agentic_core' / 'L6_observability' / 'dashboards' / 'autonomy_dashboard.html'
+PROJECT_ROOT = Path(
+    __file__
+).parent.parent.parent.parent  # agentic_core/L0_maintenance/scripts -> project root
+DISCOVERY_PATH = PROJECT_ROOT / "agent_discovery_full.json"
+DASHBOARD_PATH = (
+    PROJECT_ROOT / "agentic_core" / "L6_observability" / "dashboards" / "autonomy_dashboard.html"
+)
 
 # Add project root to path for imports
 sys.path.insert(0, str(PROJECT_ROOT))
@@ -70,18 +74,18 @@ from agentic_core.L5_safety.validators.dashboard_ssot_definitions import (
 
 # Territory name mapping (discovery -> dashboard)
 TERRITORY_MAPPING = {
-    'Base/Base Class': 'Base/Root',
-    'L0 Maintenance/Base Class': 'L0 Maintenance/Base Agent',
-    'L1 Cognition/Base Class': 'L1 Cognition/Base Agent',
-    'L2 Execution/Base Class': 'L2 Execution/Base Agent',
-    'L3 Orchestration/Base Class': 'L3 Orchestration/Base Agent',
-    'L4 State/Base Class': 'L4 State/Base Agent',
-    'L5 Safety/Base Class': 'L5 Safety/Base Agent',
-    'L6_Observability/Base Class': 'L6 Observability/Base Agent',
-    'L6_Observability/Metrics': 'L6 Observability/Metrics',
-    'L6_Observability/Telemetry': 'L6 Observability/Infrastructure',
-    'L1/Prompt_Governance': 'L1 Cognition/Core',
-    'Utils': 'Apps Shared',
+    "Base/Base Class": "Base/Root",
+    "L0 Maintenance/Base Class": "L0 Maintenance/Base Agent",
+    "L1 Cognition/Base Class": "L1 Cognition/Base Agent",
+    "L2 Execution/Base Class": "L2 Execution/Base Agent",
+    "L3 Orchestration/Base Class": "L3 Orchestration/Base Agent",
+    "L4 State/Base Class": "L4 State/Base Agent",
+    "L5 Safety/Base Class": "L5 Safety/Base Agent",
+    "L6_Observability/Base Class": "L6 Observability/Base Agent",
+    "L6_Observability/Metrics": "L6 Observability/Metrics",
+    "L6_Observability/Telemetry": "L6 Observability/Infrastructure",
+    "L1/Prompt_Governance": "L1 Cognition/Core",
+    "Utils": "Apps Shared",
 }
 
 
@@ -95,7 +99,7 @@ def build_real_agent_data(agents: list[dict], territory_mapping: dict[str, str])
     # Group agents by normalized territory
     territory_agents = defaultdict(list)
     for agent in agents:
-        territory = agent.get('territory', 'Unknown')
+        territory = agent.get("territory", "Unknown")
         mapped = territory_mapping.get(territory, territory)
         territory_agents[mapped].append(agent)
 
@@ -119,7 +123,7 @@ def build_real_agent_data(agents: list[dict], territory_mapping: dict[str, str])
         for agent in agent_list:
             # Extract metrics from discovery using SSOT field names
             has_healing = 100.0 if agent.get(FIELD_HAS_HEALING, False) else 0.0
-            has_invocation = 100.0 if agent.get(FIELD_INVOCATION) == 'Yes' else 0.0
+            has_invocation = 100.0 if agent.get(FIELD_INVOCATION) == "Yes" else 0.0
             is_hardened = 100.0 if agent.get(FIELD_MCP_HARDENED, False) else 0.0
             has_tests = 100.0 if agent.get(FIELD_HAS_TESTS, False) else 0.0
 
@@ -137,10 +141,14 @@ def build_real_agent_data(agents: list[dict], territory_mapping: dict[str, str])
             quality = calculate_code_quality(typed_pct, doc_pct, schema_pct, base_pct)
 
             # Calculate health score using SSOT formula
-            observable = 100.0 if agent.get('observability', {}).get('logging', False) else 0.0
+            observable = 100.0 if agent.get("observability", {}).get("logging", False) else 0.0
             agent_health = calc_health_score(
-                has_healing, has_invocation, has_tests, observable, comp_health,
-                is_l0=is_l0_territory(territory)
+                has_healing,
+                has_invocation,
+                has_tests,
+                observable,
+                comp_health,
+                is_l0=is_l0_territory(territory),
             )
 
             # Add to arrays
@@ -157,41 +165,43 @@ def build_real_agent_data(agents: list[dict], territory_mapping: dict[str, str])
             code_quality.append(quality)
 
             # Build agent detail
-            obs = agent.get('observability', {})
+            obs = agent.get("observability", {})
             has_proper_base = agent.get(FIELD_PROPER_BASE_CLASS, False)
-            inheritance_list = agent.get('inheritance', [])
-            base_class_name = inheritance_list[-1] if inheritance_list else 'Unknown'
+            inheritance_list = agent.get("inheritance", [])
+            base_class_name = inheritance_list[-1] if inheritance_list else "Unknown"
 
-            agents_data.append({
-                "name": agent.get('class_name', 'Unknown'),
-                "path": agent.get('path', ''),
-                "rel": agent.get('path', ''),
-                "abs_file": str(PROJECT_ROOT / agent.get('path', '')),
-                "abs_class": str(PROJECT_ROOT / agent.get('path', '')),
-                "class_line": 1,
-                "has_mixin": agent.get(FIELD_HAS_HEALING, False),
-                "invocation": agent.get(FIELD_INVOCATION, 'No'),
-                "has_tests": agent.get(FIELD_HAS_TESTS, False),
-                "obs_summary": f"Logging: {'✓' if obs.get('logging') else '✗'} | Metrics: {'✓' if obs.get('metrics') else '✗'} | Tracing: {'✓' if obs.get('tracing') else '✗'}",
-                "mcp_summary": f"Shield: {'✓' if agent.get(FIELD_MCP_HARDENED) else '✗'} | @hardened: ✗ | Safe: ✓",
-                "typing_summary": f"Typed: {typed_pct:.0f}%",
-                "typed_pct": typed_pct,
-                "overall_typed_pct": typed_pct,
-                "complexity": cc,
-                "health": agent_health,
-                "healCap": has_healing,
-                "test": has_tests,
-                "complexityHealth": comp_health,
-                "hardened": is_hardened,
-                "documented": doc_pct,
-                "schema": schema_pct,
-                "base": base_pct,
-                "proper_base_class": has_proper_base,  # Boolean for drill-down display
-                "base_class_name": base_class_name,  # Name of base class for display
-                "has_base_violation": not has_proper_base,  # For row highlighting
-                "quality": quality,
-                "loc": agent.get('loc', 50)
-            })
+            agents_data.append(
+                {
+                    "name": agent.get("class_name", "Unknown"),
+                    "path": agent.get("path", ""),
+                    "rel": agent.get("path", ""),
+                    "abs_file": str(PROJECT_ROOT / agent.get("path", "")),
+                    "abs_class": str(PROJECT_ROOT / agent.get("path", "")),
+                    "class_line": 1,
+                    "has_mixin": agent.get(FIELD_HAS_HEALING, False),
+                    "invocation": agent.get(FIELD_INVOCATION, "No"),
+                    "has_tests": agent.get(FIELD_HAS_TESTS, False),
+                    "obs_summary": f"Logging: {'✓' if obs.get('logging') else '✗'} | Metrics: {'✓' if obs.get('metrics') else '✗'} | Tracing: {'✓' if obs.get('tracing') else '✗'}",
+                    "mcp_summary": f"Shield: {'✓' if agent.get(FIELD_MCP_HARDENED) else '✗'} | @hardened: ✗ | Safe: ✓",
+                    "typing_summary": f"Typed: {typed_pct:.0f}%",
+                    "typed_pct": typed_pct,
+                    "overall_typed_pct": typed_pct,
+                    "complexity": cc,
+                    "health": agent_health,
+                    "healCap": has_healing,
+                    "test": has_tests,
+                    "complexityHealth": comp_health,
+                    "hardened": is_hardened,
+                    "documented": doc_pct,
+                    "schema": schema_pct,
+                    "base": base_pct,
+                    "proper_base_class": has_proper_base,  # Boolean for drill-down display
+                    "base_class_name": base_class_name,  # Name of base class for display
+                    "has_base_violation": not has_proper_base,  # For row highlighting
+                    "quality": quality,
+                    "loc": agent.get("loc", 50),
+                }
+            )
 
         real_agent_data[territory] = {
             "healCap": heal_cap,
@@ -205,7 +215,7 @@ def build_real_agent_data(agents: list[dict], territory_mapping: dict[str, str])
             "schemaStrictness": schema_strictness,
             "properBase": proper_base,
             "codeQuality": code_quality,
-            "agents": agents_data
+            "agents": agents_data,
         }
 
     return real_agent_data
@@ -216,7 +226,7 @@ def build_dashboard_data(agents: list[dict], territory_mapping: dict[str, str]) 
     # Group agents by normalized territory
     territory_agents = defaultdict(list)
     for agent in agents:
-        territory = agent.get('territory', 'Unknown')
+        territory = agent.get("territory", "Unknown")
         mapped = territory_mapping.get(territory, territory)
         territory_agents[mapped].append(agent)
 
@@ -239,8 +249,7 @@ def build_dashboard_data(agents: list[dict], territory_mapping: dict[str, str]) 
 
     # Calculate health score using SSOT formula
     health = calc_health_score(
-        heal_cap_pct, invocation_pct, test_pct, 50.0, complexity_health,
-        is_l0=False
+        heal_cap_pct, invocation_pct, test_pct, 50.0, complexity_health, is_l0=False
     )
 
     code_quality = calculate_code_quality(avg_typed, avg_documented, avg_schema, proper_base_pct)
@@ -265,12 +274,14 @@ def build_dashboard_data(agents: list[dict], territory_mapping: dict[str, str]) 
         "Health": health,
         "Risk": "Low" if health >= 75 else "Medium" if health >= 50 else "High",
         "Hardened %": hardened_pct,
-        "Criticality": 75
+        "Criticality": 75,
     }
     dashboard_data.append(total_row)
 
     # Build territory rows using SSOT functions
-    for territory, agent_list in sorted(territory_agents.items(), key=lambda x: get_territory_sort_key(x[0])):
+    for territory, agent_list in sorted(
+        territory_agents.items(), key=lambda x: get_territory_sort_key(x[0])
+    ):
         count = len(agent_list)
         if count == 0:
             continue
@@ -296,8 +307,12 @@ def build_dashboard_data(agents: list[dict], territory_mapping: dict[str, str]) 
 
         # Use SSOT health calculation
         t_health = calc_health_score(
-            t_heal_cap_pct_val, t_invocation_pct_val, t_test_pct, 50.0, t_complexity_health,
-            is_l0=is_l0
+            t_heal_cap_pct_val,
+            t_invocation_pct_val,
+            t_test_pct,
+            50.0,
+            t_complexity_health,
+            is_l0=is_l0,
         )
 
         t_code_quality = calculate_code_quality(t_typed, t_documented, t_schema, t_proper_base_pct)
@@ -322,7 +337,7 @@ def build_dashboard_data(agents: list[dict], territory_mapping: dict[str, str]) 
             "Health": t_health,
             "Risk": "Low" if t_health >= 75 else "Medium" if t_health >= 50 else "High",
             "Hardened %": t_hardened_pct,
-            "Criticality": 75
+            "Criticality": 75,
         }
         dashboard_data.append(territory_row)
 
@@ -353,14 +368,14 @@ def generate_strategic_recommendations(dashboard_data: list[dict]) -> dict[str, 
         print(f"  ⚠️  StrategicRecommendationAgent import failed: {e}")
         return {
             "review": "Strategic analysis unavailable - module not found.",
-            "recommendations": []
+            "recommendations": [],
         }
     except Exception as e:
         print(f"  ⚠️  StrategicRecommendationAgent failed: {e}")
         # Return fallback
         return {
             "review": "Strategic analysis unavailable - agent initialization failed.",
-            "recommendations": []
+            "recommendations": [],
         }
 
 
@@ -372,93 +387,99 @@ def inject_strategic_observations(content: str, recommendations: dict[str, Any])
     """
     # Build the recommendations data structure for JavaScript
     recs_data = []
-    for i, rec in enumerate(recommendations.get('recommendations', []), 1):
+    for i, rec in enumerate(recommendations.get("recommendations", []), 1):
         # Parse recommendation format: "1. Title<br>Details..."
-        if '<br>' in rec:
-            parts = rec.split('<br>', 1)
-            title = parts[0].lstrip('0123456789. ')
-            description = parts[1] if len(parts) > 1 else ''
+        if "<br>" in rec:
+            parts = rec.split("<br>", 1)
+            title = parts[0].lstrip("0123456789. ")
+            description = parts[1] if len(parts) > 1 else ""
         else:
-            title = rec.lstrip('0123456789. ')
-            description = ''
+            title = rec.lstrip("0123456789. ")
+            description = ""
 
-        recs_data.append({
-            "priority": i,
-            "title": title,
-            "description": description,
-            "impact": "HIGH" if i <= 3 else "MEDIUM" if i <= 7 else "LOW",
-            "effort": "MEDIUM"
-        })
+        recs_data.append(
+            {
+                "priority": i,
+                "title": title,
+                "description": description,
+                "impact": "HIGH" if i <= 3 else "MEDIUM" if i <= 7 else "LOW",
+                "effort": "MEDIUM",
+            }
+        )
 
     # Build the observations data structure
     obs_data = {
-        "macro_observations": recommendations.get('macro_observations', []),
-        "metric_observations": recommendations.get('metric_observations', [])
+        "macro_observations": recommendations.get("macro_observations", []),
+        "metric_observations": recommendations.get("metric_observations", []),
     }
 
     # Find and replace strategicObservationsData - use brace counting (RCA 2026-01-20)
     # Handle both patterns: 'const x = {' and 'const x = window.x || {'
-    obs_start_idx = content.find('const strategicObservationsData = window.strategicObservationsData || {')
+    obs_start_idx = content.find(
+        "const strategicObservationsData = window.strategicObservationsData || {"
+    )
     if obs_start_idx == -1:
-        obs_start_idx = content.find('const strategicObservationsData = {')
+        obs_start_idx = content.find("const strategicObservationsData = {")
 
     if obs_start_idx == -1:
         # Add before recommendationsData (but only if it doesn't exist)
-        recs_idx = content.find('const recommendationsData = ')
+        recs_idx = content.find("const recommendationsData = ")
         if recs_idx != -1:
-            new_obs = f'const strategicObservationsData = {json.dumps(obs_data, indent=2)};\n\n        '
+            new_obs = (
+                f"const strategicObservationsData = {json.dumps(obs_data, indent=2)};\n\n        "
+            )
             content = content[:recs_idx] + new_obs + content[recs_idx:]
     else:
         # Use brace counting to find matching close (RCA fix)
         brace_count = 0
         obs_end_idx = obs_start_idx
         for i, char in enumerate(content[obs_start_idx:], obs_start_idx):
-            if char == '{':
+            if char == "{":
                 brace_count += 1
-            elif char == '}':
+            elif char == "}":
                 brace_count -= 1
                 if brace_count == 0:
                     obs_end_idx = i + 1
                     break
         # Skip semicolon if present
-        if obs_end_idx < len(content) and content[obs_end_idx] == ';':
+        if obs_end_idx < len(content) and content[obs_end_idx] == ";":
             obs_end_idx += 1
 
-        new_obs = f'const strategicObservationsData = {json.dumps(obs_data, indent=2)};'
+        new_obs = f"const strategicObservationsData = {json.dumps(obs_data, indent=2)};"
         content = content[:obs_start_idx] + new_obs + content[obs_end_idx:]
 
     # Find and replace recommendationsData - handle both patterns
     # Pattern 1: 'const recommendationsData = ['
     # Pattern 2: 'const recommendationsData = window.recommendationsData || ['
-    marker_start = 'const recommendationsData = window.recommendationsData || ['
+    marker_start = "const recommendationsData = window.recommendationsData || ["
     start_idx = content.find(marker_start)
     if start_idx == -1:
-        marker_start = 'const recommendationsData = ['
+        marker_start = "const recommendationsData = ["
         start_idx = content.find(marker_start)
 
     if start_idx == -1:
         # If not found, try to add it before dashboardData
-        dd_idx = content.find('const dashboardData = ')
+        dd_idx = content.find("const dashboardData = ")
         if dd_idx != -1:
-            new_recs = f'const recommendationsData = {json.dumps(recs_data, indent=2)};\n\n        '
+            new_recs = f"const recommendationsData = {json.dumps(recs_data, indent=2)};\n\n        "
             content = content[:dd_idx] + new_recs + content[dd_idx:]
     else:
         # Find matching closing bracket by counting brackets
         bracket_count = 0
         end_idx = start_idx
         for i, char in enumerate(content[start_idx:], start_idx):
-            if char == '[':
+            if char == "[":
                 bracket_count += 1
-            elif char == ']':
+            elif char == "]":
                 bracket_count -= 1
                 if bracket_count == 0:
                     end_idx = i + 1
                     break
         # Skip semicolon if present
-        if end_idx < len(content) and content[end_idx] == ';':
+        if end_idx < len(content) and content[end_idx] == ";":
             end_idx += 1
 
-        new_recs = f'const recommendationsData = {json.dumps(recs_data, indent=2)};'
+        new_recs = f"const recommendationsData = {json.dumps(recs_data, indent=2)};"
         content = content[:start_idx] + new_recs + content[end_idx:]
 
     return content
@@ -467,6 +488,7 @@ def inject_strategic_observations(content: str, recommendations: dict[str, Any])
 # =============================================================================
 # GUARDRAILS - Post-regeneration validation (RCA 2026-01-20)
 # =============================================================================
+
 
 def validate_html_integrity(content: str) -> tuple[bool, list[str]]:
     """
@@ -484,7 +506,7 @@ def validate_html_integrity(content: str) -> tuple[bool, list[str]]:
     errors = []
 
     # Guardrail 1: Single </html> tag
-    html_end_count = content.count('</html>')
+    html_end_count = content.count("</html>")
     if html_end_count != 1:
         errors.append(f"CORRUPTION: Found {html_end_count} </html> tags (expected 1)")
 
@@ -497,10 +519,10 @@ def validate_html_integrity(content: str) -> tuple[bool, list[str]]:
 
     # Guardrail 3: No duplicate JS declarations
     js_declarations = [
-        ('dashboardData', r'const\s+dashboardData\s*='),
-        ('realAgentData', r'const\s+realAgentData\s*='),
-        ('recommendationsData', r'const\s+recommendationsData\s*='),
-        ('strategicObservationsData', r'const\s+strategicObservationsData\s*='),
+        ("dashboardData", r"const\s+dashboardData\s*="),
+        ("realAgentData", r"const\s+realAgentData\s*="),
+        ("recommendationsData", r"const\s+recommendationsData\s*="),
+        ("strategicObservationsData", r"const\s+strategicObservationsData\s*="),
     ]
 
     for var_name, pattern in js_declarations:
@@ -513,12 +535,12 @@ def validate_html_integrity(content: str) -> tuple[bool, list[str]]:
         errors.append("MISSING: TOTAL row not found in dashboardData")
 
     # Guardrail 5: Balanced script tags
-    script_open = content.count('<script')
-    script_close = content.count('</script>')
+    script_open = content.count("<script")
+    script_close = content.count("</script>")
     if script_open != script_close:
         errors.append(f"UNBALANCED: {script_open} <script> vs {script_close} </script>")
 
-    is_valid = len([e for e in errors if not e.startswith('WARNING')]) == 0
+    is_valid = len([e for e in errors if not e.startswith("WARNING")]) == 0
     return is_valid, errors
 
 
@@ -532,10 +554,10 @@ def validate_pre_regeneration(content: str) -> tuple[str, list[str]]:
     warnings = []
 
     # Check for corruption and auto-fix
-    html_end_count = content.count('</html>')
+    html_end_count = content.count("</html>")
     if html_end_count > 1:
         warnings.append(f"Auto-fixed: Truncated corrupted HTML ({html_end_count} </html> tags)")
-        first_html_end = content.find('</html>') + len('</html>')
+        first_html_end = content.find("</html>") + len("</html>")
         content = content[:first_html_end]
 
     # Check size
@@ -553,7 +575,7 @@ def main():
     print("=" * 70)
 
     # Load agent discovery
-    with open(DISCOVERY_PATH, encoding='utf-8') as f:
+    with open(DISCOVERY_PATH, encoding="utf-8") as f:
         agents = json.load(f)
 
     print(f"\nLoaded {len(agents)} agents from discovery")
@@ -572,76 +594,76 @@ def main():
     print("\nGenerating strategic recommendations via StrategicRecommendationAgent...")
     strategic_recs = generate_strategic_recommendations(dashboard_data)
     print(f"  Generated {len(strategic_recs.get('recommendations', []))} recommendations")
-    if strategic_recs.get('review'):
+    if strategic_recs.get("review"):
         print(f"  Review: {strategic_recs['review'][:100]}...")
 
     # Load dashboard HTML
-    content = DASHBOARD_PATH.read_text(encoding='utf-8')
+    content = DASHBOARD_PATH.read_text(encoding="utf-8")
 
     # CRITICAL: Verify HTML ends with </html> - detect corruption
-    html_end_count = content.count('</html>')
+    html_end_count = content.count("</html>")
     if html_end_count > 1:
         print(f"  ⚠️  WARNING: HTML file appears corrupted ({html_end_count} </html> tags)")
         print("  ⚠️  Truncating to first </html> tag...")
-        first_html_end = content.find('</html>') + len('</html>')
+        first_html_end = content.find("</html>") + len("</html>")
         content = content[:first_html_end]
 
     # Replace dashboardData - find the FIRST occurrence only
     # Handle both patterns: 'const dashboardData = [' and 'const dashboardData = window.dashboardData || ['
     print("\nUpdating dashboardData in HTML...")
-    dd_start = content.find('const dashboardData = window.dashboardData || [')
+    dd_start = content.find("const dashboardData = window.dashboardData || [")
     if dd_start == -1:
-        dd_start = content.find('const dashboardData = [')
+        dd_start = content.find("const dashboardData = [")
     if dd_start == -1:
         print("  ❌ ERROR: Could not find dashboardData declaration in HTML")
         return 1
 
     # Find the matching closing bracket by counting brackets
     bracket_count = 0
-    dd_end = dd_start + len('const dashboardData = [')
+    dd_end = dd_start + len("const dashboardData = [")
     for i, char in enumerate(content[dd_start:], dd_start):
-        if char == '[':
+        if char == "[":
             bracket_count += 1
-        elif char == ']':
+        elif char == "]":
             bracket_count -= 1
             if bracket_count == 0:
                 dd_end = i + 1
                 break
 
     # Skip the semicolon if present
-    if dd_end < len(content) and content[dd_end] == ';':
+    if dd_end < len(content) and content[dd_end] == ";":
         dd_end += 1
 
-    new_dashboard_data = 'const dashboardData = ' + json.dumps(dashboard_data, indent=2) + ';'
+    new_dashboard_data = "const dashboardData = " + json.dumps(dashboard_data, indent=2) + ";"
     content = content[:dd_start] + new_dashboard_data + content[dd_end:]
 
     # Replace realAgentData - find the FIRST occurrence only
     # Handle both patterns: 'const realAgentData = {' and 'const realAgentData = window.realAgentData || {'
     print("Updating realAgentData in HTML...")
-    rad_start = content.find('const realAgentData = window.realAgentData || {')
+    rad_start = content.find("const realAgentData = window.realAgentData || {")
     if rad_start == -1:
-        rad_start = content.find('const realAgentData = {')
+        rad_start = content.find("const realAgentData = {")
     if rad_start == -1:
         print("  ❌ ERROR: Could not find realAgentData declaration in HTML")
         return 1
 
     # Find the matching closing brace by counting braces
     brace_count = 0
-    rad_end = rad_start + len('const realAgentData = {')
+    rad_end = rad_start + len("const realAgentData = {")
     for i, char in enumerate(content[rad_start:], rad_start):
-        if char == '{':
+        if char == "{":
             brace_count += 1
-        elif char == '}':
+        elif char == "}":
             brace_count -= 1
             if brace_count == 0:
                 rad_end = i + 1
                 break
 
     # Skip the semicolon if present
-    if rad_end < len(content) and content[rad_end] == ';':
+    if rad_end < len(content) and content[rad_end] == ";":
         rad_end += 1
 
-    new_real_agent_data = 'const realAgentData = ' + json.dumps(real_agent_data, indent=2) + ';'
+    new_real_agent_data = "const realAgentData = " + json.dumps(real_agent_data, indent=2) + ";"
     content = content[:rad_start] + new_real_agent_data + content[rad_end:]
 
     # Inject strategic recommendations
@@ -657,7 +679,7 @@ def main():
 
     if validation_errors:
         for err in validation_errors:
-            if err.startswith('WARNING'):
+            if err.startswith("WARNING"):
                 print(f"  ⚠️  {err}")
             else:
                 print(f"  ❌ {err}")
@@ -670,7 +692,7 @@ def main():
     print("  ✅ All guardrail checks passed")
 
     # Write updated dashboard
-    DASHBOARD_PATH.write_text(content, encoding='utf-8')
+    DASHBOARD_PATH.write_text(content, encoding="utf-8")
 
     # Report final file size
     final_size_kb = len(content) / 1024

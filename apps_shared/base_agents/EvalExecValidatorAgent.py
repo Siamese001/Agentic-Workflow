@@ -11,12 +11,13 @@ Migration:
         validate_eval_exec,
     )
 """
+
 import warnings
 
 warnings.warn(
     "EvalExecValidatorAgent is deprecated. Use UnifiedASTValidatorAgent instead.",
     DeprecationWarning,
-    stacklevel=2
+    stacklevel=2,
 )
 
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
@@ -43,7 +44,7 @@ from typing import Any
 from agentic_core.runtime.shared_runtime.ast_validator import CanonASTValidator
 
 # GRAVITY FIXED (Upward Leak): from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-_mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_mixin')
+_mod = importlib.import_module("agentic_core.L5_safety.guardrails.mcp_hardened_mixin")
 MCPHardenedMixin = _mod.MCPHardenedMixin
 from agentic_core.L5_safety.validators.decorators import standard_heal
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
@@ -58,12 +59,12 @@ class EvalExecValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValidat
 
     def visit_Call(self, node: ast.Call) -> Any:
         """Check for eval() or exec() function calls."""
-        if isinstance(node.func, ast.Name) and node.func.id in ('eval', 'exec'):
+        if isinstance(node.func, ast.Name) and node.func.id in ("eval", "exec"):
             if not self.in_type_checking:
-                self.report(f'Forbidden {node.func.id}() call detected', node)
+                self.report(f"Forbidden {node.func.id}() call detected", node)
         self.generic_visit(node)
 
     @standard_heal
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()

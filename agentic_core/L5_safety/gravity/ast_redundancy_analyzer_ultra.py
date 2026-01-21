@@ -9,6 +9,7 @@ Ultra-hardened version with:
 - Advanced near-duplicate detection via normalized AST diff
 - Sovereign reporting with IDE-ready recommendations
 """
+
 import ast
 import hashlib
 import json
@@ -58,12 +59,19 @@ class UltraASTNormalizer(ast.NodeTransformer):
 
     def visit_ClassDef(self, node: ast.ClassDef) -> ast.ClassDef:
         # Strip class docstring
-        if node.body and isinstance(node.body[0], ast.Expr) and isinstance(node.body[0].value, ast.Constant) and isinstance(node.body[0].value.value, str):
+        if (
+            node.body
+            and isinstance(node.body[0], ast.Expr)
+            and isinstance(node.body[0].value, ast.Constant)
+            and isinstance(node.body[0].value.value, str)
+        ):
             node.body = node.body[1:]
 
         # Sort methods alphabetically
         methods = [n for n in node.body if isinstance(n, ast.FunctionDef | ast.AsyncFunctionDef)]
-        non_methods = [n for n in node.body if not isinstance(n, ast.FunctionDef | ast.AsyncFunctionDef)]
+        non_methods = [
+            n for n in node.body if not isinstance(n, ast.FunctionDef | ast.AsyncFunctionDef)
+        ]
         methods.sort(key=lambda m: m.name)
         node.body = non_methods + methods
 
@@ -98,7 +106,12 @@ class UltraASTNormalizer(ast.NodeTransformer):
         node.args.kwonlyargs = []
 
         # Strip function docstring
-        if node.body and isinstance(node.body[0], ast.Expr) and isinstance(node.body[0].value, ast.Constant) and isinstance(node.body[0].value.value, str):
+        if (
+            node.body
+            and isinstance(node.body[0], ast.Expr)
+            and isinstance(node.body[0].value, ast.Constant)
+            and isinstance(node.body[0].value.value, str)
+        ):
             node.body = node.body[1:]
 
         # Remove decorators, returns, type comments
@@ -127,14 +140,22 @@ class UltraASTNormalizer(ast.NodeTransformer):
 
 def extract_layer(file_path: Path) -> str:
     path_str = str(file_path).lower()
-    if "l0_" in path_str: return "L0"
-    if "l1_" in path_str: return "L1"
-    if "l2_" in path_str: return "L2"
-    if "l3_" in path_str: return "L3"
-    if "l4_" in path_str: return "L4"
-    if "l5_" in path_str: return "L5"
-    if "observability" in path_str: return "L6-OBS"
-    if "utils" in path_str: return "UTILS"
+    if "l0_" in path_str:
+        return "L0"
+    if "l1_" in path_str:
+        return "L1"
+    if "l2_" in path_str:
+        return "L2"
+    if "l3_" in path_str:
+        return "L3"
+    if "l4_" in path_str:
+        return "L4"
+    if "l5_" in path_str:
+        return "L5"
+    if "observability" in path_str:
+        return "L6-OBS"
+    if "utils" in path_str:
+        return "UTILS"
     return "OTHER"
 
 
@@ -142,6 +163,7 @@ def find_agents() -> list[AgentInfo]:
     agents = []
     # Operation Zero: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_agent_files
+
     for py_file in get_agent_files(AGENTIC_CORE):
         if any(ex in str(py_file) for ex in EXCLUDED_DIRS):
             continue
@@ -153,17 +175,29 @@ def find_agents() -> list[AgentInfo]:
             continue
 
         for node in ast.walk(tree):
-            if isinstance(node, ast.ClassDef) and node.name.endswith("Agent") and node.name[0].isupper():
-                method_count = sum(1 for n in node.body if isinstance(n, ast.FunctionDef | ast.AsyncFunctionDef))
-                method_names = [n.name for n in node.body if isinstance(n, ast.FunctionDef | ast.AsyncFunctionDef)]
-                agents.append(AgentInfo(
-                    name=node.name,
-                    file_path=py_file,
-                    layer=extract_layer(py_file),
-                    line_number=node.lineno,
-                    method_count=method_count,
-                    method_names=method_names
-                ))
+            if (
+                isinstance(node, ast.ClassDef)
+                and node.name.endswith("Agent")
+                and node.name[0].isupper()
+            ):
+                method_count = sum(
+                    1 for n in node.body if isinstance(n, ast.FunctionDef | ast.AsyncFunctionDef)
+                )
+                method_names = [
+                    n.name
+                    for n in node.body
+                    if isinstance(n, ast.FunctionDef | ast.AsyncFunctionDef)
+                ]
+                agents.append(
+                    AgentInfo(
+                        name=node.name,
+                        file_path=py_file,
+                        layer=extract_layer(py_file),
+                        line_number=node.lineno,
+                        method_count=method_count,
+                        method_names=method_names,
+                    )
+                )
     return sorted(agents, key=lambda a: (a.layer, a.name))
 
 
@@ -278,7 +312,7 @@ def main():
     near = []
     agents_with_src = [a for a in agents if a.normalized_source]
     for i, a1 in enumerate(agents_with_src):
-        for a2 in agents_with_src[i+1:]:
+        for a2 in agents_with_src[i + 1 :]:
             if a1.fingerprint != a2.fingerprint:
                 sim = similarity_ratio(a1.normalized_source, a2.normalized_source)
                 if sim > 0.92:
@@ -302,12 +336,18 @@ def main():
     print("─" * 80)
 
     print("\n┌" + "─" * 42 + "┬" + "─" * 8 + "┬" + "─" * 8 + "┬" + "─" * 18 + "┐")
-    print("│ {:^40} │ {:^6} │ {:^6} │ {:^16} │".format("Agent Name", "Layer", "Methods", "Fingerprint"))
+    print(
+        "│ {:^40} │ {:^6} │ {:^6} │ {:^16} │".format(
+            "Agent Name", "Layer", "Methods", "Fingerprint"
+        )
+    )
     print("├" + "─" * 42 + "┼" + "─" * 8 + "┼" + "─" * 8 + "┼" + "─" * 18 + "┤")
 
     for agent in agents:
         fp_display = agent.fingerprint[:16] if len(agent.fingerprint) >= 16 else agent.fingerprint
-        print(f"│ {agent.name[:40]:40} │ {agent.layer:^6} │ {agent.method_count:^6} │ {fp_display:16} │")
+        print(
+            f"│ {agent.name[:40]:40} │ {agent.layer:^6} │ {agent.method_count:^6} │ {fp_display:16} │"
+        )
 
     print("└" + "─" * 42 + "┴" + "─" * 8 + "┴" + "─" * 8 + "┴" + "─" * 18 + "┘")
 
@@ -328,7 +368,9 @@ def main():
         print("✅ CODEBASE ETERNALLY PURE AND MAXIMALLY SOVEREIGN")
     else:
         print("⚠️  ULTRA AST REDUNDANCY ANALYSIS COMPLETE")
-        print(f"⚠️  ACTION REQUIRED: {len(exact_duplicates)} duplicate groups, {len(near)} near-duplicates")
+        print(
+            f"⚠️  ACTION REQUIRED: {len(exact_duplicates)} duplicate groups, {len(near)} near-duplicates"
+        )
     print("=" * 80)
 
     # Save JSON report
@@ -344,18 +386,25 @@ def main():
                 "layer": a.layer,
                 "line": a.line_number,
                 "methods": a.method_count,
-                "fingerprint": a.fingerprint[:16] if len(a.fingerprint) >= 16 else a.fingerprint
+                "fingerprint": a.fingerprint[:16] if len(a.fingerprint) >= 16 else a.fingerprint,
             }
             for a in agents
         ],
         "exact_duplicates": {
-            fp[:16]: [{"name": a.name, "file": str(a.file_path.relative_to(PROJECT_ROOT)), "layer": a.layer} for a in group]
+            fp[:16]: [
+                {
+                    "name": a.name,
+                    "file": str(a.file_path.relative_to(PROJECT_ROOT)),
+                    "layer": a.layer,
+                }
+                for a in group
+            ]
             for fp, group in exact_duplicates.items()
         },
         "near_duplicates": [
             {"agent1": a1.name, "agent2": a2.name, "similarity": round(sim, 4)}
             for a1, a2, sim in near
-        ]
+        ],
     }
 
     report_path = PROJECT_ROOT / "ast_redundancy_report_ultra.json"

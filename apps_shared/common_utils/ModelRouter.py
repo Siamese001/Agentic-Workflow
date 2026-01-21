@@ -17,13 +17,15 @@ logger = logging.getLogger(__name__)
 
 class ModelTier(str, Enum):
     """Model performance tiers."""
-    FAST = "FAST"           # gpt-4o-mini, claude-3-haiku
-    BALANCED = "BALANCED"   # gpt-4o, claude-3-5-sonnet
-    REASONING = "REASONING" # o1-preview, claude-3-opus
+
+    FAST = "FAST"  # gpt-4o-mini, claude-3-haiku
+    BALANCED = "BALANCED"  # gpt-4o, claude-3-5-sonnet
+    REASONING = "REASONING"  # o1-preview, claude-3-opus
 
 
 class TaskType(str, Enum):
     """Types of tasks that can be routed."""
+
     RESUME_FORMATTING = "RESUME_FORMATTING"
     MESSAGE_DRAFTING = "MESSAGE_DRAFTING"
     STRATEGIC_PLANNING = "STRATEGIC_PLANNING"
@@ -39,6 +41,7 @@ class TaskType(str, Enum):
 @dataclass
 class ModelConfig:
     """Configuration for a specific model."""
+
     provider: str  # openai, anthropic, etc.
     model_name: str
     tier: ModelTier
@@ -52,6 +55,7 @@ class ModelConfig:
 @dataclass
 class TaskProfile:
     """Profile for a task type."""
+
     task_type: TaskType
     default_tier: ModelTier
     min_complexity: int = 1
@@ -63,11 +67,7 @@ class TaskProfile:
 class ModelRouter:
     """Routes tasks to appropriate models based on various factors."""
 
-    def __init__(
-        self,
-        daily_budget: float = 5.0,
-        budget_period_hours: int = 24
-    ):
+    def __init__(self, daily_budget: float = 5.0, budget_period_hours: int = 24):
         """Initialize model router.
 
         Args:
@@ -93,7 +93,7 @@ class ModelRouter:
             "requests_by_task": {task.value: 0 for task in TaskType},
             "fallbacks": 0,
             "budget_enforced": 0,
-            "total_spend": 0.0
+            "total_spend": 0.0,
         }
 
         # Initialize defaults
@@ -110,7 +110,7 @@ class ModelRouter:
             tier=ModelTier.FAST,
             max_tokens=4096,
             temperature=0.7,
-            cost_per_1k_tokens=0.00015
+            cost_per_1k_tokens=0.00015,
         )
 
         self._models["claude-3-haiku"] = ModelConfig(
@@ -119,7 +119,7 @@ class ModelRouter:
             tier=ModelTier.FAST,
             max_tokens=4096,
             temperature=0.7,
-            cost_per_1k_tokens=0.00025
+            cost_per_1k_tokens=0.00025,
         )
 
         # Balanced tier models
@@ -129,7 +129,7 @@ class ModelRouter:
             tier=ModelTier.BALANCED,
             max_tokens=4096,
             temperature=0.7,
-            cost_per_1k_tokens=0.005
+            cost_per_1k_tokens=0.005,
         )
 
         self._models["claude-3-5-sonnet"] = ModelConfig(
@@ -138,7 +138,7 @@ class ModelRouter:
             tier=ModelTier.BALANCED,
             max_tokens=4096,
             temperature=0.7,
-            cost_per_1k_tokens=0.003
+            cost_per_1k_tokens=0.003,
         )
 
         # Reasoning tier models
@@ -148,7 +148,7 @@ class ModelRouter:
             tier=ModelTier.REASONING,
             max_tokens=32768,
             temperature=1.0,
-            cost_per_1k_tokens=0.015
+            cost_per_1k_tokens=0.015,
         )
 
         self._models["claude-3-opus"] = ModelConfig(
@@ -157,7 +157,7 @@ class ModelRouter:
             tier=ModelTier.REASONING,
             max_tokens=4096,
             temperature=0.7,
-            cost_per_1k_tokens=0.015
+            cost_per_1k_tokens=0.015,
         )
 
         # Task profiles with complexity thresholds
@@ -167,8 +167,8 @@ class ModelRouter:
             complexity_thresholds={
                 ModelTier.FAST: 3,
                 ModelTier.BALANCED: 7,
-                ModelTier.REASONING: 10
-            }
+                ModelTier.REASONING: 10,
+            },
         )
 
         self._task_profiles[TaskType.MESSAGE_DRAFTING] = TaskProfile(
@@ -177,8 +177,8 @@ class ModelRouter:
             complexity_thresholds={
                 ModelTier.FAST: 2,
                 ModelTier.BALANCED: 8,
-                ModelTier.REASONING: 10
-            }
+                ModelTier.REASONING: 10,
+            },
         )
 
         self._task_profiles[TaskType.STRATEGIC_PLANNING] = TaskProfile(
@@ -187,8 +187,8 @@ class ModelRouter:
             complexity_thresholds={
                 ModelTier.FAST: 1,
                 ModelTier.BALANCED: 5,
-                ModelTier.REASONING: 8
-            }
+                ModelTier.REASONING: 8,
+            },
         )
 
         self._task_profiles[TaskType.CODE_GENERATION] = TaskProfile(
@@ -197,8 +197,8 @@ class ModelRouter:
             complexity_thresholds={
                 ModelTier.FAST: 3,
                 ModelTier.BALANCED: 7,
-                ModelTier.REASONING: 10
-            }
+                ModelTier.REASONING: 10,
+            },
         )
 
         self._task_profiles[TaskType.DATA_ANALYSIS] = TaskProfile(
@@ -207,8 +207,8 @@ class ModelRouter:
             complexity_thresholds={
                 ModelTier.FAST: 2,
                 ModelTier.BALANCED: 6,
-                ModelTier.REASONING: 9
-            }
+                ModelTier.REASONING: 9,
+            },
         )
 
         self._task_profiles[TaskType.CONTENT_CREATION] = TaskProfile(
@@ -217,8 +217,8 @@ class ModelRouter:
             complexity_thresholds={
                 ModelTier.FAST: 3,
                 ModelTier.BALANCED: 7,
-                ModelTier.REASONING: 10
-            }
+                ModelTier.REASONING: 10,
+            },
         )
 
         self._task_profiles[TaskType.TRANSLATION] = TaskProfile(
@@ -227,8 +227,8 @@ class ModelRouter:
             complexity_thresholds={
                 ModelTier.FAST: 5,
                 ModelTier.BALANCED: 8,
-                ModelTier.REASONING: 10
-            }
+                ModelTier.REASONING: 10,
+            },
         )
 
         self._task_profiles[TaskType.SUMMARIZATION] = TaskProfile(
@@ -237,8 +237,8 @@ class ModelRouter:
             complexity_thresholds={
                 ModelTier.FAST: 4,
                 ModelTier.BALANCED: 8,
-                ModelTier.REASONING: 10
-            }
+                ModelTier.REASONING: 10,
+            },
         )
 
         self._task_profiles[TaskType.QUESTION_ANSWERING] = TaskProfile(
@@ -247,8 +247,8 @@ class ModelRouter:
             complexity_thresholds={
                 ModelTier.FAST: 2,
                 ModelTier.BALANCED: 6,
-                ModelTier.REASONING: 9
-            }
+                ModelTier.REASONING: 9,
+            },
         )
 
         self._task_profiles[TaskType.VALIDATION] = TaskProfile(
@@ -257,15 +257,12 @@ class ModelRouter:
             complexity_thresholds={
                 ModelTier.FAST: 4,
                 ModelTier.BALANCED: 8,
-                ModelTier.REASONING: 10
-            }
+                ModelTier.REASONING: 10,
+            },
         )
 
     def get_model_config(
-        self,
-        task_type: TaskType,
-        complexity_score: int = 1,
-        force_tier: ModelTier | None = None
+        self, task_type: TaskType, complexity_score: int = 1, force_tier: ModelTier | None = None
     ) -> dict[str, Any]:
         """Get model configuration for a task.
 
@@ -302,7 +299,7 @@ class ModelRouter:
             "max_tokens": model_config.max_tokens,
             "temperature": model_config.temperature,
             "max_retries": model_config.max_retries,
-            "timeout_seconds": model_config.timeout_seconds
+            "timeout_seconds": model_config.timeout_seconds,
         }
 
         # Apply task-specific overrides
@@ -366,10 +363,7 @@ class ModelRouter:
             Selected model configuration
         """
         # Get models for tier
-        tier_models = [
-            config for config in self._models.values()
-            if config.tier == tier
-        ]
+        tier_models = [config for config in self._models.values() if config.tier == tier]
 
         if not tier_models:
             raise ValueError(f"No models available for tier: {tier}")
@@ -392,11 +386,7 @@ class ModelRouter:
         return FallbackClient(model_config, self)
 
     def record_usage(
-        self,
-        model_name: str,
-        input_tokens: int,
-        output_tokens: int,
-        cost: float
+        self, model_name: str, input_tokens: int, output_tokens: int, cost: float
     ) -> None:
         """Record model usage for budget tracking.
 
@@ -416,7 +406,7 @@ class ModelRouter:
             "model": model_name,
             "input_tokens": input_tokens,
             "output_tokens": output_tokens,
-            "cost": cost
+            "cost": cost,
         }
 
         self._usage_history.append(usage)
@@ -461,15 +451,12 @@ class ModelRouter:
             "current_spend": self._current_spend,
             "remaining": max(0, self.daily_budget - self._current_spend),
             "period_hours": self.budget_period_hours,
-            "period_start": self._budget_start.isoformat()
+            "period_start": self._budget_start.isoformat(),
         }
 
         # Add model counts
         stats["available_models"] = {
-            tier.value: len([
-                m for m in self._models.values()
-                if m.tier == tier
-            ])
+            tier.value: len([m for m in self._models.values() if m.tier == tier])
             for tier in ModelTier
         }
 
@@ -498,11 +485,7 @@ class ModelRouter:
 class FallbackClient:
     """LLM client with automatic fallback and retry logic."""
 
-    def __init__(
-        self,
-        primary_config: ModelConfig,
-        router: ModelRouter
-    ):
+    def __init__(self, primary_config: ModelConfig, router: ModelRouter):
         """Initialize fallback client.
 
         Args:
@@ -513,11 +496,7 @@ class FallbackClient:
         self.router = router
         self._client_cache: dict[str, LLMClient] = {}
 
-    async def generate(
-        self,
-        prompt: str,
-        **kwargs
-    ) -> str:
+    async def generate(self, prompt: str, **kwargs) -> str:
         """Generate text with fallback logic.
 
         Args:
@@ -620,10 +599,7 @@ class FallbackClient:
 
         # Record with router
         self.router.record_usage(
-            client.config.model_name,
-            int(input_tokens),
-            int(output_tokens),
-            cost
+            client.config.model_name, int(input_tokens), int(output_tokens), cost
         )
 
 
@@ -709,10 +685,7 @@ async def get_model_router() -> ModelRouter:
 
 # Helper functions
 async def route_and_generate(
-    task_type: TaskType,
-    prompt: str,
-    complexity_score: int = 1,
-    **kwargs
+    task_type: TaskType, prompt: str, complexity_score: int = 1, **kwargs
 ) -> str:
     """Route task and generate response.
 

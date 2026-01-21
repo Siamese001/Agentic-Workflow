@@ -48,15 +48,15 @@ class BackupFolderSSOTTester:
         The folder must be explicitly defined in SOVEREIGN_REGISTRY
         or documented as an approved root folder.
         """
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("TEST 1: SSOT Compliance for Backup Folder")
-        print("="*70)
+        print("=" * 70)
 
         # Check if folder is in SOVEREIGN_REGISTRY
-        in_registry = '.sovereign_healing_backup' in SOVEREIGN_REGISTRY
+        in_registry = ".sovereign_healing_backup" in SOVEREIGN_REGISTRY
 
         # Check if folder is in exclusions (acknowledged but not approved)
-        in_exclusions = '.sovereign_healing_backup' in SCOPE_SUMMARY_EXCLUSIONS
+        in_exclusions = ".sovereign_healing_backup" in SCOPE_SUMMARY_EXCLUSIONS
 
         print(f"   In SOVEREIGN_REGISTRY: {in_registry}")
         print(f"   In SCOPE_SUMMARY_EXCLUSIONS: {in_exclusions}")
@@ -74,9 +74,9 @@ class BackupFolderSSOTTester:
 
     def test_2_filesystem_agent_backup_location(self):
         """Test 2: Verify FilesystemAgent uses SSOT-approved backup location."""
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("TEST 2: FilesystemAgent Backup Location")
-        print("="*70)
+        print("=" * 70)
 
         try:
             from agentic_core.L5_safety.validators.FilesystemAgent import get_filesystem_agent
@@ -88,8 +88,7 @@ class BackupFolderSSOTTester:
 
             # Check if backup_dir uses SSOT-approved location
             is_ssot_approved = (
-                '.sovereign_healing_backup' in SOVEREIGN_REGISTRY or
-                'archives' in backup_dir_str
+                ".sovereign_healing_backup" in SOVEREIGN_REGISTRY or "archives" in backup_dir_str
             )
 
             if is_ssot_approved:
@@ -106,9 +105,9 @@ class BackupFolderSSOTTester:
 
     def test_3_location_agent_backup_location(self):
         """Test 3: Verify LocationAgent uses SSOT-approved backup location."""
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("TEST 3: LocationAgent Backup Location")
-        print("="*70)
+        print("=" * 70)
 
         try:
             from agentic_core.L5_safety.validators.LocationAgent import get_location_agent
@@ -118,14 +117,14 @@ class BackupFolderSSOTTester:
             # LocationAgent creates backup_dir in _initialize_backup_dir method
             # We need to check the method implementation
             import inspect
+
             source = inspect.getsource(agent._initialize_backup_dir)
 
             print("   Checking _initialize_backup_dir method...")
 
             # Check if method uses SSOT-approved location
             uses_ssot_location = (
-                '.sovereign_healing_backup' in SOVEREIGN_REGISTRY or
-                'archives' in source
+                ".sovereign_healing_backup" in SOVEREIGN_REGISTRY or "archives" in source
             )
 
             if uses_ssot_location:
@@ -142,29 +141,31 @@ class BackupFolderSSOTTester:
 
     def test_4_naming_agent_backup_location(self):
         """Test 4: Verify NamingAgent uses SSOT-approved backup location."""
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("TEST 4: NamingAgent Backup Location")
-        print("="*70)
+        print("=" * 70)
 
         try:
             # NamingAgent creates backups in heal_repository method
             # Check if it uses SSOT-approved location
-            naming_agent_path = self.project_root / "agentic_core" / "L5_safety" / "validators" / "NamingAgent.py"
+            naming_agent_path = (
+                self.project_root / "agentic_core" / "L5_safety" / "validators" / "NamingAgent.py"
+            )
 
             if not naming_agent_path.exists():
                 print("   ⚠️  TEST 4 SKIPPED: NamingAgent.py not found")
                 return True  # Skip test if file doesn't exist
 
-            content = naming_agent_path.read_text(encoding='utf-8')
+            content = naming_agent_path.read_text(encoding="utf-8")
 
             # Check if NamingAgent uses .sovereign_healing_backup
-            uses_backup_folder = '.sovereign_healing_backup' in content
+            uses_backup_folder = ".sovereign_healing_backup" in content
 
             print(f"   Uses .sovereign_healing_backup: {uses_backup_folder}")
 
             if uses_backup_folder:
                 # Check if folder is SSOT-approved
-                is_ssot_approved = '.sovereign_healing_backup' in SOVEREIGN_REGISTRY
+                is_ssot_approved = ".sovereign_healing_backup" in SOVEREIGN_REGISTRY
 
                 if is_ssot_approved:
                     print("   ✅ TEST 4 PASSED: NamingAgent uses SSOT-approved location")
@@ -182,9 +183,9 @@ class BackupFolderSSOTTester:
 
     def test_5_healing_transaction_manager_backup_location(self):
         """Test 5: Verify HealingTransactionManager uses SSOT-approved backup location."""
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("TEST 5: HealingTransactionManager Backup Location")
-        print("="*70)
+        print("=" * 70)
 
         try:
             from agentic_core.L4_state.ledger.healing_transaction_manager import (
@@ -198,8 +199,7 @@ class BackupFolderSSOTTester:
 
             # Check if backup_dir uses SSOT-approved location
             is_ssot_approved = (
-                '.sovereign_healing_backup' in SOVEREIGN_REGISTRY or
-                'archives' in backup_dir_str
+                ".sovereign_healing_backup" in SOVEREIGN_REGISTRY or "archives" in backup_dir_str
             )
 
             if is_ssot_approved:
@@ -216,45 +216,48 @@ class BackupFolderSSOTTester:
 
     def test_6_root_folder_ssot_enforcement(self):
         """Test 6: Verify no unauthorized root folders are created."""
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("TEST 6: Root Folder SSOT Enforcement")
-        print("="*70)
+        print("=" * 70)
 
         try:
             # Get all directories at root level
-            root_dirs = [d for d in os.listdir(self.project_root)
-                         if os.path.isdir(self.project_root / d)]
+            root_dirs = [
+                d for d in os.listdir(self.project_root) if os.path.isdir(self.project_root / d)
+            ]
 
             # Get approved folders from SOVEREIGN_REGISTRY
             approved_folders = set(SOVEREIGN_REGISTRY.keys())
 
             # Add other known approved folders
-            approved_folders.update([
-                'scripts',
-                'docs',
-                'archives',
-                'reports',
-                'data',
-                'node_modules',
-                '.venv',
-                'venv',
-                'env',
-                '.git',
-                '.github',
-                '__pycache__',
-                'coverage_html',
-                'htmlcov',
-                '.pytest_cache',
-                '.ruff_cache',
-                '.mypy_cache',
-                '.coverage',
-            ])
+            approved_folders.update(
+                [
+                    "scripts",
+                    "docs",
+                    "archives",
+                    "reports",
+                    "data",
+                    "node_modules",
+                    ".venv",
+                    "venv",
+                    "env",
+                    ".git",
+                    ".github",
+                    "__pycache__",
+                    "coverage_html",
+                    "htmlcov",
+                    ".pytest_cache",
+                    ".ruff_cache",
+                    ".mypy_cache",
+                    ".coverage",
+                ]
+            )
 
             # Check for unauthorized folders
             unauthorized = set(root_dirs) - approved_folders
 
             # Filter out hidden folders that are system-generated
-            unauthorized_visible = {f for f in unauthorized if not f.startswith('.')}
+            unauthorized_visible = {f for f in unauthorized if not f.startswith(".")}
 
             print(f"   Total root directories: {len(root_dirs)}")
             print(f"   Approved folders: {len(approved_folders)}")
@@ -264,8 +267,8 @@ class BackupFolderSSOTTester:
                 print(f"   ⚠️  Unauthorized folders found: {unauthorized_visible}")
 
             # Check specifically for .sovereign_healing_backup
-            has_backup_folder = '.sovereign_healing_backup' in root_dirs
-            backup_folder_approved = '.sovereign_healing_backup' in SOVEREIGN_REGISTRY
+            has_backup_folder = ".sovereign_healing_backup" in root_dirs
+            backup_folder_approved = ".sovereign_healing_backup" in SOVEREIGN_REGISTRY
 
             print(f"\n   .sovereign_healing_backup exists: {has_backup_folder}")
             print(f"   .sovereign_healing_backup approved: {backup_folder_approved}")
@@ -286,9 +289,9 @@ class BackupFolderSSOTTester:
 
     def run_all_tests(self):
         """Run all 6 test cases and report results."""
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("BACKUP FOLDER SSOT COMPLIANCE TEST SUITE")
-        print("="*70)
+        print("=" * 70)
         print(f"Project Root: {self.project_root}")
 
         tests = [
@@ -296,7 +299,10 @@ class BackupFolderSSOTTester:
             ("FilesystemAgent Backup Location", self.test_2_filesystem_agent_backup_location),
             ("LocationAgent Backup Location", self.test_3_location_agent_backup_location),
             ("NamingAgent Backup Location", self.test_4_naming_agent_backup_location),
-            ("HealingTransactionManager Backup Location", self.test_5_healing_transaction_manager_backup_location),
+            (
+                "HealingTransactionManager Backup Location",
+                self.test_5_healing_transaction_manager_backup_location,
+            ),
             ("Root Folder SSOT Enforcement", self.test_6_root_folder_ssot_enforcement),
         ]
 
@@ -308,13 +314,14 @@ class BackupFolderSSOTTester:
             except Exception as e:
                 print(f"\n   ❌ TEST FAILED WITH EXCEPTION: {e}")
                 import traceback
+
                 traceback.print_exc()
                 results.append((test_name, False))
 
         # Summary
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("TEST SUMMARY")
-        print("="*70)
+        print("=" * 70)
 
         passed_count = sum(1 for _, passed in results if passed)
         total_count = len(results)
@@ -328,13 +335,17 @@ class BackupFolderSSOTTester:
         if passed_count == total_count:
             print("\n🎉 ALL TESTS PASSED!")
             print("\nNext Steps:")
-            print("  1. Add .sovereign_healing_backup to SOVEREIGN_REGISTRY in structure_blueprint.py")
+            print(
+                "  1. Add .sovereign_healing_backup to SOVEREIGN_REGISTRY in structure_blueprint.py"
+            )
             print("  2. Re-run tests to verify SSOT compliance")
             return 0
         else:
             print(f"\n⚠️  {total_count - passed_count} TEST(S) FAILED")
             print("\nRequired Fix:")
-            print("  Add .sovereign_healing_backup to SOVEREIGN_REGISTRY in structure_blueprint.py:")
+            print(
+                "  Add .sovereign_healing_backup to SOVEREIGN_REGISTRY in structure_blueprint.py:"
+            )
             print("")
             print("  SOVEREIGN_REGISTRY: Any = {")
             print("      # ... existing entries ...")

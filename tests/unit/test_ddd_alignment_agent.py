@@ -13,6 +13,7 @@ import pytest
 def get_project_root() -> Path:
     """Get project root directory."""
     import os
+
     if "PROJECT_ROOT" in os.environ:
         return Path(os.environ["PROJECT_ROOT"])
 
@@ -34,21 +35,25 @@ class TestDDDAlignmentAgent:
     def test_agent_can_be_imported(self):
         """Verify DDDAlignmentAgent can be imported."""
         from agentic_core.L5_safety.validators.DDDAlignmentAgent import DDDAlignmentAgent
+
         assert DDDAlignmentAgent is not None
 
     def test_agent_has_heal_repository(self):
         """Verify DDDAlignmentAgent has heal_repository method."""
         from agentic_core.L5_safety.validators.DDDAlignmentAgent import DDDAlignmentAgent
-        assert hasattr(DDDAlignmentAgent, 'heal_repository')
+
+        assert hasattr(DDDAlignmentAgent, "heal_repository")
 
     def test_agent_has_run_method(self):
         """Verify DDDAlignmentAgent has run method."""
         from agentic_core.L5_safety.validators.DDDAlignmentAgent import DDDAlignmentAgent
-        assert hasattr(DDDAlignmentAgent, 'run')
+
+        assert hasattr(DDDAlignmentAgent, "run")
 
     def test_agent_can_be_instantiated(self, project_root: Path):
         """Verify DDDAlignmentAgent can be instantiated."""
         from agentic_core.L5_safety.validators.DDDAlignmentAgent import DDDAlignmentAgent
+
         agent = DDDAlignmentAgent(project_root=project_root)
         assert agent.project_root == project_root.resolve()
 
@@ -57,9 +62,7 @@ class TestDDDAlignmentAgent:
         from agentic_core.config.core_hygiene_agents import CORE_HYGIENE_AGENTS
 
         tier_2 = CORE_HYGIENE_AGENTS.get("tier_2_architectural", [])
-        assert "DDDAlignmentAgent" in tier_2, (
-            "DDDAlignmentAgent must be in tier_2_architectural"
-        )
+        assert "DDDAlignmentAgent" in tier_2, "DDDAlignmentAgent must be in tier_2_architectural"
 
     def test_agent_has_description(self):
         """Verify DDDAlignmentAgent has a description in registry."""
@@ -76,8 +79,13 @@ class TestDDDAlignmentAgent:
 
         # Must have L0-L6 contexts
         required_contexts = [
-            "L0_Governance", "L1_Cognition", "L2_Execution",
-            "L3_Orchestration", "L4_State", "L5_Safety", "L6_Observability"
+            "L0_Governance",
+            "L1_Cognition",
+            "L2_Execution",
+            "L3_Orchestration",
+            "L4_State",
+            "L5_Safety",
+            "L6_Observability",
         ]
 
         for ctx in required_contexts:

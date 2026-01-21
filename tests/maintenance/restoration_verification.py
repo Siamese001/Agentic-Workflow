@@ -24,7 +24,10 @@ sys.path.insert(0, str(PROJECT_ROOT))
 RESTORED_AGENTS: list[tuple[str, str]] = [
     # (Agent Name, Full Module Path)
     ("MetaLearningAgent", "agentic_core.L1_cognition.thought_engine.MetaLearningAgent"),
-    ("StrategicRecommendationAgent", "agentic_core.L1_cognition.thought_engine.StrategicRecommendationAgent"),
+    (
+        "StrategicRecommendationAgent",
+        "agentic_core.L1_cognition.thought_engine.StrategicRecommendationAgent",
+    ),
     ("BudgetAgent", "agentic_core.L1_cognition.thought_engine.BudgetAgent"),
     ("CodeDeduplicationAgent", "agentic_core.L5_safety.validators.CodeDeduplicationAgent"),
     ("PatternEnforcerAgent", "agentic_core.L5_safety.validators.PatternEnforcerAgent"),
@@ -65,8 +68,9 @@ def check_file_exists(module_path: str) -> tuple[bool, str, Path]:
 def check_syntax(file_path: Path) -> tuple[bool, str]:
     """Check if the file has valid Python syntax."""
     import ast
+
     try:
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
         ast.parse(content)
         return True, "Valid syntax"
     except SyntaxError as e:
@@ -76,8 +80,9 @@ def check_syntax(file_path: Path) -> tuple[bool, str]:
 def check_class_defined(file_path: Path, class_name: str) -> tuple[bool, str]:
     """Check if the class is defined in the file."""
     import ast
+
     try:
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
         tree = ast.parse(content)
 
         for node in ast.walk(tree):
@@ -92,24 +97,29 @@ def check_class_defined(file_path: Path, class_name: str) -> tuple[bool, str]:
 def check_imports(file_path: Path) -> tuple[bool, str, list[str]]:
     """Check for potentially broken imports."""
     import ast
+
     issues = []
 
     try:
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
         tree = ast.parse(content)
 
         for node in ast.walk(tree):
             if isinstance(node, ast.ImportFrom):
                 if node.module:
                     # Check for deprecated/moved imports
-                    if 'MCPHardenedMixin' in [alias.name for alias in node.names]:
+                    if "MCPHardenedMixin" in [alias.name for alias in node.names]:
                         # Check if importing from correct location
-                        if 'L5_safety.guardrails.mcp_hardened_mixin' not in node.module and \
-                           'L2_execution.mcp.mcp_hardened_mixin' not in node.module:
-                            issues.append(f"MCPHardenedMixin import from deprecated location: {node.module}")
+                        if (
+                            "L5_safety.guardrails.mcp_hardened_mixin" not in node.module
+                            and "L2_execution.mcp.mcp_hardened_mixin" not in node.module
+                        ):
+                            issues.append(
+                                f"MCPHardenedMixin import from deprecated location: {node.module}"
+                            )
 
                     # Check for imports from archives (bad!)
-                    if 'archives' in node.module:
+                    if "archives" in node.module:
                         issues.append(f"Import from archives: {node.module}")
 
         if issues:
@@ -140,7 +150,7 @@ def check_import_safety(module_path: str, class_name: str) -> tuple[bool, str]:
         seen = set()
         duplicates = []
         for name in mro_names:
-            if name in seen and name != 'object':
+            if name in seen and name != "object":
                 duplicates.append(name)
             seen.add(name)
 
@@ -221,7 +231,11 @@ def main():
     print(f"  Total Checks: {PASSED + FAILED}")
     print(f"  Passed: {PASSED}")
     print(f"  Failed: {FAILED}")
-    print(f"  Pass Rate: {PASSED / (PASSED + FAILED) * 100:.1f}%" if (PASSED + FAILED) > 0 else "  No tests run")
+    print(
+        f"  Pass Rate: {PASSED / (PASSED + FAILED) * 100:.1f}%"
+        if (PASSED + FAILED) > 0
+        else "  No tests run"
+    )
     print()
 
     if FAILED == 0:

@@ -9,6 +9,7 @@ Tests the 3 detailed test cases for:
 
 All 3 tests must pass 100%.
 """
+
 import sys
 from pathlib import Path
 
@@ -27,9 +28,9 @@ def test_1_syntax_gate():
     Pass Condition: Mission aborts after Tier 0 with critical error;
     Tier 1 and Tier 3 never execute.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 1: Syntax Gate Test")
-    print("="*60)
+    print("=" * 60)
 
     # Create a mock SyntaxValidatorAgent that returns violations
     from agentic_core.L3_orchestration.unified.CoreOrchestrationAgent import CoreOrchestrationAgent
@@ -40,12 +41,7 @@ def test_1_syntax_gate():
     class MockSyntaxValidator:
         def heal_repository(self, dry_run=True, execute=False, **kwargs):
             # Return violations that cannot be fixed
-            return {
-                "violations": 5,
-                "fixed": 0,
-                "errors": 0,
-                "skipped": 0
-            }
+            return {"violations": 5, "fixed": 0, "errors": 0, "skipped": 0}
 
     # Mock agent that should NOT run if Tier 0 fails
     class MockLocationAgent:
@@ -70,7 +66,9 @@ def test_1_syntax_gate():
     print(f"   Tier 0 violations: {total_violations}")
 
     # In execute mode with violations, is_stable should be False
-    assert not is_stable, "Tier 0 should report is_stable=False when violations exist in execute mode"
+    assert not is_stable, (
+        "Tier 0 should report is_stable=False when violations exist in execute mode"
+    )
     assert total_violations == 5, f"Expected 5 violations, got {total_violations}"
 
     # Verify the gate logic would prevent Tier 1 execution
@@ -91,9 +89,9 @@ def test_2_deduplication_detection():
     Pass Condition: Tier 1 (Deduplication Phase A) identifies the
     hash collision before the NamingAgent runs.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 2: Deduplication Detection")
-    print("="*60)
+    print("=" * 60)
 
     # Check that TwoPhaseDeduplicationAgent exists and can be imported
     try:
@@ -101,6 +99,7 @@ def test_2_deduplication_detection():
             TwoPhaseDeduplicationAgent,
             get_two_phase_deduplication_agent,
         )
+
         print("   TwoPhaseDeduplicationAgent: importable ✓")
     except ImportError as e:
         print(f"   ❌ FAILED: Cannot import TwoPhaseDeduplicationAgent: {e}")
@@ -109,8 +108,10 @@ def test_2_deduplication_detection():
     # Verify the agent has the required methods
     agent = get_two_phase_deduplication_agent(PROJECT_ROOT)
 
-    assert hasattr(agent, 'heal_repository'), "Agent must have heal_repository method"
-    assert hasattr(agent, 'run_phase_a'), "Agent must have run_phase_a method for identity collisions"
+    assert hasattr(agent, "heal_repository"), "Agent must have heal_repository method"
+    assert hasattr(agent, "run_phase_a"), (
+        "Agent must have run_phase_a method for identity collisions"
+    )
 
     print("   heal_repository method: exists ✓")
     print("   run_phase_a method: exists ✓")
@@ -127,8 +128,9 @@ def test_2_deduplication_detection():
     dedup_index = tier1_order.index("TwoPhaseDeduplicationAgent_PhaseA")
     naming_index = tier1_order.index("NamingAgent")
 
-    assert dedup_index < naming_index, \
+    assert dedup_index < naming_index, (
         f"Deduplication ({dedup_index}) must run before Naming ({naming_index})"
+    )
 
     print(f"   Tier 1 order: Deduplication @ {dedup_index}, Naming @ {naming_index} ✓")
 
@@ -146,17 +148,17 @@ def test_3_roster_cleanliness():
 
     Pass Condition: Core agents are in SKIP_AGENTS list.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 3: Roster Cleanliness")
-    print("="*60)
+    print("=" * 60)
 
     from agentic_core.L0_maintenance.scripts.discovery_roster_builder import SKIP_AGENTS
 
     # Core agents that should be skipped
-    tier0_agents = ['SyntaxValidatorAgent', 'HygieneGuardianAgent']
-    tier1_agents = ['TwoPhaseDeduplicationAgent', 'LocationAgent', 'HierarchyAgent', 'NamingAgent']
-    tier2_agents = ['ImportAgent']
-    tier4_agents = ['AutonomyGuardianAgent']
+    tier0_agents = ["SyntaxValidatorAgent", "HygieneGuardianAgent"]
+    tier1_agents = ["TwoPhaseDeduplicationAgent", "LocationAgent", "HierarchyAgent", "NamingAgent"]
+    tier2_agents = ["ImportAgent"]
+    tier4_agents = ["AutonomyGuardianAgent"]
 
     all_core_agents = tier0_agents + tier1_agents + tier2_agents + tier4_agents
 
@@ -183,13 +185,13 @@ def test_4_tier_assembly_verification():
 
     Checks that the tier structure is correctly defined.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("BONUS TEST: Tier Assembly Verification")
-    print("="*60)
+    print("=" * 60)
 
     # Read canon_validator to verify tier structure
     canon_path = PROJECT_ROOT / "canon_validator_agentic_v2_thin.py"
-    content = canon_path.read_text(encoding='utf-8')
+    content = canon_path.read_text(encoding="utf-8")
 
     # Check for Tier 0 definition
     assert "mandatory_preflight" in content, "Tier 0 (mandatory_preflight) not found"
@@ -215,9 +217,9 @@ def test_4_tier_assembly_verification():
 
 def run_all_tests():
     """Run all test cases."""
-    print("\n" + "#"*60)
+    print("\n" + "#" * 60)
     print("# 5-Tier Execution Flow Test Suite")
-    print("#"*60)
+    print("#" * 60)
 
     tests = [
         ("Test 1: Syntax Gate", test_1_syntax_gate),
@@ -241,12 +243,13 @@ def run_all_tests():
             print(f"❌ ERROR: {name}")
             print(f"   Exception: {e}")
             import traceback
+
             traceback.print_exc()
             failed += 1
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print(f"RESULTS: {passed}/{len(tests)} tests passed")
-    print("="*60)
+    print("=" * 60)
 
     if failed > 0:
         print(f"❌ {failed} test(s) FAILED")

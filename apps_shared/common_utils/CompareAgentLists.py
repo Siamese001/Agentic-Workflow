@@ -2,6 +2,7 @@
 """
 compare_agent_lists.py - Compare agent lists between commits to trace reductions
 """
+
 import json
 import subprocess
 import sys
@@ -15,18 +16,19 @@ def get_agents_at_commit(commit_hash):
         ["git", "show", f"{commit_hash}:agent_discovery_full.json"],
         capture_output=True,
         text=True,
-        cwd="C:/Git/Agentic-Workflow"
+        cwd="C:/Git/Agentic-Workflow",
     )
     if result.returncode == 0:
         data = json.loads(result.stdout)
         agents = {}
         for a in data:
-            agents[a['class_name']] = {
-                'path': a.get('path', ''),
-                'layer': a.get('layer', 'Unknown'),
+            agents[a["class_name"]] = {
+                "path": a.get("path", ""),
+                "layer": a.get("layer", "Unknown"),
             }
         return agents
     return {}
+
 
 def get_current_agents():
     """Get current agent list."""
@@ -34,11 +36,12 @@ def get_current_agents():
         data = json.load(f)
     agents = {}
     for a in data:
-        agents[a['class_name']] = {
-            'path': a.get('path', ''),
-            'layer': a.get('layer', 'Unknown'),
+        agents[a["class_name"]] = {
+            "path": a.get("path", ""),
+            "layer": a.get("layer", "Unknown"),
         }
     return agents
+
 
 def find_agent_in_archives(agent_name):
     """Search for agent in archives directory."""
@@ -49,6 +52,7 @@ def find_agent_in_archives(agent_name):
             rel = f.relative_to(archives)
             results.append(str(rel))
     return results
+
 
 def main():
     # Commit with 209 agents (from waterfall analysis)
@@ -134,6 +138,7 @@ def main():
     print(f"  Not in archives: {len(not_found)}")
 
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

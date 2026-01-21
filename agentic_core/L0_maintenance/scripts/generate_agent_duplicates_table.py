@@ -3,6 +3,7 @@
 Generate Markdown table of duplicated agents (excluding test files).
 Filters to actual production/blueprint agent files only.
 """
+
 import json
 import sys
 from pathlib import Path
@@ -51,10 +52,10 @@ def is_actual_agent_file(path: str) -> bool:
 
 def generate_table(json_file: Path, output_file: Path):
     """Generate Markdown table from JSON report."""
-    with open(json_file, encoding='utf-8') as f:
+    with open(json_file, encoding="utf-8") as f:
         content = f.read()
         # Skip log lines at the beginning
-        json_start = content.find('[')
+        json_start = content.find("[")
         if json_start > 0:
             content = content[json_start:]
         data = json.loads(content)
@@ -77,21 +78,23 @@ def generate_table(json_file: Path, output_file: Path):
 
         # Add to results
         for dup in agent_dups:
-            agent_duplicates.append({
-                "agent_name": extract_basename(canonical),
-                "canonical": canonical,
-                "duplicate": dup["path"],
-                "action": item["action"],
-                "canonical_quality": item["canonical_quality"]["quality_score"],
-                "duplicate_quality": dup["quality"]["quality_score"],
-                "rationale": infer_rationale(canonical, [dup], item["action"])
-            })
+            agent_duplicates.append(
+                {
+                    "agent_name": extract_basename(canonical),
+                    "canonical": canonical,
+                    "duplicate": dup["path"],
+                    "action": item["action"],
+                    "canonical_quality": item["canonical_quality"]["quality_score"],
+                    "duplicate_quality": dup["quality"]["quality_score"],
+                    "rationale": infer_rationale(canonical, [dup], item["action"]),
+                }
+            )
 
     # Sort by action (DELETE first), then by agent name
     agent_duplicates.sort(key=lambda x: (0 if x["action"] == "DELETE" else 1, x["agent_name"]))
 
     # Generate Markdown table
-    with open(output_file, 'w', encoding='utf-8') as f:
+    with open(output_file, "w", encoding="utf-8") as f:
         f.write("# Duplicated Agents Table\n")
         f.write(f"**Generated:** {Path(json_file).stat().st_mtime}\n")
         f.write(f"**Total Duplicates:** {len(agent_duplicates)}\n\n")
@@ -102,7 +105,9 @@ def generate_table(json_file: Path, output_file: Path):
         f.write(f"**Action Summary:** {delete_count} auto-delete, {review_count} manual review\n\n")
 
         # Table header
-        f.write("| Agent Name | Canonical Path | Duplicate Path | Action | Quality (C/D) | Rationale |\n")
+        f.write(
+            "| Agent Name | Canonical Path | Duplicate Path | Action | Quality (C/D) | Rationale |\n"
+        )
         f.write("| --- | --- | --- | --- | --- | --- |\n")
 
         # Table rows
@@ -128,7 +133,7 @@ def generate_table(json_file: Path, output_file: Path):
         f.write("```bash\n")
         for item in agent_duplicates:
             if item["action"] == "REVIEW":
-                f.write(f'# {item["agent_name"]}\n')
+                f.write(f"# {item['agent_name']}\n")
                 f.write(f'code --diff "{item["canonical"]}" "{item["duplicate"]}"\n\n')
         f.write("```\n")
 

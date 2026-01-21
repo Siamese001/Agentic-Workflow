@@ -29,7 +29,11 @@ class ReasoningLayerTestSuite:
         self.sample_dense_results = [
             {"doc_id": "doc1", "score": 0.9, "content": "Our RAG pipeline achieves 50ms latency"},
             {"doc_id": "doc2", "score": 0.8, "content": "Industry benchmarks show 100ms average"},
-            {"doc_id": "doc3", "score": 0.7, "content": "Financial apps require sub-100ms response"},
+            {
+                "doc_id": "doc3",
+                "score": 0.7,
+                "content": "Financial apps require sub-100ms response",
+            },
         ]
 
         self.sample_sparse_results = [
@@ -45,36 +49,36 @@ class ReasoningLayerTestSuite:
                 "query": "What is RAG?",
                 "expected_sub_queries": 1,
                 "complexity_min": 1,
-                "complexity_max": 3
+                "complexity_max": 3,
             },
             # Comparison queries
             {
                 "query": "Compare AWS vs Azure pricing for financial services",
                 "expected_sub_queries": 3,
                 "complexity_min": 6,
-                "complexity_max": 9
+                "complexity_max": 9,
             },
             # Causation queries
             {
                 "query": "Why did our latency increase after the migration?",
                 "expected_sub_queries": 2,
                 "complexity_min": 5,
-                "complexity_max": 8
+                "complexity_max": 8,
             },
             # Complex multi-hop
             {
                 "query": "Compare the performance of our RAG pipeline to industry standards for financial apps and identify the root causes of any discrepancies",
                 "expected_sub_queries": 4,
                 "complexity_min": 8,
-                "complexity_max": 10
+                "complexity_max": 10,
             },
             # Technical queries
             {
                 "query": "Python API v3.1 documentation for Redis",
                 "expected_sub_queries": 1,
                 "complexity_min": 1,
-                "complexity_max": 4
-            }
+                "complexity_max": 4,
+            },
         ]
 
         # Test queries for dynamic alpha
@@ -82,37 +86,37 @@ class ReasoningLayerTestSuite:
             {
                 "query": "ABC-123 error code in production",
                 "expected_alpha": 0.3,
-                "reason": "Entity pattern (ticket ID)"
+                "reason": "Entity pattern (ticket ID)",
             },
             {
                 "query": "Python Django REST API performance",
                 "expected_alpha": 0.4,
-                "reason": "Technical pattern"
+                "reason": "Technical pattern",
             },
             {
                 "query": "Company culture and leadership strategy",
                 "expected_alpha": 0.8,
-                "reason": "Concept/strategy pattern"
+                "reason": "Concept/strategy pattern",
             },
             {
                 "query": "General information about systems",
                 "expected_alpha": 0.6,
-                "reason": "Default case"
-            }
+                "reason": "Default case",
+            },
         ]
 
     async def test_query_decomposer(self):
         """Test the Query Decomposer with various query types."""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("TESTING: Query Decomposer")
-        print("="*60)
+        print("=" * 60)
 
         for i, test_case in enumerate(self.test_queries, 1):
             print(f"\nTest Case {i}: {test_case['query']}")
             print("-" * 40)
 
             start_time = time.time()
-            result = await self.decomposer.decompose(test_case['query'])
+            result = await self.decomposer.decompose(test_case["query"])
             elapsed = time.time() - start_time
 
             print(f"✅ Decomposition completed in {elapsed:.3f}s")
@@ -122,16 +126,24 @@ class ReasoningLayerTestSuite:
             print(f"   Reasoning: {result.reasoning}")
 
             # Verify expectations
-            if len(result.sub_queries) == test_case['expected_sub_queries']:
+            if len(result.sub_queries) == test_case["expected_sub_queries"]:
                 print("   ✅ Correct number of sub-queries")
             else:
-                print(f"   ⚠️  Expected {test_case['expected_sub_queries']}, got {len(result.sub_queries)}")
+                print(
+                    f"   ⚠️  Expected {test_case['expected_sub_queries']}, got {len(result.sub_queries)}"
+                )
 
-            if test_case['complexity_min'] <= result.complexity_score <= test_case['complexity_max']:
+            if (
+                test_case["complexity_min"]
+                <= result.complexity_score
+                <= test_case["complexity_max"]
+            ):
                 print("   ✅ Complexity within expected range")
             else:
-                print(f"   ⚠️  Complexity {result.complexity_score} outside range "
-                      f"({test_case['complexity_min']}-{test_case['complexity_max']})")
+                print(
+                    f"   ⚠️  Complexity {result.complexity_score} outside range "
+                    f"({test_case['complexity_min']}-{test_case['complexity_max']})"
+                )
 
             # Show sub-queries
             for j, sub_query in enumerate(result.sub_queries, 1):
@@ -139,9 +151,9 @@ class ReasoningLayerTestSuite:
 
     def test_dynamic_hybrid_scorer(self):
         """Test the Dynamic Hybrid Scorer with different query types."""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("TESTING: Dynamic Hybrid Scorer")
-        print("="*60)
+        print("=" * 60)
 
         for test_case in self.alpha_test_queries:
             print(f"\nQuery: {test_case['query']}")
@@ -152,12 +164,12 @@ class ReasoningLayerTestSuite:
             results = self.scorer.score_documents(
                 dense_results=self.sample_dense_results,
                 sparse_results=self.sample_sparse_results,
-                query=test_case['query']
+                query=test_case["query"],
             )
 
             print(f"   ✅ Dynamic alpha used: {self.scorer.alpha}")
 
-            if self.scorer.alpha == test_case['expected_alpha']:
+            if self.scorer.alpha == test_case["expected_alpha"]:
                 print("   ✅ Alpha matches expectation")
             else:
                 print(f"   ⚠️  Expected {test_case['expected_alpha']}, got {self.scorer.alpha}")
@@ -166,14 +178,16 @@ class ReasoningLayerTestSuite:
             if results:
                 top = results[0]
                 print(f"   Top result: {top.doc_id} (score: {top.final_score:.3f})")
-                print(f"   Score breakdown: Dense={top.dense_score:.3f}, "
-                      f"Sparse={top.sparse_score:.3f}, Boost={top.metadata_boost:.3f}")
+                print(
+                    f"   Score breakdown: Dense={top.dense_score:.3f}, "
+                    f"Sparse={top.sparse_score:.3f}, Boost={top.metadata_boost:.3f}"
+                )
 
     async def test_integration_scenario(self):
         """Test both components working together in a realistic scenario."""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("TESTING: Integration Scenario")
-        print("="*60)
+        print("=" * 60)
 
         # Complex executive query
         executive_query = "Compare our RAG pipeline performance against financial industry benchmarks and identify optimization opportunities"
@@ -201,7 +215,7 @@ class ReasoningLayerTestSuite:
             results = self.scorer.score_documents(
                 dense_results=self.sample_dense_results,
                 sparse_results=self.sample_sparse_results,
-                query=sub_query
+                query=sub_query,
             )
 
             if results:
@@ -225,9 +239,9 @@ class ReasoningLayerTestSuite:
 
     async def test_async_execution(self):
         """Test the async execution helper for parallel sub-query processing."""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("TESTING: Async Execution Helper")
-        print("="*60)
+        print("=" * 60)
 
         # Create a mock search function
         async def mock_search(query: str, delay: float = 0.1):
@@ -243,9 +257,7 @@ class ReasoningLayerTestSuite:
 
         start_time = time.time()
         results = await self.decomposer.execute_plan(
-            decomposed=decomposed,
-            search_function=mock_search,
-            delay=0.05
+            decomposed=decomposed, search_function=mock_search, delay=0.05
         )
         elapsed = time.time() - start_time
 
@@ -257,13 +269,13 @@ class ReasoningLayerTestSuite:
         # Verify results
         for i, result_list in enumerate(results):
             if result_list:
-                print(f"   Sub-query {i+1}: {len(result_list)} result(s)")
+                print(f"   Sub-query {i + 1}: {len(result_list)} result(s)")
 
     def test_convenience_functions(self):
         """Test the convenience functions for direct usage."""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("TESTING: Convenience Functions")
-        print("="*60)
+        print("=" * 60)
 
         # Test decompose_query function
         print("\n1. Testing decompose_query() function:")
@@ -278,7 +290,7 @@ class ReasoningLayerTestSuite:
         results = static_scorer.score_documents(
             dense_results=self.sample_dense_results,
             sparse_results=self.sample_sparse_results,
-            query="This should not affect alpha"
+            query="This should not affect alpha",
         )
         print(f"   Static alpha: {static_scorer.alpha}")
         print(f"   Results: {len(results)} documents scored")
@@ -286,7 +298,7 @@ class ReasoningLayerTestSuite:
     def run_all_tests(self):
         """Run all tests sequentially."""
         print("🚀 Starting Phase 2 Reasoning Layer Test Suite")
-        print("="*60)
+        print("=" * 60)
 
         # Run async tests
         asyncio.run(self.test_query_decomposer())
@@ -297,9 +309,9 @@ class ReasoningLayerTestSuite:
         self.test_dynamic_hybrid_scorer()
         self.test_convenience_functions()
 
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("✅ ALL TESTS COMPLETED")
-        print("="*60)
+        print("=" * 60)
         print("\nPhase 2 Reasoning Layer is ready for integration!")
         print("\nKey Benefits Achieved:")
         print("  • Complex query decomposition into atomic sub-queries")

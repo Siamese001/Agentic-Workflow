@@ -35,6 +35,7 @@ EXCLUDE_EXTENSIONS = {".pyc", ".pyo", ".so", ".dll", ".exe"}
 @dataclass
 class ClassInfo:
     """Information about a Python class."""
+
     name: str
     bases: list[str]
     methods: list[str]
@@ -45,6 +46,7 @@ class ClassInfo:
 @dataclass
 class FileAnalysis:
     """Complete analysis of a file."""
+
     path: Path
     relative_path: str
     size_bytes: int
@@ -76,8 +78,8 @@ def compute_file_hash(file_path: Path) -> str:
     """Compute SHA256 hash of file contents."""
     sha256 = hashlib.sha256()
     try:
-        with open(file_path, 'rb') as f:
-            for chunk in iter(lambda: f.read(8192), b''):
+        with open(file_path, "rb") as f:
+            for chunk in iter(lambda: f.read(8192), b""):
                 sha256.update(chunk)
         return sha256.hexdigest()[:16]
     except Exception:
@@ -87,7 +89,7 @@ def compute_file_hash(file_path: Path) -> str:
 def count_lines(file_path: Path) -> int:
     """Count lines in a text file."""
     try:
-        with open(file_path, encoding='utf-8', errors='ignore') as f:
+        with open(file_path, encoding="utf-8", errors="ignore") as f:
             return sum(1 for _ in f)
     except Exception:
         return 0
@@ -96,9 +98,9 @@ def count_lines(file_path: Path) -> int:
 def get_snippet(file_path: Path, chars: int = 200) -> str:
     """Get first N characters of a file."""
     try:
-        with open(file_path, encoding='utf-8', errors='ignore') as f:
+        with open(file_path, encoding="utf-8", errors="ignore") as f:
             content = f.read(chars)
-            return content.replace('\n', ' ').strip()
+            return content.replace("\n", " ").strip()
     except Exception:
         return "[BINARY OR UNREADABLE]"
 
@@ -115,14 +117,17 @@ def parse_python_file(file_path: Path) -> tuple[list[ClassInfo], list[str], list
     module_docstring = None
 
     try:
-        with open(file_path, encoding='utf-8', errors='ignore') as f:
+        with open(file_path, encoding="utf-8", errors="ignore") as f:
             content = f.read()
 
         tree = ast.parse(content)
 
         # Get module docstring
-        if (tree.body and isinstance(tree.body[0], ast.Expr) and
-            isinstance(tree.body[0].value, ast.Constant)):
+        if (
+            tree.body
+            and isinstance(tree.body[0], ast.Expr)
+            and isinstance(tree.body[0].value, ast.Constant)
+        ):
             module_docstring = tree.body[0].value.value
 
         for node in ast.walk(tree):
@@ -133,23 +138,30 @@ def parse_python_file(file_path: Path) -> tuple[list[ClassInfo], list[str], list
                     if isinstance(base, ast.Name):
                         bases.append(base.id)
                     elif isinstance(base, ast.Attribute):
-                        bases.append(f"{base.value.id if hasattr(base.value, 'id') else '?'}.{base.attr}")
+                        bases.append(
+                            f"{base.value.id if hasattr(base.value, 'id') else '?'}.{base.attr}"
+                        )
 
                 methods = [item.name for item in node.body if isinstance(item, ast.FunctionDef)]
 
                 # Get class docstring
                 class_docstring = None
-                if (node.body and isinstance(node.body[0], ast.Expr) and
-                    isinstance(node.body[0].value, ast.Constant)):
+                if (
+                    node.body
+                    and isinstance(node.body[0], ast.Expr)
+                    and isinstance(node.body[0].value, ast.Constant)
+                ):
                     class_docstring = node.body[0].value.value
 
-                classes.append(ClassInfo(
-                    name=node.name,
-                    bases=bases,
-                    methods=methods,
-                    line_number=node.lineno,
-                    docstring=class_docstring
-                ))
+                classes.append(
+                    ClassInfo(
+                        name=node.name,
+                        bases=bases,
+                        methods=methods,
+                        line_number=node.lineno,
+                        docstring=class_docstring,
+                    )
+                )
 
             # Imports
             elif isinstance(node, ast.Import):
@@ -161,7 +173,11 @@ def parse_python_file(file_path: Path) -> tuple[list[ClassInfo], list[str], list
                     imports.append(f"{module}.{alias.name}")
 
             # Top-level functions
-            elif isinstance(node, ast.FunctionDef) and hasattr(node, 'col_offset') and node.col_offset == 0:
+            elif (
+                isinstance(node, ast.FunctionDef)
+                and hasattr(node, "col_offset")
+                and node.col_offset == 0
+            ):
                 functions.append(node.name)
 
         return classes, imports, functions, module_docstring
@@ -172,7 +188,9 @@ def parse_python_file(file_path: Path) -> tuple[list[ClassInfo], list[str], list
         return [], [f"PARSE_ERROR: {e}"], [], None
 
 
-def check_sovereignty_compliance(file_path: Path, content: str, classes: list[ClassInfo]) -> dict[str, bool]:
+def check_sovereignty_compliance(
+    file_path: Path, content: str, classes: list[ClassInfo]
+) -> dict[str, bool]:
     """Check for sovereignty compliance issues."""
     issues = {
         "has_snake_case_class": False,
@@ -186,7 +204,7 @@ def check_sovereignty_compliance(file_path: Path, content: str, classes: list[Cl
 
     # Check for snake_case classes (should be PascalCase)
     for cls in classes:
-        if '_' in cls.name and not cls.name.startswith('_'):
+        if "_" in cls.name and not cls.name.startswith("_"):
             issues["has_snake_case_class"] = True
             break
 
@@ -209,7 +227,15 @@ def check_sovereignty_compliance(file_path: Path, content: str, classes: list[Cl
         issues["mcp_usage"] = True
 
     # Check for LLM calls
-    llm_patterns = ["openai", "anthropic", "claude", "gpt-4", "gpt-3", "llm_client", "chat_completion"]
+    llm_patterns = [
+        "openai",
+        "anthropic",
+        "claude",
+        "gpt-4",
+        "gpt-3",
+        "llm_client",
+        "chat_completion",
+    ]
     for pattern in llm_patterns:
         if pattern in content_lower:
             issues["llm_calls"] = True
@@ -224,8 +250,14 @@ def find_modern_equivalent(file_path: Path, file_name: str) -> tuple[str | None,
     # Known mappings
     mappings = {
         "circuit_breaker.py": ("agentic_core/L4_resilience/circuit_breaker.py", "EXISTS_SIMPLER"),
-        "subatomic_hop.py": ("agentic_core/runtime/shared_runtime/subatomic_hop.py", "EXISTS_MODERNIZED"),
-        "semantic_cache.py": ("agentic_core/runtime/shared_runtime/semantic_cache.py", "EXISTS_ENHANCED"),
+        "subatomic_hop.py": (
+            "agentic_core/runtime/shared_runtime/subatomic_hop.py",
+            "EXISTS_MODERNIZED",
+        ),
+        "semantic_cache.py": (
+            "agentic_core/runtime/shared_runtime/semantic_cache.py",
+            "EXISTS_ENHANCED",
+        ),
         "input_sanitizer.py": ("agentic_core/L5_safety/guardrails/", "MIGRATE_TO_SAFETY"),
         "reflection_engine.py": ("agentic_core/runtime/shared_runtime/", "UNIQUE_MIGRATE"),
         "cognitive_contracts.py": ("agentic_core/schemas/models/", "UNIQUE_MIGRATE"),
@@ -270,44 +302,74 @@ def classify_file(analysis: FileAnalysis) -> tuple[str, str, str, str]:
     analysis.modern_equivalent = equiv
 
     if status == "EXISTS_SIMPLER":
-        return ("DUPLICATE_ARCHIVE_RICHER", "MERGE",
-                f"Archive version ({analysis.line_count} LOC) richer than modern. Merge unique features.", "MEDIUM")
+        return (
+            "DUPLICATE_ARCHIVE_RICHER",
+            "MERGE",
+            f"Archive version ({analysis.line_count} LOC) richer than modern. Merge unique features.",
+            "MEDIUM",
+        )
 
     if status == "EXISTS_MODERNIZED":
-        return ("DUPLICATE_MODERN_NEWER", "DELETE",
-                "Modern version exists with dependency injection pattern. Archive obsolete.", "LOW")
+        return (
+            "DUPLICATE_MODERN_NEWER",
+            "DELETE",
+            "Modern version exists with dependency injection pattern. Archive obsolete.",
+            "LOW",
+        )
 
     if status == "EXISTS_ENHANCED":
-        return ("DUPLICATE_MODERN_ENHANCED", "DELETE",
-                "Modern version has semantic matching. Archive is basic version.", "LOW")
+        return (
+            "DUPLICATE_MODERN_ENHANCED",
+            "DELETE",
+            "Modern version has semantic matching. Archive is basic version.",
+            "LOW",
+        )
 
     if status == "UNIQUE_MIGRATE":
-        return ("UNIQUE_VALUABLE", "MIGRATE",
-                f"Unique implementation ({analysis.line_count} LOC). Migrate to modern structure.", "LOW")
+        return (
+            "UNIQUE_VALUABLE",
+            "MIGRATE",
+            f"Unique implementation ({analysis.line_count} LOC). Migrate to modern structure.",
+            "LOW",
+        )
 
     if status == "INTERFACE_MIGRATE":
-        return ("INTERFACE_CONTRACT", "MIGRATE",
-                "Abstract interface/contract. Migrate to schemas.", "LOW")
+        return (
+            "INTERFACE_CONTRACT",
+            "MIGRATE",
+            "Abstract interface/contract. Migrate to schemas.",
+            "LOW",
+        )
 
     if status == "MIGRATE_SCHEMAS":
-        return ("SCHEMA_MODEL", "MIGRATE",
-                "Schema/model definition. Move to agentic_core/schemas/", "LOW")
+        return (
+            "SCHEMA_MODEL",
+            "MIGRATE",
+            "Schema/model definition. Move to agentic_core/schemas/",
+            "LOW",
+        )
 
     if status == "MIGRATE_SAFETY":
-        return ("SAFETY_COMPONENT", "MIGRATE",
-                "Security/safety component. Move to L5_safety/", "MEDIUM")
+        return (
+            "SAFETY_COMPONENT",
+            "MIGRATE",
+            "Security/safety component. Move to L5_safety/",
+            "MEDIUM",
+        )
 
     if status == "MIGRATE_MCP":
-        return ("MCP_COMPONENT", "MIGRATE",
-                "MCP integration. Move to L2_execution/mcp/", "MEDIUM")
+        return ("MCP_COMPONENT", "MIGRATE", "MCP integration. Move to L2_execution/mcp/", "MEDIUM")
 
     if status == "MIGRATE_CONFIG":
-        return ("CONFIG_FILE", "MIGRATE",
-                "Configuration. Move to agentic_core/config/", "LOW")
+        return ("CONFIG_FILE", "MIGRATE", "Configuration. Move to agentic_core/config/", "LOW")
 
     if status == "CHECK_DUPLICATE":
-        return ("POTENTIAL_DUPLICATE", "REVIEW",
-                "May have modern equivalent. Review before action.", "MEDIUM")
+        return (
+            "POTENTIAL_DUPLICATE",
+            "REVIEW",
+            "May have modern equivalent. Review before action.",
+            "MEDIUM",
+        )
 
     # Default cases
     if file_name == "__init__.py":
@@ -317,21 +379,27 @@ def classify_file(analysis: FileAnalysis) -> tuple[str, str, str, str]:
             return ("INIT_EXPORTS", "REVIEW", "Init with exports. May need updating.", "LOW")
 
     if analysis.extension == ".json":
-        return ("DATA_ASSET", "MIGRATE",
-                "JSON data asset. Move to agentic_core/schemas/models/data_assets/", "LOW")
+        return (
+            "DATA_ASSET",
+            "MIGRATE",
+            "JSON data asset. Move to agentic_core/schemas/models/data_assets/",
+            "LOW",
+        )
 
     if analysis.extension in [".yaml", ".yml"]:
-        return ("CONFIG_ASSET", "MIGRATE",
-                "YAML config. Move to agentic_core/config/", "LOW")
+        return ("CONFIG_ASSET", "MIGRATE", "YAML config. Move to agentic_core/config/", "LOW")
 
     if analysis.extension == ".md":
-        return ("DOCUMENTATION", "REVIEW",
-                "Documentation file. Review for relevance.", "LOW")
+        return ("DOCUMENTATION", "REVIEW", "Documentation file. Review for relevance.", "LOW")
 
     # Check for dangerous patterns
     if analysis.has_hardcoded_creds:
-        return ("DANGEROUS_CREDS", "DELETE_IMMEDIATELY",
-                "Contains hardcoded credentials! Security risk.", "CRITICAL")
+        return (
+            "DANGEROUS_CREDS",
+            "DELETE_IMMEDIATELY",
+            "Contains hardcoded credentials! Security risk.",
+            "CRITICAL",
+        )
 
     return ("UNKNOWN", "REVIEW", "Requires manual review.", "MEDIUM")
 
@@ -398,7 +466,7 @@ def analyze_file(file_path: Path, archive_base: Path) -> FileAnalysis:
     # Python-specific analysis
     if extension == ".py":
         try:
-            with open(file_path, encoding='utf-8', errors='ignore') as f:
+            with open(file_path, encoding="utf-8", errors="ignore") as f:
                 content = f.read()
 
             classes, imports, functions, docstring = parse_python_file(file_path)
@@ -514,9 +582,15 @@ def generate_markdown_report(all_analyses: list[FileAnalysis]) -> str:
     report.append("\n### Compliance Issues\n")
     report.append("| Issue | Count | Files |")
     report.append("|-------|-------|-------|")
-    report.append(f"| Snake_case Classes | {len(snake_case)} | {', '.join(a.path.name for a in snake_case[:3])}{'...' if len(snake_case) > 3 else ''} |")
-    report.append(f"| Hardcoded Credentials | {len(hardcoded)} | {'SECURITY RISK' if hardcoded else 'None'} |")
-    report.append(f"| Raw Prompt Strings | {len(raw_prompts)} | {', '.join(a.path.name for a in raw_prompts[:3])}{'...' if len(raw_prompts) > 3 else ''} |")
+    report.append(
+        f"| Snake_case Classes | {len(snake_case)} | {', '.join(a.path.name for a in snake_case[:3])}{'...' if len(snake_case) > 3 else ''} |"
+    )
+    report.append(
+        f"| Hardcoded Credentials | {len(hardcoded)} | {'SECURITY RISK' if hardcoded else 'None'} |"
+    )
+    report.append(
+        f"| Raw Prompt Strings | {len(raw_prompts)} | {', '.join(a.path.name for a in raw_prompts[:3])}{'...' if len(raw_prompts) > 3 else ''} |"
+    )
 
     # Detailed file table by archive
     for archive in TARGET_ARCHIVES:
@@ -525,7 +599,9 @@ def generate_markdown_report(all_analyses: list[FileAnalysis]) -> str:
             continue
 
         report.append(f"\n## archives/{archive}/ Analysis\n")
-        report.append(f"**Files:** {len(archive_files)} | **LOC:** {sum(a.line_count for a in archive_files):,}\n")
+        report.append(
+            f"**Files:** {len(archive_files)} | **LOC:** {sum(a.line_count for a in archive_files):,}\n"
+        )
 
         report.append("| Path | Size | LOC | Classes | Action | Target | Risk |")
         report.append("|------|------|-----|---------|--------|--------|------|")
@@ -535,10 +611,14 @@ def generate_markdown_report(all_analyses: list[FileAnalysis]) -> str:
             if len(a.classes) > 3:
                 class_names += "..."
 
-            report.append(f"| `{a.relative_path}` | {a.size_bytes:,}B | {a.line_count} | {class_names or '-'} | **{a.recommended_action}** | `{a.target_path}` | {a.risk_level} |")
+            report.append(
+                f"| `{a.relative_path}` | {a.size_bytes:,}B | {a.line_count} | {class_names or '-'} | **{a.recommended_action}** | `{a.target_path}` | {a.risk_level} |"
+            )
 
     # High-value migration candidates
-    migrate_files = [a for a in all_analyses if a.recommended_action == "MIGRATE" and a.line_count > 100]
+    migrate_files = [
+        a for a in all_analyses if a.recommended_action == "MIGRATE" and a.line_count > 100
+    ]
 
     report.append("\n## High-Value Migration Candidates (>100 LOC)\n")
     report.append("| File | LOC | Classes | Justification |")
@@ -554,10 +634,14 @@ def generate_markdown_report(all_analyses: list[FileAnalysis]) -> str:
         report.append("| Archive File | LOC | Modern Equivalent | Action |")
         report.append("|--------------|-----|-------------------|--------|")
         for a in merge_files:
-            report.append(f"| `{a.relative_path}` | {a.line_count} | `{a.modern_equivalent}` | Merge unique features |")
+            report.append(
+                f"| `{a.relative_path}` | {a.line_count} | `{a.modern_equivalent}` | Merge unique features |"
+            )
 
     # Delete candidates
-    delete_files = [a for a in all_analyses if a.recommended_action in ["DELETE", "DELETE_IMMEDIATELY"]]
+    delete_files = [
+        a for a in all_analyses if a.recommended_action in ["DELETE", "DELETE_IMMEDIATELY"]
+    ]
     if delete_files:
         report.append("\n## Delete Candidates\n")
         report.append("| File | Reason |")
@@ -574,7 +658,9 @@ def generate_markdown_report(all_analyses: list[FileAnalysis]) -> str:
         for cls in a.classes:
             bases = ", ".join(cls.bases) or "None"
             methods = len(cls.methods)
-            report.append(f"| `{cls.name}` | `{a.path.name}` | {bases} | {methods} | `{a.target_path}` |")
+            report.append(
+                f"| `{cls.name}` | `{a.path.name}` | {bases} | {methods} | `{a.target_path}` |"
+            )
 
     # Implementation plan
     report.append("\n## Implementation Plan\n")
@@ -585,7 +671,7 @@ def generate_markdown_report(all_analyses: list[FileAnalysis]) -> str:
     report.append("# 2. High-priority migrations (unique valuable code)")
     for a in migrate_files[:5]:
         if a.target_path:
-            target = a.target_path.rstrip('/') + '/' + a.path.name
+            target = a.target_path.rstrip("/") + "/" + a.path.name
             report.append(f"git mv archives/{a.relative_path} {target}")
     report.append("")
     report.append("# 3. Update imports (global replace)")
@@ -623,7 +709,7 @@ def main():
 
     # Write report
     report_path = PROJECT_ROOT / "ARCHIVE_MIGRATION_REPORT_2026.md"
-    with open(report_path, 'w', encoding='utf-8') as f:
+    with open(report_path, "w", encoding="utf-8") as f:
         f.write(report)
 
     print(f"\nReport saved to: {report_path}")
@@ -631,31 +717,35 @@ def main():
     # Also output JSON for programmatic use
     json_data = []
     for a in all_analyses:
-        json_data.append({
-            "path": str(a.path),
-            "relative_path": a.relative_path,
-            "size_bytes": a.size_bytes,
-            "line_count": a.line_count,
-            "extension": a.extension,
-            "hash": a.sha256_hash,
-            "classes": [{"name": c.name, "bases": c.bases, "methods": c.methods} for c in a.classes],
-            "imports": a.imports[:10],  # Limit for readability
-            "classification": a.classification,
-            "recommended_action": a.recommended_action,
-            "target_path": a.target_path,
-            "justification": a.justification,
-            "risk_level": a.risk_level,
-            "compliance": {
-                "snake_case_class": a.has_snake_case_class,
-                "hardcoded_creds": a.has_hardcoded_creds,
-                "raw_prompts": a.has_raw_prompts,
-                "mcp_usage": a.mcp_usage,
-                "llm_calls": a.llm_calls,
+        json_data.append(
+            {
+                "path": str(a.path),
+                "relative_path": a.relative_path,
+                "size_bytes": a.size_bytes,
+                "line_count": a.line_count,
+                "extension": a.extension,
+                "hash": a.sha256_hash,
+                "classes": [
+                    {"name": c.name, "bases": c.bases, "methods": c.methods} for c in a.classes
+                ],
+                "imports": a.imports[:10],  # Limit for readability
+                "classification": a.classification,
+                "recommended_action": a.recommended_action,
+                "target_path": a.target_path,
+                "justification": a.justification,
+                "risk_level": a.risk_level,
+                "compliance": {
+                    "snake_case_class": a.has_snake_case_class,
+                    "hardcoded_creds": a.has_hardcoded_creds,
+                    "raw_prompts": a.has_raw_prompts,
+                    "mcp_usage": a.mcp_usage,
+                    "llm_calls": a.llm_calls,
+                },
             }
-        })
+        )
 
     json_path = PROJECT_ROOT / "archive_migration_data.json"
-    with open(json_path, 'w', encoding='utf-8') as f:
+    with open(json_path, "w", encoding="utf-8") as f:
         json.dump(json_data, f, indent=2)
 
     print(f"JSON data saved to: {json_path}")

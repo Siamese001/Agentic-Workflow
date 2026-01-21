@@ -110,12 +110,14 @@ class SovereignReport:
                 if match:
                     line_num = int(match.group(1))
 
-                all_issues.append({
-                    "dimension": dimension,
-                    "description": message,
-                    "file": file_path,
-                    "line": line_num,
-                })
+                all_issues.append(
+                    {
+                        "dimension": dimension,
+                        "description": message,
+                        "file": file_path,
+                        "line": line_num,
+                    }
+                )
         return all_issues
 
     def print_summary(self) -> float:
@@ -123,9 +125,9 @@ class SovereignReport:
         Human-readable sovereignty Verdict.
         Returns overall score for programmatic use.
         """
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("SOVEREIGN MULTI-DIMENSIONAL AUDIT REPORT")
-        print("="*60)
+        print("=" * 60)
 
         overall = self.get_overall_score()
 
@@ -133,12 +135,12 @@ class SovereignReport:
             status = "[OK]" if score > 95 else "[WARN]" if score > 80 else "[FAIL]"
             print(f"{status} {dim:<20} : {score:.1f}%")
             if score < 100:
-                preview = ', '.join(str(i) for i in self.issues[dim][:3])
+                preview = ", ".join(str(i) for i in self.issues[dim][:3])
                 preview += "..." if len(self.issues[dim]) > 3 else ""
                 print(f"   Violations: {preview}")
 
         print("-" * 60)
         status = "SOVEREIGN" if overall > 95 else "VULNERABLE"
         print(f"OVERALL HEALTH: {overall:.1f}% -> {status}")
-        print("="*60)
+        print("=" * 60)
         return overall

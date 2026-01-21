@@ -66,7 +66,7 @@ async def health_check() -> dict[str, Any]:
     return {
         "status": "healthy",
         "version": "1.0.0",
-        "state_file_found": RUNTIME_STATE_FILE.exists()
+        "state_file_found": RUNTIME_STATE_FILE.exists(),
     }
 
 
@@ -100,7 +100,11 @@ async def post_meta_learning_experience(payload: ExperienceIn) -> dict[str, Any]
             reward=payload.reward,
         )
         _append_log(f"META store_experience {exp_id} reward={payload.reward}")
-        return {"status": "ok", "experience_id": exp_id, "total_experiences": meta_agent.total_experiences}
+        return {
+            "status": "ok",
+            "experience_id": exp_id,
+            "total_experiences": meta_agent.total_experiences,
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -119,13 +123,14 @@ async def get_api_latency() -> dict[str, Any]:
 # Phase 2 Endpoints - Enhanced Telemetry for Dashboard Live Runtime
 # ============================================================================
 
+
 def _safe_read_json(file_path: Path, retries: int = MAX_READ_RETRIES) -> dict[str, Any]:
     """Read JSON file with retry logic for concurrent access safety."""
     last_error = None
     for _attempt in range(retries):
         try:
             if file_path.exists():
-                content = file_path.read_text(encoding='utf-8')
+                content = file_path.read_text(encoding="utf-8")
                 if content.strip():  # Avoid empty file during write
                     return json.loads(content)
         except json.JSONDecodeError as e:
@@ -167,8 +172,8 @@ async def get_execution_timeline() -> list[dict[str, Any]]:
     """Get agent execution timeline from runtime_state.json."""
     try:
         if RUNTIME_STATE_FILE.exists():
-            state = json.loads(RUNTIME_STATE_FILE.read_text(encoding='utf-8'))
-            return state.get('execution_timeline', [])
+            state = json.loads(RUNTIME_STATE_FILE.read_text(encoding="utf-8"))
+            return state.get("execution_timeline", [])
         return []
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

@@ -18,43 +18,44 @@ from pathlib import Path
 # CONFIGURATION
 # ============================================================================
 
-ARCHIVES_ROOT = Path('archives')
-CURRENT_DIRS = ['agentic_core', 'apps_rg', 'apps_lic', 'apps_shared', 'scripts']
+ARCHIVES_ROOT = Path("archives")
+CURRENT_DIRS = ["agentic_core", "apps_rg", "apps_lic", "apps_shared", "scripts"]
 
 # Folders to EXCLUDE (duplicates/backups)
 EXCLUDE_FOLDERS = {
-    'identity_duplicates',
-    'hierarchy_violations',  # Contains many duplicates
-    'void_violations',  # Contains many duplicates
-    'location_violations',  # Contains many duplicates
-    '.sovereign_healing_backup',
-    'backups',
-    'healing_backups',
-    'fission_backups',
+    "identity_duplicates",
+    "hierarchy_violations",  # Contains many duplicates
+    "void_violations",  # Contains many duplicates
+    "location_violations",  # Contains many duplicates
+    ".sovereign_healing_backup",
+    "backups",
+    "healing_backups",
+    "fission_backups",
 }
 
 # Patterns in path to exclude
-EXCLUDE_PATTERNS = ['backup', 'duplicate', '__pycache__', '.git']
+EXCLUDE_PATTERNS = ["backup", "duplicate", "__pycache__", ".git"]
 
 # Files to skip
-SKIP_FILES = {'__init__.py', 'conftest.py', 'setup.py'}
+SKIP_FILES = {"__init__.py", "conftest.py", "setup.py"}
 
 # Priority folders (scan these first)
 PRIORITY_FOLDERS = [
-    'apps_lic',
-    'apps_rg',
-    'apps_shared',
-    'Reachout Engine Archive',
-    'legacy_agents',
-    'legacy_validators',
-    'legacy_orchestrators',
-    'consolidated_agents',
-    'deprecated_agents',
+    "apps_lic",
+    "apps_rg",
+    "apps_shared",
+    "Reachout Engine Archive",
+    "legacy_agents",
+    "legacy_validators",
+    "legacy_orchestrators",
+    "consolidated_agents",
+    "deprecated_agents",
 ]
 
 # ============================================================================
 # CODEBASE INDEX
 # ============================================================================
+
 
 def build_codebase_index() -> tuple[set[str], set[str], set[str]]:
     """Build index of classes, functions, and file hashes in current codebase."""
@@ -67,11 +68,11 @@ def build_codebase_index() -> tuple[set[str], set[str], set[str]]:
     for dir_path in CURRENT_DIRS:
         if not Path(dir_path).exists():
             continue
-        for py_file in Path(dir_path).rglob('*.py'):
-            if '__pycache__' in str(py_file) or 'archives' in str(py_file):
+        for py_file in Path(dir_path).rglob("*.py"):
+            if "__pycache__" in str(py_file) or "archives" in str(py_file):
                 continue
             try:
-                content = py_file.read_text(encoding='utf-8', errors='replace')
+                content = py_file.read_text(encoding="utf-8", errors="replace")
                 file_contents.add(hashlib.md5(content.encode()).hexdigest())
 
                 tree = ast.parse(content)
@@ -85,9 +86,11 @@ def build_codebase_index() -> tuple[set[str], set[str], set[str]]:
 
     return classes, functions, file_contents
 
+
 # ============================================================================
 # FILE ANALYSIS
 # ============================================================================
+
 
 def should_exclude_path(path: Path) -> bool:
     """Check if path should be excluded."""
@@ -105,15 +108,16 @@ def should_exclude_path(path: Path) -> bool:
 
     return False
 
+
 def analyze_file(file_path: Path, existing_classes: set[str], existing_functions: set[str]) -> dict:
     """Analyze a file for unique content."""
     try:
-        content = file_path.read_text(encoding='utf-8', errors='replace')
+        content = file_path.read_text(encoding="utf-8", errors="replace")
         tree = ast.parse(content)
     except SyntaxError:
-        return {'valid': False, 'error': 'syntax'}
+        return {"valid": False, "error": "syntax"}
     except Exception as e:
-        return {'valid': False, 'error': str(e)}
+        return {"valid": False, "error": str(e)}
 
     unique_agents = []
     unique_classes = []
@@ -123,7 +127,7 @@ def analyze_file(file_path: Path, existing_classes: set[str], existing_functions
     for node in ast.iter_child_nodes(tree):
         if isinstance(node, ast.ClassDef):
             name_lower = node.name.lower()
-            is_agent = node.name.endswith('Agent')
+            is_agent = node.name.endswith("Agent")
 
             if name_lower not in existing_classes:
                 if is_agent:
@@ -134,7 +138,7 @@ def analyze_file(file_path: Path, existing_classes: set[str], existing_functions
                 existing.append(node.name)
 
         elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
-            if not node.name.startswith('_'):
+            if not node.name.startswith("_"):
                 if node.name.lower() not in existing_functions:
                     unique_functions.append(node.name)
                 else:
@@ -149,37 +153,41 @@ def analyze_file(file_path: Path, existing_classes: set[str], existing_functions
     uniqueness = min(100, uniqueness)
 
     return {
-        'valid': True,
-        'unique_agents': unique_agents,
-        'unique_classes': unique_classes,
-        'unique_functions': unique_functions,
-        'existing': existing,
-        'uniqueness': uniqueness,
-        'loc': len(content.splitlines())
+        "valid": True,
+        "unique_agents": unique_agents,
+        "unique_classes": unique_classes,
+        "unique_functions": unique_functions,
+        "existing": existing,
+        "uniqueness": uniqueness,
+        "loc": len(content.splitlines()),
     }
+
 
 def infer_domain(file_path: Path, content: str = None) -> str:
     """Infer domain from path and content."""
     path_str = str(file_path).lower()
 
-    if 'lic' in path_str or 'outreach' in path_str or 'message' in path_str:
-        return 'outreach'
-    if 'rg' in path_str or 'resume' in path_str:
-        return 'resume'
-    return 'shared'
+    if "lic" in path_str or "outreach" in path_str or "message" in path_str:
+        return "outreach"
+    if "rg" in path_str or "resume" in path_str:
+        return "resume"
+    return "shared"
+
 
 def get_target_folder(domain: str, has_agents: bool) -> str:
     """Get target folder based on domain."""
-    if domain == 'outreach':
-        return 'apps_lic/engines/utils/' if not has_agents else 'apps_lic/engines/'
-    elif domain == 'resume':
-        return 'apps_rg/engines/utils/' if not has_agents else 'apps_rg/engines/'
+    if domain == "outreach":
+        return "apps_lic/engines/utils/" if not has_agents else "apps_lic/engines/"
+    elif domain == "resume":
+        return "apps_rg/engines/utils/" if not has_agents else "apps_rg/engines/"
     else:
-        return 'apps_shared/common_utils/' if not has_agents else 'apps_shared/base_agents/'
+        return "apps_shared/common_utils/" if not has_agents else "apps_shared/base_agents/"
+
 
 # ============================================================================
 # MAIN
 # ============================================================================
+
 
 def main():
     print("=" * 80)
@@ -210,15 +218,16 @@ def main():
             continue
 
         for file in files:
-            if not file.endswith('.py') or file in SKIP_FILES:
+            if not file.endswith(".py") or file in SKIP_FILES:
                 continue
 
             file_path = root_path / file
 
             # Check file hash for exact duplicates
             import hashlib
+
             try:
-                content = file_path.read_text(encoding='utf-8', errors='replace')
+                content = file_path.read_text(encoding="utf-8", errors="replace")
                 file_hash = hashlib.md5(content.encode()).hexdigest()
                 if file_hash in file_hashes:
                     continue  # Exact duplicate
@@ -228,39 +237,41 @@ def main():
             # Analyze file
             result = analyze_file(file_path, existing_classes, existing_functions)
 
-            if not result['valid']:
+            if not result["valid"]:
                 continue
 
-            if result['uniqueness'] >= 50:  # At least 50% unique
+            if result["uniqueness"] >= 50:  # At least 50% unique
                 domain = infer_domain(file_path)
-                has_agents = len(result['unique_agents']) > 0
+                has_agents = len(result["unique_agents"]) > 0
                 target = get_target_folder(domain, has_agents)
 
-                candidates.append({
-                    'path': file_path,
-                    'relative': str(file_path.relative_to(ARCHIVES_ROOT)),
-                    'unique_agents': result['unique_agents'],
-                    'unique_classes': result['unique_classes'],
-                    'unique_functions': result['unique_functions'],
-                    'uniqueness': result['uniqueness'],
-                    'domain': domain,
-                    'target': target,
-                    'loc': result['loc']
-                })
+                candidates.append(
+                    {
+                        "path": file_path,
+                        "relative": str(file_path.relative_to(ARCHIVES_ROOT)),
+                        "unique_agents": result["unique_agents"],
+                        "unique_classes": result["unique_classes"],
+                        "unique_functions": result["unique_functions"],
+                        "uniqueness": result["uniqueness"],
+                        "domain": domain,
+                        "target": target,
+                        "loc": result["loc"],
+                    }
+                )
 
     print(f"  Found {len(candidates)} unique files to restore")
     print(f"  Skipped folders: {skipped_folders}")
 
     # Sort by uniqueness
-    candidates.sort(key=lambda x: -x['uniqueness'])
+    candidates.sort(key=lambda x: -x["uniqueness"])
 
     # Show candidates
     print("\n[3/4] Restoration candidates...")
     print("-" * 60)
 
     for c in candidates[:30]:
-        agents = c['unique_agents']
-        classes = c['unique_classes'][:3]
+        agents = c["unique_agents"]
+        classes = c["unique_classes"][:3]
         print(f"\n  [{c['uniqueness']:.0f}%] {c['path'].name}")
         print(f"    Path: {c['relative']}")
         print(f"    Domain: {c['domain'].upper()}")
@@ -281,21 +292,21 @@ def main():
     skipped = 0
 
     for c in candidates:
-        src = c['path']
-        target_dir = Path(c['target'])
+        src = c["path"]
+        target_dir = Path(c["target"])
         target_dir.mkdir(parents=True, exist_ok=True)
 
         # Generate PascalCase filename
-        if c['unique_agents']:
-            dst_name = c['unique_agents'][0] + '.py'
+        if c["unique_agents"]:
+            dst_name = c["unique_agents"][0] + ".py"
         else:
             # Convert snake_case to PascalCase
             name = src.stem
-            if '_' in name:
-                parts = name.split('_')
-                dst_name = ''.join(p.capitalize() for p in parts) + '.py'
+            if "_" in name:
+                parts = name.split("_")
+                dst_name = "".join(p.capitalize() for p in parts) + ".py"
             else:
-                dst_name = name[0].upper() + name[1:] + '.py' if name else src.name
+                dst_name = name[0].upper() + name[1:] + ".py" if name else src.name
 
         dst = target_dir / dst_name
 
@@ -314,5 +325,6 @@ def main():
     print(f"  Skipped (exists): {skipped} files")
     print(f"  Total candidates: {len(candidates)} files")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

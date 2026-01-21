@@ -24,6 +24,7 @@ Usage:
     # After file modifications (healers):
     cache.invalidate()
 """
+
 from __future__ import annotations
 
 import logging
@@ -48,21 +49,21 @@ class FileCache:
 
     # Directories to exclude from all scans (pruned during os.walk)
     EXCLUDED_DIRS: set[str] = {
-        '.git',
-        '__pycache__',
-        '.sovereign_healing_backup',
-        'healing_backups',
-        'node_modules',
-        '.venv',
-        'venv',
-        '.pytest_cache',
-        '.mypy_cache',
-        'coverage_html',
-        '.tox',
-        'dist',
-        'build',
-        '.idea',
-        '.vscode',
+        ".git",
+        "__pycache__",
+        ".sovereign_healing_backup",
+        "healing_backups",
+        "node_modules",
+        ".venv",
+        "venv",
+        ".pytest_cache",
+        ".mypy_cache",
+        "coverage_html",
+        ".tox",
+        "dist",
+        "build",
+        ".idea",
+        ".vscode",
     }
 
     def __init__(self, project_root: Path | None = None):
@@ -111,11 +112,11 @@ class FileCache:
 
         # Walk up looking for project markers
         for parent in [current] + list(current.parents):
-            if (parent / 'agentic_core').is_dir() and (parent / 'tests').is_dir():
+            if (parent / "agentic_core").is_dir() and (parent / "tests").is_dir():
                 return parent
-            if (parent / 'pyproject.toml').exists():
+            if (parent / "pyproject.toml").exists():
                 return parent
-            if (parent / '.git').is_dir():
+            if (parent / ".git").is_dir():
                 return parent
 
         # Fallback to parent of agentic_core
@@ -141,16 +142,18 @@ class FileCache:
             for root, dirs, files in os.walk(self._project_root):
                 # Prune excluded directories in-place (CRITICAL for performance)
                 # This prevents os.walk from descending into .git, __pycache__, etc.
-                dirs[:] = [d for d in dirs if d not in self.EXCLUDED_DIRS and not d.endswith('.egg-info')]
+                dirs[:] = [
+                    d for d in dirs if d not in self.EXCLUDED_DIRS and not d.endswith(".egg-info")
+                ]
 
                 for file in files:
                     file_path = Path(root) / file
                     new_files["all"].append(file_path)
 
                     suffix = file_path.suffix.lower()
-                    if suffix == '.py' or suffix == '.pyi':
+                    if suffix == ".py" or suffix == ".pyi":
                         new_files["python"].append(file_path)
-                    elif suffix in {'.md', '.markdown'}:
+                    elif suffix in {".md", ".markdown"}:
                         new_files["markdown"].append(file_path)
 
         except PermissionError as e:
@@ -185,8 +188,8 @@ class FileCache:
             List of file paths with the specified extension
         """
         # Normalize extension
-        if not ext.startswith('.'):
-            ext = f'.{ext}'
+        if not ext.startswith("."):
+            ext = f".{ext}"
         ext = ext.lower()
 
         with self._cache_lock:
@@ -194,9 +197,9 @@ class FileCache:
                 self._scan()
 
             # Return from pre-computed categories if available
-            if ext in {'.py', '.pyi'}:
+            if ext in {".py", ".pyi"}:
                 return [f for f in self._files.get("python", []) if f.suffix.lower() == ext]
-            elif ext in {'.md', '.markdown'}:
+            elif ext in {".md", ".markdown"}:
                 return [f for f in self._files.get("markdown", []) if f.suffix.lower() == ext]
 
             # Filter from all files for other extensions
@@ -298,8 +301,8 @@ def invalidate_cache() -> None:
 
 
 __all__ = [
-    'FileCache',
-    'get_python_files',
-    'get_all_files',
-    'invalidate_cache',
+    "FileCache",
+    "get_python_files",
+    "get_all_files",
+    "invalidate_cache",
 ]

@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: guardrail, healer, memory
@@ -24,9 +23,11 @@ except ImportError:
     def publish_event(event_type: str, payload: dict) -> Any:
         """Execute publish_event operation."""
         print(f"[CoverageAgent] Event published (stub): {event_type} = {payload}")
+
     def subscribe_event(event_type: str, handler) -> Any:
         """Execute subscribe_event operation."""
         print(f"[CoverageAgent] Event subscription (stub): {event_type}")
+
 
 try:
     from agentic_core.L3_orchestration.workflow_engines.task_queue import enqueue
@@ -36,21 +37,24 @@ except ImportError:
         """Execute enqueue operation."""
         print(f"[CoverageAgent] Task enqueued (stub): {task_payload['task_id']}")
 
+
 # Use the canonical base for metric-related agents (observed pattern in MetricsAgent/BenchmarkingAgent)
 # If no specific base exists, fall back to a lightweight object; adjust if your MetricsAgent inherits something specific
 @dataclass
 class CoverageAgent(SovereignBaseAgent):
     """CoverageAgent agent for autonomous operations."""
+
     def __init__(
         self,
         layers: list[str] | None = None,
         threshold_entropy: float = 2.2,  # Tuned lower than max for early triggers (base-2; ~12 layers → max ~3.58)
         dashboard_api_url: str = "http://localhost:8000/api/metrics",
         intervention_mode: str = "full_active",  # Options: "report" (log only), "bias_only", "full_active" (bias + inject)
-        bias_weight: float = 4.0,                # Selection score multiplier (tunable; 3-5 recommended)
-        bias_duration_cycles: int = 30,          # How many orchestration cycles to sustain bias
-        synthetic_tasks_per_trigger: int = 10,   # Safe no-ops injected per act() imbalance detection
-        priority_boost_layers: list[str] | None = None, # Ordered forced exploration (Phase roadmap)
+        bias_weight: float = 4.0,  # Selection score multiplier (tunable; 3-5 recommended)
+        bias_duration_cycles: int = 30,  # How many orchestration cycles to sustain bias
+        synthetic_tasks_per_trigger: int = 10,  # Safe no-ops injected per act() imbalance detection
+        priority_boost_layers: list[str]
+        | None = None,  # Ordered forced exploration (Phase roadmap)
     ) -> None:
         """
         Initialize coverage agent.
@@ -67,9 +71,20 @@ class CoverageAgent(SovereignBaseAgent):
         """
         self.name: str = "CoverageAgent"
         self.layers: list[str] = layers or [
-            "L0_maintenance", "L1_cognition", "L2_execution", "L3_orchestration",
-            "L4_state", "L5_safety", "config", "schemas", "prompt_governance",
-            "observability", "utils", "apps_rg", "apps_lic", "apps_shared"
+            "L0_maintenance",
+            "L1_cognition",
+            "L2_execution",
+            "L3_orchestration",
+            "L4_state",
+            "L5_safety",
+            "config",
+            "schemas",
+            "prompt_governance",
+            "observability",
+            "utils",
+            "apps_rg",
+            "apps_lic",
+            "apps_shared",
         ]  # SSOT-derived major territories from blueprint
         self.threshold_entropy: float = threshold_entropy
         self.dashboard_api_url: str = dashboard_api_url
@@ -78,11 +93,11 @@ class CoverageAgent(SovereignBaseAgent):
         self.bias_duration_cycles: int = bias_duration_cycles
         self.synthetic_tasks_per_trigger: int = synthetic_tasks_per_trigger
         self.priority_boost_layers: list[str] = priority_boost_layers or [
-            "L5_safety",    # Phase 2 target (highest risk)
-            "L4_state",     # Phase 3
-            "L1_cognition", # Phase 4
+            "L5_safety",  # Phase 2 target (highest risk)
+            "L4_state",  # Phase 3
+            "L1_cognition",  # Phase 4
             "observability",
-            "utils"
+            "utils",
         ]
         # PHASE 8: Subscribe to parameter updates from MetaCoverageOptimizerAgent
         subscribe_event("coverage_params_updated", self._handle_param_update)
@@ -94,7 +109,9 @@ class CoverageAgent(SovereignBaseAgent):
             print(f"[{self.name}] Updated bias_weight to {self.bias_weight}")
         if "synthetic_tasks_per_trigger" in event_data:
             self.synthetic_tasks_per_trigger = event_data["synthetic_tasks_per_trigger"]
-            print(f"[{self.name}] Updated synthetic_tasks_per_trigger to {self.synthetic_tasks_per_trigger}")
+            print(
+                f"[{self.name}] Updated synthetic_tasks_per_trigger to {self.synthetic_tasks_per_trigger}"
+            )
 
     def _fetch_metrics(self) -> dict[str, int] | None:
         """Pull layer activation counts from dashboard backend."""
@@ -134,14 +151,17 @@ class CoverageAgent(SovereignBaseAgent):
 
         report = (
             f"{self.name}: Entropy={entropy:.2f}/{np.log2(len(self.layers)):.2f} "
-            f"({(entropy/np.log2(len(self.layers))*100):.1f}% max). "
+            f"({(entropy / np.log2(len(self.layers)) * 100):.1f}% max). "
         )
 
         if entropy < self.threshold_entropy:
             # Prioritize from roadmap list
             underrepresented = min(
                 proportions,
-                key=lambda k: (proportions[k], -self.priority_boost_layers.index(k) if k in self.priority_boost_layers else 99)
+                key=lambda k: (
+                    proportions[k],
+                    -self.priority_boost_layers.index(k) if k in self.priority_boost_layers else 99,
+                ),
             )
             report += (
                 f"IMBALANCE DETECTED — Underrepresented: {underrepresented} "
@@ -155,7 +175,9 @@ class CoverageAgent(SovereignBaseAgent):
                 self._inject_synthetic_exercises(underrepresented)
 
             # Console output for monitoring
-            print(f"[CoverageAgent] INTERVENTION TRIGGERED: bias on {underrepresented}, {self.synthetic_tasks_per_trigger} tasks injected")
+            print(
+                f"[CoverageAgent] INTERVENTION TRIGGERED: bias on {underrepresented}, {self.synthetic_tasks_per_trigger} tasks injected"
+            )
 
         else:
             report += "Coverage balanced."
@@ -164,18 +186,26 @@ class CoverageAgent(SovereignBaseAgent):
 
     def _apply_routing_bias(self, layer: str) -> None:
         """Publish bias event — orchestrator subscribes and applies multiplier."""
-        priority_index = self.priority_boost_layers.index(layer) if layer in self.priority_boost_layers else 99
-        effective_weight = self.bias_weight + (5 - priority_index)  # Extra boost for roadmap priorities
-        publish_event("coverage_bias_update", {
-            "underrepresented_layer": layer,
-            "selection_weight_multiplier": effective_weight,
-            "remaining_orchestration_cycles": self.bias_duration_cycles,
-            "trigger_timestamp": time.time(),
-        })
+        priority_index = (
+            self.priority_boost_layers.index(layer) if layer in self.priority_boost_layers else 99
+        )
+        effective_weight = self.bias_weight + (
+            5 - priority_index
+        )  # Extra boost for roadmap priorities
+        publish_event(
+            "coverage_bias_update",
+            {
+                "underrepresented_layer": layer,
+                "selection_weight_multiplier": effective_weight,
+                "remaining_orchestration_cycles": self.bias_duration_cycles,
+                "trigger_timestamp": time.time(),
+            },
+        )
 
     def _inject_synthetic_exercises(self, layer: str) -> None:
         """Enqueue safe no-op tasks targeting layer — direct metric increment."""
         from agentic_core.L5_safety.validators.structure_blueprint import EXERCISER_REGISTRY
+
         exerciser_class_name = EXERCISER_REGISTRY.get(layer, "GeneralExerciserAgent")
         for _i in range(self.synthetic_tasks_per_trigger):
             task_payload = {
@@ -198,9 +228,11 @@ class CoverageAgent(SovereignBaseAgent):
             results["tests"].append({"name": "test_instantiation", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
+            results["tests"].append(
+                {"name": "test_instantiation", "status": "failed", "error": str(e)}
+            )
         return results
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()

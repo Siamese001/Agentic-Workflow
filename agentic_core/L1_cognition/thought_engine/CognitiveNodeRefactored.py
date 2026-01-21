@@ -46,7 +46,7 @@ class CognitiveNodeRefactored:
         self.node_metrics = {
             "perception": {"calls": 0, "total_time": 0.0},
             "reasoning": {"calls": 0, "total_time": 0.0},
-            "action": {"calls": 0, "total_time": 0.0}
+            "action": {"calls": 0, "total_time": 0.0},
         }
         self.total_processes = 0
         self.lazy_evaluations = 0
@@ -95,7 +95,9 @@ class CognitiveNodeRefactored:
 
         return output
 
-    async def process_async(self, raw_input: dict[str, Any], context: dict[str, Any]) -> dict[str, Any]:
+    async def process_async(
+        self, raw_input: dict[str, Any], context: dict[str, Any]
+    ) -> dict[str, Any]:
         """
         Parallel cognitive processing with async/await.
 
@@ -120,12 +122,8 @@ class CognitiveNodeRefactored:
 
         # Parallel perception + memory prefetch
         start = time.time()
-        perception_task = asyncio.create_task(
-            self.perception.process_async(raw_input, context)
-        )
-        memory_task = asyncio.create_task(
-            self._lazy_memory_prefetch(context)
-        )
+        perception_task = asyncio.create_task(self.perception.process_async(raw_input, context))
+        memory_task = asyncio.create_task(self._lazy_memory_prefetch(context))
 
         perceived = await perception_task
         memory = await memory_task
@@ -136,10 +134,7 @@ class CognitiveNodeRefactored:
         if self._is_simple_intent(perceived):
             self.lazy_evaluations += 1
             start = time.time()
-            output = await asyncio.to_thread(
-                self.action.act_simple,
-                perceived
-            )
+            output = await asyncio.to_thread(self.action.act_simple, perceived)
             self._record_metric("action", time.time() - start)
         else:
             # Full async reasoning pipeline
@@ -187,11 +182,7 @@ class CognitiveNodeRefactored:
         confidence = perceived.get("confidence", 0.0)
         intent = perceived.get("intent", "")
 
-        return (
-            query_len < 50 and
-            confidence > 0.8 and
-            intent in ["action", "memory"]
-        )
+        return query_len < 50 and confidence > 0.8 and intent in ["action", "memory"]
 
     async def _lazy_memory_prefetch(self, context: dict[str, Any]) -> list[dict[str, Any]]:
         """
@@ -224,9 +215,11 @@ class CognitiveNodeRefactored:
         stats = {
             "total_processes": self.total_processes,
             "lazy_evaluations": self.lazy_evaluations,
-            "lazy_rate": (self.lazy_evaluations / self.total_processes * 100) if self.total_processes > 0 else 0,
+            "lazy_rate": (self.lazy_evaluations / self.total_processes * 100)
+            if self.total_processes > 0
+            else 0,
             "cache_size": len(self.cache),
-            "nodes": {}
+            "nodes": {},
         }
 
         # Per-node statistics
@@ -238,7 +231,7 @@ class CognitiveNodeRefactored:
             stats["nodes"][node_name] = {
                 "calls": calls,
                 "total_time": total_time,
-                "avg_time": avg_time
+                "avg_time": avg_time,
             }
 
         # Sub-node statistics

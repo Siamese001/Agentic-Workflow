@@ -14,6 +14,7 @@ Original monolithic functions have been decomposed into:
 For new code, prefer importing and using agents directly:
     from apps_lic.agents import LeadVettingAgent, ResilientPipelineAgent
 """
+
 import asyncio
 import json
 import os
@@ -47,13 +48,18 @@ from network_utils import strict_egress_filter
 SHADOW_MODE_ACTIVE = os.environ.get("AGENT_MODE", "PRODUCTION") == "SHADOW"
 
 OUTREACH_ALLOWED_HOSTS = [
-    "api.openai.com", "anthropic.com", "genai.google.com",
-    "smtp.sendgrid.net", "mailgun.com",
-    "linkedin.com", "www.linkedin.com"
+    "api.openai.com",
+    "anthropic.com",
+    "genai.google.com",
+    "smtp.sendgrid.net",
+    "mailgun.com",
+    "linkedin.com",
+    "www.linkedin.com",
 ]
 
 
 # === Shared Helper Functions (kept in orchestrator) ===
+
 
 @strict_egress_filter(allowed_domains=OUTREACH_ALLOWED_HOSTS)
 def _fetch_company_content(url: str, fetch_tool: Any, max_length: int = 1000) -> str | None:
@@ -64,7 +70,10 @@ def _fetch_company_content(url: str, fetch_tool: Any, max_length: int = 1000) ->
 # === BACKWARD-COMPATIBLE WRAPPER FUNCTIONS ===
 # These wrap the new agents to maintain compatibility with existing callers
 
-def automated_lead_vetting(company_url: str, user_name: str, tools: dict[str, Any], Logger: Any | None = None) -> dict[str, Any]:
+
+def automated_lead_vetting(
+    company_url: str, user_name: str, tools: dict[str, Any], Logger: Any | None = None
+) -> dict[str, Any]:
     """
     DEPRECATED: Use LeadVettingAgent directly for new code.
 
@@ -74,7 +83,13 @@ def automated_lead_vetting(company_url: str, user_name: str, tools: dict[str, An
     return asyncio.run(agent.execute(company_url, user_name, tools, Logger))
 
 
-def vet_lead_optimal_time(lead_email: str, lead_timezone: str, pitch_body: str, tools: dict[str, Any], Logger: Any | None = None) -> dict[str, Any]:
+def vet_lead_optimal_time(
+    lead_email: str,
+    lead_timezone: str,
+    pitch_body: str,
+    tools: dict[str, Any],
+    Logger: Any | None = None,
+) -> dict[str, Any]:
     """
     DEPRECATED: Use OptimalTimeSchedulerAgent directly for new code.
 
@@ -84,7 +99,13 @@ def vet_lead_optimal_time(lead_email: str, lead_timezone: str, pitch_body: str, 
     return asyncio.run(agent.execute(lead_email, lead_timezone, pitch_body, tools, Logger))
 
 
-def execute_autonomous_job_application(app_url: str, user_name: str, code_sample_path: str, tools: dict[str, Any], Logger: Any | None = None) -> dict[str, Any]:
+def execute_autonomous_job_application(
+    app_url: str,
+    user_name: str,
+    code_sample_path: str,
+    tools: dict[str, Any],
+    Logger: Any | None = None,
+) -> dict[str, Any]:
     """
     DEPRECATED: Use JobApplicationAgent directly for new code.
 
@@ -94,7 +115,9 @@ def execute_autonomous_job_application(app_url: str, user_name: str, code_sample
     return asyncio.run(agent.execute(app_url, user_name, code_sample_path, tools, Logger))
 
 
-def adaptive_browser_session(target_url: str, tools: dict[str, Any] = None, Logger: Any | None = None) -> dict[str, Any]:
+def adaptive_browser_session(
+    target_url: str, tools: dict[str, Any] = None, Logger: Any | None = None
+) -> dict[str, Any]:
     """
     DEPRECATED: Use BrowserSessionAgent directly for new code.
 
@@ -104,17 +127,23 @@ def adaptive_browser_session(target_url: str, tools: dict[str, Any] = None, Logg
     return asyncio.run(agent.execute(target_url, tools, max_retries=3, Logger=Logger))
 
 
-def execute_resilient_application_pipeline(app_url: str, user_name: str, max_retries: int = 3, Logger: Any | None = None) -> dict[str, Any]:
+def execute_resilient_application_pipeline(
+    app_url: str, user_name: str, max_retries: int = 3, Logger: Any | None = None
+) -> dict[str, Any]:
     """
     DEPRECATED: Use ResilientPipelineAgent directly for new code.
 
     Backward-compatible wrapper that delegates to ResilientPipelineAgent.
     """
     agent = ResilientPipelineAgent()
-    return asyncio.run(agent.execute(app_url, user_name, tools=None, max_retries=max_retries, Logger=Logger))
+    return asyncio.run(
+        agent.execute(app_url, user_name, tools=None, max_retries=max_retries, Logger=Logger)
+    )
 
 
-def execute_resilient_application_pipeline_hardened(app_url: str, user_name: str, max_retries: int = 3, Logger: Any | None = None) -> dict[str, Any]:
+def execute_resilient_application_pipeline_hardened(
+    app_url: str, user_name: str, max_retries: int = 3, Logger: Any | None = None
+) -> dict[str, Any]:
     """
     DEPRECATED: Use ResilientPipelineAgent directly for new code.
 
@@ -126,7 +155,16 @@ def execute_resilient_application_pipeline_hardened(app_url: str, user_name: str
 
 # === FUNCTIONS KEPT IN ORCHESTRATOR (Not yet agent-converted) ===
 
-def vet_lead_snapshot_outreach(lead_profile_url: str, lead_email: str, user_name: str, pitch_topic: str, expected_title: str, tools: dict[str, Any], Logger: Any | None = None) -> dict[str, Any]:
+
+def vet_lead_snapshot_outreach(
+    lead_profile_url: str,
+    lead_email: str,
+    user_name: str,
+    pitch_topic: str,
+    expected_title: str,
+    tools: dict[str, Any],
+    Logger: Any | None = None,
+) -> dict[str, Any]:
     """
     Refined 'Lead Snapshot Vetting' (Outreach Engine). Uses L2 Playwright for efficient, verified context capture
     before committing to the outreach action, adhering to the 22/100 connection budget.
@@ -135,17 +173,18 @@ def vet_lead_snapshot_outreach(lead_profile_url: str, lead_email: str, user_name
     """
     if Logger:
         Logger.info(
-            f"📸 Starting efficient L2 Snapshot Vetting for {lead_email} (Budget: 78 remaining connections).")
+            f"📸 Starting efficient L2 Snapshot Vetting for {lead_email} (Budget: 78 remaining connections)."
+        )
 
     snapshot_file_path = f"snapshots/{lead_email.split('@')[0]}_profile.png"
 
     # Extract Playwright MCP tools
-    browser_navigate_tool = tools.get('browser_navigate')
-    browser_verify_text_visible = tools.get('browser_verify_text_visible')
-    browser_snapshot = tools.get('browser_snapshot')
-    search_nodes = tools.get('search_nodes')
-    search_records_tool = tools.get('search_records')
-    send_email = tools.get('send_email')
+    browser_navigate_tool = tools.get("browser_navigate")
+    browser_verify_text_visible = tools.get("browser_verify_text_visible")
+    browser_snapshot = tools.get("browser_snapshot")
+    search_nodes = tools.get("search_nodes")
+    search_records_tool = tools.get("search_records")
+    send_email = tools.get("send_email")
 
     # Step 1: Capture and Verify Live Context (L2 Playwright)
     try:
@@ -157,23 +196,31 @@ def vet_lead_snapshot_outreach(lead_profile_url: str, lead_email: str, user_name
         browser_snapshot(filename=snapshot_file_path)
 
         if Logger:
-            Logger.info(f"✅ Playwright connection successful. Verified '{expected_title}' and snapshot saved.")
+            Logger.info(
+                f"✅ Playwright connection successful. Verified '{expected_title}' and snapshot saved."
+            )
 
     except Exception as e:
         if Logger:
-            Logger.warning(f"⚠️ Playwright L2 failed (Connection Budget Protected: {e}). Falling back to static context.")
+            Logger.warning(
+                f"⚠️ Playwright L2 failed (Connection Budget Protected: {e}). Falling back to static context."
+            )
         snapshot_file_path = "N/A (L2 connection failed or verification failed)"
 
     # Step 2 & 3: Retrieve Personalization & Canonical Pitch (L5/L3)
     try:
-        relation_query = f"User {user_name} relationship to lead {lead_email} and preferred outreach style."
+        relation_query = (
+            f"User {user_name} relationship to lead {lead_email} and preferred outreach style."
+        )
         user_context_str = search_nodes(query=relation_query)
         user_context = json.loads(user_context_str)
 
         pitch_query = f"Best outreach pitch template for topic '{pitch_topic}' in {user_context.get('style', 'formal')} style."
-        search_result_str = search_records_tool(query=pitch_query, index="outreach_templates", top_k=1)
+        search_result_str = search_records_tool(
+            query=pitch_query, index="outreach_templates", top_k=1
+        )
         search_result = json.loads(search_result_str)
-        canonical_pitch = search_result[0].get('text', 'Placeholder pitch content.')
+        canonical_pitch = search_result[0].get("text", "Placeholder pitch content.")
 
     except Exception as e:
         if Logger:
@@ -193,19 +240,23 @@ def vet_lead_snapshot_outreach(lead_profile_url: str, lead_email: str, user_name
 
     try:
         send_result = send_email(recipient=lead_email, subject=final_subject, body=final_body)
-        search_nodes(query=f"Add observation: Sent outreach to {lead_email}. Snapshot status: {snapshot_file_path}.")
+        search_nodes(
+            query=f"Add observation: Sent outreach to {lead_email}. Snapshot status: {snapshot_file_path}."
+        )
 
         return {
             "status": "outreach_dispatched",
             "message": "Outreach successfully dispatched and logged to MEMemory.",
             "snapshot_path": snapshot_file_path,
-            "send_result": send_result
+            "send_result": send_result,
         }
     except Exception as e:
         return {"status": "error", "message": f"Send Email MCP failed: {e}"}
 
 
-def brand_compliant_outreach(company_url: str, user_name: str, brand_id: str = "default", Logger: Any | None = None) -> dict[str, Any]:
+def brand_compliant_outreach(
+    company_url: str, user_name: str, brand_id: str = "default", Logger: Any | None = None
+) -> dict[str, Any]:
     """
     Outreach sequence with brand compliance and cost-controlled search.
     Integrates Figma (L2) for brand guidelines and rate-limited Brave Search (L1/L3).
@@ -226,7 +277,7 @@ def brand_compliant_outreach(company_url: str, user_name: str, brand_id: str = "
         brand_guidelines = {
             "colors": ["#000000", "#FFFFFF"],
             "tone": "professional",
-            "_fallback": True
+            "_fallback": True,
         }
 
     # 2. Perform cost-controlled company research
@@ -250,13 +301,13 @@ def brand_compliant_outreach(company_url: str, user_name: str, brand_id: str = "
 
     # 3. Generate brand-compliant outreach content
     outreach_content = f"""
-Subject: Partnership Opportunity with {brand_guidelines.get('company_name', 'Your Company')}
+Subject: Partnership Opportunity with {brand_guidelines.get("company_name", "Your Company")}
 
-Dear {company_info.get('contact_name', 'Hiring Manager')},
+Dear {company_info.get("contact_name", "Hiring Manager")},
 
 I hope this message finds you well. I'm reaching out regarding potential opportunities at {company_url}.
 
-Our team specializes in {brand_guidelines.get('specialization', 'innovative solutions')} that align with your company's goals.
+Our team specializes in {brand_guidelines.get("specialization", "innovative solutions")} that align with your company's goals.
 
 Best regards,
 {user_name}
@@ -264,35 +315,38 @@ Best regards,
 
     # 4. Validate brand compliance
     compliance_result = ensure_brand_compliance(
-        content=outreach_content,
-        brand_guidelines=brand_guidelines,
-        Logger=Logger
+        content=outreach_content, brand_guidelines=brand_guidelines, Logger=Logger
     )
 
     # 5. Log compliance check to MEMory (L5)
     try:
-        add_observations(observations=[{
-            "entityName": "OutreachCompliance",
-            "contents": [
-                f"Brand compliance check for {company_url}",
-                f"Status: {'COMPLIANT' if compliance_result['compliant'] else 'NON_COMPLIANT'}",
-                f"Issues: {compliance_result.get('issues', [])}",
-                f"Brand ID: {brand_id}"
+        add_observations(
+            observations=[
+                {
+                    "entityName": "OutreachCompliance",
+                    "contents": [
+                        f"Brand compliance check for {company_url}",
+                        f"Status: {'COMPLIANT' if compliance_result['compliant'] else 'NON_COMPLIANT'}",
+                        f"Issues: {compliance_result.get('issues', [])}",
+                        f"Brand ID: {brand_id}",
+                    ],
+                }
             ]
-        }])
+        )
     except Exception:
         pass
 
     return {
-        "status": "ready" if compliance_result['compliant'] else "non_compliant",
+        "status": "ready" if compliance_result["compliant"] else "non_compliant",
         "message": f"Outreach content {'complies' if compliance_result['compliant'] else 'does not comply'} with brand guidelines",
         "content": outreach_content,
         "compliance_result": compliance_result,
-        "brand_source": "figma" if not brand_guidelines.get('_fallback') else "fallback"
+        "brand_source": "figma" if not brand_guidelines.get("_fallback") else "fallback",
     }
 
 
 # === NEW UNIFIED ENTRYPOINT ===
+
 
 async def run_outreach_engine(workflow: str, **kwargs) -> dict[str, Any]:
     """
@@ -316,27 +370,41 @@ async def run_outreach_engine(workflow: str, **kwargs) -> dict[str, Any]:
     """
     workflows = {
         "lead_vetting": lambda: LeadVettingAgent().execute(
-            kwargs['company_url'], kwargs['user_name'], kwargs['tools'], kwargs.get('Logger')
+            kwargs["company_url"], kwargs["user_name"], kwargs["tools"], kwargs.get("Logger")
         ),
         "optimal_time": lambda: OptimalTimeSchedulerAgent().execute(
-            kwargs['lead_email'], kwargs['lead_timezone'], kwargs['pitch_body'],
-            kwargs['tools'], kwargs.get('Logger')
+            kwargs["lead_email"],
+            kwargs["lead_timezone"],
+            kwargs["pitch_body"],
+            kwargs["tools"],
+            kwargs.get("Logger"),
         ),
         "job_application": lambda: JobApplicationAgent().execute(
-            kwargs['app_url'], kwargs['user_name'], kwargs['code_sample_path'],
-            kwargs['tools'], kwargs.get('Logger')
+            kwargs["app_url"],
+            kwargs["user_name"],
+            kwargs["code_sample_path"],
+            kwargs["tools"],
+            kwargs.get("Logger"),
         ),
         "browser_session": lambda: BrowserSessionAgent().execute(
-            kwargs['target_url'], kwargs.get('tools'), kwargs.get('max_retries', 3),
-            kwargs.get('Logger')
+            kwargs["target_url"],
+            kwargs.get("tools"),
+            kwargs.get("max_retries", 3),
+            kwargs.get("Logger"),
         ),
         "resilient_pipeline": lambda: ResilientPipelineAgent().execute(
-            kwargs['app_url'], kwargs['user_name'], kwargs.get('tools'),
-            kwargs.get('max_retries', 3), kwargs.get('Logger')
+            kwargs["app_url"],
+            kwargs["user_name"],
+            kwargs.get("tools"),
+            kwargs.get("max_retries", 3),
+            kwargs.get("Logger"),
         ),
     }
 
     if workflow not in workflows:
-        return {"status": "error", "message": f"Unknown workflow: {workflow}. Available: {list(workflows.keys())}"}
+        return {
+            "status": "error",
+            "message": f"Unknown workflow: {workflow}. Available: {list(workflows.keys())}",
+        }
 
     return await workflows[workflow]()

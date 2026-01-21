@@ -5,12 +5,15 @@ Recalculate Code Quality Scores in Dashboard
 Updates the Code Quality Score formula from simple average (Typed + Documented) / 2
 to weighted composite: (Typed × 0.30) + (Documented × 0.30) + (Schema × 0.25) + (Canonical × 0.15)
 """
+
 import re
 import sys
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent
-DASHBOARD_PATH = PROJECT_ROOT / "agentic_core" / "L6_observability" / "dashboards" / "autonomy_dashboard.html"
+DASHBOARD_PATH = (
+    PROJECT_ROOT / "agentic_core" / "L6_observability" / "dashboards" / "autonomy_dashboard.html"
+)
 
 
 def calculate_code_quality_score(typed_pct, documented_pct, schema_pct, canonical_pct):
@@ -25,19 +28,14 @@ def calculate_code_quality_score(typed_pct, documented_pct, schema_pct, canonica
     - Schema Strictness %: 25% - Important for data validation and contracts
     - Canonical Inheritance %: 15% - Architectural compliance, less critical than others
     """
-    score = (
-        typed_pct * 0.30 +
-        documented_pct * 0.30 +
-        schema_pct * 0.25 +
-        canonical_pct * 0.15
-    )
+    score = typed_pct * 0.30 + documented_pct * 0.30 + schema_pct * 0.25 + canonical_pct * 0.15
     return round(score, 1)
 
 
 def extract_territory_data(content):
     """Extract all territory data blocks from dashboard."""
     # Find the dashboardData array
-    match = re.search(r'const dashboardData = \[(.*?)\];', content, re.DOTALL)
+    match = re.search(r"const dashboardData = \[(.*?)\];", content, re.DOTALL)
     if not match:
         print("ERROR: Could not find dashboardData array")
         return None
@@ -50,15 +48,15 @@ def extract_territory_data(content):
     brace_count = 0
 
     for char in data_content:
-        if char == '{':
+        if char == "{":
             brace_count += 1
-        elif char == '}':
+        elif char == "}":
             brace_count -= 1
 
         current_obj += char
 
         if brace_count == 0 and current_obj.strip():
-            territories.append(current_obj.strip().rstrip(','))
+            territories.append(current_obj.strip().rstrip(","))
             current_obj = ""
 
     return territories
@@ -85,9 +83,7 @@ def update_code_quality_score(territory_text):
 
     # Replace old score
     updated = re.sub(
-        r'"Code Quality Score":\s*[\d.]+',
-        f'"Code Quality Score": {new_score}',
-        territory_text
+        r'"Code Quality Score":\s*[\d.]+', f'"Code Quality Score": {new_score}', territory_text
     )
 
     return updated
@@ -104,7 +100,7 @@ def main():
         return 1
 
     # Read dashboard
-    content = DASHBOARD_PATH.read_text(encoding='utf-8')
+    content = DASHBOARD_PATH.read_text(encoding="utf-8")
 
     # Extract territories
     territories = extract_territory_data(content)
@@ -120,7 +116,7 @@ def main():
     for i, territory in enumerate(territories):
         # Extract territory name for logging
         name_match = re.search(r'"Territory":\s*"([^"]+)"', territory)
-        territory_name = name_match.group(1) if name_match else f"Territory {i+1}"
+        territory_name = name_match.group(1) if name_match else f"Territory {i + 1}"
 
         # Extract old score
         old_score_match = re.search(r'"Code Quality Score":\s*([\d.]+)', territory)
@@ -139,19 +135,16 @@ def main():
             print(f"  ✓ {territory_name}: {old_score} → {new_score}")
 
     # Reconstruct dashboardData
-    new_data_content = ',\n  '.join(updated_territories)
-    new_dashboard_data = f'const dashboardData = [\n  {new_data_content}\n];'
+    new_data_content = ",\n  ".join(updated_territories)
+    new_dashboard_data = f"const dashboardData = [\n  {new_data_content}\n];"
 
     # Replace in content
     updated_content = re.sub(
-        r'const dashboardData = \[.*?\];',
-        new_dashboard_data,
-        content,
-        flags=re.DOTALL
+        r"const dashboardData = \[.*?\];", new_dashboard_data, content, flags=re.DOTALL
     )
 
     # Write back
-    DASHBOARD_PATH.write_text(updated_content, encoding='utf-8')
+    DASHBOARD_PATH.write_text(updated_content, encoding="utf-8")
 
     print(f"\n✅ Updated {len(changes)} Code Quality Scores")
     print(f"Dashboard saved to: {DASHBOARD_PATH}")

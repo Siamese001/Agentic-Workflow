@@ -18,9 +18,19 @@ Logger = logging.getLogger(__name__)
 
 # [SSOT] Sovereign territory boundaries derived from SOVEREIGN_REGISTRY
 # NAMING FIXED: ALLOWED_ROOT_PREFIXES → allowed_root_prefixes
-allowed_root_prefixes = set(SOVEREIGN_REGISTRY.keys()) | {"config"}  # config is a subfolder, add explicitly
+allowed_root_prefixes = set(SOVEREIGN_REGISTRY.keys()) | {
+    "config"
+}  # config is a subfolder, add explicitly
 # NAMING FIXED: FORBIDDEN_PATH_PATTERNS → forbidden_path_patterns
-forbidden_path_patterns = {"..", "/etc", "/root", "~", ".ssh", ".env"}  # Renamed to avoid SSOT conflict
+forbidden_path_patterns = {
+    "..",
+    "/etc",
+    "/root",
+    "~",
+    ".ssh",
+    ".env",
+}  # Renamed to avoid SSOT conflict
+
 
 # NAMING FIXED: SovereignFilesystemMCP → SovereignFilesystemMcp
 class SovereignFilesystemMcp:
@@ -34,7 +44,7 @@ class SovereignFilesystemMcp:
     def _validate_path(self, path: str) -> str:
         """L5 path sovereignty check. Blocks traversals and absolute escapes."""
         # Convert to a clean, relative-style string for validation
-        path_str = str(path).replace('\\', '/')
+        path_str = str(path).replace("\\", "/")
         if any(p in path_str for p in FORBIDDEN_PATH_PATTERNS):
             raise PermissionError(f"Sovereignty Breach: Forbidden path pattern in '{path}'")
 
@@ -47,7 +57,6 @@ class SovereignFilesystemMcp:
         return path_str
 
     async def read_text_file(self, path: str) -> str:
-
         safe_path = self._validate_path(path)
         try:
             # We use the official MCP 'read_file' tool for auditable access
@@ -60,7 +69,8 @@ class SovereignFilesystemMcp:
 
     async def atomic_fission_write(self, files: dict[str, str], monolith_path: str) -> dict:
         """Executes a physical fission event via the MCP server."""
-        for p in files: self._validate_path(p)
+        for p in files:
+            self._validate_path(p)
         self._validate_path(monolith_path)
 
         try:
@@ -68,19 +78,24 @@ class SovereignFilesystemMcp:
             for path, content in files.items():
                 # We use 'write_file' but record the intent in Redis first
                 # This ensures we can recover if the MCP server crashes mid-fission
-                result = await self.manager.call_tool("write_file", {
-                    "path": path,
-                    "content": content
-                })
+                result = await self.manager.call_tool(
+                    "write_file", {"path": path, "content": content}
+                )
                 results.append(result)
 
             # [L4 LEDGER] Record the physical change history
-            redis_shield.execute("rpush", f"fs_ops:{self.mission_id}", json.dumps({
-                "op": "fission",
-                "source": monolith_path,
-                "targets": list(files.keys()),
-                "ts": datetime.utcnow().isoformat()
-            }))
+            redis_shield.execute(
+                "rpush",
+                f"fs_ops:{self.mission_id}",
+                json.dumps(
+                    {
+                        "op": "fission",
+                        "source": monolith_path,
+                        "targets": list(files.keys()),
+                        "ts": datetime.utcnow().isoformat(),
+                    }
+                ),
+            )
 
             return {"status": "fission_complete", "count": len(results)}
         except Exception as e:
@@ -98,7 +113,7 @@ class SovereignFilesystemMcp:
         try:
             await self.manager.call_tool("roots_update", {"roots": validated})
             # Persist for continuity
-            redis_shield.execute("set", self.roots_key, json.dumps(validated), ex=60*60*24)
+            redis_shield.execute("set", self.roots_key, json.dumps(validated), ex=60 * 60 * 24)
             Logger.info(f"[L4 FS] Sovereign roots locked: {validated}")
         except Exception as e:
             Logger.warning(f"MCP Server does not support dynamic roots: {e}")

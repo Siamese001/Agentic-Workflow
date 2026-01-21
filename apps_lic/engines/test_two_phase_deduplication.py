@@ -9,13 +9,14 @@ Tests the two-phase duplicate detection system:
 
 Run: python scripts/test_two_phase_deduplication.py
 """
+
 import os
 import sys
 
 if sys.platform.startswith("win"):
     os.system("chcp 65001 >nul 2>&1")
-    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
-    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 import shutil
 import tempfile
@@ -29,6 +30,7 @@ sys.path.insert(0, str(project_root))
 # ============================================================================
 # TEST HELPER: Create test environment
 # ============================================================================
+
 
 def create_test_environment():
     """Create a temporary test environment with duplicate files."""
@@ -78,7 +80,9 @@ class DataHandler:
 '''
 
     # Same structure, different variable names (logic duplicate)
-    (temp_dir / "agentic_core" / "L5_safety" / "validators" / "ProcessorAgent.py").write_text(content_b1)
+    (temp_dir / "agentic_core" / "L5_safety" / "validators" / "ProcessorAgent.py").write_text(
+        content_b1
+    )
     (temp_dir / "agentic_core" / "L3_orchestration" / "HandlerAgent.py").write_text(content_b2)
 
     # Create unique files (not duplicates)
@@ -90,7 +94,9 @@ class UniqueAgent:
     def do_something_unique(self):
         return self.unique_id
 '''
-    (temp_dir / "agentic_core" / "L5_safety" / "validators" / "UniqueAgent.py").write_text(unique_content)
+    (temp_dir / "agentic_core" / "L5_safety" / "validators" / "UniqueAgent.py").write_text(
+        unique_content
+    )
 
     return temp_dir
 
@@ -105,12 +111,14 @@ def cleanup_test_environment(temp_dir: Path):
 # TEST FUNCTIONS
 # ============================================================================
 
+
 def test_1_agent_exists() -> tuple[bool, str]:
     """Test 1: Verify TwoPhaseDeduplicationAgent exists."""
     try:
         from agentic_core.L5_safety.guardrails.TwoPhaseDeduplicationAgent import (
             TwoPhaseDeduplicationAgent,
         )
+
         return True, "TwoPhaseDeduplicationAgent module exists"
     except ImportError as e:
         return False, f"Import failed: {e}"
@@ -124,7 +132,13 @@ def test_2_agent_has_required_methods() -> tuple[bool, str]:
 
     agent = TwoPhaseDeduplicationAgent(project_root=project_root)
 
-    required_methods = ['run_phase_a', 'run_phase_b', 'heal_repository', 'heal_phase_a', 'heal_phase_b']
+    required_methods = [
+        "run_phase_a",
+        "run_phase_b",
+        "heal_repository",
+        "heal_phase_a",
+        "heal_phase_b",
+    ]
     missing = [m for m in required_methods if not hasattr(agent, m)]
 
     if missing:
@@ -310,8 +324,8 @@ def test_9_ssot_orchestrator_has_two_phase_order() -> tuple[bool, str]:
     # Check execution order includes both phases
     order = agent._execution_order
 
-    has_phase_a = 'TwoPhaseDeduplicationAgent_PhaseA' in order
-    has_phase_b = 'TwoPhaseDeduplicationAgent_PhaseB' in order
+    has_phase_a = "TwoPhaseDeduplicationAgent_PhaseA" in order
+    has_phase_b = "TwoPhaseDeduplicationAgent_PhaseB" in order
 
     if not has_phase_a:
         return False, "Missing Phase A in execution order"
@@ -319,8 +333,8 @@ def test_9_ssot_orchestrator_has_two_phase_order() -> tuple[bool, str]:
         return False, "Missing Phase B in execution order"
 
     # Verify Phase A comes before Phase B
-    idx_a = order.index('TwoPhaseDeduplicationAgent_PhaseA')
-    idx_b = order.index('TwoPhaseDeduplicationAgent_PhaseB')
+    idx_a = order.index("TwoPhaseDeduplicationAgent_PhaseA")
+    idx_b = order.index("TwoPhaseDeduplicationAgent_PhaseB")
 
     if idx_a >= idx_b:
         return False, f"Phase A (idx {idx_a}) should come before Phase B (idx {idx_b})"
@@ -338,10 +352,10 @@ def test_10_phase_a_runs_early() -> tuple[bool, str]:
     order = agent._execution_order
 
     # Phase A should be at index 1 (right after SyntaxValidator at index 0)
-    if order[0] != 'SyntaxValidatorAgent':
+    if order[0] != "SyntaxValidatorAgent":
         return False, f"SyntaxValidator not first: {order[0]}"
 
-    if order[1] != 'TwoPhaseDeduplicationAgent_PhaseA':
+    if order[1] != "TwoPhaseDeduplicationAgent_PhaseA":
         return False, f"Phase A not second: {order[1]}"
 
     return True, "Phase A correctly positioned after SyntaxValidator"
@@ -357,16 +371,22 @@ def test_11_phase_b_runs_after_structural_healing() -> tuple[bool, str]:
     order = agent._execution_order
 
     # Phase B should come after LocationAgent
-    if 'LocationAgent' not in order:
+    if "LocationAgent" not in order:
         return False, "LocationAgent not in execution order"
 
-    idx_location = order.index('LocationAgent')
-    idx_phase_b = order.index('TwoPhaseDeduplicationAgent_PhaseB')
+    idx_location = order.index("LocationAgent")
+    idx_phase_b = order.index("TwoPhaseDeduplicationAgent_PhaseB")
 
     if idx_phase_b <= idx_location:
-        return False, f"Phase B (idx {idx_phase_b}) should come after LocationAgent (idx {idx_location})"
+        return (
+            False,
+            f"Phase B (idx {idx_phase_b}) should come after LocationAgent (idx {idx_location})",
+        )
 
-    return True, f"Phase B correctly after LocationAgent: Location at {idx_location}, Phase B at {idx_phase_b}"
+    return (
+        True,
+        f"Phase B correctly after LocationAgent: Location at {idx_location}, Phase B at {idx_phase_b}",
+    )
 
 
 def test_12_shared_dedup_agent_instance() -> tuple[bool, str]:
@@ -378,10 +398,10 @@ def test_12_shared_dedup_agent_instance() -> tuple[bool, str]:
     agent = SSOTOrchestratorAgent(project_root=project_root)
 
     # Get dedup agent for Phase A
-    dedup_a = agent._get_agent('TwoPhaseDeduplicationAgent_PhaseA')
+    dedup_a = agent._get_agent("TwoPhaseDeduplicationAgent_PhaseA")
 
     # Get dedup agent for Phase B
-    dedup_b = agent._get_agent('TwoPhaseDeduplicationAgent_PhaseB')
+    dedup_b = agent._get_agent("TwoPhaseDeduplicationAgent_PhaseB")
 
     # Should be the same instance
     if dedup_a is not dedup_b:
@@ -406,9 +426,13 @@ def test_13_report_structure() -> tuple[bool, str]:
 
         # Check report structure
         required_fields = [
-            'phase_a_duplicates', 'phase_b_duplicates',
-            'total_identity_collisions', 'total_logic_duplicates',
-            'files_scanned', 'phase_a_complete', 'phase_b_complete'
+            "phase_a_duplicates",
+            "phase_b_duplicates",
+            "total_identity_collisions",
+            "total_logic_duplicates",
+            "files_scanned",
+            "phase_a_complete",
+            "phase_b_complete",
         ]
 
         for field in required_fields:
@@ -440,11 +464,11 @@ def test_14_excludes_archives_directory() -> tuple[bool, str]:
         agent = TwoPhaseDeduplicationAgent(project_root=temp_dir)
 
         # Collect all scanned files
-        scanned_files = list(agent._iter_files({'.py'}))
+        scanned_files = list(agent._iter_files({".py"}))
         scanned_paths = [str(f) for f in scanned_files]
 
         # Check no archives files included
-        archives_files = [p for p in scanned_paths if 'archives' in p]
+        archives_files = [p for p in scanned_paths if "archives" in p]
 
         if archives_files:
             return False, f"Archives files included: {archives_files}"
@@ -467,11 +491,11 @@ def test_15_canonical_priority_order() -> tuple[bool, str]:
     priority = agent.CANONICAL_PRIORITY
 
     # L5 should have higher priority than L0
-    if priority.get('agentic_core/L5_safety', 0) <= priority.get('agentic_core/L0_maintenance', 0):
+    if priority.get("agentic_core/L5_safety", 0) <= priority.get("agentic_core/L0_maintenance", 0):
         return False, "L5 should have higher priority than L0"
 
     # L5 should have higher priority than utils
-    if priority.get('agentic_core/L5_safety', 0) <= priority.get('agentic_core/utils', 0):
+    if priority.get("agentic_core/L5_safety", 0) <= priority.get("agentic_core/utils", 0):
         return False, "L5 should have higher priority than utils"
 
     return True, "Canonical priority follows SSOT layer order"
@@ -481,6 +505,7 @@ def test_15_canonical_priority_order() -> tuple[bool, str]:
 # TEST RUNNER
 # ============================================================================
 
+
 def run_all_tests():
     """Run all tests and return results."""
     tests = [
@@ -489,12 +514,21 @@ def run_all_tests():
         ("Test 3: Phase A detects identity collisions", test_3_phase_a_detects_identity_collisions),
         ("Test 4: Phase A selects canonical path", test_4_phase_a_selects_canonical_path),
         ("Test 5: Phase B detects logic duplicates", test_5_phase_b_detects_logic_duplicates),
-        ("Test 6: heal_repository supports phase parameter", test_6_heal_repository_supports_phase_parameter),
+        (
+            "Test 6: heal_repository supports phase parameter",
+            test_6_heal_repository_supports_phase_parameter,
+        ),
         ("Test 7: Dry run makes no changes", test_7_dry_run_makes_no_changes),
         ("Test 8: Execute mode archives duplicates", test_8_execute_mode_archives_duplicates),
-        ("Test 9: SSOT Orchestrator has two-phase order", test_9_ssot_orchestrator_has_two_phase_order),
+        (
+            "Test 9: SSOT Orchestrator has two-phase order",
+            test_9_ssot_orchestrator_has_two_phase_order,
+        ),
         ("Test 10: Phase A runs early", test_10_phase_a_runs_early),
-        ("Test 11: Phase B runs after structural healing", test_11_phase_b_runs_after_structural_healing),
+        (
+            "Test 11: Phase B runs after structural healing",
+            test_11_phase_b_runs_after_structural_healing,
+        ),
         ("Test 12: Shared dedup agent instance", test_12_shared_dedup_agent_instance),
         ("Test 13: Report structure", test_13_report_structure),
         ("Test 14: Excludes archives directory", test_14_excludes_archives_directory),
@@ -523,25 +557,30 @@ def run_all_tests():
             else:
                 results["failed"] += 1
 
-            results["details"].append({
-                "name": name,
-                "passed": passed,
-                "message": message,
-            })
+            results["details"].append(
+                {
+                    "name": name,
+                    "passed": passed,
+                    "message": message,
+                }
+            )
 
             print(f"\n{icon} {name}")
             print(f"   {message}")
 
         except Exception as e:
             results["failed"] += 1
-            results["details"].append({
-                "name": name,
-                "passed": False,
-                "message": f"ERROR: {e}",
-            })
+            results["details"].append(
+                {
+                    "name": name,
+                    "passed": False,
+                    "message": f"ERROR: {e}",
+                }
+            )
             print(f"\n❌ {name}")
             print(f"   ERROR: {e}")
             import traceback
+
             traceback.print_exc()
 
     # Summary

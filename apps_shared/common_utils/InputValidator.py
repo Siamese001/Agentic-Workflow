@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 class ValidationType(Enum):
     """Types of validation."""
+
     STRING = "string"
     INTEGER = "integer"
     FLOAT = "float"
@@ -36,6 +37,7 @@ class ValidationType(Enum):
 @dataclass
 class ValidationRule:
     """Rule for validating input."""
+
     name: str
     validation_type: ValidationType
     required: bool = True
@@ -147,7 +149,9 @@ class InputValidator:
         # Raise errors if any
         if errors:
             error_messages = [f"{e.field}: {e.message}" for e in errors]
-            raise InputValidationError("multiple", f"Validation failed: {', '.join(error_messages)}")
+            raise InputValidationError(
+                "multiple", f"Validation failed: {', '.join(error_messages)}"
+            )
 
         return validated
 
@@ -194,7 +198,9 @@ class InputValidator:
         if rule.pattern:
             if isinstance(validated_value, str):
                 if not re.match(rule.pattern, validated_value):
-                    raise InputValidationError(field, f"Value does not match pattern: {rule.pattern}")
+                    raise InputValidationError(
+                        field, f"Value does not match pattern: {rule.pattern}"
+                    )
 
         # Allowed values validation
         if rule.allowed_values:
@@ -243,7 +249,7 @@ class InputValidator:
                 return float(value)
             elif rule.validation_type == ValidationType.BOOLEAN:
                 if isinstance(value, str):
-                    return value.lower() in ('true', '1', 'yes', 'on')
+                    return value.lower() in ("true", "1", "yes", "on")
                 return bool(value)
             elif rule.validation_type == ValidationType.LIST:
                 if isinstance(value, str):
@@ -322,7 +328,7 @@ class InputValidator:
                     rule = ValidationRule(
                         prop,
                         self._get_validation_type_from_schema(prop_schema),
-                        required=schema.get("required", {}).get(prop, False)
+                        required=schema.get("required", {}).get(prop, False),
                     )
                     validator.add_rule(prop, rule)
                     validator.validate({prop: value[prop]}, strict=False)
@@ -359,7 +365,7 @@ class InputValidator:
             "number": ValidationType.FLOAT,
             "boolean": ValidationType.BOOLEAN,
             "array": ValidationType.LIST,
-            "object": ValidationType.DICT
+            "object": ValidationType.DICT,
         }
         return type_map.get(schema.get("type", "string"), ValidationType.STRING)
 
@@ -375,14 +381,14 @@ class InputValidator:
         """
         if isinstance(value, str):
             # Remove control characters
-            value = ''.join(char for char in value if ord(char) >= 32 or char in '\n\r\t')
+            value = "".join(char for char in value if ord(char) >= 32 or char in "\n\r\t")
 
             # Limit length
             if rule.max_length:
-                value = value[:rule.max_length]
+                value = value[: rule.max_length]
 
             # Normalize whitespace
-            value = ' '.join(value.split())
+            value = " ".join(value.split())
 
         elif isinstance(value, list):
             # Remove None values
@@ -390,7 +396,7 @@ class InputValidator:
 
             # Limit length
             if rule.max_length:
-                value = value[:rule.max_length]
+                value = value[: rule.max_length]
 
         return value
 
@@ -403,40 +409,32 @@ COMMON_RULES = {
         required=True,
         min_length=1,
         max_length=100,
-        pattern=r"^[a-zA-Z0-9_-]+$"
+        pattern=r"^[a-zA-Z0-9_-]+$",
     ),
     "context_data": ValidationRule(
         "context_data",
         ValidationType.DICT,
         required=False,
-        max_length=1000  # Max 1000 keys
+        max_length=1000,  # Max 1000 keys
     ),
     "retry_count": ValidationRule(
-        "retry_count",
-        ValidationType.INTEGER,
-        required=False,
-        min_value=0,
-        max_value=10
+        "retry_count", ValidationType.INTEGER, required=False, min_value=0, max_value=10
     ),
     "timeout": ValidationRule(
-        "timeout",
-        ValidationType.FLOAT,
-        required=False,
-        min_value=0.1,
-        max_value=300.0
+        "timeout", ValidationType.FLOAT, required=False, min_value=0.1, max_value=300.0
     ),
     "json_payload": ValidationRule(
         "json_payload",
         ValidationType.JSON,
         required=False,
-        max_length=10000  # Max 10KB
+        max_length=10000,  # Max 10KB
     ),
     "xml_content": ValidationRule(
         "xml_content",
         ValidationType.XML,
         required=False,
-        max_length=50000  # Max 50KB
-    )
+        max_length=50000,  # Max 50KB
+    ),
 }
 
 
@@ -466,17 +464,17 @@ class ValidatedInput(BaseModel):
         # Extra fields forbidden
         extra = "forbid"
 
-    @validator('*')
+    @validator("*")
     def sanitize_strings(cls, v):
         """Sanitize string fields."""
         if isinstance(v, str):
             # Remove control characters
-            v = ''.join(char for char in v if ord(char) >= 32 or char in '\n\r\t')
+            v = "".join(char for char in v if ord(char) >= 32 or char in "\n\r\t")
             # Strip whitespace
             v = v.strip()
         return v
 
-    @validator('*')
+    @validator("*")
     def check_size(cls, v):
         """Check size limits."""
         if isinstance(v, str) and len(v) > 10000:
@@ -486,7 +484,9 @@ class ValidatedInput(BaseModel):
         return v
 
 
-def validate_with_pydantic(data: dict[str, Any], model_class: type[ValidatedInput]) -> ValidatedInput:
+def validate_with_pydantic(
+    data: dict[str, Any], model_class: type[ValidatedInput]
+) -> ValidatedInput:
     """Validate data using Pydantic model.
 
     Args:
@@ -505,6 +505,6 @@ def validate_with_pydantic(data: dict[str, Any], model_class: type[ValidatedInpu
         # Convert to InputValidationError for consistency
         errors = []
         for error in e.errors():
-            field = '.'.join(str(x) for x in error['loc'])
+            field = ".".join(str(x) for x in error["loc"])
             errors.append(f"{field}: {error['msg']}")
         raise InputValidationError("pydantic", f"Validation failed: {', '.join(errors)}")

@@ -17,6 +17,7 @@ Phase 2 Enhancement (Jan 19, 2026):
 - Uses ssot_discovery for all file lookups
 - Provides run_mission and run_agent methods
 """
+
 from __future__ import annotations
 
 import logging
@@ -39,6 +40,7 @@ Logger = logging.getLogger(__name__)
 
 class OrchestratorMode(str, Enum):
     """Orchestration modes supported by UnifiedOrchestratorAgent."""
+
     HEALING = "healing"
     COMPLIANCE = "compliance"
     SSOT = "ssot"
@@ -63,11 +65,7 @@ class UnifiedOrchestratorAgent(L3OrchestrationBaseAgent):
     - unified: Default mode (same as full)
     """
 
-    def __init__(
-        self,
-        agent_id: str = "unified_orchestrator_01",
-        mode: str = "unified"
-    ):
+    def __init__(self, agent_id: str = "unified_orchestrator_01", mode: str = "unified"):
         super().__init__()
         self.agent_id = agent_id
         self.agent_type = "L3_Unified"
@@ -95,6 +93,7 @@ class UnifiedOrchestratorAgent(L3OrchestrationBaseAgent):
             try:
                 from agentic_core.L3_orchestration.strategies.RLStrategy import RLStrategy
                 from agentic_core.L3_orchestration.strategies.SafetyStrategy import SafetyStrategy
+
                 self._strategies = {
                     "safety": SafetyStrategy(),
                     "rl": RLStrategy(),
@@ -144,7 +143,7 @@ class UnifiedOrchestratorAgent(L3OrchestrationBaseAgent):
         agents: list[str],
         dry_run: bool = True,
         execute: bool = False,
-        context: ExecutionContext | None = None
+        context: ExecutionContext | None = None,
     ) -> MissionResult:
         """
         Execute a mission across multiple agents.
@@ -163,7 +162,9 @@ class UnifiedOrchestratorAgent(L3OrchestrationBaseAgent):
         if context is None:
             context = ExecutionContext(dry_run=dry_run, execute=execute)
 
-        self.logger.info(f"[MISSION] Starting mission with {len(agents)} agents (mode={self.mode.value})")
+        self.logger.info(
+            f"[MISSION] Starting mission with {len(agents)} agents (mode={self.mode.value})"
+        )
 
         agent_results: list[AgentResult] = []
         total_violations_found = 0
@@ -190,17 +191,14 @@ class UnifiedOrchestratorAgent(L3OrchestrationBaseAgent):
             total_errors=total_errors,
             agent_results=agent_results,
             phase=ExecutionPhase.COMPLETE,
-            metadata={"mode": self.mode.value}
+            metadata={"mode": self.mode.value},
         )
 
         self.logger.info(f"[MISSION] Complete: {successful}/{len(agents)} agents succeeded")
         return mission_result
 
     def run_agent(
-        self,
-        agent_name: str,
-        dry_run: bool = True,
-        context: ExecutionContext | None = None
+        self, agent_name: str, dry_run: bool = True, context: ExecutionContext | None = None
     ) -> AgentResult:
         """
         Execute a single agent with standardized result.
@@ -221,7 +219,9 @@ class UnifiedOrchestratorAgent(L3OrchestrationBaseAgent):
         Returns:
             AgentResult with execution outcome
         """
-        self.logger.debug(f"[AGENT] Running {agent_name} (dry_run={dry_run}, mode={self.mode.value})")
+        self.logger.debug(
+            f"[AGENT] Running {agent_name} (dry_run={dry_run}, mode={self.mode.value})"
+        )
 
         try:
             # Mode-specific execution logic
@@ -237,18 +237,11 @@ class UnifiedOrchestratorAgent(L3OrchestrationBaseAgent):
         except Exception as e:
             self.logger.error(f"[AGENT] {agent_name} failed: {e}")
             return AgentResult(
-                agent_name=agent_name,
-                success=False,
-                errors=1,
-                status="ERROR",
-                message=str(e)
+                agent_name=agent_name, success=False, errors=1, status="ERROR", message=str(e)
             )
 
     def _run_compliance_mode(
-        self,
-        agent_name: str,
-        dry_run: bool,
-        context: ExecutionContext | None
+        self, agent_name: str, dry_run: bool, context: ExecutionContext | None
     ) -> AgentResult:
         """
         Execute agent in COMPLIANCE mode.
@@ -264,11 +257,14 @@ class UnifiedOrchestratorAgent(L3OrchestrationBaseAgent):
             from agentic_core.L5_safety.validators.CredentialScannerAgent import (
                 CredentialScannerAgent,
             )
+
             credential_scanner = CredentialScannerAgent()
             credential_results = credential_scanner.scan_for_credentials()
 
             total_credentials = credential_results.get("total_matches", 0)
-            high_severity = credential_results.get("summary", {}).get("by_severity", {}).get("high", 0)
+            high_severity = (
+                credential_results.get("summary", {}).get("by_severity", {}).get("high", 0)
+            )
 
             status = "PASS" if total_credentials == 0 else "WARN"
             if high_severity > 0:
@@ -290,8 +286,8 @@ class UnifiedOrchestratorAgent(L3OrchestrationBaseAgent):
                     "total_credentials": total_credentials,
                     "high_severity_count": high_severity,
                     "summary": credential_results.get("summary", {}),
-                    "recommendations": credential_results.get("recommendations", [])
-                }
+                    "recommendations": credential_results.get("recommendations", []),
+                },
             )
         except Exception as e:
             self.logger.error(f"[COMPLIANCE] Credential scan failed: {e}")
@@ -301,14 +297,11 @@ class UnifiedOrchestratorAgent(L3OrchestrationBaseAgent):
                 errors=1,
                 status="ERROR",
                 message=f"Credential scan error: {str(e)}",
-                metadata={"dry_run": dry_run, "mode": "compliance", "credential_scan": "error"}
+                metadata={"dry_run": dry_run, "mode": "compliance", "credential_scan": "error"},
             )
 
     def _run_healing_mode(
-        self,
-        agent_name: str,
-        dry_run: bool,
-        context: ExecutionContext | None
+        self, agent_name: str, dry_run: bool, context: ExecutionContext | None
     ) -> AgentResult:
         """Execute agent in HEALING mode - focus on heal_repository."""
         self.logger.info(f"[HEALING] Running {agent_name}")
@@ -322,14 +315,11 @@ class UnifiedOrchestratorAgent(L3OrchestrationBaseAgent):
             skipped=0,
             status="PASS",
             message=f"Healing operations completed for {agent_name}",
-            metadata={"dry_run": dry_run, "mode": "healing"}
+            metadata={"dry_run": dry_run, "mode": "healing"},
         )
 
     def _run_ssot_mode(
-        self,
-        agent_name: str,
-        dry_run: bool,
-        context: ExecutionContext | None
+        self, agent_name: str, dry_run: bool, context: ExecutionContext | None
     ) -> AgentResult:
         """Execute agent in SSOT mode - enforce SSOT compliance."""
         self.logger.info(f"[SSOT] Running {agent_name}")
@@ -343,14 +333,11 @@ class UnifiedOrchestratorAgent(L3OrchestrationBaseAgent):
             skipped=0,
             status="PASS",
             message=f"SSOT compliance verified for {agent_name}",
-            metadata={"dry_run": dry_run, "mode": "ssot"}
+            metadata={"dry_run": dry_run, "mode": "ssot"},
         )
 
     def _run_full_mode(
-        self,
-        agent_name: str,
-        dry_run: bool,
-        context: ExecutionContext | None
+        self, agent_name: str, dry_run: bool, context: ExecutionContext | None
     ) -> AgentResult:
         """Execute agent in FULL/UNIFIED mode - all operations."""
         self.logger.info(f"[FULL] Running {agent_name}")
@@ -364,7 +351,7 @@ class UnifiedOrchestratorAgent(L3OrchestrationBaseAgent):
             skipped=0,
             status="PASS",
             message=f"Agent {agent_name} executed successfully",
-            metadata={"dry_run": dry_run, "mode": self.mode.value}
+            metadata={"dry_run": dry_run, "mode": self.mode.value},
         )
 
     def get_available_agents(self) -> list[str]:
@@ -380,21 +367,20 @@ class UnifiedOrchestratorAgent(L3OrchestrationBaseAgent):
             from agentic_core.L5_safety.validators.structure_blueprint import (
                 get_validated_project_root,
             )
+
             project_root = get_validated_project_root()
 
             # Use ssot_discovery exclusively (no rglob)
             agent_files = get_agent_files(project_root)
             self._available_agents = [f.stem for f in agent_files]
 
-            self.logger.debug(f"[DISCOVERY] Found {len(self._available_agents)} agents via ssot_discovery")
+            self.logger.debug(
+                f"[DISCOVERY] Found {len(self._available_agents)} agents via ssot_discovery"
+            )
 
         return self._available_agents
 
-    def validate_mission(
-        self,
-        agents: list[str],
-        context: ExecutionContext | None = None
-    ) -> bool:
+    def validate_mission(self, agents: list[str], context: ExecutionContext | None = None) -> bool:
         """
         Pre-flight validation before mission execution.
 

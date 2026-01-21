@@ -33,7 +33,9 @@ class HOP5GenerationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     Output: state/5_generated_drafts.json
     """
 
-    def __init__(self, config: dict[str, Any], llm_client: Any = None, tool: CodeInterpreterTool = None) -> None:
+    def __init__(
+        self, config: dict[str, Any], llm_client: Any = None, tool: CodeInterpreterTool = None
+    ) -> None:
         """
         Initialize HOP-5 generation agent.
 
@@ -67,9 +69,9 @@ class HOP5GenerationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         Generates N candidates for C-level archetypes, scores them using
         Fast Loop, and selects the best candidate.
         """
-        print(f"\n{'='*80}")
+        print(f"\n{'=' * 80}")
         print("HOP-5: GENERATION AGENT")
-        print(f"{'='*80}\n")
+        print(f"{'=' * 80}\n")
 
         research = state_mgr.read_state("HOP-2")
         grounding = state_mgr.read_state("HOP-3")
@@ -87,25 +89,31 @@ class HOP5GenerationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
         candidates = []
         for i in range(n_candidates):
-            print(f"  Generating candidate {i+1}/{n_candidates}...")
+            print(f"  Generating candidate {i + 1}/{n_candidates}...")
             try:
-                draft_text = await self._generate_single_draft(research, grounding, scaffold, temperature)
+                draft_text = await self._generate_single_draft(
+                    research, grounding, scaffold, temperature
+                )
             except Exception as e:
                 self.log(f"⚠️ LLM error: {e}")
                 return None
-            candidates.append({
-                "candidate_id": i + 1,
-                "text": draft_text,
-                "word_count": len(draft_text.split()),
-                "char_count": len(draft_text),
-                "temperature": temperature
-            })
+            candidates.append(
+                {
+                    "candidate_id": i + 1,
+                    "text": draft_text,
+                    "word_count": len(draft_text.split()),
+                    "char_count": len(draft_text),
+                    "temperature": temperature,
+                }
+            )
 
         if n_candidates > 1:
             print(f"\nScoring {n_candidates} candidates (Fast Loop)...")
             scored = self._score_candidates_with_tool(candidates, research)
             selected_candidate = scored[0]
-            print(f"  ✓ Selected candidate {selected_candidate['candidate_id']} (score: {selected_candidate['total_score']:.3f})")
+            print(
+                f"  ✓ Selected candidate {selected_candidate['candidate_id']} (score: {selected_candidate['total_score']:.3f})"
+            )
         else:
             selected_candidate = candidates[0]
             scored = [selected_candidate]
@@ -118,7 +126,7 @@ class HOP5GenerationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             "generation_temperature": temperature,
             "generation_attempts": 1,
             "Archetype": Archetype,
-            "Route": Route
+            "Route": Route,
         }
 
         output_path = state_mgr.write_state("HOP-5", output_state)
@@ -129,7 +137,13 @@ class HOP5GenerationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
         return output_path
 
-    async def _generate_single_draft(self, research: dict[str, Any], grounding: dict[str, Any], scaffold: dict[str, Any], temperature: float) -> str:
+    async def _generate_single_draft(
+        self,
+        research: dict[str, Any],
+        grounding: dict[str, Any],
+        scaffold: dict[str, Any],
+        temperature: float,
+    ) -> str:
         """Generate a single message draft"""
         template = self.prompts["strategic_alignment_prompt_template"]["template"]
         strategic_brief = research.get("strategic_brief", "")
@@ -147,20 +161,22 @@ class HOP5GenerationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             forbidden=", ".join(voice.get("forbidden_phrases", [])[:10]),
             Route=scaffold["Route"],
             Archetype=scaffold["Archetype"],
-            adversarial_constraints=""
+            adversarial_constraints="",
         )
 
         loop = asyncio.get_event_loop()
         draft_text = await loop.run_in_executor(None, self.llm_client.generate, prompt)
         return draft_text.strip()
 
-    def _score_candidates_with_tool(self, candidates: list[dict[str, Any]], research: dict[str, Any]) -> list[dict[str, Any]]:
+    def _score_candidates_with_tool(
+        self, candidates: list[dict[str, Any]], research: dict[str, Any]
+    ) -> list[dict[str, Any]]:
         """Score candidates using CodeInterpreterTool (Fast Loop)"""
         strategic_brief = research.get("strategic_brief", "")
         scored = self.tool.execute(
             "run_scoring_competition",
             candidates=[c["text"] for c in candidates],
-            strategic_brief=strategic_brief
+            strategic_brief=strategic_brief,
         )
 
         for i, ScoreResult in enumerate(scored):
@@ -182,14 +198,16 @@ class HOP5GenerationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         for product in products[:2]:
             summary_lines.append(f"- Product: {product}")
 
-        return "\n".join(summary_lines) if summary_lines else "- Professional with relevant experience"
+        return (
+            "\n".join(summary_lines) if summary_lines else "- Professional with relevant experience"
+        )
 
     def _extract_recipient_summary(self, research: dict[str, Any], strategic_brief: str) -> str:
         """Extract top 5 recipient priorities"""
         summary_lines = []
 
         if strategic_brief:
-            brief_lines = strategic_brief.split('\n')[:5]
+            brief_lines = strategic_brief.split("\n")[:5]
             summary_lines.extend([f"- {line[:150]}" for line in brief_lines if line.strip()])
 
         if not summary_lines:
@@ -230,7 +248,7 @@ class HOP5GenerationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             if not self.llm_client:
                 Logger.warning("LLM client missing — generation may fail")
                 return
-            if not hasattr(self.llm_client, 'generate'):
+            if not hasattr(self.llm_client, "generate"):
                 Logger.error("LLM client missing generate method — disabling")
                 self.llm_client = None
         except Exception as e:
@@ -267,7 +285,9 @@ class HOP5GenerationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             base_temps = self.config.get("base_temperatures", {})
             for archetype, temp in base_temps.items():
                 if not isinstance(temp, (int, float)) or temp < 0 or temp > 2.0:
-                    Logger.warning(f"Temperature {temp} for {archetype} out of bounds — resetting to 0.7")
+                    Logger.warning(
+                        f"Temperature {temp} for {archetype} out of bounds — resetting to 0.7"
+                    )
                     base_temps[archetype] = 0.7
         except Exception as e:
             Logger.error(f"Temperature bounds check failed: {e}")

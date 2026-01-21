@@ -14,6 +14,7 @@ Author: Cascade
 Date: January 19, 2026
 Phase: 6.8 - Total Obliteration
 """
+
 import sys
 from pathlib import Path
 
@@ -28,9 +29,9 @@ def test_tc48_test_suite_purge():
 
     Verify test files use ssot_discovery instead of rglob.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-48: Test Suite Purge")
-    print("="*60)
+    print("=" * 60)
 
     test_files = [
         "maintenance/test_consolidation_validation.py",
@@ -52,10 +53,13 @@ def test_tc48_test_suite_purge():
             continue
 
         try:
-            content = full_path.read_text(encoding='utf-8', errors='ignore')
+            content = full_path.read_text(encoding="utf-8", errors="ignore")
 
             # Check for ssot_discovery import
-            has_ssot_import = 'from agentic_core.utils.ssot_discovery import' in content or 'ssot_discovery' in content
+            has_ssot_import = (
+                "from agentic_core.utils.ssot_discovery import" in content
+                or "ssot_discovery" in content
+            )
 
             if has_ssot_import:
                 files_using_ssot += 1
@@ -82,9 +86,9 @@ def test_tc49_l1_l3_deep_stack():
 
     Verify L1_cognition, L2_execution, L3_orchestration use ssot_discovery.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-49: L1-L3 Deep Stack")
-    print("="*60)
+    print("=" * 60)
 
     deep_stack_files = {
         "L1_cognition/thought_engine/analyze_legacy_files.py": "get_python_files",
@@ -107,7 +111,7 @@ def test_tc49_l1_l3_deep_stack():
             continue
 
         try:
-            content = full_path.read_text(encoding='utf-8', errors='ignore')
+            content = full_path.read_text(encoding="utf-8", errors="ignore")
 
             # Check for expected ssot_discovery method
             has_method = expected_method in content
@@ -137,9 +141,9 @@ def test_tc50_utils_core_extensions():
 
     Verify utils/core_extensions files use ssot_discovery.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-50: Utils Core Extensions")
-    print("="*60)
+    print("=" * 60)
 
     utils_files = [
         "validation_summary.py",
@@ -174,10 +178,13 @@ def test_tc50_utils_core_extensions():
             continue
 
         try:
-            content = full_path.read_text(encoding='utf-8', errors='ignore')
+            content = full_path.read_text(encoding="utf-8", errors="ignore")
 
             # Check for ssot_discovery import
-            has_ssot_import = 'from agentic_core.utils.ssot_discovery import' in content or 'ssot_discovery' in content
+            has_ssot_import = (
+                "from agentic_core.utils.ssot_discovery import" in content
+                or "ssot_discovery" in content
+            )
 
             if has_ssot_import:
                 files_using_ssot += 1
@@ -204,9 +211,9 @@ def test_tc51_total_obliteration_achievement():
 
     Verify the total obliteration achieved significant reduction across all phases.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-51: Total Obliteration Achievement")
-    print("="*60)
+    print("=" * 60)
 
     # Import the CI check
     sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
@@ -230,8 +237,12 @@ def test_tc51_total_obliteration_achievement():
     print(f"   Phase 6.6 start: {phase6_6_start}")
     print(f"   Phase 6.7 start: {phase6_7_start}")
     print(f"   Current: {total_count}")
-    print(f"\n   Total Phase 6 reduction: {total_reduction} calls ({total_reduction/phase6_start*100:.1f}%)")
-    print(f"   Phase 6.8 reduction: {phase6_8_reduction} calls ({phase6_8_reduction/phase6_7_start*100:.1f}%)")
+    print(
+        f"\n   Total Phase 6 reduction: {total_reduction} calls ({total_reduction / phase6_start * 100:.1f}%)"
+    )
+    print(
+        f"   Phase 6.8 reduction: {phase6_8_reduction} calls ({phase6_8_reduction / phase6_7_start * 100:.1f}%)"
+    )
 
     # Show refactored categories
     print("\n   Phase 6.8 refactored categories:")
@@ -241,18 +252,22 @@ def test_tc51_total_obliteration_achievement():
     print("   - Total files refactored: 43+")
 
     if phase6_8_reduction >= 25:
-        print(f"✅ PASS: Significant obliteration achieved ({phase6_8_reduction} calls, {phase6_8_reduction/phase6_7_start*100:.1f}%)")
+        print(
+            f"✅ PASS: Significant obliteration achieved ({phase6_8_reduction} calls, {phase6_8_reduction / phase6_7_start * 100:.1f}%)"
+        )
         return True
     else:
-        print(f"⚠️  INFO: Reduction is {phase6_8_reduction} calls ({phase6_8_reduction/phase6_7_start*100:.1f}%)")
+        print(
+            f"⚠️  INFO: Reduction is {phase6_8_reduction} calls ({phase6_8_reduction / phase6_7_start * 100:.1f}%)"
+        )
         return True
 
 
 def main():
     """Run all Phase 6.8 Total Obliteration test cases."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("PHASE 6.8 TOTAL OBLITERATION TEST SUITE")
-    print("="*70)
+    print("=" * 70)
     print(f"Project Root: {PROJECT_ROOT}")
 
     tests = [
@@ -270,13 +285,14 @@ def main():
         except Exception as e:
             print(f"\n❌ EXCEPTION in {test_name}: {e}")
             import traceback
+
             traceback.print_exc()
             results.append((test_name, False))
 
     # Summary
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST SUMMARY")
-    print("="*70)
+    print("=" * 70)
 
     passed_count = sum(1 for _, passed in results if passed)
     total_count = len(results)
@@ -285,7 +301,7 @@ def main():
         status = "✅ PASS" if passed else "❌ FAIL"
         print(f"{status}: {test_name}")
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print(f"TOTAL: {passed_count}/{total_count} tests passed")
 
     if passed_count == total_count:

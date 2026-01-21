@@ -22,6 +22,7 @@ from typing import Any
 
 class ConstitutionalPrinciple(Enum):
     """Core constitutional principles."""
+
     HELPFULNESS = "helpfulness"
     HARMLESSNESS = "harmlessness"
     HONESTY = "honesty"
@@ -34,6 +35,7 @@ class ConstitutionalPrinciple(Enum):
 @dataclass
 class PrincipleViolation:
     """Violation of a constitutional principle."""
+
     principle: ConstitutionalPrinciple
     severity: str  # "minor", "moderate", "severe"
     description: str
@@ -43,6 +45,7 @@ class PrincipleViolation:
 @dataclass
 class GovernanceResult:
     """Result of governance check."""
+
     compliant: bool
     violations: list[PrincipleViolation] = field(default_factory=list)
     audit_id: str | None = None
@@ -71,29 +74,29 @@ class ConstitutionalGovernanceGuardrail:
         self.principle_checks = {
             ConstitutionalPrinciple.HARMLESSNESS: {
                 "negative_patterns": [
-                    "harm", "hurt", "damage", "destroy", "kill",
-                    "attack", "exploit", "abuse"
+                    "harm",
+                    "hurt",
+                    "damage",
+                    "destroy",
+                    "kill",
+                    "attack",
+                    "exploit",
+                    "abuse",
                 ],
-                "weight": 1.0
+                "weight": 1.0,
             },
             ConstitutionalPrinciple.HONESTY: {
-                "negative_patterns": [
-                    "lie", "deceive", "mislead", "fake", "pretend to be"
-                ],
-                "weight": 0.9
+                "negative_patterns": ["lie", "deceive", "mislead", "fake", "pretend to be"],
+                "weight": 0.9,
             },
             ConstitutionalPrinciple.PRIVACY: {
-                "negative_patterns": [
-                    "personal data", "private information", "ssn", "password"
-                ],
-                "weight": 0.8
+                "negative_patterns": ["personal data", "private information", "ssn", "password"],
+                "weight": 0.8,
             },
             ConstitutionalPrinciple.FAIRNESS: {
-                "negative_patterns": [
-                    "discriminate", "bias against", "unfair"
-                ],
-                "weight": 0.8
-            }
+                "negative_patterns": ["discriminate", "bias against", "unfair"],
+                "weight": 0.8,
+            },
         }
 
         # Audit log
@@ -138,7 +141,7 @@ class ConstitutionalGovernanceGuardrail:
             compliant=len(violations) == 0,
             violations=violations,
             audit_id=audit_id,
-            review_notes=self._generate_notes(violations)
+            review_notes=self._generate_notes(violations),
         )
 
     def _check_principles(self, content: str) -> list[PrincipleViolation]:
@@ -149,28 +152,34 @@ class ConstitutionalGovernanceGuardrail:
         for principle, config in self.principle_checks.items():
             for pattern in config["negative_patterns"]:
                 if pattern in content_lower:
-                    violations.append(PrincipleViolation(
-                        principle=principle,
-                        severity="moderate",
-                        description=f"Potential violation of {principle.value}: contains '{pattern}'",
-                        suggested_revision=f"Consider removing or rephrasing content containing '{pattern}'"
-                    ))
+                    violations.append(
+                        PrincipleViolation(
+                            principle=principle,
+                            severity="moderate",
+                            description=f"Potential violation of {principle.value}: contains '{pattern}'",
+                            suggested_revision=f"Consider removing or rephrasing content containing '{pattern}'",
+                        )
+                    )
                     self.revisions_suggested += 1
                     break  # One violation per principle
 
         return violations
 
-    def _check_governance(self, content: str, context: dict[str, Any] | None) -> list[PrincipleViolation]:
+    def _check_governance(
+        self, content: str, context: dict[str, Any] | None
+    ) -> list[PrincipleViolation]:
         """Check governance rules."""
         violations = []
 
         # Check content length governance
         if len(content) > 10000:
-            violations.append(PrincipleViolation(
-                principle=ConstitutionalPrinciple.TRANSPARENCY,
-                severity="minor",
-                description="Content exceeds governance length limit"
-            ))
+            violations.append(
+                PrincipleViolation(
+                    principle=ConstitutionalPrinciple.TRANSPARENCY,
+                    severity="minor",
+                    description="Content exceeds governance length limit",
+                )
+            )
 
         return violations
 
@@ -179,20 +188,22 @@ class ConstitutionalGovernanceGuardrail:
         self.audit_counter += 1
         audit_id = f"audit_{self.audit_counter}_{int(time.time())}"
 
-        self.audit_log.append({
-            "audit_id": audit_id,
-            "timestamp": time.time(),
-            "content_length": len(content),
-            "violation_count": len(violations),
-            "violations": [
-                {
-                    "principle": v.principle.value,
-                    "severity": v.severity,
-                    "description": v.description
-                }
-                for v in violations
-            ]
-        })
+        self.audit_log.append(
+            {
+                "audit_id": audit_id,
+                "timestamp": time.time(),
+                "content_length": len(content),
+                "violation_count": len(violations),
+                "violations": [
+                    {
+                        "principle": v.principle.value,
+                        "severity": v.severity,
+                        "description": v.description,
+                    }
+                    for v in violations
+                ],
+            }
+        )
 
         return audit_id
 
@@ -234,5 +245,9 @@ class ConstitutionalGovernanceGuardrail:
             "violations_found": self.violations_found,
             "revisions_suggested": self.revisions_suggested,
             "audit_log_size": len(self.audit_log),
-            "compliance_rate": ((self.reviews_performed - self.violations_found) / self.reviews_performed * 100) if self.reviews_performed > 0 else 100
+            "compliance_rate": (
+                (self.reviews_performed - self.violations_found) / self.reviews_performed * 100
+            )
+            if self.reviews_performed > 0
+            else 100,
         }

@@ -15,22 +15,28 @@ from enum import Enum
 # ENUMS & CONSTANTS
 # ============================================================================
 
+
 class Route(Enum):
     """Message delivery routes"""
+
     INMAIL = "INMAIL"
     CONNECTION_REQ = "CONNECTION_REQ"
     EMAIL = "EMAIL"
     FOLLOW_UP = "FOLLOW_UP"
 
+
 class Archetype(Enum):
     """Recipient archetypes for personalization - v11.6 4-Archetype standard"""
+
     C_LEVEL = "C_LEVEL"
     EXECUTIVE = "EXECUTIVE"
     SENIOR_TA = "SENIOR_TA"
     RECRUITER = "RECRUITER"
 
+
 class EventType(Enum):
     """Event types for message bus / state logging"""
+
     WORKFLOW_STARTED = "WORKFLOW_STARTED"
     WORKFLOW_COMPLETED = "WORKFLOW_COMPLETED"
     HOP_1_COMPLETED = "HOP_1_COMPLETED"
@@ -45,36 +51,46 @@ class EventType(Enum):
     CREATIVE_LOOP_TRIGGERED = "CREATIVE_LOOP_TRIGGERED"
     CIRCUIT_BREAKER_TRIGGERED = "CIRCUIT_BREAKER_TRIGGERED"
 
+
 class AgentStatus(Enum):
     """Agent execution status"""
+
     IDLE = "IDLE"
     RUNNING = "RUNNING"
     COMPLETED = "COMPLETED"
     FAILED = "FAILED"
 
+
 class ValidationSeverity(Enum):
     """Validation result Severity levels"""
+
     CRITICAL = "CRITICAL"
     HIGH = "HIGH"
     MEDIUM = "MEDIUM"
     INFO = "INFO"
 
+
 class CircuitState(Enum):
     """Circuit breaker states"""
-    CLOSED = "CLOSED"      # Normal operation
-    OPEN = "OPEN"          # Blocking requests
+
+    CLOSED = "CLOSED"  # Normal operation
+    OPEN = "OPEN"  # Blocking requests
     HALF_OPEN = "HALF_OPEN"  # Testing recovery
+
 
 class FailureClassifierAgent(Enum):
     """
     Classifies S6 validation failures to determine retry strategy in HOP-7.
     """
+
     CREATIVE_FAILURE = "CREATIVE_FAILURE"  # e.g., tone, forbidden verbs
-    FACTUAL_FAILURE = "FACTUAL_FAILURE"    # e.g., strategic misalignment
+    FACTUAL_FAILURE = "FACTUAL_FAILURE"  # e.g., strategic misalignment
+
 
 # ============================================================================
 # CUSTOM EXCEPTIONS
 # ============================================================================
+
 
 class FactualGapError(Exception):
     """
@@ -82,19 +98,25 @@ class FactualGapError(Exception):
     This signals the HOPOrchestrator to trigger the S6->S2 "Slow Factual Loop"
     for a full re-planning and re-research cycle.
     """
+
     pass
+
 
 class CircuitBreakerOpenError(Exception):
     """Raised when circuit breaker is OPEN"""
+
     pass
+
 
 # ============================================================================
 # DATA CLASSES
 # ============================================================================
 
+
 @dataclass
 class OutreachMission:
     """Complete mission specification (Input)"""
+
     mission_id: str
     sender_profile: dict[str, object]
     recipient_profile: dict[str, object]
@@ -104,6 +126,7 @@ class OutreachMission:
     route_override: Route | None = None
     context: dict[str, object] = field(default_factory=dict)
 
+
 @dataclass
 class ProfileAnalysis:
     """
@@ -111,28 +134,34 @@ class ProfileAnalysis:
     Output is now state/1_profile_analysis.json
     This class is kept for type hinting in legacy models if needed.
     """
+
     Archetype: Archetype
     confidence: float
     reasoning: str
     key_indicators: list[str]
     needs_manual_override: bool = False
 
+
 @dataclass
 class MessageClaim:
     """NEW v11.6: Individual Claim with confidence (FEATURE 1.2)"""
+
     text: str
     confidence: float
     supporting_sources: list[str]
     source_weights: list[float]
 
+
 @dataclass
 class RAGCritique:
     """NEW v11.6: RAG quality critique (FEATURE 1.4)"""
+
     confidence_score: float
     gaps_identified: list[str]
     refinement_tasks: list[str]
     reasoning: str
     is_sufficient: bool = False
+
 
 @dataclass
 class RAGResult:
@@ -140,6 +169,7 @@ class RAGResult:
     Single RAG retrieval result with metadata.
     Used by HOP-2 ResearchAgent.
     """
+
     source: str
     SourceType: str
     text: str
@@ -149,17 +179,20 @@ class RAGResult:
     recipient_specific: bool
     confidence: float = 1.0
 
+
 @dataclass
 class SenderGroundingWhitelists:
     """
     Output of HOP-3 SenderGroundingAgent.
     Used to validate "my team" / "our product" claims in HOP-6.
     """
+
     team_members: list[str] = field(default_factory=list)
     products: list[str] = field(default_factory=list)
     case_studies: list[str] = field(default_factory=list)
     quantifiable_achievements: list[str] = field(default_factory=list)
     raw_evidence: dict[str, list[str]] = field(default_factory=dict)
+
 
 @dataclass
 class ResearchContext:
@@ -168,12 +201,14 @@ class ResearchContext:
     Output is now state/2_research_context.json
     This class is kept for type hinting in legacy models if needed.
     """
+
     recipient_insights: list[str]
     company_context: list[str]
     recent_activity: list[str]
     rag_results: list[RAGResult]
     sender_grounding: SenderGroundingWhitelists | None = None
     adversarial_findings: list[str] = field(default_factory=list)
+
 
 @dataclass
 class MessageScaffold:
@@ -182,11 +217,13 @@ class MessageScaffold:
     Output is now state/4_routing_decision.json
     This class is kept for type hinting in legacy models if needed.
     """
+
     Route: Route
     Archetype: Archetype
     sections: dict[str, dict[str, object]]
     constraints: dict[str, object]
     locked_sections: set[str] = field(default_factory=set)
+
 
 @dataclass
 class GeneratedMessage:
@@ -195,6 +232,7 @@ class GeneratedMessage:
     Output is now state/5_generated_drafts.json
     This class is kept for type hinting in legacy models if needed.
     """
+
     content: str
     word_count: int
     char_count: int
@@ -204,16 +242,19 @@ class GeneratedMessage:
     generation_attempts: int
     checksum: str
 
+
 @dataclass
 class ValidationResult:
     """
     Result from a single validation check in HOP-6.
     """
+
     passed: bool
     Severity: ValidationSeverity
     rule_id: str
     message: str
     details: dict[str, object] | None = None
+
 
 @dataclass
 class QAReport:
@@ -222,12 +263,15 @@ class QAReport:
     Output is now a persistent .md file.
     This class is kept for type hinting in legacy models if needed.
     """
+
     mission_id: str
     validation_results: list[ValidationResult]
     passed: bool
     timestamp: str
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 

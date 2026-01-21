@@ -15,13 +15,16 @@ import logging
 
 # GRAVITY FIXED: Use correct L2 location for MCPHardenedMixin
 try:
-    _mod = importlib.import_module('agentic_core.L2_execution.mcp.mcp_hardened_mixin')
+    _mod = importlib.import_module("agentic_core.L2_execution.mcp.mcp_hardened_mixin")
     MCPHardenedMixin = _mod.MCPHardenedMixin
 except (ImportError, AttributeError):
     # Fallback: create stub if module not available during healing
     class MCPHardenedMixin:
         """Stub MCPHardenedMixin for healing resilience."""
+
         pass
+
+
 from agentic_core.schemas.models.anomaly_report import AnomalyReport, AnomalySeverity
 
 # Import instructional injection patterns for all agents
@@ -30,9 +33,12 @@ try:
         InstructionalInjectionMixin,
     )
 except ImportError:
+
     class InstructionalInjectionMixin:
         """Stub for healing resilience."""
+
         pass
+
 
 Logger = logging.getLogger(__name__)
 
@@ -99,8 +105,9 @@ class SubatomicTestingMixin(InstructionalInjectionMixin):
 
         # If tools present, test registration structure
         if hasattr(self, "tools") and self.tools is not None:
-            assert isinstance(self.tools, dict | list), \
+            assert isinstance(self.tools, dict | list), (
                 f"{class_name}: Tools must be dict or list, got {type(self.tools)}"
+            )
 
         # If memory/state dict exists, test basic operations
         if hasattr(self, "state") and isinstance(self.state, dict):
@@ -110,8 +117,9 @@ class SubatomicTestingMixin(InstructionalInjectionMixin):
 
             # Write test
             self.state[test_key] = test_value
-            assert self.state.get(test_key) == test_value, \
+            assert self.state.get(test_key) == test_value, (
                 f"{class_name}: State write/read corruption"
+            )
 
             # Cleanup
             if original_value is None:
@@ -179,6 +187,7 @@ class L2SelfTestingMixin(SubatomicTestingMixin, MCPHardenedMixin):
 
     NOTE: _healing_enabled = False - Pure testing utility, no repair context.
     """
+
     pass
 
 

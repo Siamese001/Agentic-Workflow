@@ -43,9 +43,7 @@ class StructureLeadAgent(BaseAgent):
         bullet_texts = [b.get("text", "") for b in bullets]
 
         summary_content = (
-            "; ".join(summary_pivots)
-            if summary_pivots
-            else " ".join(bullet_texts[:2])
+            "; ".join(summary_pivots) if summary_pivots else " ".join(bullet_texts[:2])
         ).strip()
 
         experience_entries: list[dict[str, Any]] = []
@@ -227,9 +225,7 @@ class EvidenceLiaisonAgent(BaseAgent):
 
             if open_questions:
                 clar_payload = {
-                    "recipient": "bullet_team"
-                    if section_name == "experience"
-                    else "rag_team",
+                    "recipient": "bullet_team" if section_name == "experience" else "rag_team",
                     "questions": open_questions,
                     "context_summary": payload_dict.get("draft", "")[:200],
                 }
@@ -237,9 +233,7 @@ class EvidenceLiaisonAgent(BaseAgent):
                 record = EvidenceClarificationTool.ClarificationRequestOutput.model_validate(
                     clar_dict
                 )
-                clarifications.append(
-                    EvidenceClarificationRecord(**record.model_dump())
-                )
+                clarifications.append(EvidenceClarificationRecord(**record.model_dump()))
 
             brief_payload = {
                 "section": section_name,
@@ -248,16 +242,12 @@ class EvidenceLiaisonAgent(BaseAgent):
                 "open_questions": open_questions,
             }
             brief_dict = await self.brief_tool.run_async(brief_payload, workflow_id)
-            brief_record = EvidenceBriefAssemblerTool.EvidenceBriefOutput.model_validate(
-                brief_dict
-            )
+            brief_record = EvidenceBriefAssemblerTool.EvidenceBriefOutput.model_validate(brief_dict)
             briefs.append(EvidenceBriefRecord(**brief_record.model_dump()))
 
         return EvidenceLiaisonPacket(clarifications=clarifications, briefs=briefs)
 
-    def _harvest_resume_evidence(
-        self, section_name: str, resume: dict[str, Any]
-    ) -> list[str]:
+    def _harvest_resume_evidence(self, section_name: str, resume: dict[str, Any]) -> list[str]:
         evidence: list[str] = []
         if section_name == "experience":
             for experience in resume.get("professional_experience", []):
@@ -321,12 +311,8 @@ class CritiqueRoutingPanel(BaseAgent):
         )
 
     def _fact_critic(self, liaison_packet: EvidenceLiaisonPacket) -> CritiqueFindingRecord:
-        outstanding = [
-            brief for brief in liaison_packet.briefs if brief.outstanding_questions
-        ]
-        clarifications_pending = [
-            clar for clar in liaison_packet.clarifications if clar.questions
-        ]
+        outstanding = [brief for brief in liaison_packet.briefs if brief.outstanding_questions]
+        clarifications_pending = [clar for clar in liaison_packet.clarifications if clar.questions]
 
         severity = "approved"
         issues: list[str] = []
@@ -361,13 +347,9 @@ class CritiqueRoutingPanel(BaseAgent):
 
         if offenders:
             severity = "block"
-            issues.append(
-                f"Policy-sensitive terms detected: {', '.join(offenders)}"
-            )
+            issues.append(f"Policy-sensitive terms detected: {', '.join(offenders)}")
             blockers = offenders
-            recommendations.append(
-                "Remove or sanitize policy-sensitive language."
-            )
+            recommendations.append("Remove or sanitize policy-sensitive language.")
 
         return CritiqueFindingRecord(
             critic="Policy Critic",
@@ -404,9 +386,7 @@ class DraftingGuildCoordinator(BaseAgent):
         bullets = task_context.get("bullets", [])
         resume = task_context.get("resume", {})
 
-        structure_packet = await self.structure_lead.run_async(
-            bullets, strategy, workflow_id
-        )
+        structure_packet = await self.structure_lead.run_async(bullets, strategy, workflow_id)
         narrative_packet = await self.narrative_stylist.run_async(
             structure_packet.sections, strategy, workflow_id
         )

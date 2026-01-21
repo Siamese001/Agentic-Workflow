@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, state, workflow
@@ -50,9 +49,10 @@ class GravityHealerAgent(HealerMixin, SubatomicTestingMixin, MCPHardenedMixin):
     Applies appropriate healing strategy based on violation type.
     """
 
-
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -66,16 +66,15 @@ class GravityHealerAgent(HealerMixin, SubatomicTestingMixin, MCPHardenedMixin):
         super().heal_repository()
 
         # === ZOMBIE VACCINATION: Wired orphaned methods ===
-        if hasattr(self, 'heal_file') and not dry_run and execute:
+        if hasattr(self, "heal_file") and not dry_run and execute:
             try:
                 mutation_result = self.heal_file()
                 if mutation_result:
-                    metrics['fixed'] += mutation_result if isinstance(mutation_result, int) else 1
+                    metrics["fixed"] += mutation_result if isinstance(mutation_result, int) else 1
             except Exception as e:
-                Logger.error(f'Error in heal_file: {e}')
-                metrics['errors'] += 1
+                Logger.error(f"Error in heal_file: {e}")
+                metrics["errors"] += 1
         # === END VACCINATION ===
-
 
         return {"violations": 0, "fixed": 0, "errors": 0}
 
@@ -102,7 +101,7 @@ class GravityHealerAgent(HealerMixin, SubatomicTestingMixin, MCPHardenedMixin):
                 "dynamic_import": 0,
                 "comment_out": 0,
                 "relocation_suggested": 0,
-            }
+            },
         }
 
         results = []
@@ -134,22 +133,26 @@ class GravityHealerAgent(HealerMixin, SubatomicTestingMixin, MCPHardenedMixin):
                     stats["by_strategy"]["relocation_suggested"] += 1
 
                 if result:
-                    results.append({
-                        "file": str(v.file_path),
-                        "violation_type": v.violation_type,
-                        "action": v.suggested_action,
-                        "result": result,
-                    })
+                    results.append(
+                        {
+                            "file": str(v.file_path),
+                            "violation_type": v.violation_type,
+                            "action": v.suggested_action,
+                            "result": result,
+                        }
+                    )
 
             except Exception as e:
                 stats["failed"] += 1
                 self.logger.error(f"Failed to heal {v.file_path}: {e}")
-                results.append({
-                    "file": str(v.file_path),
-                    "violation_type": v.violation_type,
-                    "action": v.suggested_action,
-                    "result": {"success": False, "error": str(e)},
-                })
+                results.append(
+                    {
+                        "file": str(v.file_path),
+                        "violation_type": v.violation_type,
+                        "action": v.suggested_action,
+                        "result": {"success": False, "error": str(e)},
+                    }
+                )
 
         return {
             "statistics": stats,
@@ -181,9 +184,13 @@ class GravityHealerAgent(HealerMixin, SubatomicTestingMixin, MCPHardenedMixin):
                 if clean_line == import_line.strip() and not clean_line.startswith("#"):
                     if header_needed and not header_injected:
                         # Identify injection point for importlib
-                        future_imports = [i for i, l in enumerate(new_lines) if "from __future__" in l]
+                        future_imports = [
+                            i for i, l in enumerate(new_lines) if "from __future__" in l
+                        ]
                         insertion_point = max(future_imports) + 1 if future_imports else 0
-                        new_lines.insert(insertion_point, "import importlib  # AUTO-INJECTED BY GRAVITY HEALER")
+                        new_lines.insert(
+                            insertion_point, "import importlib  # AUTO-INJECTED BY GRAVITY HEALER"
+                        )
                         header_injected = True
 
                     if clean_line.startswith("import "):
@@ -196,7 +203,7 @@ class GravityHealerAgent(HealerMixin, SubatomicTestingMixin, MCPHardenedMixin):
                         match = re.match(r"from\s+([\w.]+)\s+import\s+([\w\s,]+)", clean_line)
                         if match:
                             module_path = match.group(1)
-                            first_item = match.group(2).strip().split(',')[0].strip()
+                            first_item = match.group(2).strip().split(",")[0].strip()
                             new_lines.append(f"# GRAVITY FIXED (Upward Leak): {clean_line}")
                             new_lines.append(f"_mod = importlib.import_module('{module_path}')")
                             new_lines.append(f"{first_item} = getattr(_mod, '{first_item}')")
@@ -206,7 +213,10 @@ class GravityHealerAgent(HealerMixin, SubatomicTestingMixin, MCPHardenedMixin):
                     new_lines.append(line)
 
             if not import_replaced:
-                return {"success": False, "error": "Target import line not found or already commented"}
+                return {
+                    "success": False,
+                    "error": "Target import line not found or already commented",
+                }
 
             # Write the modified content
             file_path.write_text("\n".join(new_lines), encoding="utf-8")

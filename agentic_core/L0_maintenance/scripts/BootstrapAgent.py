@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, workflow
@@ -138,7 +137,6 @@ class BootstrapAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
             print("   [BOOTSTRAP FAILED] Neural link compromised - check .env and Redis.")
         return result
 
-
     # SUPPLEMENTED FROM OrganicTerritorySeederAgent — sovereign project initialization — merged 2025-12-30
     async def seed_initial_territory(self, project_root: Path = None) -> dict[str, Any]:
         """
@@ -156,7 +154,8 @@ class BootstrapAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
         def _get_toolsmith():
             """Lazy load Toolsmith to avoid L0 → L2 dependency."""
             import importlib
-            module = importlib.import_module('agentic_core.L2_execution.ToolRegistry.Toolsmith')
+
+            module = importlib.import_module("agentic_core.L2_execution.ToolRegistry.Toolsmith")
             return module.Toolsmith
 
         root = project_root or self.project_root
@@ -164,28 +163,35 @@ class BootstrapAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
 
         result = await toolsmith.seed_territory(root, dry_run=False)
 
-        if result.get('seeded'):
+        if result.get("seeded"):
             Logger.info(f"Territory seeded: {len(result['seeded'])} files")
-            for f in result['seeded']:
+            for f in result["seeded"]:
                 print(f"   [SEEDED] {f}")
-        if result.get('errors'):
+        if result.get("errors"):
             Logger.warning(f"Seeding errors: {result['errors']}")
 
         return result
 
     # Mandatory agents and search paths for registry validation
     _MANDATORY_AGENTS = [
-        'LocationAgent', 'HierarchyAgent', 'NamingAgent', 'HealerAgent', 'ImportAgent',
+        "LocationAgent",
+        "HierarchyAgent",
+        "NamingAgent",
+        "HealerAgent",
+        "ImportAgent",
     ]
     _SEARCH_PATHS = [
-        'agentic_core.L5_safety.validators', 'agentic_core.L5_safety.guardrails',
-        'agentic_core.L5_safety.gravity', 'agentic_core.L2_execution.tool_registry',
-        'agentic_core.utils.naming',
+        "agentic_core.L5_safety.validators",
+        "agentic_core.L5_safety.guardrails",
+        "agentic_core.L5_safety.gravity",
+        "agentic_core.L2_execution.tool_registry",
+        "agentic_core.utils.naming",
     ]
 
     def _try_import_agent(self, agent_name: str) -> bool:
         """Try to import an agent from known search paths."""
         import importlib
+
         for module_path in self._SEARCH_PATHS:
             try:
                 full_path = f"{module_path}.{agent_name}"
@@ -226,30 +232,30 @@ class BootstrapAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
         print("\n[BOOTSTRAP PHASE] Full Sovereign Bootstrap Sequence...")
 
         results = {
-            'neural_link': False,
-            'registry_valid': False,
-            'territory_seeded': False,
+            "neural_link": False,
+            "registry_valid": False,
+            "territory_seeded": False,
         }
 
         # Step 1: Neural link verification
-        results['neural_link'] = self.verify_neural_link()
+        results["neural_link"] = self.verify_neural_link()
 
         # Step 2: Registry validation
         Missing = self.validate_sovereign_registry()
-        results['registry_valid'] = len(Missing) == 0
-        results['missing_agents'] = Missing
+        results["registry_valid"] = len(Missing) == 0
+        results["missing_agents"] = Missing
 
         # Step 3: Territory seeding (async)
         try:
             seed_result = await self.seed_initial_territory()
-            results['territory_seeded'] = len(seed_result.get('errors', [])) == 0
-            results['seeded_files'] = seed_result.get('seeded', [])
+            results["territory_seeded"] = len(seed_result.get("errors", [])) == 0
+            results["seeded_files"] = seed_result.get("seeded", [])
         except Exception as e:
             Logger.error(f"Territory seeding failed: {e}")
-            results['territory_seeded'] = False
+            results["territory_seeded"] = False
 
         # Summary
-        all_ok = all([results['neural_link'], results['registry_valid']])
+        all_ok = all([results["neural_link"], results["registry_valid"]])
         if all_ok:
             print("\n   [BOOTSTRAP COMPLETE] All critical systems active.")
         else:
@@ -264,7 +270,7 @@ class BootstrapAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: set[str] | None = None
+        _call_path: set[str] | None = None,
     ) -> dict[str, int]:
         """
         Execute L0 maintenance healing operations.

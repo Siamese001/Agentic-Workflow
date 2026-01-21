@@ -19,6 +19,7 @@ Logger = logging.getLogger(__name__)
 @dataclass
 class MCPTool:
     """MCP tool definition."""
+
     name: str
     description: str
     parameters: dict[str, Any]
@@ -56,6 +57,7 @@ class MCPTool:
 @dataclass
 class MCPToolResult:
     """Result from MCP tool execution."""
+
     tool_name: str
     success: bool
     result: Any
@@ -223,6 +225,7 @@ def register_default_tools(server: MCPToolServer) -> None:
     Args:
         server: MCP tool server
     """
+
     # Calculator tool
     def calculator(operation: str, a: float, b: float) -> float:
         """Perform basic arithmetic operations."""
@@ -230,7 +233,7 @@ def register_default_tools(server: MCPToolServer) -> None:
             "add": lambda x, y: x + y,
             "subtract": lambda x, y: x - y,
             "multiply": lambda x, y: x * y,
-            "divide": lambda x, y: x / y if y != 0 else float('inf'),
+            "divide": lambda x, y: x / y if y != 0 else float("inf"),
         }
 
         if operation not in operations:
@@ -267,7 +270,7 @@ def register_default_tools(server: MCPToolServer) -> None:
     def analyze_text(text: str) -> dict[str, Any]:
         """Analyze text and return statistics."""
         words = text.split()
-        sentences = text.split('.')
+        sentences = text.split(".")
 
         return {
             "character_count": len(text),
@@ -339,6 +342,7 @@ def execute_tool_calls(
 
             if isinstance(arguments, str):
                 import json
+
                 try:
                     arguments = json.loads(arguments)
                 except json.JSONDecodeError:

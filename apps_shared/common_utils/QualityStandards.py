@@ -14,6 +14,7 @@ from .signal_infrastructure import DomainConfig, EngineType
 
 class StandardType(Enum):
     """Types of quality standards."""
+
     BASE = "base"  # Minimum acceptable for all engines
     PREFERRED = "preferred"  # Target quality for production
     EXCELLENCE = "excellence"  # Aspirational quality level
@@ -21,6 +22,7 @@ class StandardType(Enum):
 
 class QualityDimension(Enum):
     """Dimensions of quality assessment."""
+
     ACCURACY = "accuracy"  # Factual correctness
     RELEVANCE = "relevance"  # Pertinence to context
     CLARITY = "clarity"  # Readability and comprehension
@@ -108,13 +110,9 @@ class CrossEngineQualityStandards:
             description="Content must be factually correct and verifiable",
             dimension=QualityDimension.ACCURACY,
             standard_type=StandardType.BASE,
-            criteria={
-                "min_confidence": 0.8,
-                "max_unverified_claims": 0,
-                "requires_sources": True
-            },
+            criteria={"min_confidence": 0.8, "max_unverified_claims": 0, "requires_sources": True},
             measurement_method="claim_verification",
-            validation_rules=["no_false_claims", "verify_statistics", "check_dates"]
+            validation_rules=["no_false_claims", "verify_statistics", "check_dates"],
         )
 
         self._standards["no_hallucination"] = QualityStandard(
@@ -125,10 +123,10 @@ class CrossEngineQualityStandards:
             criteria={
                 "max_hallucination_risk": 0.2,
                 "no_speculative_language": True,
-                "grounded_in_context": True
+                "grounded_in_context": True,
             },
             measurement_method="risk_assessment",
-            validation_rules=["check_speculative_claims", "verify_context_grounding"]
+            validation_rules=["check_speculative_claims", "verify_context_grounding"],
         )
 
         # Relevance standards
@@ -140,10 +138,10 @@ class CrossEngineQualityStandards:
             criteria={
                 "min_relevance_score": 0.7,
                 "addresses_requirements": True,
-                "avoids_irrelevant_content": True
+                "avoids_irrelevant_content": True,
             },
             measurement_method="semantic_analysis",
-            validation_rules=["check_keyword_alignment", "validate_requirement_coverage"]
+            validation_rules=["check_keyword_alignment", "validate_requirement_coverage"],
         )
 
         # Clarity standards
@@ -155,10 +153,10 @@ class CrossEngineQualityStandards:
             criteria={
                 "max_sentence_length": 25,
                 "min_readability_score": 0.6,
-                "proper_grammar": True
+                "proper_grammar": True,
             },
             measurement_method="readability_analysis",
-            validation_rules=["check_grammar", "analyze_sentence_structure"]
+            validation_rules=["check_grammar", "analyze_sentence_structure"],
         )
 
         self._standards["coherence"] = QualityStandard(
@@ -169,10 +167,10 @@ class CrossEngineQualityStandards:
             criteria={
                 "logical_flow": True,
                 "no_contradictions": True,
-                "consistent_terminology": True
+                "consistent_terminology": True,
             },
             measurement_method="coherence_analysis",
-            validation_rules=["check_logical_flow", "detect_contradictions"]
+            validation_rules=["check_logical_flow", "detect_contradictions"],
         )
 
         # Value standards
@@ -184,10 +182,10 @@ class CrossEngineQualityStandards:
             criteria={
                 "min_value_score": 0.7,
                 "actionable_insights": True,
-                "unique_perspective": True
+                "unique_perspective": True,
             },
             measurement_method="value_assessment",
-            validation_rules=["check_insight_quality", "validate_uniqueness"]
+            validation_rules=["check_insight_quality", "validate_uniqueness"],
         )
 
         # Completeness standards
@@ -199,10 +197,10 @@ class CrossEngineQualityStandards:
             criteria={
                 "covers_all_requirements": True,
                 "no_missing_sections": True,
-                "adequate_detail": True
+                "adequate_detail": True,
             },
             measurement_method="requirement_analysis",
-            validation_rules=["check_requirement_coverage", "validate_section_completeness"]
+            validation_rules=["check_requirement_coverage", "validate_section_completeness"],
         )
 
         # Preferred standards
@@ -214,10 +212,10 @@ class CrossEngineQualityStandards:
             criteria={
                 "appropriate_formality": True,
                 "no_casual_language": True,
-                "respectful_language": True
+                "respectful_language": True,
             },
             measurement_method="tone_analysis",
-            validation_rules=["check_formality_level", "scan_inappropriate_language"]
+            validation_rules=["check_formality_level", "scan_inappropriate_language"],
         )
 
         self._standards["concise"] = QualityStandard(
@@ -228,10 +226,10 @@ class CrossEngineQualityStandards:
             criteria={
                 "min_information_density": 0.7,
                 "no_redundancy": True,
-                "efficient_communication": True
+                "efficient_communication": True,
             },
             measurement_method="density_analysis",
-            validation_rules=["check_redundancy", "calculate_information_density"]
+            validation_rules=["check_redundancy", "calculate_information_density"],
         )
 
         # Excellence standards
@@ -243,10 +241,10 @@ class CrossEngineQualityStandards:
             criteria={
                 "min_overall_score": 0.9,
                 "innovative_insights": True,
-                "exemplary_writing": True
+                "exemplary_writing": True,
             },
             measurement_method="comprehensive_assessment",
-            validation_rules=["comprehensive_quality_check", "innovation_assessment"]
+            validation_rules=["comprehensive_quality_check", "innovation_assessment"],
         )
 
     def _initialize_engine_profiles(self) -> None:
@@ -261,29 +259,20 @@ class CrossEngineQualityStandards:
                 "context_relevance",
                 "readability",
                 "coherence",
-                "completeness"
+                "completeness",
             },
-            preferred_standards={
-                "professional_tone",
-                "concise",
-                "adds_value"
-            },
-            excellence_standards={
-                "exceptional_quality"
-            },
+            preferred_standards={"professional_tone", "concise", "adds_value"},
+            excellence_standards={"exceptional_quality"},
             custom_thresholds=QualityThresholds(
-                MIN_RELEVANCE=0.75,
-                MIN_AUTHORITY=0.6,
-                MIN_SPECIFICITY=0.7,
-                MIN_COHERENCE=0.7
+                MIN_RELEVANCE=0.75, MIN_AUTHORITY=0.6, MIN_SPECIFICITY=0.7, MIN_COHERENCE=0.7
             ),
             domain_weights={
                 "accuracy": 0.3,
                 "relevance": 0.2,
                 "specificity": 0.2,
                 "coherence": 0.2,
-                "value": 0.1
-            }
+                "value": 0.1,
+            },
         )
 
         # Outreach engine profile
@@ -295,28 +284,14 @@ class CrossEngineQualityStandards:
                 "context_relevance",
                 "readability",
                 "coherence",
-                "completeness"
+                "completeness",
             },
-            preferred_standards={
-                "professional_tone",
-                "adds_value"
-            },
-            excellence_standards={
-                "concise",
-                "exceptional_quality"
-            },
+            preferred_standards={"professional_tone", "adds_value"},
+            excellence_standards={"concise", "exceptional_quality"},
             custom_thresholds=QualityThresholds(
-                MIN_RELEVANCE=0.8,
-                MIN_AUTHORITY=0.5,
-                MIN_SPECIFICITY=0.6,
-                MIN_COHERENCE=0.7
+                MIN_RELEVANCE=0.8, MIN_AUTHORITY=0.5, MIN_SPECIFICITY=0.6, MIN_COHERENCE=0.7
             ),
-            domain_weights={
-                "accuracy": 0.25,
-                "relevance": 0.3,
-                "clarity": 0.25,
-                "value": 0.2
-            }
+            domain_weights={"accuracy": 0.25, "relevance": 0.3, "clarity": 0.25, "value": 0.2},
         )
 
     def get_standard(self, name: str) -> QualityStandard | None:
@@ -346,7 +321,7 @@ class CrossEngineQualityStandards:
         content: str,
         engine_type: EngineType,
         quality_level: StandardType = StandardType.BASE,
-        context: dict[str, Any] | None = None
+        context: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Evaluate content against engine-specific standards.
 
@@ -371,7 +346,7 @@ class CrossEngineQualityStandards:
             "standards_passed": 0,
             "standards_failed": [],
             "overall_score": 0.0,
-            "detailed_results": {}
+            "detailed_results": {},
         }
 
         total_score = 0.0
@@ -417,24 +392,26 @@ class CrossEngineQualityStandards:
             "base_gate": {
                 "required_standards": list(profile.base_standards),
                 "min_score": 0.6,
-                "description": "Minimum acceptable quality"
+                "description": "Minimum acceptable quality",
             },
             "preferred_gate": {
                 "required_standards": list(profile.base_standards | profile.preferred_standards),
                 "min_score": 0.75,
-                "description": "Preferred quality for production"
+                "description": "Preferred quality for production",
             },
             "excellence_gate": {
-                "required_standards": list(profile.base_standards | profile.preferred_standards | profile.excellence_standards),
+                "required_standards": list(
+                    profile.base_standards
+                    | profile.preferred_standards
+                    | profile.excellence_standards
+                ),
                 "min_score": 0.9,
-                "description": "Excellence quality level"
-            }
+                "description": "Excellence quality level",
+            },
         }
 
     def create_domain_config_from_standards(
-        self,
-        engine_type: EngineType,
-        quality_level: StandardType = StandardType.PREFERRED
+        self, engine_type: EngineType, quality_level: StandardType = StandardType.PREFERRED
     ) -> DomainConfig:
         """Create domain config based on quality standards.
 
@@ -452,19 +429,13 @@ class CrossEngineQualityStandards:
         # Adjust thresholds based on quality level
         if quality_level == StandardType.BASE:
             thresholds = QualityThresholds(
-                EXCELLENT_MIN=0.8,
-                HIGH_MIN=0.65,
-                GOOD_MIN=0.5,
-                MARGINAL_MIN=0.3
+                EXCELLENT_MIN=0.8, HIGH_MIN=0.65, GOOD_MIN=0.5, MARGINAL_MIN=0.3
             )
         elif quality_level == StandardType.PREFERRED:
             thresholds = profile.custom_thresholds
         else:  # EXCELLENCE
             thresholds = QualityThresholds(
-                EXCELLENT_MIN=0.95,
-                HIGH_MIN=0.85,
-                GOOD_MIN=0.75,
-                MARGINAL_MIN=0.6
+                EXCELLENT_MIN=0.95, HIGH_MIN=0.85, GOOD_MIN=0.75, MARGINAL_MIN=0.6
             )
 
         # Create validation rules from standards
@@ -479,7 +450,7 @@ class CrossEngineQualityStandards:
             quality_thresholds=thresholds,
             validation_rules=validation_rules,
             custom_metrics=list(profile.domain_weights.keys()),
-            metric_weights=profile.domain_weights
+            metric_weights=profile.domain_weights,
         )
 
     def export_standards(self) -> dict[str, Any]:
@@ -495,7 +466,7 @@ class CrossEngineQualityStandards:
                     "dimension": std.dimension.value,
                     "type": std.standard_type.value,
                     "criteria": std.criteria,
-                    "validation_rules": std.validation_rules
+                    "validation_rules": std.validation_rules,
                 }
                 for name, std in self._standards.items()
             },
@@ -504,10 +475,10 @@ class CrossEngineQualityStandards:
                     "base_standards": list(profile.base_standards),
                     "preferred_standards": list(profile.preferred_standards),
                     "excellence_standards": list(profile.excellence_standards),
-                    "domain_weights": profile.domain_weights
+                    "domain_weights": profile.domain_weights,
                 }
                 for engine, profile in self._profiles.items()
-            }
+            },
         }
 
 
@@ -532,7 +503,7 @@ def evaluate_content_quality(
     content: str,
     engine_type: EngineType,
     quality_level: StandardType = StandardType.BASE,
-    context: dict[str, Any] | None = None
+    context: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Evaluate content quality against standards.
 
@@ -546,9 +517,7 @@ def evaluate_content_quality(
         Evaluation results
     """
     standards = get_quality_standards()
-    return standards.evaluate_against_standards(
-        content, engine_type, quality_level, context
-    )
+    return standards.evaluate_against_standards(content, engine_type, quality_level, context)
 
 
 def get_engine_quality_gates(engine_type: EngineType) -> dict[str, dict[str, Any]]:

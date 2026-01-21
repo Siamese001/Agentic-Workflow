@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 
 class FeedbackType(Enum):
     """Types of feedback."""
+
     EXPLICIT = "explicit"  # User-provided feedback
     IMPLICIT = "implicit"  # Inferred from usage patterns
     AUTOMATIC = "automatic"  # System-generated feedback
@@ -77,24 +78,11 @@ class AdaptiveThresholds:
         """
         self.thresholds = initial_thresholds.copy()
         self.adjustment_history: list[dict[str, Any]] = []
-        self.min_thresholds = {
-            "excellent": 0.85,
-            "high": 0.70,
-            "good": 0.55,
-            "marginal": 0.40
-        }
-        self.max_thresholds = {
-            "excellent": 0.95,
-            "high": 0.85,
-            "good": 0.70,
-            "marginal": 0.55
-        }
+        self.min_thresholds = {"excellent": 0.85, "high": 0.70, "good": 0.55, "marginal": 0.40}
+        self.max_thresholds = {"excellent": 0.95, "high": 0.85, "good": 0.70, "marginal": 0.55}
 
     def adjust_thresholds(
-        self,
-        quality_scores: list[float],
-        acceptance_rate: float,
-        target_acceptance: float = 0.75
+        self, quality_scores: list[float], acceptance_rate: float, target_acceptance: float = 0.75
     ) -> dict[str, float]:
         """Adjust thresholds based on performance.
 
@@ -125,21 +113,24 @@ class AdaptiveThresholds:
             new_value = current + adjustment_factor
 
             # Clamp to min/max
-            new_value = max(self.min_thresholds[level],
-                           min(self.max_thresholds[level], new_value))
+            new_value = max(self.min_thresholds[level], min(self.max_thresholds[level], new_value))
 
             self.thresholds[level] = new_value
 
         # Record adjustment
-        self.adjustment_history.append({
-            "timestamp": datetime.now(),
-            "acceptance_rate": acceptance_rate,
-            "adjustment_factor": adjustment_factor,
-            "new_thresholds": self.thresholds.copy()
-        })
+        self.adjustment_history.append(
+            {
+                "timestamp": datetime.now(),
+                "acceptance_rate": acceptance_rate,
+                "adjustment_factor": adjustment_factor,
+                "new_thresholds": self.thresholds.copy(),
+            }
+        )
 
-        logger.info(f"Adjusted thresholds: acceptance_rate={acceptance_rate:.2f}, "
-                   f"adjustment={adjustment_factor:.3f}")
+        logger.info(
+            f"Adjusted thresholds: acceptance_rate={acceptance_rate:.2f}, "
+            f"adjustment={adjustment_factor:.3f}"
+        )
 
         return self.thresholds
 
@@ -160,9 +151,7 @@ class FeedbackLoop:
         # Data storage
         self.assessments: deque = deque(maxlen=history_size)
         self.feedback: deque = deque(maxlen=history_size)
-        self.quality_history: dict[str, deque] = defaultdict(
-            lambda: deque(maxlen=100)
-        )
+        self.quality_history: dict[str, deque] = defaultdict(lambda: deque(maxlen=100))
 
         # Analysis cache
         self._trends_cache: dict[str, QualityTrend] = {}
@@ -170,12 +159,9 @@ class FeedbackLoop:
         self._cache_ttl = 300  # 5 minutes
 
         # Adaptive thresholds
-        self.adaptive_thresholds = AdaptiveThresholds({
-            "excellent": 0.9,
-            "high": 0.75,
-            "good": 0.6,
-            "marginal": 0.4
-        })
+        self.adaptive_thresholds = AdaptiveThresholds(
+            {"excellent": 0.9, "high": 0.75, "good": 0.6, "marginal": 0.4}
+        )
 
         # Thread safety
         self._lock = threading.Lock()
@@ -268,7 +254,7 @@ class FeedbackLoop:
                 current_value=values[0] if values else 0.0,
                 trend_direction="stable",
                 trend_strength=0.0,
-                confidence=0.0
+                confidence=0.0,
             )
 
         # Calculate trend using linear regression
@@ -313,7 +299,7 @@ class FeedbackLoop:
             trend_strength=strength,
             confidence=confidence,
             recent_values=values[-10:],  # Last 10 values
-            baseline_value=statistics.mean(values[:10]) if len(values) >= 10 else None
+            baseline_value=statistics.mean(values[:10]) if len(values) >= 10 else None,
         )
 
     def get_quality_insights(self) -> dict[str, Any]:
@@ -346,12 +332,11 @@ class FeedbackLoop:
                 "relevance": statistics.mean([a.relevance_score for a in recent_assessments]),
                 "authority": statistics.mean([a.authority_score for a in recent_assessments]),
                 "coherence": statistics.mean([a.coherence_score for a in recent_assessments]),
-                "specificity": statistics.mean([a.specificity_score for a in recent_assessments])
+                "specificity": statistics.mean([a.specificity_score for a in recent_assessments]),
             }
 
             # Hallucination risk analysis
-            high_risk_count = sum(1 for a in recent_assessments
-                                 if a.hallucination_risk > 0.3)
+            high_risk_count = sum(1 for a in recent_assessments if a.hallucination_risk > 0.3)
 
             return {
                 "total_assessments": len(self.assessments),
@@ -361,7 +346,7 @@ class FeedbackLoop:
                 "average_scores": avg_scores,
                 "high_hallucination_risk_rate": high_risk_count / len(recent_assessments),
                 "current_thresholds": self.adaptive_thresholds.thresholds,
-                "trends": self.analyze_trends()
+                "trends": self.analyze_trends(),
             }
 
     def recommend_improvements(self) -> list[str]:
@@ -449,9 +434,12 @@ class FeedbackLoop:
 
             # Calculate acceptance rate
             recent = list(self.assessments)[-20:]
-            accepted = sum(1 for a in recent if a.quality_level in [
-                SignalQuality.GOOD, SignalQuality.HIGH, SignalQuality.EXCELLENT
-            ])
+            accepted = sum(
+                1
+                for a in recent
+                if a.quality_level
+                in [SignalQuality.GOOD, SignalQuality.HIGH, SignalQuality.EXCELLENT]
+            )
             acceptance_rate = accepted / len(recent)
 
             # Get quality scores
@@ -478,7 +466,7 @@ class FeedbackLoop:
                         "quality_level": a.quality_level.value,
                         "composite_score": a.composite_score,
                         "timestamp": a.timestamp.isoformat(),
-                        "flags": a.flags
+                        "flags": a.flags,
                     }
                     for a in self.assessments
                 ],
@@ -490,16 +478,16 @@ class FeedbackLoop:
                             "accuracy": f.accuracy_rating,
                             "relevance": f.relevance_rating,
                             "clarity": f.clarity_rating,
-                            "completeness": f.completeness_rating
+                            "completeness": f.completeness_rating,
                         },
                         "comments": f.user_comments,
-                        "timestamp": f.timestamp.isoformat()
+                        "timestamp": f.timestamp.isoformat(),
                     }
                     for f in self.feedback
                 ],
                 "threshold_history": self.adaptive_thresholds.adjustment_history,
                 "insights": self.get_quality_insights(),
-                "recommendations": self.recommend_improvements()
+                "recommendations": self.recommend_improvements(),
             }
 
 

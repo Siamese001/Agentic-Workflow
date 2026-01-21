@@ -2,6 +2,7 @@
 Dependency Graph - Code structure analysis and impact tracking.
 Extracted from BudgetManagerAgent.py for single responsibility.
 """
+
 from __future__ import annotations
 
 import ast
@@ -21,31 +22,31 @@ class DependencyGraph:
         Args:
             files: List of Python file paths to analyze
         """
-        print('🕸️ Building Holistic Code Graph...')
+        print("🕸️ Building Holistic Code Graph...")
 
         for file_path in files:
-            self.graph[file_path] = {'imports': [], 'classes': []}
+            self.graph[file_path] = {"imports": [], "classes": []}
 
             try:
-                with open(file_path, encoding='utf-8') as f:
+                with open(file_path, encoding="utf-8") as f:
                     tree = ast.parse(f.read())
 
                 for node in ast.walk(tree):
                     if isinstance(node, ast.Import):
                         for n in node.names:
-                            self.graph[file_path]['imports'].append(n.name)
+                            self.graph[file_path]["imports"].append(n.name)
                     elif isinstance(node, ast.ImportFrom):
                         if node.module:
-                            self.graph[file_path]['imports'].append(node.module)
+                            self.graph[file_path]["imports"].append(node.module)
                     elif isinstance(node, ast.ClassDef):
-                        self.graph[file_path]['classes'].append(node.name)
+                        self.graph[file_path]["classes"].append(node.name)
             except Exception:
                 # Skip files that can't be parsed
                 pass
 
         # Build reverse graph for impact analysis
         for file, data in self.graph.items():
-            for imp in data['imports']:
+            for imp in data["imports"]:
                 if imp not in self.reverse_graph:
                     self.reverse_graph[imp] = []
                 self.reverse_graph[imp].append(file)
@@ -60,7 +61,7 @@ class DependencyGraph:
             List of file paths that would be impacted by changes
         """
         impacted = set()
-        module_name = file_path.replace('/', '.').replace('\\', '.').replace('.py', '')
+        module_name = file_path.replace("/", ".").replace("\\", ".").replace(".py", "")
 
         if module_name in self.reverse_graph:
             impacted.update(self.reverse_graph[module_name])
@@ -76,7 +77,7 @@ class DependencyGraph:
         Returns:
             List of imported module names
         """
-        return self.graph.get(file_path, {}).get('imports', [])
+        return self.graph.get(file_path, {}).get("imports", [])
 
     def get_classes(self, file_path: str) -> list[str]:
         """Get all class definitions in a specific file.
@@ -87,7 +88,7 @@ class DependencyGraph:
         Returns:
             List of class names defined in the file
         """
-        return self.graph.get(file_path, {}).get('classes', [])
+        return self.graph.get(file_path, {}).get("classes", [])
 
     def get_all_files(self) -> list[str]:
         """Get all files in the dependency graph.

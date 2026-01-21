@@ -8,10 +8,12 @@ from functools import wraps
 
 class RateLimitExceeded(Exception):
     """Raised when an operation exceeds its defined rate limit."""
+
     def __init__(self, key: str, wait_time: float):
         self.key = key
         self.wait_time = wait_time
         super().__init__(f"Rate limit exceeded for '{key}'. Retry in {wait_time:.2f}s")
+
 
 class RateLimitMixin:
     """
@@ -41,6 +43,7 @@ class RateLimitMixin:
         self._redis = None
         try:
             from agentic_core.L2_execution.mcp.caching_redis_mcp_client import get_redis_client
+
             self._redis = get_redis_client()
         except Exception:
             self._redis = None
@@ -63,7 +66,7 @@ class RateLimitMixin:
         self._rate_limits[key] = {
             "rate": float(rate),
             "per": float(per),
-            "burst": float(burst if burst is not None else rate)
+            "burst": float(burst if burst is not None else rate),
         }
         self._rl_logger.debug(f"Rate limit configured for '{key}': {rate}/{per}s (burst={burst})")
 
@@ -71,7 +74,7 @@ class RateLimitMixin:
         """Internal: Calculate current tokens for a key based on time elapsed."""
         config = self._rate_limits.get(key)
         if not config:
-            return float('inf')  # Unlimited if not configured
+            return float("inf")  # Unlimited if not configured
 
         now = time.time()
         state = self._bucket_state.get(key, {"tokens": config["burst"], "last_updated": now})
@@ -85,10 +88,7 @@ class RateLimitMixin:
         current_tokens = min(config["burst"], state["tokens"] + new_tokens)
 
         # Update internal state with new values
-        self._bucket_state[key] = {
-            "tokens": current_tokens,
-            "last_updated": now
-        }
+        self._bucket_state[key] = {"tokens": current_tokens, "last_updated": now}
         return current_tokens
 
     async def _load_state_from_redis(self, key: str) -> None:
@@ -172,11 +172,14 @@ class RateLimitMixin:
     @staticmethod
     def rate_limit(key: str, consume: int = 1):
         """Decorator to automatically enforce rate limits on agent methods."""
+
         def decorator(func):
             @wraps(func)
             async def wrapper(self, *args, **kwargs):
                 if isinstance(self, RateLimitMixin):
                     await self.check_rate_limit(key, consume=consume)
                 return await func(self, *args, **kwargs)
+
             return wrapper
+
         return decorator

@@ -16,6 +16,7 @@ Features:
 - Dynamic model switching
 - Token budget management
 """
+
 from __future__ import annotations
 
 import logging
@@ -29,23 +30,26 @@ Logger = logging.getLogger(__name__)
 
 class ModelTier(Enum):
     """Model tiers by capability and cost."""
-    ECONOMY = 0      # Low cost, basic tasks
-    STANDARD = 1     # Medium cost, general tasks
-    PREMIUM = 2      # High cost, complex reasoning
-    FLAGSHIP = 3     # Highest cost, most capable
+
+    ECONOMY = 0  # Low cost, basic tasks
+    STANDARD = 1  # Medium cost, general tasks
+    PREMIUM = 2  # High cost, complex reasoning
+    FLAGSHIP = 3  # Highest cost, most capable
 
 
 class TaskComplexity(Enum):
     """Task complexity levels."""
-    SIMPLE = 0       # Basic Q&A, formatting
-    MODERATE = 1     # Summarization, basic analysis
-    COMPLEX = 2      # Multi-step reasoning, coding
-    EXPERT = 3       # Advanced reasoning, research
+
+    SIMPLE = 0  # Basic Q&A, formatting
+    MODERATE = 1  # Summarization, basic analysis
+    COMPLEX = 2  # Multi-step reasoning, coding
+    EXPERT = 3  # Advanced reasoning, research
 
 
 @dataclass
 class ModelConfig:
     """Configuration for a model."""
+
     name: str
     provider: str
     tier: ModelTier
@@ -59,6 +63,7 @@ class ModelConfig:
 @dataclass
 class RoutingDecision:
     """Represents a routing decision."""
+
     model: ModelConfig
     reason: str
     complexity: TaskComplexity
@@ -69,6 +74,7 @@ class RoutingDecision:
 @dataclass
 class RouterConfig:
     """Configuration for the router."""
+
     enable_cost_optimization: bool = True
     enable_complexity_detection: bool = True
     enable_failover: bool = True
@@ -142,14 +148,34 @@ class UnifiedModelRouterAgent:
 
     # Complexity indicators
     COMPLEX_INDICATORS = [
-        "explain", "analyze", "compare", "evaluate", "synthesize",
-        "algorithm", "optimize", "debug", "refactor", "architect",
-        "research", "investigate", "prove", "derive", "calculate",
+        "explain",
+        "analyze",
+        "compare",
+        "evaluate",
+        "synthesize",
+        "algorithm",
+        "optimize",
+        "debug",
+        "refactor",
+        "architect",
+        "research",
+        "investigate",
+        "prove",
+        "derive",
+        "calculate",
     ]
 
     SIMPLE_INDICATORS = [
-        "format", "list", "summarize", "translate", "convert",
-        "extract", "count", "find", "replace", "generate",
+        "format",
+        "list",
+        "summarize",
+        "translate",
+        "convert",
+        "extract",
+        "count",
+        "find",
+        "replace",
+        "generate",
     ]
 
     def __init__(

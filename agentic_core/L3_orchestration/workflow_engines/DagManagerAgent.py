@@ -10,15 +10,15 @@ Extracted: 2026-01-06 (Surgical Extraction)
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-
-
 from __future__ import annotations
 
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
 
 
-class DAGManagerAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin):
+class DAGManagerAgent(
+    HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin
+):
     """Manages the dynamic DAG with mutation capabilities.
 
     HARDENED: Redis caching + Pinecone vector support for DAG structure caching.
@@ -48,7 +48,7 @@ class DAGManagerAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin, Re
             "spawned_predecessors": 0,
             "spawned_successors": 0,
             "skipped_nodes": 0,
-            "replaced_nodes": 0
+            "replaced_nodes": 0,
         }
 
         Logger.info("Initialized DAGManagerAgent with dynamic mutation support")
@@ -63,11 +63,7 @@ class DAGManagerAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin, Re
         self.function_registry[name] = function
         Logger.debug(f"Registered function: {name}")
 
-    def add_node(
-        self,
-        hop: SubatomicHop,
-        predecessors: Optional[List[str]] = None
-    ) -> None:
+    def add_node(self, hop: SubatomicHop, predecessors: Optional[List[str]] = None) -> None:
         """Add a node to the DAG.
 
         Args:
@@ -77,12 +73,7 @@ class DAGManagerAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin, Re
         self.node_registry[hop.config.hop_id] = hop
 
         # Add to graph
-        self.graph.add_node(
-            hop.config.hop_id,
-            hop=hop,
-            depth=0,
-            created_at=datetime.now()
-        )
+        self.graph.add_node(hop.config.hop_id, hop=hop, depth=0, created_at=datetime.now())
 
         # Add edges from predecessors
         if predecessors:
@@ -137,7 +128,7 @@ class DAGManagerAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin, Re
         hop_function: str,
         reason: str,
         requester_hop_id: str,
-        **kwargs
+        **kwargs,
     ) -> DAGMutation:
         """Create a mutation request.
 
@@ -152,17 +143,14 @@ class DAGManagerAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin, Re
         Returns:
             DAGMutation object
         """
-        hop_spec = HopSpec(
-            hop_function=hop_function,
-            **kwargs
-        )
+        hop_spec = HopSpec(hop_function=hop_function, **kwargs)
 
         return DAGMutation(
             action=action,
             target_hop_id=target_hop_id,
             new_hop_spec=hop_spec,
             reason=reason,
-            requester_hop_id=requester_hop_id
+            requester_hop_id=requester_hop_id,
         )
 
     def get_next_node(self) -> Optional[SubatomicHop]:
@@ -220,7 +208,7 @@ class DAGManagerAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin, Re
             "edge_count": self.graph.number_of_edges(),
             "queue_size": len(self.execution_queue),
             "registered_functions": len(self.function_registry),
-            **self.stats
+            **self.stats,
         }
 
     def visualize_graph(self) -> Dict[str, Any]:
@@ -234,32 +222,40 @@ class DAGManagerAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin, Re
 
         for node_id in self.graph.nodes:
             node_data = self.graph.nodes[node_id]
-            hop = node_data.get('hop')
+            hop = node_data.get("hop")
 
-            nodes.append({
-                "id": node_id,
-                "depth": node_data.get('depth', 0),
-                "state": hop.state.value if hop else None,
-                "skipped": node_data.get('skipped', False),
-                "replaced": node_data.get('replaced', False)
-            })
+            nodes.append(
+                {
+                    "id": node_id,
+                    "depth": node_data.get("depth", 0),
+                    "state": hop.state.value if hop else None,
+                    "skipped": node_data.get("skipped", False),
+                    "replaced": node_data.get("replaced", False),
+                }
+            )
 
         for edge in self.graph.edges:
             edge_data = self.graph.edges[edge]
-            edges.append({
-                "source": edge[0],
-                "target": edge[1],
-                "bridge": edge_data.get('bridge_created', False)
-            })
+            edges.append(
+                {
+                    "source": edge[0],
+                    "target": edge[1],
+                    "bridge": edge_data.get("bridge_created", False),
+                }
+            )
 
-        return {
-            "nodes": nodes,
-            "edges": edges
-        }
+        return {"nodes": nodes, "edges": edges}
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: Optional[set] = None,
+    ) -> Dict[str, int]:
         """L3 orchestration agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:

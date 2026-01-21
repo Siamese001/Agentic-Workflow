@@ -8,6 +8,7 @@ SSOT Consolidation (Jan 20, 2026):
 All scripts should import get_project_root from here instead of
 computing paths manually.
 """
+
 from functools import lru_cache
 from pathlib import Path
 
@@ -16,7 +17,7 @@ ROOT_MARKERS: list[str] = [
     "pyproject.toml",
     ".git",
     "agentic_core",  # The core package directory itself
-    "requirements.txt"
+    "requirements.txt",
 ]
 
 

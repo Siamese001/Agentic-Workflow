@@ -50,9 +50,8 @@ Key capabilities:
 - Pattern recognition in large datasets
 - Fact-checking and validation
 
-Remember: Your outputs become the foundation for all subsequent work. Accuracy and thoroughness are paramount."""
+Remember: Your outputs become the foundation for all subsequent work. Accuracy and thoroughness are paramount.""",
         },
-
         AgentRole.STRATEGIC_PLANNER: {
             "functional_role": "Executive Strategist",
             "objective": "Transform research into clear, actionable strategic guidance",
@@ -71,9 +70,8 @@ Key capabilities:
 - Risk identification and mitigation
 - Success metric definition
 
-Remember: Your strategies guide the entire content creation process. They must be both ambitious and achievable."""
+Remember: Your strategies guide the entire content creation process. They must be both ambitious and achievable.""",
         },
-
         AgentRole.CONTENT_DRAFTER: {
             "functional_role": "Executive Drafter",
             "objective": "Create compelling, accurate content that meets strategic objectives",
@@ -92,9 +90,8 @@ Key capabilities:
 - Brand voice maintenance
 - Audience engagement
 
-Remember: You are the final creative voice before quality review. Your drafts must be publication-ready."""
+Remember: You are the final creative voice before quality review. Your drafts must be publication-ready.""",
         },
-
         AgentRole.QUALITY_CRITIC: {
             "functional_role": "Governance Auditor",
             "objective": "Ensure content meets all quality standards and governance requirements",
@@ -113,9 +110,8 @@ Key capabilities:
 - Constructive feedback generation
 - Risk identification
 
-Remember: You are the final gatekeeper. Your approval signals content is ready for the world."""
+Remember: You are the final gatekeeper. Your approval signals content is ready for the world.""",
         },
-
         AgentRole.MESSAGE_CRAFTER: {
             "functional_role": "Message Architect",
             "objective": "Create personalized messages that build genuine connections",
@@ -134,9 +130,8 @@ Key capabilities:
 - Relationship building through messaging
 - Conversion optimization
 
-Remember: Your messages represent direct human connections. Authenticity is your greatest asset."""
+Remember: Your messages represent direct human connections. Authenticity is your greatest asset.""",
         },
-
         AgentRole.PROTOCOL_ENFORCER: {
             "functional_role": "Protocol Guardian",
             "objective": "Ensure 100% compliance with all established protocols",
@@ -155,9 +150,8 @@ Key capabilities:
 - Legal and safety validation
 - Brand protection
 
-Remember: You protect the organization and its users. There is no room for compromise."""
+Remember: You protect the organization and its users. There is no room for compromise.""",
         },
-
         AgentRole.RESUME_BUILDER: {
             "functional_role": "Resume Architect",
             "objective": "Create resumes that get past ATS and impress recruiters",
@@ -176,8 +170,8 @@ Key capabilities:
 - Industry-specific formatting
 - Keyword strategy
 
-Remember: Your resumes open doors to opportunities. Every word must serve the candidate's success."""
-        }
+Remember: Your resumes open doors to opportunities. Every word must serve the candidate's success.""",
+        },
     }
 
     @classmethod
@@ -203,7 +197,7 @@ Remember: Your resumes open doors to opportunities. Every word must serve the ca
             CONSUMER_ROLE=persona["consumer_role"],
             ADDITIONAL_CONSTRAINTS=persona["additional_constraints"],
             CONTEXT=cls._format_context(context, role),
-            TASK=task
+            TASK=task,
         )
 
         # Add role-specific system prompt
@@ -237,7 +231,11 @@ Remember: Your resumes open doors to opportunities. Every word must serve the ca
             if "objectives" in context:
                 formatted.append(f"Strategic Objectives: {context['objectives']}")
 
-        elif role in [AgentRole.CONTENT_DRAFTER, AgentRole.RESUME_BUILDER, AgentRole.MESSAGE_CRAFTER]:
+        elif role in [
+            AgentRole.CONTENT_DRAFTER,
+            AgentRole.RESUME_BUILDER,
+            AgentRole.MESSAGE_CRAFTER,
+        ]:
             if "strategic_plan" in context:
                 formatted.append(f"Strategic Guidance: {context['strategic_plan']}")
             if "tone_settings" in context:
@@ -259,9 +257,18 @@ Remember: Your resumes open doors to opportunities. Every word must serve the ca
 
         # Add any additional context
         for key, value in context.items():
-            if key not in ["query", "sources", "research_results", "objectives",
-                          "strategic_plan", "tone_settings", "target_audience",
-                          "content", "quality_criteria", "protocol_rules"]:
+            if key not in [
+                "query",
+                "sources",
+                "research_results",
+                "objectives",
+                "strategic_plan",
+                "tone_settings",
+                "target_audience",
+                "content",
+                "quality_criteria",
+                "protocol_rules",
+            ]:
                 formatted.append(f"{key.replace('_', ' ').title()}: {value}")
 
         return "\n".join(formatted) if formatted else "No specific context provided"

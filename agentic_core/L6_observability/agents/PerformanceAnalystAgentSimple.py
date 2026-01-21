@@ -49,10 +49,7 @@ class PerformanceAnalystAgentSimple:
         """Stop tracking and return metrics for an agent."""
         if agent_name in self.start_times:
             duration = time.time() - self.start_times[agent_name]
-            self.metrics[agent_name] = {
-                "duration": duration,
-                "timestamp": time.time()
-            }
+            self.metrics[agent_name] = {"duration": duration, "timestamp": time.time()}
             del self.start_times[agent_name]
             return self.metrics[agent_name]
         return {}
@@ -68,7 +65,7 @@ class PerformanceAnalystAgentSimple:
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: set | None = None
+        _call_path: set | None = None,
     ) -> dict[str, int]:
         """
         Performance analyst healing - reports metrics status.
@@ -78,5 +75,5 @@ class PerformanceAnalystAgentSimple:
             "status": "ready",
             "metrics_collected": len(self.metrics),
             "violations_fixed": 0,
-            "violations_found": 0
+            "violations_found": 0,
         }

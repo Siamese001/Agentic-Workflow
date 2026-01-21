@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: guardrail
@@ -41,6 +40,7 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 @dataclass
 class AutonomousThreatEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
     """L5: Self-healing security agent"""
+
     def __init__(self, SafetyEngine: Any | None = None) -> None:
         """
         Initialize autonomous threat evolution agent.
@@ -89,7 +89,7 @@ class AutonomousThreatEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, He
             with open(self.log_path) as f:
                 data = json.load(f)
                 cutoff = datetime.now() - timedelta(hours=hours)
-                return [d for d in data if datetime.fromisoformat(d['ts']) > cutoff]
+                return [d for d in data if datetime.fromisoformat(d["ts"]) > cutoff]
         except (json.JSONDecodeError, KeyError):
             return []
 
@@ -104,7 +104,14 @@ class AutonomousThreatEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, He
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L5 safety agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -136,7 +143,7 @@ class AutonomousThreatEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, He
             "evolution_interval": self.evolution_interval,
             "confidence_threshold": self.confidence_threshold,
             "log_path": str(self.log_path),
-            "recent_detections": len(self._load_recent_detections(hours=24))
+            "recent_detections": len(self._load_recent_detections(hours=24)),
         }
 
     def set_evolution_interval(self, seconds: int) -> Any:
@@ -163,6 +170,7 @@ class AutonomousThreatEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, He
                         rules_deployed += 1
             return rules_deployed
         return 0
+
 
 # Factory function for L6 coordination
 def create_threat_evolution_agent(SafetyEngine=None) -> AutonomousThreatEvolution:

@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, workflow
@@ -25,7 +24,7 @@ from typing import Any
 
 # GRAVITY VIOLATION: from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
 # GRAVITY FIXED (Upward Leak): from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
-_mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_mixin')
+_mod = importlib.import_module("agentic_core.L5_safety.guardrails.mcp_hardened_mixin")
 MCPHardenedMixin = _mod.MCPHardenedMixin
 from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
@@ -38,6 +37,7 @@ except ImportError:
     # Fallback if not available
     class CanonBaseAgentInterface:
         pass
+
 
 try:
     from agentic_core.L5_safety.validators.structure_blueprint import (
@@ -59,6 +59,7 @@ try:
 except ImportError:
     # Fallback defaults
     from pathlib import Path
+
     AGENT_DISCOVERY_JSON = "agent_discovery_full.json"
     AGENT_DISCOVERY_MANIFEST_JSON = "agent_discovery_manifest.json"
     _root = Path(__file__).resolve().parent.parent.parent.parent
@@ -73,20 +74,41 @@ except ImportError:
     L4_STATE_DIR = _root / "agentic_core" / "L4_state"
     L5_SAFETY_DIR = _root / "agentic_core" / "L5_safety"
     L6_OBSERVABILITY_DIR = _root / "agentic_core" / "L6_observability"
+
     def get_validated_project_root() -> Path:
         return _root
 
+
 # Excluded directories for file scanning
 EXCLUDED_DIRS = [
-    '.git', '__pycache__', '.venv', 'venv', 'env', 'node_modules',
-    'dist', 'build', '.vscode', '.idea', '.DS_Store', '.mypy_cache',
-    '.pytest_cache', 'htmlcov', 'site-packages', 'docs', TESTS_DIR,
-    'temp', 'tmp', 'log', 'logs'
+    ".git",
+    "__pycache__",
+    ".venv",
+    "venv",
+    "env",
+    "node_modules",
+    "dist",
+    "build",
+    ".vscode",
+    ".idea",
+    ".DS_Store",
+    ".mypy_cache",
+    ".pytest_cache",
+    "htmlcov",
+    "site-packages",
+    "docs",
+    TESTS_DIR,
+    "temp",
+    "tmp",
+    "log",
+    "logs",
 ]
 
 
 @dataclass
-class GenerativeGuardAgent(SubatomicTestingMixin, HealerMixin, CanonBaseAgentInterface, MCPHardenedMixin):
+class GenerativeGuardAgent(
+    SubatomicTestingMixin, HealerMixin, CanonBaseAgentInterface, MCPHardenedMixin
+):
     """
     KEYS: 45 (Dead Code/Runaway Generation)
     ROLE: The Watchdog. Identifies and deletes recursively-generated files.
@@ -129,7 +151,7 @@ class GenerativeGuardAgent(SubatomicTestingMixin, HealerMixin, CanonBaseAgentInt
         print(f"\n[>>>] {self.name} ACTIVATED: Checking Generative Policy...")
         violations = []
 
-        project_root = getattr(self.ctx, 'project_root', '.')
+        project_root = getattr(self.ctx, "project_root", ".")
 
         for root, dirs, files in os.walk(project_root):
             dirs[:] = [d for d in dirs if d not in EXCLUDED_DIRS]
@@ -183,7 +205,14 @@ class GenerativeGuardAgent(SubatomicTestingMixin, HealerMixin, CanonBaseAgentInt
                 violations_in_dir.append(file_path)
         return violations_in_dir
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L1 cognition agent - operational only."""
         super().heal_repository()
 

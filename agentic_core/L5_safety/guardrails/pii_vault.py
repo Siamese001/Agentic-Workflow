@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
 from typing import Any
 
@@ -13,9 +13,10 @@ class PiiVault:
     L5 Safety: The Secret Vault.
     Handles tokenization and de-tokenization of sensitive data.
     """
+
     def __init__(self, config: dict[str, Any]):
         self.config = config
-        self._vault = {} # simple in-memory map for the demo
+        self._vault = {}  # simple in-memory map for the demo
 
     def tokenize(self, trace_id: str, text: str) -> str:
         """Swaps real PII for safe tokens."""

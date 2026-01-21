@@ -8,6 +8,7 @@ Features:
 - No raw code storage (embeddings only)
 - Namespace isolation
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -69,6 +70,7 @@ class PineconeVectorMixin:
                 from agentic_core.L2_execution.mcp.pinecone_mcp_client import (
                     get_pinecone_mcp_client,
                 )
+
                 self._pinecone_client = get_pinecone_mcp_client()
             except Exception as e:
                 if not GRACEFUL_DEGRADATION:
@@ -82,7 +84,7 @@ class PineconeVectorMixin:
         embedding: list[float],
         top_k: int = 10,
         metadata_filter: dict[str, Any] | None = None,
-        include_metadata: bool = True
+        include_metadata: bool = True,
     ) -> list[dict[str, Any]]:
         """
         Search for similar vectors.
@@ -110,7 +112,10 @@ class PineconeVectorMixin:
 
         if hasattr(self, "circuit_breaker") and self.circuit_breaker:
             try:
-                if hasattr(self.circuit_breaker, "can_execute") and not self.circuit_breaker.can_execute():
+                if (
+                    hasattr(self.circuit_breaker, "can_execute")
+                    and not self.circuit_breaker.can_execute()
+                ):
                     log.warning("Pinecone circuit open -> fallback to local immediately")
                     local_only = True
             except Exception:
@@ -154,19 +159,18 @@ class PineconeVectorMixin:
                 meta = vdata.get("metadata", {})
                 if not all(meta.get(k) == v for k, v in metadata_filter.items()):
                     continue
-            results.append({
-                "id": vid,
-                "score": 0.5,  # Placeholder score for local
-                "metadata": vdata.get("metadata", {}) if include_metadata else {}
-            })
+            results.append(
+                {
+                    "id": vid,
+                    "score": 0.5,  # Placeholder score for local
+                    "metadata": vdata.get("metadata", {}) if include_metadata else {},
+                }
+            )
 
         return results[:top_k]
 
     async def vector_upsert(
-        self,
-        id: str,
-        embedding: list[float],
-        metadata: dict[str, Any]
+        self, id: str, embedding: list[float], metadata: dict[str, Any]
     ) -> bool:
         """
         Upsert a vector with metadata.
@@ -185,20 +189,13 @@ class PineconeVectorMixin:
         metrics = get_cache_metrics()
 
         # Always store locally
-        self._local_vectors[id] = {
-            "values": embedding,
-            "metadata": metadata
-        }
+        self._local_vectors[id] = {"values": embedding, "metadata": metadata}
 
         if self.pinecone:
             try:
                 await self.pinecone.upsert(
-                    vectors=[{
-                        "id": id,
-                        "values": embedding,
-                        "metadata": metadata
-                    }],
-                    namespace=self._namespace
+                    vectors=[{"id": id, "values": embedding, "metadata": metadata}],
+                    namespace=self._namespace,
                 )
                 latency = (time.time() - start) * 1000
                 if CACHE_METRICS_ENABLED:
@@ -233,10 +230,7 @@ class PineconeVectorMixin:
         # Delete from Pinecone
         if self.pinecone:
             try:
-                await self.pinecone.delete(
-                    ids=ids,
-                    namespace=self._namespace
-                )
+                await self.pinecone.delete(ids=ids, namespace=self._namespace)
             except Exception:
                 pass
 
@@ -252,10 +246,7 @@ class PineconeVectorMixin:
 
         if self.pinecone:
             try:
-                response = await self.pinecone.fetch(
-                    ids=ids,
-                    namespace=self._namespace
-                )
+                response = await self.pinecone.fetch(ids=ids, namespace=self._namespace)
                 results.update(response.get("vectors", {}))
             except Exception:
                 pass

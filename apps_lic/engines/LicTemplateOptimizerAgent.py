@@ -58,5 +58,5 @@ class LicTemplateOptimizerAgent(SubatomicTestingMixin, OutreachAgent, MCPHardene
             print(f"   [{self.name}] ✅ Templates optimized")
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()

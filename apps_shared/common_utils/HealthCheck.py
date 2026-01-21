@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 
 class HealthStatus(str, Enum):
     """Health status levels."""
+
     HEALTHY = "healthy"
     DEGRADED = "degraded"
     UNHEALTHY = "unhealthy"
@@ -28,6 +29,7 @@ class HealthStatus(str, Enum):
 
 class ComponentType(str, Enum):
     """Types of components being monitored."""
+
     BULKHEAD = "bulkhead"
     CIRCUIT_BREAKER = "circuit_breaker"
     DEAD_LETTER_QUEUE = "dead_letter_queue"
@@ -40,6 +42,7 @@ class ComponentType(str, Enum):
 @dataclass
 class HealthCheckResult:
     """Result of a health check."""
+
     component_name: str
     component_type: ComponentType
     status: HealthStatus
@@ -61,7 +64,7 @@ class HealthCheckResult:
             "message": self.message,
             "timestamp": self.timestamp.isoformat(),
             "metrics": self.metrics,
-            "details": self.details
+            "details": self.details,
         }
 
 
@@ -121,7 +124,9 @@ class BulkheadHealthChecker(HealthChecker):
                 if utilization > 90:
                     issues.append(f"{name}: High utilization ({utilization:.1f}%)")
                 if bulkhead_metrics.queued_tasks > bulkhead_metrics.queue_size * 0.8:
-                    issues.append(f"{name}: Queue buildup ({bulkhead_metrics.queued_tasks}/{bulkhead_metrics.queue_size})")
+                    issues.append(
+                        f"{name}: Queue buildup ({bulkhead_metrics.queued_tasks}/{bulkhead_metrics.queue_size})"
+                    )
 
             # Determine status
             if not issues:
@@ -140,7 +145,7 @@ class BulkheadHealthChecker(HealthChecker):
                 status=status,
                 message=message,
                 timestamp=datetime.utcnow(),
-                metrics=metrics
+                metrics=metrics,
             )
 
         except Exception as e:
@@ -149,7 +154,7 @@ class BulkheadHealthChecker(HealthChecker):
                 component_type=self.component_type,
                 status=HealthStatus.CRITICAL,
                 message=f"Health check failed: {e}",
-                timestamp=datetime.utcnow()
+                timestamp=datetime.utcnow(),
             )
 
     @property
@@ -220,9 +225,9 @@ class CircuitBreakerHealthChecker(HealthChecker):
                     "total_circuits": len(all_stats),
                     "open_circuits": len(open_circuits),
                     "half_open_circuits": len(half_open_circuits),
-                    "high_failure_rates": len(high_failure_rates)
+                    "high_failure_rates": len(high_failure_rates),
                 },
-                details={"circuit_stats": all_stats}
+                details={"circuit_stats": all_stats},
             )
 
         except Exception as e:
@@ -231,7 +236,7 @@ class CircuitBreakerHealthChecker(HealthChecker):
                 component_type=self.component_type,
                 status=HealthStatus.CRITICAL,
                 message=f"Health check failed: {e}",
-                timestamp=datetime.utcnow()
+                timestamp=datetime.utcnow(),
             )
 
     @property
@@ -289,7 +294,7 @@ class DeadLetterQueueHealthChecker(HealthChecker):
                 status=status,
                 message=message,
                 timestamp=datetime.utcnow(),
-                metrics=health
+                metrics=health,
             )
 
         except Exception as e:
@@ -298,7 +303,7 @@ class DeadLetterQueueHealthChecker(HealthChecker):
                 component_type=self.component_type,
                 status=HealthStatus.CRITICAL,
                 message=f"Health check failed: {e}",
-                timestamp=datetime.utcnow()
+                timestamp=datetime.utcnow(),
             )
 
     @property
@@ -335,10 +340,8 @@ class CheckpointManagerHealthChecker(HealthChecker):
 
             # Test save
             from .core.envelope import TextEnvelope
-            test_envelope = TextEnvelope(
-                text="health check test",
-                trace_id=test_trace_id
-            )
+
+            test_envelope = TextEnvelope(text="health check test", trace_id=test_trace_id)
 
             save_success = await self.checkpoint_manager.save(test_envelope)
 
@@ -364,7 +367,7 @@ class CheckpointManagerHealthChecker(HealthChecker):
                 status=status,
                 message=message,
                 timestamp=datetime.utcnow(),
-                metrics=stats
+                metrics=stats,
             )
 
         except Exception as e:
@@ -373,7 +376,7 @@ class CheckpointManagerHealthChecker(HealthChecker):
                 component_type=self.component_type,
                 status=HealthStatus.CRITICAL,
                 message=f"Health check failed: {e}",
-                timestamp=datetime.utcnow()
+                timestamp=datetime.utcnow(),
             )
 
     @property
@@ -446,7 +449,7 @@ class HealthCheckRegistry:
                             component_type=ComponentType.CUSTOM,
                             status=HealthStatus.CRITICAL,
                             message=f"Health check error: {result}",
-                            timestamp=datetime.utcnow()
+                            timestamp=datetime.utcnow(),
                         )
                         results.append(error_result)
                         critical_issues.append(str(result))
@@ -457,9 +460,15 @@ class HealthCheckRegistry:
                         if result.status == HealthStatus.CRITICAL:
                             overall_status = HealthStatus.CRITICAL
                             critical_issues.append(result.message)
-                        elif result.status == HealthStatus.UNHEALTHY and overall_status != HealthStatus.CRITICAL:
+                        elif (
+                            result.status == HealthStatus.UNHEALTHY
+                            and overall_status != HealthStatus.CRITICAL
+                        ):
                             overall_status = HealthStatus.UNHEALTHY
-                        elif result.status == HealthStatus.DEGRADED and overall_status not in [HealthStatus.CRITICAL, HealthStatus.UNHEALTHY]:
+                        elif result.status == HealthStatus.DEGRADED and overall_status not in [
+                            HealthStatus.CRITICAL,
+                            HealthStatus.UNHEALTHY,
+                        ]:
                             overall_status = HealthStatus.DEGRADED
 
             self._last_check = datetime.utcnow()
@@ -475,8 +484,8 @@ class HealthCheckRegistry:
                     "healthy": sum(1 for r in results if r.status == HealthStatus.HEALTHY),
                     "degraded": sum(1 for r in results if r.status == HealthStatus.DEGRADED),
                     "unhealthy": sum(1 for r in results if r.status == HealthStatus.UNHEALTHY),
-                    "critical": sum(1 for r in results if r.status == HealthStatus.CRITICAL)
-                }
+                    "critical": sum(1 for r in results if r.status == HealthStatus.CRITICAL),
+                },
             }
 
             if critical_issues:
@@ -502,7 +511,7 @@ class HealthCheckRegistry:
                 component_type=checker.component_type,
                 status=HealthStatus.CRITICAL,
                 message=f"Health check failed: {e}",
-                timestamp=datetime.utcnow()
+                timestamp=datetime.utcnow(),
             )
 
     async def check_component(self, component_name: str) -> HealthCheckResult | None:
@@ -560,7 +569,7 @@ async def initialize_system_health_checks(
     bulkhead_manager=None,
     circuit_breaker_registry=None,
     dead_letter_queue=None,
-    checkpoint_manager=None
+    checkpoint_manager=None,
 ) -> None:
     """Initialize health checks for all system components.
 

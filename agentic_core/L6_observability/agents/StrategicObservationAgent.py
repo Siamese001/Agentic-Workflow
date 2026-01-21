@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, healer, memory, orchestrator, prompt, state
@@ -20,6 +19,7 @@ class StrategicObservationAgent(L6ObservabilityBaseAgent):
     Responsible for high-level monitoring of agentic workflows, distilling
     complex execution logs into strategic observations for the dashboard.
     """
+
     agent_name: str = "StrategicObservationAgent"
     observations_cache: list[dict[str, Any]] = field(default_factory=list)
 
@@ -38,7 +38,7 @@ class StrategicObservationAgent(L6ObservabilityBaseAgent):
             A formatted observation object compatible with L6 Dashboard UI.
         """
         # Log observation generation
-        if hasattr(self, 'log_info'):
+        if hasattr(self, "log_info"):
             self.log_info("Generating strategic observations...")
 
         # Placeholder for transformation logic
@@ -47,7 +47,7 @@ class StrategicObservationAgent(L6ObservabilityBaseAgent):
             "summary": "System operating within normal strategic parameters.",
             "critical_path_status": "Healthy",
             "detected_drift": False,
-            "timestamp": self.get_timestamp()
+            "timestamp": self.get_timestamp(),
         }
 
         self.observations_cache.append(observation)
@@ -72,7 +72,9 @@ class StrategicObservationAgent(L6ObservabilityBaseAgent):
         return True
 
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict[str, Any]:
         """Autonomous healing with proper invocation chain."""
         super().heal_repository(dry_run=dry_run, execute=execute, **kwargs)
         return {"violations_found": 0, "violations_fixed": 0, "errors": 0}

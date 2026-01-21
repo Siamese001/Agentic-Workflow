@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: guardrail
@@ -38,16 +37,18 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger: Any = logging.getLogger(__name__)
 
+
 @dataclass
 class ValidationContext:
     """ValidationContext agent for autonomous operations."""
+
     modified_files: set[Path] = field(default_factory=set)
     signals: list[str] = field(default_factory=list)
     file_hashes: dict[str, str] = field(default_factory=dict)
     cycle_id: int = 0
     start_time: datetime = field(default_factory=datetime.utcnow)
     end_time: datetime | None = None
-    status: str = 'RUNNING'
+    status: str = "RUNNING"
     files_scanned: int = 0
     files_skipped: int = 0
     violations_found: int = 0
@@ -81,7 +82,13 @@ class ValidationContext:
 
     def _compute_raw_context(self, key: str) -> dict | None:
         """Compute raw context - override in subclasses."""
-        return {'key': key, 'cycle_id': self.cycle_id, 'status': self.status, 'files_scanned': self.files_scanned, 'violations_found': self.violations_found}
+        return {
+            "key": key,
+            "cycle_id": self.cycle_id,
+            "status": self.status,
+            "files_scanned": self.files_scanned,
+            "violations_found": self.violations_found,
+        }
 
     def add_modified_file(self, file_path: Path) -> Any:
         """Add a file to the modified set."""
@@ -103,20 +110,20 @@ class ValidationContext:
         """Mark a file as flapping (toggling status)."""
         self.flapping_files[file_path] = self.flapping_files.get(file_path, 0) + 1
 
-    def is_flapping(self, file_path: str, threshold: int=3) -> bool:
+    def is_flapping(self, file_path: str, threshold: int = 3) -> bool:
         """Check if a file is flapping."""
         return self.flapping_files.get(file_path, 0) >= threshold
 
-    def signal_healing_cycle(self, cycle_number: int, max_cycles: int=5) -> Any:
+    def signal_healing_cycle(self, cycle_number: int, max_cycles: int = 5) -> Any:
         """Signal the start of a healing cycle."""
-        print(f'   [~] Healing Cycle {cycle_number}/{max_cycles}')
+        print(f"   [~] Healing Cycle {cycle_number}/{max_cycles}")
 
     def signal_convergence(self) -> Any:
         """Signal that the validation has converged (no more changes)."""
-        print('   [OK] Convergence achieved - no modifications in this cycle')
-        self.add_signal('CONVERGENCE')
+        print("   [OK] Convergence achieved - no modifications in this cycle")
+        self.add_signal("CONVERGENCE")
 
-    def complete(self, status: str='COMPLETED') -> Any:
+    def complete(self, status: str = "COMPLETED") -> Any:
         """Mark the cycle as complete."""
         self.end_time = datetime.utcnow()
         self.status = status
@@ -124,30 +131,30 @@ class ValidationContext:
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         data: Any = asdict(self)
-        data['modified_files'] = [str(p) for p in self.modified_files]
-        data['start_time'] = self.start_time.isoformat()
-        data['end_time'] = self.end_time.isoformat() if self.end_time else None
+        data["modified_files"] = [str(p) for p in self.modified_files]
+        data["start_time"] = self.start_time.isoformat()
+        data["end_time"] = self.end_time.isoformat() if self.end_time else None
         return data
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> ValidationContext:
         """Create from dictionary."""
-        if 'modified_files' in data:
-            data['modified_files'] = {Path(p) for p in data['modified_files']}
-        if 'start_time' in data and data['start_time']:
-            data['start_time'] = datetime.fromisoformat(data['start_time'])
-        if 'end_time' in data and data['end_time']:
-            data['end_time'] = datetime.fromisoformat(data['end_time'])
+        if "modified_files" in data:
+            data["modified_files"] = {Path(p) for p in data["modified_files"]}
+        if "start_time" in data and data["start_time"]:
+            data["start_time"] = datetime.fromisoformat(data["start_time"])
+        if "end_time" in data and data["end_time"]:
+            data["end_time"] = datetime.fromisoformat(data["end_time"])
         return cls(**data)
 
     def save_to_file(self, file_path: Path) -> Any:
         """Save context to file."""
         try:
-            with open(file_path, 'w') as f:
+            with open(file_path, "w") as f:
                 json.dump(self.to_dict(), f, indent=2)
-            LOGGER.debug(f'Saved ValidationContext to {file_path}')
+            LOGGER.debug(f"Saved ValidationContext to {file_path}")
         except Exception as e:
-            LOGGER.error(f'Failed to save ValidationContext: {e}')
+            LOGGER.error(f"Failed to save ValidationContext: {e}")
 
     @classmethod
     def load_from_file(cls, file_path: Path) -> ValidationContext | None:
@@ -157,34 +164,36 @@ class ValidationContext:
                 return None
             with open(file_path) as f:
                 data: Any = json.load(f)
-            Logger.debug(f'Loaded ValidationContext from {file_path}')
+            Logger.debug(f"Loaded ValidationContext from {file_path}")
             return cls.from_dict(data)
         except Exception as e:
-            Logger.error(f'Failed to load ValidationContext: {e}')
+            Logger.error(f"Failed to load ValidationContext: {e}")
             return None
 
+
 # [NAMING ALIAS] PascalCase alias for backward compatibility
+
 
 class ValidationContextManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     Manages ValidationContext persistence and history.
     """
 
-    def __init__(self, memory_dir: Path=None) -> None:
+    def __init__(self, memory_dir: Path = None) -> None:
         """
         Initialize the manager.
 
         Args:
             memory_dir: Directory to store context files
         """
-        self.memory_dir = memory_dir or Path('observability/memory')
+        self.memory_dir = memory_dir or Path("observability/memory")
         self.memory_dir.mkdir(parents=True, exist_ok=True)
         self.current_context: ValidationContext | None = None
         self.context_history: list[ValidationContext] = []
-        self.canon_memory_file = self.memory_dir / 'canon_memory.json'
-        self.current_context_file = self.memory_dir / 'current_context.json'
+        self.canon_memory_file = self.memory_dir / "canon_memory.json"
+        self.current_context_file = self.memory_dir / "current_context.json"
 
-    def start_new_cycle(self, cycle_id: int=None) -> ValidationContext:
+    def start_new_cycle(self, cycle_id: int = None) -> ValidationContext:
         """
         Start a new validation cycle.
 
@@ -200,18 +209,18 @@ class ValidationContextManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
                 last_id: Any = max(ctx.cycle_id for ctx in self.context_history)
             cycle_id: Any = last_id + 1
         self.current_context = ValidationContext(cycle_id=cycle_id)
-        LOGGER.info(f'Started validation cycle {cycle_id}')
+        LOGGER.info(f"Started validation cycle {cycle_id}")
         return self.current_context
 
-    def complete_cycle(self, status: str='COMPLETED') -> Any:
+    def complete_cycle(self, status: str = "COMPLETED") -> Any:
         """Complete the current cycle and save to history."""
         if not self.current_context:
-            LOGGER.warning('No active cycle to complete')
+            LOGGER.warning("No active cycle to complete")
             return
         self.current_context.complete(status)
         self.context_history.append(self.current_context)
         self._save_memory()
-        LOGGER.info(f'Completed cycle {self.current_context.cycle_id} with status {status}')
+        LOGGER.info(f"Completed cycle {self.current_context.cycle_id} with status {status}")
 
     def _save_memory(self) -> Any:
         """Save context memory to files."""
@@ -219,8 +228,13 @@ class ValidationContextManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
             self.current_context.save_to_file(self.current_context_file)
         if self.context_history:
             last_context = self.context_history[-1]
-            memory_data = {'last_cycle_id': last_context.cycle_id, 'file_hashes': last_context.file_hashes, 'flapping_files': last_context.flapping_files, 'timestamp': last_context.end_time.isoformat() if last_context.end_time else None}
-            with open(self.canon_memory_file, 'w') as f:
+            memory_data = {
+                "last_cycle_id": last_context.cycle_id,
+                "file_hashes": last_context.file_hashes,
+                "flapping_files": last_context.flapping_files,
+                "timestamp": last_context.end_time.isoformat() if last_context.end_time else None,
+            }
+            with open(self.canon_memory_file, "w") as f:
                 json.dump(memory_data, f, indent=2)
 
     def load_memory(self) -> bool:
@@ -237,7 +251,7 @@ class ValidationContextManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
                 LOGGER.info(f"Loaded memory from cycle {memory_data.get('last_cycle_id')}")
                 return True
             except Exception as e:
-                LOGGER.error(f'Failed to load canon memory: {e}')
+                LOGGER.error(f"Failed to load canon memory: {e}")
         return False
 
     def get_last_file_hashes(self) -> dict[str, str]:
@@ -246,9 +260,9 @@ class ValidationContextManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
             try:
                 with open(self.canon_memory_file) as f:
                     memory_data: Any = json.load(f)
-                return memory_data.get('file_hashes', {})
+                return memory_data.get("file_hashes", {})
             except Exception as e:
-                LOGGER.error(f'Failed to load file hashes: {e}')
+                LOGGER.error(f"Failed to load file hashes: {e}")
         return {}
 
     def get_flapping_files(self) -> dict[str, int]:
@@ -257,14 +271,21 @@ class ValidationContextManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
             try:
                 with open(self.canon_memory_file) as f:
                     memory_data: Any = json.load(f)
-                return memory_data.get('flapping_files', {})
+                return memory_data.get("flapping_files", {})
             except Exception as e:
-                LOGGER.error(f'Failed to load flapping files: {e}')
+                LOGGER.error(f"Failed to load flapping files: {e}")
         return {}
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L4 state agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -281,9 +302,11 @@ class ValidationContextManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
         finally:
             _call_path.discard(agent_name)
 
+
 # [NAMING ALIAS] PascalCase alias for backward compatibility
 
 _context_manager: ValidationContextManagerAgent | None = None
+
 
 def get_context_manager() -> ValidationContextManagerAgent:
     """Get or create the global context manager."""
@@ -294,6 +317,7 @@ def get_context_manager() -> ValidationContextManagerAgent:
     if _context_manager is None:
         _context_manager = ValidationContextManagerAgent()
     return _context_manager
+
 
 def get_current_context() -> ValidationContext | None:
     """Get the current validation context."""

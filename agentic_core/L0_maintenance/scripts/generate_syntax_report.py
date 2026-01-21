@@ -2,6 +2,7 @@
 """
 Generate detailed syntax error report with file paths and error details.
 """
+
 import sys
 from pathlib import Path
 
@@ -22,7 +23,7 @@ def main():
 
     # Run validation
     results = agent.validate_repository()
-    errors = results.get('syntax_errors', [])
+    errors = results.get("syntax_errors", [])
 
     print(f"Total syntax errors: {len(errors)}")
     print()
@@ -35,24 +36,24 @@ def main():
     by_layer = {}
     for e in errors:
         path_str = str(e.file_path)
-        if 'L0_' in path_str:
-            layer = 'L0'
-        elif 'L1_' in path_str:
-            layer = 'L1'
-        elif 'L2_' in path_str:
-            layer = 'L2'
-        elif 'L3_' in path_str:
-            layer = 'L3'
-        elif 'L4_' in path_str:
-            layer = 'L4'
-        elif 'L5_' in path_str:
-            layer = 'L5'
-        elif 'config' in path_str:
-            layer = 'Config'
-        elif 'apps_' in path_str:
-            layer = 'Apps'
+        if "L0_" in path_str:
+            layer = "L0"
+        elif "L1_" in path_str:
+            layer = "L1"
+        elif "L2_" in path_str:
+            layer = "L2"
+        elif "L3_" in path_str:
+            layer = "L3"
+        elif "L4_" in path_str:
+            layer = "L4"
+        elif "L5_" in path_str:
+            layer = "L5"
+        elif "config" in path_str:
+            layer = "Config"
+        elif "apps_" in path_str:
+            layer = "Apps"
         else:
-            layer = 'Other'
+            layer = "Other"
 
         if layer not in by_layer:
             by_layer[layer] = []
@@ -84,5 +85,6 @@ def main():
 
     return 1
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     sys.exit(main())

@@ -39,6 +39,7 @@ class MutationMode(Enum):
     Defines the different formats in which code mutations can be expressed,
     including full code replacement, unified diffs, and JSON patches.
     """
+
     FULL_CODE = "full_code"
     UNIFIED_DIFF = "unified_diff"
     JSON_PATCH = "json_patch"
@@ -55,6 +56,7 @@ class FileBackup:
         hash: Content hash for verification
         timestamp: ISO timestamp of backup creation
     """
+
     path: str
     content: str
     hash: str
@@ -76,6 +78,7 @@ class MutationResult:
         error: Optional error message
         diff_applied: Whether diff was successfully applied
     """
+
     success: bool
     original_content: str
     mutated_content: str
@@ -97,6 +100,7 @@ class RepairProposal:
         confidence: Confidence score (0-1)
         reasoning: Reasoning for the proposal
     """
+
     agent_name: str
     proposal: str
     confidence: float
@@ -306,7 +310,9 @@ class GitOpsManager:
 
         # Remove markdown code blocks
         if "```" in clean:
-            clean = re.sub(r"```python\nimport logging\n\nLogger = logging.getLogger(__name__)\n", "", clean)
+            clean = re.sub(
+                r"```python\nimport logging\n\nLogger = logging.getLogger(__name__)\n", "", clean
+            )
             clean = re.sub(r"```\n?", "", clean)
 
         return clean.strip()
@@ -510,7 +516,7 @@ class ResilientMutator:
             except Exception as e:
                 print(f"   [{agent_name}] ⚠️ Attempt {attempt} error: {e}")
                 if "429" in str(e):
-                    await asyncio.sleep(2 ** attempt)
+                    await asyncio.sleep(2**attempt)
 
         # Return best result even if below threshold
         if best_result:
@@ -645,7 +651,7 @@ OUTPUT FORMAT: Full Python Code. NO MARKDOWN. NO BACKTICKS."""
                     old_len = int(m.group(2) or "1")
 
                     # Delete old lines
-                    del new_lines[old_start:old_start + old_len]
+                    del new_lines[old_start : old_start + old_len]
 
                     # Collect additions
                     i += 1
@@ -1090,5 +1096,5 @@ class Phase4OrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingM
         }
 
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()

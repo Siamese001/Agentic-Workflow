@@ -2,13 +2,14 @@ from __future__ import annotations
 
 import ast
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
-'Brief description of functionality and purpose.'
+"Brief description of functionality and purpose."
 import logging
 from typing import Any
 
-Logger: Any = logging.getLogger('CanonValidator')
+Logger: Any = logging.getLogger("CanonValidator")
+
 
 def validate_python_syntax(file_path: str) -> tuple[bool, str | None]:
     """
@@ -22,15 +23,15 @@ def validate_python_syntax(file_path: str) -> tuple[bool, str | None]:
                                     (False, error_message) if invalid.
     """
     try:
-        with open(file_path, encoding='utf-8') as f:
+        with open(file_path, encoding="utf-8") as f:
             source: Any = f.read()
         ast.parse(source)
         return (True, None)
     except SyntaxError as e:
-        error_msg: Any = f'SyntaxError in {file_path}: {e.msg} at line {e.lineno}'
+        error_msg: Any = f"SyntaxError in {file_path}: {e.msg} at line {e.lineno}"
         Logger.error(error_msg)
         return (False, error_msg)
     except Exception as e:
-        error_msg: Any = f'Unexpected error validating {file_path}: {str(e)}'
+        error_msg: Any = f"Unexpected error validating {file_path}: {str(e)}"
         Logger.error(error_msg)
         return (False, error_msg)

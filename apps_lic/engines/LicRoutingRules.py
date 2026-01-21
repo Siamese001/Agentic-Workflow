@@ -301,9 +301,7 @@ class LICRouter:
         """Get constraints for a Route."""
         return self._route_configs[Route].constraints
 
-    def get_archetype_tone(
-        self, Archetype: RecipientArchetype
-    ) -> ArchetoneConfig:
+    def get_archetype_tone(self, Archetype: RecipientArchetype) -> ArchetoneConfig:
         """Get tone configuration for an Archetype."""
         return self._archetype_tones.get(
             Archetype,
@@ -355,14 +353,10 @@ class LICRouter:
             min_words, max_words = constraints.word_range
             if word_count < min_words:
                 result["is_valid"] = False
-                result["violations"].append(
-                    f"Word count {word_count} below minimum {min_words}"
-                )
+                result["violations"].append(f"Word count {word_count} below minimum {min_words}")
             elif word_count > max_words:
                 result["is_valid"] = False
-                result["violations"].append(
-                    f"Word count {word_count} exceeds maximum {max_words}"
-                )
+                result["violations"].append(f"Word count {word_count} exceeds maximum {max_words}")
 
         return result
 

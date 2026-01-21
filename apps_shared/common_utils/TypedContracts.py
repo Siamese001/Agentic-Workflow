@@ -66,6 +66,7 @@ def test_validate_schema_version_accepts_matching_models() -> None:
 
 def test_validate_schema_version_rejects_mismatched_version() -> None:
     """Test that validate_schema_version rejects mismatched versions."""
+
     class DummyModel(BaseModel):
         schema_version: str = "v2"  # wrong version
 
@@ -75,6 +76,4 @@ def test_validate_schema_version_rejects_mismatched_version() -> None:
     except ValueError as exc:
         assert "Unexpected schema_version" in str(exc)
     else:  # pragma: no cover
-        raise AssertionError(
-            "validate_schema_version did not reject mismatched version"
-        )
+        raise AssertionError("validate_schema_version did not reject mismatched version")

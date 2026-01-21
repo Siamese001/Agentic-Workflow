@@ -12,27 +12,30 @@ from typing import Any
 
 Logger: Any = logging.getLogger(__name__)
 
+
 class MissionHistorian:
     """
     L4 State: Mission History Tracking
     Records all mission actions, decisions, and outcomes for audit trails.
     """
 
-    def __init__(self, log_path: Path=None):
+    def __init__(self, log_path: Path = None):
         """
         Initialize the MissionHistorian.
 
         Args:
             log_path: Path to the audit log CSV file
         """
-        self.log_path = log_path or Path('mission_audit.csv')
+        self.log_path = log_path or Path("mission_audit.csv")
         if not self.log_path.exists():
             self.log_path.parent.mkdir(parents=True, exist_ok=True)
-            with open(self.log_path, 'w', newline='', encoding='utf-8') as f:
+            with open(self.log_path, "w", newline="", encoding="utf-8") as f:
                 writer = csv.writer(f)
-                writer.writerow(['timestamp', 'file', 'action', 'source', 'destination', 'reason'])
+                writer.writerow(["timestamp", "file", "action", "source", "destination", "reason"])
 
-    def record(self, file_name: str, action: str, source: str, destination: str, reason: str) -> Any:
+    def record(
+        self, file_name: str, action: str, source: str, destination: str, reason: str
+    ) -> Any:
         """
         Record a mission action to the audit log.
 
@@ -44,14 +47,16 @@ class MissionHistorian:
             reason: Reason for the action
         """
         try:
-            with open(self.log_path, 'a', newline='', encoding='utf-8') as f:
+            with open(self.log_path, "a", newline="", encoding="utf-8") as f:
                 writer: Any = csv.writer(f)
-                writer.writerow([datetime.now().isoformat(), file_name, action, source, destination, reason])
-            Logger.debug(f'[MissionHistorian] Recorded: {action} on {file_name}')
+                writer.writerow(
+                    [datetime.now().isoformat(), file_name, action, source, destination, reason]
+                )
+            Logger.debug(f"[MissionHistorian] Recorded: {action} on {file_name}")
         except Exception as e:
-            Logger.error(f'[MissionHistorian] Failed to record action: {e}')
+            Logger.error(f"[MissionHistorian] Failed to record action: {e}")
 
-    def get_history(self, file_name: str | None=None) -> list:
+    def get_history(self, file_name: str | None = None) -> list:
         """
         Retrieve mission history.
 
@@ -65,13 +70,13 @@ class MissionHistorian:
             return []
         history: Any = []
         try:
-            with open(self.log_path, newline='', encoding='utf-8') as f:
+            with open(self.log_path, newline="", encoding="utf-8") as f:
                 reader: Any = csv.DictReader(f)
                 for row in reader:
-                    if file_name is None or row.get('file') == file_name:
+                    if file_name is None or row.get("file") == file_name:
                         history.append(row)
         except Exception as e:
-            Logger.error(f'[MissionHistorian] Failed to read history: {e}')
+            Logger.error(f"[MissionHistorian] Failed to read history: {e}")
         return history
 
     def get_summary(self) -> dict[str, Any]:
@@ -84,6 +89,6 @@ class MissionHistorian:
         history: Any = self.get_history()
         actions: Any = {}
         for record in history:
-            action: Any = record.get('action', 'unknown')
+            action: Any = record.get("action", "unknown")
             actions[action] = actions.get(action, 0) + 1
-        return {'total_records': len(history), 'actions': actions, 'log_path': str(self.log_path)}
+        return {"total_records": len(history), "actions": actions, "log_path": str(self.log_path)}

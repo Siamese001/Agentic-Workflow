@@ -4,6 +4,7 @@ ContactValidatorAgent - Extracted for one-class-per-file pattern.
 Originally from: LeadQualityAgent.py
 Extracted: 2026-01-06 (Surgical Extraction)
 """
+
 from __future__ import annotations
 
 import re
@@ -64,7 +65,9 @@ class ContactValidatorAgent(HealerMixin, SubatomicTestingMixin, OutreachAgent, M
             self.record_result(True, "All contacts validated")
             print(f"   [{self.name}] ✅ Contacts validated")
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, int]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict[str, int]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 

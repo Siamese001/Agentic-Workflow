@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: guardrail, memory, orchestrator, prompt, validator
@@ -79,8 +78,8 @@ class TaskMonitorAgent(HealerMixin):
 
     @standard_heal
     def heal_repository(self) -> dict:
-            """Invoke healing chain via super()."""
-            return super().heal_repository()
+        """Invoke healing chain via super()."""
+        return super().heal_repository()
 
 
 # NAMING FIXED: DeadlockDetectorAgent → DeadlockDetectorAgent
@@ -121,8 +120,10 @@ def send_heartbeat(task_id: str) -> Any:
 # Decorator for automatic monitoring
 def monitor_task(name: str = None) -> Any:
     """Decorator to automatically monitor a coroutine."""
+
     def decorator(coro) -> Any:
         """Execute decorator operation."""
+
         async def wrapper(*args, **kwargs) -> Any:
             """Execute wrapper operation."""
             Task = asyncio.create_task(coro(*args, **kwargs))
@@ -137,4 +138,5 @@ def monitor_task(name: str = None) -> Any:
                     del get_deadlock_detector().monitored_tasks[task_id]
 
         return wrapper
+
     return decorator

@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class AgentConfig:
     """Configuration for agent execution."""
+
     provider: Provider = Provider.OPENAI
     model: str | None = None
     temperature: float = 0.7
@@ -36,6 +37,7 @@ class AgentConfig:
 @dataclass
 class AgentMessage:
     """Message in agent conversation."""
+
     role: str
     content: str
     name: str | None = None
@@ -46,6 +48,7 @@ class AgentMessage:
 @dataclass
 class AgentResponse:
     """Response from agent execution."""
+
     content: str
     finish_reason: str
     usage: dict[str, int] = field(default_factory=dict)
@@ -232,14 +235,16 @@ class AgentExecutor:
             if hasattr(block, "text"):
                 content += block.text
             elif hasattr(block, "tool_use"):
-                tool_calls.append({
-                    "id": block.id,
-                    "type": "function",
-                    "function": {
-                        "name": block.name,
-                        "arguments": block.input,
-                    },
-                })
+                tool_calls.append(
+                    {
+                        "id": block.id,
+                        "type": "function",
+                        "function": {
+                            "name": block.name,
+                            "arguments": block.input,
+                        },
+                    }
+                )
 
         return AgentResponse(
             content=content,
@@ -266,7 +271,7 @@ class AgentExecutor:
         client = self._get_client()
 
         # Check if we have the new v1beta client or legacy
-        if hasattr(client, 'interactions'):
+        if hasattr(client, "interactions"):
             # NEW: Use v1beta Interactions API
             return self._execute_google_interactions(
                 client, messages, model, tools, previous_interaction_id, **kwargs
@@ -298,12 +303,11 @@ class AgentExecutor:
                     if msg["role"] == "system":
                         # System prompt becomes first user message with model acknowledgment
                         input_messages.append({"role": "user", "content": msg["content"]})
-                        input_messages.append({"role": "model", "content": "Understood. I am ready."})
+                        input_messages.append(
+                            {"role": "model", "content": "Understood. I am ready."}
+                        )
                     else:
-                        input_messages.append({
-                            "role": msg["role"],
-                            "content": msg["content"]
-                        })
+                        input_messages.append({"role": msg["role"], "content": msg["content"]})
 
                 # Prepare request parameters
                 request_params = {
@@ -329,17 +333,17 @@ class AgentExecutor:
 
                 # Extract content from response
                 content = ""
-                if hasattr(response, 'candidates') and response.candidates:
+                if hasattr(response, "candidates") and response.candidates:
                     candidate = response.candidates[0]
-                    if hasattr(candidate, 'content') and candidate.content:
+                    if hasattr(candidate, "content") and candidate.content:
                         content = candidate.content.parts[0].text if candidate.content.parts else ""
 
                 # Build response
                 return AgentResponse(
                     content=content,
-                    finish_reason=getattr(response, 'finish_reason', 'stop'),
+                    finish_reason=getattr(response, "finish_reason", "stop"),
                     usage={},  # Usage info not available in v1beta yet
-                    interaction_id=getattr(response, 'id', None),
+                    interaction_id=getattr(response, "id", None),
                     raw_response=response,
                 )
 
@@ -418,6 +422,7 @@ class AgentExecutor:
     def _get_default_model(self) -> str:
         """Get default model for provider."""
         from .multi_provider_clients import get_default_model
+
         return get_default_model(self.config.provider)
 
     def execute_structured(
@@ -440,7 +445,9 @@ class AgentExecutor:
         """
         # Special handling for Google GenAI with Interactions API
         if self.config.provider == Provider.GOOGLE:
-            return self._execute_google_structured(messages, response_model, system_prompt, **kwargs)
+            return self._execute_google_structured(
+                messages, response_model, system_prompt, **kwargs
+            )
 
         # Use Instructor for other providers
         instructor_client = get_instructor_client(self.config.provider)
@@ -474,7 +481,7 @@ class AgentExecutor:
         client = self._get_client()
 
         # Check if we have the new v1beta client
-        if not hasattr(client, 'interactions'):
+        if not hasattr(client, "interactions"):
             # Fallback to Instructor with legacy SDK
             instructor_client = get_instructor_client(self.config.provider)
             formatted_messages = self._format_messages(messages, system_prompt)
@@ -499,9 +506,11 @@ class AgentExecutor:
             schema = response_model.model_json_schema()
         else:
             # Try to get schema from response_model if it has one
-            schema = getattr(response_model, 'json_schema', None)
+            schema = getattr(response_model, "json_schema", None)
             if not schema:
-                raise ValueError("response_model must be a Pydantic BaseModel or have json_schema method")
+                raise ValueError(
+                    "response_model must be a Pydantic BaseModel or have json_schema method"
+                )
 
         # Prepare input for interactions.create
         input_messages = []
@@ -513,16 +522,15 @@ class AgentExecutor:
                 input_messages.append({"role": "user", "content": msg["content"]})
                 input_messages.append({"role": "model", "content": "Understood. I am ready."})
             else:
-                input_messages.append({
-                    "role": msg["role"],
-                    "content": msg["content"]
-                })
+                input_messages.append({"role": msg["role"], "content": msg["content"]})
 
         # Add JSON schema instruction to last message
         if input_messages:
             last_msg = input_messages[-1]
             if last_msg["role"] == "user":
-                last_msg["content"] += "\n\nIMPORTANT: Respond with valid JSON that matches the required schema."
+                last_msg["content"] += (
+                    "\n\nIMPORTANT: Respond with valid JSON that matches the required schema."
+                )
 
         # Execute the interaction with JSON schema
         response = client.interactions.create(
@@ -533,14 +541,14 @@ class AgentExecutor:
                 "response_schema": schema,
                 "temperature": self.config.temperature,
                 "max_output_tokens": self.config.max_tokens,
-            }
+            },
         )
 
         # Extract and parse JSON response
         content = ""
-        if hasattr(response, 'candidates') and response.candidates:
+        if hasattr(response, "candidates") and response.candidates:
             candidate = response.candidates[0]
-            if hasattr(candidate, 'content') and candidate.content:
+            if hasattr(candidate, "content") and candidate.content:
                 content = candidate.content.parts[0].text if candidate.content.parts else ""
 
         # Parse JSON into response model

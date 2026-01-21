@@ -6,6 +6,7 @@ CodeStandardsEnforcerAgent should detect.
 
 DO NOT FIX - Used for testing pattern enforcement.
 """
+
 from __future__ import annotations
 
 import builtins
@@ -64,6 +65,7 @@ def list() -> builtins.list[Any]:
 # VIOLATION Key 36: Shadowed builtin (class name)
 class dict:
     """Class name shadows builtin 'dict' - VIOLATION."""
+
     pass
 
 

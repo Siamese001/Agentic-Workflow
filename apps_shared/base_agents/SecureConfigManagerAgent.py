@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt, state, validator
@@ -46,7 +45,7 @@ class SecureConfigManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
         self,
         config_dir: Path | None = None,
         master_password: str | None = None,
-        env_prefix: str = "AGENTIC_"
+        env_prefix: str = "AGENTIC_",
     ) -> None:
         """Initialize the secure config manager.
 
@@ -132,7 +131,7 @@ class SecureConfigManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
             return {}
 
         try:
-            with open(self.config_file, 'rb') as f:
+            with open(self.config_file, "rb") as f:
                 encrypted_data = f.read()
 
             decrypted_data = self._decrypt_data(encrypted_data)
@@ -149,7 +148,7 @@ class SecureConfigManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
 
             # Atomic write
             temp_file = self.config_file.with_suffix(".tmp")
-            with open(temp_file, 'wb') as f:
+            with open(temp_file, "wb") as f:
                 f.write(encrypted_data)
             temp_file.replace(self.config_file)
 
@@ -167,7 +166,7 @@ class SecureConfigManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
             return {}
 
         try:
-            with open(self.keys_file, 'rb') as f:
+            with open(self.keys_file, "rb") as f:
                 encrypted_data = f.read()
 
             decrypted_data = self._decrypt_data(encrypted_data)
@@ -184,7 +183,7 @@ class SecureConfigManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
 
             # Atomic write
             temp_file = self.keys_file.with_suffix(".tmp")
-            with open(temp_file, 'wb') as f:
+            with open(temp_file, "wb") as f:
                 f.write(encrypted_data)
             temp_file.replace(self.keys_file)
 
@@ -249,7 +248,7 @@ class SecureConfigManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
                 "key": key_b64,
                 "created_at": time.time(),
                 "rotation_days": rotation_days,
-                "last_rotated": time.time()
+                "last_rotated": time.time(),
             }
 
             self._save_keys()
@@ -363,13 +362,7 @@ class SecureConfigManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
             Exported configuration
         """
         with self._lock:
-            exported = {
-                "config": {},
-                "metadata": {
-                    "exported_at": time.time(),
-                    "version": "1.0"
-                }
-            }
+            exported = {"config": {}, "metadata": {"exported_at": time.time(), "version": "1.0"}}
 
             for key, value in self._config.items():
                 if self._is_sensitive_key(key) and not include_secrets:
@@ -389,8 +382,14 @@ class SecureConfigManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
             True if key is sensitive
         """
         sensitive_patterns = [
-            "password", "secret", "token", "key", "credential",
-            "api_key", "private", "auth"
+            "password",
+            "secret",
+            "token",
+            "key",
+            "credential",
+            "api_key",
+            "private",
+            "auth",
         ]
 
         return any(pattern in key.lower() for pattern in sensitive_patterns)
@@ -434,7 +433,7 @@ class SecureConfigManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: set | None = None
+        _call_path: set | None = None,
     ) -> dict[str, int]:
         """
         Sovereign security healing - validates encryption, detects exposed secrets,
@@ -460,20 +459,20 @@ class SecureConfigManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
 
         try:
             # 1. Encryption Hygiene (The most dangerous orphaned capability)
-            if hasattr(self, '_validate_encryption_hygiene'):
+            if hasattr(self, "_validate_encryption_hygiene"):
                 enc_results = self._validate_encryption_hygiene(dry_run=dry_run)
                 metrics["violations"] += enc_results.get("violations", 0)
                 metrics["fixed"] += enc_results.get("fixed", 0)
 
             # 2. Schema Reconciliation
-            if hasattr(self, '_reconcile_config_schema'):
+            if hasattr(self, "_reconcile_config_schema"):
                 schema_results = self._reconcile_config_schema(dry_run=dry_run)
                 metrics["violations"] += schema_results.get("violations", 0)
                 metrics["fixed"] += schema_results.get("fixed", 0)
 
             # 3. Handle Execution/Commit if applicable
-            if execute and not dry_run and getattr(self, 'dirty_config', False):
-                if hasattr(self, '_save_config'):
+            if execute and not dry_run and getattr(self, "dirty_config", False):
+                if hasattr(self, "_save_config"):
                     self._save_config()
                     metrics["fixed"] += 1
 
@@ -542,6 +541,9 @@ def get_encryption_key(key_name: str) -> str | None:
     """
     return get_config_manager().get_key(key_name)
 
-def get_secure_config_manager(config_dir: Path | None = None, master_password: str | None = None) -> SecureConfigManagerAgent:
+
+def get_secure_config_manager(
+    config_dir: Path | None = None, master_password: str | None = None
+) -> SecureConfigManagerAgent:
     """Factory function to get secure config manager."""
     return SecureConfigManagerAgent(config_dir, master_password)

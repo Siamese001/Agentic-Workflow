@@ -11,13 +11,16 @@ from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class ExecutionResult:
     """Standardized operation result container."""
+
     success: bool
     data: str | int | float | bool | list | dict | None = None
     metadata: dict[str, str | int | float | bool | list | dict] = field(default_factory=dict)
     error_message: str | None = None
+
 
 class Validation:
     """
@@ -31,7 +34,9 @@ class Validation:
         self.config = config or {}
         self._logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
 
-    def process(self, payload: str | int | float | bool | list | dict, context: dict | None = None) -> ExecutionResult:
+    def process(
+        self, payload: str | int | float | bool | list | dict, context: dict | None = None
+    ) -> ExecutionResult:
         """
         Execute the primary logic for this module.
 
@@ -53,15 +58,12 @@ class Validation:
             self._logger.error(f"Unexpected system error: {e}", exc_info=True)
             return ExecutionResult(success=False, error_message="Internal System Error")
 
-    def _execute_logic(self, data: str | int | float | bool | list | dict, context: dict | None) -> str | int | float | bool | list | dict:
+    def _execute_logic(
+        self, data: str | int | float | bool | list | dict, context: dict | None
+    ) -> str | int | float | bool | list | dict:
         """Internal validation logic implementation."""
         # Initialize validation result
-        validation_result = {
-            "is_valid": True,
-            "errors": [],
-            "warnings": [],
-            "validated_data": data
-        }
+        validation_result = {"is_valid": True, "errors": [], "warnings": [], "validated_data": data}
 
         # Perform validation based on data type
         if isinstance(data, dict):
@@ -79,7 +81,7 @@ class Validation:
         if context:
             validation_result["context"] = {
                 "validation_context": context,
-                "validation_timestamp": self._get_timestamp()
+                "validation_timestamp": self._get_timestamp(),
             }
 
         return validation_result
@@ -152,6 +154,7 @@ class Validation:
         pattern = self.config.get("string_pattern")
         if pattern:
             import re
+
             if not re.match(pattern, data):
                 result["errors"].append(f"String does not match required pattern: {pattern}")
                 result["is_valid"] = False
@@ -183,7 +186,9 @@ class Validation:
     def _get_timestamp(self) -> str:
         """Get current timestamp for validation context."""
         from datetime import datetime
+
         return datetime.utcnow().isoformat()
+
 
 def run_process(data: str | int | float | bool | list | dict) -> ExecutionResult:
     """Module-level entry point."""

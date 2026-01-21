@@ -11,6 +11,7 @@ Instead of:
 Use:
     from agentic_core.config import DEFAULT_EXCLUDE_DIRS
 """
+
 from __future__ import annotations
 
 # Re-export from the SSOT modules
@@ -23,13 +24,21 @@ except ImportError:
     CANON_SIGNALS = set()
 
 # Define constants that may not exist in structure_blueprint
-DEFAULT_EXCLUDE_DIRS = {'.git', '.venv', 'venv', '__pycache__', 'node_modules', 'archives', '.sovereign_healing_backup'}
+DEFAULT_EXCLUDE_DIRS = {
+    ".git",
+    ".venv",
+    "venv",
+    "__pycache__",
+    "node_modules",
+    "archives",
+    ".sovereign_healing_backup",
+}
 FORBIDDEN_PATTERNS_RAW = []
 NAMING_EXEMPT_FILES = set()
 NAMING_EXEMPT_DIRS = set()
 ALLOWED_DUPLICATE_FILENAMES = set()
 PYTHON_STDLIB_MODULES = set()
-VALIDATED_FILE_EXTENSIONS = {'.py', '.pyi'}
+VALIDATED_FILE_EXTENSIONS = {".py", ".pyi"}
 
 from .blueprint_sovereign.registry import (
     AGENT_RESILIENCE_CONFIG,

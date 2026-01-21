@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, state, workflow
@@ -26,46 +25,57 @@ def _get_hierarchy_agent() -> Any:
     """Get hierarchy agent."""
     try:
         from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+
         return HierarchyAgent
     except Exception:
         return None
+
 
 def _get_naming_agent() -> Any:
     """Get naming agent."""
     try:
         from agentic_core.L5_safety.validators.NamingAgent import NamingAgent
+
         return NamingAgent
     except Exception:
         return None
+
 
 def _get_import_agent() -> Any:
     """Get import agent."""
     try:
         from agentic_core.L5_safety.gravity.ImportAgent import ImportAgent
+
         return ImportAgent
     except Exception:
         return None
+
 
 def _get_red_team_agent() -> Any:
     """Get red team agent."""
     try:
         from agentic_core.L5_safety.red_teaming.RedTeamAgent import RedTeamAgent
+
         return RedTeamAgent
     except Exception:
         return None
+
 
 def _get_healer_agent() -> Any:
     """Get healer agent."""
     try:
         from agentic_core.L5_safety.guardrails.StructuralHealerAgent import StructuralHealerAgent
+
         return StructuralHealerAgent
     except Exception:
         return None
+
 
 def log_event(event_type: str, payload: dict) -> Any:
     """Log event with fallback to print."""
     try:
         from agentic_core.runtime.shared_runtime import log_event as _log_event
+
         _log_event(event_type, payload)
     except Exception:
         print(f"[L5SafetyExerciserAgent] Event logged (stub): {event_type} = {payload}")
@@ -117,7 +127,8 @@ class L5SafetyExerciserAgent(MCPHardenedMixin):
         """Probe naming laws on synthetic filenames."""
         test_names = ["good_agent.py", "l5_bad_prefix.py", "temp.bak.123"]
         violations = [
-            name for name in test_names
+            name
+            for name in test_names
             if has_forbidden_layer_prefix(name) or is_broken_backup_file(name)
         ]
         return f"Naming check: {len(violations)} synthetic violations detected (expected)"
@@ -197,5 +208,7 @@ class L5SafetyExerciserAgent(MCPHardenedMixin):
             results["tests"].append({"name": "test_instantiation", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
+            results["tests"].append(
+                {"name": "test_instantiation", "status": "failed", "error": str(e)}
+            )
         return results

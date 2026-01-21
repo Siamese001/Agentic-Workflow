@@ -2,6 +2,7 @@
 Generate rename suggestions for intentional variants.
 Uses NamingAgent principles to suggest unique, descriptive names.
 """
+
 import re
 import sys
 from pathlib import Path
@@ -18,7 +19,7 @@ sys.path.insert(0, str(project_root))
 def read_file_content(file_path: Path) -> str:
     """Read file content."""
     try:
-        with open(file_path, encoding='utf-8') as f:
+        with open(file_path, encoding="utf-8") as f:
             return f.read()
     except Exception:
         return ""
@@ -31,10 +32,10 @@ def extract_purpose_from_content(content: str, file_path: Path) -> str:
     if docstring_match:
         doc = docstring_match.group(1).strip()
         if doc:
-            return doc.split('\n')[0][:100]  # First line, max 100 chars
+            return doc.split("\n")[0][:100]  # First line, max 100 chars
 
     # Check for comments
-    comment_match = re.search(r'^#\s*(.+)$', content, re.MULTILINE)
+    comment_match = re.search(r"^#\s*(.+)$", content, re.MULTILINE)
     if comment_match:
         return comment_match.group(1).strip()[:100]
 
@@ -58,21 +59,21 @@ def suggest_rename_for_init_files(file_paths):
         path_parts = rel_path.parts
 
         # Extract meaningful context
-        if 'config' in path_parts:
+        if "config" in path_parts:
             pass
-        elif 'L0_maintenance' in path_parts:
+        elif "L0_maintenance" in path_parts:
             pass
-        elif 'L1_cognition' in path_parts:
+        elif "L1_cognition" in path_parts:
             pass
-        elif 'L2_execution' in path_parts:
+        elif "L2_execution" in path_parts:
             pass
-        elif 'L3_orchestration' in path_parts:
+        elif "L3_orchestration" in path_parts:
             pass
-        elif 'L4_state' in path_parts:
+        elif "L4_state" in path_parts:
             pass
-        elif 'L5_safety' in path_parts:
+        elif "L5_safety" in path_parts:
             pass
-        elif 'observability' in path_parts:
+        elif "observability" in path_parts:
             pass
         elif APPS_LIC_DIR in path_parts:
             pass
@@ -83,32 +84,34 @@ def suggest_rename_for_init_files(file_paths):
         elif TESTS_DIR in path_parts:
             pass
         else:
-            path_parts[0] if path_parts else 'unknown'
+            path_parts[0] if path_parts else "unknown"
 
         # Get parent directory name
         parent = file_path.parent.name
 
         # Check if content is empty or minimal
-        lines = [l for l in content.splitlines() if l.strip() and not l.strip().startswith('#')]
+        lines = [l for l in content.splitlines() if l.strip() and not l.strip().startswith("#")]
         is_empty = len(lines) == 0
 
         # Generate suggestion
         if is_empty:
             suggestion = {
-                'original': str(rel_path),
-                'suggested_name': '__init__.py',  # Keep as is if empty
-                'action': 'KEEP_AS_IS',
-                'reason': 'Empty package initializer - standard Python convention'
+                "original": str(rel_path),
+                "suggested_name": "__init__.py",  # Keep as is if empty
+                "action": "KEEP_AS_IS",
+                "reason": "Empty package initializer - standard Python convention",
             }
         else:
             # Suggest descriptive name based on content
             purpose = extract_purpose_from_content(content, file_path)
             suggestion = {
-                'original': str(rel_path),
-                'suggested_name': f'__{parent}_init__.py' if parent != SCRIPTS_DIR else '__init__.py',
-                'action': 'CONSIDER_RENAME',
-                'reason': f'Non-empty init with purpose: {purpose[:60]}...',
-                'alternative': 'Consider consolidating into parent __init__.py or extracting to separate module'
+                "original": str(rel_path),
+                "suggested_name": f"__{parent}_init__.py"
+                if parent != SCRIPTS_DIR
+                else "__init__.py",
+                "action": "CONSIDER_RENAME",
+                "reason": f"Non-empty init with purpose: {purpose[:60]}...",
+                "alternative": "Consider consolidating into parent __init__.py or extracting to separate module",
             }
 
         suggestions.append(suggestion)
@@ -125,22 +128,22 @@ def suggest_rename_for_canon_validator(file_paths):
         rel_path = file_path.relative_to(project_root)
 
         # Determine purpose from location
-        if 'L0_maintenance/scripts' in str(rel_path):
-            suggested_name = 'canon_validator_bootstrap.py'
-            reason = 'Bootstrap/initialization script for canon validator in maintenance layer'
-        elif 'tests/core' in str(rel_path):
-            suggested_name = 'canon_validator_test_init.py'
-            reason = 'Test initialization for canon validator tests'
+        if "L0_maintenance/scripts" in str(rel_path):
+            suggested_name = "canon_validator_bootstrap.py"
+            reason = "Bootstrap/initialization script for canon validator in maintenance layer"
+        elif "tests/core" in str(rel_path):
+            suggested_name = "canon_validator_test_init.py"
+            reason = "Test initialization for canon validator tests"
         else:
-            suggested_name = 'canon_validator_init.py'
-            reason = 'Initialization module for canon validator'
+            suggested_name = "canon_validator_init.py"
+            reason = "Initialization module for canon validator"
 
         suggestion = {
-            'original': str(rel_path),
-            'suggested_name': suggested_name,
-            'action': 'RENAME',
-            'reason': reason,
-            'command': f'git mv "{rel_path}" "{rel_path.parent / suggested_name}"'
+            "original": str(rel_path),
+            "suggested_name": suggested_name,
+            "action": "RENAME",
+            "reason": reason,
+            "command": f'git mv "{rel_path}" "{rel_path.parent / suggested_name}"',
         }
 
         suggestions.append(suggestion)
@@ -191,7 +194,7 @@ def main():
 
     files = [
         project_root / "agentic_core/L0_maintenance/scripts/canon_validator___init__.py",
-        project_root / "tests/core/canon_validator___init__.py"
+        project_root / "tests/core/canon_validator___init__.py",
     ]
 
     # Filter to existing files
@@ -217,7 +220,7 @@ def main():
             print(f"      → Suggested: {sug['suggested_name']}")
             print(f"      → Reason: {sug['reason']}")
             print(f"      → Action: {sug['action']}")
-            if 'command' in sug:
+            if "command" in sug:
                 print(f"      → Command: {sug['command']}")
             print()
 

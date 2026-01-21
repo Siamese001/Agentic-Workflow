@@ -79,6 +79,7 @@ class MetricsWitnessAgent(
             from agentic_core.L6_observability.metrics.MetricsAgent import (
                 metrics_agent as MetricsAgentCls,
             )
+
             self.metrics = MetricsAgentCls(project_root)
         except Exception:
             self.Logger.warning("MetricsAgent unavailable – witness operating in degraded mode")
@@ -149,16 +150,14 @@ class MetricsWitnessAgent(
         if self.metrics is None:
             return {
                 "reason": "metrics_agent_unavailable",
-                "action": "attempt_reinitialization_or_escalate"
+                "action": "attempt_reinitialization_or_escalate",
             }
 
         # Optional future enhancement: detect Metric staleness via timestamp
         return None
 
     async def _execute_conservative(
-        self,
-        ctx: Any,
-        **context: dict[str, Any]
+        self, ctx: Any, **context: dict[str, Any]
     ) -> dict[str, tuple[float, list[str]]]:
         """
         Execute in conservative mode with cached/fallback scores.
@@ -173,14 +172,10 @@ class MetricsWitnessAgent(
         self.Logger.info("Conservative mode: returning cached/fallback scores")
         return {
             "Structural SSOT": (100.0, ["Conservative mode: no live metrics query"]),
-            "Healing Resilience": (100.0, ["Conservative mode: assuming full resilience"])
+            "Healing Resilience": (100.0, ["Conservative mode: assuming full resilience"]),
         }
 
-    async def _execute_minimal(
-        self,
-        ctx: Any,
-        **context: dict[str, Any]
-    ) -> dict[str, str]:
+    async def _execute_minimal(self, ctx: Any, **context: dict[str, Any]) -> dict[str, str]:
         """
         Execute in minimal mode for resource preservation.
 
@@ -192,15 +187,10 @@ class MetricsWitnessAgent(
             Dict with standby status.
         """
         self.Logger.warning("Minimal mode: witness standing by")
-        return {
-            "status": "minimal_standby",
-            "reason": "resource_preservation"
-        }
+        return {"status": "minimal_standby", "reason": "resource_preservation"}
 
     async def _execute_standard(
-        self,
-        ctx: Any,
-        **context: dict[str, Any]
+        self, ctx: Any, **context: dict[str, Any]
     ) -> dict[str, tuple[float, list[str]]]:
         """
         Execute in standard mode with full metrics calculation.

@@ -11,6 +11,7 @@ Usage:
     python scripts/archive_legacy_validators.py --dry-run
     python scripts/archive_legacy_validators.py
 """
+
 from __future__ import annotations
 
 import argparse
@@ -29,7 +30,6 @@ LEGACY_VALIDATORS: dict[str, str] = {
     "CanonValidatorAgent.py": "agentic_core/L5_safety/validators/",
     "AsyncBlockingValidatorAgent.py": "agentic_core/L5_safety/validators/",
     "PrintStatementValidatorAgent.py": "agentic_core/L5_safety/validators/",
-
     # L5 Structure Validators -> UnifiedStructureValidatorAgent
     "GravityValidatorAgent.py": "agentic_core/L5_safety/validators/",
     "HygieneValidatorAgent.py": "agentic_core/L5_safety/validators/",
@@ -40,7 +40,6 @@ LEGACY_VALIDATORS: dict[str, str] = {
     "ExternalHttpValidatorAgent.py": "agentic_core/L5_safety/validators/",
     "HealValidatorAgent.py": "agentic_core/L5_safety/validators/",
     "InputValidatorAgent.py": "agentic_core/L5_safety/validators/",
-
     # App Content Validators -> AppContentValidatorAgent
     "ContactValidatorAgent.py": "apps_lic/domain/validators/",
     "ContentCleanlinessValidatorAgent.py": "apps_lic/domain/validators/",
@@ -92,8 +91,8 @@ def archive_validator(source: Path, dry_run: bool = False) -> tuple[bool, str]:
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Archive legacy validators')
-    parser.add_argument('--dry-run', action='store_true', help='Show what would be done')
+    parser = argparse.ArgumentParser(description="Archive legacy validators")
+    parser.add_argument("--dry-run", action="store_true", help="Show what would be done")
     args = parser.parse_args()
 
     print("=" * 70)

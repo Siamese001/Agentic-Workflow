@@ -6,6 +6,7 @@ Comprehensive end-to-end tests for the dashboard.
 
 Migrated from: agentic_core/L5_safety/validators/test_dashboard_end_to_end.py
 """
+
 import sys
 from pathlib import Path
 
@@ -30,7 +31,7 @@ class TestAgentDiscovery:
 
     def test_agents_have_required_fields(self, agent_discovery_data):
         """Verify agents have required fields."""
-        required_fields = ['class_name', 'path', 'territory']
+        required_fields = ["class_name", "path", "territory"]
         for agent in agent_discovery_data[:10]:  # Check first 10
             for field in required_fields:
                 assert field in agent, f"Agent missing field: {field}"
@@ -46,11 +47,11 @@ class TestDashboardHTML:
 
     def test_html_has_dashboard_data(self, html_content):
         """Verify HTML contains dashboard data."""
-        assert 'dashboardData' in html_content, "dashboardData not found in HTML"
+        assert "dashboardData" in html_content, "dashboardData not found in HTML"
 
     def test_html_has_tables(self, html_content):
         """Verify HTML contains table elements."""
-        assert '<table' in html_content, "No tables found in HTML"
+        assert "<table" in html_content, "No tables found in HTML"
 
 
 @pytest.mark.dashboard
@@ -79,12 +80,13 @@ class TestDataConsistency:
         """Verify total agent count matches between discovery and dashboard."""
         discovery_count = len(agent_discovery_data)
 
-        total_row = next((r for r in dashboard_data if r.get('Territory') == 'TOTAL'), None)
+        total_row = next((r for r in dashboard_data if r.get("Territory") == "TOTAL"), None)
         assert total_row is not None, "TOTAL row not found"
 
-        dashboard_count = total_row.get('Total', 0)
-        assert dashboard_count == discovery_count, \
+        dashboard_count = total_row.get("Total", 0)
+        assert dashboard_count == discovery_count, (
             f"Agent count mismatch: discovery={discovery_count}, dashboard={dashboard_count}"
+        )
 
 
 @pytest.mark.dashboard
@@ -93,11 +95,11 @@ class TestTableRendering:
 
     def test_kpi_grid_exists(self, html_content):
         """Verify KPI grid container exists."""
-        assert 'kpiGrid' in html_content or 'kpi-grid' in html_content
+        assert "kpiGrid" in html_content or "kpi-grid" in html_content
 
     def test_table_headers_exist(self, html_content):
         """Verify table headers exist."""
-        assert '<th' in html_content, "No table headers found"
+        assert "<th" in html_content, "No table headers found"
 
 
 @pytest.mark.dashboard
@@ -106,21 +108,21 @@ class TestRowOrder:
 
     def test_total_row_is_first(self, dashboard_data):
         """Verify TOTAL row is first."""
-        assert dashboard_data[0].get('Territory') == 'TOTAL', \
-            "TOTAL row should be first"
+        assert dashboard_data[0].get("Territory") == "TOTAL", "TOTAL row should be first"
 
     def test_territories_are_sorted(self, dashboard_data):
         """Verify territories follow canonical order."""
         # Skip TOTAL row and check that L6 comes before L5, etc.
-        territories = [r.get('Territory') for r in dashboard_data[1:]]
+        territories = [r.get("Territory") for r in dashboard_data[1:]]
 
         # Basic check: L6 territories should come before L5
-        l6_indices = [i for i, t in enumerate(territories) if t and 'L6' in t]
-        l5_indices = [i for i, t in enumerate(territories) if t and 'L5' in t]
+        l6_indices = [i for i, t in enumerate(territories) if t and "L6" in t]
+        l5_indices = [i for i, t in enumerate(territories) if t and "L5" in t]
 
         if l6_indices and l5_indices:
-            assert max(l6_indices) < min(l5_indices), \
+            assert max(l6_indices) < min(l5_indices), (
                 "L6 territories should come before L5 territories"
+            )
 
 
 @pytest.mark.dashboard
@@ -133,6 +135,7 @@ class TestPlaywrightVisual:
         """Check if Playwright is available."""
         try:
             from playwright.sync_api import sync_playwright
+
             assert True
         except ImportError:
             pytest.skip("Playwright not installed")

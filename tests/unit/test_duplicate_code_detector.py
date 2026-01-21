@@ -43,6 +43,7 @@ def test_fail(test_id: str, msg: str):
 # Test Suite 1: Initialization and Configuration
 # ============================================================================
 
+
 def test_initialization():
     """Test agent initialization."""
     print("\n" + "=" * 60)
@@ -88,6 +89,7 @@ def test_initialization():
 # Test Suite 2: File Scanning and Filtering
 # ============================================================================
 
+
 def test_file_filtering():
     """Test file extension filtering."""
     print("\n" + "=" * 60)
@@ -97,28 +99,28 @@ def test_file_filtering():
     agent = DuplicateCodeDetectorAgent()
 
     # Test supported extensions
-    if '.py' in agent.SUPPORTED_EXTENSIONS:
+    if ".py" in agent.SUPPORTED_EXTENSIONS:
         test_pass("EXT_PY", "Python files supported")
     else:
         test_fail("EXT_PY", "Python files NOT supported")
 
-    if '.js' in agent.SUPPORTED_EXTENSIONS:
+    if ".js" in agent.SUPPORTED_EXTENSIONS:
         test_pass("EXT_JS", "JavaScript files supported")
     else:
         test_fail("EXT_JS", "JavaScript files NOT supported")
 
-    if '.json' in agent.SUPPORTED_EXTENSIONS:
+    if ".json" in agent.SUPPORTED_EXTENSIONS:
         test_pass("EXT_JSON", "JSON files supported")
     else:
         test_fail("EXT_JSON", "JSON files NOT supported")
 
     # Test whole file types
-    if '.json' in agent.WHOLE_FILE_TYPES:
+    if ".json" in agent.WHOLE_FILE_TYPES:
         test_pass("WHOLE_JSON", "JSON uses whole-file hashing")
     else:
         test_fail("WHOLE_JSON", "JSON should use whole-file hashing")
 
-    if '.py' not in agent.WHOLE_FILE_TYPES:
+    if ".py" not in agent.WHOLE_FILE_TYPES:
         test_pass("BLOCK_PY", "Python uses block-based detection")
     else:
         test_fail("BLOCK_PY", "Python should use block-based detection")
@@ -127,6 +129,7 @@ def test_file_filtering():
 # ============================================================================
 # Test Suite 3: Exclusion Patterns
 # ============================================================================
+
 
 def test_exclusion_patterns():
     """Test directory exclusion patterns."""
@@ -145,7 +148,7 @@ def test_exclusion_patterns():
         test_fail("SSOT_EXCLUDE", "NOT using GLOBAL_EXCLUDED_DIRS from SSOT")
 
     # Test specific exclusions
-    required_exclusions = ['__pycache__', '.git', 'node_modules', 'venv', 'archives', 'tests']
+    required_exclusions = ["__pycache__", ".git", "node_modules", "venv", "archives", "tests"]
 
     for exclusion in required_exclusions:
         if exclusion in agent.EXCLUDE_DIRS:
@@ -157,6 +160,7 @@ def test_exclusion_patterns():
 # ============================================================================
 # Test Suite 4: Hash Computation
 # ============================================================================
+
 
 def test_hash_computation():
     """Test file hashing."""
@@ -203,6 +207,7 @@ def test_hash_computation():
 # Test Suite 5: DuplicateFile Dataclass
 # ============================================================================
 
+
 def test_duplicate_file_dataclass():
     """Test DuplicateFile dataclass."""
     print("\n" + "=" * 60)
@@ -214,7 +219,7 @@ def test_duplicate_file_dataclass():
             hash="abc123",
             size=1024,
             paths=[Path("/tmp/file1.py"), Path("/tmp/file2.py")],
-            file_type=".py"
+            file_type=".py",
         )
 
         test_pass("DATACLASS_CREATE", "DuplicateFile created successfully")
@@ -247,6 +252,7 @@ def test_duplicate_file_dataclass():
 # Test Suite 6: Canonical Prefixes
 # ============================================================================
 
+
 def test_canonical_prefixes():
     """Test canonical location preferences."""
     print("\n" + "=" * 60)
@@ -256,7 +262,7 @@ def test_canonical_prefixes():
     agent = DuplicateCodeDetectorAgent()
 
     # Test that canonical prefixes are defined
-    if hasattr(agent, 'CANONICAL_PREFIXES'):
+    if hasattr(agent, "CANONICAL_PREFIXES"):
         test_pass("CANONICAL_DEFINED", "CANONICAL_PREFIXES defined")
 
         # Test specific prefixes
@@ -275,7 +281,7 @@ def test_canonical_prefixes():
         else:
             test_fail("CANON_L2", "L2_EXECUTION_DIR NOT in canonical prefixes")
 
-        if 'agentic_core/utils' in agent.CANONICAL_PREFIXES:
+        if "agentic_core/utils" in agent.CANONICAL_PREFIXES:
             test_pass("CANON_UTILS", "utils in canonical prefixes")
         else:
             test_fail("CANON_UTILS", "utils NOT in canonical prefixes")
@@ -287,6 +293,7 @@ def test_canonical_prefixes():
 # Test Suite 7: Mixin Integration
 # ============================================================================
 
+
 def test_mixin_integration():
     """Test that agent properly inherits from mixins."""
     print("\n" + "=" * 60)
@@ -296,19 +303,19 @@ def test_mixin_integration():
     agent = DuplicateCodeDetectorAgent()
 
     # Test SubatomicTestingMixin
-    if hasattr(agent, '_run_self_tests'):
+    if hasattr(agent, "_run_self_tests"):
         test_pass("MIXIN_SUBATOMIC", "Has SubatomicTestingMixin methods")
     else:
         test_fail("MIXIN_SUBATOMIC", "Missing SubatomicTestingMixin methods")
 
     # Test HealerMixin
-    if hasattr(agent, 'heal_repository'):
+    if hasattr(agent, "heal_repository"):
         test_pass("MIXIN_HEALER", "Has HealerMixin methods")
     else:
         test_fail("MIXIN_HEALER", "Missing HealerMixin methods")
 
     # Test MCPHardenedMixin
-    if hasattr(agent, '_mcp_audit_log') or hasattr(agent, '_hardened_call'):
+    if hasattr(agent, "_mcp_audit_log") or hasattr(agent, "_hardened_call"):
         test_pass("MIXIN_MCP", "Has MCPHardenedMixin methods")
     else:
         test_fail("MIXIN_MCP", "Missing MCPHardenedMixin methods")
@@ -318,6 +325,7 @@ def test_mixin_integration():
 # Test Suite 8: Import Validation
 # ============================================================================
 
+
 def test_import_validation():
     """Test that all imports are correct."""
     print("\n" + "=" * 60)
@@ -326,18 +334,21 @@ def test_import_validation():
 
     try:
         from apps_shared.utils.DuplicateCodeDetectorAgent import DuplicateCodeDetectorAgent
+
         test_pass("IMPORT_AGENT", "Agent imports successfully from apps_shared")
     except ImportError as e:
         test_fail("IMPORT_AGENT", f"Import failed: {e}")
 
     try:
         from agentic_core.L5_safety.validators.structure_blueprint import GLOBAL_EXCLUDED_DIRS
+
         test_pass("IMPORT_SSOT", "GLOBAL_EXCLUDED_DIRS imports from SSOT")
     except ImportError as e:
         test_fail("IMPORT_SSOT", f"SSOT import failed: {e}")
 
     try:
         from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
+
         test_pass("IMPORT_MCP", "MCPHardenedMixin imports correctly")
     except ImportError as e:
         test_fail("IMPORT_MCP", f"MCP import failed: {e}")
@@ -347,6 +358,7 @@ def test_import_validation():
 # Test Suite 9: Execute Method Signature
 # ============================================================================
 
+
 def test_execute_signature():
     """Test execute method signature."""
     print("\n" + "=" * 60)
@@ -355,11 +367,12 @@ def test_execute_signature():
 
     agent = DuplicateCodeDetectorAgent()
 
-    if hasattr(agent, 'execute'):
+    if hasattr(agent, "execute"):
         test_pass("METHOD_EXECUTE", "execute() method exists")
 
         # Check if it's async
         import inspect
+
         if inspect.iscoroutinefunction(agent.execute):
             test_pass("EXECUTE_ASYNC", "execute() is async")
         else:
@@ -371,6 +384,7 @@ def test_execute_signature():
 # ============================================================================
 # Test Suite 10: Tree-sitter Integration
 # ============================================================================
+
 
 def test_tree_sitter():
     """Test tree-sitter integration."""
@@ -398,6 +412,7 @@ def test_tree_sitter():
 # ============================================================================
 # Main Execution
 # ============================================================================
+
 
 def main():
     print("=" * 60)
@@ -444,4 +459,5 @@ def main():
 
 if __name__ == "__main__":
     import hashlib  # Import for hash tests
+
     sys.exit(main())

@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 class TaskType(Enum):
     """Types of tasks for reasoning strategy selection."""
+
     TOOL_USE = "tool_use"
     QUESTION_ANSWERING = "qa"
     CLASSIFICATION = "classification"
@@ -157,7 +158,7 @@ class ReasoningRouter:
                 "task_type": task_type.value,
                 "strategy": strategy.value,
                 "task_preview": task[:100],
-            }
+            },
         )
 
         return strategy
@@ -176,7 +177,7 @@ class ReasoningRouter:
             extra={
                 "task_type": task_type.value,
                 "new_strategy": mode.value,
-            }
+            },
         )
 
 

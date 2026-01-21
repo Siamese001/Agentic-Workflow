@@ -1,4 +1,5 @@
 """Tests for ReasoningToggles validation logic."""
+
 import pytest
 from pydantic import ValidationError
 from src.lic_agentic.reasoning.toggles import ReasoningToggles

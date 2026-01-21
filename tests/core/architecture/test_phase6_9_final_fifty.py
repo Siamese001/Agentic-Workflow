@@ -15,6 +15,7 @@ Author: Cascade
 Date: January 19, 2026
 Phase: 6.9 - Final Fifty
 """
+
 import sys
 from pathlib import Path
 
@@ -32,9 +33,9 @@ def test_tc52_exhaustion_test():
 
     Uses AST-based detection for cross-platform compatibility.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-52: Exhaustion Test (AST-based)")
-    print("="*60)
+    print("=" * 60)
 
     import ast
 
@@ -53,18 +54,20 @@ def test_tc52_exhaustion_test():
         files_scanned += 1
 
         try:
-            content = py_file.read_text(encoding='utf-8', errors='ignore')
+            content = py_file.read_text(encoding="utf-8", errors="ignore")
             tree = ast.parse(content)
 
             for node in ast.walk(tree):
                 # Detect .rglob() and .glob() attribute calls
-                if isinstance(node, ast.Attribute) and node.attr in ['rglob', 'glob']:
-                    line_no = getattr(node, 'lineno', 0)
-                    rglob_calls.append({
-                        'file': str(py_file.relative_to(PROJECT_ROOT)),
-                        'line': line_no,
-                        'method': node.attr
-                    })
+                if isinstance(node, ast.Attribute) and node.attr in ["rglob", "glob"]:
+                    line_no = getattr(node, "lineno", 0)
+                    rglob_calls.append(
+                        {
+                            "file": str(py_file.relative_to(PROJECT_ROOT)),
+                            "line": line_no,
+                            "method": node.attr,
+                        }
+                    )
 
         except SyntaxError:
             # Skip files with syntax errors
@@ -87,7 +90,7 @@ def test_tc52_exhaustion_test():
             print("\n   Top 10 files with rglob/glob calls:")
             file_counts = {}
             for call in rglob_calls:
-                file_counts[call['file']] = file_counts.get(call['file'], 0) + 1
+                file_counts[call["file"]] = file_counts.get(call["file"], 0) + 1
 
             sorted_files = sorted(file_counts.items(), key=lambda x: x[1], reverse=True)
             for file_path, count in sorted_files[:10]:
@@ -108,9 +111,9 @@ def test_tc53_l5_safety_validators():
 
     Verify L5_safety/validators files use ssot_discovery.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-53: L5 Safety Validators")
-    print("="*60)
+    print("=" * 60)
 
     validator_files = {
         "FileManagerAgent.py": "get_python_files",
@@ -133,7 +136,7 @@ def test_tc53_l5_safety_validators():
             continue
 
         try:
-            content = full_path.read_text(encoding='utf-8', errors='ignore')
+            content = full_path.read_text(encoding="utf-8", errors="ignore")
 
             # Check for expected ssot_discovery method
             has_method = expected_method in content
@@ -163,9 +166,9 @@ def test_tc54_l0_maintenance_scripts():
 
     Verify L0_maintenance/scripts files use ssot_discovery.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-54: L0 Maintenance Scripts")
-    print("="*60)
+    print("=" * 60)
 
     script_files = [
         "analyze_duplicates_simple.py",
@@ -188,10 +191,13 @@ def test_tc54_l0_maintenance_scripts():
             continue
 
         try:
-            content = full_path.read_text(encoding='utf-8', errors='ignore')
+            content = full_path.read_text(encoding="utf-8", errors="ignore")
 
             # Check for ssot_discovery import
-            has_ssot_import = 'from agentic_core.utils.ssot_discovery import' in content or 'ssot_discovery' in content
+            has_ssot_import = (
+                "from agentic_core.utils.ssot_discovery import" in content
+                or "ssot_discovery" in content
+            )
 
             if has_ssot_import:
                 files_using_ssot += 1
@@ -218,9 +224,9 @@ def test_tc55_observability_tests():
 
     Verify observability test files use ssot_discovery.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-55: Observability Tests")
-    print("="*60)
+    print("=" * 60)
 
     test_files = [
         "test_root_ssot_enforcement.py",
@@ -237,10 +243,13 @@ def test_tc55_observability_tests():
             continue
 
         try:
-            content = full_path.read_text(encoding='utf-8', errors='ignore')
+            content = full_path.read_text(encoding="utf-8", errors="ignore")
 
             # Check for ssot_discovery import
-            has_ssot_import = 'from agentic_core.utils.ssot_discovery import' in content or 'ssot_discovery' in content
+            has_ssot_import = (
+                "from agentic_core.utils.ssot_discovery import" in content
+                or "ssot_discovery" in content
+            )
 
             if has_ssot_import:
                 files_using_ssot += 1
@@ -267,9 +276,9 @@ def test_tc56_final_fifty_achievement():
 
     Verify the Final Fifty achieved significant reduction across all phases.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-56: Final Fifty Achievement")
-    print("="*60)
+    print("=" * 60)
 
     # Import the CI check
     sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
@@ -295,8 +304,12 @@ def test_tc56_final_fifty_achievement():
     print(f"   Phase 6.7 start: {phase6_7_start}")
     print(f"   Phase 6.8 start: {phase6_8_start}")
     print(f"   Current: {total_count}")
-    print(f"\n   Total Phase 6 reduction: {total_reduction} calls ({total_reduction/phase6_start*100:.1f}%)")
-    print(f"   Phase 6.9 reduction: {phase6_9_reduction} calls ({phase6_9_reduction/phase6_8_start*100:.1f}%)")
+    print(
+        f"\n   Total Phase 6 reduction: {total_reduction} calls ({total_reduction / phase6_start * 100:.1f}%)"
+    )
+    print(
+        f"   Phase 6.9 reduction: {phase6_9_reduction} calls ({phase6_9_reduction / phase6_8_start * 100:.1f}%)"
+    )
 
     # Show refactored categories
     print("\n   Phase 6.9 refactored categories:")
@@ -306,18 +319,22 @@ def test_tc56_final_fifty_achievement():
     print("   - Total files refactored: 62+")
 
     if total_count < 90:
-        print(f"✅ PASS: Final Fifty achieved ({total_count} calls, {total_reduction/phase6_start*100:.1f}% total reduction)")
+        print(
+            f"✅ PASS: Final Fifty achieved ({total_count} calls, {total_reduction / phase6_start * 100:.1f}% total reduction)"
+        )
         return True
     else:
-        print(f"⚠️  INFO: Current count is {total_count} calls ({total_reduction/phase6_start*100:.1f}% total reduction)")
+        print(
+            f"⚠️  INFO: Current count is {total_count} calls ({total_reduction / phase6_start * 100:.1f}% total reduction)"
+        )
         return True
 
 
 def main():
     """Run all Phase 6.9 Final Fifty test cases."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("PHASE 6.9 FINAL FIFTY TEST SUITE")
-    print("="*70)
+    print("=" * 70)
     print(f"Project Root: {PROJECT_ROOT}")
 
     tests = [
@@ -336,13 +353,14 @@ def main():
         except Exception as e:
             print(f"\n❌ EXCEPTION in {test_name}: {e}")
             import traceback
+
             traceback.print_exc()
             results.append((test_name, False))
 
     # Summary
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST SUMMARY")
-    print("="*70)
+    print("=" * 70)
 
     passed_count = sum(1 for _, passed in results if passed)
     total_count = len(results)
@@ -351,7 +369,7 @@ def main():
         status = "✅ PASS" if passed else "❌ FAIL"
         print(f"{status}: {test_name}")
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print(f"TOTAL: {passed_count}/{total_count} tests passed")
 
     if passed_count == total_count:

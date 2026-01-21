@@ -3,6 +3,7 @@ SemanticMemory - Semantic memory storage for cognitive agents.
 
 Provides semantic memory capabilities with embedding-based retrieval.
 """
+
 import logging
 from typing import Any
 
@@ -11,14 +12,17 @@ logger = logging.getLogger(__name__)
 
 class EmbeddingProvider:
     """Provider for embeddings."""
+
     def __init__(self, model: str = "default"):
         self.model = model
+
     def embed(self, text: str) -> list[float]:
         return [0.0] * 384  # Default embedding size
 
 
 class VectorIndex:
     """Index for vector storage and retrieval."""
+
     def __init__(self, dimension: int = 384):
         self.dimension = dimension
         self._vectors: dict[str, list[float]] = {}
@@ -32,6 +36,7 @@ class VectorIndex:
 
 class SemanticEntry:
     """Entry in semantic memory."""
+
     def __init__(self, key: str, value: Any, embedding: list[float] | None = None):
         self.key = key
         self.value = value
@@ -65,11 +70,9 @@ class SemanticMemory:
             if key in self._memories:
                 # Simple dot product as similarity (not normalized)
                 similarity = sum(a * b for a, b in zip(query_embedding, embedding, strict=False))
-                results.append({
-                    "key": key,
-                    "value": self._memories[key]["value"],
-                    "similarity": similarity
-                })
+                results.append(
+                    {"key": key, "value": self._memories[key]["value"], "similarity": similarity}
+                )
         results.sort(key=lambda x: x["similarity"], reverse=True)
         return results[:top_k]
 
@@ -86,4 +89,4 @@ class SemanticMemory:
         self._embeddings.clear()
 
 
-__all__ = ['SemanticMemory', 'SemanticEntry', 'EmbeddingProvider', 'VectorIndex']
+__all__ = ["SemanticMemory", "SemanticEntry", "EmbeddingProvider", "VectorIndex"]

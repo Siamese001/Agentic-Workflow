@@ -53,7 +53,9 @@ class AdaptiveExecutionMixin:
         # 2. Recent failure rate (safety)
         failure_rate = await self._get_recent_failure_rate(context)
         if failure_rate > 0.35:
-            self.Logger.warning(f"High failure rate ({failure_rate:.1%}) → switching to conservative mode")
+            self.Logger.warning(
+                f"High failure rate ({failure_rate:.1%}) → switching to conservative mode"
+            )
             return "conservative"
 
         # 3. Urgency flag (performance)
@@ -83,7 +85,11 @@ class AdaptiveExecutionMixin:
         Agents must call super().execute() or implement mode-specific logic.
         """
         # Build enriched context
-        base_context = await self._build_execution_context(ctx) if hasattr(self, "_build_execution_context") else {}
+        base_context = (
+            await self._build_execution_context(ctx)
+            if hasattr(self, "_build_execution_context")
+            else {}
+        )
         full_context = {**base_context, **kwargs}
 
         # Select mode
@@ -126,11 +132,7 @@ class AdaptiveExecutionMixin:
     async def _execute_minimal(self, ctx: Any, **context: dict[str, Any]) -> Any:
         """Bare minimum — skip non-essential work to preserve resources."""
         self.Logger.warning("Minimal mode: skipping non-critical operations")
-        return {
-            "mode": "minimal",
-            "result": "skipped_due_to_load",
-            "preserved_resources": True
-        }
+        return {"mode": "minimal", "result": "skipped_due_to_load", "preserved_resources": True}
 
     def force_mode(self, mode: str) -> None:
         """Emergency override — for testing or containment."""

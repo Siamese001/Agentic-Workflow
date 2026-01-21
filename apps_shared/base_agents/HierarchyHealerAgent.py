@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, state, workflow
@@ -69,7 +68,9 @@ class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
             print("   [INFO] Hierarchy healing disabled (healing_enabled=False)")
             return results
 
-        print("\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[*] L6 HIERARCHY ENFORCEMENT: Healing non-approved subfolders...")
+        print(
+            "\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[*] L6 HIERARCHY ENFORCEMENT: Healing non-approved subfolders..."
+        )
 
         # Get approved L1 folders for agentic_core from SSOT
         approved_l1 = set(SOVEREIGN_REGISTRY["agentic_core"]["subfolders"])
@@ -80,7 +81,8 @@ class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
 
         # Phase 1: Find all non-approved L1 folders
         actual_l1 = {
-            p.name for p in agentic_core_path.iterdir()
+            p.name
+            for p in agentic_core_path.iterdir()
             if p.is_dir() and not p.name.startswith(".") and p.name not in self.protected_folders
         }
         non_approved_l1 = actual_l1 - approved_l1
@@ -92,13 +94,17 @@ class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
         for l1_name in approved_l1:
             self._heal_l2_folders(l1_name, agentic_core_path, results)
 
-        print(f"   [HIERARCHY HEALING COMPLETE] {results['files_relocated']} files relocated, {results['folders_removed']} folders removed")
+        print(
+            f"   [HIERARCHY HEALING COMPLETE] {results['files_relocated']} files relocated, {results['folders_removed']} folders removed"
+        )
         if results["errors"]:
             print(f"   [!] {len(results['errors'])} errors occurred during healing")
 
         return results
 
-    def _heal_l1_folder(self, bad_l1: str, agentic_core_path: Path, approved_l1: set, results: dict[str, Any]) -> None:
+    def _heal_l1_folder(
+        self, bad_l1: str, agentic_core_path: Path, approved_l1: set, results: dict[str, Any]
+    ) -> None:
         """Heal non-approved L1 folder by relocating files and removing empty folder."""
         bad_path = agentic_core_path / bad_l1
         print(f"   [!] Non-approved L1 folder: {bad_l1}")
@@ -116,7 +122,9 @@ class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
         # Try to remove empty folder tree
         self._cleanup_empty_folder(bad_path, bad_l1, results)
 
-    def _relocate_file_to_l1(self, py_file: Path, target_l1: str, target_path: Path, results: dict[str, Any]) -> None:
+    def _relocate_file_to_l1(
+        self, py_file: Path, target_l1: str, target_path: Path, results: dict[str, Any]
+    ) -> None:
         """Relocate a single file to approved L1 folder."""
         try:
             target_l2 = get_best_target_l2(target_l1, py_file.name)
@@ -133,7 +141,9 @@ class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
         except Exception as e:
             results["errors"].append(f"{py_file.name}: {e}")
 
-    def _heal_l2_folders(self, l1_name: str, agentic_core_path: Path, results: dict[str, Any]) -> None:
+    def _heal_l2_folders(
+        self, l1_name: str, agentic_core_path: Path, results: dict[str, Any]
+    ) -> None:
         """Heal non-approved L2 folders within an approved L1 folder."""
         l1_path = agentic_core_path / l1_name
         if not l1_path.exists():
@@ -144,7 +154,8 @@ class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
             return  # No L2 enforcement for this L1
 
         actual_l2 = {
-            p.name for p in l1_path.iterdir()
+            p.name
+            for p in l1_path.iterdir()
             if p.is_dir() and not p.name.startswith(".") and p.name not in self.protected_folders
         }
         non_approved_l2 = actual_l2 - approved_l2
@@ -152,7 +163,9 @@ class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
         for bad_l2 in non_approved_l2:
             self._heal_single_l2_folder(l1_name, l1_path, bad_l2, results)
 
-    def _heal_single_l2_folder(self, l1_name: str, l1_path: Path, bad_l2: str, results: dict[str, Any]) -> None:
+    def _heal_single_l2_folder(
+        self, l1_name: str, l1_path: Path, bad_l2: str, results: dict[str, Any]
+    ) -> None:
         """Heal a single non-approved L2 folder."""
         bad_path = l1_path / bad_l2
         print(f"   [!] Non-approved L2 folder: {l1_name}/{bad_l2}")
@@ -180,7 +193,9 @@ class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
         # Try to remove empty folder
         self._cleanup_empty_folder(bad_path, f"{l1_name}/{bad_l2}", results)
 
-    def _cleanup_empty_folder(self, folder_path: Path, folder_label: str, results: dict[str, Any]) -> None:
+    def _cleanup_empty_folder(
+        self, folder_path: Path, folder_label: str, results: dict[str, Any]
+    ) -> None:
         """Remove empty folder tree after relocation."""
         try:
             self._remove_empty_dirs(folder_path)
@@ -207,7 +222,8 @@ class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
 
         # Then check if this directory is now empty
         remaining = [
-            p for p in path.iterdir()
+            p
+            for p in path.iterdir()
             if p.name not in {"__pycache__", "__init__.py", ".gitkeep"}
             and not p.name.startswith(".")
         ]
@@ -275,7 +291,11 @@ class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
                 if i > 50:
                     break
 
-            new_lines = lines[:insert_idx] + ["", marker_comment, dated_comment, purge_pattern, ""] + lines[insert_idx:]
+            new_lines = (
+                lines[:insert_idx]
+                + ["", marker_comment, dated_comment, purge_pattern, ""]
+                + lines[insert_idx:]
+            )
             new_content = "\n".join(new_lines).rstrip() + "\n"
 
             gitignore_path.write_text(new_content, encoding="utf-8")
@@ -313,7 +333,7 @@ class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
 
         for root, dirs, files in os.walk(self.project_root):
             # Skip protected folders entirely
-            dirs[:] = [d for d in dirs if d not in self.protected_folders and not d.startswith('.')]
+            dirs[:] = [d for d in dirs if d not in self.protected_folders and not d.startswith(".")]
             for file in files:
                 if scan_count >= MAX_PURGE_SCAN:
                     break
@@ -343,7 +363,7 @@ class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
 
                 # [BUG FIX 2025-12-31] Skip files that are already archived
                 # Prevents infinite loop: file.json → file.json.archived → file.json.archived.archived...
-                archive_markers = ('.archived', '.backup', '.old', '.copy')
+                archive_markers = (".archived", ".backup", ".old", ".copy")
                 if any(file_path.name.lower().endswith(marker) for marker in archive_markers):
                     continue
                 if any(marker in file_path.name.lower() for marker in archive_markers):
@@ -380,46 +400,46 @@ class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
         result = super().heal_repository(dry_run=dry_run, **kwargs)
 
         # === ZOMBIE VACCINATION: Wired orphaned methods ===
-        if hasattr(self, 'heal_hierarchy_violations') and not dry_run and execute:
+        if hasattr(self, "heal_hierarchy_violations") and not dry_run and execute:
             try:
                 mutation_result = self.heal_hierarchy_violations()
                 if mutation_result:
-                    metrics['fixed'] += mutation_result if isinstance(mutation_result, int) else 1
+                    metrics["fixed"] += mutation_result if isinstance(mutation_result, int) else 1
             except Exception as e:
-                Logger.error(f'Error in heal_hierarchy_violations: {e}')
-                metrics['errors'] += 1
-        if hasattr(self, '_heal_l1_folder') and not dry_run and execute:
+                Logger.error(f"Error in heal_hierarchy_violations: {e}")
+                metrics["errors"] += 1
+        if hasattr(self, "_heal_l1_folder") and not dry_run and execute:
             try:
                 mutation_result = self._heal_l1_folder()
                 if mutation_result:
-                    metrics['fixed'] += mutation_result if isinstance(mutation_result, int) else 1
+                    metrics["fixed"] += mutation_result if isinstance(mutation_result, int) else 1
             except Exception as e:
-                Logger.error(f'Error in _heal_l1_folder: {e}')
-                metrics['errors'] += 1
-        if hasattr(self, '_heal_l2_folders') and not dry_run and execute:
+                Logger.error(f"Error in _heal_l1_folder: {e}")
+                metrics["errors"] += 1
+        if hasattr(self, "_heal_l2_folders") and not dry_run and execute:
             try:
                 mutation_result = self._heal_l2_folders()
                 if mutation_result:
-                    metrics['fixed'] += mutation_result if isinstance(mutation_result, int) else 1
+                    metrics["fixed"] += mutation_result if isinstance(mutation_result, int) else 1
             except Exception as e:
-                Logger.error(f'Error in _heal_l2_folders: {e}')
-                metrics['errors'] += 1
-        if hasattr(self, '_heal_single_l2_folder') and not dry_run and execute:
+                Logger.error(f"Error in _heal_l2_folders: {e}")
+                metrics["errors"] += 1
+        if hasattr(self, "_heal_single_l2_folder") and not dry_run and execute:
             try:
                 mutation_result = self._heal_single_l2_folder()
                 if mutation_result:
-                    metrics['fixed'] += mutation_result if isinstance(mutation_result, int) else 1
+                    metrics["fixed"] += mutation_result if isinstance(mutation_result, int) else 1
             except Exception as e:
-                Logger.error(f'Error in _heal_single_l2_folder: {e}')
-                metrics['errors'] += 1
-        if hasattr(self, '_cleanup_empty_folder') and not dry_run and execute:
+                Logger.error(f"Error in _heal_single_l2_folder: {e}")
+                metrics["errors"] += 1
+        if hasattr(self, "_cleanup_empty_folder") and not dry_run and execute:
             try:
                 mutation_result = self._cleanup_empty_folder()
                 if mutation_result:
-                    metrics['fixed'] += mutation_result if isinstance(mutation_result, int) else 1
+                    metrics["fixed"] += mutation_result if isinstance(mutation_result, int) else 1
             except Exception as e:
-                Logger.error(f'Error in _cleanup_empty_folder: {e}')
-                metrics['errors'] += 1
+                Logger.error(f"Error in _cleanup_empty_folder: {e}")
+                metrics["errors"] += 1
         # === END VACCINATION ===
 
         return {"healed": 0, "skipped": 0, "parent": result}

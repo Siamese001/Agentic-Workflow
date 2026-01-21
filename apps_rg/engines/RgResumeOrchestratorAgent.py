@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, prompt, state
@@ -8,9 +7,9 @@ from __future__ import annotations
 
 import logging
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
@@ -74,16 +73,33 @@ class RgResumeOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerM
 
     def _record_hop(self, hop_id: str, results: list = None) -> None:
         """Record a hop Checkpoint."""
-        status = "COMPLETED" if not results or all(getattr(r, 'passed', True) for r in results) else "FAILED"
+        status = (
+            "COMPLETED"
+            if not results or all(getattr(r, "passed", True) for r in results)
+            else "FAILED"
+        )
         self.hop_checkpoints.append({"hop_id": hop_id, "status": status})
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L3 orchestration agent - operational only."""
         if _call_path is None:
             _call_path = set()
-        super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+        super().heal_repository(
+            dry_run=dry_run,
+            execute=execute,
+            depth=depth,
+            max_depth=max_depth,
+            _call_path=_call_path,
+        )
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
             return {"errors": 1, "cycle_detected": True}

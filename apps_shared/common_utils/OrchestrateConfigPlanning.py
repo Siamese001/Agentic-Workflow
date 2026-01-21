@@ -13,16 +13,20 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
+
 class ConfigEnvironment(Enum):
     """Deployment environments for configuration."""
+
     DEVELOPMENT = "development"
     TESTING = "testing"
     STAGING = "staging"
     PRODUCTION = "production"
     DR = "disaster_recovery"
 
+
 class ConfigFormat(Enum):
     """Configuration file formats."""
+
     JSON = "json"
     YAML = "yaml"
     TOML = "toml"
@@ -30,17 +34,21 @@ class ConfigFormat(Enum):
     ENV = "env"
     XML = "xml"
 
+
 class DeploymentStrategy(Enum):
     """Configuration deployment strategies."""
+
     BLUE_GREEN = "blue_green"
     CANARY = "canary"
     ROLLING = "rolling"
     ATOMIC = "atomic"
     SHADOW = "shadow"
 
+
 @dataclass
 class ConfigDefinition:
     """Definition of a configuration item."""
+
     name: str
     format: ConfigFormat
     environment: ConfigEnvironment
@@ -50,9 +58,11 @@ class ConfigDefinition:
     description: str | None = None
     tags: list[str] = field(default_factory=list)
 
+
 @dataclass
 class ConfigValidationRule:
     """Rule for validating configuration."""
+
     name: str
     path: str  # JSON path or similar
     rule_type: str  # required, pattern, range, enum
@@ -60,9 +70,11 @@ class ConfigValidationRule:
     message: str
     severity: str = "error"
 
+
 @dataclass
 class DeploymentPlan:
     """Plan for configuration deployment."""
+
     strategy: DeploymentStrategy
     target_environments: list[ConfigEnvironment]
     rollout_percentage: float = 100.0
@@ -70,9 +82,11 @@ class DeploymentPlan:
     rollback_plan: str | None = None
     dependencies: list[str] = field(default_factory=list)
 
+
 @dataclass
 class ConfigPlanningConfig:
     """Configuration for config planning orchestrator."""
+
     enable_validation: bool = True
     enable_versioning: bool = True
     enable_encryption: bool = False
@@ -80,9 +94,11 @@ class ConfigPlanningConfig:
     max_config_size: int = 1048576  # 1MB
     log_level: str = "INFO"
 
+
 @dataclass
 class ConfigPlanningResult:
     """Result of config planning orchestration."""
+
     success: bool
     validated_configs: list[ConfigDefinition] = field(default_factory=list)
     deployment_plan: DeploymentPlan | None = None
@@ -90,6 +106,7 @@ class ConfigPlanningResult:
     warnings: list[str] = field(default_factory=list)
     errors: list[str] = field(default_factory=list)
     metadata: dict[str, Any] = field(default_factory=dict)
+
 
 class ConfigPlanningOrchestrator:
     """Orchestrator for planning configuration operations."""
@@ -108,7 +125,9 @@ class ConfigPlanningOrchestrator:
         Returns:
             ConfigPlanningResult: Complete planning result with validated configs and deployment plan
         """
-        self.logger.info(f"Starting config planning for: {config_request.get('service', 'unknown')}")
+        self.logger.info(
+            f"Starting config planning for: {config_request.get('service', 'unknown')}"
+        )
 
         try:
             # Validate input request
@@ -134,11 +153,13 @@ class ConfigPlanningOrchestrator:
                     "planned_at": datetime.utcnow().isoformat(),
                     "service": config_request.get("service"),
                     "config_count": len(validated_configs),
-                    "orchestrator": "ConfigPlanningOrchestrator"
-                }
+                    "orchestrator": "ConfigPlanningOrchestrator",
+                },
             )
 
-            self.logger.info(f"Successfully planned configuration: {len(validated_configs)} configs validated")
+            self.logger.info(
+                f"Successfully planned configuration: {len(validated_configs)} configs validated"
+            )
             return result
 
         except Exception as e:
@@ -148,8 +169,8 @@ class ConfigPlanningOrchestrator:
                 errors=[str(e)],
                 metadata={
                     "failed_at": datetime.utcnow().isoformat(),
-                    "orchestrator": "ConfigPlanningOrchestrator"
-                }
+                    "orchestrator": "ConfigPlanningOrchestrator",
+                },
             )
 
     def _validate_request(self, request: dict[str, Any]) -> None:
@@ -178,7 +199,7 @@ class ConfigPlanningOrchestrator:
             "staging": ConfigEnvironment.STAGING,
             "prod": ConfigEnvironment.PRODUCTION,
             "production": ConfigEnvironment.PRODUCTION,
-            "dr": ConfigEnvironment.DR
+            "dr": ConfigEnvironment.DR,
         }
 
         environment = env_mapping.get(environment_str.lower(), ConfigEnvironment.DEVELOPMENT)
@@ -193,13 +214,15 @@ class ConfigPlanningOrchestrator:
                     version=raw_config.get("version", "1.0.0"),
                     namespace=raw_config.get("namespace"),
                     description=raw_config.get("description"),
-                    tags=raw_config.get("tags", [])
+                    tags=raw_config.get("tags", []),
                 )
                 configs.append(config)
 
         return configs
 
-    def _create_deployment_plan(self, request: dict[str, Any], configs: list[ConfigDefinition]) -> DeploymentPlan | None:
+    def _create_deployment_plan(
+        self, request: dict[str, Any], configs: list[ConfigDefinition]
+    ) -> DeploymentPlan | None:
         """Create deployment plan for configurations."""
         if not configs:
             return None
@@ -213,7 +236,7 @@ class ConfigPlanningOrchestrator:
             "canary": DeploymentStrategy.CANARY,
             "rolling": DeploymentStrategy.ROLLING,
             "atomic": DeploymentStrategy.ATOMIC,
-            "shadow": DeploymentStrategy.SHADOW
+            "shadow": DeploymentStrategy.SHADOW,
         }
 
         strategy = strategy_mapping.get(strategy_str.lower(), DeploymentStrategy.ATOMIC)
@@ -231,7 +254,7 @@ class ConfigPlanningOrchestrator:
                 "staging": ConfigEnvironment.STAGING,
                 "prod": ConfigEnvironment.PRODUCTION,
                 "production": ConfigEnvironment.PRODUCTION,
-                "dr": ConfigEnvironment.DR
+                "dr": ConfigEnvironment.DR,
             }
             env = env_mapping.get(env_str.lower(), ConfigEnvironment.DEVELOPMENT)
             target_envs.append(env)
@@ -242,7 +265,7 @@ class ConfigPlanningOrchestrator:
             rollout_percentage=deployment_config.get("rollout_percentage", 100.0),
             validation_steps=deployment_config.get("validation_steps", []),
             rollback_plan=deployment_config.get("rollback_plan"),
-            dependencies=deployment_config.get("dependencies", [])
+            dependencies=deployment_config.get("dependencies", []),
         )
 
     def _collect_validation_errors(self, request: dict[str, Any]) -> list[str]:
@@ -264,23 +287,23 @@ class ConfigPlanningOrchestrator:
             # Check config size
             content_size = len(str(config.get("content", {})))
             if content_size > self.config.max_config_size:
-                errors.append(f"Config exceeds maximum size: {content_size} > {self.config.max_config_size}")
+                errors.append(
+                    f"Config exceeds maximum size: {content_size} > {self.config.max_config_size}"
+                )
 
         return errors
 
+
 # Factory function for easy instantiation
 def create_config_planning_orchestrator(
-    enable_validation: bool = True,
-    enable_versioning: bool = True,
-    **kwargs: object
+    enable_validation: bool = True, enable_versioning: bool = True, **kwargs: object
 ) -> ConfigPlanningOrchestrator:
     """Create a configured config planning orchestrator."""
     config = ConfigPlanningConfig(
-        enable_validation=enable_validation,
-        enable_versioning=enable_versioning,
-        **kwargs
+        enable_validation=enable_validation, enable_versioning=enable_versioning, **kwargs
     )
     return ConfigPlanningOrchestrator(config)
+
 
 # Convenience function for direct usage
 def plan_config_deployment(
@@ -288,7 +311,7 @@ def plan_config_deployment(
     environment: str,
     configs: list[dict[str, Any]],
     deployment: dict[str, Any] | None = None,
-    config: dict[str, Any] | None = None
+    config: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Plan configuration deployment from simple parameters.
 
@@ -307,7 +330,7 @@ def plan_config_deployment(
         "service": service,
         "environment": environment,
         "configs": configs,
-        "deployment": deployment or {}
+        "deployment": deployment or {},
     }
 
     # Create orchestrator and execute
@@ -327,7 +350,7 @@ def plan_config_deployment(
                 "version": c.version,
                 "namespace": c.namespace,
                 "description": c.description,
-                "tags": c.tags
+                "tags": c.tags,
             }
             for c in result.validated_configs
         ],
@@ -337,13 +360,16 @@ def plan_config_deployment(
             "rollout_percentage": result.deployment_plan.rollout_percentage,
             "validation_steps": result.deployment_plan.validation_steps,
             "rollback_plan": result.deployment_plan.rollback_plan,
-            "dependencies": result.deployment_plan.dependencies
-        } if result.deployment_plan else None,
+            "dependencies": result.deployment_plan.dependencies,
+        }
+        if result.deployment_plan
+        else None,
         "validation_errors": result.validation_errors,
         "warnings": result.warnings,
         "errors": result.errors,
-        "metadata": result.metadata
+        "metadata": result.metadata,
     }
+
 
 if __name__ == "__main__":
     # Example usage
@@ -352,7 +378,7 @@ if __name__ == "__main__":
             "name": "database_config",
             "format": "json",
             "content": {"host": "localhost", "port": 5432},
-            "version": "1.0.0"
+            "version": "1.0.0",
         }
     ]
 
@@ -360,5 +386,5 @@ if __name__ == "__main__":
         service="user_service",
         environment="production",
         configs=example_configs,
-        deployment={"strategy": "blue_green"}
+        deployment={"strategy": "blue_green"},
     )

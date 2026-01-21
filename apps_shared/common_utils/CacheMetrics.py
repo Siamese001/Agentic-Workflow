@@ -8,6 +8,7 @@ Tracks:
 
 Integrates with dashboard for visibility.
 """
+
 from __future__ import annotations
 
 import threading
@@ -25,6 +26,7 @@ class CacheMetrics:
         metrics.record("redis_get", hit=True, latency_ms=1.5)
         stats = metrics.get_stats()
     """
+
     _instance = None
     _lock = threading.Lock()
 

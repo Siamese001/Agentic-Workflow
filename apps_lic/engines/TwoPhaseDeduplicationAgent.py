@@ -26,6 +26,7 @@ Phase B (Deep SSOT Duplicate Check):
 Territory: agentic_core/L5_safety/guardrails/
 Canon Key 51 Compliance: Includes heal_repository() method
 """
+
 from __future__ import annotations
 
 import ast
@@ -57,9 +58,11 @@ Logger = logging.getLogger(__name__)
 # DATA CLASSES
 # ============================================================================
 
+
 @dataclass
 class ShallowDuplicate:
     """Phase A: Identity collision (exact filename+path duplicate)."""
+
     filename: str
     hash: str
     size: int
@@ -72,6 +75,7 @@ class ShallowDuplicate:
 @dataclass
 class DeepDuplicate:
     """Phase B: Logic/code duplicate (different names, same structure)."""
+
     ast_fingerprint: str
     similarity_score: float
     paths: list[Path]
@@ -84,6 +88,7 @@ class DeepDuplicate:
 @dataclass
 class DeduplicationReport:
     """Combined report from both phases."""
+
     phase_a_duplicates: list[ShallowDuplicate] = field(default_factory=list)
     phase_b_duplicates: list[DeepDuplicate] = field(default_factory=list)
     total_identity_collisions: int = 0
@@ -98,6 +103,7 @@ class DeduplicationReport:
 # MAIN AGENT
 # ============================================================================
 
+
 class TwoPhaseDeduplicationAgent(HealerMixin, MCPHardenedMixin):
     """
     Two-Phase Deduplication Agent for improved duplicate detection signal.
@@ -111,10 +117,19 @@ class TwoPhaseDeduplicationAgent(HealerMixin, MCPHardenedMixin):
     """
 
     # Supported file extensions
-    SUPPORTED_EXTENSIONS = {'.py', '.js', '.ts', '.html', '.css', '.json', '.yaml', '.yml'}
+    SUPPORTED_EXTENSIONS = {".py", ".js", ".ts", ".html", ".css", ".json", ".yaml", ".yml"}
 
     # Directories to exclude
-    EXCLUDE_DIRS = {'archives', '__pycache__', '.git', 'node_modules', 'venv', '.venv', 'dist', 'build'}
+    EXCLUDE_DIRS = {
+        "archives",
+        "__pycache__",
+        ".git",
+        "node_modules",
+        "venv",
+        ".venv",
+        "dist",
+        "build",
+    }
 
     # Canonical location priority (higher = more canonical)
     CANONICAL_PRIORITY = {
@@ -124,8 +139,8 @@ class TwoPhaseDeduplicationAgent(HealerMixin, MCPHardenedMixin):
         L2_EXECUTION_DIR: 70,
         L1_COGNITION_DIR: 60,
         L0_MAINTENANCE_DIR: 50,
-        'agentic_core/utils': 40,
-        'agentic_core/config': 30,
+        "agentic_core/utils": 40,
+        "agentic_core/config": 30,
     }
 
     def __init__(self, project_root: Path | None = None) -> None:
@@ -195,7 +210,7 @@ class TwoPhaseDeduplicationAgent(HealerMixin, MCPHardenedMixin):
                     paths=paths,
                     canonical_path=canonical,
                     duplicate_paths=dupes,
-                    rationale=rationale
+                    rationale=rationale,
                 )
                 duplicates.append(duplicate)
 
@@ -204,7 +219,9 @@ class TwoPhaseDeduplicationAgent(HealerMixin, MCPHardenedMixin):
         self._report.files_scanned = files_scanned
         self._report.phase_a_complete = True
 
-        Logger.info(f"[PHASE A] Found {len(duplicates)} identity collisions in {files_scanned} files")
+        Logger.info(
+            f"[PHASE A] Found {len(duplicates)} identity collisions in {files_scanned} files"
+        )
         return duplicates
 
     # ========================================================================
@@ -232,17 +249,17 @@ class TwoPhaseDeduplicationAgent(HealerMixin, MCPHardenedMixin):
         Logger.info("[PHASE B] Starting Deep SSOT Duplicate Check (Logic Duplicates)...")
 
         # Phase B only supports Python files for AST analysis
-        file_types = {'.py'}
+        file_types = {".py"}
 
         # Generate AST fingerprints for all Python files
         ast_fingerprints: dict[str, list[tuple[Path, str]]] = defaultdict(list)
 
         for file_path in self._iter_files(file_types):
             try:
-                content = file_path.read_text(encoding='utf-8', errors='ignore')
+                content = file_path.read_text(encoding="utf-8", errors="ignore")
 
                 # Skip small files
-                if content.count('\n') < self.min_lines:
+                if content.count("\n") < self.min_lines:
                     continue
 
                 # Generate AST fingerprint
@@ -273,7 +290,7 @@ class TwoPhaseDeduplicationAgent(HealerMixin, MCPHardenedMixin):
                         canonical_path=canonical,
                         duplicate_paths=dupes,
                         code_snippet=snippet,
-                        rationale=rationale
+                        rationale=rationale,
                     )
                     duplicates.append(duplicate)
 
@@ -295,7 +312,7 @@ class TwoPhaseDeduplicationAgent(HealerMixin, MCPHardenedMixin):
             if not root_path.exists():
                 continue
 
-            for file_path in root_path.rglob('*'):
+            for file_path in root_path.rglob("*"):
                 if not file_path.is_file():
                     continue
 
@@ -319,6 +336,7 @@ class TwoPhaseDeduplicationAgent(HealerMixin, MCPHardenedMixin):
         Returns:
             Tuple of (canonical_path, duplicate_paths, rationale)
         """
+
         def get_priority(path: Path) -> tuple[int, int, str]:
             rel_path = str(path.relative_to(self.project_root))
 
@@ -363,19 +381,19 @@ class TwoPhaseDeduplicationAgent(HealerMixin, MCPHardenedMixin):
         even when variable names and constants differ.
         """
         if isinstance(node, ast.Name):
-            return 'VAR'
+            return "VAR"
         elif isinstance(node, ast.Constant):
-            return f'CONST_{type(node.value).__name__}'
+            return f"CONST_{type(node.value).__name__}"
         elif isinstance(node, ast.FunctionDef):
             # Keep function structure but anonymize name
-            body = '|'.join(self._normalize_ast(child) for child in node.body)
-            return f'FUNC({body})'
+            body = "|".join(self._normalize_ast(child) for child in node.body)
+            return f"FUNC({body})"
         elif isinstance(node, ast.ClassDef):
-            body = '|'.join(self._normalize_ast(child) for child in node.body)
-            return f'CLASS({body})'
+            body = "|".join(self._normalize_ast(child) for child in node.body)
+            return f"CLASS({body})"
 
         children = [self._normalize_ast(child) for child in ast.iter_child_nodes(node)]
-        return f'{type(node).__name__}({"|".join(children)})' if children else type(node).__name__
+        return f"{type(node).__name__}({'|'.join(children)})" if children else type(node).__name__
 
     # ========================================================================
     # HEALING INTERFACE
@@ -469,7 +487,9 @@ class TwoPhaseDeduplicationAgent(HealerMixin, MCPHardenedMixin):
             }
             results["recommendations"].append(recommendation)
 
-            Logger.warning(f"   [!] LOGIC DUPLICATE: {dup.canonical_path.name} has {len(dup.duplicate_paths)} structural duplicates")
+            Logger.warning(
+                f"   [!] LOGIC DUPLICATE: {dup.canonical_path.name} has {len(dup.duplicate_paths)} structural duplicates"
+            )
 
         return results
 
@@ -483,7 +503,7 @@ class TwoPhaseDeduplicationAgent(HealerMixin, MCPHardenedMixin):
         max_depth: int = 3,
         _call_path: set[str] | None = None,
         phase: str = "both",
-        **kwargs
+        **kwargs,
     ) -> dict[str, Any]:
         """
         Execute two-phase deduplication healing.
@@ -494,7 +514,11 @@ class TwoPhaseDeduplicationAgent(HealerMixin, MCPHardenedMixin):
         """
         # CRITICAL: Chain up to HealerMixin for telemetry and safety guards
         parent_results = super().heal_repository(
-            dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path
+            dry_run=dry_run,
+            execute=execute,
+            depth=depth,
+            max_depth=max_depth,
+            _call_path=_call_path,
         )
 
         if _call_path is None:
@@ -542,6 +566,7 @@ class TwoPhaseDeduplicationAgent(HealerMixin, MCPHardenedMixin):
 # ============================================================================
 # FACTORY FUNCTION
 # ============================================================================
+
 
 def get_two_phase_deduplication_agent(project_root: Path = None):
     """Factory function for TwoPhaseDeduplicationAgent."""

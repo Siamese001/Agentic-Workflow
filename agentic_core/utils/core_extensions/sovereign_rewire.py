@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-'''Brief description of functionality and purpose.'''
+"""Brief description of functionality and purpose."""
 
-'Brief description of functionality and purpose.'
+"Brief description of functionality and purpose."
 import re
 from pathlib import Path
 from typing import Any
@@ -11,32 +11,39 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENTIC_CORE_DIR,
 )
 
-root: Any = Path('C:/Git/Agentic-Workflow')
+root: Any = Path("C:/Git/Agentic-Workflow")
 core: Any = ROOT / AGENTIC_CORE_DIR
-rewire_rules: Any = [('from agentic_core\\.utils import', 'from agentic_core.utils.P1_core import'), ('from agentic_core\\.memory import', 'from agentic_core.memory.P1_core import')]
+rewire_rules: Any = [
+    ("from agentic_core\\.utils import", "from agentic_core.utils.P1_core import"),
+    ("from agentic_core\\.memory import", "from agentic_core.memory.P1_core import"),
+]
+
 
 def rewire_synapses() -> Any:
     """Brief description of functionality and purpose."""
-    print('[*] STARTING GLOBAL SYNAPTIC REWIRE...')
+    print("[*] STARTING GLOBAL SYNAPTIC REWIRE...")
     fixed_count: Any = 0
     # Phase 6.8: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_python_files
+
     for py_file in get_python_files(ROOT):
-        if 'sovereign_rewire' in py_file.name:
+        if "sovereign_rewire" in py_file.name:
             continue
         try:
-            content: Any = py_file.read_text(encoding='utf-8')
+            content: Any = py_file.read_text(encoding="utf-8")
             original: Any = content
             for pattern, replacement in REWIRE_RULES:
                 content: Any = re.sub(pattern, replacement, content)
-            if 'P1_core' in str(py_file):
-                content: Any = content.replace('from ..', 'from agentic_core.')
+            if "P1_core" in str(py_file):
+                content: Any = content.replace("from ..", "from agentic_core.")
             if content != original:
-                py_file.write_text(content, encoding='utf-8')
-                print(f'  [✓] Rewired: {py_file.relative_to(ROOT)}')
+                py_file.write_text(content, encoding="utf-8")
+                print(f"  [✓] Rewired: {py_file.relative_to(ROOT)}")
                 fixed_count += 1
         except Exception as e:
-            print(f'  [!] Failed {py_file.name}: {e}')
-    print(f'\n[OK] REWIRE COMPLETE. {fixed_count} files reconnected to the Sovereign Brain.')
-if __name__ == '__main__':
+            print(f"  [!] Failed {py_file.name}: {e}")
+    print(f"\n[OK] REWIRE COMPLETE. {fixed_count} files reconnected to the Sovereign Brain.")
+
+
+if __name__ == "__main__":
     rewire_synapses()

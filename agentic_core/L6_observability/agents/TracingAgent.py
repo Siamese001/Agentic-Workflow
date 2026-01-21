@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, prompt, state, validator, workflow
@@ -57,7 +56,7 @@ class Span:
         trace_id: str,
         span_id: str,
         parent_span_id: str | None = None,
-        attributes: dict[str, Any] | None = None
+        attributes: dict[str, Any] | None = None,
     ):
         self.name = name
         self.trace_id = trace_id
@@ -83,7 +82,7 @@ class Span:
         event = {
             "name": name,
             "timestamp": datetime.now().isoformat(timespec="milliseconds"),
-            "attributes": attributes or {}
+            "attributes": attributes or {},
         }
         self.events.append(event)
 
@@ -109,7 +108,7 @@ class Span:
             "duration_ms": duration_ms,
             "status": self.status,
             "attributes": self.attributes,
-            "events": self.events
+            "events": self.events,
         }
 
 
@@ -136,7 +135,7 @@ class TracingAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         project_root: Path | None = None,
         export_path: Path | None = None,
         timestamped_exports: bool = True,
-        auto_export_on_mission_end: bool = True
+        auto_export_on_mission_end: bool = True,
     ):
         self.project_root = project_root.resolve() if project_root else None
         self._lock = Lock()
@@ -152,28 +151,49 @@ class TracingAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         self._ensure_export_dir()
 
         if self.export_path:
-            Logger.info(f"[TracingAgent] File export enabled: {self.export_path} (timestamped={timestamped_exports})")
+            Logger.info(
+                f"[TracingAgent] File export enabled: {self.export_path} (timestamped={timestamped_exports})"
+            )
 
         # Sovereign tracing Provider setup
         self.tracer = self._setup_sovereign_tracer()
 
     def _setup_sovereign_tracer(self) -> Any:
         """Setup mock tracer + optional OTLP export."""
+
         # 1. Internal Mock Provider (Zero-Dependency Fallback)
         class MockSpan:
             """MockSpan agent for autonomous operations."""
-            def __enter__(self): return self
-            def __exit__(self, *args): pass
-            def set_attribute(self, *args) -> Any: pass
-            def set_status(self, *args) -> Any: pass
-            def record_exception(self, *args) -> Any: pass
-            def add_event(self, *args, **kwargs) -> Any: pass
-            def end(self) -> Any: pass
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *args):
+                pass
+
+            def set_attribute(self, *args) -> Any:
+                pass
+
+            def set_status(self, *args) -> Any:
+                pass
+
+            def record_exception(self, *args) -> Any:
+                pass
+
+            def add_event(self, *args, **kwargs) -> Any:
+                pass
+
+            def end(self) -> Any:
+                pass
 
         class MockTracer:
             """MockTracer agent for autonomous operations."""
-            def start_as_current_span(self, name) -> Any: return MockSpan()
-            def start_span(self, name) -> Any: return MockSpan()
+
+            def start_as_current_span(self, name) -> Any:
+                return MockSpan()
+
+            def start_span(self, name) -> Any:
+                return MockSpan()
 
         tracer = MockTracer()
 
@@ -188,10 +208,9 @@ class TracingAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
 
             endpoint = os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT")
             if endpoint:
-                resource = Resource(attributes={
-                    SERVICE_NAME: "sovereign-agentic",
-                    SERVICE_VERSION: "v2.9"
-                })
+                resource = Resource(
+                    attributes={SERVICE_NAME: "sovereign-agentic", SERVICE_VERSION: "v2.9"}
+                )
                 Provider = TracerProvider(resource=resource)
                 processor = BatchSpanProcessor(OTLPSpanExporter(endpoint=endpoint, insecure=True))
                 Provider.add_span_processor(processor)
@@ -199,7 +218,9 @@ class TracingAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
                 tracer = otel_trace.get_tracer("sovereign.tracing")
                 Logger.info(f"[TracingAgent] OTLP export enabled: {endpoint}")
             else:
-                Logger.info("[TracingAgent] Using mock Provider (OTEL_EXPORTER_OTLP_ENDPOINT not set)")
+                Logger.info(
+                    "[TracingAgent] Using mock Provider (OTEL_EXPORTER_OTLP_ENDPOINT not set)"
+                )
         except Exception as e:
             Logger.warning(f"[TracingAgent] OTLP setup failed — using mock tracer: {e}")
 
@@ -216,7 +237,9 @@ class TracingAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
             try:
                 self.export_path.mkdir(parents=True, exist_ok=True)
             except Exception as e:
-                Logger.error(f"[TracingAgent] Failed to create export directory {self.export_path}: {e}")
+                Logger.error(
+                    f"[TracingAgent] Failed to create export directory {self.export_path}: {e}"
+                )
                 self.export_path = None
 
     def _get_export_filepath(self, trace_id: str | None = None) -> Path | None:
@@ -227,7 +250,11 @@ class TracingAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         if self.timestamped_exports:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")[:-3]
             filename = f"trace_{timestamp}_{trace_id or 'batch'}.json"
-            return self.export_path / filename if self.export_path.is_dir() else self.export_path.parent / filename
+            return (
+                self.export_path / filename
+                if self.export_path.is_dir()
+                else self.export_path.parent / filename
+            )
         else:
             return self.export_path
 
@@ -261,7 +288,9 @@ class TracingAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
                 if not self.timestamped_exports:
                     # Append with comma separation for JSON array
                     if filepath.exists() and filepath.stat().st_size > 0:
-                        f.write(",\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\n")
+                        f.write(
+                            ",\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\n"
+                        )
                     else:
                         f.write("[\n")
                 json.dump(export_data[0] if trace_id else export_data, f, indent=2)
@@ -283,7 +312,9 @@ class TracingAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
             probability: 0.0 (none) to 1.0 (all). Values outside clamped.
         """
         if not 0.0 <= probability <= 1.0:
-            Logger.warning(f"[TracingAgent] Sampling probability {probability} out of range, clamping to [0.0, 1.0]")
+            Logger.warning(
+                f"[TracingAgent] Sampling probability {probability} out of range, clamping to [0.0, 1.0]"
+            )
             probability = max(0.0, min(1.0, probability))
 
         with self._lock:
@@ -303,7 +334,7 @@ class TracingAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         name: str,
         trace_id: str | None = None,
         parent_span_id: str | None = None,
-        attributes: dict[str, Any] | None = None
+        attributes: dict[str, Any] | None = None,
     ) -> Any:
         """
         Context manager for creating and completing a Span.
@@ -328,8 +359,13 @@ class TracingAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
             # No-op Span: yield dummy to avoid breaking caller
             class NoOpSpan:
                 """NoOpSpan agent for autonomous operations."""
-                def set_attribute(self, *args) -> Any: pass
-                def add_event(self, *args) -> Any: pass
+
+                def set_attribute(self, *args) -> Any:
+                    pass
+
+                def add_event(self, *args) -> Any:
+                    pass
+
             yield NoOpSpan()
             return
 
@@ -388,6 +424,7 @@ class TracingAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     def export_traces_json(self) -> str:
         """Export all traces as JSON string."""
         import json
+
         return json.dumps(self.get_all_traces(), indent=2)
 
     # === Compliance Mission Helpers ===
@@ -400,7 +437,9 @@ class TracingAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         self.force_sample_trace(trace_id)
 
         attributes = {"mission_id": mission_id, "agent": "ComplianceOrchestratorAgent"}
-        with self.create_span("full_compliance_mission", trace_id, attributes=attributes) as root_span:
+        with self.create_span(
+            "full_compliance_mission", trace_id, attributes=attributes
+        ) as root_span:
             try:
                 yield root_span, trace_id
             finally:
@@ -409,12 +448,25 @@ class TracingAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
                     self.export_trace_to_file(trace_id)
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """Observability agent - invoke shared healing chain."""
         if _call_path is None:
             _call_path = set()
         # Invoke shared HealerMixin chain for diagnostics, rollback, MCP hardening
-        super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+        super().heal_repository(
+            dry_run=dry_run,
+            execute=execute,
+            depth=depth,
+            max_depth=max_depth,
+            _call_path=_call_path,
+        )
         print(f"[{self.__class__.__name__}] Observability agent - healing chain invoked")
         return {"skipped": 1}
 

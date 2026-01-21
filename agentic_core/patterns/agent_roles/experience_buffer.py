@@ -88,10 +88,12 @@ class ExperienceBuffer:
             return
 
         if len(lines) > self.max_entries:
-            kept = lines[-self.max_entries:]
+            kept = lines[-self.max_entries :]
             try:
                 self.path.write_text("".join(kept), encoding="utf-8")
-                self.Logger.info(f"Trimmed experience buffer from {len(lines)} to {len(kept)} entries")
+                self.Logger.info(
+                    f"Trimmed experience buffer from {len(lines)} to {len(kept)} entries"
+                )
             except Exception as e:
                 self.Logger.error(f"Failed to trim buffer: {e}")
 

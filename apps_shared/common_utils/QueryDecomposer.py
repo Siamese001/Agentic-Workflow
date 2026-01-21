@@ -22,7 +22,7 @@ class DecomposedQuery(BaseModel):
     reasoning: str = Field(..., description="Reasoning for decomposition")
     complexity_score: int = Field(..., ge=1, le=10, description="Complexity score (1-10)")
 
-    @validator('sub_queries')
+    @validator("sub_queries")
     def validate_sub_queries(cls, v):
         """Ensure sub-queries are valid."""
         if not v:
@@ -67,6 +67,7 @@ class QueryDecomposer(SimpleAgentBase):
         # Import AdaptiveRetrievalGate for heuristic check
         try:
             from .adaptive_retrieval_gate import AdaptiveRetrievalGate
+
             self.gate = AdaptiveRetrievalGate()
         except ImportError:
             logger.warning("AdaptiveRetrievalGate not available, skipping heuristic check")
@@ -74,11 +75,19 @@ class QueryDecomposer(SimpleAgentBase):
 
         # Simple patterns to detect complex queries
         self.complexity_indicators = {
-            'comparison': re.compile(r'\b(compare|vs|versus|against|difference|contrast)\b', re.IGNORECASE),
-            'causation': re.compile(r'\b(why|cause|reason|impact|effect)\b', re.IGNORECASE),
-            'temporal': re.compile(r'\b(before|after|during|when|timeline|history)\b', re.IGNORECASE),
-            'aggregation': re.compile(r'\b(sum|total|average|count|aggregate|combine)\b', re.IGNORECASE),
-            'relationship': re.compile(r'\b(relationship|correlation|between|and)\b', re.IGNORECASE)
+            "comparison": re.compile(
+                r"\b(compare|vs|versus|against|difference|contrast)\b", re.IGNORECASE
+            ),
+            "causation": re.compile(r"\b(why|cause|reason|impact|effect)\b", re.IGNORECASE),
+            "temporal": re.compile(
+                r"\b(before|after|during|when|timeline|history)\b", re.IGNORECASE
+            ),
+            "aggregation": re.compile(
+                r"\b(sum|total|average|count|aggregate|combine)\b", re.IGNORECASE
+            ),
+            "relationship": re.compile(
+                r"\b(relationship|correlation|between|and)\b", re.IGNORECASE
+            ),
         }
 
     def _calculate_complexity_score(self, query: str) -> int:
@@ -105,7 +114,7 @@ class QueryDecomposer(SimpleAgentBase):
             score += 1
 
         # Question words increase complexity
-        question_words = ['what', 'how', 'why', 'where', 'when', 'which', 'who']
+        question_words = ["what", "how", "why", "where", "when", "which", "who"]
         question_count = sum(1 for word in question_words if word in query.lower())
         score += min(question_count, 2)
 
@@ -134,7 +143,7 @@ class QueryDecomposer(SimpleAgentBase):
                 model="claude-3-5-sonnet-20241022",
                 max_tokens=200,  # Strict token limit for cost control
                 temperature=temperature,
-                messages=[{"role": "user", "content": prompt}]
+                messages=[{"role": "user", "content": prompt}],
             )
 
             class LLMResponseImpl:
@@ -145,6 +154,7 @@ class QueryDecomposer(SimpleAgentBase):
 
         except Exception as e:
             logger.error(f"LLM call failed: {e}")
+
             # Return fallback response
             class LLMResponseImpl:
                 def __init__(self, content: str):
@@ -164,13 +174,16 @@ class QueryDecomposer(SimpleAgentBase):
         # Heuristic check: if gate says simple, skip LLM
         if self.gate:
             decision = self.gate.should_retrieve(query)
-            if decision.query_type in ["CONVERSATIONAL", "FACTUAL"] and not decision.should_retrieve:
+            if (
+                decision.query_type in ["CONVERSATIONAL", "FACTUAL"]
+                and not decision.should_retrieve
+            ):
                 logger.info(f"Simple query detected, skipping decomposition: {query}")
                 return DecomposedQuery(
                     original_query=query,
                     sub_queries=[query],
                     reasoning="Query is simple, no decomposition needed",
-                    complexity_score=1
+                    complexity_score=1,
                 )
 
         # Calculate complexity score
@@ -183,7 +196,7 @@ class QueryDecomposer(SimpleAgentBase):
                 original_query=query,
                 sub_queries=[query],
                 reasoning="Query complexity is low, no decomposition needed",
-                complexity_score=complexity
+                complexity_score=complexity,
             )
 
         # Build decomposition prompt
@@ -216,13 +229,16 @@ Output: {{
 
             # Parse JSON response
             import json
+
             result = json.loads(response.content.strip())
 
             # Validate and limit sub-queries
             sub_queries = result.get("sub_queries", [query])
             if len(sub_queries) > self.max_sub_queries:
-                logger.warning(f"LLM generated too many sub-queries ({len(sub_queries)}), truncating")
-                sub_queries = sub_queries[:self.max_sub_queries]
+                logger.warning(
+                    f"LLM generated too many sub-queries ({len(sub_queries)}), truncating"
+                )
+                sub_queries = sub_queries[: self.max_sub_queries]
 
             # Ensure at least one sub-query
             if not sub_queries:
@@ -234,7 +250,7 @@ Output: {{
                 original_query=query,
                 sub_queries=sub_queries,
                 reasoning=reasoning,
-                complexity_score=complexity
+                complexity_score=complexity,
             )
 
         except Exception as e:
@@ -244,14 +260,11 @@ Output: {{
                 original_query=query,
                 sub_queries=[query],
                 reasoning="Decomposition failed, using original query",
-                complexity_score=complexity
+                complexity_score=complexity,
             )
 
     async def execute_plan(
-        self,
-        decomposed_query: DecomposedQuery,
-        search_function: callable,
-        **kwargs
+        self, decomposed_query: DecomposedQuery, search_function: callable, **kwargs
     ) -> list[Any]:
         """Execute search for all sub-queries in parallel.
 
@@ -284,7 +297,9 @@ Output: {{
                 else:
                     processed_results.append(result)
 
-            logger.info(f"Completed execution: {sum(len(r) for r in processed_results)} total results")
+            logger.info(
+                f"Completed execution: {sum(len(r) for r in processed_results)} total results"
+            )
             return processed_results
 
         except Exception as e:

@@ -13,6 +13,7 @@ Author: Cascade
 Date: January 19, 2026
 Phase: 6.4 - Sub-200 rglob Purge
 """
+
 import sys
 from pathlib import Path
 
@@ -28,9 +29,9 @@ def test_tc35_memory_manager_discovery_integrity():
     Verify MemoryManagerAgent correctly loads JSON contexts using
     ssot_discovery.get_json_files instead of glob.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-35: MemoryManagerAgent Discovery Integrity")
-    print("="*60)
+    print("=" * 60)
 
     import tempfile
 
@@ -60,7 +61,7 @@ def test_tc35_memory_manager_discovery_integrity():
         print(f"   Total size: {stats.get('total_size_mb', 0)} MB")
 
         # Verify stats contain expected keys
-        required_keys = ['base_dir', 'conversations', 'results', 'agent_states', 'total_size_mb']
+        required_keys = ["base_dir", "conversations", "results", "agent_states", "total_size_mb"]
         missing_keys = [k for k in required_keys if k not in stats]
 
         if missing_keys:
@@ -90,14 +91,26 @@ def test_tc36_legacy_extraction_parity():
 
     Verify all legacy extraction scripts use ssot_discovery instead of rglob.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-36: Legacy Extraction Parity")
-    print("="*60)
+    print("=" * 60)
 
     extraction_scripts = [
-        PROJECT_ROOT / "agentic_core" / "L0_maintenance" / "scripts" / "legacy_extraction_extract_lic_all_formats.py",
-        PROJECT_ROOT / "agentic_core" / "L0_maintenance" / "scripts" / "legacy_extraction_extract_lic_with_json.py",
-        PROJECT_ROOT / "agentic_core" / "L0_maintenance" / "scripts" / "legacy_extraction_extract_archived_lic_detailed.py",
+        PROJECT_ROOT
+        / "agentic_core"
+        / "L0_maintenance"
+        / "scripts"
+        / "legacy_extraction_extract_lic_all_formats.py",
+        PROJECT_ROOT
+        / "agentic_core"
+        / "L0_maintenance"
+        / "scripts"
+        / "legacy_extraction_extract_lic_with_json.py",
+        PROJECT_ROOT
+        / "agentic_core"
+        / "L0_maintenance"
+        / "scripts"
+        / "legacy_extraction_extract_archived_lic_detailed.py",
     ]
 
     all_use_ssot = True
@@ -108,13 +121,13 @@ def test_tc36_legacy_extraction_parity():
             continue
 
         try:
-            content = script.read_text(encoding='utf-8')
+            content = script.read_text(encoding="utf-8")
 
             # Check for ssot_discovery import
-            has_ssot_import = 'from agentic_core.utils.ssot_discovery import' in content
+            has_ssot_import = "from agentic_core.utils.ssot_discovery import" in content
 
             # Check for rglob usage (should be minimal or none)
-            rglob_count = content.count('.rglob(')
+            rglob_count = content.count(".rglob(")
 
             print(f"   {script.name}:")
             print(f"      Uses ssot_discovery: {'✓' if has_ssot_import else '✗'}")
@@ -145,9 +158,9 @@ def test_tc37_sub_200_achievement():
 
     Verify the rglob count has dropped below 200.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-37: Sub-200 Achievement")
-    print("="*60)
+    print("=" * 60)
 
     # Import the CI check
     sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
@@ -164,7 +177,7 @@ def test_tc37_sub_200_achievement():
     reduction = baseline - total_count
 
     print(f"   Baseline (Phase 6.3): {baseline}")
-    print(f"   Reduction: {reduction} calls ({reduction/baseline*100:.1f}%)")
+    print(f"   Reduction: {reduction} calls ({reduction / baseline * 100:.1f}%)")
 
     if total_count >= 200:
         print(f"❌ FAIL: Count is {total_count}, target was < 200")
@@ -184,9 +197,9 @@ def test_phase6_4_file_coverage():
     """
     Bonus Test: Verify Phase 6.4 file coverage.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("BONUS: Phase 6.4 File Coverage")
-    print("="*60)
+    print("=" * 60)
 
     refactored_files = [
         "legacy_extraction_extract_lic_all_formats.py",
@@ -206,8 +219,8 @@ def test_phase6_4_file_coverage():
     for py_file in get_python_files(PROJECT_ROOT / "agentic_core"):
         if py_file.name in refactored_files:
             try:
-                content = py_file.read_text(encoding='utf-8', errors='ignore')
-                if 'from agentic_core.utils.ssot_discovery import' in content:
+                content = py_file.read_text(encoding="utf-8", errors="ignore")
+                if "from agentic_core.utils.ssot_discovery import" in content:
                     files_using_ssot += 1
                     print(f"   ✓ {py_file.name}")
             except:
@@ -225,13 +238,16 @@ def test_phase6_4_file_coverage():
 
 def main():
     """Run all Phase 6.4 Zero-Loss test cases."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("PHASE 6.4 ZERO-LOSS VERIFICATION TEST SUITE")
-    print("="*70)
+    print("=" * 70)
     print(f"Project Root: {PROJECT_ROOT}")
 
     tests = [
-        ("TC-35: MemoryManagerAgent Discovery Integrity", test_tc35_memory_manager_discovery_integrity),
+        (
+            "TC-35: MemoryManagerAgent Discovery Integrity",
+            test_tc35_memory_manager_discovery_integrity,
+        ),
         ("TC-36: Legacy Extraction Parity", test_tc36_legacy_extraction_parity),
         ("TC-37: Sub-200 Achievement", test_tc37_sub_200_achievement),
         ("BONUS: Phase 6.4 File Coverage", test_phase6_4_file_coverage),
@@ -245,13 +261,14 @@ def main():
         except Exception as e:
             print(f"\n❌ EXCEPTION in {test_name}: {e}")
             import traceback
+
             traceback.print_exc()
             results.append((test_name, False))
 
     # Summary
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST SUMMARY")
-    print("="*70)
+    print("=" * 70)
 
     passed_count = sum(1 for _, passed in results if passed)
     total_count = len(results)
@@ -264,7 +281,7 @@ def main():
         status = "✅ PASS" if passed else "❌ FAIL"
         print(f"{status}: {test_name}")
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print(f"CORE TESTS: {core_passed}/3 passed")
     print(f"TOTAL: {passed_count}/{total_count} tests passed")
 

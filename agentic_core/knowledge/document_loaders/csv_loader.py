@@ -4,6 +4,7 @@ CSV Document Loader - Pandas-based structured data loading for RAG.
 Restored: 2026-01-13 | Version: 2.0.0
 Original: archives/unmapped_drift/20260107/agentic_core/knowledge/document_loaders/csv_loader.py
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -11,6 +12,7 @@ from typing import Any
 
 try:
     import pandas as pd
+
     HAS_PANDAS = True
 except ImportError:
     HAS_PANDAS = False
@@ -42,10 +44,10 @@ class CsvDocumentLoader:
 
         try:
             df: Any = pd.read_csv(file_path, **kwargs)
-            records: list[dict[str, Any]] = df.to_dict(orient='records')
+            records: list[dict[str, Any]] = df.to_dict(orient="records")
             return records
         except Exception as e:
-            raise ValueError(f'CSV loading failed for {file_path}: {e}')
+            raise ValueError(f"CSV loading failed for {file_path}: {e}")
 
     @staticmethod
     def load_as_dataframe(file_path: Path, **kwargs) -> Any:
@@ -56,7 +58,7 @@ class CsvDocumentLoader:
         try:
             return pd.read_csv(file_path, **kwargs)
         except Exception as e:
-            raise ValueError(f'CSV DataFrame load failed: {e}')
+            raise ValueError(f"CSV DataFrame load failed: {e}")
 
     @staticmethod
     def load_sample(file_path: Path, rows: int = 10, **kwargs) -> list[dict[str, Any]]:
@@ -66,6 +68,6 @@ class CsvDocumentLoader:
 
         try:
             df: Any = pd.read_csv(file_path, nrows=rows, **kwargs)
-            return df.to_dict(orient='records')
+            return df.to_dict(orient="records")
         except Exception as e:
-            raise ValueError(f'CSV sample load failed: {e}')
+            raise ValueError(f"CSV sample load failed: {e}")

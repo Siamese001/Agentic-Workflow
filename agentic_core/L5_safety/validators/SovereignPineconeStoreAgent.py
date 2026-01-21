@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, orchestrator, prompt, workflow
@@ -33,7 +32,7 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
-Logger: Any = logging.getLogger('L4.PineconeStore')
+Logger: Any = logging.getLogger("L4.PineconeStore")
 
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
@@ -51,17 +50,17 @@ class SovereignPineconeStoreAgent(HealerMixin, MCPHardenedMixin):
     Phase 13C: All operations now flow through L3 MCP Router with L5 shielding.
     """
 
-    def __init__(self, index_name: str | None=None, namespace: str | None=None) -> None:
+    def __init__(self, index_name: str | None = None, namespace: str | None = None) -> None:
         """Initialize the adapter with MCP client."""
         self.McpClient = SovereignPineconeMCPClient()
         self.namespace = namespace
         self._initialized = False
-        Logger.info('[L4 ADAPTER] Initialized - routing to MCP client')
+        Logger.info("[L4 ADAPTER] Initialized - routing to MCP client")
 
     def _run_self_tests(self) -> bool:
         """Phase 1: Self-testing for L4 compliance."""
-        assert hasattr(self, 'McpClient'), "Missing McpClient"
-        assert hasattr(self, 'namespace'), "Missing namespace"
+        assert hasattr(self, "McpClient"), "Missing McpClient"
+        assert hasattr(self, "namespace"), "Missing namespace"
         return True
 
     async def _ensure_initialized(self):
@@ -70,17 +69,26 @@ class SovereignPineconeStoreAgent(HealerMixin, MCPHardenedMixin):
             await self.McpClient.initialize()
             self._initialized = True
 
-    async def similarity_search(self, query: str, k: int=4, **kwargs) -> list[dict]:
+    async def similarity_search(self, query: str, k: int = 4, **kwargs) -> list[dict]:
         """Legacy adapter for search."""
-        Logger.info(f'[L4 ADAPTER] Routing legacy search to MCP: {query}')
+        Logger.info(f"[L4 ADAPTER] Routing legacy search to MCP: {query}")
         await self._ensure_initialized()
-        result: Any = await self.McpClient.search(query_text=query, top_k=k, namespace=self.namespace, rerank=kwargs.get('rerank', True))
-        matches: Any = result.get('matches', []) if isinstance(result, dict) else []
+        result: Any = await self.McpClient.search(
+            query_text=query, top_k=k, namespace=self.namespace, rerank=kwargs.get("rerank", True)
+        )
+        matches: Any = result.get("matches", []) if isinstance(result, dict) else []
         return matches
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L4 state agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -97,29 +105,39 @@ class SovereignPineconeStoreAgent(HealerMixin, MCPHardenedMixin):
         finally:
             _call_path.discard(agent_name)
 
-    async def add_texts(self, texts: list[str], metadatas: list[dict] | None=None, ids: list[str] | None=None) -> list[str]:
+    async def add_texts(
+        self, texts: list[str], metadatas: list[dict] | None = None, ids: list[str] | None = None
+    ) -> list[str]:
         """Legacy adapter for adding documents."""
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository()
 
-        Logger.info('[L4 ADAPTER] Routing legacy add_texts to MCP Inference + Upsert')
+        Logger.info("[L4 ADAPTER] Routing legacy add_texts to MCP Inference + Upsert")
         await self._ensure_initialized()
         emb_result: Any = await self.McpClient.inference_embed(texts)
-        embeddings: Any = emb_result.get('data', [])
+        embeddings: Any = emb_result.get("data", [])
         if not embeddings:
-            raise RuntimeError('MCP Inference failed to return embeddings')
+            raise RuntimeError("MCP Inference failed to return embeddings")
         vectors: Any = []
         result_ids: Any = []
         for i, text in enumerate(texts):
-            vec_id: Any = ids[i] if ids else f'vec_{abs(hash(text))}'
+            vec_id: Any = ids[i] if ids else f"vec_{abs(hash(text))}"
             meta: Any = metadatas[i] if metadatas else {}
-            meta['text'] = text
-            vectors.append({'id': vec_id, 'values': embeddings[i]['values'] if isinstance(embeddings[i], dict) else embeddings[i], 'metadata': meta})
+            meta["text"] = text
+            vectors.append(
+                {
+                    "id": vec_id,
+                    "values": embeddings[i]["values"]
+                    if isinstance(embeddings[i], dict)
+                    else embeddings[i],
+                    "metadata": meta,
+                }
+            )
             result_ids.append(vec_id)
         await self.McpClient.upsert(vectors=vectors, namespace=self.namespace)
         return result_ids
 
-    async def upsert_file_vector(self, file_path: Path, territory_hint: str | None=None) -> Any:
+    async def upsert_file_vector(self, file_path: Path, territory_hint: str | None = None) -> Any:
         """
         Upsert single file — used during healing.
 
@@ -129,19 +147,19 @@ class SovereignPineconeStoreAgent(HealerMixin, MCPHardenedMixin):
         """
         await self._ensure_initialized()
         try:
-            content: Any = file_path.read_text(encoding='utf-8', errors='ignore')
-            path_str: Any = str(file_path).replace('/', '_').replace('\\', '_')
-            file_id: Any = f'file_{path_str}'
-            metadata: Any = {'text': content, 'file_path': str(file_path), 'type': 'file'}
+            content: Any = file_path.read_text(encoding="utf-8", errors="ignore")
+            path_str: Any = str(file_path).replace("/", "_").replace("\\", "_")
+            file_id: Any = f"file_{path_str}"
+            metadata: Any = {"text": content, "file_path": str(file_path), "type": "file"}
             if territory_hint:
-                metadata['territory'] = territory_hint
-            vectors: Any = [{'id': file_id, 'metadata': metadata}]
+                metadata["territory"] = territory_hint
+            vectors: Any = [{"id": file_id, "metadata": metadata}]
             await self.McpClient.upsert(vectors=vectors)
-            Logger.info(f'[L4 PINECONE STORE] Upserted file vector: {file_path}')
+            Logger.info(f"[L4 PINECONE STORE] Upserted file vector: {file_path}")
         except Exception as e:
-            Logger.error(f'[L4 PINECONE STORE] File upsert failed for {file_path}: {e}')
+            Logger.error(f"[L4 PINECONE STORE] File upsert failed for {file_path}: {e}")
 
-    async def semantic_search(self, query: str, top_k: int=5) -> list[dict]:
+    async def semantic_search(self, query: str, top_k: int = 5) -> list[dict]:
         """
         Runtime retrieval for agents needing to 'find' logic.
 
@@ -155,13 +173,15 @@ class SovereignPineconeStoreAgent(HealerMixin, MCPHardenedMixin):
         await self._ensure_initialized()
         try:
             results: Any = await self.McpClient.search(query_text=query, top_k=top_k, rerank=True)
-            Logger.info(f"[L4 PINECONE STORE] Semantic search returned {len(results.get('matches', []))} results")
-            return results.get('matches', [])
+            Logger.info(
+                f"[L4 PINECONE STORE] Semantic search returned {len(results.get('matches', []))} results"
+            )
+            return results.get("matches", [])
         except Exception as e:
-            Logger.error(f'[L4 PINECONE STORE] Semantic search failed: {e}')
+            Logger.error(f"[L4 PINECONE STORE] Semantic search failed: {e}")
             return []
 
-    async def hybrid_search(self, query: str, top_k: int=5) -> list[dict]:
+    async def hybrid_search(self, query: str, top_k: int = 5) -> list[dict]:
         """
         Eternal precision: Combined Vector + Keyword search.
 
@@ -175,10 +195,12 @@ class SovereignPineconeStoreAgent(HealerMixin, MCPHardenedMixin):
         await self._ensure_initialized()
         try:
             results: Any = await self.McpClient.search(query_text=query, top_k=top_k, rerank=True)
-            Logger.info(f"[L4 PINECONE STORE] Hybrid search returned {len(results.get('matches', []))} results")
-            return results.get('matches', [])
+            Logger.info(
+                f"[L4 PINECONE STORE] Hybrid search returned {len(results.get('matches', []))} results"
+            )
+            return results.get("matches", [])
         except Exception as e:
-            Logger.error(f'[L4 PINECONE STORE] Hybrid search failed: {e}')
+            Logger.error(f"[L4 PINECONE STORE] Hybrid search failed: {e}")
             return []
 
     def purge_ghost_vector(self, file_path: Path) -> Any:
@@ -191,7 +213,9 @@ class SovereignPineconeStoreAgent(HealerMixin, MCPHardenedMixin):
         Args:
             file_path: Path to file
         """
-        Logger.warning(f'[L4 PINECONE STORE] purge_ghost_vector called but delete not supported via MCP: {file_path}')
+        Logger.warning(
+            f"[L4 PINECONE STORE] purge_ghost_vector called but delete not supported via MCP: {file_path}"
+        )
 
     async def health_check(self) -> dict:
         """
@@ -203,12 +227,22 @@ class SovereignPineconeStoreAgent(HealerMixin, MCPHardenedMixin):
         await self._ensure_initialized()
         try:
             health: Any = await self.McpClient.health_check()
-            return {'status': health.get('status', 'unknown'), 'vectors': health.get('vector_count', 0), 'namespaces': health.get('namespaces', {}), 'sample_quality': 'good' if health.get('status') == 'healthy' else 'degraded'}
+            return {
+                "status": health.get("status", "unknown"),
+                "vectors": health.get("vector_count", 0),
+                "namespaces": health.get("namespaces", {}),
+                "sample_quality": "good" if health.get("status") == "healthy" else "degraded",
+            }
         except Exception as e:
-            Logger.error(f'[L4 PINECONE STORE] Health check failed: {e}')
-            return {'status': 'unhealthy', 'error': str(e), 'vectors': 0, 'sample_quality': 'degraded'}
+            Logger.error(f"[L4 PINECONE STORE] Health check failed: {e}")
+            return {
+                "status": "unhealthy",
+                "error": str(e),
+                "vectors": 0,
+                "sample_quality": "degraded",
+            }
 
-    async def execute(self, ctx: Any=None) -> Any:
+    async def execute(self, ctx: Any = None) -> Any:
         """
         Health check for the validator loop.
         Reports index status and vector count with quality metrics.
@@ -220,11 +254,13 @@ class SovereignPineconeStoreAgent(HealerMixin, MCPHardenedMixin):
         try:
             health: Any = await self.health_check()
             status_msg: Any = f"Pinecone MCP: {health['vectors']} vectors online (quality: {health['sample_quality']})"
-            Logger.info(f'[L4 PINECONE STORE] {status_msg}')
+            Logger.info(f"[L4 PINECONE STORE] {status_msg}")
             if ctx:
-                ctx.report('VectorHealth', 1, health['status'] == 'healthy', status_msg)
+                ctx.report("VectorHealth", 1, health["status"] == "healthy", status_msg)
         except Exception as e:
-            Logger.error(f'[L4 PINECONE STORE] Execute failed: {e}')
+            Logger.error(f"[L4 PINECONE STORE] Execute failed: {e}")
             if ctx:
-                ctx.report('VectorHealth', 1, True, f'Pinecone health check warning: {str(e)}')
+                ctx.report("VectorHealth", 1, True, f"Pinecone health check warning: {str(e)}")
+
+
 PineconeSovereignAgent: Any = SovereignPineconeStoreAgent

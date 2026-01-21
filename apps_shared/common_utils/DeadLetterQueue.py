@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 
 class FailureReason(str, Enum):
     """Reasons for envelope failure."""
+
     VALIDATION_FAILED = "validation_failed"
     PROCESSING_ERROR = "processing_error"
     TIMEOUT = "timeout"
@@ -35,6 +36,7 @@ class FailureReason(str, Enum):
 
 class DeadLetterStatus(str, Enum):
     """Status of dead letter items."""
+
     PENDING_REVIEW = "pending_review"
     UNDER_INVESTIGATION = "under_investigation"
     RESOLVED = "resolved"
@@ -45,6 +47,7 @@ class DeadLetterStatus(str, Enum):
 @dataclass
 class DeadLetterItem:
     """An item in the dead letter queue."""
+
     envelope: SignalEnvelope
     failure_reason: FailureReason
     failure_stage: str
@@ -64,7 +67,9 @@ class DeadLetterItem:
             Dictionary representation
         """
         return {
-            "envelope": self.envelope.dict() if hasattr(self.envelope, 'dict') else self.envelope.to_dict(),
+            "envelope": self.envelope.dict()
+            if hasattr(self.envelope, "dict")
+            else self.envelope.to_dict(),
             "failure_reason": self.failure_reason.value,
             "failure_stage": self.failure_stage,
             "error_message": self.error_message,
@@ -74,7 +79,7 @@ class DeadLetterItem:
             "status": self.status.value,
             "investigation_notes": self.investigation_notes,
             "resolved_by": self.resolved_by,
-            "metadata": self.metadata
+            "metadata": self.metadata,
         }
 
     @classmethod
@@ -100,7 +105,7 @@ class DeadLetterItem:
             status=DeadLetterStatus(data.get("status", "pending_review")),
             investigation_notes=data.get("investigation_notes"),
             resolved_by=data.get("resolved_by"),
-            metadata=data.get("metadata", {})
+            metadata=data.get("metadata", {}),
         )
 
 
@@ -133,9 +138,7 @@ class DeadLetterStorage(ABC):
 
     @abstractmethod
     async def list(
-        self,
-        status: DeadLetterStatus | None = None,
-        limit: int = 100
+        self, status: DeadLetterStatus | None = None, limit: int = 100
     ) -> list[DeadLetterItem]:
         """List items in queue.
 
@@ -149,7 +152,9 @@ class DeadLetterStorage(ABC):
         pass
 
     @abstractmethod
-    async def update_status(self, item_id: str, status: DeadLetterStatus, notes: str | None = None) -> bool:
+    async def update_status(
+        self, item_id: str, status: DeadLetterStatus, notes: str | None = None
+    ) -> bool:
         """Update item status.
 
         Args:
@@ -218,7 +223,7 @@ class FileDeadLetterStorage(DeadLetterStorage):
             DeadLetterStatus.UNDER_INVESTIGATION: "investigation",
             DeadLetterStatus.RESOLVED: "resolved",
             DeadLetterStatus.PERMANENTLY_FAILED: "resolved",
-            DeadLetterStatus.REQUEUED: "resolved"
+            DeadLetterStatus.REQUEUED: "resolved",
         }.get(item.status, "pending")
 
         return self.storage_path / status_dir / f"{item.envelope.trace_id}.json"
@@ -238,12 +243,14 @@ class FileDeadLetterStorage(DeadLetterStorage):
 
             # Atomic write
             temp_path = path.with_suffix(".tmp")
-            async with aiofiles.open(temp_path, 'w') as f:
+            async with aiofiles.open(temp_path, "w") as f:
                 await f.write(json.dumps(data, indent=2))
 
             await aiofiles.os.rename(temp_path, path)
 
-            logger.warning(f"Added envelope {item.envelope.trace_id} to dead letter queue: {item.failure_reason}")
+            logger.warning(
+                f"Added envelope {item.envelope.trace_id} to dead letter queue: {item.failure_reason}"
+            )
             return True
 
         except Exception as e:
@@ -274,9 +281,7 @@ class FileDeadLetterStorage(DeadLetterStorage):
         return None
 
     async def list(
-        self,
-        status: DeadLetterStatus | None = None,
-        limit: int = 100
+        self, status: DeadLetterStatus | None = None, limit: int = 100
     ) -> list[DeadLetterItem]:
         """List items in queue.
 
@@ -296,7 +301,7 @@ class FileDeadLetterStorage(DeadLetterStorage):
                 DeadLetterStatus.UNDER_INVESTIGATION: ["investigation"],
                 DeadLetterStatus.RESOLVED: ["resolved"],
                 DeadLetterStatus.PERMANENTLY_FAILED: ["resolved"],
-                DeadLetterStatus.REQUEUED: ["resolved"]
+                DeadLetterStatus.REQUEUED: ["resolved"],
             }.get(status, ["pending", "investigation", "resolved"])
         else:
             status_dirs = ["pending", "investigation", "resolved"]
@@ -328,7 +333,9 @@ class FileDeadLetterStorage(DeadLetterStorage):
         items.sort(key=lambda x: x.timestamp, reverse=True)
         return items[:limit]
 
-    async def update_status(self, item_id: str, status: DeadLetterStatus, notes: str | None = None) -> bool:
+    async def update_status(
+        self, item_id: str, status: DeadLetterStatus, notes: str | None = None
+    ) -> bool:
         """Update item status.
 
         Args:
@@ -355,7 +362,7 @@ class FileDeadLetterStorage(DeadLetterStorage):
         try:
             # Save updated data
             data = item.to_dict()
-            async with aiofiles.open(old_path, 'w') as f:
+            async with aiofiles.open(old_path, "w") as f:
                 await f.write(json.dumps(data, indent=2))
 
             # Move if directory changed
@@ -441,7 +448,7 @@ class DeadLetterQueue:
             "by_reason": {},
             "by_status": {},
             "resolved": 0,
-            "requeued": 0
+            "requeued": 0,
         }
 
         logger.info("Initialized DeadLetterQueue")
@@ -452,7 +459,7 @@ class DeadLetterQueue:
         failure_reason: FailureReason,
         failure_stage: str,
         error_message: str,
-        metadata: dict[str, Any] | None = None
+        metadata: dict[str, Any] | None = None,
     ) -> bool:
         """Add failed envelope to dead letter queue.
 
@@ -472,7 +479,7 @@ class DeadLetterQueue:
             failure_stage=failure_stage,
             error_message=error_message,
             timestamp=datetime.utcnow(),
-            metadata=metadata or {}
+            metadata=metadata or {},
         )
 
         success = await self.storage.add(item)
@@ -496,9 +503,7 @@ class DeadLetterQueue:
         return await self.storage.get(trace_id)
 
     async def list_failed_envelopes(
-        self,
-        status: DeadLetterStatus | None = None,
-        limit: int = 100
+        self, status: DeadLetterStatus | None = None, limit: int = 100
     ) -> list[DeadLetterItem]:
         """List failed envelopes.
 
@@ -524,7 +529,7 @@ class DeadLetterQueue:
         return await self.storage.update_status(
             trace_id,
             DeadLetterStatus.UNDER_INVESTIGATION,
-            f"Investigation started by {investigator}"
+            f"Investigation started by {investigator}",
         )
 
     async def resolve(self, trace_id: str, resolution: str, resolved_by: str) -> bool:
@@ -539,9 +544,7 @@ class DeadLetterQueue:
             True if updated successfully
         """
         success = await self.storage.update_status(
-            trace_id,
-            DeadLetterStatus.RESOLVED,
-            f"Resolved by {resolved_by}: {resolution}"
+            trace_id, DeadLetterStatus.RESOLVED, f"Resolved by {resolved_by}: {resolution}"
         )
 
         if success:
@@ -620,7 +623,7 @@ class DeadLetterQueue:
             "under_investigation": len(investigation),
             "resolved": len(resolved),
             "total_failed": self._stats["total_failed"],
-            "stats": self.get_stats()
+            "stats": self.get_stats(),
         }
 
 
@@ -644,8 +647,7 @@ async def get_dead_letter_queue() -> DeadLetterQueue:
 
 # Decorator for automatic dead letter handling
 def dead_letter_handler(
-    failure_reason: FailureReason = FailureReason.UNKNOWN,
-    include_payload: bool = True
+    failure_reason: FailureReason = FailureReason.UNKNOWN, include_payload: bool = True
 ):
     """Decorator to automatically send failed envelopes to DLQ.
 
@@ -656,6 +658,7 @@ def dead_letter_handler(
     Returns:
         Decorated function
     """
+
     def decorator(func):
         async def wrapper(envelope: SignalEnvelope, *args, **kwargs):
             try:
@@ -668,8 +671,10 @@ def dead_letter_handler(
                     failure_reason,
                     func.__name__,
                     str(e),
-                    {"args": str(args), "kwargs": str(kwargs)} if include_payload else None
+                    {"args": str(args), "kwargs": str(kwargs)} if include_payload else None,
                 )
                 raise
+
         return wrapper
+
     return decorator

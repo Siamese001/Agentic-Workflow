@@ -12,12 +12,14 @@ from typing import Any
 
 class ExecutionPhase(Enum):
     """Phases of the Think-Act-Observe execution cycle."""
-    MISSION: Any = 'mission'
-    SCENE: Any = 'scene'
-    THINK: Any = 'think'
-    ACT: Any = 'act'
-    OBSERVE: Any = 'observe'
-    REFLECT: Any = 'reflect'
+
+    MISSION: Any = "mission"
+    SCENE: Any = "scene"
+    THINK: Any = "think"
+    ACT: Any = "act"
+    OBSERVE: Any = "observe"
+    REFLECT: Any = "reflect"
+
 
 @dataclass
 class ExecutionContext:
@@ -31,6 +33,7 @@ class ExecutionContext:
         metadata: Additional context metadata
         previous_phase_signals: Signals from previous phase execution
     """
+
     mission: str
     scene: dict[str, Any] = field(default_factory=dict)
     state: dict[str, Any] = field(default_factory=dict)
@@ -40,7 +43,15 @@ class ExecutionContext:
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
-        return {'mission': self.mission, 'scene': self.scene, 'state': self.state, 'history': self.history, 'metadata': self.metadata, 'previous_phase_signals': self.previous_phase_signals}
+        return {
+            "mission": self.mission,
+            "scene": self.scene,
+            "state": self.state,
+            "history": self.history,
+            "metadata": self.metadata,
+            "previous_phase_signals": self.previous_phase_signals,
+        }
+
 
 @dataclass
 class ExecutionResult:
@@ -55,6 +66,7 @@ class ExecutionResult:
         errors: List of errors encountered
         metadata: Additional result metadata
     """
+
     success: bool = False
     output: Any | None = None
     final_state: dict[str, Any] = field(default_factory=dict)
@@ -65,4 +77,12 @@ class ExecutionResult:
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
-        return {'success': self.success, 'output': self.output, 'final_state': self.final_state, 'execution_trace': self.execution_trace, 'iterations': self.iterations, 'errors': self.errors, 'metadata': self.metadata}
+        return {
+            "success": self.success,
+            "output": self.output,
+            "final_state": self.final_state,
+            "execution_trace": self.execution_trace,
+            "iterations": self.iterations,
+            "errors": self.errors,
+            "metadata": self.metadata,
+        }

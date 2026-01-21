@@ -13,6 +13,7 @@ Author: Cascade
 Date: January 19, 2026
 Phase: 6.1 - Discovery Expansion (Batch 1)
 """
+
 import os
 import sys
 from pathlib import Path
@@ -29,9 +30,9 @@ def test_tc25_data_discovery_accuracy():
     Verify get_data_files returns the exact same file set as a manual os.walk
     (minus backups and excluded directories).
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-25: Data Discovery Accuracy")
-    print("="*60)
+    print("=" * 60)
 
     from agentic_core.utils.ssot_discovery import (
         DEFAULT_EXCLUDE_DIRS,
@@ -46,10 +47,10 @@ def test_tc25_data_discovery_accuracy():
     manual_json_files = set()
     for root, dirs, files in os.walk(PROJECT_ROOT):
         # Filter out excluded directories
-        dirs[:] = [d for d in dirs if d not in DEFAULT_EXCLUDE_DIRS and not d.startswith('.')]
+        dirs[:] = [d for d in dirs if d not in DEFAULT_EXCLUDE_DIRS and not d.startswith(".")]
 
         for file in files:
-            if file.endswith('.json'):
+            if file.endswith(".json"):
                 file_path = Path(root) / file
                 manual_json_files.add(str(file_path))
 
@@ -77,10 +78,10 @@ def test_tc25_data_discovery_accuracy():
 
     manual_md_files = set()
     for root, dirs, files in os.walk(PROJECT_ROOT):
-        dirs[:] = [d for d in dirs if d not in DEFAULT_EXCLUDE_DIRS and not d.startswith('.')]
+        dirs[:] = [d for d in dirs if d not in DEFAULT_EXCLUDE_DIRS and not d.startswith(".")]
 
         for file in files:
-            if file.endswith('.md'):
+            if file.endswith(".md"):
                 file_path = Path(root) / file
                 manual_md_files.add(str(file_path))
 
@@ -104,9 +105,9 @@ def test_tc26_memory_integrity():
     Verify MemoryManagerAgent can successfully load its JSON state using
     the new discovery method.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-26: Memory Integrity")
-    print("="*60)
+    print("=" * 60)
 
     import tempfile
 
@@ -120,10 +121,7 @@ def test_tc26_memory_integrity():
         agent = MemoryManagerAgent(base_dir=str(temp_path))
 
         # Save some test data
-        test_data = {
-            "test_key": "test_value",
-            "timestamp": "2026-01-19T12:00:00"
-        }
+        test_data = {"test_key": "test_value", "timestamp": "2026-01-19T12:00:00"}
 
         agent.save_memory("test_memory", test_data, category="test")
 
@@ -151,7 +149,7 @@ def test_tc26_memory_integrity():
         # Test get_memory_stats with new discovery method
         stats = agent.get_memory_stats()
 
-        required_keys = ['base_dir', 'total_size_mb']
+        required_keys = ["base_dir", "total_size_mb"]
         missing_keys = [k for k in required_keys if k not in stats]
 
         if missing_keys:
@@ -172,13 +170,17 @@ def test_tc27_key_check():
     Confirm 'violations' has been replaced with 'violations_found' in the
     logic of Batch 1 files.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TC-27: Key Check - Legacy Key Cleanup")
-    print("="*60)
+    print("=" * 60)
 
     batch_1_files = [
         PROJECT_ROOT / "agentic_core" / "L4_state" / "ValidationContext" / "MemoryManagerAgent.py",
-        PROJECT_ROOT / "agentic_core" / "L0_maintenance" / "scripts" / "populate_pinecone_embeddings.py",
+        PROJECT_ROOT
+        / "agentic_core"
+        / "L0_maintenance"
+        / "scripts"
+        / "populate_pinecone_embeddings.py",
         PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "LocationAgent.py",
         PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "NamingAgent.py",
     ]
@@ -192,26 +194,27 @@ def test_tc27_key_check():
             continue
 
         try:
-            content = file_path.read_text(encoding='utf-8')
+            content = file_path.read_text(encoding="utf-8")
 
             # Check for standardized keys
-            if 'violations_found' in content:
+            if "violations_found" in content:
                 files_with_violations_found.append(file_path.name)
 
             # Check for legacy keys in logic (not comments or strings meant for display)
             # Look for dictionary access patterns
             import re
+
             legacy_patterns = [
-                r'metrics\[[\"\']violations[\"\']\]',  # metrics["violations"]
-                r'\.get\([\"\']violations[\"\']\)',    # .get("violations")
-                r'[\"\']violations[\"\']\s*:',          # "violations": in dict literal
+                r"metrics\[[\"\']violations[\"\']\]",  # metrics["violations"]
+                r"\.get\([\"\']violations[\"\']\)",  # .get("violations")
+                r"[\"\']violations[\"\']\s*:",  # "violations": in dict literal
             ]
 
             has_legacy = False
             for pattern in legacy_patterns:
                 if re.search(pattern, content):
                     # Exclude if it's checking for both old and new keys (backward compat)
-                    if 'violations_found' in content and 'get("violations"' in content:
+                    if "violations_found" in content and 'get("violations"' in content:
                         continue  # This is backward compatibility code
                     has_legacy = True
                     break
@@ -244,9 +247,9 @@ def test_rglob_reduction():
     """
     Bonus Test: Verify rglob count has decreased by at least 15 calls.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("BONUS: rglob Count Reduction")
-    print("="*60)
+    print("=" * 60)
 
     # Import the CI check
     sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
@@ -276,7 +279,7 @@ def test_rglob_reduction():
     refactored = []
 
     for offender in offenders:
-        file_name = Path(offender['file']).name
+        file_name = Path(offender["file"]).name
         if file_name in batch_1_names:
             refactored.append(f"{file_name}: {offender['count']} calls")
 
@@ -293,9 +296,9 @@ def test_rglob_reduction():
 
 def main():
     """Run all Phase 6.1 (Batch 1) Zero-Loss test cases."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("PHASE 6.1 (BATCH 1) ZERO-LOSS VERIFICATION TEST SUITE")
-    print("="*70)
+    print("=" * 70)
     print(f"Project Root: {PROJECT_ROOT}")
 
     tests = [
@@ -313,13 +316,14 @@ def main():
         except Exception as e:
             print(f"\n❌ EXCEPTION in {test_name}: {e}")
             import traceback
+
             traceback.print_exc()
             results.append((test_name, False))
 
     # Summary
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST SUMMARY")
-    print("="*70)
+    print("=" * 70)
 
     passed_count = sum(1 for _, passed in results if passed)
     total_count = len(results)
@@ -332,7 +336,7 @@ def main():
         status = "✅ PASS" if passed else "❌ FAIL"
         print(f"{status}: {test_name}")
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print(f"CORE TESTS: {core_passed}/3 passed")
     print(f"TOTAL: {passed_count}/{total_count} tests passed")
 

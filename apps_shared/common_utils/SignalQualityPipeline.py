@@ -19,12 +19,14 @@ class QualityAssessment(BaseModel):
     is_pass: bool = Field(..., description="Overall pass/fail decision")
     relevance_score: confloat(ge=0.0, le=1.0) = Field(default=0.0, description="Relevance to query")
     authority_score: confloat(ge=0.0, le=1.0) = Field(default=0.0, description="Source authority")
-    specificity_score: confloat(ge=0.0, le=1.0) = Field(default=0.0, description="Metric specificity")
+    specificity_score: confloat(ge=0.0, le=1.0) = Field(
+        default=0.0, description="Metric specificity"
+    )
     coherence_score: confloat(ge=0.0, le=1.0) = Field(default=0.0, description="Content coherence")
     flags: list[str] = Field(default_factory=list, description="Quality flags/warnings")
     doc_id: str | None = Field(None, description="Document identifier for logging")
 
-    @validator('flags', pre=True)
+    @validator("flags", pre=True)
     def validate_flags(cls, v):
         """Ensure flags is a list of strings."""
         if isinstance(v, str):
@@ -35,17 +37,12 @@ class QualityAssessment(BaseModel):
     def composite_score(self) -> float:
         """Calculate composite quality score."""
         # Weighted average of all scores
-        weights = {
-            "relevance": 0.3,
-            "authority": 0.3,
-            "specificity": 0.2,
-            "coherence": 0.2
-        }
+        weights = {"relevance": 0.3, "authority": 0.3, "specificity": 0.2, "coherence": 0.2}
         return (
-            self.relevance_score * weights["relevance"] +
-            self.authority_score * weights["authority"] +
-            self.specificity_score * weights["specificity"] +
-            self.coherence_score * weights["coherence"]
+            self.relevance_score * weights["relevance"]
+            + self.authority_score * weights["authority"]
+            + self.specificity_score * weights["specificity"]
+            + self.coherence_score * weights["coherence"]
         )
 
     def has_flag(self, flag: str) -> bool:
@@ -70,7 +67,7 @@ class SignalQualityPipeline:
         relevance_threshold: float = 0.3,
         authority_threshold: float = 0.4,
         specificity_threshold: float = 0.5,
-        enable_coherence_check: bool = False
+        enable_coherence_check: bool = False,
     ):
         """Initialize the quality pipeline.
 
@@ -90,31 +87,64 @@ class SignalQualityPipeline:
             # Tier 1: Official financial/regulatory documents
             "tier_1": {
                 "score": 1.0,
-                "sources": {"10-k", "10-q", "official_report", "sec_filing", "annual_report", "proxy_statement"}
+                "sources": {
+                    "10-k",
+                    "10-q",
+                    "official_report",
+                    "sec_filing",
+                    "annual_report",
+                    "proxy_statement",
+                },
             },
             # Tier 2: Professional profiles and verified resumes
             "tier_2": {
                 "score": 0.8,
-                "sources": {"linkedin", "resume_v1", "official_resume", "company_profile", "verified_profile"}
+                "sources": {
+                    "linkedin",
+                    "resume_v1",
+                    "official_resume",
+                    "company_profile",
+                    "verified_profile",
+                },
             },
             # Tier 3: Notes and informal sources
             "tier_3": {
                 "score": 0.5,
-                "sources": {"notes", "blog", "scratchpad", "personal_notes", "draft"}
+                "sources": {"notes", "blog", "scratchpad", "personal_notes", "draft"},
             },
             # Tier 4: Unverified or low-quality sources
-            "tier_4": {
-                "score": 0.2,
-                "sources": {"unknown", "unverified", "cached", "temp"}
-            }
+            "tier_4": {"score": 0.2, "sources": {"unknown", "unverified", "cached", "temp"}},
         }
 
         # Impact words that should have metrics
         self.impact_words = {
-            "grew", "growth", "increased", "decreased", "reduced", "saved", "generated",
-            "achieved", "improved", "optimized", "accelerated", "expanded", "launched",
-            "delivered", "completed", "managed", "led", "built", "created", "drove",
-            "revenue", "cost", "savings", "profit", "margin", "roi", "efficiency"
+            "grew",
+            "growth",
+            "increased",
+            "decreased",
+            "reduced",
+            "saved",
+            "generated",
+            "achieved",
+            "improved",
+            "optimized",
+            "accelerated",
+            "expanded",
+            "launched",
+            "delivered",
+            "completed",
+            "managed",
+            "led",
+            "built",
+            "created",
+            "drove",
+            "revenue",
+            "cost",
+            "savings",
+            "profit",
+            "margin",
+            "roi",
+            "efficiency",
         }
 
         # Metric patterns to detect
@@ -127,16 +157,14 @@ class SignalQualityPipeline:
             r"\b\d+\s*(?:years?|months?|weeks?|days?)\b",  # Time periods
         ]
 
-        logger.info(f"Initialized SignalQualityPipeline with thresholds: "
-                   f"relevance={relevance_threshold}, authority={authority_threshold}, "
-                   f"specificity={specificity_threshold}")
+        logger.info(
+            f"Initialized SignalQualityPipeline with thresholds: "
+            f"relevance={relevance_threshold}, authority={authority_threshold}, "
+            f"specificity={specificity_threshold}"
+        )
 
     def evaluate_signal(
-        self,
-        content: str,
-        metadata: dict[str, str],
-        query: str,
-        doc_id: str | None = None
+        self, content: str, metadata: dict[str, str], query: str, doc_id: str | None = None
     ) -> QualityAssessment:
         """Evaluate a signal through all quality checks.
 
@@ -150,10 +178,7 @@ class SignalQualityPipeline:
             QualityAssessment with detailed evaluation results
         """
         try:
-            assessment = QualityAssessment(
-                is_pass=True,
-                doc_id=doc_id
-            )
+            assessment = QualityAssessment(is_pass=True, doc_id=doc_id)
 
             # Validate inputs
             if not content or not isinstance(content, str):
@@ -194,8 +219,10 @@ class SignalQualityPipeline:
                 assessment.coherence_score = 0.5  # Default neutral score
 
             # Stage 5: Apply hard rules
-            if (assessment.authority_score < self.authority_threshold or
-                assessment.relevance_score < self.relevance_threshold):
+            if (
+                assessment.authority_score < self.authority_threshold
+                or assessment.relevance_score < self.relevance_threshold
+            ):
                 assessment.is_pass = False
                 assessment.add_flag("HARD_FAIL")
 
@@ -204,7 +231,7 @@ class SignalQualityPipeline:
                 f"authority={assessment.authority_score:.2f}, "
                 f"specificity={assessment.specificity_score:.2f}, "
                 f"flags={assessment.flags}, pass={assessment.is_pass}",
-                extra={"doc_id": doc_id, "flags": assessment.flags, "is_pass": assessment.is_pass}
+                extra={"doc_id": doc_id, "flags": assessment.flags, "is_pass": assessment.is_pass},
             )
 
             return assessment
@@ -212,11 +239,7 @@ class SignalQualityPipeline:
         except Exception as e:
             logger.error(f"Error evaluating signal for doc {doc_id}: {str(e)}")
             # Return safe fallback
-            return QualityAssessment(
-                is_pass=False,
-                flags=["EVALUATION_ERROR"],
-                doc_id=doc_id
-            )
+            return QualityAssessment(is_pass=False, flags=["EVALUATION_ERROR"], doc_id=doc_id)
 
     def _check_relevance(self, content: str, query: str) -> float:
         """Check relevance between content and query using keyword overlap.
@@ -297,8 +320,9 @@ class SignalQualityPipeline:
             has_impact_words = any(word in content_lower for word in self.impact_words)
 
             # Check for metrics
-            has_metrics = any(re.search(pattern, content, re.IGNORECASE)
-                             for pattern in self.metric_patterns)
+            has_metrics = any(
+                re.search(pattern, content, re.IGNORECASE) for pattern in self.metric_patterns
+            )
 
             # Scoring logic
             if has_impact_words and has_metrics:
@@ -328,7 +352,7 @@ class SignalQualityPipeline:
         """
         try:
             # Simple coherence checks
-            sentences = re.split(r'[.!?]+', content)
+            sentences = re.split(r"[.!?]+", content)
             sentences = [s.strip() for s in sentences if s.strip()]
 
             if not sentences:
@@ -346,7 +370,7 @@ class SignalQualityPipeline:
                 length_score = 0.7
 
             # Check for sentence fragments (ending without punctuation)
-            fragment_penalty = 0.1 if not content.endswith(('.', '!', '?')) else 0.0
+            fragment_penalty = 0.1 if not content.endswith((".", "!", "?")) else 0.0
 
             # Check for repeated words (potential duplication)
             words = content.lower().split()
@@ -354,9 +378,7 @@ class SignalQualityPipeline:
             repetition_score = min(1.0, unique_ratio * 1.2)
 
             # Combine scores
-            coherence = (length_score * 0.4 +
-                        repetition_score * 0.4 +
-                        (1.0 - fragment_penalty) * 0.2)
+            coherence = length_score * 0.4 + repetition_score * 0.4 + (1.0 - fragment_penalty) * 0.2
 
             return min(1.0, max(0.0, coherence))
         except Exception as e:
@@ -374,13 +396,46 @@ class SignalQualityPipeline:
         """
         try:
             # Remove punctuation and split on whitespace
-            tokens = re.findall(r'\b\w+\b', text.lower())
+            tokens = re.findall(r"\b\w+\b", text.lower())
 
             # Filter out very short tokens and common stop words
-            stop_words = {'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to',
-                         'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'be',
-                         'been', 'have', 'has', 'had', 'do', 'does', 'did', 'will',
-                         'would', 'could', 'should', 'may', 'might', 'can', 'this', 'that'}
+            stop_words = {
+                "the",
+                "a",
+                "an",
+                "and",
+                "or",
+                "but",
+                "in",
+                "on",
+                "at",
+                "to",
+                "for",
+                "of",
+                "with",
+                "by",
+                "is",
+                "are",
+                "was",
+                "were",
+                "be",
+                "been",
+                "have",
+                "has",
+                "had",
+                "do",
+                "does",
+                "did",
+                "will",
+                "would",
+                "could",
+                "should",
+                "may",
+                "might",
+                "can",
+                "this",
+                "that",
+            }
 
             return [token for token in tokens if len(token) > 2 and token not in stop_words]
         except Exception as e:
@@ -388,9 +443,7 @@ class SignalQualityPipeline:
             return []
 
     def batch_evaluate(
-        self,
-        documents: list[tuple[str, dict[str, str], str]],
-        filter_failed: bool = True
+        self, documents: list[tuple[str, dict[str, str], str]], filter_failed: bool = True
     ) -> list[tuple[dict[str, str], QualityAssessment]]:
         """Evaluate multiple documents in batch.
 
@@ -423,7 +476,7 @@ def create_quality_pipeline(
     relevance_threshold: float = 0.3,
     authority_threshold: float = 0.4,
     specificity_threshold: float = 0.5,
-    strict_mode: bool = False
+    strict_mode: bool = False,
 ) -> SignalQualityPipeline:
     """Create a SignalQualityPipeline instance.
 
@@ -441,20 +494,19 @@ def create_quality_pipeline(
             relevance_threshold=0.4,
             authority_threshold=0.6,
             specificity_threshold=0.7,
-            enable_coherence_check=True
+            enable_coherence_check=True,
         )
 
     return SignalQualityPipeline(
         relevance_threshold=relevance_threshold,
         authority_threshold=authority_threshold,
-        specificity_threshold=specificity_threshold
+        specificity_threshold=specificity_threshold,
     )
 
 
 # Convenience function for quick filtering
 def filter_high_quality_signals(
-    documents: list[tuple[str, dict[str, str], str]],
-    strict_mode: bool = False
+    documents: list[tuple[str, dict[str, str], str]], strict_mode: bool = False
 ) -> list[dict[str, str]]:
     """Quickly filter documents for high-quality signals.
 

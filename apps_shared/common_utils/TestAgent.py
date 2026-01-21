@@ -34,11 +34,22 @@ def test_root_end_guarantee():
     print("TEST 1: Root-End Guarantee")
     print("=" * 70)
 
-
     test_cases = [
-        ("L0MaintenanceBaseAgent", "agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent", "L0MaintenanceBaseAgent"),
-        ("L5SafetyBaseAgent", "agentic_core.L5_safety.guardrails.L5SafetyBaseAgent", "L5SafetyBaseAgent"),
-        ("L3OrchestrationBaseAgent", "agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent", "L3OrchestrationBaseAgent"),
+        (
+            "L0MaintenanceBaseAgent",
+            "agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent",
+            "L0MaintenanceBaseAgent",
+        ),
+        (
+            "L5SafetyBaseAgent",
+            "agentic_core.L5_safety.guardrails.L5SafetyBaseAgent",
+            "L5SafetyBaseAgent",
+        ),
+        (
+            "L3OrchestrationBaseAgent",
+            "agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent",
+            "L3OrchestrationBaseAgent",
+        ),
     ]
 
     all_passed = True
@@ -55,9 +66,9 @@ def test_root_end_guarantee():
             object_idx = None
 
             for i, c in enumerate(mro):
-                if c.__name__ == 'SovereignBaseAgent':
+                if c.__name__ == "SovereignBaseAgent":
                     sovereign_idx = i
-                if c.__name__ == 'MCPHardenedMixin':
+                if c.__name__ == "MCPHardenedMixin":
                     mcp_idx = i
                 if c is object:
                     object_idx = i
@@ -70,17 +81,23 @@ def test_root_end_guarantee():
                     print(f"     MRO: {' -> '.join(c.__name__ for c in mro)}")
                 else:
                     print(f"  ❌ {name}: Incorrect MRO order")
-                    print(f"     SovereignBaseAgent at {sovereign_idx}, MCPHardenedMixin at {mcp_idx}, object at {object_idx}")
+                    print(
+                        f"     SovereignBaseAgent at {sovereign_idx}, MCPHardenedMixin at {mcp_idx}, object at {object_idx}"
+                    )
                     all_passed = False
 
                 # Check no mixin appears AFTER SovereignBaseAgent (except MCPHardenedMixin)
                 for i, c in enumerate(mro):
-                    if i > sovereign_idx and c.__name__ not in ('MCPHardenedMixin', 'object'):
-                        print(f"  ❌ {name}: CRITICAL - {c.__name__} appears AFTER SovereignBaseAgent!")
+                    if i > sovereign_idx and c.__name__ not in ("MCPHardenedMixin", "object"):
+                        print(
+                            f"  ❌ {name}: CRITICAL - {c.__name__} appears AFTER SovereignBaseAgent!"
+                        )
                         all_passed = False
             else:
                 print(f"  ❌ {name}: Could not find required classes in MRO")
-                print(f"     SovereignBaseAgent: {sovereign_idx}, MCPHardenedMixin: {mcp_idx}, object: {object_idx}")
+                print(
+                    f"     SovereignBaseAgent: {sovereign_idx}, MCPHardenedMixin: {mcp_idx}, object: {object_idx}"
+                )
                 all_passed = False
 
         except Exception as e:
@@ -121,6 +138,7 @@ def test_initialization_chain():
         @dataclass
         class TestAgent(InitTrackerMixin, L5SafetyBaseAgent):
             """Test agent to verify initialization chain."""
+
             pass
 
         init_counter["count"] = 0
@@ -133,14 +151,14 @@ def test_initialization_chain():
             all_passed = False
 
         # Verify MCPHardenedMixin was initialized via root
-        if hasattr(agent, '_mcp_audit_log'):
+        if hasattr(agent, "_mcp_audit_log"):
             print("  ✅ MCPHardenedMixin initialized via SovereignBaseAgent root")
         else:
             print("  ❌ MCPHardenedMixin NOT initialized (missing _mcp_audit_log)")
             all_passed = False
 
         # Verify SovereignBaseAgent state initialized
-        if hasattr(agent, '_state') and isinstance(agent._state, dict):
+        if hasattr(agent, "_state") and isinstance(agent._state, dict):
             print("  ✅ SovereignBaseAgent._state initialized")
         else:
             print("  ❌ SovereignBaseAgent._state NOT initialized")
@@ -149,6 +167,7 @@ def test_initialization_chain():
     except Exception as e:
         print(f"  ⚠️  Initialization chain test failed: {e}")
         import traceback
+
         traceback.print_exc()
         all_passed = False
 
@@ -171,17 +190,24 @@ def test_shadowing_audit():
 
     # Critical MCP methods that should NOT be shadowed
     critical_mcp_methods = [
-        '_hardened_call',
-        '_validate_response',
-        '_check_code_injection',
-        '_mcp_audit',
+        "_hardened_call",
+        "_validate_response",
+        "_check_code_injection",
+        "_mcp_audit",
     ]
 
     test_cases = [
-        ("L5SafetyBaseAgent", "agentic_core.L5_safety.guardrails.L5SafetyBaseAgent", "L5SafetyBaseAgent"),
-        ("L3OrchestrationBaseAgent", "agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent", "L3OrchestrationBaseAgent"),
+        (
+            "L5SafetyBaseAgent",
+            "agentic_core.L5_safety.guardrails.L5SafetyBaseAgent",
+            "L5SafetyBaseAgent",
+        ),
+        (
+            "L3OrchestrationBaseAgent",
+            "agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent",
+            "L3OrchestrationBaseAgent",
+        ),
     ]
-
 
     for name, module_path, class_name in test_cases:
         try:
@@ -199,12 +225,14 @@ def test_shadowing_audit():
 
                 if len(defining_classes) > 1:
                     # Method is defined in multiple classes - potential shadowing
-                    if 'MCPHardenedMixin' in defining_classes:
-                        other_classes = [c for c in defining_classes if c != 'MCPHardenedMixin']
+                    if "MCPHardenedMixin" in defining_classes:
+                        other_classes = [c for c in defining_classes if c != "MCPHardenedMixin"]
                         if other_classes:
-                            print(f"  ⚠️  {name}: {method_name} defined in {other_classes} shadows MCPHardenedMixin!")
+                            print(
+                                f"  ⚠️  {name}: {method_name} defined in {other_classes} shadows MCPHardenedMixin!"
+                            )
                             # This is a warning, not a failure - may be intentional override
-                elif len(defining_classes) == 1 and defining_classes[0] == 'MCPHardenedMixin':
+                elif len(defining_classes) == 1 and defining_classes[0] == "MCPHardenedMixin":
                     pass  # Good - only MCPHardenedMixin defines it
 
             print(f"  ✅ {name}: No critical MCP method shadowing detected")
@@ -227,18 +255,25 @@ def test_attribute_collision():
     try:
         from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 
-        mcp_attrs = [attr for attr in dir(MCPHardenedMixin) if attr.startswith('_mcp_')]
-        expected_mcp = ['_mcp_audit_log', '_mcp_call_count', '_mcp_success_count', '_mcp_failure_count']
+        mcp_attrs = [attr for attr in dir(MCPHardenedMixin) if attr.startswith("_mcp_")]
+        expected_mcp = [
+            "_mcp_audit_log",
+            "_mcp_call_count",
+            "_mcp_success_count",
+            "_mcp_failure_count",
+        ]
 
         # Check that key attributes use _mcp_ prefix
-        if '_mcp_audit_log' in str(MCPHardenedMixin.__init__.__code__.co_names) or \
-           'self._mcp_audit_log' in str(MCPHardenedMixin.__init__):
+        if "_mcp_audit_log" in str(
+            MCPHardenedMixin.__init__.__code__.co_names
+        ) or "self._mcp_audit_log" in str(MCPHardenedMixin.__init__):
             print("  ✅ MCPHardenedMixin uses _mcp_ prefix for attributes")
         else:
             # Check the source code directly
             import inspect
+
             source = inspect.getsource(MCPHardenedMixin.__init__)
-            if '_mcp_audit_log' in source:
+            if "_mcp_audit_log" in source:
                 print("  ✅ MCPHardenedMixin uses _mcp_ prefix for attributes")
             else:
                 print("  ⚠️  MCPHardenedMixin: Could not verify _mcp_ prefix (may still be correct)")
@@ -251,9 +286,10 @@ def test_attribute_collision():
         import inspect
 
         from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+
         source = inspect.getsource(HealerMixin.__init__)
 
-        if '_healer_cache' in source and '_healer_metrics' in source:
+        if "_healer_cache" in source and "_healer_metrics" in source:
             print("  ✅ HealerMixin uses _healer_ prefix for attributes")
         else:
             print("  ❌ HealerMixin does NOT use _healer_ prefix")
@@ -278,7 +314,6 @@ def test_cooperative_super():
         ("HealerMixin", "agentic_core.utils.core_extensions.healer_mixin"),
     ]
 
-
     for mixin_name, module_path in mixins_to_check:
         try:
             module = __import__(module_path, fromlist=[mixin_name])
@@ -287,9 +322,9 @@ def test_cooperative_super():
             source = inspect.getsource(mixin_class.__init__)
 
             # Check for **kwargs in signature and super().__init__(**kwargs)
-            if '**kwargs' in source and 'super().__init__(**kwargs)' in source:
+            if "**kwargs" in source and "super().__init__(**kwargs)" in source:
                 print(f"  ✅ {mixin_name}: Uses cooperative **kwargs pattern")
-            elif '**kwargs' in source:
+            elif "**kwargs" in source:
                 print(f"  ⚠️  {mixin_name}: Has **kwargs but may not propagate correctly")
             else:
                 print(f"  ❌ {mixin_name}: Does NOT use **kwargs pattern")

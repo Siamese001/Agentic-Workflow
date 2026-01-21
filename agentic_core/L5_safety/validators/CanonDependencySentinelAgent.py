@@ -1,4 +1,3 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, workflow
@@ -58,7 +57,9 @@ class CodeJanitor:
         """
         Executes the CodeJanitor agent's checks and auto-fixes for syntax and style violations.
         """
-        print(f"\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.agent.name} ACTIVATED: Sanitizing Codebase...")
+        print(
+            f"\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.agent.name} ACTIVATED: Sanitizing Codebase..."
+        )
 
         # Check and fix trailing whitespace (Key 11)
         passed, details = self.check_no_trailing_whitespace()
@@ -117,7 +118,7 @@ class CodeJanitor:
         keys_to_check = {
             10: self.check_no_long_lines,
             15: self.check_no_magic_numbers,
-            16: self.check_no_deep_nesting
+            16: self.check_no_deep_nesting,
         }
 
         for key, check_func in keys_to_check.items():
@@ -138,6 +139,7 @@ class CodeJanitor:
 
         self.agent.ctx.signal_ast_valid()
         print(f"[<<<] {self.agent.name} FINISHED.")
+
     def check_no_trailing_whitespace(self) -> tuple[bool, list[str]]:
         """
         Checks for trailing whitespace on lines (excluding the final newline character).
@@ -151,7 +153,7 @@ class CodeJanitor:
                     for i, line in enumerate(lines, 1):
                         # Check if the line, excluding its final newline, has trailing whitespace
                         # Changed rstrip('\n\r') to rstrip('\n') for consistency with Key 10
-                        if line.rstrip('\n') != line.rstrip('\n').rstrip():
+                        if line.rstrip("\n") != line.rstrip("\n").rstrip():
                             violations.append(f"{file_path}:{i}")
             except (OSError, UnicodeDecodeError) as e:
                 print(f"      [!]  Could not read {file_path} for Key 11 check: {e}")
@@ -199,13 +201,13 @@ class CodeJanitor:
         Reports file paths and line numbers.
         """
         violations = []
-        max_line_length = int(os.getenv('MAX_LINE_LENGTH', '100'))
+        max_line_length = int(os.getenv("MAX_LINE_LENGTH", "100"))
         for file_path in self.agent.ctx.python_files:
             try:
                 with open(file_path, encoding="utf-8") as f:
                     for i, line in enumerate(f, 1):
                         # Check length excluding the newline character
-                        if len(line.rstrip('\n')) > max_line_length:
+                        if len(line.rstrip("\n")) > max_line_length:
                             violations.append(f"{file_path}:{i}")
             except (OSError, UnicodeDecodeError) as e:
                 print(f"      [!]  Could not read {file_path} for Key 10 check: {e}")
@@ -249,11 +251,10 @@ class CodeJanitor:
         The maximum nesting depth is configurable via 'MAX_NESTING_DEPTH' environment variable (default: 4).
         Reports file paths and line numbers.
         """
-        max_depth = int(os.getenv('MAX_NESTING_DEPTH', '4'))
+        max_depth = int(os.getenv("MAX_NESTING_DEPTH", "4"))
         violations = []
 
         class NestingVisitor(ast.NodeVisitor):
-
             def __init__(self, filepath: str, max_depth: int) -> None:
                 self.filepath = filepath
                 self.max_depth = max_depth
@@ -261,9 +262,18 @@ class CodeJanitor:
                 self.violations = []
 
             def visit(self, node):
-
                 # Nodes that increase nesting depth
-                is_nesting_node = isinstance(node, ast.If | ast.For | ast.While | ast.Try | ast.With | ast.FunctionDef | ast.AsyncFunctionDef | ast.ClassDef)
+                is_nesting_node = isinstance(
+                    node,
+                    ast.If
+                    | ast.For
+                    | ast.While
+                    | ast.Try
+                    | ast.With
+                    | ast.FunctionDef
+                    | ast.AsyncFunctionDef
+                    | ast.ClassDef,
+                )
                 if is_nesting_node:
                     self.depth += 1
                     if self.depth > self.max_depth:
@@ -293,24 +303,33 @@ class CodeJanitor:
         """
         try:
             # Assuming 'scripts/fix_trailing_whitespace.py' exists and is executable
-            result = safe_execute([sys.executable, "scripts/fix_trailing_whitespace.py", "."],
-                                    capture_output=True, text=True, check=True)
+            result = safe_execute(
+                [sys.executable, "scripts/fix_trailing_whitespace.py", "."],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
             print("      [OK] Trailing whitespace fix script executed.")
             if result.stdout:
                 print(f"         Script output: {result.stdout.strip()}")
             if result.stderr:
                 print(f"         Script errors: {result.stderr.strip()}")
         except subprocess.CalledProcessError as e:
-            print(f"      [X] Failed to fix trailing whitespace (script returned non-zero exit code): {e}")
+            print(
+                f"      [X] Failed to fix trailing whitespace (script returned non-zero exit code): {e}"
+            )
             print(f"         Stdout: {e.stdout.strip() if hasattr(e, 'stdout') else ''}")
             print(f"         Stderr: {e.stderr.strip() if hasattr(e, 'stderr') else ''}")
         except FileNotFoundError:
             print("      [X] Fix script 'scripts/fix_trailing_whitespace.py' not found.")
         except Exception as e:  # Catch other potential errors during subprocess execution
             print(f"      [X] An unexpected error occurred while fixing trailing whitespace: {e}")
+
+
 # GRAVITY FIXED (Upward Leak): from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
-_mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_mixin')
+_mod = importlib.import_module("agentic_core.L5_safety.guardrails.mcp_hardened_mixin")
 MCPHardenedMixin = _mod.MCPHardenedMixin
+
 
 # NOT_AN_AGENT — legacy L1 class, true agent is DependencySentinelAgent in L2 — excluded from discovery
 class DependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
@@ -350,14 +369,18 @@ class DependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMix
             safe_execute(["autoflake", "--version"], capture_output=True, check=True)
             has_autoflake = True
         except (subprocess.CalledProcessError, FileNotFoundError):
-            print("      [!]  autoflake not installed or not found. Install with: pip install autoflake")
+            print(
+                "      [!]  autoflake not installed or not found. Install with: pip install autoflake"
+            )
 
         if has_autoflake:
             print("      [+] Auto-removing unused imports with autoflake...")
             try:
                 result = safe_execute(
                     ["autoflake", "--in-place", "--remove-all-unused-imports", "--recursive", "."],
-                    capture_output=True, text=True, check=True
+                    capture_output=True,
+                    text=True,
+                    check=True,
                 )
                 print("      [OK] Unused imports removed by autoflake.")
                 if result.stdout:
@@ -427,9 +450,7 @@ class DependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMix
             print(f"      [X] Syntax error in {fp} for Key {key} check: {e}")
             return None
 
-    def _check_import_pattern(
-        self, key: int, predicate: callable
-    ) -> tuple[bool, list[str]]:
+    def _check_import_pattern(self, key: int, predicate: callable) -> tuple[bool, list[str]]:
         """Generic import pattern checker.
 
         Args:
@@ -492,11 +513,17 @@ class DependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMix
                 # Collect all names used in the code
                 used_names = set()
                 for node in ast.walk(tree):
-                    if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load | ast.Store | ast.Del):
+                    if isinstance(node, ast.Name) and isinstance(
+                        node.ctx, ast.Load | ast.Store | ast.Del
+                    ):
                         used_names.add(node.id)
                     # Also consider attribute access for imported modules (e.g., 'os.path')
                     # This is still a heuristic; a full symbol table is needed for accuracy.
-                    elif isinstance(node, ast.Attribute) and isinstance(node.value, ast.Name) and isinstance(node.ctx, ast.Load):
+                    elif (
+                        isinstance(node, ast.Attribute)
+                        and isinstance(node.value, ast.Name)
+                        and isinstance(node.ctx, ast.Load)
+                    ):
                         used_names.add(node.value.id)  # Add the module name itself
 
                 # Find imported names that were not used
@@ -539,18 +566,24 @@ class DependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMix
                             imported_name = alias.asname if alias.asname else alias.name
                             import_tuple = (module_name, imported_name)
                             if import_tuple in seen_imports:
-                                current_file_violations.append(f"{fp}:{node.lineno}: import {module_name} (as {imported_name})")
+                                current_file_violations.append(
+                                    f"{fp}:{node.lineno}: import {module_name} (as {imported_name})"
+                                )
                             seen_imports.add(import_tuple)
                     elif isinstance(node, ast.ImportFrom):
                         # Skip star imports as their "imported names" are ambiguous
                         if any(alias.name == "*" for alias in node.names):
                             continue
-                        module_name = node.module if node.module else "" # Handle 'from agentic_core. import x' where module is None
+                        module_name = (
+                            node.module if node.module else ""
+                        )  # Handle 'from agentic_core. import x' where module is None
                         for alias in node.names:
                             imported_name = alias.asname if alias.asname else alias.name
                             import_tuple = (module_name, imported_name)
                             if import_tuple in seen_imports:
-                                current_file_violations.append(f"{fp}:{node.lineno}: from {module_name} import {imported_name}")
+                                current_file_violations.append(
+                                    f"{fp}:{node.lineno}: from {module_name} import {imported_name}"
+                                )
                             seen_imports.add(import_tuple)
                 violations.extend(current_file_violations)
             except (OSError, UnicodeDecodeError) as e:
@@ -573,8 +606,15 @@ class DependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMix
         print("      ⏩ Skipping Key 44 (Circular Imports): Not implemented.")
         return True, ["Key 44 (Circular Imports) check is not implemented."]
 
+
 @timeout(300)
-def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
+def heal_repository(
+    dry_run: bool = True,
+    execute: bool = False,
+    depth: int = 0,
+    max_depth: int = 3,
+    _call_path: set | None = None,
+) -> dict[str, int]:
     """L1 cognition - operational only."""
     # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
     super().heal_repository()

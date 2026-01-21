@@ -3,23 +3,25 @@
 Generate test files for agents lacking test coverage.
 Priority: L5 > L4 > L3 > L2 > L1 > L0 > Base > Apps
 """
+
 import json
 from pathlib import Path
 
 project_root = Path(__file__).parent.parent
 
 # Load untested agents
-with open(project_root / "untested_agents.json", encoding='utf-8') as f:
+with open(project_root / "untested_agents.json", encoding="utf-8") as f:
     untested_agents = json.load(f)
 
 # Priority order for test generation
-LAYER_PRIORITY = ['L5', 'L4', 'L3', 'L2', 'L1', 'L0', 'Base', 'L6', 'Apps', 'Utils']
+LAYER_PRIORITY = ["L5", "L4", "L3", "L2", "L1", "L0", "Base", "L6", "Apps", "Utils"]
+
 
 def get_test_template(agent: dict) -> str:
     """Generate a test file template for an agent."""
-    class_name = agent['class_name']
-    agent_path = agent['path'].replace('\\', '/')
-    layer = agent['layer']
+    class_name = agent["class_name"]
+    agent_path = agent["path"].replace("\\", "/")
+    layer = agent["layer"]
 
     # Determine test file path
     test_dir = project_root / "tests" / layer.lower()
@@ -38,7 +40,7 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-from {agent_path.replace('/', '.').replace('.py', '')} import {class_name}
+from {agent_path.replace("/", ".").replace(".py", "")} import {class_name}
 
 
 class Test{class_name}:
@@ -88,18 +90,18 @@ if __name__ == "__main__":
 
 def generate_tests_for_layer(layer: str, agents: list[dict], max_count: int = 10) -> int:
     """Generate test files for agents in a specific layer."""
-    layer_agents = [a for a in agents if a['layer'] == layer]
+    layer_agents = [a for a in agents if a["layer"] == layer]
 
     if not layer_agents:
         return 0
 
-    print(f"\n{'='*70}")
+    print(f"\n{'=' * 70}")
     print(f"Generating tests for {layer} layer ({len(layer_agents)} agents)")
-    print(f"{'='*70}")
+    print(f"{'=' * 70}")
 
     generated = 0
     for agent in layer_agents[:max_count]:
-        class_name = agent['class_name']
+        class_name = agent["class_name"]
         test_file = project_root / "tests" / layer.lower() / f"test_{class_name}.py"
 
         # Skip if test already exists
@@ -113,7 +115,7 @@ def generate_tests_for_layer(layer: str, agents: list[dict], max_count: int = 10
 
             # Write test file
             test_file.parent.mkdir(parents=True, exist_ok=True)
-            test_file.write_text(test_content, encoding='utf-8')
+            test_file.write_text(test_content, encoding="utf-8")
 
             print(f"  ✅ {class_name}: test generated")
             generated += 1

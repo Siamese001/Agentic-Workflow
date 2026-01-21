@@ -14,13 +14,22 @@ Logger = logging.getLogger(__name__)
 # Sovereign allowlist — tools that don't bring their own "brain"
 # NAMING FIXED: SOVEREIGN_SAFE_MCPS → sovereign_safe_mcps
 sovereign_safe_mcps = {
-    "Filesystem", "Time", "Redis", "Pinecone", "Playwright", "Figma",
-    "Brave Search", "Fetch", "GitKraken", "Memory"
+    "Filesystem",
+    "Time",
+    "Redis",
+    "Pinecone",
+    "Playwright",
+    "Figma",
+    "Brave Search",
+    "Fetch",
+    "GitKraken",
+    "Memory",
 }
 
 # Forbidden providers — competitive LLM ecosystems
 # NAMING FIXED: FORBIDDEN_PROVIDERS → forbidden_providers
 forbidden_providers = {"OpenAI", "Anthropic", "Claude", "GPT", "o1", "Llama"}
+
 
 # NAMING FIXED: SovereignMCPMarketplace → SovereignMcpMarketplace
 class SovereignMcpMarketplace:
@@ -41,7 +50,9 @@ class SovereignMcpMarketplace:
 
             # L5 sovereignty check: block competitive brains
             if any(forbidden in Provider for forbidden in FORBIDDEN_PROVIDERS):
-                Logger.critical(f"[L5 MCP BREACH] Forbidden Provider detected: {Provider} — blocked.")
+                Logger.critical(
+                    f"[L5 MCP BREACH] Forbidden Provider detected: {Provider} — blocked."
+                )
                 mcp_authority.record_breach(f"Attempted Marketplace Load: {Provider}")
                 continue
 
@@ -57,5 +68,4 @@ class SovereignMcpMarketplace:
             Logger.warning("[L3 MARKETPLACE] No safe MCPs found. Running in LLM-only mode.")
 
     def get_safe_tools(self) -> list[str]:
-
         return self.safe_tools

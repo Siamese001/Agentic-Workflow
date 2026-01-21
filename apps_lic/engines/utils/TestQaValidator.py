@@ -11,18 +11,14 @@ def test_missing_subject_fails():
 
 def test_complete_message_passes():
     validator = QAValidator()
-    draft = (
-        "Subject: Update\n\nHello there\n[artifact_id:123] summary\nCTA: Can we connect?\nBest regards,\nLIC Outreach Bot"
-    )
+    draft = "Subject: Update\n\nHello there\n[artifact_id:123] summary\nCTA: Can we connect?\nBest regards,\nLIC Outreach Bot"
     result = validator.validate(draft, {"123": "summary"})
     assert result.ok
 
 
 def test_unknown_and_missing_artifacts_are_reported():
     validator = QAValidator()
-    draft = (
-        "Subject: Proof\n\nHello\n[artifact_id:known] data\n[artifact_id:unknown] extra\nCTA: Talk soon?\nBest regards,\nLIC Outreach Bot"
-    )
+    draft = "Subject: Proof\n\nHello\n[artifact_id:known] data\n[artifact_id:unknown] extra\nCTA: Talk soon?\nBest regards,\nLIC Outreach Bot"
     artifacts = {"known": "data", "missing": "oops"}
     result = validator.validate(draft, artifacts)
     assert not result.ok
@@ -32,9 +28,7 @@ def test_unknown_and_missing_artifacts_are_reported():
 
 def test_long_body_triggers_style_violation():
     validator = QAValidator(max_body_chars=20)
-    draft = (
-        "Subject: Length\n\nHello there\n[artifact_id:1] short\nCTA: Meet?\nBest regards,\nLIC Outreach Bot"
-    )
+    draft = "Subject: Length\n\nHello there\n[artifact_id:1] short\nCTA: Meet?\nBest regards,\nLIC Outreach Bot"
     result = validator.validate(draft, {"1": "short"})
     assert not result.ok
     assert any("character" in reason for reason in result.reasons)

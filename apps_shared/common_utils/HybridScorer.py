@@ -13,6 +13,7 @@ from typing import Any
 @dataclass
 class ScoringWeights:
     """Weights for different scoring components."""
+
     bm25_weight: float = 0.4
     semantic_weight: float = 0.3
     tfidf_weight: float = 0.2
@@ -22,6 +23,7 @@ class ScoringWeights:
 @dataclass
 class ScoringResult:
     """Result of scoring operation."""
+
     document_id: str
     bm25_score: float
     semantic_score: float
@@ -69,7 +71,9 @@ class BM25Scorer:
                 self.doc_freqs[term] = self.doc_freqs.get(term, 0) + 1
 
         # Calculate average document length
-        self.avg_doc_length = sum(self.doc_lengths) / len(self.doc_lengths) if self.doc_lengths else 0
+        self.avg_doc_length = (
+            sum(self.doc_lengths) / len(self.doc_lengths) if self.doc_lengths else 0
+        )
 
         # Store tokenized documents for scoring
         self.documents = all_terms
@@ -105,8 +109,10 @@ class BM25Scorer:
                 idf = math.log((len(self.documents) - df + 0.5) / (df + 0.5))
 
                 # BM25 score for this term
-                term_score = idf * (tf * (self.k1 + 1)) / (
-                    tf + self.k1 * (1 - self.b + self.b * doc_length / self.avg_doc_length)
+                term_score = (
+                    idf
+                    * (tf * (self.k1 + 1))
+                    / (tf + self.k1 * (1 - self.b + self.b * doc_length / self.avg_doc_length))
                 )
                 score += term_score
 
@@ -161,10 +167,10 @@ class HybridScorer:
 
             # Calculate weighted final score
             final_score = (
-                self.weights.bm25_weight * bm25_score +
-                self.weights.semantic_weight * semantic_score +
-                self.weights.tfidf_weight * tfidf_score +
-                self.weights.freshness_weight * freshness_score
+                self.weights.bm25_weight * bm25_score
+                + self.weights.semantic_weight * semantic_score
+                + self.weights.tfidf_weight * tfidf_score
+                + self.weights.freshness_weight * freshness_score
             )
 
             result = ScoringResult(
@@ -174,7 +180,7 @@ class HybridScorer:
                 tfidf_score=tfidf_score,
                 freshness_score=freshness_score,
                 final_score=final_score,
-                metadata={"content_length": len(doc["content"])}
+                metadata={"content_length": len(doc["content"])},
             )
 
             results.append(result)
@@ -226,7 +232,13 @@ class HybridScorer:
         # Default to neutral score
         return 0.5
 
-    def calculate_hybrid_score(self, vector_score: float, keyword_score: float, weights: dict[str, float] | None = None, metadata: dict[str, Any] | None = None) -> float:
+    def calculate_hybrid_score(
+        self,
+        vector_score: float,
+        keyword_score: float,
+        weights: dict[str, float] | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> float:
         """Calculate hybrid score from vector and keyword scores.
 
         Args:
@@ -239,11 +251,11 @@ class HybridScorer:
             Combined hybrid score
         """
         if weights is None:
-            weights = {'semantic_weight': 0.5, 'bm25_weight': 0.5, 'recency_weight': 0.0}
+            weights = {"semantic_weight": 0.5, "bm25_weight": 0.5, "recency_weight": 0.0}
 
-        semantic_weight = weights.get('semantic_weight', 0.5)
-        bm25_weight = weights.get('bm25_weight', 0.5)
-        recency_weight = weights.get('recency_weight', 0.0)
+        semantic_weight = weights.get("semantic_weight", 0.5)
+        bm25_weight = weights.get("bm25_weight", 0.5)
+        recency_weight = weights.get("recency_weight", 0.0)
 
         # Normalize weights to sum to 1 (excluding recency)
         total_weight = semantic_weight + bm25_weight
@@ -260,7 +272,9 @@ class HybridScorer:
 
         return score
 
-    def _normalize_score(self, score: float, min_score: float = 0.0, max_score: float = 1.0) -> float:
+    def _normalize_score(
+        self, score: float, min_score: float = 0.0, max_score: float = 1.0
+    ) -> float:
         """Normalize score to [0, 1] range.
 
         Args:
@@ -272,7 +286,7 @@ class HybridScorer:
             Normalized score
         """
         # If max_score is None or unbounded, clamp to [0, 1]
-        if max_score is None or max_score == float('inf'):
+        if max_score is None or max_score == float("inf"):
             return min(max(score, 1.0), 0.0)
 
         if max_score - min_score == 0:

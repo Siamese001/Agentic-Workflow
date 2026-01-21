@@ -9,6 +9,7 @@ This module replaces the 4 competing backup patterns identified in the SSOT audi
 
 All agents should use BackupManager for backup operations.
 """
+
 import shutil
 from datetime import datetime
 from pathlib import Path
@@ -25,10 +26,7 @@ class BackupManager:
 
     @classmethod
     def get_backup_dir(
-        cls,
-        category: str,
-        project_root: str | Path | None = None,
-        timestamped: bool = True
+        cls, category: str, project_root: str | Path | None = None, timestamped: bool = True
     ) -> Path:
         """
         Get a standardized backup directory path.
@@ -55,10 +53,7 @@ class BackupManager:
 
     @classmethod
     def cleanup_old_backups(
-        cls,
-        category: str,
-        keep_last_n: int = 10,
-        project_root: str | Path | None = None
+        cls, category: str, keep_last_n: int = 10, project_root: str | Path | None = None
     ) -> int:
         """
         Remove old backups for a specific category, keeping only the N most recent.
@@ -74,9 +69,7 @@ class BackupManager:
 
         # List all subdirectories, sort by name (timestamp guarantees chronological order)
         backups = sorted(
-            [d for d in category_dir.iterdir() if d.is_dir()],
-            key=lambda x: x.name,
-            reverse=True
+            [d for d in category_dir.iterdir() if d.is_dir()], key=lambda x: x.name, reverse=True
         )
 
         removed_count = 0
@@ -93,10 +86,7 @@ class BackupManager:
 
     @classmethod
     def backup_file(
-        cls,
-        target_file: str | Path,
-        category: str = "misc",
-        project_root: str | Path | None = None
+        cls, target_file: str | Path, category: str = "misc", project_root: str | Path | None = None
     ) -> Path | None:
         """
         Quickly backup a single file to a timestamped location.
@@ -119,11 +109,7 @@ class BackupManager:
         return dest_file
 
     @classmethod
-    def list_backups(
-        cls,
-        category: str,
-        project_root: str | Path | None = None
-    ) -> list[Path]:
+    def list_backups(cls, category: str, project_root: str | Path | None = None) -> list[Path]:
         """
         List all backup directories for a category.
 
@@ -141,17 +127,12 @@ class BackupManager:
             return []
 
         return sorted(
-            [d for d in category_dir.iterdir() if d.is_dir()],
-            key=lambda x: x.name,
-            reverse=True
+            [d for d in category_dir.iterdir() if d.is_dir()], key=lambda x: x.name, reverse=True
         )
 
     @classmethod
     def restore_backup(
-        cls,
-        backup_path: str | Path,
-        target_path: str | Path,
-        overwrite: bool = False
+        cls, backup_path: str | Path, target_path: str | Path, overwrite: bool = False
     ) -> bool:
         """
         Restore files from a backup directory to a target location.
@@ -193,10 +174,7 @@ class BackupManager:
             return False
 
     @classmethod
-    def decommission_legacy_backups(
-        cls,
-        project_root: str | Path | None = None
-    ) -> int:
+    def decommission_legacy_backups(cls, project_root: str | Path | None = None) -> int:
         """
         Final cleanup of deprecated backup directories.
 
@@ -227,10 +205,7 @@ class BackupManager:
         return removed_count
 
     @classmethod
-    def get_legacy_backup_dirs(
-        cls,
-        project_root: str | Path | None = None
-    ) -> list[Path]:
+    def get_legacy_backup_dirs(cls, project_root: str | Path | None = None) -> list[Path]:
         """
         List any legacy backup directories that still exist.
 

@@ -123,10 +123,18 @@ class OutreachValidationExecutor(ValidationGateExecutor):
             RuleFailure if placeholders found
         """
         placeholder_patterns = [
-            r'\[NAME\]', r'\[COMPANY\]', r'\[TITLE\]',
-            r'\{name\}', r'\{company\}', r'\{title\}',
-            r'<NAME>', r'<COMPANY>', r'<TITLE>',
-            r'PLACEHOLDER', r'TODO', r'TBD',
+            r"\[NAME\]",
+            r"\[COMPANY\]",
+            r"\[TITLE\]",
+            r"\{name\}",
+            r"\{company\}",
+            r"\{title\}",
+            r"<NAME>",
+            r"<COMPANY>",
+            r"<TITLE>",
+            r"PLACEHOLDER",
+            r"TODO",
+            r"TBD",
         ]
 
         found_placeholders = []
@@ -226,9 +234,9 @@ class OutreachValidationExecutor(ValidationGateExecutor):
 
         # Extract metrics from content (numbers with %, $, or units)
         metric_patterns = [
-            r'\d+%',
-            r'\$\d+[KMB]?',
-            r'\d+[KMB]?\+?\s+(?:users|customers|engineers|deployments)',
+            r"\d+%",
+            r"\$\d+[KMB]?",
+            r"\d+[KMB]?\+?\s+(?:users|customers|engineers|deployments)",
         ]
 
         found_metrics = []
@@ -277,7 +285,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
             return None
 
         # Extract metrics
-        metric_patterns = [r'\d+%', r'\$\d+[KMB]?']
+        metric_patterns = [r"\d+%", r"\$\d+[KMB]?"]
         found_metrics = []
         for pattern in metric_patterns:
             matches = re.findall(pattern, content)

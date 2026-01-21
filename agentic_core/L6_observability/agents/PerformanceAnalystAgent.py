@@ -1,10 +1,10 @@
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, healer, memory, orchestrator, prompt, state, workflow
 # This boosts alignment detection — review and integrate appropriately
 
 from dataclasses import dataclass
+
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
@@ -20,18 +20,17 @@ PURPOSE: Identifies performance bottlenecks and calls out underperforming agents
 import asyncio
 from datetime import timedelta
 from pathlib import Path
-from typing import Any, Dict, List
-import json
+from typing import Any
 
 # ARCHIVED: L6ObservabilityBaseAgent import removed
 L6ObservabilityBaseAgent = object  # Stub for archived import
 AgentPerformanceMetrics = None
 CritiqueReport = None
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.L5_safety.validators.decorators import standard_heal
 
+
 # [SOVEREIGN FACTORY]
-def get_performance_analyst(project_root: Path) -> 'PerformanceAnalystAgent':
+def get_performance_analyst(project_root: Path) -> "PerformanceAnalystAgent":
     """Factory function to get PerformanceAnalystAgent instance."""
     return PerformanceAnalystAgent(project_root=project_root)
 
@@ -67,7 +66,7 @@ class PerformanceAnalystAgent(L6ObservabilityBaseAgent):
 
         self.log_info("Performance Analyst initialized - skeptical mode: MAXIMUM")
 
-    async def analyze(self) -> Dict[str, Any]:
+    async def analyze(self) -> dict[str, Any]:
         """
         Run comprehensive performance analysis.
 
@@ -91,13 +90,9 @@ class PerformanceAnalystAgent(L6ObservabilityBaseAgent):
         # Generate performance report
         report = self._generate_performance_report(performance_issues)
 
-        return {
-            **result,
-            'performance_issues': performance_issues,
-            'report': report
-        }
+        return {**result, "performance_issues": performance_issues, "report": report}
 
-    async def _analyze_performance_bottlenecks(self) -> List[Dict[str, Any]]:
+    async def _analyze_performance_bottlenecks(self) -> list[dict[str, Any]]:
         """
         Identify performance bottlenecks across all agents.
 
@@ -124,18 +119,22 @@ class PerformanceAnalystAgent(L6ObservabilityBaseAgent):
 
             # Check test coverage bottleneck
             if metric.test_coverage < 0.7:
-                issues.append(f"Low test coverage ({metric.test_coverage*100:.1f}%) increases debugging time")
+                issues.append(
+                    f"Low test coverage ({metric.test_coverage * 100:.1f}%) increases debugging time"
+                )
 
             if issues:
-                bottlenecks.append({
-                    'agent': metric.agent_name,
-                    'layer': metric.layer,
-                    'issues': issues,
-                    'severity': self._calculate_bottleneck_severity(metric)
-                })
+                bottlenecks.append(
+                    {
+                        "agent": metric.agent_name,
+                        "layer": metric.layer,
+                        "issues": issues,
+                        "severity": self._calculate_bottleneck_severity(metric),
+                    }
+                )
 
         # Sort by severity (worst first)
-        bottlenecks.sort(key=lambda x: -x['severity'])
+        bottlenecks.sort(key=lambda x: -x["severity"])
 
         return bottlenecks
 
@@ -149,13 +148,13 @@ class PerformanceAnalystAgent(L6ObservabilityBaseAgent):
         coverage_penalty = max(0.0, (1.0 - metric.test_coverage) * 100)
 
         severity = (
-            (complexity_penalty * self.WEIGHT_COMPLEXITY) +
-            (mcp_penalty * self.WEIGHT_MCP) +
-            (coverage_penalty * self.WEIGHT_COVERAGE)
+            (complexity_penalty * self.WEIGHT_COMPLEXITY)
+            + (mcp_penalty * self.WEIGHT_MCP)
+            + (coverage_penalty * self.WEIGHT_COVERAGE)
         )
         return round(severity, 1)
 
-    def _generate_performance_report(self, bottlenecks: List[Dict[str, Any]]) -> str:
+    def _generate_performance_report(self, bottlenecks: list[dict[str, Any]]) -> str:
         """
         Generate skeptical performance report.
 
@@ -177,15 +176,21 @@ class PerformanceAnalystAgent(L6ObservabilityBaseAgent):
             lines.append("-" * 80)
 
             for i, bottleneck in enumerate(bottlenecks[:10], 1):  # Top 10 worst
-                lines.append(f"\n{i}. {bottleneck['agent']} ({bottleneck['layer']}) - Severity: {bottleneck['severity']}/100")
-                for issue in bottleneck['issues']:
+                lines.append(
+                    f"\n{i}. {bottleneck['agent']} ({bottleneck['layer']}) - Severity: {bottleneck['severity']}/100"
+                )
+                for issue in bottleneck["issues"]:
                     lines.append(f"   ❌ {issue}")
 
                 # Harsh recommendation
-                if bottleneck['severity'] > 70:
-                    lines.append("   📢 RECOMMENDATION: Immediate refactoring required - this is unacceptable")
-                elif bottleneck['severity'] > 50:
-                    lines.append("   📢 RECOMMENDATION: Schedule refactoring sprint - technical debt is mounting")
+                if bottleneck["severity"] > 70:
+                    lines.append(
+                        "   📢 RECOMMENDATION: Immediate refactoring required - this is unacceptable"
+                    )
+                elif bottleneck["severity"] > 50:
+                    lines.append(
+                        "   📢 RECOMMENDATION: Schedule refactoring sprint - technical debt is mounting"
+                    )
                 else:
                     lines.append("   📢 RECOMMENDATION: Address issues in next release cycle")
 
@@ -194,9 +199,9 @@ class PerformanceAnalystAgent(L6ObservabilityBaseAgent):
         lines.append("Analyst: PerformanceAnalystAgent (No excuses. Data only.)")
         lines.append("=" * 80)
 
-        return '\n'.join(lines)
+        return "\n".join(lines)
 
-    async def run_post_deployment_audit(self) -> Dict[str, Any]:
+    async def run_post_deployment_audit(self) -> dict[str, Any]:
         """
         Run immediate audit after deployment.
 
@@ -211,10 +216,7 @@ class PerformanceAnalystAgent(L6ObservabilityBaseAgent):
         result = await self.analyze()
 
         # Check for critical bottlenecks
-        critical_bottlenecks = [
-            b for b in result['performance_issues']
-            if b['severity'] > 70
-        ]
+        critical_bottlenecks = [b for b in result["performance_issues"] if b["severity"] > 70]
 
         if critical_bottlenecks:
             verdict = "FAILED"
@@ -224,17 +226,19 @@ class PerformanceAnalystAgent(L6ObservabilityBaseAgent):
             message = "Performance within acceptable limits"
 
         return {
-            'verdict': verdict,
-            'message': message,
-            'critical_bottlenecks': len(critical_bottlenecks),
-            'full_analysis': result
+            "verdict": verdict,
+            "message": message,
+            "critical_bottlenecks": len(critical_bottlenecks),
+            "full_analysis": result,
         }
 
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict[str, Any]:
         """Autonomous healing with proper invocation chain."""
         super().heal_repository(dry_run=dry_run, execute=execute, **kwargs)
-        return {"violations": 0, "fixed": 0, "errors": 0}
+        return {"violations_found": 0, "violations_fixed": 0, "errors": 0}
 
 
 # Async entry point for scheduled execution
@@ -247,7 +251,7 @@ async def run_nightly_analysis() -> Any:
     print(analyst.generate_critique_report())
 
     # Print performance report
-    print(result['report'])
+    print(result["report"])
 
     return result
 

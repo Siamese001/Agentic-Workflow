@@ -1,9 +1,10 @@
 """Test tree-sitter-languages API to find correct usage."""
+
 from tree_sitter import Parser
 from tree_sitter_languages import get_language
 
 # Get language
-lang = get_language('python')
+lang = get_language("python")
 print(f"Language type: {type(lang)}")
 print(f"Language: {lang}")
 
