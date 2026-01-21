@@ -39,6 +39,16 @@ import hashlib
 from typing import Any, Callable, Dict, List, Optional, Set
 from dataclasses import dataclass, field
 
+# Import instructional injection patterns for all agents
+try:
+    from agentic_core.utils.core_extensions.instructional_injection_mixin import (
+        InstructionalInjectionMixin,
+    )
+except ImportError:
+    class InstructionalInjectionMixin:
+        """Stub for healing resilience."""
+        pass
+
 Logger: Any = logging.getLogger(__name__)
 
 
@@ -62,7 +72,7 @@ class MCPValidationResult:
     sanitized_output: Any = None
 
 
-class MCPHardenedMixin:
+class MCPHardenedMixin(InstructionalInjectionMixin):
     """
     Mixin providing hardened MCP operations:
     - Exponential backoff retry (3 attempts by default)
@@ -72,11 +82,16 @@ class MCPHardenedMixin:
     - Safe MCP call with validation and sandboxing
     - Response validation (code injection, resource limits)
     - Audit trail logging
+    - All 30 instructional injection patterns (via InstructionalInjectionMixin)
     
     MRO HARDENING:
     - Uses cooperative multiple inheritance via **kwargs
     - Always calls super().__init__(**kwargs) to propagate up the chain
     - Private attributes use _mcp_ prefix to avoid collisions
+    
+    INSTRUCTIONAL INJECTION (Jan 2026):
+    - Inherits InstructionalInjectionMixin providing all 30 patterns
+    - All worker agents automatically get inject_*_layer() methods
     """
 
     MAX_RETRIES: int = 3

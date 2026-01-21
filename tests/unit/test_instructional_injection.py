@@ -1,0 +1,212 @@
+"""
+Test: Instructional Injection Patterns
+
+Verifies that all worker agents across SSOT-approved folders have access to
+the 30 instructional injection patterns from v5.
+
+SOURCE: data/prompt_governance/prompt_injections/Instructional_Injection_Enhanced_v5.md
+"""
+
+import pytest
+from pathlib import Path
+import ast
+import importlib.util
+
+
+def get_project_root() -> Path:
+    """Get project root directory."""
+    import os
+    if "PROJECT_ROOT" in os.environ:
+        return Path(os.environ["PROJECT_ROOT"])
+    
+    known_root = Path("C:/Git/Agentic-Workflow")
+    if known_root.exists() and (known_root / "agentic_core").is_dir():
+        return known_root
+    
+    test_file = Path(__file__).resolve()
+    return test_file.parent.parent.parent
+
+
+# SSOT-approved folders containing worker agents
+SSOT_AGENT_FOLDERS = [
+    "agentic_core/L0_maintenance/scripts",
+    "agentic_core/L1_cognition/thought_engine",
+    "agentic_core/L2_execution/ToolRegistry",
+    "agentic_core/L3_orchestration/fission_logic",
+    "agentic_core/L3_orchestration/workflow_engines",
+    "agentic_core/L4_state/ValidationContext",
+    "agentic_core/L5_safety/validators",
+    "agentic_core/L5_safety/guardrails",
+    "agentic_core/L5_safety/gravity",
+    "agentic_core/L6_observability/agents",
+    "agentic_core/prompt_governance",
+]
+
+
+class TestInstructionalInjectionMixin:
+    """Test suite for InstructionalInjectionMixin."""
+
+    @pytest.fixture
+    def project_root(self) -> Path:
+        return get_project_root()
+
+    def test_mixin_can_be_imported(self):
+        """Verify InstructionalInjectionMixin can be imported."""
+        from agentic_core.utils.core_extensions.instructional_injection_mixin import (
+            InstructionalInjectionMixin,
+        )
+        assert InstructionalInjectionMixin is not None
+
+    def test_mixin_has_30_patterns(self):
+        """Verify all 30 patterns are defined."""
+        from agentic_core.utils.core_extensions.instructional_injection_mixin import (
+            INSTRUCTIONAL_PATTERNS,
+        )
+        assert len(INSTRUCTIONAL_PATTERNS) == 30
+
+    def test_patterns_cover_all_layers(self):
+        """Verify patterns cover all 6 layers."""
+        from agentic_core.utils.core_extensions.instructional_injection_mixin import (
+            INSTRUCTIONAL_PATTERNS,
+            InjectionLayer,
+        )
+        
+        layers_covered = set()
+        for pattern in INSTRUCTIONAL_PATTERNS.values():
+            layers_covered.add(pattern.layer)
+        
+        assert len(layers_covered) == 6
+        for layer in InjectionLayer:
+            assert layer in layers_covered, f"Missing layer: {layer}"
+
+    def test_mixin_has_inject_methods(self):
+        """Verify mixin has all inject_*_layer methods."""
+        from agentic_core.utils.core_extensions.instructional_injection_mixin import (
+            InstructionalInjectionMixin,
+        )
+        
+        required_methods = [
+            "inject_framing_layer",
+            "inject_context_layer",
+            "inject_reasoning_layer",
+            "inject_tooling_layer",
+            "inject_safety_layer",
+            "inject_output_layer",
+            "inject_all_layers",
+            "get_pattern",
+            "get_patterns_by_layer",
+            "get_injection_summary",
+        ]
+        
+        for method in required_methods:
+            assert hasattr(InstructionalInjectionMixin, method), f"Missing method: {method}"
+
+    def test_healer_mixin_inherits_injection(self):
+        """Verify HealerMixin inherits InstructionalInjectionMixin."""
+        from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+        from agentic_core.utils.core_extensions.instructional_injection_mixin import (
+            InstructionalInjectionMixin,
+        )
+        
+        assert issubclass(HealerMixin, InstructionalInjectionMixin)
+
+    def test_subatomic_testing_mixin_inherits_injection(self):
+        """Verify SubatomicTestingMixin inherits InstructionalInjectionMixin."""
+        from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+        from agentic_core.utils.core_extensions.instructional_injection_mixin import (
+            InstructionalInjectionMixin,
+        )
+        
+        assert issubclass(SubatomicTestingMixin, InstructionalInjectionMixin)
+
+    def test_mcp_hardened_mixin_inherits_injection(self):
+        """Verify MCPHardenedMixin inherits InstructionalInjectionMixin."""
+        from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
+        from agentic_core.utils.core_extensions.instructional_injection_mixin import (
+            InstructionalInjectionMixin,
+        )
+        
+        assert issubclass(MCPHardenedMixin, InstructionalInjectionMixin)
+
+    def test_inject_safety_layer_works(self):
+        """Verify inject_safety_layer actually injects patterns."""
+        from agentic_core.utils.core_extensions.instructional_injection_mixin import (
+            InstructionalInjectionMixin,
+        )
+        
+        mixin = InstructionalInjectionMixin()
+        original_prompt = "Do something"
+        injected = mixin.inject_safety_layer(original_prompt)
+        
+        # Should have safety patterns injected
+        assert "[INJECTION SHIELD]" in injected
+        assert "[CONSTITUTIONAL]" in injected
+        assert original_prompt in injected
+
+    def test_inject_output_layer_works(self):
+        """Verify inject_output_layer actually injects patterns."""
+        from agentic_core.utils.core_extensions.instructional_injection_mixin import (
+            InstructionalInjectionMixin,
+        )
+        
+        mixin = InstructionalInjectionMixin()
+        original_prompt = "Generate output"
+        injected = mixin.inject_output_layer(original_prompt, schema='{"type": "object"}')
+        
+        # Should have output patterns injected
+        assert "[JSON-ONLY]" in injected
+        assert "[SCHEMA]" in injected
+        assert original_prompt in injected
+
+    def test_get_injection_summary(self):
+        """Verify get_injection_summary returns correct structure."""
+        from agentic_core.utils.core_extensions.instructional_injection_mixin import (
+            InstructionalInjectionMixin,
+        )
+        
+        mixin = InstructionalInjectionMixin()
+        summary = mixin.get_injection_summary()
+        
+        assert "total_patterns" in summary
+        assert summary["total_patterns"] == 30
+        assert "layers" in summary
+        assert len(summary["layers"]) == 6
+        assert "enabled_count" in summary
+
+
+class TestAgentInstructionalInjection:
+    """Test that specific agents have instructional injection capabilities."""
+
+    @pytest.fixture
+    def project_root(self) -> Path:
+        return get_project_root()
+
+    def test_naming_agent_has_injection(self):
+        """Verify NamingAgent has instructional injection."""
+        from agentic_core.L5_safety.validators.NamingAgent import NamingAgent
+        
+        assert hasattr(NamingAgent, 'inject_safety_layer')
+        assert hasattr(NamingAgent, 'inject_all_layers')
+
+    def test_location_agent_has_injection(self):
+        """Verify LocationAgent has instructional injection."""
+        from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+        
+        assert hasattr(LocationAgent, 'inject_safety_layer')
+        assert hasattr(LocationAgent, 'get_injection_summary')
+
+    def test_hierarchy_agent_has_injection(self):
+        """Verify HierarchyAgent has instructional injection."""
+        from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+        
+        assert hasattr(HierarchyAgent, 'inject_safety_layer')
+
+    def test_ddd_alignment_agent_has_injection(self):
+        """Verify DDDAlignmentAgent has instructional injection."""
+        from agentic_core.L5_safety.validators.DDDAlignmentAgent import DDDAlignmentAgent
+        
+        assert hasattr(DDDAlignmentAgent, 'inject_safety_layer')
+
+
+if __name__ == "__main__":
+    pytest.main([__file__, "-v"])
