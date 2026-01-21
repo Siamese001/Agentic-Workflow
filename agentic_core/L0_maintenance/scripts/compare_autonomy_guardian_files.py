@@ -1,6 +1,6 @@
 """Compare the two AutonomyGuardianAgent.py files to understand their differences."""
-from pathlib import Path
 import difflib
+from pathlib import Path
 
 file1 = Path("agentic_core/L5_safety/validators/AutonomyGuardianAgent.py")
 file2 = Path("agentic_core/config/blueprint_sovereign/AutonomyGuardianAgent.py")
@@ -32,6 +32,7 @@ else:
 
 # Check class definitions
 import re
+
 classes1 = re.findall(r'^class\s+(\w+)', content1[0] if content1 else '', re.MULTILINE)
 classes2 = re.findall(r'^class\s+(\w+)', content2[0] if content2 else '', re.MULTILINE)
 

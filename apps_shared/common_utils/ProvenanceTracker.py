@@ -8,11 +8,10 @@ import asyncio
 import json
 import logging
 import time
-from dataclasses import dataclass, field
-from datetime import datetime
+from dataclasses import dataclass
 from difflib import SequenceMatcher
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -29,7 +28,7 @@ class SourceCitation:
     citation_type: str = "source"  # source, reference, inspiration
     verified: bool = False  # Whether verified as actually used
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary.
 
         Returns:
@@ -49,12 +48,12 @@ class ArtifactLineage(BaseModel):
     """Lineage information for a generated artifact."""
     artifact_id: str
     generation_prompt: str
-    used_sources: List[Dict[str, Any]] = Field(default_factory=list)
+    used_sources: list[dict[str, Any]] = Field(default_factory=list)
     model_version: str
     timestamp: float = Field(default_factory=time.time)
     trace_id: str
     verification_status: str = "pending"  # pending, verified, failed
-    verified_citations: List[str] = Field(default_factory=list)
+    verified_citations: list[str] = Field(default_factory=list)
 
     class Config:
         json_encoders = {
@@ -78,7 +77,7 @@ class ProvenanceTracker:
         self.lineage_file = self.storage_path / "lineage.jsonl"
 
         # Active context tracking
-        self._active_context: Dict[str, List[SourceCitation]] = {}
+        self._active_context: dict[str, list[SourceCitation]] = {}
         self._lock = asyncio.Lock()
 
         # Statistics
@@ -94,7 +93,7 @@ class ProvenanceTracker:
     async def capture_context(
         self,
         trace_id: str,
-        sources: List[Tuple[str, str, float]]  # (source_id, snippet, relevance)
+        sources: list[tuple[str, str, float]]  # (source_id, snippet, relevance)
     ) -> None:
         """Capture context sources for a trace.
 
@@ -125,7 +124,7 @@ class ProvenanceTracker:
         artifact_id: str,
         output: str,
         model_version: str,
-        generation_prompt: Optional[str] = None
+        generation_prompt: str | None = None
     ) -> ArtifactLineage:
         """Record a generation with its lineage.
 
@@ -276,7 +275,7 @@ class ProvenanceTracker:
         with open(self.lineage_file, 'a', encoding='utf-8') as f:
             f.write(lineage_json + '\n')
 
-    async def get_lineage(self, artifact_id: str) -> Optional[ArtifactLineage]:
+    async def get_lineage(self, artifact_id: str) -> ArtifactLineage | None:
         """Get lineage for an artifact.
 
         Args:
@@ -301,7 +300,7 @@ class ProvenanceTracker:
             logger.error(f"Failed to get lineage: {e}")
             return None
 
-    def _read_lineage_file(self) -> List[str]:
+    def _read_lineage_file(self) -> list[str]:
         """Read lineage file lines.
 
         Returns:
@@ -310,15 +309,15 @@ class ProvenanceTracker:
         if not self.lineage_file.exists():
             return []
 
-        with open(self.lineage_file, 'r', encoding='utf-8') as f:
+        with open(self.lineage_file, encoding='utf-8') as f:
             return f.readlines()
 
     async def search_lineage(
         self,
-        trace_id: Optional[str] = None,
-        model_version: Optional[str] = None,
+        trace_id: str | None = None,
+        model_version: str | None = None,
         limit: int = 100
-    ) -> List[ArtifactLineage]:
+    ) -> list[ArtifactLineage]:
         """Search lineage records.
 
         Args:
@@ -391,7 +390,7 @@ class ProvenanceTracker:
             logger.error(f"Failed to cleanup lineage: {e}")
             return 0
 
-    def _write_lineage_file(self, lines: List[str]) -> None:
+    def _write_lineage_file(self, lines: list[str]) -> None:
         """Write lineage file (sync for file I/O).
 
         Args:
@@ -400,7 +399,7 @@ class ProvenanceTracker:
         with open(self.lineage_file, 'w', encoding='utf-8') as f:
             f.writelines(lines)
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get provenance tracker statistics.
 
         Returns:
@@ -408,7 +407,7 @@ class ProvenanceTracker:
         """
         return self._stats.copy()
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """Check health of provenance tracker.
 
         Returns:
@@ -441,7 +440,7 @@ class ProvenanceTracker:
 
 
 # Global provenance tracker
-_provenance_tracker: Optional[ProvenanceTracker] = None
+_provenance_tracker: ProvenanceTracker | None = None
 _tracker_lock = asyncio.Lock()
 
 
@@ -465,8 +464,8 @@ class ProvenanceContext:
     def __init__(
         self,
         trace_id: str,
-        sources: List[Tuple[str, str, float]],
-        tracker: Optional[ProvenanceTracker] = None
+        sources: list[tuple[str, str, float]],
+        tracker: ProvenanceTracker | None = None
     ):
         """Initialize provenance context.
 
@@ -497,7 +496,7 @@ class ProvenanceContext:
         artifact_id: str,
         output: str,
         model_version: str,
-        generation_prompt: Optional[str] = None
+        generation_prompt: str | None = None
     ) -> ArtifactLineage:
         """Record generation within context.
 
@@ -522,11 +521,11 @@ class ProvenanceContext:
 # Helper functions
 async def track_provenance(
     trace_id: str,
-    sources: List[Tuple[str, str, float]],
+    sources: list[tuple[str, str, float]],
     artifact_id: str,
     output: str,
     model_version: str,
-    generation_prompt: Optional[str] = None
+    generation_prompt: str | None = None
 ) -> ArtifactLineage:
     """Track provenance for a generation.
 
@@ -555,7 +554,7 @@ async def track_provenance(
 
 # Decorator for automatic provenance tracking
 def provenance_tracked(
-    extract_sources: Optional[Callable] = None
+    extract_sources: Callable | None = None
 ):
     """Decorator to automatically track provenance.
 

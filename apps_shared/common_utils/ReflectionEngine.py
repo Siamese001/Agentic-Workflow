@@ -4,22 +4,20 @@ This module implements the reflection engine that forces nodes to grade their ow
 work before passing it downstream, preventing hallucination cascades.
 """
 
+import asyncio
 import json
 import logging
-import logging
 import time
-from enum import Enum
-from typing import Dict, Any, Optional, List, Union, Callable
-from abc import ABC, abstractmethod
-
-from .resilience.circuit_breaker import (
-    CircuitBreakerFactory,
-    CircuitOpenError,
-    CircuitBreakerConfig
-)
+from collections.abc import Callable
+from typing import Any, Optional
 
 from pydantic import BaseModel, Field, validator
-import asyncio
+
+from .resilience.circuit_breaker import (
+    CircuitBreakerConfig,
+    CircuitBreakerFactory,
+    CircuitOpenError,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +27,7 @@ class CritiqueResult(BaseModel):
     is_valid: bool
     confidence_score: float = Field(ge=0.0, le=1.0)
     critique_reasoning: str
-    suggested_fix: Optional[str] = None
+    suggested_fix: str | None = None
     validation_type: str = "unknown"  # "regex" or "llm"
     execution_time: float = 0.0
     mutation_request: Optional["MutationRequest"] = None
@@ -45,7 +43,7 @@ class ValidationCriterion(BaseModel):
     """A single validation criterion."""
     name: str
     description: str
-    validator: Union[str, Callable]  # regex pattern or function
+    validator: str | Callable  # regex pattern or function
     is_required: bool = True
     weight: float = Field(default=1.0, ge=0.0, le=1.0)
 
@@ -65,16 +63,16 @@ class MutationRequest(BaseModel):
     """Request for DAG mutation when critique fails."""
     action: str  # "SPAWN_PREDECESSOR" or "ESCALATE"
     reason: str
-    required_context: Optional[str] = None
-    hop_function: Optional[str] = None
-    parameters: Dict[str, Any] = Field(default_factory=dict)
+    required_context: str | None = None
+    hop_function: str | None = None
+    parameters: dict[str, Any] = Field(default_factory=dict)
     priority: str = "normal"
 
 
 class ReflectionEngine:
     """Engine for self-reflection and quality assessment."""
 
-    def __init__(self, config: Optional[ReflectionConfig] = None):
+    def __init__(self, config: ReflectionConfig | None = None):
         """Initialize the Reflection Engine.
 
         Args:
@@ -144,8 +142,8 @@ class ReflectionEngine:
     async def evaluate(
         self,
         content: Any,
-        criteria: List[Union[str, ValidationCriterion]],
-        context: Optional[Dict[str, Any]] = None
+        criteria: list[str | ValidationCriterion],
+        context: dict[str, Any] | None = None
     ) -> CritiqueResult:
         """Evaluate content against criteria with circuit breaker protection.
 
@@ -223,7 +221,7 @@ class ReflectionEngine:
 
         return result
 
-    def _should_use_fast_path(self, criteria: List[ValidationCriterion]) -> bool:
+    def _should_use_fast_path(self, criteria: list[ValidationCriterion]) -> bool:
         """Determine if fast path (regex) can be used."""
         # Fast path if all criteria are simple validators
         for criterion in criteria:
@@ -241,8 +239,8 @@ class ReflectionEngine:
     async def _fast_path_evaluate(
         self,
         content: Any,
-        criteria: List[ValidationCriterion],
-        context: Optional[Dict[str, Any]]
+        criteria: list[ValidationCriterion],
+        context: dict[str, Any] | None
     ) -> CritiqueResult:
         """Evaluate using fast regex/built-in validators."""
         results = []
@@ -285,8 +283,8 @@ class ReflectionEngine:
     async def _llm_path_evaluate(
         self,
         content: Any,
-        criteria: List[ValidationCriterion],
-        context: Optional[Dict[str, Any]]
+        criteria: list[ValidationCriterion],
+        context: dict[str, Any] | None
     ) -> CritiqueResult:
         """Evaluate using LLM for semantic validation."""
         # Build prompt
@@ -426,7 +424,7 @@ Respond in JSON format:
 
         return all(keyword in text for keyword in required_keywords)
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get reflection engine statistics."""
         return {
             **self.stats,
@@ -450,7 +448,7 @@ Respond in JSON format:
 
 
 # Global instance
-_reflection_engine: Optional[ReflectionEngine] = None
+_reflection_engine: ReflectionEngine | None = None
 
 
 def get_reflection_engine(**kwargs) -> ReflectionEngine:
@@ -474,8 +472,8 @@ def get_reflection_engine(**kwargs) -> ReflectionEngine:
 # Convenience functions
 async def evaluate_content(
     content: Any,
-    criteria: List[Union[str, ValidationCriterion]],
-    context: Optional[Dict[str, Any]] = None,
+    criteria: list[str | ValidationCriterion],
+    context: dict[str, Any] | None = None,
     **kwargs
 ) -> CritiqueResult:
     """Convenience function for content evaluation.

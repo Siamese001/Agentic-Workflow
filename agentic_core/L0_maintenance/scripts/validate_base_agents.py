@@ -17,9 +17,7 @@ Fixes:
 - Can auto-deprecate non-canonical base agents
 """
 import json
-from pathlib import Path
 from collections import defaultdict
-from typing import Dict, List, Tuple
 
 # Load agent discovery
 data = json.load(open('agent_discovery_full.json'))
@@ -38,7 +36,7 @@ CANONICAL_BASE_AGENTS = {
     'L6': 'L6ObservabilityBaseAgent'
 }
 
-def find_base_agents() -> Dict[str, List[Dict]]:
+def find_base_agents() -> dict[str, list[dict]]:
     """Find all base agents grouped by layer."""
     base_agents_by_layer = defaultdict(list)
 
@@ -64,7 +62,7 @@ def find_base_agents() -> Dict[str, List[Dict]]:
 
     return base_agents_by_layer
 
-def validate_base_agents() -> Tuple[bool, List[str]]:
+def validate_base_agents() -> tuple[bool, list[str]]:
     """Validate base agent uniqueness per layer."""
     base_agents = find_base_agents()
     errors = []
@@ -142,7 +140,7 @@ def validate_base_agents() -> Tuple[bool, List[str]]:
 
     return is_valid, all_messages
 
-def suggest_fixes() -> List[str]:
+def suggest_fixes() -> list[str]:
     """Suggest fixes for base agent violations."""
     base_agents = find_base_agents()
     fixes = []

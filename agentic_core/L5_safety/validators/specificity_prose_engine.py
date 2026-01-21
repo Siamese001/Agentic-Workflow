@@ -5,6 +5,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """Specificity Prose Engine Agent - Cover Letter Generator (K.10)
 
 
@@ -25,15 +26,10 @@ Non-responsibilities:
 - Bullet synthesis
 - Headline composition
 """
-import logging
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Protocol
+from dataclasses import dataclass
+from typing import Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 
 @dataclass
@@ -57,11 +53,11 @@ class CompanySpecificDetail:
 class SpecificityProseResult:
     """Docstring."""
     cover_letter: str
-    paragraphs: List[str]
-    company_specifics: List[CompanySpecificDetail]
+    paragraphs: list[str]
+    company_specifics: list[CompanySpecificDetail]
     find_replace_test_passed: bool
-    validation_results: List[ValidationResult]
-    temperature_log: List[Dict[str, Any]]
+    validation_results: list[ValidationResult]
+    temperature_log: list[dict[str, Any]]
     success: bool
     attempts: int
 
@@ -76,12 +72,12 @@ class SpecificityProseEngine:
     """
     COMPANY_SPECIFIC_CATEGORIES: Any = {'PRODUCT': ['product', 'platform', 'service', 'solution', 'offering'], 'MISSION': ['mission', 'vision', 'values', 'purpose', 'goal'], 'ACHIEVEMENT': ['milestone', 'launch', 'acquisition', 'funding', 'award'], 'CULTURE': ['culture', 'team', 'environment', 'approach', 'philosophy'], 'TECHNOLOGY': ['technology', 'stack', 'infrastructure', 'architecture', 'innovation']}
 
-    def __init__(self, config: Optional[SpecificityProseConfig]=None, gate_executor: Optional[IntegrityGateExecutorAgent]=None, recovery_loop: Optional[AdaptiveRecoveryLoop]=None):
+    def __init__(self, config: SpecificityProseConfig | None=None, gate_executor: IntegrityGateExecutorAgent | None=None, recovery_loop: AdaptiveRecoveryLoop | None=None):
         SELF.CONFIG = config or SpecificityProseConfig()
         self.gate_executor = gate_executor or IntegrityGateExecutorAgent()
         self.recovery_loop = recovery_loop or AdaptiveRecoveryLoop(initial_temperature=self.config.temperature)
 
-    def generate_cover_letter(self, company_research: Dict[str, Any], resume_highlights: List[str], context: Dict[str, Any]) -> SpecificityProseResult:
+    def generate_cover_letter(self, company_research: dict[str, Any], resume_highlights: list[str], context: dict[str, Any]) -> SpecificityProseResult:
         """
         Generate cover letter with company-specific details.
 
@@ -100,15 +96,15 @@ class SpecificityProseEngine:
             hygiene_result: Any = self.gate_executor.execute_hygiene_scan(cover_letter)
             validation_results.append(hygiene_result)
             if not hygiene_result.passed:
-                RECOVERY: Any = self.recovery_loop.record_failure(gate_id=hygiene_result.gate_id, MESSAGE=hygiene_result.message, DETAILS=hygiene_result.details)
+                self.recovery_loop.record_failure(gate_id=hygiene_result.gate_id, MESSAGE=hygiene_result.message, DETAILS=hygiene_result.details)
                 if not recovery.should_retry:
                     break
                 continue
-            PARAGRAPHS: Any = self._split_paragraphs(cover_letter)
+            self._split_paragraphs(cover_letter)
             paragraph_result: Any = self._validate_paragraph_structure(paragraphs)
             validation_results.append(paragraph_result)
             if not paragraph_result.passed:
-                RECOVERY: Any = self.recovery_loop.record_failure(gate_id=paragraph_result.gate_id, MESSAGE=paragraph_result.message, DETAILS=paragraph_result.details)
+                self.recovery_loop.record_failure(gate_id=paragraph_result.gate_id, MESSAGE=paragraph_result.message, DETAILS=paragraph_result.details)
                 if not recovery.should_retry:
                     break
                 continue
@@ -116,7 +112,7 @@ class SpecificityProseEngine:
             specificity_result: Any = self._validate_company_specifics(company_specifics)
             validation_results.append(specificity_result)
             if not specificity_result.passed:
-                RECOVERY: Any = self.recovery_loop.record_failure(gate_id=specificity_result.gate_id, MESSAGE=specificity_result.message, DETAILS={'company_specifics_count': len(company_specifics)})
+                self.recovery_loop.record_failure(gate_id=specificity_result.gate_id, MESSAGE=specificity_result.message, DETAILS={'company_specifics_count': len(company_specifics)})
                 if not recovery.should_retry:
                     break
                 continue
@@ -124,7 +120,7 @@ class SpecificityProseEngine:
             find_replace_result: Any = ValidationResult(gate_id='VG_FIND_REPLACE_TEST', PASSED=find_replace_test_passed, SEVERITY='BLOCK' if not find_replace_test_passed else 'INFO', MESSAGE=f"Find-replace test {('passed' if find_replace_test_passed else 'FAILED')}", SIGNATURE=f"FINDREPLACE:{('OK' if find_replace_test_passed else 'FAIL')}")
             validation_results.append(find_replace_result)
             if not find_replace_test_passed:
-                RECOVERY: Any = self.recovery_loop.record_failure(gate_id=find_replace_result.gate_id, MESSAGE=find_replace_result.message, DETAILS={'company_specifics_count': len(company_specifics)})
+                self.recovery_loop.record_failure(gate_id=find_replace_result.gate_id, MESSAGE=find_replace_result.message, DETAILS={'company_specifics_count': len(company_specifics)})
                 if not recovery.should_retry:
                     break
                 continue
@@ -132,7 +128,7 @@ class SpecificityProseEngine:
             return SpecificityProseResult(cover_letter=cover_letter, PARAGRAPHS=paragraphs, company_specifics=company_specifics, find_replace_test_passed=find_replace_test_passed, validation_results=validation_results, temperature_log=self.recovery_loop.get_temperature_log(), SUCCESS=True, ATTEMPTS=attempt)
         return SpecificityProseResult(cover_letter='', PARAGRAPHS=[], company_specifics=[], find_replace_test_passed=False, validation_results=validation_results, temperature_log=self.recovery_loop.get_temperature_log(), SUCCESS=False, ATTEMPTS=self.config.max_attempts)
 
-    def _generate_content(self, company_research: Dict[str, Any], resume_highlights: List[str], context: Dict[str, Any], temperature: float, attempt: int) -> str:
+    def _generate_content(self, company_research: dict[str, Any], resume_highlights: list[str], context: dict[str, Any], temperature: float, attempt: int) -> str:
         """
         Generate cover letter content using LLM.
         Placeholder for actual LLM integration.
@@ -142,12 +138,12 @@ class SpecificityProseEngine:
         MISSION = company_research.get('mission', 'transform the industry')
         return f"I am writing to express my strong interest in the Chief Technology Officer positi\n    on at {company_name}. Your company's {PRODUCT} represents a compelling opportunity to drive tech\n        nological innovation at scale, and I am particularly drawn to your mission to {MISSION}.\n\nThroughout my career, I have consistently delivered transformative results in similar high-growth en\n    vironments. At my previous role, I led a cloud migration initiative that reduced infrastructure\n        costs by 40% while improving system reliability, directly aligning with {company_name}'s foc\n            us on operational excellence. I also architected a microservices platform that enabled 3\n                x faster feature deployment,\n                    demonstrating the kind of scalable architecture that would support your\n                    expansion goals.\n\nI would welcome the opportunity to discuss how my experience in building high-performing engineering\n    teams and delivering strategic technology initiatives can contribute to {company_name}'s continu\n        ed success. Thank you for considering my application, and I look forward to the possibility\n            of contributing to your innovative work in transforming the industry."
 
-    def _split_paragraphs(self, text: str) -> List[str]:
+    def _split_paragraphs(self, text: str) -> list[str]:
         """Split text into paragraphs"""
-        PARAGRAPHS = [p.strip() for p in text.split('\n\n') if p.strip()]
+        [p.strip() for p in text.split('\n\n') if p.strip()]
         return paragraphs
 
-    def _validate_paragraph_structure(self, paragraphs: List[str]) -> ValidationResult:
+    def _validate_paragraph_structure(self, paragraphs: list[str]) -> ValidationResult:
         """
         Validate paragraph count and word counts.
         BLOCKS if structure is invalid.
@@ -165,13 +161,13 @@ class SpecificityProseEngine:
             return ValidationResult(gate_id='VG_PARAGRAPH_STRUCTURE', PASSED=False, SEVERITY='BLOCK', MESSAGE=f'BLOCKED: {len(VIOLATIONS)} paragraph word count violations', DETAILS={'violations': VIOLATIONS})
         return ValidationResult(gate_id='VG_PARAGRAPH_STRUCTURE', PASSED=True, SEVERITY='INFO', MESSAGE=f'Paragraph structure valid: {len(paragraphs)} paragraphs with correct word counts', SIGNATURE=f'PARA:OK:{len(paragraphs)}')
 
-    def _extract_company_specifics(self, cover_letter: str, company_research: Dict[str, Any]) -> List[CompanySpecificDetail]:
+    def _extract_company_specifics(self, cover_letter: str, company_research: dict[str, Any]) -> list[CompanySpecificDetail]:
         """Extract company-specific details from cover letter"""
         SPECIFICS = []
         company_name = company_research.get('name', '')
         if company_name and company_name in cover_letter:
             COUNT = cover_letter.count(company_name)
-            for i in range(COUNT):
+            for _i in range(COUNT):
                 SPECIFICS.append(CompanySpecificDetail(DETAIL=company_name, CATEGORY='COMPANY_NAME', SOURCE='company_research'))
         for category, keywords in self.COMPANY_SPECIFIC_CATEGORIES.items():
             for keyword in keywords:
@@ -181,16 +177,16 @@ class SpecificityProseEngine:
                             SPECIFICS.append(CompanySpecificDetail(DETAIL=value, CATEGORY=category, SOURCE=f'company_research.{key}'))
         return SPECIFICS[:10]
 
-    def _validate_company_specifics(self, company_specifics: List[CompanySpecificDetail]) -> ValidationResult:
+    def _validate_company_specifics(self, company_specifics: list[CompanySpecificDetail]) -> ValidationResult:
         """
         Validate ≥4 company-specific details present.
         BLOCKS if insufficient specifics.
         """
         if len(company_specifics) >= self.config.min_company_specifics:
-            return ValidationResult(gate_id='VG_COMPANY_SPECIFICS', PASSED=True, SEVERITY='INFO', MESSAGE=f'Company specifics satisfied: {len(company_specifics)} details (min {self.config.min_company_specifics})', SIGNATURE=f'SPECIFICS:OK:{len(company_specifics)}', DETAILS={'count': len(company_specifics), 'categories': list(set((s.category for s in company_specifics)))})
+            return ValidationResult(gate_id='VG_COMPANY_SPECIFICS', PASSED=True, SEVERITY='INFO', MESSAGE=f'Company specifics satisfied: {len(company_specifics)} details (min {self.config.min_company_specifics})', SIGNATURE=f'SPECIFICS:OK:{len(company_specifics)}', DETAILS={'count': len(company_specifics), 'categories': list({s.category for s in company_specifics})})
         return ValidationResult(gate_id='VG_COMPANY_SPECIFICS', PASSED=False, SEVERITY='BLOCK', MESSAGE=f'BLOCKED: Insufficient company specifics - {len(company_specifics)} details (min {self.config.min_company_specifics})', DETAILS={'count': len(company_specifics), 'min_required': self.config.min_company_specifics})
 
-    def _execute_find_replace_test(self, cover_letter: str, company_specifics: List[CompanySpecificDetail]) -> bool:
+    def _execute_find_replace_test(self, cover_letter: str, company_specifics: list[CompanySpecificDetail]) -> bool:
         """
         Execute find-replace test - letter should break if specifics removed.
         Returns True if test passes (letter is truly specific).
@@ -203,6 +199,6 @@ class SpecificityProseEngine:
         generic_ratio = test_letter.count('[COMPANY]') / max(len(cover_letter.split()), 1)
         return generic_ratio > 0.02
 
-def create_specificity_prose_engine(config: Optional[SpecificityProseConfig]=None) -> SpecificityProseEngine:
+def create_specificity_prose_engine(config: SpecificityProseConfig | None=None) -> SpecificityProseEngine:
     """Factory function to create SpecificityProseEngine instance"""
     return SpecificityProseEngine(config=config)

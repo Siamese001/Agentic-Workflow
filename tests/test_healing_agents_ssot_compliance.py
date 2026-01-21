@@ -10,11 +10,10 @@ their backup paths are correct.
 """
 from __future__ import annotations
 
+import shutil
 import sys
 import tempfile
-import shutil
 from pathlib import Path
-from datetime import datetime
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent

@@ -4,14 +4,14 @@ Cache metrics module for L6 observability.
 
 Provides cache performance metrics collection and reporting.
 """
-from typing import Dict, Any, Optional
-import time
 import logging
+import time
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
 # Global cache metrics storage
-_cache_metrics: Dict[str, Any] = {
+_cache_metrics: dict[str, Any] = {
     "hits": 0,
     "misses": 0,
     "total_requests": 0,
@@ -19,7 +19,7 @@ _cache_metrics: Dict[str, Any] = {
 }
 
 
-def get_cache_metrics() -> Dict[str, Any]:
+def get_cache_metrics() -> dict[str, Any]:
     """
     Get current cache metrics.
 
@@ -67,7 +67,7 @@ class CacheMetricsCollector:
 
     def __init__(self, cache_name: str = "default"):
         self.cache_name = cache_name
-        self._local_metrics: Dict[str, int] = {
+        self._local_metrics: dict[str, int] = {
             "hits": 0,
             "misses": 0,
         }
@@ -82,7 +82,7 @@ class CacheMetricsCollector:
         self._local_metrics["misses"] += 1
         record_cache_miss()
 
-    def get_local_metrics(self) -> Dict[str, Any]:
+    def get_local_metrics(self) -> dict[str, Any]:
         """Get metrics for this specific cache."""
         total = self._local_metrics["hits"] + self._local_metrics["misses"]
         hit_rate = (self._local_metrics["hits"] / total * 100) if total > 0 else 0.0

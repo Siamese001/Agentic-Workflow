@@ -6,14 +6,11 @@ LLM based on task type, complexity, and budget constraints.
 
 import asyncio
 import logging
-import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union
-
-from pydantic import BaseModel, Field
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -59,8 +56,8 @@ class TaskProfile:
     default_tier: ModelTier
     min_complexity: int = 1
     max_complexity: int = 10
-    complexity_thresholds: Dict[ModelTier, int] = field(default_factory=dict)
-    config_overrides: Dict[str, Any] = field(default_factory=dict)
+    complexity_thresholds: dict[ModelTier, int] = field(default_factory=dict)
+    config_overrides: dict[str, Any] = field(default_factory=dict)
 
 
 class ModelRouter:
@@ -81,13 +78,13 @@ class ModelRouter:
         self.budget_period_hours = budget_period_hours
 
         # Model configurations
-        self._models: Dict[str, ModelConfig] = {}
-        self._task_profiles: Dict[TaskType, TaskProfile] = {}
+        self._models: dict[str, ModelConfig] = {}
+        self._task_profiles: dict[TaskType, TaskProfile] = {}
 
         # Budget tracking
         self._budget_start = datetime.utcnow()
         self._current_spend = 0.0
-        self._usage_history: List[Dict[str, Any]] = []
+        self._usage_history: list[dict[str, Any]] = []
 
         # Statistics
         self._stats = {
@@ -268,8 +265,8 @@ class ModelRouter:
         self,
         task_type: TaskType,
         complexity_score: int = 1,
-        force_tier: Optional[ModelTier] = None
-    ) -> Dict[str, Any]:
+        force_tier: ModelTier | None = None
+    ) -> dict[str, Any]:
         """Get model configuration for a task.
 
         Args:
@@ -450,7 +447,7 @@ class ModelRouter:
             self._current_spend = 0.0
             logger.info("Budget period reset")
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get router statistics.
 
         Returns:
@@ -514,7 +511,7 @@ class FallbackClient:
         """
         self.primary_config = primary_config
         self.router = router
-        self._client_cache: Dict[str, "LLMClient"] = {}
+        self._client_cache: dict[str, LLMClient] = {}
 
     async def generate(
         self,
@@ -589,7 +586,7 @@ class FallbackClient:
 
         return self._client_cache[cache_key]
 
-    def _get_fallback_tier(self, current_tier: ModelTier) -> Optional[ModelTier]:
+    def _get_fallback_tier(self, current_tier: ModelTier) -> ModelTier | None:
         """Get fallback tier.
 
         Args:
@@ -693,7 +690,7 @@ class AnthropicClient(LLMClient):
 
 
 # Global router
-_model_router: Optional[ModelRouter] = None
+_model_router: ModelRouter | None = None
 _router_lock = asyncio.Lock()
 
 

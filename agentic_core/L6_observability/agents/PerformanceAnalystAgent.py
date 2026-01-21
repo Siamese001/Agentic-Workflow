@@ -23,14 +23,12 @@ from pathlib import Path
 from typing import Any, Dict, List
 import json
 
-# ARCHIVED: L6ObservabilityBaseAgent import removed # (
-    L6ObservabilityBaseAgent,
-    AgentPerformanceMetrics,
-    CritiqueReport
-)
+# ARCHIVED: L6ObservabilityBaseAgent import removed
+L6ObservabilityBaseAgent = object  # Stub for archived import
+AgentPerformanceMetrics = None
+CritiqueReport = None
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.L5_safety.validators.decorators import standard_heal
-
 
 # [SOVEREIGN FACTORY]
 def get_performance_analyst(project_root: Path) -> 'PerformanceAnalystAgent':

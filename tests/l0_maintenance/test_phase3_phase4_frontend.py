@@ -13,7 +13,6 @@ Tests:
 """
 
 import sys
-import json
 from pathlib import Path
 
 # Add project root to path

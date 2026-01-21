@@ -4,21 +4,14 @@ This module combines Semantic Fencing, Cognitive Contracts, and Few-Shot Registr
 into a single, cohesive system for robust prompt enhancement.
 """
 
-import json
 import logging
-from typing import Dict, List, Any, Optional, Union, Tuple
 from dataclasses import dataclass
-from pathlib import Path
+from typing import Any
 
-from .prompt_assembler import PromptAssembler, get_prompt_assembler
-from .prompt_injection_loader import PromptInjectionLoader, get_injection_loader, InjectionMatch
-from .cognitive_contracts import (
-    CognitiveContractManager,
-    get_contract_manager,
-    create_constraints_from_directives,
-    enforce_cognitive_contract
-)
-from .few_shot_registry import get_few_shot_registry, enhance_with_examples
+from .cognitive_contracts import enforce_cognitive_contract, get_contract_manager
+from .few_shot_registry import get_few_shot_registry
+from .prompt_assembler import get_prompt_assembler
+from .prompt_injection_loader import InjectionMatch, get_injection_loader
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +30,7 @@ class EnhancementConfig:
 class PromptEnhancer:
     """Unified prompt enhancement system orchestrating all strategies."""
 
-    def __init__(self, config: Optional[EnhancementConfig] = None):
+    def __init__(self, config: EnhancementConfig | None = None):
         """Initialize the prompt enhancer.
 
         Args:
@@ -58,13 +51,13 @@ class PromptEnhancer:
         base_prompt: str,
         hop_type: str = "default",
         stage: str = "THINK",
-        context: Optional[Dict[str, Any]] = None,
+        context: dict[str, Any] | None = None,
         role: str = "Assistant",
         objective: str = "Follow instructions precisely",
-        content: Optional[str] = None,
-        output_schema: Optional[Dict[str, Any]] = None,
-        enforce_contract: Optional[bool] = None
-    ) -> Tuple[str, Dict[str, Any]]:
+        content: str | None = None,
+        output_schema: dict[str, Any] | None = None,
+        enforce_contract: bool | None = None
+    ) -> tuple[str, dict[str, Any]]:
         """Enhance a prompt using all configured strategies.
 
         Args:
@@ -172,7 +165,7 @@ class PromptEnhancer:
 
         # Add enhancement metadata
         if not self.config.legacy_mode:
-            metadata_str = f"\n\n[ENHANCEMENT_METADATA]\n"
+            metadata_str = "\n\n[ENHANCEMENT_METADATA]\n"
             metadata_str += f"Strategies: {', '.join(metadata['strategies_applied'])}\n"
             metadata_str += f"Injections: {metadata['injections_count']}\n"
             metadata_str += f"Examples: {metadata['examples_count']}\n"
@@ -182,7 +175,7 @@ class PromptEnhancer:
 
         return enhanced, metadata
 
-    def _build_constraints(self, matches: List[InjectionMatch]) -> List[str]:
+    def _build_constraints(self, matches: list[InjectionMatch]) -> list[str]:
         """Build constraint list from injection matches.
 
         Args:
@@ -207,8 +200,8 @@ class PromptEnhancer:
     def process_response(
         self,
         response: str,
-        contract_id: Optional[str] = None
-    ) -> Tuple[str, Dict[str, Any]]:
+        contract_id: str | None = None
+    ) -> tuple[str, dict[str, Any]]:
         """Process a response, validating against any contracts.
 
         Args:
@@ -257,8 +250,8 @@ class PromptEnhancer:
         role: str,
         objective: str,
         hop_type: str,
-        stages: List[str]
-    ) -> Dict[str, str]:
+        stages: list[str]
+    ) -> dict[str, str]:
         """Create enhanced prompts for multiple stages.
 
         Args:
@@ -284,7 +277,7 @@ class PromptEnhancer:
 
         return prompts
 
-    def get_enhancement_stats(self) -> Dict[str, Any]:
+    def get_enhancement_stats(self) -> dict[str, Any]:
         """Get statistics about the enhancement system.
 
         Returns:
@@ -309,10 +302,10 @@ class PromptEnhancer:
 
 
 # Global enhancer instance
-_prompt_enhancer: Optional[PromptEnhancer] = None
+_prompt_enhancer: PromptEnhancer | None = None
 
 
-def get_prompt_enhancer(config: Optional[EnhancementConfig] = None) -> PromptEnhancer:
+def get_prompt_enhancer(config: EnhancementConfig | None = None) -> PromptEnhancer:
     """Get the global prompt enhancer instance.
 
     Args:
@@ -334,8 +327,8 @@ def enhance_prompt(
     base_prompt: str,
     hop_type: str = "default",
     stage: str = "THINK",
-    context: Optional[Dict[str, Any]] = None,
-    content: Optional[str] = None,
+    context: dict[str, Any] | None = None,
+    content: str | None = None,
     **kwargs
 ) -> str:
     """Enhance a prompt (backward compatibility).
@@ -373,12 +366,12 @@ def enhance_prompt_advanced(
     base_prompt: str,
     hop_type: str = "default",
     stage: str = "THINK",
-    context: Optional[Dict[str, Any]] = None,
+    context: dict[str, Any] | None = None,
     role: str = "Assistant",
     objective: str = "Follow instructions precisely",
     enforce_contract: bool = False,
     **kwargs
-) -> Tuple[str, Dict[str, Any]]:
+) -> tuple[str, dict[str, Any]]:
     """Enhance a prompt with all advanced features.
 
     Args:

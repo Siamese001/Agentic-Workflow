@@ -19,9 +19,6 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_REGISTRY,
-    APPS_LIC_DIR,
-    APPS_SHARED_DIR,
-    APPS_RG_DIR,
 )
 
 PASSED = 0
@@ -84,10 +81,10 @@ def test_agent_purpose():
 
     if shared_count > lic_count:
         test_pass("SCOPE", f"Agent is GENERIC (shared: {shared_count} > lic: {lic_count})")
-        print(f"  📊 VERDICT: Should be in apps_shared (generic utility)")
+        print("  📊 VERDICT: Should be in apps_shared (generic utility)")
     else:
         test_fail("SCOPE", f"Agent appears LIC-specific (lic: {lic_count} >= shared: {shared_count})")
-        print(f"  📊 VERDICT: Current location apps_lic is correct")
+        print("  📊 VERDICT: Current location apps_lic is correct")
 
 
 # ============================================================================
@@ -121,10 +118,10 @@ def test_dependencies():
 
     if len(apps_lic_imports) == 0:
         test_pass("DEPS", "No apps_lic dependencies - agent is NOT LIC-specific")
-        print(f"  📊 VERDICT: Should be in apps_shared (no LIC dependencies)")
+        print("  📊 VERDICT: Should be in apps_shared (no LIC dependencies)")
     else:
         test_fail("DEPS", f"Has {len(apps_lic_imports)} apps_lic dependencies")
-        print(f"  📊 VERDICT: May need to stay in apps_lic")
+        print("  📊 VERDICT: May need to stay in apps_lic")
         for imp in apps_lic_imports:
             print(f"    - {imp.strip()}")
 
@@ -173,13 +170,13 @@ def test_usage_patterns():
 
     if cross_app_usage:
         test_pass("USAGE", "Agent is used across multiple apps/core - should be shared")
-        print(f"  📊 VERDICT: Should be in apps_shared (cross-app usage)")
+        print("  📊 VERDICT: Should be in apps_shared (cross-app usage)")
     elif len(usage_files) == 0:
         test_pass("USAGE", "No current usage found - can be moved to apps_shared")
-        print(f"  📊 VERDICT: Should be in apps_shared (generic utility)")
+        print("  📊 VERDICT: Should be in apps_shared (generic utility)")
     else:
         test_fail("USAGE", f"Only used in apps_lic ({len(apps_lic_usage)} files)")
-        print(f"  📊 VERDICT: Current location may be correct")
+        print("  📊 VERDICT: Current location may be correct")
 
 
 # ============================================================================
@@ -206,7 +203,7 @@ def test_sovereign_registry():
 
     if 'utils' in apps_shared_structure.get('subfolders', []):
         test_pass("STRUCTURE", "'utils' is valid in apps_shared (good target)")
-        print(f"  📊 VERDICT: apps_shared/utils/ is appropriate for shared utilities")
+        print("  📊 VERDICT: apps_shared/utils/ is appropriate for shared utilities")
     else:
         test_fail("STRUCTURE", "'utils' NOT in apps_shared subfolders")
 
@@ -250,7 +247,7 @@ def test_functional_analysis():
 
     if generic_count > specific_count:
         test_pass("FUNCTION", f"Agent is GENERIC utility (generic: {generic_count} > specific: {specific_count})")
-        print(f"  📊 VERDICT: Should be in apps_shared (generic code quality tool)")
+        print("  📊 VERDICT: Should be in apps_shared (generic code quality tool)")
     else:
         test_fail("FUNCTION", f"Agent may be app-specific (specific: {specific_count} >= generic: {generic_count})")
 

@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Cryptographic Provenance Utilities
 
@@ -7,8 +8,10 @@ Lines: 337-380 from core_utils.py
 """
 import logging
 import subprocess
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 from agentic_core.utils.security import safe_execute
+
 Logger: Any = logging.getLogger('CanonValidator')
 
 def setup_gpg_signing(key_id: str) -> Any:

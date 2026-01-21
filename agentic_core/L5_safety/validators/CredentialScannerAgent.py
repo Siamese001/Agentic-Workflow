@@ -13,11 +13,11 @@ Uses FileCache for efficient scanning (Opportunity #3 integration).
 """
 from __future__ import annotations
 
-import re
 import logging
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, List, Any, Optional, Set, Tuple
+from typing import Any
 
 from agentic_core.L5_safety.validators.L5SafetyBaseAgent import L5SafetyBaseAgent
 from agentic_core.utils.file_cache import FileCache
@@ -53,7 +53,7 @@ class CredentialScannerAgent(L5SafetyBaseAgent):
     """
 
     # Credential detection patterns
-    PATTERNS: Dict[str, Tuple[str, str, float]] = field(default_factory=lambda: {
+    PATTERNS: dict[str, tuple[str, str, float]] = field(default_factory=lambda: {
         # Format: pattern_name: (regex, severity, confidence)
 
         # Generic API Keys
@@ -167,14 +167,14 @@ class CredentialScannerAgent(L5SafetyBaseAgent):
     })
 
     # File extensions to scan
-    SCANNABLE_EXTENSIONS: Set[str] = field(default_factory=lambda: {
+    SCANNABLE_EXTENSIONS: set[str] = field(default_factory=lambda: {
         '.py', '.js', '.ts', '.jsx', '.tsx', '.java', '.go', '.rb', '.php',
         '.cs', '.cpp', '.c', '.h', '.sh', '.bash', '.zsh', '.yaml', '.yml',
         '.json', '.xml', '.env', '.config', '.ini', '.toml', '.properties'
     })
 
     # Paths to exclude from scanning
-    EXCLUDED_PATHS: Set[str] = field(default_factory=lambda: {
+    EXCLUDED_PATHS: set[str] = field(default_factory=lambda: {
         '.git', '__pycache__', 'node_modules', '.venv', 'venv',
         'archives', '.sovereign_healing_backup', 'healing_backups',
         'coverage_html', '.pytest_cache', '.mypy_cache'
@@ -183,14 +183,14 @@ class CredentialScannerAgent(L5SafetyBaseAgent):
     def __post_init__(self):
         """Initialize the credential scanner."""
         super().__post_init__()
-        self.file_cache: Optional[FileCache] = None
-        self.matches: List[CredentialMatch] = []
+        self.file_cache: FileCache | None = None
+        self.matches: list[CredentialMatch] = []
 
     def scan_for_credentials(
         self,
-        target_path: Optional[Path] = None,
-        file_patterns: Optional[List[str]] = None
-    ) -> Dict[str, Any]:
+        target_path: Path | None = None,
+        file_patterns: list[str] | None = None
+    ) -> dict[str, Any]:
         """
         Scan for hardcoded credentials in the codebase.
 
@@ -202,7 +202,9 @@ class CredentialScannerAgent(L5SafetyBaseAgent):
             Dict with scan results including matches, summary, and recommendations
         """
         if target_path is None:
-            from agentic_core.L5_safety.validators.structure_blueprint import get_validated_project_root
+            from agentic_core.L5_safety.validators.structure_blueprint import (
+                get_validated_project_root,
+            )
             target_path = get_validated_project_root()
 
         logger.info(f"[CREDENTIAL SCAN] Starting scan of {target_path}")
@@ -234,7 +236,7 @@ class CredentialScannerAgent(L5SafetyBaseAgent):
             "recommendations": self._generate_recommendations()
         }
 
-    def _get_scannable_files(self, root_path: Path) -> List[Path]:
+    def _get_scannable_files(self, root_path: Path) -> list[Path]:
         """Get list of files to scan using FileCache."""
         if self.file_cache is None:
             return []
@@ -264,7 +266,7 @@ class CredentialScannerAgent(L5SafetyBaseAgent):
             for line_num, line in enumerate(lines, start=1):
                 for pattern_name, (regex, severity, confidence) in self.PATTERNS.items():
                     matches = re.finditer(regex, line)
-                    for match in matches:
+                    for _match in matches:
                         # Skip false positives
                         if self._is_false_positive(line, pattern_name):
                             continue
@@ -295,7 +297,7 @@ class CredentialScannerAgent(L5SafetyBaseAgent):
         line_lower = line.lower()
         return any(marker in line_lower for marker in false_positive_markers)
 
-    def _generate_summary(self) -> Dict[str, Any]:
+    def _generate_summary(self) -> dict[str, Any]:
         """Generate summary statistics."""
         by_severity = {"high": 0, "medium": 0, "low": 0}
         by_type = {}
@@ -310,7 +312,7 @@ class CredentialScannerAgent(L5SafetyBaseAgent):
             "high_confidence_count": sum(1 for m in self.matches if m.confidence >= 0.9)
         }
 
-    def _generate_recommendations(self) -> List[str]:
+    def _generate_recommendations(self) -> list[str]:
         """Generate security recommendations based on findings."""
         recommendations = []
 
@@ -337,7 +339,7 @@ class CredentialScannerAgent(L5SafetyBaseAgent):
 
         return recommendations
 
-    def _match_to_dict(self, match: CredentialMatch) -> Dict[str, Any]:
+    def _match_to_dict(self, match: CredentialMatch) -> dict[str, Any]:
         """Convert CredentialMatch to dictionary."""
         return {
             "file": match.file_path,
@@ -353,7 +355,7 @@ class CredentialScannerAgent(L5SafetyBaseAgent):
         dry_run: bool = True,
         execute: bool = False,
         **kwargs
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Autonomous healing for credential leaks.
 

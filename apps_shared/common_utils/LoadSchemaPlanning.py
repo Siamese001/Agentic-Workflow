@@ -5,11 +5,11 @@ including schema parsing, validation, and dependency resolution.
 Follows the canonical pattern with dataclass-first design and proper logging.
 """
 
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any, Union
 import logging
+from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -50,9 +50,9 @@ class SchemaDefinition:
     type: SchemaType
     version: str
     content: str
-    file_path: Optional[str] = None
-    url: Optional[str] = None
-    dependencies: List[str] = field(default_factory=list)
+    file_path: str | None = None
+    url: str | None = None
+    dependencies: list[str] = field(default_factory=list)
     scope: SchemaScope = SchemaScope.DATA
 
 
@@ -61,9 +61,9 @@ class ValidationRule:
     """Definition of a validation rule."""
     name: str
     type: str
-    parameters: Dict[str, Any] = field(default_factory=dict)
+    parameters: dict[str, Any] = field(default_factory=dict)
     severity: str = "error"
-    message: Optional[str] = None
+    message: str | None = None
 
 
 @dataclass
@@ -72,7 +72,7 @@ class SchemaTransform:
     source_type: SchemaType
     target_type: SchemaType
     transform_function: str
-    parameters: Dict[str, Any] = field(default_factory=dict)
+    parameters: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -80,14 +80,14 @@ class SchemaLoadPlan:
     """Complete plan for schema loading."""
     id: str
     name: str
-    schemas: List[SchemaDefinition] = field(default_factory=list)
+    schemas: list[SchemaDefinition] = field(default_factory=list)
     validation_mode: ValidationMode = ValidationMode.STRICT
-    validation_rules: List[ValidationRule] = field(default_factory=list)
-    transforms: List[SchemaTransform] = field(default_factory=list)
+    validation_rules: list[ValidationRule] = field(default_factory=list)
+    transforms: list[SchemaTransform] = field(default_factory=list)
     resolve_dependencies: bool = True
     enable_caching: bool = True
     cache_ttl: int = 3600
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -105,27 +105,27 @@ class SchemaLoadConfig:
 class SchemaLoadResult:
     """Result of schema load planning."""
     success: bool
-    load_plan: Optional[SchemaLoadPlan] = None
+    load_plan: SchemaLoadPlan | None = None
     schema_count: int = 0
     dependency_count: int = 0
     validation_rule_count: int = 0
     transform_count: int = 0
     load_time_estimate: int = 0
     memory_estimate: int = 0
-    warnings: List[str] = field(default_factory=list)
-    errors: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    warnings: list[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class SchemaLoadPlanner:
     """Planner for schema loading operations."""
 
-    def __init__(self, config: Optional[SchemaLoadConfig] = None):
+    def __init__(self, config: SchemaLoadConfig | None = None):
         self.config = config or SchemaLoadConfig()
         self.logger = logging.getLogger(self.__class__.__name__)
         self.logger.setLevel(self.config.log_level)
 
-    def plan_load(self, load_request: Dict[str, Any]) -> SchemaLoadResult:
+    def plan_load(self, load_request: dict[str, Any]) -> SchemaLoadResult:
         """Plan schema loading operations.
 
         Args:
@@ -209,7 +209,7 @@ class SchemaLoadPlanner:
                 }
             )
 
-    def _validate_request(self, request: Dict[str, Any]) -> None:
+    def _validate_request(self, request: dict[str, Any]) -> None:
         """Validate schema load planning request."""
         if not request:
             raise ValueError("Schema load planning request cannot be empty")
@@ -220,7 +220,7 @@ class SchemaLoadPlanner:
         if "schemas" not in request:
             raise ValueError("Schemas are required in schema load planning request")
 
-    def _parse_schemas(self, request: Dict[str, Any]) -> List[SchemaDefinition]:
+    def _parse_schemas(self, request: dict[str, Any]) -> list[SchemaDefinition]:
         """Parse schemas from request."""
         schemas = []
         raw_schemas = request.get("schemas", [])
@@ -288,7 +288,7 @@ class SchemaLoadPlanner:
 
         return schemas
 
-    def _parse_validation_mode(self, request: Dict[str, Any]) -> ValidationMode:
+    def _parse_validation_mode(self, request: dict[str, Any]) -> ValidationMode:
         """Parse validation mode from request."""
         mode_mapping = {
             "strict": ValidationMode.STRICT,
@@ -300,7 +300,7 @@ class SchemaLoadPlanner:
         mode_str = request.get("validation_mode", self.config.default_validation_mode)
         return mode_mapping.get(mode_str, ValidationMode.STRICT)
 
-    def _parse_validation_rules(self, request: Dict[str, Any]) -> List[ValidationRule]:
+    def _parse_validation_rules(self, request: dict[str, Any]) -> list[ValidationRule]:
         """Parse validation rules from request."""
         rules = []
         raw_rules = request.get("validation_rules", [])
@@ -318,7 +318,7 @@ class SchemaLoadPlanner:
 
         return rules
 
-    def _parse_transforms(self, request: Dict[str, Any]) -> List[SchemaTransform]:
+    def _parse_transforms(self, request: dict[str, Any]) -> list[SchemaTransform]:
         """Parse transforms from request."""
         transforms = []
         raw_transforms = request.get("transforms", [])
@@ -353,11 +353,11 @@ class SchemaLoadPlanner:
 
     def _create_load_plan(
         self,
-        request: Dict[str, Any],
-        schemas: List[SchemaDefinition],
+        request: dict[str, Any],
+        schemas: list[SchemaDefinition],
         validation_mode: ValidationMode,
-        validation_rules: List[ValidationRule],
-        transforms: List[SchemaTransform]
+        validation_rules: list[ValidationRule],
+        transforms: list[SchemaTransform]
     ) -> SchemaLoadPlan:
         """Create schema load plan from parsed components."""
         return SchemaLoadPlan(
@@ -438,7 +438,7 @@ class SchemaLoadPlanner:
 def create_schema_load_planner(
     enable_validation: bool = True,
     enable_transforms: bool = True,
-    **kwargs: Dict[str, object]) -> SchemaLoadPlanner:
+    **kwargs: dict[str, object]) -> SchemaLoadPlanner:
     """Create a configured schema load planner."""
     config = SchemaLoadConfig(
         enable_validation=enable_validation,
@@ -451,13 +451,13 @@ def create_schema_load_planner(
 # Convenience function for direct usage
 def plan_schema_load(
     plan_name: str,
-    schemas: List[Dict[str, Any]],
+    schemas: list[dict[str, Any]],
     validation_mode: str = "strict",
-    validation_rules: Optional[List[Dict[str, Any]]] = None,
-    transforms: Optional[List[Dict[str, Any]]] = None,
+    validation_rules: list[dict[str, Any]] | None = None,
+    transforms: list[dict[str, Any]] | None = None,
     resolve_dependencies: bool = True,
-    config: Optional[Dict[str, Any]] = None
-) -> Dict[str, Any]:
+    config: dict[str, Any] | None = None
+) -> dict[str, Any]:
     """Plan schema load from simple parameters.
 
     Args:

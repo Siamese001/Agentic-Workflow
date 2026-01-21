@@ -19,12 +19,11 @@ from enum import Enum
 from typing import Dict, Any, Optional, List, Union, Callable
 from abc import ABC, abstractmethod
 
-# ARCHIVED: circuit_breaker import removed # (
-    CircuitBreaker,
-    CircuitBreakerState,
-    CircuitBreakerOpenError,
-    get_breaker,
-)
+# ARCHIVED: circuit_breaker import removed
+CircuitBreaker = None
+CircuitBreakerState = None
+CircuitBreakerOpenError = None
+get_breaker = None
 
 from pydantic import BaseModel, Field, validator
 import asyncio

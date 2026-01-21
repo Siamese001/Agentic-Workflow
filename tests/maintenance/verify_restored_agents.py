@@ -2,8 +2,8 @@
 file: tests/maintenance/verify_restored_agents.py
 description: Smoke test to identify broken imports in the 10 recently restored agents.
 """
-import sys
 import importlib
+import sys
 from pathlib import Path
 
 # Add project root to path
@@ -11,7 +11,6 @@ PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 import pytest
-from typing import List, Tuple
 
 # The 10 agents we just restored
 RESTORED_TARGETS = [
@@ -56,5 +55,5 @@ def test_restoration_integrity():
 if __name__ == "__main__":
     try:
         test_restoration_integrity()
-    except Exception as e:
+    except Exception:
         sys.exit(1)

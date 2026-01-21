@@ -8,11 +8,9 @@ import hashlib
 import json
 import logging
 import uuid
-from abc import ABC, abstractmethod
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, Generic, List, Optional, TypeVar, Union
-from dataclasses import dataclass, field
+from typing import Any, Generic, TypeVar
 
 from pydantic import BaseModel, Field, validator
 from pydantic.generics import GenericModel
@@ -53,10 +51,10 @@ class PayloadBase(BaseModel):
 class ResumeData(PayloadBase):
     """Resume-specific payload data."""
     payload_type: PayloadType = PayloadType.RESUME_DATA
-    sections: Dict[str, Any] = Field(default_factory=dict)
-    target_role: Optional[str] = None
-    experience_years: Optional[int] = None
-    skills: List[str] = Field(default_factory=list)
+    sections: dict[str, Any] = Field(default_factory=dict)
+    target_role: str | None = None
+    experience_years: int | None = None
+    skills: list[str] = Field(default_factory=list)
 
     @validator('content_hash', pre=True, always=True)
     def generate_hash(cls, v, values):
@@ -70,10 +68,10 @@ class ResumeData(PayloadBase):
 class OutreachData(PayloadBase):
     """Outreach-specific payload data."""
     payload_type: PayloadType = PayloadType.OUTREACH_DATA
-    recipient_info: Dict[str, Any] = Field(default_factory=dict)
-    sender_info: Dict[str, Any] = Field(default_factory=dict)
-    campaign_context: Dict[str, Any] = Field(default_factory=dict)
-    personalization_points: List[str] = Field(default_factory=list)
+    recipient_info: dict[str, Any] = Field(default_factory=dict)
+    sender_info: dict[str, Any] = Field(default_factory=dict)
+    campaign_context: dict[str, Any] = Field(default_factory=dict)
+    personalization_points: list[str] = Field(default_factory=list)
 
     @validator('content_hash', pre=True, always=True)
     def generate_hash(cls, v, values):
@@ -91,7 +89,7 @@ class RawText(PayloadBase):
     """Raw text payload."""
     payload_type: PayloadType = PayloadType.RAW_TEXT
     text: str
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
     @validator('content_hash', pre=True, always=True)
     def generate_hash(cls, v, values):
@@ -104,7 +102,7 @@ class RawText(PayloadBase):
 class DictData(PayloadBase):
     """Generic dictionary payload."""
     payload_type: PayloadType = PayloadType.DICT_DATA
-    data: Dict[str, Any]
+    data: dict[str, Any]
 
     @validator('content_hash', pre=True, always=True)
     def generate_hash(cls, v, values):
@@ -120,8 +118,8 @@ class ErrorPayload(PayloadBase):
     payload_type: PayloadType = PayloadType.ERROR_PAYLOAD
     error_type: str
     error_message: str
-    original_payload_type: Optional[PayloadType] = None
-    stack_trace: Optional[str] = None
+    original_payload_type: PayloadType | None = None
+    stack_trace: str | None = None
 
 
 class StageResult(BaseModel):
@@ -130,9 +128,9 @@ class StageResult(BaseModel):
     status: PipelineStageStatus
     duration_ms: float
     output_hash: str
-    error_message: Optional[str] = None
+    error_message: str | None = None
     retry_count: int = 0
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
     @validator('output_hash', pre=True, always=True)
     def generate_output_hash(cls, v, values):
@@ -149,7 +147,7 @@ class SignalEnvelope(GenericModel, Generic[T]):
     # Identification
     id: uuid.UUID = Field(default_factory=uuid.uuid4)
     trace_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    parent_trace_id: Optional[str] = None  # For distributed tracing
+    parent_trace_id: str | None = None  # For distributed tracing
 
     # Timestamps
     created_at: datetime = Field(default_factory=datetime.utcnow)
@@ -159,10 +157,10 @@ class SignalEnvelope(GenericModel, Generic[T]):
     payload: T
 
     # Audit trail
-    history: List[StageResult] = Field(default_factory=list)
+    history: list[StageResult] = Field(default_factory=list)
 
     # Context metadata
-    metadata: Dict[str, str] = Field(default_factory=dict)
+    metadata: dict[str, str] = Field(default_factory=dict)
 
     # Error state
     has_errors: bool = False
@@ -197,8 +195,8 @@ class SignalEnvelope(GenericModel, Generic[T]):
         self,
         stage_name: str,
         duration_ms: float,
-        output_hash: Optional[str] = None,
-        metadata: Optional[Dict[str, Any]] = None
+        output_hash: str | None = None,
+        metadata: dict[str, Any] | None = None
     ) -> None:
         """Mark a stage as successfully completed.
 
@@ -273,7 +271,7 @@ class SignalEnvelope(GenericModel, Generic[T]):
         self.error_count += 1
         self._touch()
 
-    def mark_stage_skipped(self, stage_name: str, reason: Optional[str] = None) -> None:
+    def mark_stage_skipped(self, stage_name: str, reason: str | None = None) -> None:
         """Mark a stage as skipped.
 
         Args:
@@ -317,7 +315,7 @@ class SignalEnvelope(GenericModel, Generic[T]):
                 return result.status == PipelineStageStatus.SUCCESS
         return False
 
-    def get_stage_result(self, stage_name: str) -> Optional[StageResult]:
+    def get_stage_result(self, stage_name: str) -> StageResult | None:
         """Get the result for a specific stage.
 
         Args:
@@ -331,7 +329,7 @@ class SignalEnvelope(GenericModel, Generic[T]):
                 return result
         return None
 
-    def get_last_completed_stage(self) -> Optional[str]:
+    def get_last_completed_stage(self) -> str | None:
         """Get the name of the last completed stage.
 
         Returns:
@@ -342,7 +340,7 @@ class SignalEnvelope(GenericModel, Generic[T]):
                 return result.stage_name
         return None
 
-    def get_failed_stages(self) -> List[str]:
+    def get_failed_stages(self) -> list[str]:
         """Get list of failed stage names.
 
         Returns:
@@ -362,7 +360,7 @@ class SignalEnvelope(GenericModel, Generic[T]):
         """Update the updated_at timestamp."""
         self.updated_at = datetime.utcnow()
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert envelope to dictionary for serialization.
 
         Returns:
@@ -382,7 +380,7 @@ class SignalEnvelope(GenericModel, Generic[T]):
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "SignalEnvelope":
+    def from_dict(cls, data: dict[str, Any]) -> "SignalEnvelope":
         """Create envelope from dictionary.
 
         Args:
@@ -424,7 +422,7 @@ class SignalEnvelope(GenericModel, Generic[T]):
         return envelope
 
     @classmethod
-    def from_legacy_dict(cls, data: Dict[str, Any], metadata: Optional[Dict[str, str]] = None) -> "SignalEnvelope":
+    def from_legacy_dict(cls, data: dict[str, Any], metadata: dict[str, str] | None = None) -> "SignalEnvelope":
         """Create envelope from legacy dict format for backward compatibility.
 
         Args:
@@ -456,9 +454,9 @@ class EnvelopeFactory:
     @staticmethod
     def create_envelope(
         data: Any,
-        metadata: Optional[Dict[str, str]] = None,
-        trace_id: Optional[str] = None,
-        parent_trace_id: Optional[str] = None
+        metadata: dict[str, str] | None = None,
+        trace_id: str | None = None,
+        parent_trace_id: str | None = None
     ) -> SignalEnvelope:
         """Create a new signal envelope.
 
@@ -504,7 +502,7 @@ class EnvelopeFactory:
         return envelope
 
     @staticmethod
-    def _create_payload_from_dict(data: Dict[str, Any]) -> Union[ResumeData, OutreachData, DictData]:
+    def _create_payload_from_dict(data: dict[str, Any]) -> ResumeData | OutreachData | DictData:
         """Create appropriate payload from dictionary.
 
         Args:

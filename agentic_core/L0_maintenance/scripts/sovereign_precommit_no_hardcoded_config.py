@@ -1,26 +1,26 @@
 from __future__ import annotations
+
 """
 Sovereign Guard: Block Hardcoded Configuration Constants
 Enforces that all operational constants must be centralized in sovereign_config.py
 
 Usage: Called automatically by pre-commit hook
 """
-import ast
 import re
 import sys
 from pathlib import Path
 from typing import Any
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+
 exempt: Any = {'agentic_core/config/blueprint_sovereign/environments/sovereign_config.py', 'test_', 'tests/'}
 hardcoded_patterns: Any = [('PRIMARY_MODEL\\s*=\\s*["\\\']', 'Model selection'), ('REASONING_MODEL\\s*=\\s*["\\\']', 'Model selection'), ('MAX_RETRY_ATTEMPTS\\s*=\\s*\\d+', 'Retry configuration'), ('CHECKPOINT_INTERVAL\\s*=\\s*\\d+', 'Checkpoint configuration'), ('SEMANTIC_SIMILARITY_THRESHOLD\\s*=\\s*[\\d.]+', 'Threshold configuration'), ('BASE_GIT_PATH\\s*=\\s*["\\\']', 'Path configuration'), ('gpt-4o["\\\']', 'Hardcoded model name'), ('o1-preview["\\\']', 'Hardcoded model name')]
 
 def check_file(filepath: Any) -> Any:
     """Check a single file for hardcoded configuration constants."""
     normalized_path: Any = str(Path(filepath)).replace('\\', '/')
-    if any((exempt in normalized_path for exempt in EXEMPT)):
+    if any(exempt in normalized_path for exempt in EXEMPT):
         return True
     try:
-        with open(filepath, 'r', encoding='utf-8') as f:
+        with open(filepath, encoding='utf-8') as f:
             content: Any = f.read()
         violations: Any = []
         lines: Any = content.split('\n')

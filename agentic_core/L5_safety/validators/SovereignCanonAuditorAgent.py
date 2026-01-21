@@ -5,7 +5,9 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 """
 Sovereign Canon Audit – Powered by DeepWiki MCP
 Phase 13E: L6 Self-Verification Utility
@@ -15,17 +17,14 @@ using DeepWiki's codebase intelligence capabilities.
 """
 import asyncio
 import logging
-from typing import List, Dict, Any
+from typing import Any
+
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L6_observability.deepwiki_client_sovereign import SovereignDeepWikiClient
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.decorators import standard_heal
 
 Logger: Any = logging.getLogger('L6.CanonAudit')
 
@@ -41,7 +40,7 @@ class SovereignCanonAuditorAgent(HealerMixin, SubatomicTestingMixin, MCPHardened
         self.client = SovereignDeepWikiClient()
         self.critical_files = ['agentic_core/L3_orchestration/workflow_engines/mcp_router_sovereign.py', 'agentic_core/L5_safety/guardrails/mcp_sovereign.py', 'agentic_core/L4_state/semantic_memory/pinecone_mcp_client.py', 'agentic_core/L4_state/knowledge_graph/SovereignGraphClient.py', 'agentic_core/L6_observability/deepwiki_client_sovereign.py', 'agentic_core/L1_cognition/thought_engine/StrategicPlannerAgent.py', 'agentic_core/L2_execution/ToolRegistry/WebSearchTools.py']
 
-    async def audit_core_components(self) -> Dict[str, Any]:
+    async def audit_core_components(self) -> dict[str, Any]:
         """
         Audit critical core components for existence.
 
@@ -80,7 +79,7 @@ class SovereignCanonAuditorAgent(HealerMixin, SubatomicTestingMixin, MCPHardened
             Answer from DeepWiki
         """
         print('\n' + '-' * 60)
-        print(f'🧠 ARCHITECTURAL INSIGHT')
+        print('🧠 ARCHITECTURAL INSIGHT')
         print('-' * 60)
         print(f'Q: {question}')
         print()
@@ -94,7 +93,7 @@ class SovereignCanonAuditorAgent(HealerMixin, SubatomicTestingMixin, MCPHardened
             print(f'A: {error_msg}')
             return error_msg
 
-    async def verify_mcp_integration(self) -> Dict[str, Any]:
+    async def verify_mcp_integration(self) -> dict[str, Any]:
         """
         Verify MCP integration across all layers.
 
@@ -110,7 +109,7 @@ class SovereignCanonAuditorAgent(HealerMixin, SubatomicTestingMixin, MCPHardened
             try:
                 question: Any = f'Does {filename} use the SovereignMCPRouter for MCP integration?'
                 answer: Any = await self.client.ask_question(question)
-                uses_mcp: Any = any((word in answer.lower() for word in ['yes', 'uses', 'integrates', 'router']))
+                uses_mcp: Any = any(word in answer.lower() for word in ['yes', 'uses', 'integrates', 'router'])
                 status: Any = '✅ VERIFIED' if uses_mcp else '⚠️ UNCLEAR'
                 results['details'].append({'component': component_name, 'file': filename, 'uses_mcp': uses_mcp, 'status': status})
                 if uses_mcp:
@@ -125,7 +124,7 @@ class SovereignCanonAuditorAgent(HealerMixin, SubatomicTestingMixin, MCPHardened
                 print(f'❌ ERROR: {component_name} - {e}')
         return results
 
-    async def run_full_audit(self) -> Dict[str, Any]:
+    async def run_full_audit(self) -> dict[str, Any]:
         """
         Run complete canon audit.
 

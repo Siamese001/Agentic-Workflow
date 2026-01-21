@@ -1,10 +1,12 @@
 from __future__ import annotations
+
 import json
+
 '''Brief description of functionality and purpose.'''
 
 import logging
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Protocol
+from dataclasses import dataclass
+from typing import Any
 
 import duckdb
 

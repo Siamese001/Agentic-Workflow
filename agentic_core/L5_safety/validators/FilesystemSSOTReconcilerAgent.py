@@ -5,6 +5,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """
 FilesystemSSOTReconcilerAgent - FILESYSTEM-LEVEL SSOT RECONCILER
 Territory: agentic_core/L0_maintenance/scripts/
@@ -59,22 +60,19 @@ DOMAIN-SPECIFIC INTEGRATIONS (SSOT Coordination):
 """
 
 import ast
-import hashlib
-import importlib
 import logging
 import os
 import shutil
 import tempfile
+from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
-
-from dataclasses import dataclass
+from typing import Any
 
 # PHASE 2.1: L0 Structural Standardization
 from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
-from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
 from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
+from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
 from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
 
 # GRAVITY FIXED (Upward Leak): from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
@@ -86,6 +84,7 @@ except ImportError:
     class MCPHardenedMixin:
         pass
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
+
 try:
     from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 except ImportError:
@@ -103,13 +102,13 @@ class ReconciliationViolation:
     """Structured violation for blueprint reconciliation healing."""
     is_valid: bool
     message: str
-    drift_type: Optional[str] = None
-    file_path: Optional[Path] = None
-    suggested_action: Optional[str] = None
+    drift_type: str | None = None
+    file_path: Path | None = None
+    suggested_action: str | None = None
     severity: int = 5
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L0 maintenance agent - operational only."""
         super().heal_repository()
 
@@ -162,10 +161,10 @@ class FilesystemSSOTReconcilerAgent(
         self.enforcement_mode = enforcement_mode
 
         # Track discovered state
-        self.actual_folders: Dict[str, Set[str]] = {}
-        self.actual_agents: Set[str] = set()
-        self.actual_signals: Set[str] = set()
-        self.drift_detected: List[Dict[str, Any]] = []
+        self.actual_folders: dict[str, set[str]] = {}
+        self.actual_agents: set[str] = set()
+        self.actual_signals: set[str] = set()
+        self.drift_detected: list[dict[str, Any]] = []
 
         # Initialize ArchivalGatekeeper for safe file operations
         self.gatekeeper = ArchivalGatekeeper.get_instance(self.project_root)
@@ -177,19 +176,19 @@ class FilesystemSSOTReconcilerAgent(
     # Core Reconciliation Methods
     # ===================================================================
 
-    def _create_no_drift_result(self) -> Dict[str, Any]:
+    def _create_no_drift_result(self) -> dict[str, Any]:
         """Create result for no drift detected."""
         return {"drift_detected": False, "proposals": [], "applied": False}
 
-    def _create_rejected_result(self, proposals: List[Dict], message: str) -> Dict[str, Any]:
+    def _create_rejected_result(self, proposals: list[dict], message: str) -> dict[str, Any]:
         """Create result for rejected/aborted changes."""
         return {"drift_detected": True, "proposals": proposals, "applied": False, "message": message}
 
-    def _create_applied_result(self, proposals: List[Dict], results: List[str]) -> Dict[str, Any]:
+    def _create_applied_result(self, proposals: list[dict], results: list[str]) -> dict[str, Any]:
         """Create result for successfully applied changes."""
         return {"drift_detected": True, "proposals": proposals, "applied": True, "results": results}
 
-    def _handle_interactive_approval(self, proposals: List[Dict]) -> Tuple[bool, Optional[Dict[str, Any]]]:
+    def _handle_interactive_approval(self, proposals: list[dict]) -> tuple[bool, dict[str, Any] | None]:
         """Handle interactive approval flow. Returns (should_apply, early_return_result)."""
         Logger.info("Interactive mode - requesting user approval")
         try:
@@ -203,7 +202,7 @@ class FilesystemSSOTReconcilerAgent(
             Logger.warning("User aborted reconciliation")
             return False, self._create_rejected_result(proposals, "Reconciliation aborted by user")
 
-    async def enforce_gospel(self, auto_apply: bool = False, interactive: bool = True) -> Dict[str, Any]:
+    async def enforce_gospel(self, auto_apply: bool = False, interactive: bool = True) -> dict[str, Any]:
         """Main entry point: Align filesystem to match the Gospel (blueprint)."""
         Logger.info("Starting SSOT Gospel Enforcement scan...")
 
@@ -294,7 +293,7 @@ class FilesystemSSOTReconcilerAgent(
         if discovery_path.exists():
             try:
                 import json
-                with open(discovery_path, 'r', encoding='utf-8') as f:
+                with open(discovery_path, encoding='utf-8') as f:
                     discovery_data = json.load(f)
 
                 for entry in discovery_data:
@@ -344,7 +343,7 @@ class FilesystemSSOTReconcilerAgent(
 
         Logger.info(f"Agent scan complete: {len(self.actual_agents)} agents, {len(self.actual_signals)} signals discovered")
 
-    def _load_current_blueprint(self) -> Dict[str, Any]:
+    def _load_current_blueprint(self) -> dict[str, Any]:
         """
         Load current blueprint values by dynamically importing it.
 
@@ -372,7 +371,7 @@ class FilesystemSSOTReconcilerAgent(
 
         return blueprint
 
-    def _detect_drift(self, current_blueprint: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def _detect_drift(self, current_blueprint: dict[str, Any]) -> list[dict[str, Any]]:
         """
         Compare actual state vs blueprint, return list of drift items.
 
@@ -397,7 +396,7 @@ class FilesystemSSOTReconcilerAgent(
         Logger.info(f"Drift detection complete: {len(drift)} discrepancies found")
         return drift
 
-    def _check_registry_subfolders(self, current_blueprint: Dict[str, Any], drift: List[Dict[str, Any]]) -> None:
+    def _check_registry_subfolders(self, current_blueprint: dict[str, Any], drift: list[dict[str, Any]]) -> None:
         """
         Check SOVEREIGN_REGISTRY subfolders.
 
@@ -419,7 +418,7 @@ class FilesystemSSOTReconcilerAgent(
                 drift.append({
                     "type": "orphaned_subfolders",
                     "root": root,
-                    "folders": sorted(list(missing)),
+                    "folders": sorted(missing),
                     "Severity": "medium"
                 })
                 Logger.warning(f"Orphaned subfolders in {root}: {missing}")
@@ -430,12 +429,12 @@ class FilesystemSSOTReconcilerAgent(
                 drift.append({
                     "type": "missing_subfolders",
                     "root": root,
-                    "folders": sorted(list(extra)),
+                    "folders": sorted(extra),
                     "Severity": "high"
                 })
                 Logger.warning(f"Missing subfolders in {root}: {extra}")
 
-    def _check_l2_subfolders(self, current_blueprint: Dict[str, Any], drift: List[Dict[str, Any]]) -> None:
+    def _check_l2_subfolders(self, current_blueprint: dict[str, Any], drift: list[dict[str, Any]]) -> None:
         """
         Check CORE_SUBFOLDER_MAP (L2 depth).
 
@@ -456,12 +455,12 @@ class FilesystemSSOTReconcilerAgent(
                 drift.append({
                     "type": "orphaned_l2_subfolders",
                     "l1_folder": l1_folder,
-                    "folders": sorted(list(missing_l2)),
+                    "folders": sorted(missing_l2),
                     "Severity": "medium"
                 })
                 Logger.warning(f"Orphaned L2 subfolders in {l1_folder}: {missing_l2}")
 
-    def _check_canon_signals(self, current_blueprint: Dict[str, Any], drift: List[Dict[str, Any]]) -> None:
+    def _check_canon_signals(self, current_blueprint: dict[str, Any], drift: list[dict[str, Any]]) -> None:
         """
         Check CANON_SIGNALS.
 
@@ -474,12 +473,12 @@ class FilesystemSSOTReconcilerAgent(
         if missing_signals:
             drift.append({
                 "type": "missing_canon_signals",
-                "signals": sorted(list(missing_signals)),
+                "signals": sorted(missing_signals),
                 "Severity": "low"
             })
             Logger.info(f"Missing canonical signals: {missing_signals}")
 
-    def _check_registry_subfolders(self, current_blueprint: Dict[str, Any], drift: List[Dict[str, Any]]) -> None:
+    def _check_registry_subfolders(self, current_blueprint: dict[str, Any], drift: list[dict[str, Any]]) -> None:
         """Check SOVEREIGN_REGISTRY subfolders for drift."""
         blueprint_registry = current_blueprint.get("sovereign_registry", {})
 
@@ -495,7 +494,7 @@ class FilesystemSSOTReconcilerAgent(
                 drift.append({
                     "type": "orphaned_subfolders",
                     "root": root,
-                    "folders": sorted(list(missing)),
+                    "folders": sorted(missing),
                     "Severity": "medium"
                 })
                 Logger.warning(f"Orphaned subfolders in {root}: {missing}")
@@ -506,12 +505,12 @@ class FilesystemSSOTReconcilerAgent(
                 drift.append({
                     "type": "missing_subfolders",
                     "root": root,
-                    "folders": sorted(list(extra)),
+                    "folders": sorted(extra),
                     "Severity": "high"
                 })
                 Logger.warning(f"Missing subfolders in {root}: {extra}")
 
-    def _check_l2_subfolders(self, current_blueprint: Dict[str, Any], drift: List[Dict[str, Any]]) -> None:
+    def _check_l2_subfolders(self, current_blueprint: dict[str, Any], drift: list[dict[str, Any]]) -> None:
         """Check CORE_SUBFOLDER_MAP (L2 depth) for drift."""
         blueprint_core_map = current_blueprint.get("core_subfolder_map", {})
 
@@ -527,12 +526,12 @@ class FilesystemSSOTReconcilerAgent(
                 drift.append({
                     "type": "orphaned_l2_subfolders",
                     "l1_folder": l1_folder,
-                    "folders": sorted(list(missing_l2)),
+                    "folders": sorted(missing_l2),
                     "Severity": "medium"
                 })
                 Logger.warning(f"Orphaned L2 subfolders in {l1_folder}: {missing_l2}")
 
-    def _check_canon_signals(self, current_blueprint: Dict[str, Any], drift: List[Dict[str, Any]]) -> None:
+    def _check_canon_signals(self, current_blueprint: dict[str, Any], drift: list[dict[str, Any]]) -> None:
         """Check CANON_SIGNALS for drift."""
         blueprint_signals = set(current_blueprint.get("CANON_SIGNALS", set()))
         missing_signals = blueprint_signals - self.actual_signals
@@ -540,12 +539,12 @@ class FilesystemSSOTReconcilerAgent(
         if missing_signals:
             drift.append({
                 "type": "missing_canon_signals",
-                "signals": sorted(list(missing_signals)),
+                "signals": sorted(missing_signals),
                 "Severity": "low"
             })
             Logger.info(f"Missing canonical signals: {missing_signals}")
 
-    def _generate_filesystem_proposals(self, drift: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def _generate_filesystem_proposals(self, drift: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Generates OS-level folder actions to match blueprint."""
         proposals = []
 
@@ -577,7 +576,7 @@ class FilesystemSSOTReconcilerAgent(
         Logger.info(f"Generated {len(proposals)} filesystem alignment proposals")
         return proposals
 
-    def _apply_filesystem_alignment(self, proposals: List[Dict[str, Any]]) -> List[str]:
+    def _apply_filesystem_alignment(self, proposals: list[dict[str, Any]]) -> list[str]:
         """Executes the terraforming actions on disk."""
         applied_logs = []
 
@@ -638,7 +637,7 @@ class FilesystemSSOTReconcilerAgent(
             rel_target = target
 
         print(f"\n{'='*60}")
-        print(f"ARCHIVE APPROVAL REQUIRED")
+        print("ARCHIVE APPROVAL REQUIRED")
         print(f"{'='*60}")
         print(f"Folder: {rel_source}")
         print(f"Target: {rel_target}")
@@ -668,7 +667,7 @@ class FilesystemSSOTReconcilerAgent(
         Logger.info(f"Backup created: {backup_path}")
         return backup_path
 
-    def _apply_proposals(self, proposals: List[Dict[str, Any]]) -> None:
+    def _apply_proposals(self, proposals: list[dict[str, Any]]) -> None:
         """
         Apply proposals by modifying structure_blueprint.py.
 
@@ -718,7 +717,7 @@ class FilesystemSSOTReconcilerAgent(
         Path(tmp_path).replace(self.blueprint_file)
         Logger.info("Blueprint updated successfully with atomic write")
 
-    def _apply_sovereign_registry_update(self, content: str, root: str, folders: List[str]) -> str:
+    def _apply_sovereign_registry_update(self, content: str, root: str, folders: list[str]) -> str:
         """
         Add subfolders to sovereign_registry[root]['subfolders'].
 
@@ -743,7 +742,7 @@ class FilesystemSSOTReconcilerAgent(
         Logger.warning(f"Could not find exact insertion point for {root}, appending at end")
         return content + f"\n# Auto-added by FilesystemSSOTReconcilerAgent\nsovereign_registry['{root}']['subfolders'].extend({folders})\n"
 
-    def _apply_core_map_update(self, content: str, l1_folder: str, folders: List[str]) -> str:
+    def _apply_core_map_update(self, content: str, l1_folder: str, folders: list[str]) -> str:
         """
         Add subfolders to core_subfolder_map[l1_folder].
 
@@ -768,7 +767,7 @@ class FilesystemSSOTReconcilerAgent(
         Logger.warning(f"Could not find exact insertion point for {l1_folder}, appending at end")
         return content + f"\n# Auto-added by FilesystemSSOTReconcilerAgent\ncore_subfolder_map['{l1_folder}'].extend({folders})\n"
 
-    def _apply_signals_update(self, content: str, signals: List[str]) -> str:
+    def _apply_signals_update(self, content: str, signals: list[str]) -> str:
         """
         Add signals to CANON_SIGNALS set.
 
@@ -785,7 +784,7 @@ class FilesystemSSOTReconcilerAgent(
                 # Look for the closing brace
                 for j in range(i, min(i + 50, len(lines))):
                     if "}" in lines[j]:
-                        insert_line = f"# Auto-added by FilesystemSSOTReconcilerAgent\n"
+                        insert_line = "# Auto-added by FilesystemSSOTReconcilerAgent\n"
                         insert_line += f"CANON_SIGNALS.update({set(signals)})\n"
                         lines.insert(j + 1, insert_line)
                         return "".join(lines)
@@ -794,7 +793,7 @@ class FilesystemSSOTReconcilerAgent(
         Logger.warning("Could not find exact insertion point for CANON_SIGNALS, appending at end")
         return content + f"\n# Auto-added by FilesystemSSOTReconcilerAgent\nCANON_SIGNALS.update({set(signals)})\n"
 
-    def _request_user_approval(self, proposals: List[Dict[str, Any]]) -> bool:
+    def _request_user_approval(self, proposals: list[dict[str, Any]]) -> bool:
         """
         Interactive approval for blueprint changes (Phase 2).
 
@@ -885,7 +884,7 @@ class FilesystemSSOTReconcilerAgent(
     # Mixin Implementations
     # ===================================================================
 
-    async def _detect_action_opportunity(self) -> Optional[Dict[str, Any]]:
+    async def _detect_action_opportunity(self) -> dict[str, Any] | None:
         """
         Proactively detect when blueprint needs reconciliation.
 
@@ -901,7 +900,7 @@ class FilesystemSSOTReconcilerAgent(
         # Future: integrate with MetricsWitness for sovereignty score
         return None
 
-    async def self_diagnose(self) -> Dict[str, Any]:
+    async def self_diagnose(self) -> dict[str, Any]:
         """
         Health check for reconciler.
 
@@ -932,15 +931,15 @@ class FilesystemSSOTReconcilerAgent(
 # Mixin Implementations
 # ===================================================================
 
-    async def _detect_action_opportunity(self) -> Optional[Dict[str, Any]]:
+    async def _detect_action_opportunity(self) -> dict[str, Any] | None:
         """Proactively detect when blueprint needs reconciliation."""
         pass
 
-    async def _execute_minimal(self, ctx: Any, **context: Dict[str, Any]) -> Any:
+    async def _execute_minimal(self, ctx: Any, **context: dict[str, Any]) -> Any:
         """Minimal mode - health check only."""
         return await self.self_diagnose()
 
-    def post_heal_validation(self, affected_paths: List[Path], dry_run: bool = True) -> Dict[str, Any]:
+    def post_heal_validation(self, affected_paths: list[Path], dry_run: bool = True) -> dict[str, Any]:
         """
         GOLD STANDARD: Post-heal validation confirming blueprint sync.
         Verifies blueprint was successfully updated and syntax is valid.
@@ -995,10 +994,10 @@ class FilesystemSSOTReconcilerAgent(
 
     def cleanup_violations(
         self,
-        violations: List[ReconciliationViolation],
+        violations: list[ReconciliationViolation],
         dry_run: bool = True,
         max_actions: int = 50
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         GOLD STANDARD: Cleanup reconciliation violations with blueprint updates.
 
@@ -1053,7 +1052,7 @@ class FilesystemSSOTReconcilerAgent(
 
         return actions
 
-    def run_with_cleanup(self, dry_run: bool = True) -> Dict[str, Any]:
+    def run_with_cleanup(self, dry_run: bool = True) -> dict[str, Any]:
         """
         GOLD STANDARD: Full reconciliation with autonomous cleanup.
         Scans filesystem, detects drift, and reconciles blueprint.
@@ -1064,7 +1063,7 @@ class FilesystemSSOTReconcilerAgent(
         Returns:
             Dict with comprehensive execution and cleanup summaries
         """
-        all_violations: List[ReconciliationViolation] = []
+        all_violations: list[ReconciliationViolation] = []
 
         # Load current blueprint and detect drift
         current_blueprint = self._load_current_blueprint()
@@ -1109,7 +1108,7 @@ class FilesystemSSOTReconcilerAgent(
         'observability', # SSOT: agentic_core/L6_observability/
     }
 
-    def detect_root_drift(self) -> Dict[str, Any]:
+    def detect_root_drift(self) -> dict[str, Any]:
         """
         Detect root-level SSOT drift.
 
@@ -1169,12 +1168,12 @@ class FilesystemSSOTReconcilerAgent(
 
         return drift
 
-    def scan_root_folders(self) -> Dict[str, Any]:
+    def scan_root_folders(self) -> dict[str, Any]:
         """Alias for detect_root_drift for API compatibility."""
         return self.detect_root_drift()
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L0 maintenance agent - operational only."""
         if _call_path is None:
             _call_path = set()

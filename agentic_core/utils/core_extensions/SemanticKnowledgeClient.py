@@ -1,9 +1,9 @@
+import logging
 import os
 import threading
-import logging
-from typing import List, Dict, Any, Optional, Union
-from enum import Enum
 from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +23,7 @@ class SearchResult:
     id: str
     content: str
     score: float
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class SemanticKnowledgeClient:
@@ -64,14 +64,14 @@ class SemanticKnowledgeClient:
     def search(
         self,
         query: str,
-        namespace: Union[KnowledgeNamespace, str],
+        namespace: KnowledgeNamespace | str,
         top_k: int = 5,
-        filter_dict: Optional[Dict[str, Any]] = None,
-    ) -> List[SearchResult]:
+        filter_dict: dict[str, Any] | None = None,
+    ) -> list[SearchResult]:
         ns_value = namespace.value if isinstance(namespace, KnowledgeNamespace) else namespace
 
         try:
-            q: Dict[str, Any] = {
+            q: dict[str, Any] = {
                 "inputs": {"text": query},
                 "top_k": top_k,
             }
@@ -81,7 +81,7 @@ class SemanticKnowledgeClient:
             response = self._index.search_records(namespace=ns_value, query=q)
 
             hits = response.get("result", {}).get("hits", [])
-            results: List[SearchResult] = []
+            results: list[SearchResult] = []
             for hit in hits:
                 fields = hit.get("fields", {})
                 results.append(
@@ -101,42 +101,42 @@ class SemanticKnowledgeClient:
         self,
         query: str,
         top_k: int = 2,
-        namespaces: Optional[List[KnowledgeNamespace]] = None,
-    ) -> Dict[str, List[SearchResult]]:
+        namespaces: list[KnowledgeNamespace] | None = None,
+    ) -> dict[str, list[SearchResult]]:
         if namespaces is None:
             namespaces = list(KnowledgeNamespace)
 
-        results: Dict[str, List[SearchResult]] = {}
+        results: dict[str, list[SearchResult]] = {}
         for ns in namespaces:
             results[ns.value] = self.search(query, ns, top_k=top_k)
         return results
 
-    def find_agent_for_task(self, task_description: str) -> List[SearchResult]:
+    def find_agent_for_task(self, task_description: str) -> list[SearchResult]:
         return self.search(task_description, KnowledgeNamespace.AGENTS, top_k=3)
 
-    def find_healing_pattern(self, error_context: str) -> List[SearchResult]:
+    def find_healing_pattern(self, error_context: str) -> list[SearchResult]:
         return self.search(error_context, KnowledgeNamespace.HEALING, top_k=3)
 
-    def get_api_contract(self, class_method_name: str) -> List[SearchResult]:
+    def get_api_contract(self, class_method_name: str) -> list[SearchResult]:
         return self.search(class_method_name, KnowledgeNamespace.CONTRACTS, top_k=3)
 
-    def find_mixin(self, capability: str) -> List[SearchResult]:
+    def find_mixin(self, capability: str) -> list[SearchResult]:
         return self.search(capability, KnowledgeNamespace.MIXINS, top_k=3)
 
-    def find_documentation(self, topic: str) -> List[SearchResult]:
+    def find_documentation(self, topic: str) -> list[SearchResult]:
         return self.search(topic, KnowledgeNamespace.DOCS, top_k=3)
 
-    def find_config(self, config_query: str) -> List[SearchResult]:
+    def find_config(self, config_query: str) -> list[SearchResult]:
         return self.search(config_query, KnowledgeNamespace.CONFIGS, top_k=3)
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         if not self.is_available:
             return {"error": "Pinecone index not available"}
 
         try:
             stats = self._index.describe_index_stats()
 
-            namespaces: Dict[str, int] = {}
+            namespaces: dict[str, int] = {}
             total_records: int = 0
             dimension: int = 0
 

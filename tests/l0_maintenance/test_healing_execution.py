@@ -7,6 +7,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from agentic_core.L5_safety.validators.AutonomyGuardianAgent import get_autonomy_guardian
 
+
 def main():
     project_root = Path(__file__).parent.parent
     guardian = get_autonomy_guardian(project_root)

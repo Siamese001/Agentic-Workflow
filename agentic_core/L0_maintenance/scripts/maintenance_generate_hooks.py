@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Pre-commit Hook Generator - SSOT Synchronization
 Dynamically generates .pre-commit-config.yaml patterns from structure_blueprint.py
@@ -8,13 +9,15 @@ Usage:
     python scripts/maintenance/generate_hooks.py
     python scripts/maintenance/generate_hooks.py --dry-run
 """
+import re
 import sys
 from pathlib import Path
-import re
 from typing import Any
+
 project_root: Any = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(project_root))
 from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
+
 
 def sync_pre_commit(dry_run: bool=False) -> Any:
     """
@@ -30,22 +33,21 @@ def sync_pre_commit(dry_run: bool=False) -> Any:
     all_roots_pattern: Any = '|'.join(all_roots)
     exclude_pattern: Any = f'^({all_roots_pattern})/'
     files_pattern: Any = f'^({roots_pattern})/.*\\.py$'
-    print(f'[*] Syncing Pre-commit Config with SSOT...')
+    print('[*] Syncing Pre-commit Config with SSOT...')
     print(f"   [SSOT] Sovereign Roots: {', '.join(sovereign_roots)}")
     print(f'   [PATTERN] Exclude: {exclude_pattern}')
     print(f'   [PATTERN] Files: {files_pattern}')
     config_path: Any = project_root / 'agentic_core' / 'L0_maintenance' / 'scripts' / '.pre-commit-config.yaml'
     if not config_path.exists():
         print(f'   [!] Config not found at: {config_path}')
-        print(f'   [!] Checking alternate location...')
+        print('   [!] Checking alternate location...')
         config_path: Any = project_root / '.pre-commit-config.yaml'
         if not config_path.exists():
-            print(f'   [X] No .pre-commit-config.yaml found!')
+            print('   [X] No .pre-commit-config.yaml found!')
             return False
     print(f'   [OK] Found config at: {config_path}')
-    with open(config_path, 'r', encoding='utf-8') as f:
+    with open(config_path, encoding='utf-8') as f:
         content: Any = f.read()
-    original_content: Any = content
     replacements: Any = [('exclude: \\^[(]agentic_core\\|apps_lic\\|apps_rg\\|apps_shared\\|schemas\\|prompt_governance\\|observability\\|config\\|data\\|archives[)]/', f'exclude: ^({all_roots_pattern})/'), ('files: \\^[(]agentic_core\\|apps_lic\\|apps_rg\\|apps_shared\\|schemas\\|prompt_governance\\|observability\\|config[)]/\\.\\*\\\\\\.py\\$', f'files: ^({roots_pattern})/.*\\.py$')]
     changes_made: Any = 0
     for pattern, replacement in replacements:
@@ -55,17 +57,17 @@ def sync_pre_commit(dry_run: bool=False) -> Any:
             changes_made += len(matches)
             print(f'   [✓] Updated {len(matches)} pattern(s)')
     if changes_made == 0:
-        print(f'   [OK] No changes needed - config already synchronized')
+        print('   [OK] No changes needed - config already synchronized')
         return True
     if dry_run:
         print(f'\n   [DRY-RUN] Would update {changes_made} pattern(s)')
-        print(f'\n--- DIFF ---')
-        print(f'Original patterns found, would be replaced with SSOT-derived patterns')
+        print('\n--- DIFF ---')
+        print('Original patterns found, would be replaced with SSOT-derived patterns')
         return True
     with open(config_path, 'w', encoding='utf-8') as f:
         f.write(content)
     print(f'   [✓] Updated {changes_made} pattern(s) in {config_path.name}')
-    print(f'   [SUCCESS] Pre-commit config synchronized with SSOT')
+    print('   [SUCCESS] Pre-commit config synchronized with SSOT')
     return True
 
 def generate_sovereign_list() -> Any:

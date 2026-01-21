@@ -18,36 +18,19 @@ Target: PASS (testing 100%, healing >70%, MCP >80%, 0 regressions)
 # Suggested keywords to add in docstring/code: engine, guardrail, healer, memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-import ast
 import importlib
 import importlib.util
 import json
 import logging
-import os
 import sys
-import traceback
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -69,7 +52,7 @@ class AgentValidation:
     mcp_hardened: bool = False
     external_touch: bool = False
     mcp_audit_ok: bool = False
-    error: Optional[str] = None
+    error: str | None = None
 
 @dataclass
 class ValidationReport:
@@ -81,8 +64,8 @@ class ValidationReport:
     external_agents: int = 0
     mcp_hardened: int = 0
     mcp_audit_pass: int = 0
-    regressions: List[str] = field(default_factory=list)
-    agents: List[AgentValidation] = field(default_factory=list)
+    regressions: list[str] = field(default_factory=list)
+    agents: list[AgentValidation] = field(default_factory=list)
     start_time: str = ""
     end_time: str = ""
 
@@ -96,7 +79,7 @@ class Phase5Validator:
         self.report = ValidationReport()
         self.report.start_time = datetime.now().isoformat()
 
-    def load_discovery(self) -> List[Dict]:
+    def load_discovery(self) -> list[dict]:
         """Load agent discovery JSON."""
         if not self.discovery_path.exists():
             print("ERROR: agent_discovery_full.json not found. Run full_agent_discovery.py first.")
@@ -111,14 +94,14 @@ class Phase5Validator:
         self.report.total_core = len(core_agents)
         return core_agents
 
-    def get_module_path(self, rel_path: str) -> Tuple[str, Path]:
+    def get_module_path(self, rel_path: str) -> tuple[str, Path]:
         """Convert relative path to module name and absolute path."""
         file_path = self.project_root / rel_path
         # Convert path to module: agentic_core/L1_cognition/foo.py -> agentic_core.L1_cognition.foo
         module_name = rel_path.replace('/', '.').replace('\\', '.').replace('.py', '')
         return module_name, file_path
 
-    def instantiate_agent(self, agent: Dict) -> Tuple[Optional[Any], Optional[str]]:
+    def instantiate_agent(self, agent: dict) -> tuple[Any | None, str | None]:
         """Attempt to instantiate an agent class."""
         class_name = agent['class_name']
         rel_path = agent['path']
@@ -167,7 +150,7 @@ class Phase5Validator:
         except Exception as e:
             return None, f"Error: {str(e)[:100]}"
 
-    def run_self_tests(self, instance: Any, agent: Dict) -> Tuple[bool, Optional[str]]:
+    def run_self_tests(self, instance: Any, agent: dict) -> tuple[bool, str | None]:
         """Run self-tests on an agent instance."""
         try:
             if hasattr(instance, '_run_self_tests'):
@@ -184,7 +167,7 @@ class Phase5Validator:
         except Exception as e:
             return False, f"Test error: {str(e)[:50]}"
 
-    def simulate_healing(self, instance: Any, agent: Dict) -> Tuple[bool, Optional[str]]:
+    def simulate_healing(self, instance: Any, agent: dict) -> tuple[bool, str | None]:
         """Simulate a violation and verify healing."""
         if not agent.get('has_healing'):
             return False, "No healing capability"
@@ -194,7 +177,7 @@ class Phase5Validator:
             if hasattr(instance, 'heal'):
                 violation = {'path': 'test_file.py', 'type': 'simulated', 'line': 1}
                 try:
-                    result = instance.heal(violation)
+                    instance.heal(violation)
                     return True, None  # Heal method exists and runs
                 except NotImplementedError:
                     return True, None  # Abstract heal - ok
@@ -208,7 +191,7 @@ class Phase5Validator:
         except Exception as e:
             return False, f"Healing sim error: {str(e)[:50]}"
 
-    def check_mcp_audit(self, instance: Any, agent: Dict) -> Tuple[bool, Optional[str]]:
+    def check_mcp_audit(self, instance: Any, agent: dict) -> tuple[bool, str | None]:
         """Check MCP hardening audit trail."""
         if not agent.get('external_touch'):
             return False, "Not external"
@@ -230,7 +213,7 @@ class Phase5Validator:
         except Exception as e:
             return False, f"MCP check error: {str(e)[:50]}"
 
-    def validate_agent(self, agent: Dict) -> AgentValidation:
+    def validate_agent(self, agent: dict) -> AgentValidation:
         """Run full validation on a single agent."""
         result = AgentValidation(
             class_name=agent['class_name'],

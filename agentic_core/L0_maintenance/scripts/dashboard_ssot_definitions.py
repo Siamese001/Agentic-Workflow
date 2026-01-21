@@ -16,7 +16,6 @@ DO NOT define metric calculations elsewhere. This eliminates "split brain" issue
 
 Last Generated: 2026-01-20 14:46:21
 """
-from typing import Dict, Any, List, Set
 
 
 # ============================================================================
@@ -125,8 +124,8 @@ try:
     assert abs(sum([WEIGHT_HEALTH_HEAL_CAP, WEIGHT_HEALTH_INVOCATION, WEIGHT_HEALTH_TEST, WEIGHT_HEALTH_OBSERVABLE, WEIGHT_HEALTH_COMPLEXITY]) - 1.0) < 0.001
     assert abs(sum([WEIGHT_HEALTH_L0_TEST, WEIGHT_HEALTH_L0_HARDENED, WEIGHT_HEALTH_L0_COMPLEXITY]) - 1.0) < 0.001
     assert abs(sum([WEIGHT_CODE_QUALITY_TYPED, WEIGHT_CODE_QUALITY_DOCUMENTED, WEIGHT_CODE_QUALITY_SCHEMA_STRICTNESS, WEIGHT_CODE_QUALITY_CANONICAL_INHERITANCE]) - 1.0) < 0.001
-except AssertionError as e:
-    print(f'❌ CRITICAL: SSOT Weight mismatch detected in dashboard_ssot.yaml')
+except AssertionError:
+    print('❌ CRITICAL: SSOT Weight mismatch detected in dashboard_ssot.yaml')
     raise
 
 
@@ -168,7 +167,7 @@ HEALER_BASES = {
 # These functions are preserved from the original file.
 # Add calculation functions here.
 
-def calc_heal_cap_pct(agents: List[Dict], is_l0: bool = False) -> float:
+def calc_heal_cap_pct(agents: list[dict], is_l0: bool = False) -> float:
     """Calculate Heal Capability % for a set of agents."""
     if is_l0:
         return 0.0

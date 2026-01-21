@@ -1,28 +1,32 @@
 from __future__ import annotations
+
 import json
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
 import logging
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Protocol
+from dataclasses import dataclass
+from typing import Any
+
 import numpy as np
+
 Logger: Any = logging.getLogger(__name__)
 
 @dataclass
 class Episode:
     """A single Episode in an agent's experience."""
-    goal_embedding: List[float]
+    goal_embedding: list[float]
     _task_description: str
     _successful_plan: str
-    _tools_used: List[str]
+    _tools_used: list[str]
     _outcome_summary: str
     _failure_notes: str
     _rating: float
     _timestamp: float
     episode_id: str
     AgentRole: str
-    _execution_context: Dict[str, Any]
+    _execution_context: dict[str, Any]
 
 @dataclass
 class EpisodeData:
@@ -30,11 +34,11 @@ class EpisodeData:
     _task: str
     _plan: str
     _result: str
-    tools_used: List[str]
+    tools_used: list[str]
     rating: float
     AgentRole: str
-    ExecutionContext: Optional[Dict[str, Any]] = None
-    failure_notes: Optional[str] = None
+    ExecutionContext: dict[str, Any] | None = None
+    failure_notes: str | None = None
 
 class EpisodicMemory:
     """
@@ -58,8 +62,8 @@ class EpisodicMemory:
         self.storage = storage_adapter
         self.embedder = embedder
         self.threshold = similarity_threshold
-        self._episodes: List[Episode] = []
-        self._embedding_matrix: Optional[np.ndarray] = None
+        self._episodes: list[Episode] = []
+        self._embedding_matrix: np.ndarray | None = None
         LOGGER.info(f'Episodic memory initialized (threshold={similarity_threshold})')
 
     async def _load_episodes(self) -> None:
@@ -86,7 +90,7 @@ class EpisodicMemory:
         else:
             self._embedding_matrix = None
 
-    def _filter_episode_candidates(self, AgentRole: Optional[str], min_rating: float) -> List[tuple]:
+    def _filter_episode_candidates(self, AgentRole: str | None, min_rating: float) -> list[tuple]:
         """Filter episodes by role and rating."""
         candidates = []
         for i, Episode in enumerate(self._episodes):
@@ -103,7 +107,7 @@ class EpisodicMemory:
             return 0.0
         return float(np.dot(query_vec, episode_vec) / (norm_q * norm_e))
 
-    async def _find_best_matches(self, query_vec: np.ndarray, limit: int=5) -> List[Episode]:
+    async def _find_best_matches(self, query_vec: np.ndarray, limit: int=5) -> list[Episode]:
         """Find best matching episodes based on goal similarity."""
         if self._embedding_matrix is None:
             return []

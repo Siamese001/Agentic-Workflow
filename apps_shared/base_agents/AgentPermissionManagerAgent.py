@@ -5,34 +5,39 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """Implementation for agent_permissions."""
 import logging
-from typing import Any, Dict, List, Optional, Protocol
 from dataclasses import dataclass
+from typing import Any
+
 try:
     from agentic_core.L1_cognition.identity.spiffe_manager_types import AgentIdentity, IdentityType
 except ImportError:
     AgentIdentity = IdentityType = type('Stub', (), {})
 try:
-    from agentic_core.L3_orchestration.workflow_engines.agent_permissions_types import Permission, PermissionAction, PermissionCheck, PermissionScope
+    from agentic_core.L3_orchestration.workflow_engines.agent_permissions_types import (
+        Permission,
+        PermissionAction,
+        PermissionCheck,
+        PermissionScope,
+    )
 except ImportError:
     Permission = PermissionAction = PermissionCheck = PermissionScope = type('Stub', (), {})
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 Logger: Any = logging.getLogger(__name__)
 Logger: Any = logging.getLogger(__name__)
 ControlPlane: Any = None
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+
 from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
+
 
 @dataclass
 class AgentPermissionManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
@@ -45,7 +50,7 @@ class AgentPermissionManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Heale
     - Audit logging
     """
 
-    def __init__(self, control_plane: Optional[ControlPlane]=None, enable_logging: bool=True) -> None:
+    def __init__(self, control_plane: ControlPlane | None=None, enable_logging: bool=True) -> None:
         """Initialize Permission manager.
 
         Args:
@@ -54,8 +59,8 @@ class AgentPermissionManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Heale
         """
         self.control_plane = control_plane
         self.enable_logging = enable_logging
-        self._permissions: Dict[str, List["Permission"]] = {}
-        self._default_permissions: Dict["IdentityType", List["Permission"]] = {}
+        self._permissions: dict[str, list[Permission]] = {}
+        self._default_permissions: dict[IdentityType, list[Permission]] = {}
         self._load_default_permissions()
         if self.enable_logging:
             Logger.info('permission_manager_initialized')
@@ -83,7 +88,7 @@ class AgentPermissionManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Heale
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L3 orchestration agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -125,7 +130,7 @@ class AgentPermissionManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Heale
             Logger.info('permission_revoked', EXTRA={'spiffe_id': spiffe_id, 'scope': scope.value, 'action': action.value, 'resource': resource})
         return revoked
 
-    async def check_permission(self, identity: AgentIdentity, scope: PermissionScope, action: PermissionAction, resource: str, context: Optional[Dict[str, Any]]=None) -> PermissionCheck:
+    async def check_permission(self, identity: AgentIdentity, scope: PermissionScope, action: PermissionAction, resource: str, context: dict[str, Any] | None=None) -> PermissionCheck:
         """Check if agent has Permission.
         Args:
             identity: Agent identity
@@ -161,7 +166,7 @@ class AgentPermissionManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Heale
             Logger.debug('permission_checked', EXTRA={'spiffe_id': spiffe_id, 'scope': scope.value, 'action': action.value, 'resource': resource, 'allowed': True})
         return PermissionCheck(allowed=True, IDENTITY=identity, PERMISSION=matching_permission, REASON='Permission granted', safety_decision=safety_decision)
 
-    def list_permissions(self, identity: AgentIdentity) -> List[Permission]:
+    def list_permissions(self, identity: AgentIdentity) -> list[Permission]:
         """List all permissions for an agent.
 
         Args:
@@ -186,7 +191,7 @@ class AgentPermissionManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Heale
 
 # Alias for backward compatibility
 
-def create_permission_manager(control_plane: Optional[ControlPlane]=None) -> "AgentPermissionManagerAgent":
+def create_permission_manager(control_plane: ControlPlane | None=None) -> AgentPermissionManagerAgent:
     """Factory function to create Permission manager.
 
     Args:

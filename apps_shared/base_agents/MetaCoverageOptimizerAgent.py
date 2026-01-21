@@ -6,18 +6,17 @@
 
 from __future__ import annotations
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
-
-from collections import deque
-from typing import Deque, Dict, Optional
 import time
+from collections import deque
+from dataclasses import dataclass
 
-from agentic_core.L5_safety.validators.structure_blueprint import get_validated_project_root
 from agentic_core.L6_observability.metrics.CoverageAgent import CoverageAgent
 from agentic_core.L6_observability.metrics.shared_counters import counters
-from agentic_core.runtime.shared_runtime import log_event, publish_event
-from dataclasses import dataclass
+
 from agentic_core.L5_safety.validators.decorators import standard_heal
+from agentic_core.L5_safety.validators.structure_blueprint import get_validated_project_root
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.runtime.shared_runtime import log_event, publish_event
 
 
 @dataclass
@@ -35,8 +34,8 @@ class MetaCoverageOptimizerAgent(SovereignBaseAgent):
         self.project_root = get_validated_project_root()
         self.coverage_agent = CoverageAgent()
         self.history_length = 20
-        self.entropy_history: Deque[float] = deque(maxlen=self.history_length)
-        self.proportion_history: Deque[Dict[str, float]] = deque(maxlen=self.history_length)
+        self.entropy_history: deque[float] = deque(maxlen=self.history_length)
+        self.proportion_history: deque[dict[str, float]] = deque(maxlen=self.history_length)
         self.tune_interval_cycles = 50
         self.last_tune_time = time.time()
         self.param_bounds = {
@@ -77,7 +76,7 @@ class MetaCoverageOptimizerAgent(SovereignBaseAgent):
         log_event("meta_optimization_cycle", {"entropy": current_entropy})
         return final
 
-    def _compute_parameter_adjustments(self, current_proportions: Dict[str, float]) -> Dict:
+    def _compute_parameter_adjustments(self, current_proportions: dict[str, float]) -> dict:
         """Simple hill-climb: Detect stagnation/lows, propose bounded tweaks."""
         if len(self.entropy_history) < 10:
             return {}
@@ -115,7 +114,7 @@ class MetaCoverageOptimizerAgent(SovereignBaseAgent):
 
         return adjustments if len(adjustments) > 1 else {}
 
-    def _apply_adjustments(self, adjustments: Dict) -> None:
+    def _apply_adjustments(self, adjustments: dict) -> None:
         """Apply in-memory tweaks — publish for CoverageAgent/orchestrator."""
         if "bias_weight" in adjustments:
             self.coverage_agent.bias_weight = adjustments["bias_weight"]
@@ -125,7 +124,7 @@ class MetaCoverageOptimizerAgent(SovereignBaseAgent):
             adjustments["log"].append(f"Tuned synthetics → {adjustments['synthetic_tasks_per_trigger']}")
         publish_event("coverage_params_updated", adjustments)
 
-    def _find_persistent_underrepresented(self, threshold: float = 0.15) -> Optional[str]:
+    def _find_persistent_underrepresented(self, threshold: float = 0.15) -> str | None:
         """Scan history for consistently low layer."""
         lows = {}
         for props in self.proportion_history:

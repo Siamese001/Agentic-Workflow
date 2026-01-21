@@ -11,14 +11,13 @@ Test Cases:
 5. Tier 4 Reporting Accuracy - Final safety gate reports Tier 3 violations
 """
 
-import sys
 import json
 import shutil
 import sys
-import json
-from pathlib import Path
-from agentic_core.utils.security import safe_execute
 from datetime import datetime
+from pathlib import Path
+
+from agentic_core.utils.security import safe_execute
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -63,7 +62,7 @@ class TieredExecutionTester:
             return None
 
         try:
-            with open(self.runtime_state_path, 'r', encoding='utf-8') as f:
+            with open(self.runtime_state_path, encoding='utf-8') as f:
                 return json.load(f)
         except Exception as e:
             print(f"   [!] Failed to load runtime_state.json: {e}")
@@ -182,7 +181,7 @@ class TieredExecutionTester:
             print(f"   ❌ TEST 2 FAILED: Found duplicate agents in Tier 3: {duplicates}")
             return False
 
-        print(f"   ✅ TEST 2 PASSED: No duplicate agents across tiers")
+        print("   ✅ TEST 2 PASSED: No duplicate agents across tiers")
         print(f"      Tier 1 (Structural): {len(tier1_agents)} agents")
         print(f"      Tier 2 (Architectural): {len(tier2_agents)} agents")
         print(f"      Tier 3 (Discovery): {len(tier3_agents)} agents")
@@ -262,7 +261,7 @@ class TieredExecutionTester:
         # Verify mission did NOT abort
         if result["aborted"]:
             print("   ❌ TEST 4 FAILED: Mission aborted unexpectedly")
-            print(f"      Check if repository has structural violations")
+            print("      Check if repository has structural violations")
             return False
 
         # Load runtime state
@@ -280,7 +279,7 @@ class TieredExecutionTester:
         # Verify Tier 1 passed with 0 violations
         if tier1_data["violations"] > 0:
             print(f"   ❌ TEST 4 FAILED: Tier 1 has {tier1_data['violations']} violations")
-            print(f"      Repository may have structural issues")
+            print("      Repository may have structural issues")
             return False
 
         # Verify all 4 tiers executed
@@ -290,7 +289,7 @@ class TieredExecutionTester:
 
         print("   ✅ TEST 4 PASSED: Stability gate passthrough successful")
         print(f"      Tier 1 violations: {tier1_data['violations']} (clean)")
-        print(f"      All 4 tiers executed successfully")
+        print("      All 4 tiers executed successfully")
 
         return True
 
@@ -331,14 +330,14 @@ class TieredExecutionTester:
         tier3_violations = tier3_data["violations"]
         tier4_violations = tier4_data["violations"]
 
-        print(f"   ✅ TEST 5 PASSED: Tier 4 reporting structure verified")
+        print("   ✅ TEST 5 PASSED: Tier 4 reporting structure verified")
         print(f"      Tier 3 violations: {tier3_violations}")
         print(f"      Tier 4 violations: {tier4_violations}")
-        print(f"      AutonomyGuardian present in Tier 4: ✓")
+        print("      AutonomyGuardian present in Tier 4: ✓")
 
         # Note: In a clean repo, violations may be 0, which is expected
         if tier3_violations == 0 and tier4_violations == 0:
-            print(f"      ℹ️  Repository is clean - no violations to report")
+            print("      ℹ️  Repository is clean - no violations to report")
 
         return True
 

@@ -5,19 +5,18 @@ Traces every metric from agent_discovery_full.json to dashboard HTML.
 Reports ALL data gaps and calculation errors.
 """
 import json
-import re
-from pathlib import Path
-from typing import Dict, List, Any, Tuple
 from collections import defaultdict
+from pathlib import Path
+from typing import Any
 
 PROJECT_ROOT = Path(__file__).parent.parent
 
-def load_agent_discovery() -> List[Dict]:
+def load_agent_discovery() -> list[dict]:
     """Load raw agent discovery data."""
     path = PROJECT_ROOT / "agent_discovery_full.json"
     return json.loads(path.read_text(encoding='utf-8'))
 
-def load_dashboard_data() -> List[Dict]:
+def load_dashboard_data() -> list[dict]:
     """Extract dashboardData from HTML."""
     html_path = PROJECT_ROOT / "agentic_core" / "L6_observability" / "dashboards" / "autonomy_dashboard.html"
     html = html_path.read_text(encoding='utf-8')
@@ -41,7 +40,7 @@ def load_dashboard_data() -> List[Dict]:
 
     return json.loads(''.join(lines))
 
-def get_territory_for_agent(agent: Dict) -> str:
+def get_territory_for_agent(agent: dict) -> str:
     """Determine territory for an agent based on its path."""
     path = agent.get('path', '').replace('\\', '/')
     layer = agent.get('layer', '')
@@ -100,7 +99,7 @@ def get_territory_for_agent(agent: Dict) -> str:
 
     return 'Unknown'
 
-def calculate_expected_metrics(agents: List[Dict], territory: str) -> Dict[str, Any]:
+def calculate_expected_metrics(agents: list[dict], territory: str) -> dict[str, Any]:
     """Calculate expected metrics for a territory from raw agent data.
 
     Uses ACTUAL field names from agent_discovery_full.json:
@@ -260,24 +259,24 @@ def run_deep_audit():
     l2_mcp_count = sum(1 for a in l2_agents if a.get('has_mcp', False))
     l2_hardened_count = sum(1 for a in l2_agents if a.get('is_hardened', False))
 
-    print(f"\nMCP Analysis:")
+    print("\nMCP Analysis:")
     print(f"  - Total L2 agents: {len(l2_agents)}")
     print(f"  - has_mcp=True: {l2_mcp_count}")
     print(f"  - Expected MCP %: {round(l2_mcp_count / len(l2_agents) * 100, 1) if l2_agents else 0}%")
 
-    print(f"\nHardened Analysis:")
+    print("\nHardened Analysis:")
     print(f"  - is_hardened=True: {l2_hardened_count}")
     print(f"  - Expected Hardened %: {round(l2_hardened_count / len(l2_agents) * 100, 1) if l2_agents else 0}%")
 
     # Show L2 dashboard data
     l2_core = dashboard_by_territory.get('L2 Execution/Core', {})
-    print(f"\nDashboard L2 Execution/Core shows:")
+    print("\nDashboard L2 Execution/Core shows:")
     print(f"  - Total: {l2_core.get('Total', 'N/A')}")
     print(f"  - Hardened %: {l2_core.get('Hardened %', 'N/A')}")
     print(f"  - MCP Capable %: {l2_core.get('MCP Capable %', 'N/A')}")
 
     # Show sample L2 agents with their flags
-    print(f"\nSample L2 agents (first 10):")
+    print("\nSample L2 agents (first 10):")
     for agent in l2_agents[:10]:
         print(f"  - {agent['class_name']}: has_mcp={agent.get('has_mcp')}, is_hardened={agent.get('is_hardened')}, has_heal={agent.get('has_heal')}")
 

@@ -9,8 +9,6 @@ Territory: agentic_core/config/
 
 from __future__ import annotations
 
-from typing import Dict, List
-
 # Core hygiene agents organized by tier
 CORE_HYGIENE_AGENTS: dict[str, list[str]] = {
     "tier_0_preflight": [

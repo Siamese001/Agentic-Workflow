@@ -11,15 +11,15 @@ import logging
 import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Union
 from datetime import datetime
+from enum import Enum
+from typing import Any
 
 from ..core.resilience.circuit_breaker import CircuitBreakerFactory, CircuitOpenError
-from ..core.resilience.rate_limiter import RateLimiter, get_rate_limiter
-from ..core.resilience.resource_manager import ResourceManager, get_resource_manager
-from .signal_infrastructure import EngineType, DomainConfig, get_shared_infrastructure
-from .unified_formatter import UnifiedFormatter, FormatResult, get_unified_formatter
+from ..core.resilience.rate_limiter import get_rate_limiter
+from ..core.resilience.resource_manager import get_resource_manager
+from .signal_infrastructure import EngineType, get_shared_infrastructure
+from .unified_formatter import get_unified_formatter
 
 logger = logging.getLogger(__name__)
 
@@ -42,13 +42,13 @@ class ExecutionContext:
     engine_type: EngineType
     operation_id: str
     input_data: Any
-    config: Dict[str, Any] = field(default_factory=dict)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-    start_time: Optional[datetime] = None
-    end_time: Optional[datetime] = None
+    config: dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
+    start_time: datetime | None = None
+    end_time: datetime | None = None
 
     @property
-    def duration(self) -> Optional[float]:
+    def duration(self) -> float | None:
         """Get execution duration in seconds."""
         if self.start_time and self.end_time:
             return (self.end_time - self.start_time).total_seconds()
@@ -62,10 +62,10 @@ class ExecutionResult:
     status: ExecutionStatus
     data: Any
     context: ExecutionContext
-    error: Optional[str] = None
-    metrics: Dict[str, Any] = field(default_factory=dict)
+    error: str | None = None
+    metrics: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "status": self.status.value,
@@ -443,8 +443,8 @@ class UnifiedExecutor:
         input_data: Any,
         strategy: str,
         engine_type: EngineType,
-        config: Optional[Dict[str, Any]] = None,
-        operation_id: Optional[str] = None
+        config: dict[str, Any] | None = None,
+        operation_id: str | None = None
     ) -> ExecutionResult:
         """Execute operation using specified strategy.
 
@@ -508,7 +508,7 @@ class UnifiedExecutor:
         self.strategies[name] = strategy
         logger.info(f"Registered custom strategy: {name}")
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get execution statistics.
 
         Returns:
@@ -545,7 +545,7 @@ class EngineExecutor:
         self,
         input_data: Any,
         content_type: str = "default",
-        config: Optional[Dict[str, Any]] = None
+        config: dict[str, Any] | None = None
     ) -> ExecutionResult:
         """Generate content using unified executor.
 
@@ -583,8 +583,8 @@ class EngineExecutor:
 
     async def process_batch(
         self,
-        items: List[Any],
-        config: Optional[Dict[str, Any]] = None
+        items: list[Any],
+        config: dict[str, Any] | None = None
     ) -> ExecutionResult:
         """Process batch of items.
 
@@ -602,7 +602,7 @@ class EngineExecutor:
             config or self.config
         )
 
-    def _get_engine_config(self) -> Dict[str, Any]:
+    def _get_engine_config(self) -> dict[str, Any]:
         """Get engine-specific configuration.
 
         Returns:
@@ -647,7 +647,7 @@ class EngineExecutor:
 
 
 # Global executor instances
-_executors: Dict[EngineType, EngineExecutor] = {}
+_executors: dict[EngineType, EngineExecutor] = {}
 
 
 def get_engine_executor(engine_type: EngineType) -> EngineExecutor:
@@ -668,7 +668,7 @@ def get_engine_executor(engine_type: EngineType) -> EngineExecutor:
 async def execute_resume_generation(
     input_data: Any,
     content_type: str = "default",
-    config: Optional[Dict[str, Any]] = None
+    config: dict[str, Any] | None = None
 ) -> ExecutionResult:
     """Execute resume generation.
 
@@ -687,7 +687,7 @@ async def execute_resume_generation(
 async def execute_outreach_generation(
     input_data: Any,
     content_type: str = "message",
-    config: Optional[Dict[str, Any]] = None
+    config: dict[str, Any] | None = None
 ) -> ExecutionResult:
     """Execute outreach generation.
 

@@ -1,13 +1,12 @@
 from __future__ import annotations
-import os
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
-import sys
-from typing import Any, List, Dict, Optional
-from agentic_core.utils.sovereign_index import SovereignIndex
+from typing import Any
 
-def analyze_legacy_files() -> Tuple[List[str], List[str], List[str]]:
+
+def analyze_legacy_files() -> Tuple[list[str], list[str], list[str]]:
     """Analyze legacy files and categorize them."""
     source_dir: Any = Path('archives/legacy_lic')
     existing_filenames: Any = get_existing_filenames()

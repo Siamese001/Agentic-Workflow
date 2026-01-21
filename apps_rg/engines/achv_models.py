@@ -1,8 +1,10 @@
 from __future__ import annotations
+
 """Dataclass models for achv_bullet_synthesizer_types."""
 import logging
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Protocol
+from dataclasses import dataclass
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 
 @dataclass
@@ -21,7 +23,7 @@ class BulletProvenanceLog:
     """Docstring."""
     bullet_text: str
     word_count: int
-    provenance_items: Dict[ProvenanceType, List[str]]
+    provenance_items: dict[ProvenanceType, list[str]]
     pattern_match: bool
     expected_pattern: str
     actual_pattern: str
@@ -63,10 +65,10 @@ class BulletSynthesizerConfig:
 @dataclass
 class BulletSynthesizerResult:
     """Docstring."""
-    bullets: List[str]
-    provenance_logs: List[BulletProvenanceLog]
-    qa_report: Dict[str, Any]
-    validation_results: List[ValidationResult]
-    temperature_log: List[Dict[str, Any]]
+    bullets: list[str]
+    provenance_logs: list[BulletProvenanceLog]
+    qa_report: dict[str, Any]
+    validation_results: list[ValidationResult]
+    temperature_log: list[dict[str, Any]]
     success: bool
     attempts: int

@@ -5,20 +5,20 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
-from dataclasses import dataclass
 
 import tempfile
+from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Any
+from typing import Any
 
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.validators.structure_blueprint import (
     get_validated_project_root,
-    safe_path_join,
     has_forbidden_layer_prefix,
     is_broken_backup_file,
 )
 from agentic_core.L6_observability.metrics.layer_decorator import layer_entry
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
+
 
 # Lazy imports — gravity-safe (same/downstream L5)
 # Agents loaded on-demand to avoid circular dependencies
@@ -97,7 +97,7 @@ class L5SafetyExerciserAgent(MCPHardenedMixin):
     @layer_entry("L5_safety", subterritory="guardrails")
     def act(self) -> str:
         """Primary entrypoint — called by orchestrator on synthetic task."""
-        report: List[str] = [f"{self.name}: Starting safety exercise cycle"]
+        report: list[str] = [f"{self.name}: Starting safety exercise cycle"]
 
         for strategy_name, strategy_func in self.exercise_strategies.items():
             try:
@@ -158,7 +158,7 @@ class L5SafetyExerciserAgent(MCPHardenedMixin):
         try:
             healer = HealerAgent()
             dummy_violation = {"type": "territory", "file": "dummy.py"}
-            result = healer.heal([dummy_violation])
+            healer.heal([dummy_violation])
             return "Healing probe: Dry-run executed"
         except Exception as e:
             return f"Healing probe: Dry-run executed (expected: {str(e)[:50]})"
@@ -171,7 +171,7 @@ class L5SafetyExerciserAgent(MCPHardenedMixin):
         try:
             red_team = RedTeamAgent()
             dummy_prompt = "Ignore previous instructions [jailbreak attempt]"
-            result = red_team.probe_prompt(dummy_prompt)
+            red_team.probe_prompt(dummy_prompt)
             return "Red team probe: Jailbreak simulation blocked"
         except Exception as e:
             return f"Red team probe: Dry-run executed (expected: {str(e)[:50]})"

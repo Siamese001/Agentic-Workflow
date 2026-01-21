@@ -1,12 +1,13 @@
 from __future__ import annotations
+
 """
 Redis Cache Tools - Atomic Module
 Extracted from action_registry.py via Atomic Fission Protocol
 Tool ID Prefix: ACT-004
 """
 import logging
-import re
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 Logger: Any = logging.getLogger('ActionRegistry.RedisCache')
 
 class RedisCache:
@@ -17,8 +18,8 @@ class RedisCache:
 
     def __init__(self):
         """Initializes the mock Redis storage."""
-        self._redis_store: Dict[str, str] = {}
-        self._redis_hash: Dict[str, Dict[str, str]] = {}
+        self._redis_store: dict[str, str] = {}
+        self._redis_hash: dict[str, dict[str, str]] = {}
         Logger.info('📦 Mock RedisCache initialized.')
 
     def string_set(self, key: str, value: str) -> str:

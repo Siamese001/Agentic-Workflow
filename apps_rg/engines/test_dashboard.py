@@ -11,28 +11,14 @@ import json
 import re
 import sys
 from pathlib import Path
-from typing import List, Dict, Any, Tuple
 
 # Import the SSOT generator
-from generate_dashboard import DashboardGenerator, TERRITORY_ORDER, REQUIRED_FIELDS
+from generate_dashboard import REQUIRED_FIELDS, TERRITORY_ORDER, DashboardGenerator
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # Expected number of territories in frozen wireframe (excluding TOTAL)
 EXPECTED_TERRITORY_COUNT = 28  # 29 rows total, minus TOTAL row
@@ -47,7 +33,7 @@ class DashboardTestSuite:
         self.failed = 0
         self.warnings = 0
 
-    def test_wireframe_consistency(self) -> Tuple[bool, str]:
+    def test_wireframe_consistency(self) -> tuple[bool, str]:
         """Test 1: Verify dashboard wireframe is consistent."""
         try:
             html = self.dashboard_path.read_text(encoding='utf-8')
@@ -79,7 +65,7 @@ class DashboardTestSuite:
         except Exception as e:
             return False, f"Exception: {e}"
 
-    def test_territory_order(self) -> Tuple[bool, str]:
+    def test_territory_order(self) -> tuple[bool, str]:
         """Test 2: Verify territory order matches FIXED detailed structure."""
         try:
             html = self.dashboard_path.read_text(encoding='utf-8')
@@ -108,12 +94,12 @@ class DashboardTestSuite:
         except Exception as e:
             return False, f"Exception: {e}"
 
-    def test_data_consistency(self) -> Tuple[bool, str]:
+    def test_data_consistency(self) -> tuple[bool, str]:
         """Test 3: Verify dashboard data matches agent discovery."""
         try:
             # Load agent discovery
             discovery_path = self.project_root / AGENT_DISCOVERY_JSON
-            with open(discovery_path, 'r', encoding='utf-8') as f:
+            with open(discovery_path, encoding='utf-8') as f:
                 agents = json.load(f)
 
             # Load dashboard data
@@ -143,7 +129,7 @@ class DashboardTestSuite:
         except Exception as e:
             return False, f"Exception: {e}"
 
-    def test_field_types(self) -> Tuple[bool, str]:
+    def test_field_types(self) -> tuple[bool, str]:
         """Test 4: Verify all field types are correct."""
         try:
             html = self.dashboard_path.read_text(encoding='utf-8')
@@ -179,7 +165,7 @@ class DashboardTestSuite:
         except Exception as e:
             return False, f"Exception: {e}"
 
-    def test_regeneration_stability(self) -> Tuple[bool, str]:
+    def test_regeneration_stability(self) -> tuple[bool, str]:
         """Test 5: Verify regeneration produces frozen wireframe structure."""
         try:
             # Regenerate
@@ -207,7 +193,7 @@ class DashboardTestSuite:
         except Exception as e:
             return False, f"Exception: {e}"
 
-    def test_html_rendering_elements(self) -> Tuple[bool, str]:
+    def test_html_rendering_elements(self) -> tuple[bool, str]:
         """Test 6: Verify HTML has required rendering elements."""
         try:
             html = self.dashboard_path.read_text(encoding='utf-8')
@@ -236,7 +222,7 @@ class DashboardTestSuite:
         except Exception as e:
             return False, f"Exception: {e}"
 
-    def test_visual_data_population(self) -> Tuple[bool, str]:
+    def test_visual_data_population(self) -> tuple[bool, str]:
         """Test 7: Verify dashboard is populated with real data (no mock data)."""
         try:
             html = self.dashboard_path.read_text(encoding='utf-8')
@@ -259,7 +245,7 @@ class DashboardTestSuite:
                 sample_data = real_data[sample_territory]
 
                 if 'agents' not in sample_data or 'healCap' not in sample_data:
-                    return False, f"realAgentData missing required fields (agents, healCap)"
+                    return False, "realAgentData missing required fields (agents, healCap)"
 
                 agent_count = len(sample_data['agents'])
 
@@ -295,7 +281,7 @@ class DashboardTestSuite:
         except Exception as e:
             return False, f"Exception: {e}"
 
-    def test_cell_by_cell_visual_inspection(self) -> Tuple[bool, str]:
+    def test_cell_by_cell_visual_inspection(self) -> tuple[bool, str]:
         """Test 8: Cell-by-cell visual inspection of HTML data population (MANDATORY)."""
         try:
             html = self.dashboard_path.read_text(encoding='utf-8')
@@ -438,13 +424,13 @@ class DashboardTestSuite:
             if issues:
                 return False, f"Cell inspection failed: {len(issues)} issues found: {'; '.join(issues[:3])}..."
 
-            print(f"✅ PASSED: Cell-by-cell inspection passed: TOTAL row verified, sample territory verified, outlier data verified, sparkline data verified, drill-down data verified")
+            print("✅ PASSED: Cell-by-cell inspection passed: TOTAL row verified, sample territory verified, outlier data verified, sparkline data verified, drill-down data verified")
             return True, "Cell-by-cell inspection passed"
 
         except Exception as e:
             return False, f"Exception: {e}"
 
-    def test_no_duplicate_declarations(self) -> Tuple[bool, str]:
+    def test_no_duplicate_declarations(self) -> tuple[bool, str]:
         """Test 9: Ensure no duplicate const declarations (Phase 1 Guardrail)."""
         html = self.dashboard_path.read_text(encoding='utf-8')
 
@@ -466,7 +452,7 @@ class DashboardTestSuite:
 
         return True, "No duplicate declarations found"
 
-    def test_file_metrics(self) -> Tuple[bool, str]:
+    def test_file_metrics(self) -> tuple[bool, str]:
         """Test 10: Validate file size and line count are within expected ranges (Phase 1 Guardrail)."""
         html = self.dashboard_path.read_text(encoding='utf-8')
 
@@ -494,7 +480,7 @@ class DashboardTestSuite:
 
         return True, f"Metrics OK: {size_kb:.1f}KB, {line_count:,} lines"
 
-    def test_source_vs_rendered_data(self) -> Tuple[bool, str]:
+    def test_source_vs_rendered_data(self) -> tuple[bool, str]:
         """Test 11: Verify rendered TOTAL row matches source data (P0 - Critical Gap).
 
         This test catches silent data mismatches where:
@@ -510,7 +496,7 @@ class DashboardTestSuite:
             if not discovery_path.exists():
                 return False, f"Source data not found: {discovery_path}"
 
-            with open(discovery_path, 'r', encoding='utf-8') as f:
+            with open(discovery_path, encoding='utf-8') as f:
                 agents = json.load(f)
 
             # Calculate expected metrics from source
@@ -570,7 +556,7 @@ class DashboardTestSuite:
         except Exception as e:
             return False, f"Exception: {e}"
 
-    def test_tooltip_data_availability(self) -> Tuple[bool, str]:
+    def test_tooltip_data_availability(self) -> tuple[bool, str]:
         """Test 12: Verify tooltip data is available for all territories (RCA: Jan 17 2026).
 
         Catches bug where tooltips show "No agent data available" due to:
@@ -629,7 +615,7 @@ class DashboardTestSuite:
         except Exception as e:
             return False, f"Exception: {e}"
 
-    def test_distribution_stats_display(self) -> Tuple[bool, str]:
+    def test_distribution_stats_display(self) -> tuple[bool, str]:
         """Test 13: Verify min/max/stdev shown for non-100% cells (RCA: Jan 17 2026).
 
         Catches bug where distribution stats (min, max, stddev) not shown for cells < 100%.

@@ -21,29 +21,16 @@ L5 agents handle safety - validation, compliance, security.
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import Any, Dict
+from typing import Any
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin, HealResult
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
-)
 from agentic_core.L5_safety.validators.decorators import standard_heal
+from agentic_core.L5_safety.validators.structure_blueprint import (
+    TESTS_DIR,
+)
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin, HealResult
 
 
 @dataclass
@@ -69,13 +56,13 @@ class L5Agent(HealerMixin, MCPHardenedMixin):
         super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, **kwargs)
         return self._normalize_result({"status": "SKIPPED", "agent": self.name, "violations_found": 0, "violations_fixed": 0})
 
-    def _run_self_tests(self) -> Dict[str, Any]:
+    def _run_self_tests(self) -> dict[str, Any]:
         """Override in subclass to implement self-tests."""
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository()
 
         return {"status": "not_implemented", TESTS_DIR: 0}
 
-    def validate(self, target: Any) -> Dict[str, Any]:
+    def validate(self, target: Any) -> dict[str, Any]:
         """Override in subclass to implement validation logic."""
         raise NotImplementedError(f"{self.name} must implement validate()")

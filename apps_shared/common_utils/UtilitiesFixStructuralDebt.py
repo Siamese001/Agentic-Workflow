@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Structural Debt Fixer for Canon Validator.
 Targets: Keys 17, 18, 19, 20, 25 (large functions, global variables, etc.)
@@ -9,24 +10,6 @@ import shutil
 from datetime import datetime
 from typing import Any
 
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
-)
-from agentic_core.utils.sovereign_index import SovereignIndex
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 excluded_dirs: Any = {'.git', '.venv', 'venv', 'env', '__pycache__', '.pytest_cache', 'node_modules', '.idea', '.vscode', 'build', 'dist', 'eggs', ARCHIVES_DIR, 'data'}
 excluded_files: Any = {'CanonValidatorAgent.py', 'canon_validator_backup.py', 'canon_validator_v2_agentic.py', 'resume_engine.py', 'action_registry.py', 'fix_syntax_errors.py', 'healthcheck.py', 'check_pinecone.py', 'governed_outreach.py', 'fix_security_and_hygiene.py', 'fix_structural_debt.py', 'fix_print_statements.py'}
 try:
@@ -64,7 +47,7 @@ def process_file(file_path: Any) -> Any:
     """Process a file for structural fixes. Returns True if changes were made."""
     backup_path: Any = f"{file_path}.backup.{datetime.now().strftime('%Y%m%d_%H%M%S')}"
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, encoding='utf-8') as f:
             source: Any = f.read()
         shutil.copy2(file_path, backup_path)
         tree: Any = ast.parse(source)
@@ -89,7 +72,7 @@ def process_file(file_path: Any) -> Any:
     except Exception as e:
         print(f'   ERROR: Failed to process {file_path}: {e}')
         if os.path.exists(backup_path):
-            with open(backup_path, 'r') as src:
+            with open(backup_path) as src:
                 with open(file_path, 'w') as dst:
                     dst.write(src.read())
             os.remove(backup_path)
@@ -116,6 +99,6 @@ def main() -> Any:
     if HAS_ASTOR:
         print(f'Refactored {count} files.')
     else:
-        print(f"Reported issues in files. Install 'astor' to enable automatic fixes.")
+        print("Reported issues in files. Install 'astor' to enable automatic fixes.")
 if __name__ == '__main__':
     main()

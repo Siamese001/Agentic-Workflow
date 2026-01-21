@@ -6,37 +6,44 @@
 
 from __future__ import annotations
 
-from agentic_core.utils.core_extensions.SovereignBaseAgent import SovereignBaseAgent
-import importlib  # AUTO-INJECTED BY GRAVITY HEALER
 import ast
+import importlib  # AUTO-INJECTED BY GRAVITY HEALER
+
+from agentic_core.utils.core_extensions.SovereignBaseAgent import SovereignBaseAgent
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
 import asyncio
-import atexit
 import json
 import logging
 import os
-import re
 import signal
 import subprocess
 import sys
-import time
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Protocol, Set
-from agentic_core.tools.filesystem import WriteFileArgs, write_file
-from agentic_core.L2_execution.tool_registry import CanonStructuralEngineer, CodeJanitor, CodeStyleGuardian, HygieneGuardian, PerformanceEnforcer, SafetyInspectorAgent, SecurityEnforcer, SystemArchitect, get_dependency_diplomat, get_regression_oracle
+from typing import Any
+
 from agentic_core.L1_cognition.P2_domain.context import ValidationContext
+from agentic_core.tools.filesystem import WriteFileArgs, write_file
+
+from agentic_core.L2_execution.tool_registry import (
+    CanonStructuralEngineer,
+    CodeJanitor,
+    CodeStyleGuardian,
+    HygieneGuardian,
+    PerformanceEnforcer,
+    SafetyInspectorAgent,
+    SecurityEnforcer,
+    SystemArchitect,
+    get_dependency_diplomat,
+)
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 # GRAVITY FIXED (Upward Leak): from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 _mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_mixin')
-MCPHardenedMixin = getattr(_mod, 'MCPHardenedMixin')
+MCPHardenedMixin = _mod.MCPHardenedMixin
 
 try:
     from google.cloud import aiplatform
@@ -55,7 +62,7 @@ except ImportError:
     genai: Any = None
     types: Any = None
 Logger: Any = logging.getLogger(__name__)
-_orchestrator_instance: Optional['ConsolidatedOrchestratorAgent'] = None
+_orchestrator_instance: ConsolidatedOrchestratorAgent | None = None
 
 def _signal_handler(signum, frame):
     """Handle CTRL+C and graceful shutdown."""
@@ -83,7 +90,7 @@ class OrchestratorConfig:
     heal_mode: bool = False
     clean_slate: bool = False
     override_preservation: bool = False
-    target_path: Optional[str] = None
+    target_path: str | None = None
     smart_scope: bool = False
     smart_scope_depth: int = 2
 
@@ -92,13 +99,13 @@ class OrchestratorState:
     """State tracking for orchestrator execution."""
     workflow_id: str
     current_cycle: int = 0
-    signals: Set[str] = field(default_factory=set)
-    modified_files: Set[str] = field(default_factory=set)
-    healing_attempts: Dict[str, int] = field(default_factory=dict)
+    signals: set[str] = field(default_factory=set)
+    modified_files: set[str] = field(default_factory=set)
+    healing_attempts: dict[str, int] = field(default_factory=dict)
     healing_budget_used: int = 0
-    checkpoints: List[Dict[str, Any]] = field(default_factory=list)
-    start_time: Optional[datetime] = None
-    end_time: Optional[datetime] = None
+    checkpoints: list[dict[str, Any]] = field(default_factory=list)
+    start_time: datetime | None = None
+    end_time: datetime | None = None
     status: str = 'INITIALIZED'
 
 class OrchestratorHealingService:
@@ -136,7 +143,7 @@ class OrchestratorHealingService:
             self.Logger.error('Gemini client not available for healing')
             return False
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 original_code: Any = f.read()
             config: Any = types.GenerateContentConfig(temperature=self.config.temperature, thinking_config=types.ThinkingConfig(thinking_budget=self.config.thinking_budget), tools=[])
             response: Any = await asyncio.to_thread(self.client.models.generate_content, model=self.config.gemini_model, contents=f'{fix_prompt}\n\n{original_code}', config=config)
@@ -241,7 +248,7 @@ class OrchestratorStateManager:
             return True
         return True
 
-    def build_results(self) -> Dict[str, Any]:
+    def build_results(self) -> dict[str, Any]:
         """Build final workflow results."""
         duration: Any = None
         if self.state.start_time and self.state.end_time:
@@ -260,7 +267,7 @@ class OrchestratorAgentAndScopeManagerAgent(SovereignBaseAgent):
         self.ctx = ctx
         self.Logger = Logger
 
-    def create_agent_swarm(self) -> List[Any]:
+    def create_agent_swarm(self) -> list[Any]:
         """
         Create the subatomic agent swarm based on configuration.
 
@@ -279,7 +286,7 @@ class OrchestratorAgentAndScopeManagerAgent(SovereignBaseAgent):
         self.Logger.info(f'   🤖 Agent Swarm Created: {len(agents)} agents')
         return agents
 
-    async def calculate_smart_scope(self, target_path: Optional[str]=None) -> List[str]:
+    async def calculate_smart_scope(self, target_path: str | None=None) -> list[str]:
         """
         Calculate smart scope using Dependency Diplomat.
 
@@ -316,7 +323,7 @@ class OrchestratorAgentAndScopeManagerAgent(SovereignBaseAgent):
             return super().heal_repository()
 
 
-def create_orchestrator(config: Optional[OrchestratorConfig]=None, context: Optional[ValidationContext]=None) -> ConsolidatedOrchestratorAgent:
+def create_orchestrator(config: OrchestratorConfig | None=None, context: ValidationContext | None=None) -> ConsolidatedOrchestratorAgent:
     """
     Factory function to create a consolidated orchestrator.
 
@@ -355,7 +362,7 @@ async def main() -> Any:
     orchestrator: Any = create_orchestrator(config=config)
     results: Any = await orchestrator.run_mission(target_path=args.target, workflow_id=args.workflow_id)
     print(f"\n{'=' * 60}")
-    print(f'[STATS] MISSION RESULTS')
+    print('[STATS] MISSION RESULTS')
     print(f"{'=' * 60}")
     print(f"  Status: {results['status']}")
     print(f"  Cycles: {results['cycles_executed']}/{config.max_cycles}")

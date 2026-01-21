@@ -11,6 +11,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from dataclasses import dataclass
+
 """TestSovereigntyAgent — Ultra L5 Sovereign Testing Specialist (Jan 01, 2026)
 
 Delegated from L2-L4 agents for coverage, integration, regression.
@@ -23,32 +24,17 @@ Delegated from L2-L4 agents for coverage, integration, regression.
 from __future__ import annotations
 
 import re
-from pathlib import Path
-from typing import Dict, List, Optional
-from agentic_core.utils.security import safe_execute
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-
-from agentic_core.L2_execution.ToolRegistry.ExecutionCanonBaseAgent import CanonBaseAgent
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from enum import Enum
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
+from pathlib import Path
 
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L2_execution.ToolRegistry.ExecutionCanonBaseAgent import CanonBaseAgent
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
     TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.utils.security import safe_execute
 
 
 class SovereignSeverity(Enum):
@@ -63,7 +49,7 @@ class SovereignSeverity(Enum):
 class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMixin):
     """L5 specialist — advanced sovereign testing."""
 
-    def __init__(self, ctx: Optional[any] = None, *args: any, _allow_mock: bool = True, **kwargs: any) -> None:
+    def __init__(self, ctx: any | None = None, *args: any, _allow_mock: bool = True, **kwargs: any) -> None:
         """Initialize TestSovereigntyAgent.
 
         Args:
@@ -83,11 +69,11 @@ class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMix
         super().__init__(ctx, *args, **kwargs)
         self.repo_root: Path = Path.cwd()
 
-    def get_validation_keys(self) -> List[int]:
+    def get_validation_keys(self) -> list[int]:
         """Return canon keys for test sovereignty."""
         return [99]  # Testing sovereignty key
 
-    async def execute(self, request: Dict = None) -> Dict:
+    async def execute(self, request: dict = None) -> dict:
         """Run advanced tests on Artifact or repo."""
         if request is None:
             request = {}
@@ -137,7 +123,7 @@ class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMix
 
         return results
 
-    def _run_full_repo_tests(self, coverage_target: float) -> Dict:
+    def _run_full_repo_tests(self, coverage_target: float) -> dict:
         """Run full pytest with coverage."""
         try:
             result = safe_execute(
@@ -166,7 +152,7 @@ class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMix
                 "output": str(e)
             }
 
-    def _run_basic_tests(self) -> Dict:
+    def _run_basic_tests(self) -> dict:
         """Run basic pytest without coverage."""
         try:
             result = safe_execute(
@@ -192,7 +178,7 @@ class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMix
                 "output": str(e)
             }
 
-    def _run_targeted_tests(self, request: Dict) -> Dict:
+    def _run_targeted_tests(self, request: dict) -> dict:
         """Run targeted tests on specific files/modules."""
         target = request.get("target", "tests/")
         try:
@@ -232,7 +218,7 @@ class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMix
         match = re.search(r"(\d+)%\s*$", output.splitlines()[-1])
         return float(match.group(1)) if match else 0.0
 
-    def _run_integrated_self_tests(self) -> Dict:
+    def _run_integrated_self_tests(self) -> dict:
         """Ultra CRITIQUE: Integrated self-tests — all must pass."""
         tests = []
 
@@ -251,14 +237,14 @@ class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMix
         all_passed = all(t["passed"] for t in tests)
         return {TESTS_DIR: tests, "all_passed": all_passed}
 
-    def _emit_event(self, Severity: SovereignSeverity, event_type: str, payload: Optional[Dict] = None) -> None:
+    def _emit_event(self, Severity: SovereignSeverity, event_type: str, payload: dict | None = None) -> None:
         """Telemetry for observability."""
         print(f"[SOVEREIGN EVENT] {Severity.value} | {event_type}")
         if payload:
             print(f"  Payload: {payload}")
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L5 safety agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:

@@ -1,21 +1,18 @@
 from __future__ import annotations
+
 """
 Sovereign DeepWiki Healing Strategy – Phase 17E (Dec 27, 2025)
 Detects and autonomously corrects codebase documentation drift.
 L6 observability self-healing using official DeepWiki MCP.
 """
 import logging
-from typing import List, Dict, Any
 from pathlib import Path
-from agentic_core.L0_maintenance.P1_core.filesystem_mcp_client_1 import get_filesystem_client
+from typing import Any
+
 from agentic_core.config.blueprint_sovereign.sovereign_config_1 import config
+from agentic_core.L0_maintenance.P1_core.filesystem_mcp_client_1 import get_filesystem_client
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
-from agentic_core.utils.sovereign_index import SovereignIndex
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -38,7 +35,7 @@ class DeepWikiHealingStrategy:
         self.processed_today = 0
         Logger.info('[L0 DEEPWIKI HEALING] Strategy initialized')
 
-    async def diagnose(self, issues: List[Dict]) -> List[Dict]:
+    async def diagnose(self, issues: list[dict]) -> list[dict]:
         """
         Diagnose documentation drift via proactive scan.
 
@@ -58,7 +55,7 @@ class DeepWikiHealingStrategy:
         Logger.info(f'[L0 DEEPWIKI HEALING] Diagnosed {len(fixes)} undocumented files')
         return fixes
 
-    async def _find_undocumented_files(self) -> List[Path]:
+    async def _find_undocumented_files(self) -> list[Path]:
         """
         Compares physical territory to documented structure.
 
@@ -95,7 +92,7 @@ class DeepWikiHealingStrategy:
             Logger.error(f'[L0 DEEPWIKI HEALING] Error getting documented paths: {e}')
             return set()
 
-    async def apply(self, fix: Dict, ctx: Any=None) -> bool:
+    async def apply(self, fix: dict, ctx: Any=None) -> bool:
         """
         Apply DeepWiki healing via Sovereign Clients.
 

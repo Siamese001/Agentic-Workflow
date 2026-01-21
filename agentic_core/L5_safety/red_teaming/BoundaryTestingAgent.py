@@ -19,32 +19,17 @@ to identify where the system breaks or behaves unexpectedly.
 from __future__ import annotations
 
 import logging
-from typing import Any, Dict, List, Optional
 from dataclasses import dataclass
-
-from agentic_core.L4_state.ValidationContext import ValidationContext
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.runtime.shared_runtime import log_event
+from typing import Any
 
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
-)
+from agentic_core.L4_state.ValidationContext import ValidationContext
 from agentic_core.L5_safety.validators.decorators import standard_heal
-
+from agentic_core.L5_safety.validators.structure_blueprint import (
+    TESTS_DIR,
+)
+from agentic_core.runtime.shared_runtime import log_event
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 logger = logging.getLogger(__name__)
 
@@ -82,7 +67,7 @@ class BoundaryTestingAgent(HealerMixin, MCPHardenedMixin):
         self.tests_executed = 0
         self.edge_cases_found = 0
 
-    async def act(self) -> Dict[str, Any]:
+    async def act(self) -> dict[str, Any]:
         """Execute boundary testing."""
         logger.info(f"[{self.name}] Starting boundary and edge case testing")
 
@@ -131,7 +116,7 @@ class BoundaryTestingAgent(HealerMixin, MCPHardenedMixin):
                 "tests_executed": results["tests_executed"],
             }
 
-    async def _execute_boundary_test(self, test: str) -> Dict[str, Any]:
+    async def _execute_boundary_test(self, test: str) -> dict[str, Any]:
         """Execute a specific boundary test."""
         if test == "empty_input":
             return self._test_empty_input()
@@ -153,7 +138,7 @@ class BoundaryTestingAgent(HealerMixin, MCPHardenedMixin):
             return self._test_resource_limits()
         return {"edge_case_found": False}
 
-    def _test_empty_input(self) -> Dict[str, Any]:
+    def _test_empty_input(self) -> dict[str, Any]:
         """Test system behavior with empty inputs."""
         return {
             "edge_case_found": False,
@@ -163,7 +148,7 @@ class BoundaryTestingAgent(HealerMixin, MCPHardenedMixin):
             "recommendation": "Validate and handle empty inputs gracefully",
         }
 
-    def _test_null_input(self) -> Dict[str, Any]:
+    def _test_null_input(self) -> dict[str, Any]:
         """Test system behavior with null/None inputs."""
         return {
             "edge_case_found": False,
@@ -173,7 +158,7 @@ class BoundaryTestingAgent(HealerMixin, MCPHardenedMixin):
             "recommendation": "Check for null before processing",
         }
 
-    def _test_max_length(self) -> Dict[str, Any]:
+    def _test_max_length(self) -> dict[str, Any]:
         """Test system behavior at maximum length boundaries."""
         return {
             "edge_case_found": False,
@@ -183,7 +168,7 @@ class BoundaryTestingAgent(HealerMixin, MCPHardenedMixin):
             "recommendation": "Enforce maximum input length limits",
         }
 
-    def _test_special_characters(self) -> Dict[str, Any]:
+    def _test_special_characters(self) -> dict[str, Any]:
         """Test system behavior with special characters."""
         return {
             "edge_case_found": False,
@@ -193,7 +178,7 @@ class BoundaryTestingAgent(HealerMixin, MCPHardenedMixin):
             "recommendation": "Properly escape and validate special characters",
         }
 
-    def _test_unicode_edge_cases(self) -> Dict[str, Any]:
+    def _test_unicode_edge_cases(self) -> dict[str, Any]:
         """Test system behavior with unicode edge cases."""
         return {
             "edge_case_found": False,
@@ -203,7 +188,7 @@ class BoundaryTestingAgent(HealerMixin, MCPHardenedMixin):
             "recommendation": "Normalize unicode before processing",
         }
 
-    def _test_numeric_boundaries(self) -> Dict[str, Any]:
+    def _test_numeric_boundaries(self) -> dict[str, Any]:
         """Test system behavior at numeric boundaries."""
         return {
             "edge_case_found": False,
@@ -213,7 +198,7 @@ class BoundaryTestingAgent(HealerMixin, MCPHardenedMixin):
             "recommendation": "Validate numeric ranges and use appropriate data types",
         }
 
-    def _test_type_mismatches(self) -> Dict[str, Any]:
+    def _test_type_mismatches(self) -> dict[str, Any]:
         """Test system behavior with type mismatches."""
         return {
             "edge_case_found": False,
@@ -223,7 +208,7 @@ class BoundaryTestingAgent(HealerMixin, MCPHardenedMixin):
             "recommendation": "Implement strict type checking and validation",
         }
 
-    def _test_malformed_structures(self) -> Dict[str, Any]:
+    def _test_malformed_structures(self) -> dict[str, Any]:
         """Test system behavior with malformed data structures."""
         return {
             "edge_case_found": False,
@@ -233,7 +218,7 @@ class BoundaryTestingAgent(HealerMixin, MCPHardenedMixin):
             "recommendation": "Validate data structure format before processing",
         }
 
-    def _test_resource_limits(self) -> Dict[str, Any]:
+    def _test_resource_limits(self) -> dict[str, Any]:
         """Test system behavior at resource limit boundaries."""
         return {
             "edge_case_found": False,
@@ -251,7 +236,7 @@ class BoundaryTestingAgent(HealerMixin, MCPHardenedMixin):
         return True
 
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, **kwargs) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, **kwargs) -> dict[str, Any]:
         """Repository healing with parent chain invocation."""
         result = super().heal_repository(dry_run=dry_run, **kwargs)
         return {"violations_fixed": 0, "skipped": 0, "parent": result}

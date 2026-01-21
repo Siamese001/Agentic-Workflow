@@ -1,24 +1,20 @@
 from __future__ import annotations
+
 import logging
+
 '''Brief description of functionality and purpose.'''
 
 '''Brief description of functionality and purpose.'''
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Protocol
 
 _logger = logging.getLogger(__name__)
 # Ownership: apps_rg / L1_cognition
 # -*- coding: utf-8 -*-
 """RAG configuration for resume generation."""
 
-from typing import Dict
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 
 
@@ -47,7 +43,7 @@ class RagConfig:
     _cache_ttl_days: int = 30
     _telemetry_enabled: bool = True
     _telemetry_log_dir: str = "/staging/rag_telemetry"
-    _source_weights: Dict[str, float] = field(
+    _source_weights: dict[str, float] = field(
         default_factory=lambda: {
             "SOURCE_JD": 1.8,
             "SOURCE_COMPANY_BLOG": 1.5,

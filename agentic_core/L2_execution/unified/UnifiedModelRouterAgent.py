@@ -22,8 +22,7 @@ import logging
 import threading
 from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum, auto
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from enum import Enum
 
 Logger = logging.getLogger(__name__)
 
@@ -155,14 +154,14 @@ class UnifiedModelRouterAgent:
 
     def __init__(
         self,
-        models: Optional[List[ModelConfig]] = None,
-        config: Optional[RouterConfig] = None,
+        models: list[ModelConfig] | None = None,
+        config: RouterConfig | None = None,
     ):
         self.models = models or self.DEFAULT_MODELS.copy()
         self.config = config or RouterConfig()
         self._lock = threading.RLock()
-        self._decisions: List[RoutingDecision] = []
-        self._provider_failures: Dict[str, int] = {}
+        self._decisions: list[RoutingDecision] = []
+        self._provider_failures: dict[str, int] = {}
 
         Logger.info("UnifiedModelRouterAgent initialized")
 
@@ -171,8 +170,8 @@ class UnifiedModelRouterAgent:
         task: str,
         require_vision: bool = False,
         require_tools: bool = False,
-        max_tokens: Optional[int] = None,
-        preferred_provider: Optional[str] = None,
+        max_tokens: int | None = None,
+        preferred_provider: str | None = None,
     ) -> RoutingDecision:
         """
         Route a task to the optimal model.
@@ -255,9 +254,9 @@ class UnifiedModelRouterAgent:
         self,
         require_vision: bool = False,
         require_tools: bool = False,
-        max_tokens: Optional[int] = None,
-        preferred_provider: Optional[str] = None,
-    ) -> List[ModelConfig]:
+        max_tokens: int | None = None,
+        preferred_provider: str | None = None,
+    ) -> list[ModelConfig]:
         """Filter models by requirements."""
         eligible = []
 
@@ -290,7 +289,7 @@ class UnifiedModelRouterAgent:
 
     def _select_model(
         self,
-        eligible: List[ModelConfig],
+        eligible: list[ModelConfig],
         complexity: TaskComplexity,
     ) -> ModelConfig:
         """Select optimal model based on complexity and cost."""
@@ -356,7 +355,7 @@ class UnifiedModelRouterAgent:
         with self._lock:
             self._provider_failures[provider] = self._provider_failures.get(provider, 0) + 1
 
-    def reset_failures(self, provider: Optional[str] = None) -> None:
+    def reset_failures(self, provider: str | None = None) -> None:
         """Reset failure counts."""
         with self._lock:
             if provider:
@@ -364,7 +363,7 @@ class UnifiedModelRouterAgent:
             else:
                 self._provider_failures.clear()
 
-    def get_decisions(self) -> List[RoutingDecision]:
+    def get_decisions(self) -> list[RoutingDecision]:
         """Get all routing decisions."""
         return self._decisions.copy()
 

@@ -25,7 +25,7 @@ total_row = next((r for r in data if r['Territory'] == 'TOTAL'), None)
 print("\n" + "="*70)
 print("DASHBOARD DATA VERIFICATION")
 print("="*70)
-print(f"\nTOTAL Row in dashboard_data.js:")
+print("\nTOTAL Row in dashboard_data.js:")
 print(f"  Health: {total_row['Health']}")
 print(f"  Code Quality Score: {total_row['Code Quality Score']}")
 print(f"  Are they the same? {total_row['Health'] == total_row['Code Quality Score']}")
@@ -49,7 +49,7 @@ if 'const dashboardData = [' in html_content:
         embedded_total = next((r for r in embedded_data if r['Territory'] == 'TOTAL'), None)
 
         if embedded_total:
-            print(f"\nEmbedded TOTAL row in HTML:")
+            print("\nEmbedded TOTAL row in HTML:")
             print(f"  Health: {embedded_total.get('Health', 'MISSING')}")
             print(f"  Code Quality Score: {embedded_total.get('Code Quality Score', 'MISSING')}")
 
@@ -57,7 +57,7 @@ if 'const dashboardData = [' in html_content:
                 print("\n❌ BUG FOUND: Embedded HTML data has IDENTICAL Health and Code Quality!")
                 print("This is what the user is seeing!")
             else:
-                print(f"\n✅ Embedded data has different scores")
+                print("\n✅ Embedded data has different scores")
                 print(f"   Health: {embedded_total.get('Health')}")
                 print(f"   Code Quality Score: {embedded_total.get('Code Quality Score')}")
 else:

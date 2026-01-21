@@ -19,33 +19,15 @@ Target: PASS on all checks (0 violations, healing success, MCP audit clean)
 # This boosts alignment detection — review and integrate appropriately
 
 import ast
-import importlib
-import importlib.util
 import json
 import logging
 import sys
-import traceback
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(message)s')
@@ -61,7 +43,7 @@ class ValidationResult:
     healing_pass: bool = False
     mcp_hardened: bool = False
     external_touch: bool = False
-    error: Optional[str] = None
+    error: str | None = None
 
 @dataclass
 class ValidationReport:
@@ -71,8 +53,8 @@ class ValidationReport:
     healing_pass: int = 0
     mcp_hardened: int = 0
     external_agents: int = 0
-    regressions: List[str] = field(default_factory=list)
-    results: List[ValidationResult] = field(default_factory=list)
+    regressions: list[str] = field(default_factory=list)
+    results: list[ValidationResult] = field(default_factory=list)
 
     def add_result(self, result: ValidationResult):
         self.results.append(result)
@@ -96,7 +78,7 @@ class SystemValidator:
         self.discovery_path = project_root / AGENT_DISCOVERY_JSON
         self.report = ValidationReport()
 
-    def load_discovery(self) -> List[Dict]:
+    def load_discovery(self) -> list[dict]:
         """Load agent discovery JSON."""
         if not self.discovery_path.exists():
             Logger.error("agent_discovery_full.json not found. Run full_agent_discovery.py first.")
@@ -135,10 +117,10 @@ class SystemValidator:
         """Check if code has MCPHardenedMixin."""
         return 'MCPHardenedMixin' in code or 'mcp_hardened_mixin' in code
 
-    def validate_syntax(self, file_path: Path) -> Optional[str]:
+    def validate_syntax(self, file_path: Path) -> str | None:
         """Check file for syntax errors."""
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 code = f.read()
             ast.parse(code)
             return None
@@ -147,7 +129,7 @@ class SystemValidator:
         except Exception as e:
             return str(e)
 
-    def validate_agent(self, agent: Dict) -> ValidationResult:
+    def validate_agent(self, agent: dict) -> ValidationResult:
         """Validate a single agent using discovery JSON data."""
         agent_name = agent.get('class_name', 'Unknown')
         module_path = agent.get('path', '')

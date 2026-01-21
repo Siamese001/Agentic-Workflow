@@ -1,23 +1,25 @@
 from __future__ import annotations
+
 """
 Secure Subprocess Execution - Timeout-Protected Command Execution
 Prevents livelocks and provides safe subprocess management.
 """
-import os
 import subprocess
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol, Tuple, TypedDict
+from typing import Any, TypedDict
+
 from agentic_core.utils.security import safe_execute
+
 
 class ExecuteCommandArgs(TypedDict):
     """Brief description of functionality and purpose."""
     command: str
-    args: List[str]
+    args: list[str]
     timeout: int
-    cwd: Optional[str]
+    cwd: str | None
     capture_output: bool
-_cached_project_root: Optional[Path] = None
+_cached_project_root: Path | None = None
 
 def get_project_root() -> Path:
     """
@@ -61,8 +63,8 @@ class ExecutionTimeoutError(Exception):
 
 class ExecutionError(Exception):
     """Raised when command execution fails."""
-ALLOWED_COMMANDS: Dict[str, List[str]] = {'python': [sys.executable, 'python', 'python3'], 'isort': ['isort'], 'autoflake': ['autoflake'], 'black': ['black'], 'flake8': ['flake8'], 'mypy': ['mypy'], 'pytest': ['pytest'], 'pip': ['pip', 'pip3']}
-DANGEROUS_COMMANDS: List[str] = ['rm', 'del', 'rmdir', 'format', 'dd', 'mkfs', 'fdisk', 'shutdown', 'reboot', 'halt', 'poweroff', 'init']
+ALLOWED_COMMANDS: dict[str, list[str]] = {'python': [sys.executable, 'python', 'python3'], 'isort': ['isort'], 'autoflake': ['autoflake'], 'black': ['black'], 'flake8': ['flake8'], 'mypy': ['mypy'], 'pytest': ['pytest'], 'pip': ['pip', 'pip3']}
+DANGEROUS_COMMANDS: list[str] = ['rm', 'del', 'rmdir', 'format', 'dd', 'mkfs', 'fdisk', 'shutdown', 'reboot', 'halt', 'poweroff', 'init']
 
 def is_command_allowed(command: str) -> bool:
     """
@@ -85,7 +87,7 @@ def is_command_allowed(command: str) -> bool:
                 return True
     return False
 
-def execute_with_timeout(command: List[str], timeout: int=30, cwd: Optional[str]=None, capture_output: bool=True, check: bool=False) -> subprocess.CompletedProcess:
+def execute_with_timeout(command: list[str], timeout: int=30, cwd: str | None=None, capture_output: bool=True, check: bool=False) -> subprocess.CompletedProcess:
     """
     Execute a command with timeout protection.
 
@@ -121,7 +123,7 @@ def execute_with_timeout(command: List[str], timeout: int=30, cwd: Optional[str]
     except subprocess.CalledProcessError as e:
         raise ExecutionError(f"Command failed with exit code {e.returncode}: {' '.join(command)}") from e
 
-def execute_command(args: ExecuteCommandArgs) -> Tuple[int, str, str]:
+def execute_command(args: ExecuteCommandArgs) -> tuple[int, str, str]:
     """
     Execute a shell command with sandbox validation and timeout protection.
 
@@ -165,7 +167,7 @@ def check_tool_installed(tool_name: str) -> bool:
             continue
     return False
 
-def run_linter(tool: str, target_path: str='.', extra_args: Optional[List[str]]=None) -> Tuple[bool, str]:
+def run_linter(tool: str, target_path: str='.', extra_args: list[str] | None=None) -> tuple[bool, str]:
     """
     Run a linter tool on the codebase.
     Args:
@@ -191,7 +193,7 @@ def run_linter(tool: str, target_path: str='.', extra_args: Optional[List[str]]=
     except Exception as e:
         return (False, str(e))
 
-def run_autofix_tools(target_path: str='.') -> Dict[str, bool]:
+def run_autofix_tools(target_path: str='.') -> dict[str, bool]:
     """
     Run auto-fix tools (isort, autoflake) on the codebase.
 

@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Message Body Composer Agent - Core Message Generator (K.3)
 
 This agent generates LinkedIn message bodies with strict Metric binding and Archetype-specific structure.
@@ -18,14 +19,10 @@ Non-responsibilities:
 """
 import logging
 import re
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Protocol
+from dataclasses import dataclass
+from typing import Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -39,10 +36,10 @@ class MessageBodyConfig:
 class MessageBodyResult:
     """Docstring."""
     body: str
-    metrics_used: List[str]
-    evidence_bindings: Dict[str, str]
-    validation_results: List[ValidationResult]
-    temperature_log: List[Dict[str, Any]]
+    metrics_used: list[str]
+    evidence_bindings: dict[str, str]
+    validation_results: list[ValidationResult]
+    temperature_log: list[dict[str, Any]]
     success: bool
     attempts: int
 
@@ -57,12 +54,12 @@ class MessageBodyComposer:
     """
     ARCHETYPE_TRANSITIONS: Any = {'C_LEVEL': 'Two strategic insights from my experience:', 'VP_LEVEL': 'Two key achievements that align with your priorities:', 'DIRECTOR': 'Two relevant accomplishments from my background:', 'MANAGER': 'Two specific examples of my impact:', 'RECRUITER': 'Two qualifications that match your requirements:'}
 
-    def __init__(self, config: Optional[MessageBodyConfig]=None, gate_executor: Optional[IntegrityGateExecutorAgent]=None, recovery_loop: Optional[AdaptiveRecoveryLoop]=None):
+    def __init__(self, config: MessageBodyConfig | None=None, gate_executor: IntegrityGateExecutorAgent | None=None, recovery_loop: AdaptiveRecoveryLoop | None=None):
         SELF.CONFIG = config or MessageBodyConfig()
         self.gate_executor = gate_executor or IntegrityGateExecutorAgent()
         self.recovery_loop = recovery_loop or AdaptiveRecoveryLoop(initial_temperature=self.config.temperature)
 
-    def generate_message_body(self, Archetype: str, resume_evidence: Dict[str, str], context: Dict[str, Any]) -> MessageBodyResult:
+    def generate_message_body(self, Archetype: str, resume_evidence: dict[str, str], context: dict[str, Any]) -> MessageBodyResult:
         """
         Generate message body with Metric binding validation.
 
@@ -105,7 +102,7 @@ class MessageBodyComposer:
             return MessageBodyResult(BODY=body, metrics_used=metrics_used, evidence_bindings=evidence_bindings, validation_results=validation_results, temperature_log=self.recovery_loop.get_temperature_log(), SUCCESS=True, ATTEMPTS=attempt)
         return MessageBodyResult(BODY='', metrics_used=[], evidence_bindings={}, validation_results=validation_results, temperature_log=self.recovery_loop.get_temperature_log(), SUCCESS=False, ATTEMPTS=self.config.max_attempts)
 
-    def _generate_content(self, Archetype: str, resume_evidence: Dict[str, str], context: Dict[str, Any], temperature: float, attempt: int) -> str:
+    def _generate_content(self, Archetype: str, resume_evidence: dict[str, str], context: dict[str, Any], temperature: float, attempt: int) -> str:
         """
         Generate message body content using LLM.
         Placeholder for actual LLM integration.
@@ -113,12 +110,12 @@ class MessageBodyComposer:
         TRANSITION = self.ARCHETYPE_TRANSITIONS.get(Archetype, 'Two key points:')
         return f"I noticed your work at {context.get('company', 'your company')}.\n\n{TRANSITION}\n\n1. Led 30% revenue growth through strategic initiatives\n2. Managed $5M budget with 95% efficiency\n\nWould you be open to a brief conversation?"
 
-    def _extract_metrics(self, content: str) -> List[str]:
+    def _extract_metrics(self, content: str) -> list[str]:
         """Extract all metrics from content"""
         metric_pattern = '\\b\\d+%|\\b\\d+x\\b|\\b\\$\\d+[KMB]?(?:\\.\\d+)?[KMB]?\\b|\\b\\d+\\+?\\b(?=\\s+(?:team|people|projects|clients))'
         return re.findall(metric_pattern, content)
 
-    def _bind_metrics_to_evidence(self, metrics: List[str], resume_evidence: Dict[str, str]) -> Dict[str, str]:
+    def _bind_metrics_to_evidence(self, metrics: list[str], resume_evidence: dict[str, str]) -> dict[str, str]:
         """
         Bind each Metric to a resume evidence ID.
         Returns dict mapping Metric to evidence ID.
@@ -141,8 +138,8 @@ class MessageBodyComposer:
             return ValidationResult(gate_id='VG_TRANSITION_PHRASE', PASSED=True, SEVERITY='INFO', MESSAGE=f'No transition phrase required for Archetype {Archetype}')
         if expected_phrase in content:
             return ValidationResult(gate_id='VG_TRANSITION_PHRASE', PASSED=True, SEVERITY='INFO', MESSAGE=f"Transition phrase verified: '{expected_phrase}'", SIGNATURE=f'TRANS:OK:{hash(expected_phrase) % 10000}')
-        return ValidationResult(gate_id='VG_TRANSITION_PHRASE', PASSED=False, SEVERITY='BLOCK', MESSAGE=f'BLOCKED: Required transition phrase not found', DETAILS={'expected': expected_phrase, 'Archetype': Archetype, 'content_preview': content[:200]})
+        return ValidationResult(gate_id='VG_TRANSITION_PHRASE', PASSED=False, SEVERITY='BLOCK', MESSAGE='BLOCKED: Required transition phrase not found', DETAILS={'expected': expected_phrase, 'Archetype': Archetype, 'content_preview': content[:200]})
 
-def create_message_body_composer(config: Optional[MessageBodyConfig]=None) -> MessageBodyComposer:
+def create_message_body_composer(config: MessageBodyConfig | None=None) -> MessageBodyComposer:
     """Factory function to create MessageBodyComposer instance"""
     return MessageBodyComposer(config=config)

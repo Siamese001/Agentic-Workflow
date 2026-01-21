@@ -5,6 +5,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """
 L5 Safety: SubAtomicEngine
 Hardens LLM interaction with token budgets and retry logic.
@@ -17,8 +18,8 @@ import random
 import re
 import time
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol
-import numpy as np
+from typing import Any
+
 try:
     from google import genai
     from google.api_core.exceptions import DeadlineExceeded, InternalServerError, ResourceExhausted
@@ -27,7 +28,9 @@ try:
 except ImportError:
     GENAI_AVAILABLE: Any = False
 try:
-    from agentic_core.L4_state.validation_context.PineconeSovereignAgent import PineconeSovereignAgent
+    from agentic_core.L4_state.validation_context.PineconeSovereignAgent import (
+        PineconeSovereignAgent,
+    )
     PINECONE_AVAILABLE: Any = True
 except ImportError:
     PINECONE_AVAILABLE: Any = False
@@ -48,7 +51,7 @@ class SubAtomicEngine:
 class SubAtomicEngineImpl:
     """Hardens the LLM interaction with the 24,576 token budget."""
 
-    def __init__(self, gemini_client: Optional[Any]=None, redis_client: Optional[Any]=None, pinecone_index: Optional[Any]=None):
+    def __init__(self, gemini_client: Any | None=None, redis_client: Any | None=None, pinecone_index: Any | None=None):
         """
         Initialize SubAtomicEngine with Meta-Learning storage.
 
@@ -72,7 +75,7 @@ class SubAtomicEngineImpl:
             if not api_key:
                 raise RuntimeError('No Gemini API key found. Set GOOGLE_API_KEY in your .env file.')
             self._client = genai.Client(api_key=api_key)
-        self.chat_sessions: Dict[str, Any] = {}
+        self.chat_sessions: dict[str, Any] = {}
         self.pinecone = None
 
         # [HARDENING 8] Initialize prompt governor for centralized prompt management
@@ -102,7 +105,7 @@ class SubAtomicEngineImpl:
         return types.GenerateContentConfig(temperature=0.1, thinking_config=types.ThinkingConfig(thinking_budget=safe_budget))
 
     @staticmethod
-    def parse_fission_output(output: str) -> Dict[str, str]:
+    def parse_fission_output(output: str) -> dict[str, str]:
         """
         Extracts JSON file map from AI response.
 
@@ -123,7 +126,7 @@ class SubAtomicEngineImpl:
             Logger.warning(f'Failed to parse fission output: {e}')
         return {}
 
-    async def get_embedding(self, text: str) -> List[float]:
+    async def get_embedding(self, text: str) -> list[float]:
         """Generates semantic embeddings for code/tasks using Gemini 2025."""
         try:
             result: Any = await asyncio.to_thread(self._client.models.embed_content, model='text-embedding-004', contents=text)
@@ -132,7 +135,7 @@ class SubAtomicEngineImpl:
             Logger.error(f'   [MEMORY ERROR] Embedding failed: {e}')
             return [0.0] * 768
 
-    async def resilient_mutation(self, *args, system_prompt: Optional[str]=None, **kwargs) -> str:
+    async def resilient_mutation(self, *args, system_prompt: str | None=None, **kwargs) -> str:
         """
         Hardened LLM Gateway: Universal signature with legacy system_prompt support.
         Scrubs unknown kwargs to prevent Gemini API errors.
@@ -156,7 +159,7 @@ class SubAtomicEngineImpl:
         scrubbed_kwargs: Any = {k: v for k, v in kwargs.items() if k not in ['stop_sequences', 'top_p', 'response_format']}
         return await self._resilient_mutation_impl(file_path=file_path, code=code or prompt, Task=Task, round_num=round_num, fission_active=fission_active, system_prompt=system_prompt, **scrubbed_kwargs)
 
-    async def _resilient_mutation_impl(self, file_path: str, code: str, Task: str, round_num: int=1, fission_active: bool=False, system_prompt: Optional[str]=None, **kwargs) -> str:
+    async def _resilient_mutation_impl(self, file_path: str, code: str, Task: str, round_num: int=1, fission_active: bool=False, system_prompt: str | None=None, **kwargs) -> str:
         """Execute resilient mutation with exponential backoff retry.
 
         Args:
@@ -170,7 +173,9 @@ class SubAtomicEngineImpl:
         """
         if self.pinecone is None and PINECONE_AVAILABLE:
             try:
-                from agentic_core.L4_state.validation_context.PineconeSovereignAgent import PineconeSovereignAgent
+                from agentic_core.L4_state.validation_context.PineconeSovereignAgent import (
+                    PineconeSovereignAgent,
+                )
                 self.pinecone = PineconeSovereignAgent(Path('.'))
                 print('   [OK] SubAtomicEngine: Hybrid routing activated (lazy)')
             except Exception as e:
@@ -269,7 +274,9 @@ class SubAtomicEngineImpl:
             # [HARDENING] Stage 1: Post-LLM Validation Pipeline
             if not fission_active:
                 try:
-                    from agentic_core.L5_safety.validators.heal_validator_1 import HealValidatorAgent
+                    from agentic_core.L5_safety.validators.heal_validator_1 import (
+                        HealValidatorAgent,
+                    )
                     validator = HealValidatorAgent(Path('.'))
                     ValidationResult = validator.validate_healed_code(code, healed_code, Path(file_path))
 
@@ -307,13 +314,15 @@ class SubAtomicEngineImpl:
         Logger.warning('   [!] Malformed response from Gemini')
         return code
 
-    def route_mission(self, mission: str) -> Dict:
+    def route_mission(self, mission: str) -> dict:
         """
         Eternal sub-atomic routing: Vector + Keyword precision.
         """
         if self.pinecone is None and PINECONE_AVAILABLE:
             try:
-                from agentic_core.L4_state.validation_context.PineconeSovereignAgent import PineconeSovereignAgent
+                from agentic_core.L4_state.validation_context.PineconeSovereignAgent import (
+                    PineconeSovereignAgent,
+                )
                 self.pinecone = PineconeSovereignAgent(Path('.'))
             except Exception as e:
                 print(f'   [!] Routing failed to initialize Pinecone: {e}')
@@ -321,7 +330,7 @@ class SubAtomicEngineImpl:
         if not self.pinecone:
             return {'Route': 'fallback', 'reason': 'Hybrid routing offline', 'confidence': 0.0}
         from agentic_core.L5_safety.validators.structure_blueprint import CANON_SIGNALS
-        keywords: Any = [w for w in CANON_SIGNALS if w.lower() in mission.lower()]
+        [w for w in CANON_SIGNALS if w.lower() in mission.lower()]
         if hasattr(self.pinecone, 'hybrid_search'):
             try:
                 results: Any = self.pinecone.hybrid_search(query=mission, top_k=8)

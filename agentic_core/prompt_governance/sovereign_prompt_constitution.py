@@ -1,5 +1,7 @@
 from __future__ import annotations
+
 from typing import Any
+
 """
 Sovereign Prompt Constitution SSOT
 The absolute source of truth for all agent personas, directives, and meta-prompts.

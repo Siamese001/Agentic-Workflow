@@ -24,7 +24,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Set
+from typing import Any
 
 Logger = logging.getLogger(__name__)
 
@@ -65,8 +65,8 @@ class AgentPermission:
     level: PermissionLevel
     granted_by: str
     granted_at: datetime = field(default_factory=datetime.utcnow)
-    expires_at: Optional[datetime] = None
-    allowed_resources: Set[str] = field(default_factory=set)
+    expires_at: datetime | None = None
+    allowed_resources: set[str] = field(default_factory=set)
 
 
 @dataclass
@@ -88,7 +88,7 @@ class SecureCheckpoint:
     created_at: datetime
     data_hash: str
     encrypted: bool = True
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class UnifiedSecurityManagerAgent:
@@ -113,12 +113,12 @@ class UnifiedSecurityManagerAgent:
         checkpoint = manager.create_checkpoint("agent_1", data={"state": "active"})
     """
 
-    def __init__(self, vault_path: Optional[Path] = None):
+    def __init__(self, vault_path: Path | None = None):
         self._lock = threading.RLock()
-        self._permissions: Dict[str, AgentPermission] = {}
-        self._configs: Dict[str, SecureConfig] = {}
-        self._checkpoints: Dict[str, SecureCheckpoint] = {}
-        self._audit_log: List[SecurityAuditEntry] = []
+        self._permissions: dict[str, AgentPermission] = {}
+        self._configs: dict[str, SecureConfig] = {}
+        self._checkpoints: dict[str, SecureCheckpoint] = {}
+        self._audit_log: list[SecurityAuditEntry] = []
         self._vault_path = vault_path
 
         # Initialize admin permission
@@ -156,7 +156,7 @@ class UnifiedSecurityManagerAgent:
         self,
         agent_id: str,
         required_level: PermissionLevel,
-        resource: Optional[str] = None,
+        resource: str | None = None,
     ) -> bool:
         """Check if agent has required permission level."""
         if agent_id not in self._permissions:
@@ -184,8 +184,8 @@ class UnifiedSecurityManagerAgent:
         agent_id: str,
         level: PermissionLevel,
         granted_by: str,
-        expires_at: Optional[datetime] = None,
-        allowed_resources: Optional[Set[str]] = None,
+        expires_at: datetime | None = None,
+        allowed_resources: set[str] | None = None,
     ) -> bool:
         """Grant permission to an agent."""
         with self._lock:
@@ -251,7 +251,7 @@ class UnifiedSecurityManagerAgent:
             self._audit(agent_id, SecurityAction.WRITE_CONFIG, key, True)
             return True
 
-    def get_config(self, key: str, agent_id: str) -> Optional[Any]:
+    def get_config(self, key: str, agent_id: str) -> Any | None:
         """Get a secure configuration value."""
         with self._lock:
             if key not in self._configs:
@@ -269,9 +269,9 @@ class UnifiedSecurityManagerAgent:
     def create_checkpoint(
         self,
         agent_id: str,
-        data: Dict[str, Any],
+        data: dict[str, Any],
         encrypted: bool = True,
-    ) -> Optional[SecureCheckpoint]:
+    ) -> SecureCheckpoint | None:
         """Create a secure checkpoint."""
         with self._lock:
             if not self._check_permission(agent_id, PermissionLevel.SECURE_WRITER):
@@ -299,7 +299,7 @@ class UnifiedSecurityManagerAgent:
         self,
         checkpoint_id: str,
         agent_id: str,
-    ) -> Optional[Dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """Restore from a secure checkpoint."""
         with self._lock:
             if checkpoint_id not in self._checkpoints:
@@ -316,10 +316,10 @@ class UnifiedSecurityManagerAgent:
 
     def get_audit_log(
         self,
-        agent_id: Optional[str] = None,
-        action: Optional[SecurityAction] = None,
+        agent_id: str | None = None,
+        action: SecurityAction | None = None,
         limit: int = 100,
-    ) -> List[SecurityAuditEntry]:
+    ) -> list[SecurityAuditEntry]:
         """Get audit log entries."""
         with self._lock:
             entries = self._audit_log

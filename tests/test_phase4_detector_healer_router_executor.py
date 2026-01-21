@@ -28,8 +28,8 @@ class TestDeadlockDetection(unittest.TestCase):
     def test_deadlock_detection(self):
         """Correctly identify circular wait conditions in multi-threaded test code."""
         from agentic_core.L5_safety.unified.UnifiedCodeDetectorAgent import (
-            UnifiedCodeDetectorAgent,
             DetectionType,
+            UnifiedCodeDetectorAgent,
         )
 
         detector = UnifiedCodeDetectorAgent()
@@ -77,8 +77,8 @@ class TestPromptInjectionBlock(unittest.TestCase):
     def test_prompt_injection_block(self):
         """Flag 100% of standard injection patterns in simulated user input."""
         from agentic_core.L5_safety.unified.UnifiedSafetyDetectorAgent import (
-            UnifiedSafetyDetectorAgent,
             SafetyThreatType,
+            UnifiedSafetyDetectorAgent,
         )
 
         detector = UnifiedSafetyDetectorAgent()
@@ -120,8 +120,8 @@ class TestImportHealerPrecision(unittest.TestCase):
     def test_import_healer_precision(self):
         """Fix broken relative imports and remove unused imports without breaking functional code."""
         from agentic_core.L5_safety.unified.UnifiedCodeHealerAgent import (
-            UnifiedCodeHealerAgent,
             HealerConfig,
+            UnifiedCodeHealerAgent,
         )
 
         # Create test file with unused imports
@@ -174,9 +174,9 @@ class TestModelRoutingCostLogic(unittest.TestCase):
     def test_model_routing_cost_logic(self):
         """Route high-reasoning tasks to expensive models and basic tasks to cost-effective models."""
         from agentic_core.L2_execution.unified.UnifiedModelRouterAgent import (
-            UnifiedModelRouterAgent,
-            TaskComplexity,
             ModelTier,
+            TaskComplexity,
+            UnifiedModelRouterAgent,
         )
 
         router = UnifiedModelRouterAgent()
@@ -222,13 +222,13 @@ class TestIntegrityGateBlocking(unittest.TestCase):
 
     def test_integrity_gate_blocking(self):
         """Block execution if the Safety Detector flags a high-severity violation."""
-        from agentic_core.L5_safety.unified.UnifiedSafetyExecutorAgent import (
-            UnifiedSafetyExecutorAgent,
-            ExecutorConfig,
-            ExecutionStatus,
-        )
         from agentic_core.L5_safety.unified.UnifiedSafetyDetectorAgent import (
             UnifiedSafetyDetectorAgent,
+        )
+        from agentic_core.L5_safety.unified.UnifiedSafetyExecutorAgent import (
+            ExecutionStatus,
+            ExecutorConfig,
+            UnifiedSafetyExecutorAgent,
         )
 
         # Create detector and executor

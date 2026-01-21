@@ -1,8 +1,5 @@
 """Verify L2 Execution data is now correct (user's specific example)."""
 import json
-import re
-from pathlib import Path
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # Load source data
 agents = json.load(open('agent_discovery_full.json'))

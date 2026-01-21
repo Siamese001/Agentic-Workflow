@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Test cognitive recovery integration in orchestrator execution loop."""
 
-import sys
 import asyncio
+import sys
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent

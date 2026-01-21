@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Consolidated Dashboard Verification Script
 ==========================================
@@ -21,11 +20,10 @@ This script consolidates:
 import argparse
 import json
 import re
+import subprocess
 import sys
 import time
-import subprocess
 from pathlib import Path
-from typing import Tuple, List, Dict, Any
 
 # Setup project root
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -47,8 +45,8 @@ class DashboardVerifier:
         self.data_dir = self.dashboard_dir / "data"
         self.js_dir = self.dashboard_dir / "js"
         self.css_dir = self.dashboard_dir / "css"
-        self.errors: List[str] = []
-        self.warnings: List[str] = []
+        self.errors: list[str] = []
+        self.warnings: list[str] = []
         self.passed: int = 0
         self.failed: int = 0
 
@@ -69,7 +67,7 @@ class DashboardVerifier:
         print(f"   ⚠️  {msg}")
         self.warnings.append(msg)
 
-    def verify_html_exists(self) -> Tuple[bool, str]:
+    def verify_html_exists(self) -> tuple[bool, str]:
         """Verify dashboard HTML file exists."""
         print("\n1. Checking HTML file existence...")
         if not self.html_file.exists():
@@ -91,7 +89,7 @@ class DashboardVerifier:
         ]
 
         all_found = True
-        for section_id, section_text in sections:
+        for _section_id, section_text in sections:
             found = section_text in html
             self._check(found, f"Found: {section_text}", f"Missing: {section_text}")
             all_found = all_found and found

@@ -4,12 +4,10 @@ Generate test files for ALL agents that don't have tests.
 Goal: 100% test coverage for all agents.
 """
 import json
-import os
 from pathlib import Path
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # Load agent discovery data
-with open('agent_discovery_full.json', 'r') as f:
+with open('agent_discovery_full.json') as f:
     agents = json.load(f)
 
 print(f"Total agents: {len(agents)}")
@@ -156,9 +154,9 @@ for agent in agents_without_tests:
     print(f"✅ Created: {test_file}")
 
 print(f"\n{'='*70}")
-print(f"SUMMARY")
+print("SUMMARY")
 print(f"{'='*70}")
 print(f"Tests created: {created_count}")
 print(f"Tests skipped (already exist): {skipped_count}")
 print(f"Total agents: {len(agents)}")
-print(f"\nNext step: Run agent discovery to update has_tests flags")
+print("\nNext step: Run agent discovery to update has_tests flags")

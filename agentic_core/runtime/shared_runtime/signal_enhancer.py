@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Signal Enhancer - Hardened quality gates for high-signal outputs.
 
 This module provides strict validation gates, signal-to-noise optimization,
@@ -6,15 +7,12 @@ and Claim confidence scoring to ensure maximum output quality.
 """
 
 import hashlib
-import json
 import logging
-import math
 import re
-from datetime import datetime
-from typing import Any, Dict, List, Optional, Set, Tuple, Union
 from dataclasses import dataclass, field
+from datetime import datetime
 from enum import Enum
-import asyncio
+from typing import Any
 
 Logger = logging.getLogger(__name__)
 
@@ -56,7 +54,7 @@ class ClaimAnalysis:
     Claim: str
     confidence: float
     verifiable: bool
-    sources: List[str]
+    sources: list[str]
     risk_level: str  # low, medium, high
 
 
@@ -84,11 +82,11 @@ class SignalAssessment:
     # Risk indicators
     hallucination_risk: float
     repetition_ratio: float
-    claim_analyses: List[ClaimAnalysis]
+    claim_analyses: list[ClaimAnalysis]
 
     # Flags and recommendations
-    flags: List[str] = field(default_factory=list)
-    recommendations: List[str] = field(default_factory=list)
+    flags: list[str] = field(default_factory=list)
+    recommendations: list[str] = field(default_factory=list)
 
     def is_acceptable(self, min_quality: SignalQuality = SignalQuality.GOOD) -> bool:
         """Check if signal meets minimum quality threshold.
@@ -116,7 +114,7 @@ class SignalAssessment:
 class SignalEnhancer:
     """Enhances signal quality through multi-stage validation."""
 
-    def __init__(self, name: str = "default", thresholds: Optional[QualityThresholds] = None):
+    def __init__(self, name: str = "default", thresholds: QualityThresholds | None = None):
         """Initialize the signal enhancer.
 
         Args:
@@ -140,7 +138,7 @@ class SignalEnhancer:
     def assess_signal(
         self,
         content: str,
-        context: Optional[Dict[str, Any]] = None
+        context: dict[str, Any] | None = None
     ) -> SignalAssessment:
         """Assess the quality of content signal.
 
@@ -224,7 +222,7 @@ class SignalEnhancer:
 
         return assessment
 
-    def _assess_relevance(self, content: str, context: Optional[Dict[str, Any]]) -> float:
+    def _assess_relevance(self, content: str, context: dict[str, Any] | None) -> float:
         """Assess content relevance.
 
         Args:
@@ -261,7 +259,7 @@ class SignalEnhancer:
 
         return max(score, self.thresholds.MIN_RELEVANCE if score > 0.3 else score)
 
-    def _assess_authority(self, content: str, context: Optional[Dict[str, Any]]) -> float:
+    def _assess_authority(self, content: str, context: dict[str, Any] | None) -> float:
         """Assess source authority.
 
         Args:
@@ -399,17 +397,17 @@ class SignalEnhancer:
             SNR value
         """
         # Signal: informative words
-        signal_words = set([
+        signal_words = {
             "because", "therefore", "result", "conclusion", "evidence",
             "data", "analysis", "research", "study", "finding",
             "method", "approach", "technique", "algorithm", "system"
-        ])
+        }
 
         # Noise: filler words
-        noise_words = set([
+        noise_words = {
             "um", "uh", "like", "you know", "sort of", "kind of",
             "probably", "maybe", "perhaps", "basically", "actually"
-        ])
+        }
 
         words = content.lower().split()
         signal_count = sum(1 for word in words if word in signal_words)
@@ -577,7 +575,7 @@ class SignalEnhancer:
 
         return repetition_ratio
 
-    def _analyze_claims(self, content: str) -> List[ClaimAnalysis]:
+    def _analyze_claims(self, content: str) -> list[ClaimAnalysis]:
         """Analyze claims in content.
 
         Args:
@@ -617,8 +615,8 @@ class SignalEnhancer:
         composite_score: float,
         hallucination_risk: float,
         repetition_ratio: float,
-        claims: List[ClaimAnalysis]
-    ) -> Tuple[List[str], List[str]]:
+        claims: list[ClaimAnalysis]
+    ) -> tuple[list[str], list[str]]:
         """Generate flags and recommendations.
 
         Args:
@@ -690,7 +688,7 @@ class SignalEnhancer:
                 self._stats["flag_distribution"].get(flag, 0) + 1
             )
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get enhancer statistics.
 
         Returns:
@@ -706,10 +704,10 @@ class SignalEnhancer:
 
 
 # Global enhancer registry
-_enhancers: Dict[str, SignalEnhancer] = {}
+_enhancers: dict[str, SignalEnhancer] = {}
 
 
-def get_signal_enhancer(name: str = "default", thresholds: Optional[QualityThresholds] = None) -> SignalEnhancer:
+def get_signal_enhancer(name: str = "default", thresholds: QualityThresholds | None = None) -> SignalEnhancer:
     """Get or create a signal enhancer.
 
     Args:

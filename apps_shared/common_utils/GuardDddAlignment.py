@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 DDD Alignment Guardian - Sovereign Edition (December 29, 2025)
 Detects violations of Domain-Driven Design tactical patterns:
@@ -11,34 +12,21 @@ Detects violations of Domain-Driven Design tactical patterns:
 
 import ast
 from pathlib import Path
-from typing import List, Tuple, Dict
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
     SCRIPTS_DIR,
     TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
-from agentic_core.utils.sovereign_index import SovereignIndex
 
-def get_ddd_violations_detailed(root_path: str) -> List[Dict]:
+
+def get_ddd_violations_detailed(root_path: str) -> list[dict]:
     """
     [NEW] Detailed DDD Violation detector — structured output for L0 healing/forensics.
 
     Returns:
         List of dicts with keys: file, line, type, description, Severity
     """
-    violations: List[Dict] = []
+    violations: list[dict] = []
     root = Path(root_path)
     # [ROBUSTNESS] Handle case where root path doesn't exist
     if not root.exists():
@@ -227,7 +215,7 @@ def get_ddd_violations_detailed(root_path: str) -> List[Dict]:
     return violations
 
 
-def validate_ddd_alignment(root_path: str) -> Tuple[float, List[str]]:
+def validate_ddd_alignment(root_path: str) -> tuple[float, list[str]]:
     """
     Existing Auditor-compatible validator — simple score + string issues.
     Used directly by Sovereign Auditor v3.1.
@@ -245,7 +233,7 @@ def validate_ddd_alignment(root_path: str) -> Tuple[float, List[str]]:
     score = max(0.0, base_score - len(detailed_violations) * penalty_per_violation)
 
     # Format issues as strings for Auditor consumption
-    issues: List[str] = []
+    issues: list[str] = []
     for v in detailed_violations:
         line_info = f"line {v['line']}" if v['line'] > 0 else ""
         issues.append(f"{v['file']}:{line_info} [{v['Severity']}] {v['type']}: {v['description']}")

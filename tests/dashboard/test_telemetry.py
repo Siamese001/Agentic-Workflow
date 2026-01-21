@@ -6,9 +6,10 @@ Tests for dashboard live runtime meta-learning and telemetry.
 
 Migrated from: agentic_core/observability/test_phase1_phase2_telemetry.py
 """
-import pytest
 import sys
 from pathlib import Path
+
+import pytest
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))

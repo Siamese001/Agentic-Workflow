@@ -11,30 +11,33 @@
 #   exceeds config.batch_config.max_batch_queue_size.
 # - FIXED: All v10_5 imports and class names updated to v10_7.
 
-import os
-import csv
-import json
-import logging
-import shutil
 import asyncio
-import uuid
+import csv
+import logging
+import os
+import shutil
 import sys
+import uuid
 from datetime import datetime
-from typing import Dict, Any, List
+from typing import Any
 
-# v10.7: Import from new main/core
-from main_v10_7 import setup_logging, load_job_input
-from core_v10_7 import (
-    ConfigV10_7, WorkflowContext, MainGraphState,
-    CircuitBreakerOpenError, CostCeilingExceededError,
-    FileIOError, WorkflowError,
-    CircuitBreaker,
-    # v10.7: Import new helper functions
-    create_workflow_context, cleanup_workflow_chroma_collection,
-    get_checkpointer
-)
 # v10.7: Import from new orchestration/stacks
 from agent_orchestration_v10_7 import get_graph_app
+from core_v10_7 import (
+    CircuitBreaker,
+    CircuitBreakerOpenError,
+    ConfigV10_7,
+    MainGraphState,
+    WorkflowContext,
+    WorkflowError,
+    cleanup_workflow_chroma_collection,
+    # v10.7: Import new helper functions
+    create_workflow_context,
+    get_checkpointer,
+)
+
+# v10.7: Import from new main/core
+from main_v10_7 import load_job_input, setup_logging
 
 try:
     # v10.7: Import new meta-learner
@@ -57,12 +60,12 @@ SUMMARY_FILE = "batch_summary_v10_7.csv"
 class BatchFeedbackAggregator:
     """ROW 7: Aggregates feedback across batch jobs"""
     def __init__(self):
-        self.job_results: List[Dict[str, Any]] = []
+        self.job_results: list[dict[str, Any]] = []
 
-    def add_job_result(self, result: Dict[str, Any]):
+    def add_job_result(self, result: dict[str, Any]):
         self.job_results.append(result)
 
-    def get_batch_summary(self) -> Dict[str, Any]:
+    def get_batch_summary(self) -> dict[str, Any]:
         if not self.job_results: return {}
         total_jobs = len(self.job_results)
         successful = sum(1 for r in self.job_results if r['status'] == 'SUCCESS')
@@ -87,7 +90,7 @@ async def process_single_job_async(
     app, # The compiled graph app
     circuit_breaker: CircuitBreaker,
     batch_aggregator: BatchFeedbackAggregator
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Process a single job asynchronously"""
 
     job_name = os.path.basename(job_file)
@@ -179,7 +182,7 @@ async def run_batch_async(config: ConfigV10_7): # v10.7
         logger.info("v10.7 Batch process starting. No jobs found.")
         return
 
-    logger.info(f"===== v10.7 Async Batch Process Starting =====")
+    logger.info("===== v10.7 Async Batch Process Starting =====")
 
     # v10.7 (Fix #25): Backpressure Check
     max_queue_size = config.batch_config.max_batch_queue_size
@@ -284,16 +287,16 @@ async def run_batch_async(config: ConfigV10_7): # v10.7
                     writer.writeheader()
                 writer.writerow(batch_summary)
             logger.info(f"Wrote batch summary to {summary_path}")
-        except IOError as e:
+        except OSError as e:
             logger.error(f"Failed to write batch summary: {e}")
 
-    logger.info(f"BATCH PROCESSING COMPLETE (v10.7)")
+    logger.info("BATCH PROCESSING COMPLETE (v10.7)")
     logger.info(f"  Total Jobs: {batch_summary.get('total_jobs', 0)}")
     logger.info(f"  Success Rate: {batch_summary.get('success_rate', 0.0):.1%}")
     logger.info(f"  Total Cost: ${batch_summary.get('total_cost', 0.0):.4f}")
 
     # v10.7: Log metrics summary for the *entire* batch
-    logger.info(f"--- Batch Metrics Summary (v10.7) ---")
+    logger.info("--- Batch Metrics Summary (v10.7) ---")
     for metric in metrics_collector.get_summary():
          logger.info(f"  - {metric['agent_name']}::{metric['task_name']} | {metric['duration_ms']:.2f}ms | Success: {metric['success']}")
 

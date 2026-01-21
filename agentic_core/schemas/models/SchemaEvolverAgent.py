@@ -11,6 +11,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """
 ⚛️ Schema Evolver - The Structural Guard
 
@@ -25,24 +26,17 @@ Enables: Independent stage deployment with consistent data contracts
 """
 import ast
 import logging
-import re
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol, Set
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from typing import Any
+
 from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
-
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.sovereign_index import SovereignIndex
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -51,8 +45,8 @@ class SchemaDefinition:
     """Represents a Pydantic model or database schema."""
     name: str
     file_path: str
-    fields: Dict[str, str]
-    base_classes: List[str]
+    fields: dict[str, str]
+    base_classes: list[str]
     line_number: int
     is_pydantic: bool
 
@@ -62,26 +56,26 @@ class SchemaChange:
     schema_name: str
     change_type: str
     field_name: str
-    old_value: Optional[str]
-    new_value: Optional[str]
+    old_value: str | None
+    new_value: str | None
     file_path: str
 
 @dataclass
 class ImpactAnalysis:
     """Analysis of schema change impact."""
     change: SchemaChange
-    affected_files: List[str]
+    affected_files: list[str]
     breaking_change: bool
     Severity: str
-    transformation_mapping: Optional[str]
-    recommendations: List[str]
+    transformation_mapping: str | None
+    recommendations: list[str]
 
 @dataclass
 class SchemaRegistry:
     """Registry of all schemas in the codebase."""
-    schemas: Dict[str, SchemaDefinition] = field(default_factory=dict)
-    dependencies: Dict[str, Set[str]] = field(default_factory=dict)
-    reverse_deps: Dict[str, Set[str]] = field(default_factory=dict)
+    schemas: dict[str, SchemaDefinition] = field(default_factory=dict)
+    dependencies: dict[str, set[str]] = field(default_factory=dict)
+    reverse_deps: dict[str, set[str]] = field(default_factory=dict)
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
 class SchemaEvolverAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent):
@@ -128,7 +122,7 @@ class SchemaEvolverAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent
                 impact: Any = self._analyze_impact(change)
                 self._report_impact(impact)
         Logger.info(f'   Monitored {len(self.registry.schemas)} schemas')
-        Logger.info(f'   Tracked {sum((len(deps) for deps in self.registry.dependencies.values()))} dependencies')
+        Logger.info(f'   Tracked {sum(len(deps) for deps in self.registry.dependencies.values())} dependencies')
 
     def _discover_schemas(self) -> Any:
         """Discover all Pydantic models and database schemas."""
@@ -144,7 +138,7 @@ class SchemaEvolverAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent
     def _scan_file_for_schemas(self, file_path: str) -> Any:
         """Scan a file for Pydantic model definitions."""
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 source = f.read()
         except Exception as e:
             Logger.warning(f'Could not read {file_path}: {e}')
@@ -155,7 +149,7 @@ class SchemaEvolverAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent
             return
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
-                is_pydantic = any((base.id in ['BaseModel', 'BaseSettings'] if isinstance(base, ast.Name) else False for base in node.bases))
+                is_pydantic = any(base.id in ['BaseModel', 'BaseSettings'] if isinstance(base, ast.Name) else False for base in node.bases)
                 if is_pydantic or 'Schema' in node.name or 'Model' in node.name:
                     schema = self._extract_schema_definition(node, file_path, is_pydantic)
                     self.registry.schemas[schema.name] = schema
@@ -175,7 +169,7 @@ class SchemaEvolverAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent
         """Track which files depend on which schemas."""
         for file_path in self.ctx.python_files:
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
+                with open(file_path, encoding='utf-8') as f:
                     source = f.read()
             except Exception:
                 continue
@@ -214,7 +208,7 @@ class SchemaEvolverAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent
         recommendations = self._generate_recommendations(change, affected_files)
         return ImpactAnalysis(change=change, affected_files=affected_files, breaking_change=breaking_change, Severity=Severity, transformation_mapping=transformation_mapping, recommendations=recommendations)
 
-    def _generate_transformation_mapping(self, change: SchemaChange) -> Optional[str]:
+    def _generate_transformation_mapping(self, change: SchemaChange) -> str | None:
         """Generate transformation mapping for schema change."""
         if change.change_type == 'remove_field':
             return f"Migration: Remove all references to '{change.field_name}' or provide default value"
@@ -226,57 +220,57 @@ class SchemaEvolverAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent
             return f"Migration: Add '{change.field_name}' with default value or make optional"
         return None
 
-    def _generate_recommendations(self, change: SchemaChange, affected_files: List[str]) -> List[str]:
+    def _generate_recommendations(self, change: SchemaChange, affected_files: list[str]) -> list[str]:
         """Generate recommendations for handling schema change."""
         recommendations = []
         if change.change_type == 'remove_field':
             recommendations.append(f"Consider deprecation period before removing '{change.field_name}'")
-            recommendations.append(f'Add migration script to handle existing data')
+            recommendations.append('Add migration script to handle existing data')
             recommendations.append(f'Update {len(affected_files)} dependent files')
         elif change.change_type == 'modify_field':
             recommendations.append(f'Ensure type compatibility: {change.old_value} → {change.new_value}')
-            recommendations.append(f'Add validation for new type')
+            recommendations.append('Add validation for new type')
             recommendations.append(f'Test all {len(affected_files)} dependent files')
         elif change.change_type == 'rename_field':
-            recommendations.append(f'Use alias for backward compatibility')
+            recommendations.append('Use alias for backward compatibility')
             recommendations.append(f'Update {len(affected_files)} files in single commit')
         elif change.change_type == 'add_field':
-            recommendations.append(f'Make field optional or provide default')
-            recommendations.append(f'Document new field in schema')
+            recommendations.append('Make field optional or provide default')
+            recommendations.append('Document new field in schema')
         return recommendations
 
     def _report_impact(self, impact: ImpactAnalysis) -> Any:
         """Report impact analysis to user."""
         change = impact.change
         Logger.info(f"\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\n{'=' * 80}")
-        Logger.info(f'🛡️  SCHEMA CHANGE IMPACT ANALYSIS')
+        Logger.info('🛡️  SCHEMA CHANGE IMPACT ANALYSIS')
         Logger.info(f"{'=' * 80}")
         Logger.info(f'Schema: {change.schema_name}')
         Logger.info(f'Change: {change.change_type} - {change.field_name}')
         Logger.info(f'File: {change.file_path}')
-        Logger.info(f'')
-        Logger.info(f'Impact:')
+        Logger.info('')
+        Logger.info('Impact:')
         Logger.info(f'  Affected Files: {len(impact.affected_files)}')
         Logger.info(f"  Breaking Change: {('YES' if impact.breaking_change else 'NO')}")
         Logger.info(f'  Severity: {impact.Severity.upper()}')
         if impact.breaking_change:
-            Logger.warning(f'\n[!]  BREAKING CHANGE DETECTED')
+            Logger.warning('\n[!]  BREAKING CHANGE DETECTED')
         if impact.transformation_mapping:
-            Logger.info(f'\nTransformation Mapping:')
+            Logger.info('\nTransformation Mapping:')
             Logger.info(f'  {impact.transformation_mapping}')
         if impact.recommendations:
-            Logger.info(f'\nRecommendations:')
+            Logger.info('\nRecommendations:')
             for i, rec in enumerate(impact.recommendations, 1):
                 Logger.info(f'  {i}. {rec}')
         if impact.affected_files:
-            Logger.info(f'\nAffected Files (showing first 10):')
+            Logger.info('\nAffected Files (showing first 10):')
             for file_path in impact.affected_files[:10]:
                 Logger.info(f'  - {file_path}')
             if len(impact.affected_files) > 10:
                 Logger.info(f'  ... and {len(impact.affected_files) - 10} more')
         Logger.info(f"{'=' * 80}\n")
 
-    def propose_schema_change(self, schema_name: str, change_type: str, field_name: str, old_value: Optional[str]=None, new_value: Optional[str]=None, file_path: str='') -> ImpactAnalysis:
+    def propose_schema_change(self, schema_name: str, change_type: str, field_name: str, old_value: str | None=None, new_value: str | None=None, file_path: str='') -> ImpactAnalysis:
         """
         Propose a schema change and get impact analysis.
 
@@ -294,17 +288,17 @@ class SchemaEvolverAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent
         change: Any = SchemaChange(schema_name=schema_name, change_type=change_type, field_name=field_name, old_value=old_value, new_value=new_value, file_path=file_path)
         return self._analyze_impact(change)
 
-    def get_schema_dependencies(self, schema_name: str) -> Set[str]:
+    def get_schema_dependencies(self, schema_name: str) -> set[str]:
         """Get all files that depend on a schema."""
         return self.registry.dependencies.get(schema_name, set())
 
-    def get_file_schemas(self, file_path: str) -> Set[str]:
+    def get_file_schemas(self, file_path: str) -> set[str]:
         """Get all schemas used by a file."""
         return self.registry.reverse_deps.get(file_path, set())
 
     def generate_drift_report(self) -> str:
         """Generate schema drift report."""
-        lines: Any = ['🛡️  SCHEMA DRIFT REPORT', '=' * 80, f'Total Schemas: {len(self.registry.schemas)}', f'Total Dependencies: {sum((len(deps) for deps in self.registry.dependencies.values()))}', '', 'Schema Usage:']
+        lines: Any = ['🛡️  SCHEMA DRIFT REPORT', '=' * 80, f'Total Schemas: {len(self.registry.schemas)}', f'Total Dependencies: {sum(len(deps) for deps in self.registry.dependencies.values())}', '', 'Schema Usage:']
         usage_counts: Any = [(name, len(deps)) for name, deps in self.registry.dependencies.items()]
         usage_counts.sort(key=lambda x: x[1], reverse=True)
         return "\n".join(lines)
@@ -317,8 +311,8 @@ class SchemaEvolverAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[set] = None
-    ) -> Dict[str, int]:
+        _call_path: set | None = None
+    ) -> dict[str, int]:
         """
         Schema Evolution Healing - Discovers and validates Pydantic/DB schemas.
 

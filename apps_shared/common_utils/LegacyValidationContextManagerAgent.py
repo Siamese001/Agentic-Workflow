@@ -1,16 +1,14 @@
 from __future__ import annotations
+
 """
 ValidationContextManager - L4 State Context with Cache-First Reflex
 """
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 from agentic_core.L4_state.validation_context.CachedStateLedger import CachedStateLedger
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 
 class ValidationContextManager(CachedStateLedger):
@@ -22,7 +20,7 @@ class ValidationContextManager(CachedStateLedger):
     def __init__(self, project_root: Path, session_id: str='global'):
         super().__init__(project_root, session_id)
 
-    def get_context(self, key: str) -> Optional[Dict]:
+    def get_context(self, key: str) -> dict | None:
         """
         Get validation context with cache-first optimization.
         Returns cached context if available, computes and caches otherwise.
@@ -36,14 +34,14 @@ class ValidationContextManager(CachedStateLedger):
             self.cache_validation_context(key, context)
         return context
 
-    def _compute_validation_context(self, key: str) -> Optional[Dict]:
+    def _compute_validation_context(self, key: str) -> dict | None:
         """
         Compute validation context from structural laws.
         This is where the expensive computation happens.
         """
         return {'key': key, 'sovereign_depth': 3, 'gravity_rules': ['upstream_to_downstream'], 'validation_gates': ['VG_SUMMARY_GROUNDING_CHECK'], 'timestamp': '2025-12-24T10:46:00Z'}
 
-    def store_context(self, key: str, context: Dict, ttl: int=86400) -> Any:
+    def store_context(self, key: str, context: dict, ttl: int=86400) -> Any:
         """
         Manually store a validation context with custom TTL.
         """

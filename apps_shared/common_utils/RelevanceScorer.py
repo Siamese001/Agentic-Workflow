@@ -7,7 +7,7 @@ Calculates relevance of context chunks to current Think-Act-Observe step.
 import logging
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 Logger = logging.getLogger(__name__)
 
@@ -26,9 +26,9 @@ class RelevanceScore:
     chunk_id: str
     score: float
     method: RelevanceMethod
-    components: Dict[str, float]
+    components: dict[str, float]
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "chunk_id": self.chunk_id,
@@ -94,7 +94,7 @@ class RelevanceScorer:
         chunk_id: str,
         chunk_content: str,
         query: str,
-        chunk_metadata: Optional[Dict[str, Any]] = None,
+        chunk_metadata: dict[str, Any] | None = None,
     ) -> RelevanceScore:
         """Score a single chunk for relevance.
 
@@ -137,9 +137,9 @@ class RelevanceScorer:
 
     def score_chunks(
         self,
-        chunks: List[Dict[str, Any]],
+        chunks: list[dict[str, Any]],
         query: str,
-    ) -> List[RelevanceScore]:
+    ) -> list[RelevanceScore]:
         """Score multiple chunks.
 
         Args:
@@ -229,7 +229,7 @@ class RelevanceScorer:
         # Jaccard similarity
         return overlap / union
 
-    def _recency_score(self, metadata: Dict[str, Any]) -> float:
+    def _recency_score(self, metadata: dict[str, Any]) -> float:
         """Calculate recency score.
 
         Args:

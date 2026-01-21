@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Sovereign Knowledge Graph Client – Phase 13D
 Integrates Official Memory MCP for structured Entity-Relation storage.
@@ -8,18 +9,15 @@ Enables the agent to store structured relationships (e.g., (User) -[OWNS]-> (202
 complementing Pinecone's vector storage with explicit entity graphs.
 """
 import logging
-from typing import List, Dict, Any, Optional
+from typing import Any
+
 # ARCHIVED IMPORT REMOVED - dependency no longer available
 from agentic_core.config.blueprint_sovereign.sovereign_config_1 import config
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 Logger: Any = logging.getLogger('L4.KnowledgeGraph')
 
@@ -36,7 +34,9 @@ class SovereignGraphClient(MCPHardenedMixin, HealerMixin):
     def __init__(self):
         """Initialize the Knowledge Graph client with sovereign routing."""
         super().__init__()
-        from agentic_core.L3_orchestration.workflow_engines.SovereignMcpRouter import SovereignMcpRouter
+        from agentic_core.L3_orchestration.workflow_engines.SovereignMcpRouter import (
+            SovereignMcpRouter,
+        )
         self.router = SovereignMcpRouter(role='memory')
         self.initialized = False
         self._mcp_audit('init')
@@ -57,7 +57,7 @@ class SovereignGraphClient(MCPHardenedMixin, HealerMixin):
         if not self.initialized:
             await self.initialize()
 
-    async def create_entities(self, entities: List[Dict[str, Any]]) -> str:
+    async def create_entities(self, entities: list[dict[str, Any]]) -> str:
         """
         Create entities in the Knowledge Graph.
 
@@ -80,7 +80,7 @@ class SovereignGraphClient(MCPHardenedMixin, HealerMixin):
             Logger.error(f'[L4 KG] Entity creation failed: {e}')
             return f'Error: {str(e)}'
 
-    async def create_relations(self, relations: List[Dict[str, Any]]) -> str:
+    async def create_relations(self, relations: list[dict[str, Any]]) -> str:
         """
         Define relationships between entities.
 
@@ -102,7 +102,7 @@ class SovereignGraphClient(MCPHardenedMixin, HealerMixin):
             Logger.error(f'[L4 KG] Relation creation failed: {e}')
             return f'Error: {str(e)}'
 
-    async def read_graph(self) -> Dict[str, Any]:
+    async def read_graph(self) -> dict[str, Any]:
         """
         Reads the entire active knowledge graph structure.
 
@@ -120,7 +120,7 @@ class SovereignGraphClient(MCPHardenedMixin, HealerMixin):
             Logger.error(f'[L4 KG] Graph read failed: {e}')
             return {'entities': [], 'relations': [], 'error': str(e)}
 
-    async def search_nodes(self, query: str) -> List[Dict]:
+    async def search_nodes(self, query: str) -> list[dict]:
         """
         Search for entities/relations by query.
 
@@ -150,12 +150,12 @@ class SovereignGraphClient(MCPHardenedMixin, HealerMixin):
                 for entity in full_graph['entities']:
                     if query_lower in entity.get('name', '').lower():
                         results.append(entity)
-                    elif any((query_lower in obs.lower() for obs in entity.get('observations', []))):
+                    elif any(query_lower in obs.lower() for obs in entity.get('observations', [])):
                         results.append(entity)
             Logger.info(f'[L4 KG] Client-side search found {len(results)} results')
             return results
 
-    async def add_observations(self, entity_name: str, observations: List[str]) -> str:
+    async def add_observations(self, entity_name: str, observations: list[str]) -> str:
         """
         Add new observations to an existing entity.
 
@@ -177,7 +177,7 @@ class SovereignGraphClient(MCPHardenedMixin, HealerMixin):
             Logger.error(f'[L4 KG] Add observations failed: {e}')
             return f'Error: {str(e)}'
 
-    async def delete_entities(self, entity_names: List[str]) -> str:
+    async def delete_entities(self, entity_names: list[str]) -> str:
         """
         Delete entities from the graph.
 
@@ -198,7 +198,7 @@ class SovereignGraphClient(MCPHardenedMixin, HealerMixin):
             Logger.error(f'[L4 KG] Entity deletion failed: {e}')
             return f'Error: {str(e)}'
 
-    async def open_nodes(self, names: List[str]) -> List[Dict]:
+    async def open_nodes(self, names: list[str]) -> list[dict]:
         """
         Open specific nodes by their names (retrieve full details).
 
@@ -223,7 +223,7 @@ class SovereignGraphClient(MCPHardenedMixin, HealerMixin):
             Logger.error(f'[L4 KG] Open nodes failed: {e}')
             return []
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """
         Perform health check on Knowledge Graph connection.
 
@@ -240,7 +240,7 @@ class SovereignGraphClient(MCPHardenedMixin, HealerMixin):
         except Exception as e:
             Logger.error(f'[L4 KG] Health check failed: {e}')
             return {'status': 'unhealthy', 'error': str(e)}
-_graph_client: Optional[SovereignGraphClient] = None
+_graph_client: SovereignGraphClient | None = None
 
 def get_graph_client() -> SovereignGraphClient:
     """Get or create the global Knowledge Graph client."""

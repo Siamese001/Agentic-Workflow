@@ -20,16 +20,16 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from pathlib import Path
-from typing import Any, Dict, List, Set
 from datetime import datetime
+from pathlib import Path
+from typing import Any
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 
-def run_legacy_validators(source: str, file_path: Path) -> Dict[str, List[Dict[str, Any]]]:
+def run_legacy_validators(source: str, file_path: Path) -> dict[str, list[dict[str, Any]]]:
     """
     Run all 5 legacy validators and collect violations.
 
@@ -49,7 +49,9 @@ def run_legacy_validators(source: str, file_path: Path) -> Dict[str, List[Dict[s
     }
 
     try:
-        from agentic_core.L1_cognition.thought_engine.BareExceptValidatorAgent import BareExceptValidatorAgent
+        from agentic_core.L1_cognition.thought_engine.BareExceptValidatorAgent import (
+            BareExceptValidatorAgent,
+        )
         validator = BareExceptValidatorAgent()
         violations = validator.validate(source, file_path)
         results['BareExceptValidatorAgent'] = violations
@@ -57,7 +59,9 @@ def run_legacy_validators(source: str, file_path: Path) -> Dict[str, List[Dict[s
         results['BareExceptValidatorAgent'] = [{'error': str(e)}]
 
     try:
-        from agentic_core.L1_cognition.thought_engine.EmptyExceptValidatorAgent import EmptyExceptValidatorAgent
+        from agentic_core.L1_cognition.thought_engine.EmptyExceptValidatorAgent import (
+            EmptyExceptValidatorAgent,
+        )
         validator = EmptyExceptValidatorAgent()
         violations = validator.validate(source, file_path)
         results['EmptyExceptValidatorAgent'] = violations
@@ -65,7 +69,9 @@ def run_legacy_validators(source: str, file_path: Path) -> Dict[str, List[Dict[s
         results['EmptyExceptValidatorAgent'] = [{'error': str(e)}]
 
     try:
-        from agentic_core.L1_cognition.thought_engine.EvalExecValidatorAgent import EvalExecValidatorAgent
+        from agentic_core.L1_cognition.thought_engine.EvalExecValidatorAgent import (
+            EvalExecValidatorAgent,
+        )
         validator = EvalExecValidatorAgent()
         violations = validator.validate(source, file_path)
         results['EvalExecValidatorAgent'] = violations
@@ -73,7 +79,9 @@ def run_legacy_validators(source: str, file_path: Path) -> Dict[str, List[Dict[s
         results['EvalExecValidatorAgent'] = [{'error': str(e)}]
 
     try:
-        from agentic_core.L1_cognition.thought_engine.DangerousBuiltinsValidatorAgent import DangerousBuiltinsValidatorAgent
+        from agentic_core.L1_cognition.thought_engine.DangerousBuiltinsValidatorAgent import (
+            DangerousBuiltinsValidatorAgent,
+        )
         validator = DangerousBuiltinsValidatorAgent()
         violations = validator.validate(source, file_path)
         results['DangerousBuiltinsValidatorAgent'] = violations
@@ -81,7 +89,9 @@ def run_legacy_validators(source: str, file_path: Path) -> Dict[str, List[Dict[s
         results['DangerousBuiltinsValidatorAgent'] = [{'error': str(e)}]
 
     try:
-        from agentic_core.L1_cognition.thought_engine.DebuggerValidatorAgent import DebuggerValidatorAgent
+        from agentic_core.L1_cognition.thought_engine.DebuggerValidatorAgent import (
+            DebuggerValidatorAgent,
+        )
         validator = DebuggerValidatorAgent()
         violations = validator.validate(source, file_path)
         results['DebuggerValidatorAgent'] = violations
@@ -91,7 +101,7 @@ def run_legacy_validators(source: str, file_path: Path) -> Dict[str, List[Dict[s
     return results
 
 
-def run_unified_validator(source: str, file_path: Path) -> Dict[str, List[Dict[str, Any]]]:
+def run_unified_validator(source: str, file_path: Path) -> dict[str, list[dict[str, Any]]]:
     """
     Run the UnifiedASTValidatorAgent and collect violations.
 
@@ -103,7 +113,9 @@ def run_unified_validator(source: str, file_path: Path) -> Dict[str, List[Dict[s
         Dictionary with grouped violations
     """
     try:
-        from agentic_core.L1_cognition.thought_engine.UnifiedASTValidatorAgent import UnifiedASTValidatorAgent
+        from agentic_core.L1_cognition.thought_engine.UnifiedASTValidatorAgent import (
+            UnifiedASTValidatorAgent,
+        )
         validator = UnifiedASTValidatorAgent()
         grouped = validator.validate_all(source, file_path)
         return {
@@ -114,7 +126,7 @@ def run_unified_validator(source: str, file_path: Path) -> Dict[str, List[Dict[s
         return {'error': str(e)}
 
 
-def normalize_violations(violations: List[Dict[str, Any]]) -> Set[tuple]:
+def normalize_violations(violations: list[dict[str, Any]]) -> set[tuple]:
     """
     Normalize violations for comparison.
 
@@ -142,7 +154,7 @@ def normalize_violations(violations: List[Dict[str, Any]]) -> Set[tuple]:
     return normalized
 
 
-def compare_results(legacy: Dict, unified: Dict) -> Dict[str, Any]:
+def compare_results(legacy: dict, unified: dict) -> dict[str, Any]:
     """
     Compare legacy and unified validator results.
 
@@ -180,7 +192,7 @@ def compare_results(legacy: Dict, unified: Dict) -> Dict[str, Any]:
     }
 
 
-def run_chaos_test() -> Dict[str, Any]:
+def run_chaos_test() -> dict[str, Any]:
     """
     Run the chaos_test.py validation.
 
@@ -195,7 +207,9 @@ def run_chaos_test() -> Dict[str, Any]:
     source = chaos_file.read_text(encoding='utf-8')
 
     # Run unified validator
-    from agentic_core.L1_cognition.thought_engine.UnifiedASTValidatorAgent import UnifiedASTValidatorAgent
+    from agentic_core.L1_cognition.thought_engine.UnifiedASTValidatorAgent import (
+        UnifiedASTValidatorAgent,
+    )
     validator = UnifiedASTValidatorAgent()
     grouped = validator.validate_all(source, chaos_file)
     all_violations = validator.get_violations()
@@ -236,14 +250,16 @@ def run_chaos_test() -> Dict[str, Any]:
     }
 
 
-def run_self_tests() -> Dict[str, Any]:
+def run_self_tests() -> dict[str, Any]:
     """
     Run the UnifiedASTValidatorAgent's internal self-tests.
 
     Returns:
         Self-test results
     """
-    from agentic_core.L1_cognition.thought_engine.UnifiedASTValidatorAgent import UnifiedASTValidatorAgent
+    from agentic_core.L1_cognition.thought_engine.UnifiedASTValidatorAgent import (
+        UnifiedASTValidatorAgent,
+    )
     validator = UnifiedASTValidatorAgent()
     return validator._run_self_tests()
 
@@ -280,7 +296,7 @@ def main():
             failed = self_test_results.get('failed', 0)
             print(f"  ✓ Self-tests: {passed} passed, {failed} failed")
             if failed > 0:
-                print(f"  ✗ FAILED TESTS:")
+                print("  ✗ FAILED TESTS:")
                 for test in self_test_results.get('tests', []):
                     if test.get('status') == 'failed':
                         print(f"    - {test.get('name')}: {test.get('error')}")
@@ -298,7 +314,7 @@ def main():
             if chaos_results.get('all_match'):
                 print(f"  ✓ Chaos test PASSED: All {chaos_results.get('total_expected')} violations detected")
             else:
-                print(f"  ✗ Chaos test FAILED:")
+                print("  ✗ Chaos test FAILED:")
                 for key, match in chaos_results.get('matches', {}).items():
                     expected = chaos_results.get('expected', {}).get(key, 0)
                     actual = chaos_results.get('actual', {}).get(key, 0)
@@ -326,9 +342,9 @@ def main():
             }
 
             if comparison.get('is_100_percent_match'):
-                print(f"  ✓ 100% MATCH: Legacy and Unified validators produce identical results")
+                print("  ✓ 100% MATCH: Legacy and Unified validators produce identical results")
             else:
-                print(f"  ✗ MISMATCH DETECTED:")
+                print("  ✗ MISMATCH DETECTED:")
                 print(f"    Match rate: {comparison.get('match_rate', 0):.1f}%")
                 print(f"    Only in legacy: {comparison.get('only_in_legacy', [])}")
                 print(f"    Only in unified: {comparison.get('only_in_unified', [])}")

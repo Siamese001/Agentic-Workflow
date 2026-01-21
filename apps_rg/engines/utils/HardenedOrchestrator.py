@@ -12,43 +12,34 @@ Phase 4: Titanium RAG Integration - Brain transplant complete
 """
 
 import logging
-import uuid
 from datetime import datetime
-from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
-from runtime.shared.state import (
-    get_state_manager,
-    WorkflowState,
-    StatePersistenceError,
-)
-from runtime.shared.routing import (
-    get_resilient_router,
-    RoutingTier,
-)
-from runtime.shared.agent_executor import (
-    AgentMessage,
-    AgentResponse,
-)
 from apps_rg.L3_orchestration.orchestrate_workflow import (
+    HopCheckpoint,
+    HopExecutionError,
+    HopStatus,
     RGWorkflowOrchestrator,
     WorkflowSpec,
-    HopSpec,
-    HopCheckpoint,
-    HopStatus,
-    HopExecutionError,
 )
 from apps_rg.L3_orchestration.resume_orchestration_config import (
     ReasoningConfig,
     get_reasoning_config,
 )
 from apps_rg.L3_orchestration.titanium_integration import (
+    enhance_system_prompt,
     inject_titanium_tools,
     prepare_titanium_context,
-    log_titanium_usage,
-    enhance_system_prompt,
 )
-
+from runtime.shared.routing import (
+    RoutingTier,
+    get_resilient_router,
+)
+from runtime.shared.state import (
+    StatePersistenceError,
+    WorkflowState,
+    get_state_manager,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -66,9 +57,9 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
 
     def __init__(
         self,
-        workflow_spec: Optional[WorkflowSpec] = None,
+        workflow_spec: WorkflowSpec | None = None,
         run_base_dir: str = "./pipeline_runs",
-        storage_path: Optional[str] = None,
+        storage_path: str | None = None,
     ) -> None:
         """Initialize the hardened orchestrator.
 
@@ -84,7 +75,7 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
         self.router = get_resilient_router()
 
         # State tracking
-        self.workflow_state: Optional[WorkflowState] = None
+        self.workflow_state: WorkflowState | None = None
         self.resumed_from_checkpoint = False
 
         Logger.info("Hardened orchestrator initialized with atomic state management")
@@ -93,8 +84,8 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
         self,
         workflow_id: str,
         total_k_nodes: int,
-        context: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        context: dict[str, Any],
+    ) -> dict[str, Any]:
         """Initialize new workflow or resume from Checkpoint.
 
         Args:
@@ -141,9 +132,9 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
     async def execute_hop_with_hardening(
         self,
         hop_id: str,
-        context: Dict[str, Any],
+        context: dict[str, Any],
         prompt: str,
-        temperature: Optional[float] = None,
+        temperature: float | None = None,
     ) -> HopCheckpoint:
         """Execute a hop with hardened routing and atomic checkpointing.
 
@@ -259,7 +250,7 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
     def _determine_routing_tier(
         self,
         hop_id: str,
-        ReasoningConfig: Optional[ReasoningConfig],
+        ReasoningConfig: ReasoningConfig | None,
     ) -> RoutingTier:
         """Determine the appropriate routing tier for a hop.
 
@@ -286,8 +277,8 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
     async def execute_workflow_with_resilience(
         self,
         workflow_id: str,
-        context: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        context: dict[str, Any],
+    ) -> dict[str, Any]:
         """Execute workflow with resilience and atomic state management.
 
         Args:
@@ -317,7 +308,7 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
             Logger.info(f"Skipping {current_k_node} already completed hops")
 
         # Execute remaining hops
-        results: Dict[str, Any] = {
+        results: dict[str, Any] = {
             "workflow_id": workflow_id,
             "status": "RUNNING",
             "resumed_from_checkpoint": self.resumed_from_checkpoint,
@@ -391,9 +382,9 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
 
 
 def create_hardened_orchestrator(
-    workflow_spec: Optional[WorkflowSpec] = None,
+    workflow_spec: WorkflowSpec | None = None,
     run_base_dir: str = "./pipeline_runs",
-    storage_path: Optional[str] = None,
+    storage_path: str | None = None,
 ) -> HardenedWorkflowOrchestrator:
     """Create a hardened orchestrator with atomic state management.
 

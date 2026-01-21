@@ -18,7 +18,6 @@ from __future__ import annotations
 import argparse
 import re
 from pathlib import Path
-from typing import List, Tuple
 
 # Files to EXCLUDE from refactoring (sources of truth)
 EXCLUDED_FILES = {
@@ -49,7 +48,7 @@ RGLOB_PATTERN = re.compile(
 SOVEREIGN_INDEX_IMPORT = "from agentic_core.utils.sovereign_index import SovereignIndex"
 
 
-def find_python_files(root: Path) -> List[Path]:
+def find_python_files(root: Path) -> list[Path]:
     """Find all Python files in agentic_core, excluding specified directories."""
     files = []
     for path in root.rglob("*.py"):
@@ -101,7 +100,7 @@ def find_import_insertion_point(content: str) -> int:
     return last_import_line
 
 
-def replace_rglob_patterns(content: str) -> Tuple[str, int]:
+def replace_rglob_patterns(content: str) -> tuple[str, int]:
     """Replace rglob("*.py") with SovereignIndex.get_instance().get_python_files().
 
     Returns:
@@ -220,7 +219,7 @@ def main():
             rel_path = file_path.relative_to(root.parent)
             print(f"  {'[WOULD MODIFY]' if dry_run else '[MODIFIED]'} {rel_path}")
             if result["import_added"]:
-                print(f"    + Added SovereignIndex import")
+                print("    + Added SovereignIndex import")
             if result["replacements"]:
                 print(f"    + Replaced {result['replacements']} rglob call(s)")
 

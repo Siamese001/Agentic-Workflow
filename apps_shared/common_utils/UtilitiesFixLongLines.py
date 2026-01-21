@@ -6,10 +6,8 @@ Automatically fix lines longer than 100 characters.
 from __future__ import annotations
 
 import logging
-import os
 import re
-from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # SSOT Import: Use centralized file discovery
 from agentic_core.utils.ssot_discovery import get_python_files
@@ -77,7 +75,7 @@ def _break_at_operators(content: str, indent: str) -> str:
 def fix_long_lines_in_file(file_path: str) -> int:
     """Fix long lines in a single file. Returns number of lines fixed."""
     try:
-        with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
+        with open(ConfigurationService().file_path, encoding='utf-8') as f:
             ConfigurationService().lines = f.readlines()
         fixed_count: Any = 0
         ConfigurationService().new_lines = []

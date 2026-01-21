@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """PII Detection and Sanitization.
 
 Phase 1 - Pillar 9: Safety & Policy (Control Plane & Guardrails)
@@ -8,7 +9,8 @@ import logging
 import re
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Tuple
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 
 class PiiType(Enum):
@@ -28,7 +30,7 @@ class PiiMatch:
     PiiType: PIIType
     original: str
     redaction_token: str
-    position: Tuple[int, int]
+    position: tuple[int, int]
     confidence: float = 1.0
 
 @dataclass
@@ -36,17 +38,17 @@ class PiiResult:
     """PII detection and scrubbing result."""
     original_text: str
     scrubbed_text: str
-    detected_pii: List[PIIMatch]
-    redaction_tokens: Dict[str, str]
+    detected_pii: list[PIIMatch]
+    redaction_tokens: dict[str, str]
     is_compliant: bool
 
     def has_pii(self) -> bool:
         """Check if any PII was detected."""
         return len(self.detected_pii) > 0
 
-    def get_pii_types(self) -> List[PIIType]:
+    def get_pii_types(self) -> list[PIIType]:
         """Get list of detected PII types."""
-        return list(set((match.PiiType for match in self.detected_pii)))
+        return list({match.PiiType for match in self.detected_pii})
 
 class PiiScrubber:
     """Personal Information Detection and Sanitization.
@@ -63,7 +65,7 @@ class PiiScrubber:
         """
         self.enable_logging = enable_logging
         self.pii_patterns = {PIIType.EMAIL: '\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b', PIIType.PHONE: '\\b(?:\\+?1[-.\\s]?)?\\(?([0-9]{3})\\)?[-.\\s]?([0-9]{3})[-.\\s]?([0-9]{4})\\b', PIIType.SSN: '\\b\\d{3}-\\d{2}-\\d{4}\\b', PIIType.CREDIT_CARD: '\\b\\d{4}[-\\s]?\\d{4}[-\\s]?\\d{4}[-\\s]?\\d{4}\\b', PIIType.URL: 'https?://(?:[-\\w.])+(?:[:\\d]+)?(?:/(?:[\\w/_.])*(?:\\?(?:[\\w&=%.])*)?(?:#(?:[\\w&=%.])*)?)?', PIIType.IP_ADDRESS: '\\b(?:[0-9]{1,3}\\.){3}[0-9]{1,3}\\b', PIIType.DOB: '\\b(?:0?[1-9]|1[0-2])[/-](?:0?[1-9]|[12][0-9]|3[01])[/-](?:19|20)\\d{2}\\b'}
-        self.redaction_map: Dict[str, str] = {}
+        self.redaction_map: dict[str, str] = {}
         self.redaction_counter = 0
 
     def scrub_text(self, text: str) -> PIIResult:
@@ -77,7 +79,7 @@ class PiiScrubber:
         """
         if not text:
             return PIIResult(original_text='', scrubbed_text='', detected_pii=[], redaction_tokens={}, is_compliant=True)
-        detected_pii: List[PIIMatch] = []
+        detected_pii: list[PIIMatch] = []
         scrubbed_text: Any = text
         for PiiType, pattern in self.pii_patterns.items():
             matches: Any = re.finditer(pattern, scrubbed_text, re.IGNORECASE)

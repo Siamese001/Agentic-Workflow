@@ -8,18 +8,19 @@ DO NOT FIX - Used for testing pattern enforcement.
 """
 from __future__ import annotations
 
-from typing import Any, Dict, List
+import builtins
+from typing import Any
 
 
 # VIOLATION Key 26: Mutable default argument
-def function_with_mutable_default(items: List[str] = []) -> List[str]:
+def function_with_mutable_default(items: builtins.list[str] = []) -> builtins.list[str]:
     """Function with mutable default argument - VIOLATION."""
     items.append("new_item")
     return items
 
 
 # VIOLATION Key 26: Another mutable default (dict)
-def function_with_dict_default(config: Dict[str, Any] = {}) -> Dict[str, Any]:
+def function_with_dict_default(config: builtins.dict[str, Any] = {}) -> builtins.dict[str, Any]:
     """Function with dict default argument - VIOLATION."""
     config["key"] = "value"
     return config
@@ -55,7 +56,7 @@ def compare_floats(a: float, b: float) -> bool:
 
 
 # VIOLATION Key 36: Shadowed builtin (function name)
-def list() -> List[Any]:
+def list() -> builtins.list[Any]:
     """Function name shadows builtin 'list' - VIOLATION."""
     return []
 

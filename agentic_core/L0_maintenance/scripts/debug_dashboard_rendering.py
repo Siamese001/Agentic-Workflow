@@ -5,10 +5,13 @@ Check why dashboard appears empty in browser
 """
 import json
 import re
-from pathlib import Path
 
 # Import SSOT for dashboard directory - NO HARDCODING
-from agentic_core.L5_safety.validators.structure_blueprint import DASHBOARD_DIR, get_validated_project_root
+from agentic_core.L5_safety.validators.structure_blueprint import (
+    DASHBOARD_DIR,
+    get_validated_project_root,
+)
+
 
 def debug_dashboard():
     """Debug dashboard rendering."""

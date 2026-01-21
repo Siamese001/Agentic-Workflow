@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 ExperienceBuffer – Sovereign Agent Role Component (Phase 30 – Dec 30, 2025)
 
@@ -14,12 +15,11 @@ Constitutional Alignment:
 """
 
 import json
+import logging
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import List, Dict, Any, Optional
-import logging
-from collections import deque
+from typing import Any
 
 
 class ExperienceBuffer:
@@ -32,7 +32,7 @@ class ExperienceBuffer:
         self,
         path: Path,
         max_entries: int = 1000,
-        similarity_keys: Optional[List[str]] = None,
+        similarity_keys: list[str] | None = None,
     ):
         """
         Initialize buffer with persistent storage.
@@ -55,7 +55,7 @@ class ExperienceBuffer:
             self.path.write_text("")  # Empty JSONL file
             self.Logger.info(f"Created new experience buffer at {self.path}")
 
-    def record(self, entry: Dict[str, Any]) -> None:
+    def record(self, entry: dict[str, Any]) -> None:
         """
         Record a new experience outcome.
         Appends to file and enforces size limit.
@@ -95,7 +95,7 @@ class ExperienceBuffer:
             except Exception as e:
                 self.Logger.error(f"Failed to trim buffer: {e}")
 
-    def load_all(self) -> List[Dict[str, Any]]:
+    def load_all(self) -> list[dict[str, Any]]:
         """Load all entries (newest first)."""
         entries = []
         try:
@@ -112,12 +112,12 @@ class ExperienceBuffer:
 
     def find_similar(
         self,
-        action: Optional[str] = None,
-        target: Optional[str] = None,
-        context_hash: Optional[str] = None,
+        action: str | None = None,
+        target: str | None = None,
+        context_hash: str | None = None,
         limit: int = 20,
         **extra_filters,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Find historically similar experiences for success prediction.
         Matches on provided filters.
@@ -145,8 +145,8 @@ class ExperienceBuffer:
     def predict_success_probability(
         self,
         action: str,
-        target: Optional[str] = None,
-        context_hash: Optional[str] = None,
+        target: str | None = None,
+        context_hash: str | None = None,
         **extra_context,
     ) -> float:
         """
@@ -166,7 +166,7 @@ class ExperienceBuffer:
         successes = sum(1 for e in similar if e.get("success", False))
         return successes / len(similar)
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Return buffer statistics for monitoring."""
         entries = self.load_all()
         if not entries:

@@ -1,9 +1,10 @@
 from __future__ import annotations
+
 import ast
+
 '''Brief description of functionality and purpose.'''
 
 from pathlib import Path
-from typing import List, Dict, Optional, Tuple
 
 from agentic_core.L5_safety.validators.structure_blueprint import SEMANTIC_L2_REGISTRY
 
@@ -23,8 +24,8 @@ class AstRelocator(ast.NodeVisitor):
         self.file_path = file_path
         self.content_lines = content.splitlines()
         self.tree = ast.parse(content)
-        self.entities: List[Dict] = []
-        self.current_class: Optional[str] = None
+        self.entities: list[dict] = []
+        self.current_class: str | None = None
 
     def visit_ClassDef(self, node: ast.ClassDef):
         """Capture top-level classes."""
@@ -60,7 +61,7 @@ class AstRelocator(ast.NodeVisitor):
         })
         self.generic_visit(node)
 
-    def _suggest_placement(self, node: ast.AST, name: str, entity_type: str) -> Tuple[str, str, float]:
+    def _suggest_placement(self, node: ast.AST, name: str, entity_type: str) -> tuple[str, str, float]:
         """
         [SEMANTIC SCORING] Calculates placement confidence using the Rich Semantic Registry.
         Returns (L1, L2, Confidence_Score).
@@ -111,13 +112,13 @@ class AstRelocator(ast.NodeVisitor):
 
         return best_match
 
-    def get_movable_entities(self) -> List[Dict]:
+    def get_movable_entities(self) -> list[dict]:
 
         self.visit(self.tree)
         return self.entities
 
     @staticmethod
-    def extract_entity_code(content_lines: List[str], start: int, end: int) -> str:
+    def extract_entity_code(content_lines: list[str], start: int, end: int) -> str:
         """Surgically extract code block including decorators."""
         # Convert 1-based lineno to 0-based index
         # Note: Decorators are usually included in lineno in Py3.8+

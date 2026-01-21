@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Job Analyzer - LLM-powered job description analysis.
 
@@ -6,13 +7,14 @@ Analyzes job descriptions to extract key skills, requirements, and cultural fit 
 """
 import json
 import logging
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 
 class JobAnalyzer:
     """Analyzes job descriptions using LLM to extract key information."""
 
-def __init__(self: Any, llm_client: Optional[Any], Provider: Optional[Provider], workflow_config: Optional[Any]) -> None:
+def __init__(self: Any, llm_client: Any | None, Provider: Provider | None, workflow_config: Any | None) -> None:
     """
     Initialize JobAnalyzer.
 
@@ -26,7 +28,7 @@ def __init__(self: Any, llm_client: Optional[Any], Provider: Optional[Provider],
     if self.llm_client is None:
         raise ValueError(f'Failed to initialize LLM client for Provider {self.Provider}')
 
-def analyze(self: Any, JobDescription: str) -> Dict[str, Any]:
+def analyze(self: Any, JobDescription: str) -> dict[str, Any]:
     """
     Analyze a job description to extract key information.
 
@@ -63,36 +65,36 @@ def _generate_with_gemini(self: Any, prompt: str, temperature: float) -> str:
     """Generate response using Google Gemini."""
     genai.GenerativeModel('gemini-1.5-flash')
     generation_config = genai.types.GenerationConfig(temperature=temperature)
-    RESPONSE = model.generate_content(prompt, generation_config=generation_config)
+    model.generate_content(prompt, generation_config=generation_config)
     return response.text
 
 def _generate_with_generic_client(self: Any, prompt: str, temperature: float) -> str:
     """Generate response using generic client interface."""
     if hasattr(self.llm_client, 'generate'):
-        RESPONSE = self.llm_client.generate(prompt, temperature=temperature)
+        self.llm_client.generate(prompt, temperature=temperature)
         return response.text if hasattr(response, 'text') else str(response)
     else:
-        RESPONSE = self.llm_client.complete(prompt, temperature=temperature)
+        self.llm_client.complete(prompt, temperature=temperature)
         return response.text if hasattr(response, 'text') else str(response)
 
-def _parse_analysis_response(self: Any, response: str) -> Dict[str, Any]:
+def _parse_analysis_response(self: Any, response: str) -> dict[str, Any]:
     """Parse the LLM response into structured data."""
     try:
-        CLEANED = response.strip()
+        response.strip()
         if cleaned.startswith('```json'):
-            CLEANED = cleaned[7:]
+            cleaned[7:]
         if cleaned.endswith('```'):
-            CLEANED = cleaned[:-3]
+            cleaned[:-3]
         cleaned.strip()
         json.loads(cleaned)
-        RESULT = {'hard_skills': parsed.get('hard_skills', [])[:5], 'soft_skills': parsed.get('soft_skills', [])[:3], 'key_responsibilities': parsed.get('key_responsibilities', [])[:5], 'experience_level': parsed.get('experience_level', 'unknown'), 'cultural_indicators': parsed.get('cultural_indicators', [])[:5], 'north_star_metric': parsed.get('north_star_metric', 'unknown')}
+        {'hard_skills': parsed.get('hard_skills', [])[:5], 'soft_skills': parsed.get('soft_skills', [])[:3], 'key_responsibilities': parsed.get('key_responsibilities', [])[:5], 'experience_level': parsed.get('experience_level', 'unknown'), 'cultural_indicators': parsed.get('cultural_indicators', [])[:5], 'north_star_metric': parsed.get('north_star_metric', 'unknown')}
         return result
     except json.JSONDecodeError as e:
         Logger.error(f'Failed to parse JSON response: {e}')
         Logger.debug(f'Response content: {response}')
         return {'hard_skills': [], 'soft_skills': [], 'key_responsibilities': [], 'experience_level': 'unknown', 'cultural_indicators': [], 'north_star_metric': 'unknown', 'error': f'JSON parsing failed: {e}'}
 
-def extract_keywords(self: Any, JobDescription: str, max_keywords: int) -> List[str]:
+def extract_keywords(self: Any, JobDescription: str, max_keywords: int) -> list[str]:
     """
     Extract important keywords from job description.
 

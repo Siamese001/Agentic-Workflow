@@ -5,7 +5,9 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 #!/usr/bin/env python3
 """
 PineconeSovereignAgent - Eternal Sovereign Gateway to Pinecone
@@ -19,22 +21,20 @@ import hashlib
 import json
 import os
 from pathlib import Path
-from typing import Any, Dict, List, Optional
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from typing import Any
 
 import numpy as np
-from pinecone import Pinecone, ServerlessSpec
+from pinecone import Pinecone
 
 from agentic_core.config.blueprint_sovereign.SovereignEnv import get_env
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
     RedisSovereignAgent,
 )
-
-
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
+
 
 @dataclass
 class PineconeSovereignAgent(HealerMixin, MCPHardenedMixin):
@@ -43,7 +43,7 @@ class PineconeSovereignAgent(HealerMixin, MCPHardenedMixin):
     Centralizes all vector operations to prevent configuration drift.
     """
 
-    def __init__(self, project_root: Optional[Path] = None, ctx: Optional[Any] = None) -> None:
+    def __init__(self, project_root: Path | None = None, ctx: Any | None = None) -> None:
         """
         Initialize Pinecone sovereign agent.
 
@@ -58,7 +58,7 @@ class PineconeSovereignAgent(HealerMixin, MCPHardenedMixin):
         api_key = os.getenv("PINECONE_API_KEY")
         if not api_key:
             self.status = "DEGRADED (Missing API Key)"
-            print(f"   [!] PineconeSovereignAgent: API key Missing.")
+            print("   [!] PineconeSovereignAgent: API key Missing.")
             return
 
         try:
@@ -114,7 +114,7 @@ class PineconeSovereignAgent(HealerMixin, MCPHardenedMixin):
         assert hasattr(self, 'project_root'), "Missing project_root"
         return True
 
-    async def get_embedding(self, text: str, is_sanity_check: bool = False) -> List[float]:
+    async def get_embedding(self, text: str, is_sanity_check: bool = False) -> list[float]:
         """
         Sovereign embedding — cached, deterministic, QUALITY-VALIDATED.
 
@@ -172,7 +172,7 @@ class PineconeSovereignAgent(HealerMixin, MCPHardenedMixin):
 
         return validated_embedding
 
-    def _validate_and_repair_embedding(self, embedding: List[float], source_text: str, skip_sanity: bool = False) -> List[float]:
+    def _validate_and_repair_embedding(self, embedding: list[float], source_text: str, skip_sanity: bool = False) -> list[float]:
         """
         Sovereign embedding quality gate: Correct length, Non-zero variance, Reasonable norm.
         """
@@ -188,12 +188,12 @@ class PineconeSovereignAgent(HealerMixin, MCPHardenedMixin):
         # 2. Zero/near-zero vector check
         norm = np.linalg.norm(arr)
         if norm < 1e-6:
-            print(f"   [!] Zero vector detected — fallback")
+            print("   [!] Zero vector detected — fallback")
             return [0.0] * self.dimension
 
         # 3. Low variance check
         if np.std(arr) < 1e-4:
-            print(f"   [!] Low variance embedding — degraded quality")
+            print("   [!] Low variance embedding — degraded quality")
             return [0.0] * self.dimension
 
         # 4. Self-similarity sanity (avoiding infinite loops)
@@ -215,21 +215,21 @@ class PineconeSovereignAgent(HealerMixin, MCPHardenedMixin):
 
         return arr.tolist()
 
-    def _get_sparse_vector(self, text: str) -> Dict[str, Any]:
+    def _get_sparse_vector(self, text: str) -> dict[str, Any]:
         """Extracts keywords from blueprint signals for hybrid search"""
         from agentic_core.L5_safety.validators.structure_blueprint import CANON_SIGNALS
         text_low = text.lower()
         # Simple TF-based sparse vector
         indices = []
         values = []
-        for i, word in enumerate(sorted(list(CANON_SIGNALS))):
+        for i, word in enumerate(sorted(CANON_SIGNALS)):
             count = text_low.count(word.lower())
             if count > 0:
                 indices.append(i)
                 values.append(float(count))
         return {"indices": indices, "values": values}
 
-    async def hybrid_search(self, query: str, top_k: int = 5) -> List[Dict]:
+    async def hybrid_search(self, query: str, top_k: int = 5) -> list[dict]:
         """Eternal precision: Combined Vector + Keyword search"""
         dense_vec = await self.get_embedding(query)
         sparse_vec = self._get_sparse_vector(query)
@@ -270,7 +270,7 @@ class PineconeSovereignAgent(HealerMixin, MCPHardenedMixin):
             self.index.upsert(vectors=vectors)
             print(f"   [OK] PineconeSovereignAgent: Bootstrapped {len(vectors)} territories")
 
-    async def upsert_sovereign_chunks(self, chunks: List[Dict], namespace: str = "canon") -> Any:
+    async def upsert_sovereign_chunks(self, chunks: list[dict], namespace: str = "canon") -> Any:
         """
         L4: Secure, idempotent upsert into the vector memory
         """
@@ -293,7 +293,7 @@ class PineconeSovereignAgent(HealerMixin, MCPHardenedMixin):
         for i in range(0, len(vectors), 100):
             self.index.upsert(vectors=vectors[i:i+100], namespace=namespace)
 
-    async def upsert_file_vector(self, file_path: Path, territory_hint: Optional[str] = None) -> Any:
+    async def upsert_file_vector(self, file_path: Path, territory_hint: str | None = None) -> Any:
         """Upsert single file — used during healing"""
         content = file_path.read_text(encoding="utf-8", errors="ignore")
         emb = await self.get_embedding(content)
@@ -313,10 +313,10 @@ class PineconeSovereignAgent(HealerMixin, MCPHardenedMixin):
     async def semantic_search(
         self,
         query: str,
-        file_path: Optional[Path] = None,
+        file_path: Path | None = None,
         top_k: int = 5,
         relevance_threshold: float = 0.75
-    ) -> List[str]:
+    ) -> list[str]:
         """
         [HARDENING 7] Layer-scoped semantic search with relevance filtering.
 
@@ -357,7 +357,7 @@ class PineconeSovereignAgent(HealerMixin, MCPHardenedMixin):
                 include_metadata=True,
                 namespace=namespace
             )
-        except Exception as e:
+        except Exception:
             # Fallback to default namespace if layer namespace doesn't exist
             print(f"   [INFO] Layer namespace '{namespace}' not found, using default")
             results = self.index.query(
@@ -398,7 +398,7 @@ class PineconeSovereignAgent(HealerMixin, MCPHardenedMixin):
 
         return context_chunks
 
-    def health_check(self) -> Dict:
+    def health_check(self) -> dict:
         """Enhanced health check with sample quality assessment"""
         stats = self.index.describe_index_stats()
 
@@ -436,7 +436,7 @@ class PineconeSovereignAgent(HealerMixin, MCPHardenedMixin):
                 ctx.report("VectorHealth", 1, False, f"Pinecone health check failed: {str(e)}")
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L4 state agent - operational only."""
         if _call_path is None:
             # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)

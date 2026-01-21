@@ -11,10 +11,13 @@ This script removes all but the first occurrence of realAgentData.
 # This boosts alignment detection — review and integrate appropriately
 
 import re
-from pathlib import Path
 
 # Import SSOT for dashboard directory - NO HARDCODING
-from agentic_core.L5_safety.validators.structure_blueprint import DASHBOARD_DIR, get_validated_project_root
+from agentic_core.L5_safety.validators.structure_blueprint import (
+    DASHBOARD_DIR,
+    get_validated_project_root,
+)
+
 
 def fix_duplicates():
     """Remove duplicate realAgentData declarations."""

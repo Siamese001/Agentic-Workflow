@@ -4,18 +4,17 @@ import asyncio
 import json
 import re
 from collections import Counter, defaultdict
-from typing import Any, Dict, List, Optional
-
-from pydantic import BaseModel, Field
+from typing import Any
 
 from core_v10_7 import (
     BaseAgent,
     BulletList,
     CritiqueResult,
     StrategyPlan,
-    track_metrics,
     _format_prompt_with_defaults,
+    track_metrics,
 )
+from pydantic import BaseModel, Field
 
 
 class BulletEntityExtractionAgent(BaseAgent):
@@ -23,9 +22,9 @@ class BulletEntityExtractionAgent(BaseAgent):
 
     class Output(BaseModel):
         bullet_id: str
-        entities: List[Dict[str, Any]] = Field(default_factory=list)
+        entities: list[dict[str, Any]] = Field(default_factory=list)
         raw_text: str
-        experience_id: Optional[str] = None
+        experience_id: str | None = None
 
     ENTITY_PATTERN = re.compile(r"\b([A-Z][a-zA-Z]+(?: [A-Z][a-zA-Z]+){0,3})\b")
     ORGANIZATION_HINTS = {"inc", "corp", "llc", "ltd", "company", "technologies"}
@@ -49,11 +48,11 @@ class BulletEntityExtractionAgent(BaseAgent):
         self,
         bullet_id: str,
         bullet_text: str,
-        experience: Dict[str, Any],
+        experience: dict[str, Any],
         workflow_id: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         text = bullet_text or ""
-        entities: List[Dict[str, Any]] = []
+        entities: list[dict[str, Any]] = []
         seen = set()
 
         for match in self.ENTITY_PATTERN.finditer(text):
@@ -98,8 +97,8 @@ class BulletMetricsEnrichmentAgent(BaseAgent):
     class Output(BaseModel):
         bullet_id: str
         has_metric: bool
-        metrics: Dict[str, List[str]] = Field(default_factory=dict)
-        raw_numbers: List[str] = Field(default_factory=list)
+        metrics: dict[str, list[str]] = Field(default_factory=dict)
+        raw_numbers: list[str] = Field(default_factory=list)
         raw_text: str
 
     METRIC_PATTERN = re.compile(r"(?P<number>-?\d+(?:[\.,]\d+)?)(?P<suffix>%|x|X|\b)")
@@ -108,10 +107,10 @@ class BulletMetricsEnrichmentAgent(BaseAgent):
     @track_metrics("run_bullet_metrics_enrichment")
     async def run_async(
         self, bullet_id: str, bullet_text: str, workflow_id: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         text = bullet_text or ""
-        metrics: Dict[str, List[str]] = defaultdict(list)
-        raw_numbers: List[str] = []
+        metrics: dict[str, list[str]] = defaultdict(list)
+        raw_numbers: list[str] = []
 
         for match in self.METRIC_PATTERN.finditer(text):
             number = match.group("number")
@@ -145,7 +144,7 @@ class BulletNarrativeSynthesisAgent(BaseAgent):
     class Output(BaseModel):
         bullet_id: str
         storyline: str
-        highlights: List[str] = Field(default_factory=list)
+        highlights: list[str] = Field(default_factory=list)
         tone: str
 
     @track_metrics("run_bullet_narrative_synthesis")
@@ -153,9 +152,9 @@ class BulletNarrativeSynthesisAgent(BaseAgent):
         self,
         bullet_id: str,
         bullet_text: str,
-        metrics_payload: Dict[str, Any],
+        metrics_payload: dict[str, Any],
         workflow_id: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         text = bullet_text or ""
         fragments = [
             frag.strip() for frag in re.split(r"[.;]", text) if frag.strip()
@@ -178,7 +177,7 @@ class BulletEvidenceLinkerAgent(BaseAgent):
 
     class Output(BaseModel):
         bullet_id: str
-        evidence: List[str] = Field(default_factory=list)
+        evidence: list[str] = Field(default_factory=list)
         confidence: float
 
     @track_metrics("run_bullet_evidence_linker")
@@ -186,10 +185,10 @@ class BulletEvidenceLinkerAgent(BaseAgent):
         self,
         bullet_id: str,
         bullet_text: str,
-        resume_section: Dict[str, Any],
+        resume_section: dict[str, Any],
         workflow_id: str,
-    ) -> Dict[str, Any]:
-        evidence: List[str] = []
+    ) -> dict[str, Any]:
+        evidence: list[str] = []
         section_bullets = resume_section.get("bullet_pool", [])
         for existing in section_bullets[:5]:
             if bullet_text and existing.lower() in bullet_text.lower():
@@ -217,11 +216,11 @@ class BulletConfidenceScoringAgent(BaseAgent):
     async def run_async(
         self,
         bullet_id: str,
-        bullet_payload: Dict[str, Any],
+        bullet_payload: dict[str, Any],
         workflow_id: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         score = 0.5
-        rationale: List[str] = []
+        rationale: list[str] = []
         if bullet_payload.get("metrics", {}).get("has_metric"):
             score += 0.2
             rationale.append("Contains quantifiable metric.")
@@ -255,10 +254,10 @@ class BulletCoordinatorAgent(BaseAgent):
     @track_metrics("run_bullet_coordinator")
     async def run_async(
         self,
-        bullets: List[Dict[str, Any]],
-        resume: Dict[str, Any],
+        bullets: list[dict[str, Any]],
+        resume: dict[str, Any],
         workflow_id: str,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         self.log_info("Coordinating bullet enrichment agents...")
 
         enriched_bullets = []
@@ -312,9 +311,9 @@ class BulletProvenanceAuditorAgent(BaseAgent):
     @track_metrics("run_bullet_provenance_auditor")
     async def run_async(
         self,
-        bullets: List[Dict[str, Any]],
+        bullets: list[dict[str, Any]],
         workflow_id: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         self.log_info("Auditing bullet provenance...")
         missing_evidence = [
             bullet["id"]
@@ -340,8 +339,8 @@ class AsyncBulletGeneratorAgent(BaseAgent):
         self.coordinator = BulletCoordinatorAgent(context, debug_mode)
 
     async def _generate_customized(
-        self, prompt: str, experience: Dict[str, Any], client: Any
-    ) -> List[str]:
+        self, prompt: str, experience: dict[str, Any], client: Any
+    ) -> list[str]:
         gen_prompt = f"""
         {client.goal_state}
         {client.top_failures}
@@ -366,8 +365,8 @@ class AsyncBulletGeneratorAgent(BaseAgent):
         return []
 
     async def _generate_synthetic(
-        self, prompt: str, experience: Dict[str, Any], client: Any
-    ) -> List[str]:
+        self, prompt: str, experience: dict[str, Any], client: Any
+    ) -> list[str]:
         gen_prompt = f"""
         {client.goal_state}
         {client.top_failures}
@@ -394,11 +393,11 @@ class AsyncBulletGeneratorAgent(BaseAgent):
     @track_metrics("run_fact_check_bullets")
     async def run_fact_check(
         self,
-        bullets: List[str],
-        experience: Dict[str, Any],
+        bullets: list[str],
+        experience: dict[str, Any],
         strategy: StrategyPlan,
         client: Any,
-    ) -> List[str]:
+    ) -> list[str]:
         self.log_info("Fact-checking bullets (v10.7)...")
 
         prompt_template = self.prompt_manager.get_template(
@@ -435,10 +434,10 @@ class AsyncBulletGeneratorAgent(BaseAgent):
     @track_metrics("run_bullet_generator")
     async def run_async(
         self,
-        task_context: Dict[str, Any],
+        task_context: dict[str, Any],
         strategy: StrategyPlan,
         workflow_id: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         self.log_info("Generating bullets asynchronously...")
 
         generation_client = self.get_model_client("bullet_generator_model")
@@ -493,10 +492,10 @@ class AsyncBulletCritiqueAgent(BaseAgent):
     @track_metrics("run_bullet_critique")
     async def run_async(
         self,
-        bullets: List[Dict[str, Any]],
+        bullets: list[dict[str, Any]],
         critique_prompt: str,
         workflow_id: str,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         self.log_info("Critiquing bullets with validation (v10.7)...")
 
         client = self.get_model_client("critique_model")
@@ -521,7 +520,7 @@ class AsyncBulletCritiqueAgent(BaseAgent):
             )
         responses = await asyncio.gather(*critique_tasks)
 
-        critique_results: List[CritiqueResult] = []
+        critique_results: list[CritiqueResult] = []
         for res in responses:
             validated_output, error = self.validator.validate(res["content"], CritiqueResult)
             if error:

@@ -1,4 +1,5 @@
 import logging
+
 '''Brief description of functionality and purpose.'''
 
 '''Brief description of functionality and purpose.'''
@@ -10,7 +11,7 @@ _logger = logging.getLogger(__name__)
 # High-signal content preserved below — zero-loss migration
 # ================================================================================
 
-from typing import Iterable, Type
+from collections.abc import Iterable
 
 from pydantic import BaseModel
 
@@ -32,7 +33,7 @@ def _get_schema_version(obj: object) -> str | None:
 def validate_schema_version(
     obj: object,
     expected_versions: Iterable[str] = ("v1",),
-    model_type: Type[BaseModel] | None = None,
+    model_type: type[BaseModel] | None = None,
 ) -> None:
     """Validate that a Pydantic model has an expected schema_version.
 

@@ -4,7 +4,6 @@ Audit complexity health % across all agents.
 """
 import json
 from pathlib import Path
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 PROJECT_ROOT = Path(__file__).parent.parent
 DISCOVERY_FILE = PROJECT_ROOT / "agent_discovery_full.json"
@@ -16,7 +15,7 @@ def main():
     print("=" * 70)
 
     # Load agent discovery
-    with open(DISCOVERY_FILE, 'r', encoding='utf-8') as f:
+    with open(DISCOVERY_FILE, encoding='utf-8') as f:
         agents = json.load(f)
 
     total = len(agents)

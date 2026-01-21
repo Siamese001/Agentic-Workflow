@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Consolidated Dashboard Regeneration Script
 ==========================================
@@ -15,8 +14,8 @@ This script consolidates:
 - regenerate_dashboard_data.py (--data-only)
 """
 import argparse
-import sys
 import os
+import sys
 from pathlib import Path
 
 # Windows UTF-8 support
@@ -64,21 +63,48 @@ def regenerate_data_only():
     print("=" * 70)
 
     # Import SSOT definitions
-    from agentic_core.L5_safety.validators.dashboard_ssot_definitions import (
-        calc_heal_cap_pct, calc_invocation_pct, calc_test_pct, calc_hardened_pct,
-        calc_typed_pct, calc_documented_pct, calc_schema_strictness_pct,
-        calc_canonical_inheritance_pct,
-        calc_avg_cc, calc_complexity_health, is_l0_territory,
-        get_canonical_health_score, get_canonical_code_quality_score,
-        COL_TERRITORY, COL_TOTAL, COL_COMPLIANT, COL_HEAL_CAP, COL_INVOCATION,
-        COL_TEST, COL_HARDENED, COL_COMPLEXITY_HEALTH, COL_TYPED, COL_DOCUMENTED,
-        COL_SCHEMA_STRICTNESS, COL_CANONICAL_INHERITANCE, COL_CODE_QUALITY, COL_HEALTH,
-        FIELD_TERRITORY, FIELD_HAS_HEALING, FIELD_INVOCATION, FIELD_HAS_TESTS,
-        FIELD_MCP_HARDENED, FIELD_TYPED_PCT, FIELD_DOCUMENTED_PCT,
-        FIELD_SCHEMA_STRICTNESS, FIELD_PROPER_BASE_CLASS, FIELD_CYCLOMATIC_COMPLEXITY
+    from agentic_core.L0_maintenance.scripts.territory_ssot_definitions import (
+        get_territory_sort_key,
     )
-
-    from agentic_core.L0_maintenance.scripts.territory_ssot_definitions import get_territory_sort_key
+    from agentic_core.L5_safety.validators.dashboard_ssot_definitions import (
+        COL_CANONICAL_INHERITANCE,
+        COL_CODE_QUALITY,
+        COL_COMPLEXITY_HEALTH,
+        COL_COMPLIANT,
+        COL_DOCUMENTED,
+        COL_HARDENED,
+        COL_HEAL_CAP,
+        COL_HEALTH,
+        COL_INVOCATION,
+        COL_SCHEMA_STRICTNESS,
+        COL_TERRITORY,
+        COL_TEST,
+        COL_TOTAL,
+        COL_TYPED,
+        FIELD_CYCLOMATIC_COMPLEXITY,
+        FIELD_DOCUMENTED_PCT,
+        FIELD_HAS_HEALING,
+        FIELD_HAS_TESTS,
+        FIELD_INVOCATION,
+        FIELD_MCP_HARDENED,
+        FIELD_PROPER_BASE_CLASS,
+        FIELD_SCHEMA_STRICTNESS,
+        FIELD_TERRITORY,
+        FIELD_TYPED_PCT,
+        calc_avg_cc,
+        calc_canonical_inheritance_pct,
+        calc_complexity_health,
+        calc_documented_pct,
+        calc_hardened_pct,
+        calc_heal_cap_pct,
+        calc_invocation_pct,
+        calc_schema_strictness_pct,
+        calc_test_pct,
+        calc_typed_pct,
+        get_canonical_code_quality_score,
+        get_canonical_health_score,
+        is_l0_territory,
+    )
 
     # Load agent discovery
     discovery_file = PROJECT_ROOT / "agent_discovery_full.json"
@@ -87,7 +113,7 @@ def regenerate_data_only():
         print("   Run: python scripts/full_agent_discovery.py")
         return 1
 
-    with open(discovery_file, 'r', encoding='utf-8') as f:
+    with open(discovery_file, encoding='utf-8') as f:
         agents = json.load(f)
 
     print(f"Loaded {len(agents)} agents from discovery")

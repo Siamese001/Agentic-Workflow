@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Error Handling and Retry Utilities
 
@@ -6,7 +7,8 @@ Cluster: Exception classes and retry logic with exponential backoff
 Lines: 253-316 from core_utils.py
 """
 import time
-from typing import Any, Callable, Dict, List, Optional, Protocol, Tuple
+from collections.abc import Callable
+from typing import Any
 
 
 # NAMING FIXED: MCPError → McpError
@@ -19,7 +21,7 @@ class CircuitBreakerOpenError(MCPError):
     """Raised when circuit breaker is open."""
 
 
-def _perform_single_attempt(func: Callable, *args, **kwargs) -> Tuple[bool, Any, Optional[Exception]]:
+def _perform_single_attempt(func: Callable, *args, **kwargs) -> tuple[bool, Any, Exception | None]:
     """
     Helper to perform a single function call attempt and capture its result or exception.
     This helps reduce nesting depth in the retry_with_backoff decorator.
@@ -32,7 +34,7 @@ def _perform_single_attempt(func: Callable, *args, **kwargs) -> Tuple[bool, Any,
 
 
 def _execute_with_retries_internal(func: Callable, max_retries: int, base_delay: float,
-                                   *args, **kwargs) -> Tuple[bool, Any, Optional[Exception]]:
+                                   *args, **kwargs) -> tuple[bool, Any, Exception | None]:
     """
     Helper function to execute a function with retries and exponential backoff.
     Returns exceptions instead of raising them to allow the wrapper to handle the final raise.

@@ -11,9 +11,8 @@ CONSTRAINT: This is a READ-ONLY audit. No files are modified.
 import ast
 import re
 import sys
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, NamedTuple
-from dataclasses import dataclass, field
 
 PROJECT_ROOT = Path(__file__).parent.parent
 AGENTIC_CORE = PROJECT_ROOT / "agentic_core"
@@ -55,9 +54,9 @@ class ClassMethod:
 class MalformedAgent:
     """Represents an agent file with structural issues."""
     file_path: Path
-    class_names: List[str]
-    orphaned_functions: List[OrphanedFunction]
-    class_methods: Dict[str, List[ClassMethod]]
+    class_names: list[str]
+    orphaned_functions: list[OrphanedFunction]
+    class_methods: dict[str, list[ClassMethod]]
     status: str  # EXACT_DUPLICATE, DIVERGENT, ORPHAN_ONLY
     action: str
     details: str
@@ -87,17 +86,17 @@ def get_function_source(file_content: str, node: ast.FunctionDef) -> str:
     return '\n'.join(lines[start:end])
 
 
-def analyze_file(file_path: Path) -> Optional[MalformedAgent]:
+def analyze_file(file_path: Path) -> MalformedAgent | None:
     """Analyze a single agent file for malformed structure."""
     try:
         content = file_path.read_text(encoding='utf-8')
         tree = ast.parse(content)
-    except (SyntaxError, UnicodeDecodeError) as e:
+    except (SyntaxError, UnicodeDecodeError):
         return None
 
     # Find all class definitions
     classes = []
-    class_methods: Dict[str, List[ClassMethod]] = {}
+    class_methods: dict[str, list[ClassMethod]] = {}
 
     for node in ast.walk(tree):
         if isinstance(node, ast.ClassDef):
@@ -117,7 +116,7 @@ def analyze_file(file_path: Path) -> Optional[MalformedAgent]:
                     ))
 
     # Find top-level functions (orphans)
-    orphans: List[OrphanedFunction] = []
+    orphans: list[OrphanedFunction] = []
     for node in tree.body:
         if isinstance(node, ast.FunctionDef):
             # This is a top-level function
@@ -195,7 +194,7 @@ def analyze_file(file_path: Path) -> Optional[MalformedAgent]:
     )
 
 
-def scan_agentic_core() -> List[MalformedAgent]:
+def scan_agentic_core() -> list[MalformedAgent]:
     """Scan agentic_core for malformed agent files."""
     malformed = []
 
@@ -211,7 +210,7 @@ def scan_agentic_core() -> List[MalformedAgent]:
     return malformed
 
 
-def generate_report(malformed: List[MalformedAgent]) -> str:
+def generate_report(malformed: list[MalformedAgent]) -> str:
     """Generate markdown report."""
     lines = [
         "# Malformed Agents Audit Report",
@@ -231,8 +230,8 @@ def generate_report(malformed: List[MalformedAgent]) -> str:
     lines.extend([
         "## Summary",
         "",
-        f"| Status | Count | Action |",
-        f"|--------|-------|--------|",
+        "| Status | Count | Action |",
+        "|--------|-------|--------|",
         f"| EXACT_DUPLICATE | {exact_dup} | DELETE Orphan |",
         f"| DIVERGENT | {divergent} | MANUAL MERGE |",
         f"| ORPHAN_ONLY | {orphan_only} | MOVE to Class |",
@@ -271,17 +270,17 @@ def generate_report(malformed: List[MalformedAgent]) -> str:
 
                 if orphan_norm == method_norm:
                     lines.append(f"* **Comparison**: IDENTICAL to `{matching.class_name}.{matching.name}` at line {matching.lineno}")
-                    lines.append(f"* **Recommendation**: DELETE the orphan function")
+                    lines.append("* **Recommendation**: DELETE the orphan function")
                 else:
                     orphan_lines = len(orphan.source.split('\n'))
                     method_lines = len(matching.source.split('\n'))
                     lines.append(f"* **Comparison**: DIFFERS from `{matching.class_name}.{matching.name}` at line {matching.lineno}")
                     lines.append(f"* **Orphan Lines**: {orphan_lines}")
                     lines.append(f"* **Method Lines**: {method_lines}")
-                    lines.append(f"* **Recommendation**: MERGE logic, then DELETE orphan")
+                    lines.append("* **Recommendation**: MERGE logic, then DELETE orphan")
             else:
-                lines.append(f"* **Comparison**: NO matching class method found")
-                lines.append(f"* **Recommendation**: MOVE into appropriate class")
+                lines.append("* **Comparison**: NO matching class method found")
+                lines.append("* **Recommendation**: MOVE into appropriate class")
 
             lines.append("")
 

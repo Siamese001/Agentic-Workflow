@@ -1,12 +1,18 @@
 from __future__ import annotations
+
 """Verify Sovereign Patches Applied Successfully"""
 import ast
 from pathlib import Path
-from typing import Any, Tuple
-from agentic_core.L5_safety.validators.structure_blueprint import ALLOWED_CORE_STAGES, CANONICAL_DEPTH_MAP, validate_file_location
+from typing import Any
+
+from agentic_core.L5_safety.validators.structure_blueprint import (
+    ALLOWED_CORE_STAGES,
+    CANONICAL_DEPTH_MAP,
+    validate_file_location,
+)
 
 
-def validate_ast_integrity(file_path: Path) -> Tuple[bool, str]:
+def validate_ast_integrity(file_path: Path) -> tuple[bool, str]:
     """Validate that a Python file has valid AST structure."""
     if not file_path.exists():
         return False, "File does not exist"
@@ -46,14 +52,9 @@ print('\n✓ Patch 2: canon_validator_agentic_v2.py - Unified Async/Sync Wrapper
 print('  Checking telemetry wrapper implementation...')
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 validator_path: Any = root / 'canon_validator_agentic_v2.py'
-with open(validator_path, 'r', encoding='utf-8') as f:
+with open(validator_path, encoding='utf-8') as f:
     content: Any = f.read()
 has_unified_wrapper: Any = '# Unified Smart Wrapper (Handles both Sync and Async)' in content
 has_smart_dispatch: Any = '# Smart Dispatch: Check if method is async at runtime' in content

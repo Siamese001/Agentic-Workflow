@@ -16,14 +16,14 @@ def main():
     print("=" * 70)
 
     # Load agent discovery
-    with open(DISCOVERY_FILE, 'r', encoding='utf-8') as f:
+    with open(DISCOVERY_FILE, encoding='utf-8') as f:
         agents = json.load(f)
 
     total = len(agents)
     with_healing = sum(1 for a in agents if a.get('has_healing', False))
     with_invocation = sum(1 for a in agents if a.get('invocation') == 'Yes')
 
-    print(f"\nAgent Discovery Data:")
+    print("\nAgent Discovery Data:")
     print(f"  Total agents: {total}")
     print(f"  With healing: {with_healing} ({with_healing/total*100:.1f}%)")
     print(f"  With invocation: {with_invocation} ({with_invocation/total*100:.1f}%)")
@@ -36,7 +36,7 @@ def main():
         data = json.loads(match.group(1))
         total_row = data[0]
 
-        print(f"\nDashboard TOTAL Row:")
+        print("\nDashboard TOTAL Row:")
         print(f"  Heal Cap %: {total_row['Heal Cap %']}")
         print(f"  Invocation %: {total_row['Invocation %']}")
         print(f"  Test %: {total_row['Test %']}")

@@ -22,14 +22,18 @@ def main():
 
     # L0 Agent
     try:
-        from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
+        from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import (
+            L0MaintenanceBaseAgent,
+        )
         test_cases.append(("L0MaintenanceBaseAgent", L0MaintenanceBaseAgent, True))
     except Exception as e:
         print(f"Could not import L0MaintenanceBaseAgent: {e}")
 
     # L1 Agent
     try:
-        from agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent import L1CognitionBaseAgent
+        from agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent import (
+            L1CognitionBaseAgent,
+        )
         test_cases.append(("L1CognitionBaseAgent", L1CognitionBaseAgent, True))
     except Exception as e:
         print(f"Could not import L1CognitionBaseAgent: {e}")
@@ -53,12 +57,12 @@ def main():
         static_errors = auditor.audit_class_hierarchy(agent_cls)
         if static_errors:
             failed.append((agent_name, static_errors))
-            print(f"  FAILED - Static MRO check")
+            print("  FAILED - Static MRO check")
             for error in static_errors:
                 print(f"     {error}")
             continue
         else:
-            print(f"  PASSED - Static MRO check")
+            print("  PASSED - Static MRO check")
 
         # Dynamic check
         try:
@@ -69,10 +73,10 @@ def main():
 
             success, error = auditor.verify_initialization_propagation(instance)
             if success:
-                print(f"  PASSED - Propagation check")
+                print("  PASSED - Propagation check")
                 passed.append(agent_name)
             else:
-                print(f"  FAILED - Propagation check")
+                print("  FAILED - Propagation check")
                 print(f"     {error}")
                 failed.append((agent_name, [error]))
         except Exception as e:

@@ -5,14 +5,15 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
-import importlib  # AUTO-INJECTED BY GRAVITY HEALER
+
 import ast
+import importlib  # AUTO-INJECTED BY GRAVITY HEALER
+
 '''Brief description of functionality and purpose.'''
 
 import json
 import logging
-import re
-import time
+
 try:
     from core.SemanticGatekeeper import get_gatekeeper
 except ImportError:
@@ -24,13 +25,9 @@ except ImportError:
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
+from typing import Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint_1 import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 
 
@@ -41,11 +38,11 @@ class CanonEntry:
     id: str
     code_snippet: str
     ast_structure: str
-    embedding: List[float] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    embedding: list[float] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
     failure_count: int = 0
     success_count: int = 0
-    last_used: Optional[str] = None
+    last_used: str | None = None
 
     def get_success_rate(self) -> float:
         """Execute get_success_rate operation."""
@@ -68,12 +65,15 @@ class CanonEntry:
 Logger = logging.getLogger(__name__)
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+
 # GRAVITY FIXED (Upward Leak): from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 _mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_mixin')
-MCPHardenedMixin = getattr(_mod, 'MCPHardenedMixin')
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.schemas.models.anomaly_report import AnomalyReport, AnomalySeverity
+MCPHardenedMixin = _mod.MCPHardenedMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
+from agentic_core.schemas.models.anomaly_report import AnomalyReport
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+
 
 # CANONICAL: True - Consolidated 2026-01-06 (L4 connectivity variant merged)
 # NAMING FIXED: CanonValidatorAgent → CanonValidatorAgent
@@ -146,7 +146,7 @@ class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
         return False
 
-    def _safe_parse_ast(self, code: str) -> Tuple[Optional[str], Optional[str]]:
+    def _safe_parse_ast(self, code: str) -> tuple[str | None, str | None]:
         """
         Safely parses code into an AST string representation.
         Returns (ast_string, error_message)
@@ -160,7 +160,7 @@ class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             # Catching a broader exception for unexpected issues during parsing
             return None, f"Unexpected AST parsing error: {e}"
 
-    def _generate_entry(self, code: str, metadata: Optional[Dict[str, Any]] = None) -> "CanonEntry":
+    def _generate_entry(self, code: str, metadata: dict[str, Any] | None = None) -> CanonEntry:
         """
         Generates a CanonEntry from code and metadata.
         This helper method encapsulates the logic for creating a CanonEntry,
@@ -175,7 +175,7 @@ class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         else:
             ast_representation = ast_dump_str
 
-        embedding: List[float]
+        embedding: list[float]
         try:
             embedding = self.gatekeeper.embed_text(code)
         except Exception as e:
@@ -198,7 +198,7 @@ class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             ast_structure=ast_representation,
             metadata=entry_metadata
         )
-    def check_and_learn(self, new_code: str, context: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def check_and_learn(self, new_code: str, context: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Check code against the Canon and learn from results.
 
@@ -252,7 +252,7 @@ class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
         return result
 
-    def _parse_json_safely(self, json_str: str) -> Optional[Dict[str, Any]]:
+    def _parse_json_safely(self, json_str: str) -> dict[str, Any] | None:
         """
         Helper method to safely parse a JSON string.
         Reduces nesting depth in _extract_ast_error_message.
@@ -266,7 +266,7 @@ class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             Logger.debug(f"Unexpected error during JSON parsing: {e}")
             return None
 
-    def _extract_ast_error_message(self, ast_str: str) -> Optional[str]:
+    def _extract_ast_error_message(self, ast_str: str) -> str | None:
         """
         Extracts an error message from a potential JSON-encoded AST error string.
         Returns the error message if found and valid, otherwise None.
@@ -281,7 +281,7 @@ class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             return error_dict["error"]
         return None
 
-    def _handle_ast_parsing_errors(self, new_ast_str: str, existing_ast_str: str) -> Optional[Dict[str, Any]]:
+    def _handle_ast_parsing_errors(self, new_ast_str: str, existing_ast_str: str) -> dict[str, Any] | None:
         """
         Checks for AST parsing errors in new and existing AST strings.
         Returns a validation result dictionary if an error is found, otherwise None.
@@ -308,7 +308,7 @@ class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         self,
         new_entry: CanonEntry,
         existing_entry: CanonEntry
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Validate AST structures between two entries.
 
@@ -350,7 +350,7 @@ class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             "Recommendation": self._generate_recommendation(similarity, success_rate)
         }
 
-    def _get_ast_node_types_from_tree(self, tree: ast.AST) -> Set[str]:
+    def _get_ast_node_types_from_tree(self, tree: ast.AST) -> set[str]:
         """
         Helper method to extract unique node types from an AST tree.
         Reduces nesting depth in _calculate_ast_similarity.
@@ -405,7 +405,7 @@ class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         else:
             return "Code appears to be unique - validate thoroughly"
 
-    def _initialize_validation_result(self) -> Dict[str, Any]:
+    def _initialize_validation_result(self) -> dict[str, Any]:
         """Initialize default validation result structure."""
         return {
             "is_valid": True,
@@ -416,7 +416,7 @@ class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             "Recommendation": "Code appears to be new and valid"
         }
 
-    def _process_l1_match(self, new_entry: CanonEntry, best_match: CanonEntry) -> Dict[str, Any]:
+    def _process_l1_match(self, new_entry: CanonEntry, best_match: CanonEntry) -> dict[str, Any]:
         """Process L1 Redis match and return validation result."""
         validation = self._validate_ast_match(new_entry, best_match)
 
@@ -432,7 +432,7 @@ class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         Logger.info(f"L1 match found: {best_match.id}. Is valid: {validation['is_valid']}")
         return result
 
-    def _process_l2_match(self, new_entry: CanonEntry, best_match: CanonEntry) -> Dict[str, Any]:
+    def _process_l2_match(self, new_entry: CanonEntry, best_match: CanonEntry) -> dict[str, Any]:
         """Process L2 Qdrant match, promote if valid, and return validation result."""
         validation = self._validate_ast_match(new_entry, best_match)
 
@@ -478,7 +478,7 @@ class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             self.db_manager.promote_to_l2(entry) # This method name is still ambiguous.
             Logger.info(f"Pattern {entry.id} promoted to L2 (Qdrant) due to success threshold ({self.promotion_threshold}).")
 
-    def update_learning(self, entry_id: str, outcome: str, error_trace: Optional[str] = None) -> None:
+    def update_learning(self, entry_id: str, outcome: str, error_trace: str | None = None) -> None:
         """
         Update learning based on execution outcome.
 
@@ -510,7 +510,7 @@ class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         # Update the entry in Redis (L1)
         self.db_manager.redis.update_entry(entry)
 
-    def get_learning_stats(self) -> Dict[str, Any]:
+    def get_learning_stats(self) -> dict[str, Any]:
         """Get comprehensive learning statistics."""
         stats = self.db_manager.get_stats()
 
@@ -523,7 +523,7 @@ class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
         return stats
 
-    def _format_search_result(self, result: CanonEntry) -> Dict[str, Any]:
+    def _format_search_result(self, result: CanonEntry) -> dict[str, Any]:
         """
         Helper method to format a single CanonEntry into a dictionary
         for search results, reducing nesting in search_similar_patterns.
@@ -543,7 +543,7 @@ class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         code: str,
         max_results: int = 10,
         include_failures: bool = False
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Search for similar patterns in the Canon.
 
@@ -570,7 +570,7 @@ class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         # Combine and format results, prioritizing L1 results
         all_results = l1_results + l2_results
 
-        formatted: List[Dict[str, Any]] = []
+        formatted: list[dict[str, Any]] = []
         for result in all_results[:max_results]: # Take up to max_results from combined list
             formatted.append(self._format_search_result(result))
 

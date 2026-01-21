@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Structured Engine with Instructor
 
@@ -6,9 +7,10 @@ Forces LLMs to output valid, schema-compliant JSON using grammar-based constrain
 No more "I hope this parses" - the LLM physically cannot output invalid structures.
 """
 import logging
-from typing import Any, Dict, List, Literal, Optional, Protocol
-from agentic_core.schemas.models.core_contracts import AgentThoughtProcess, CodeGenerationResult, ResearchResult
-from pydantic import BaseModel, Field, field_validator
+from typing import Any
+
+from agentic_core.schemas.models.core_contracts import AgentThoughtProcess
+
 Logger: Any = logging.getLogger(__name__)
 try:
     import instructor
@@ -35,7 +37,7 @@ class StructuredEngine:
         """
         self.client = instructor.patch(client)
         self.model = 'gpt-4'
-        LOGGER.info(f'Structured engine initialized with AsyncOpenAI client')
+        LOGGER.info('Structured engine initialized with AsyncOpenAI client')
 
     async def think_structured(self, system_prompt: str, user_prompt: str, max_retries: int=3) -> AgentThoughtProcess:
         """
@@ -64,14 +66,14 @@ class StructuredEngineFactory:
     """Factory for creating specialized structured engines."""
 
     @staticmethod
-    def create_code_engine(client: AsyncOpenAI, model: str='gpt-4o') -> 'StructuredEngine':
+    def create_code_engine(client: AsyncOpenAI, model: str='gpt-4o') -> StructuredEngine:
         """Create an engine optimized for code generation."""
         engine: Any = StructuredEngine(client)
         engine.model = model
         return engine
 
     @staticmethod
-    def create_research_engine(client: AsyncOpenAI, model: str='gpt-4o') -> 'StructuredEngine':
+    def create_research_engine(client: AsyncOpenAI, model: str='gpt-4o') -> StructuredEngine:
         """Create an engine optimized for research tasks."""
         engine: Any = StructuredEngine(client)
         engine.model = model

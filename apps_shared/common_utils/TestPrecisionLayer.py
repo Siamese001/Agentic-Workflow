@@ -7,15 +7,12 @@ Run with: python runtime.shared.test_precision_layer.py
 """
 
 import time
-from typing import List, Dict
 
 # Import the precision layer components
 from runtime.shared import (
-    ContextualCompressor,
-    CompressionResult,
-    compress_chunks,
     AdaptiveRetrievalGate,
-    RetrievalDecision,
+    ContextualCompressor,
+    compress_chunks,
     should_retrieve,
 )
 
@@ -123,7 +120,7 @@ class PrecisionLayerTestSuite:
 
             # Verify compression ratio
             if test_case['min_ratio'] <= result.compression_ratio <= test_case['max_ratio']:
-                print(f"   ✅ Compression ratio within expected range")
+                print("   ✅ Compression ratio within expected range")
             else:
                 print(f"   ⚠️  Compression ratio outside expected range "
                       f"({test_case['min_ratio']:.2f} - {test_case['max_ratio']:.2f})")
@@ -155,7 +152,7 @@ class PrecisionLayerTestSuite:
             retrieve_correct = decision.should_retrieve == expected_retrieve
 
             if type_correct and retrieve_correct:
-                print(f"   ✅ Correct decision")
+                print("   ✅ Correct decision")
                 correct_decisions += 1
             else:
                 if not type_correct:
@@ -194,7 +191,7 @@ class PrecisionLayerTestSuite:
 
                 # If retrieval is needed, simulate compression
                 if decision.should_retrieve:
-                    print(f"\n  Simulating retrieval and compression...")
+                    print("\n  Simulating retrieval and compression...")
                     result = self.compressor.compress(
                         chunks=self.sample_chunks,
                         query=msg['content']

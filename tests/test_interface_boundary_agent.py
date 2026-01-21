@@ -3,9 +3,10 @@
 Robust Tests for InterfaceBoundaryAgent
 """
 
-import sys
 import ast
+import sys
 from pathlib import Path
+
 
 # Setup mock for MCPHardenedMixin
 class MockMixin: pass
@@ -15,6 +16,7 @@ sys.modules['agentic_core.utils.core_extensions.mcp_hardened_mixin'] = mock_modu
 
 # Direct import
 import importlib.util
+
 spec = importlib.util.spec_from_file_location(
     'InterfaceBoundaryAgent',
     Path('agentic_core/L5_safety/validators/InterfaceBoundaryAgent.py')

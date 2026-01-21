@@ -5,32 +5,39 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 import logging
-from pathlib import Path
 from dataclasses import dataclass
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
 import time
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 try:
-    from titanium_rag_pipeline import get_pipeline_stats, get_titanium_search_tool, get_titanium_search_with_sources
+    from titanium_rag_pipeline import (
+        get_pipeline_stats,
+        get_titanium_search_tool,
+        get_titanium_search_with_sources,
+    )
     TITANIUM_AVAILABLE: Any = True
     LOGGER.info('Titanium RAG Pipeline imported successfully')
 except ImportError as e:
     TITANIUM_AVAILABLE: Any = False
     LOGGER.warning(f'Titanium RAG Pipeline not available: {e}')
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
 @dataclass
 class DispatchResumeToolsAgent(HealerMixin, MCPHardenedMixin):
     """Executor for resume domain with Titanium RAG integration."""
 
-    def __init__(self, config: Optional[Dict[str, object]]=None) -> None:
+    def __init__(self, config: dict[str, object] | None=None) -> None:
         self.CONFIG = config or {}
         self.TIMEOUT = self.config.get('timeout', 30.0)
         self.titanium_enabled = self.config.get('use_titanium_search', True) and TITANIUM_AVAILABLE
@@ -45,7 +52,7 @@ class DispatchResumeToolsAgent(HealerMixin, MCPHardenedMixin):
         assert hasattr(self, 'CONFIG'), "Missing CONFIG"
         return True
 
-    def execute(self, action: str, params: Dict[str, object]) -> ExecutionResult:
+    def execute(self, action: str, params: dict[str, object]) -> ExecutionResult:
         """Execute action."""
         START: Any = time.time()
         try:
@@ -54,7 +61,7 @@ class DispatchResumeToolsAgent(HealerMixin, MCPHardenedMixin):
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
             return ExecutionResult(SUCCESS=False, ERROR=str(e), duration_ms=(time.time() - START) * 1000)
 
-    def _perform_action(self, action: str, params: Dict[str, object]) -> object:
+    def _perform_action(self, action: str, params: dict[str, object]) -> object:
         """Perform the action."""
         LOGGER.info(f'Executing {action} with {params}')
         if action == 'search':
@@ -66,7 +73,7 @@ class DispatchResumeToolsAgent(HealerMixin, MCPHardenedMixin):
         else:
             return {'action': action, 'params': params, 'status': 'completed'}
 
-    def _handle_search(self, params: Dict[str, object]) -> Dict[str, object]:
+    def _handle_search(self, params: dict[str, object]) -> dict[str, object]:
         """Handle search using Titanium RAG Pipeline."""
         if not self.titanium_enabled:
             return {'error': 'Titanium search not enabled', 'results': []}
@@ -76,7 +83,7 @@ class DispatchResumeToolsAgent(HealerMixin, MCPHardenedMixin):
         include_metadata = params.get('include_metadata', False)
         return {'query': QUERY, 'results': f'[Titanium Search Results for: {QUERY}]', 'pipeline': 'titanium', 'metadata': {'decomposed': True, 'reranked': True, 'cached': False}}
 
-    def _handle_search_with_sources(self, params: Dict[str, object]) -> Dict[str, object]:
+    def _handle_search_with_sources(self, params: dict[str, object]) -> dict[str, object]:
         """Handle search with full source information."""
         if not self.titanium_enabled:
             return {'error': 'Titanium search not enabled', 'sources': []}
@@ -84,7 +91,7 @@ class DispatchResumeToolsAgent(HealerMixin, MCPHardenedMixin):
         CONTEXT = params.get('context')
         return {'query': QUERY, 'sources': [{'content': f'Sample content for {QUERY}', 'metadata': {'source': 'knowledge_base', 'confidence': 0.95}}], 'pipeline': 'titanium'}
 
-    def _handle_get_stats(self) -> Dict[str, object]:
+    def _handle_get_stats(self) -> dict[str, object]:
         """Get Titanium pipeline statistics."""
         if not self.titanium_enabled:
             return {'error': 'Titanium search not enabled'}
@@ -140,6 +147,6 @@ class DispatchResumeToolsAgent(HealerMixin, MCPHardenedMixin):
         except Exception as e:
             Logger.error(f"Diagnostics exception: {e}")
 
-def execute(action: str, params: Dict[str, object], config: Optional[Dict]=None) -> ExecutionResult:
+def execute(action: str, params: dict[str, object], config: dict | None=None) -> ExecutionResult:
     """Execute action."""
     return DispatchResumeToolsAgent(config).execute(action, params)

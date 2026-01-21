@@ -7,13 +7,14 @@ circuit breakers, and retry policies.
 
 import asyncio
 import logging
-from typing import Any, Callable, Dict, List, Optional, Awaitable
+from collections.abc import Awaitable, Callable
+from typing import Any
 
-from .core.event_bus import EventBus, SystemEvent, EventType, get_event_bus
 from .bulkhead_manager import BulkheadManager, TaskPriority, get_bulkhead_manager
 from .circuit_breaker import CircuitBreakerConfig, get_circuit_breaker_registry
-from .retry_policy import RetryPolicy, RetryConfig, get_retry_executor
-from .dead_letter_queue import get_dead_letter_queue, FailureReason
+from .core.event_bus import EventBus, EventType, SystemEvent, get_event_bus
+from .dead_letter_queue import FailureReason, get_dead_letter_queue
+from .retry_policy import RetryConfig, get_retry_executor
 
 logger = logging.getLogger(__name__)
 
@@ -23,8 +24,8 @@ class HardenedEventBus:
 
     def __init__(
         self,
-        event_bus: Optional[EventBus] = None,
-        bulkhead_manager: Optional[BulkheadManager] = None
+        event_bus: EventBus | None = None,
+        bulkhead_manager: BulkheadManager | None = None
     ):
         """Initialize hardened event bus.
 
@@ -141,7 +142,7 @@ class HardenedEventBus:
 
         logger.info("HardenedEventBus closed")
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """Check health of hardened event bus.
 
         Returns:
@@ -304,7 +305,7 @@ class HardenedEventBus:
 
 
 # Global hardened event bus
-_hardened_bus: Optional[HardenedEventBus] = None
+_hardened_bus: HardenedEventBus | None = None
 _bus_lock = asyncio.Lock()
 
 
@@ -326,8 +327,8 @@ async def get_hardened_event_bus() -> HardenedEventBus:
 async def publish_hardened_event(
     event_type: EventType,
     source_component: str,
-    payload: Dict[str, Any],
-    trace_id: Optional[str] = None,
+    payload: dict[str, Any],
+    trace_id: str | None = None,
     priority: TaskPriority = TaskPriority.MEDIUM
 ) -> bool:
     """Publish a hardened system event.
@@ -342,7 +343,7 @@ async def publish_hardened_event(
     Returns:
         True if published successfully
     """
-    from .core.event_bus import SystemEvent, publish_event
+    from .core.event_bus import SystemEvent
 
     # Create event
     event = SystemEvent(

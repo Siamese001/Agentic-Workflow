@@ -5,8 +5,9 @@ Verifies that the DDDAlignmentAgent correctly detects bounded context violations
 and is properly integrated into the core hygiene agent registry.
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
 
 
 def get_project_root() -> Path:

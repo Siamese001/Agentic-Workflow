@@ -6,12 +6,11 @@ This script modifies agent files to add self-testing capability.
 import json
 import re
 from pathlib import Path
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 project_root = Path(__file__).parent.parent
 discovery_file = project_root / "agent_discovery_full.json"
 
-with open(discovery_file, 'r', encoding='utf-8') as f:
+with open(discovery_file, encoding='utf-8') as f:
     data = json.load(f)
 
 # Find agents without tests
@@ -143,7 +142,7 @@ for agent in no_tests:
     except Exception as e:
         errors.append(f"{class_name}: {str(e)}")
 
-print(f"\n=== SUMMARY ===")
+print("\n=== SUMMARY ===")
 print(f"Modified: {len(modified)}")
 print(f"Skipped: {len(skipped)}")
 print(f"Errors: {len(errors)}")

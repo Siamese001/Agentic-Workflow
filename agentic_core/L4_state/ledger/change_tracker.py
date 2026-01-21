@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Change Tracker - Sovereign Healing Audit Trail
 Canon-compliant utility for tracking file modifications by healer/fixer agents.
@@ -9,7 +10,6 @@ Purpose: Domain-agnostic core utility for miscellaneous tracking
 """
 from collections import defaultdict
 from pathlib import Path
-from typing import List, Dict, Tuple
 
 
 class ChangeRecord:
@@ -30,22 +30,22 @@ class ChangeTracker:
     """
 
     def __init__(self):
-        self.records: List[ChangeRecord] = []
+        self.records: list[ChangeRecord] = []
 
     def record(self, agent: str, file_path: str | Path, description: str):
         """Record a successful file modification immediately after writing."""
         self.records.append(ChangeRecord(agent, file_path, description))
 
-    def _group_by_agent(self) -> Dict[str, List[Tuple[str, str]]]:
+    def _group_by_agent(self) -> dict[str, list[tuple[str, str]]]:
         """Group all records by agent name."""
-        groups: Dict[str, List[Tuple[str, str]]] = defaultdict(list)
+        groups: dict[str, list[tuple[str, str]]] = defaultdict(list)
         for rec in self.records:
             groups[rec.agent].append((rec.file_path, rec.description))
         return groups
 
-    def _group_by_file(self) -> Dict[str, List[Tuple[str, str]]]:
+    def _group_by_file(self) -> dict[str, list[tuple[str, str]]]:
         """Group all records by file path."""
-        groups: Dict[str, List[Tuple[str, str]]] = defaultdict(list)
+        groups: dict[str, list[tuple[str, str]]] = defaultdict(list)
         for rec in self.records:
             groups[rec.file_path].append((rec.agent, rec.description))
         return groups

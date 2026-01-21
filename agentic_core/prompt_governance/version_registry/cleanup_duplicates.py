@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 One-time cleanup utility to collapse duplicate entries in registry.json.
 
@@ -14,7 +15,7 @@ This script:
 """
 
 import logging
-from typing import Dict, List, Any, Set, Tuple
+from typing import Any
 
 from agentic_core.prompt_governance.version_registry.PromptRegistry import get_prompt_registry
 
@@ -44,15 +45,14 @@ def collapse_duplicates():
     Logger.info(f"Original entry count: {original_count}")
 
     # Define key fields for deduplication (matches register_prompt() logic)
-    DUPLICATE_KEY_FIELDS = {"version", "purpose", "author", "content_hash", "territory"}
 
     # Clean each template's entries
     total_removed = 0
 
     for template_name, entries in list(registry.registry.items()):
         # Deduplicate by key fields - keep newest (last in reversed list)
-        seen_keys: Set[Tuple] = set()
-        unique_entries: List[Dict[str, Any]] = []
+        seen_keys: set[tuple] = set()
+        unique_entries: list[dict[str, Any]] = []
 
         # Process in reverse to preserve latest entries first
         for entry in reversed(entries):
@@ -91,7 +91,7 @@ def collapse_duplicates():
 
     final_count = sum(len(entries) for entries in registry.registry.values())
 
-    print(f"[CLEANUP] Complete!")
+    print("[CLEANUP] Complete!")
     print(f"   Original entries: {original_count}")
     print(f"   Final entries: {final_count}")
     print(f"   Removed: {total_removed} duplicate(s)")

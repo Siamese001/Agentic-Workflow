@@ -2,29 +2,15 @@
 Detailed report of files requiring manual review.
 Shows file differences, locations, and specific recommendations.
 """
-import sys
-from pathlib import Path
-from collections import defaultdict
-import hashlib
 import difflib
+import hashlib
+import sys
+from collections import defaultdict
+from pathlib import Path
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
     TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
@@ -42,7 +28,7 @@ def compute_file_hash(file_path: Path) -> str:
 def read_file_content(file_path: Path) -> str:
     """Read file content as string."""
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, encoding='utf-8') as f:
             return f.read()
     except Exception:
         return ""
@@ -121,7 +107,7 @@ def scan_for_duplicates():
     extensions = ['.py', '.json', '.md']
 
     # Phase 6.7: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_python_files, get_data_files
+    from agentic_core.utils.ssot_discovery import get_data_files, get_python_files
     all_files = list(get_python_files(project_root)) + list(get_data_files(project_root, extensions=['.json', '.md']))
 
     for file_path in all_files:
@@ -158,7 +144,7 @@ def main():
     # Filter to files with different content (need review)
     needs_review = {}
     for filename, file_info in by_filename.items():
-        hashes = set(f['hash'] for f in file_info)
+        hashes = {f['hash'] for f in file_info}
         if len(hashes) > 1:  # Different content
             needs_review[filename] = file_info
 
@@ -190,11 +176,11 @@ def main():
 
         # Analyze differences between first two files
         if len(file_info) >= 2:
-            print(f"    DIFFERENCE ANALYSIS (comparing first 2 files):")
+            print("    DIFFERENCE ANALYSIS (comparing first 2 files):")
             diff_analysis = analyze_diff(file_info[0]['path'], file_info[1]['path'])
 
             if diff_analysis.get('identical'):
-                print(f"      ✓ Files are identical (should have been caught earlier)")
+                print("      ✓ Files are identical (should have been caught earlier)")
             elif 'error' in diff_analysis:
                 print(f"      ✗ Error: {diff_analysis['error']}")
             else:
@@ -203,28 +189,28 @@ def main():
                 print()
 
                 if diff_analysis['total_changes'] < 10:
-                    print(f"      Assessment: MINOR DIFFERENCES - likely version drift")
-                    print(f"      Recommendation: Consolidate to canonical location, delete others")
+                    print("      Assessment: MINOR DIFFERENCES - likely version drift")
+                    print("      Recommendation: Consolidate to canonical location, delete others")
                 elif diff_analysis['total_changes'] < 50:
-                    print(f"      Assessment: MODERATE DIFFERENCES - may be intentional variants")
-                    print(f"      Recommendation: Review diff, rename if different purposes")
+                    print("      Assessment: MODERATE DIFFERENCES - may be intentional variants")
+                    print("      Recommendation: Review diff, rename if different purposes")
                 else:
-                    print(f"      Assessment: MAJOR DIFFERENCES - likely different implementations")
-                    print(f"      Recommendation: Rename to reflect different purposes")
+                    print("      Assessment: MAJOR DIFFERENCES - likely different implementations")
+                    print("      Recommendation: Rename to reflect different purposes")
 
                 print()
-                print(f"      DIFF PREVIEW (first 20 lines):")
-                print(f"      " + "-" * 110)
+                print("      DIFF PREVIEW (first 20 lines):")
+                print("      " + "-" * 110)
                 for line in diff_analysis['diff_preview'][:20]:
                     print(f"      {line.rstrip()}")
                 if len(diff_analysis['diff_preview']) > 20:
                     print(f"      ... ({len(diff_analysis['diff_preview']) - 20} more lines)")
-                print(f"      " + "-" * 110)
+                print("      " + "-" * 110)
 
         print()
 
         # Provide specific recommendation
-        print(f"    RECOMMENDED ACTION:")
+        print("    RECOMMENDED ACTION:")
 
         # Check if files are in archives
         archive_count = sum(1 for f in file_info if ARCHIVES_DIR in str(f['path']))
@@ -234,17 +220,17 @@ def main():
         # Check if files are in different apps
         locations = [classify_location(str(f['path'].relative_to(project_root)))[0] for f in file_info]
         if 'LIC_APP' in locations and 'RG_APP' in locations:
-            print(f"      → Files in different apps (LIC vs RG) - likely intentional variants")
+            print("      → Files in different apps (LIC vs RG) - likely intentional variants")
             print(f"      → RENAME to app-specific names (e.g., {filename.replace('.py', '_lic.py')} and {filename.replace('.py', '_rg.py')})")
         elif 'L1_COGNITION' in locations and any(loc in locations for loc in ['LIC_APP', 'RG_APP']):
-            print(f"      → Files in L1 Cognition and Apps - check if app-specific override")
-            print(f"      → If override: RENAME app version to be explicit")
-            print(f"      → If duplicate: DELETE app version, use L1 version")
+            print("      → Files in L1 Cognition and Apps - check if app-specific override")
+            print("      → If override: RENAME app version to be explicit")
+            print("      → If duplicate: DELETE app version, use L1 version")
         else:
-            print(f"      → Review diff above and decide:")
-            print(f"         - If minor differences: CONSOLIDATE to canonical location")
-            print(f"         - If different purposes: RENAME to reflect purpose")
-            print(f"         - If one is stale: DELETE stale version")
+            print("      → Review diff above and decide:")
+            print("         - If minor differences: CONSOLIDATE to canonical location")
+            print("         - If different purposes: RENAME to reflect purpose")
+            print("         - If one is stale: DELETE stale version")
 
         print()
         print("-" * 120)
@@ -266,7 +252,7 @@ def main():
                       if any(APPS_LIC_DIR in str(f['path']) for f in files) and
                          any(APPS_RG_DIR in str(f['path']) for f in files))
 
-    print(f"Quick categorization:")
+    print("Quick categorization:")
     print(f"  - Files with archived copies (safe to delete archives): ~{archive_files}")
     print(f"  - App-specific variants (LIC vs RG): ~{app_variants}")
     print(f"  - Other (needs case-by-case review): {len(needs_review) - archive_files - app_variants}")

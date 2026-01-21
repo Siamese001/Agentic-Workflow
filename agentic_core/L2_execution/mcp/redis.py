@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 SovereignRedisClient - Audited Cache Operations
 
@@ -11,30 +12,18 @@ Routes all Redis operations through controlled plane with:
 import logging
 import os
 from collections import OrderedDict
+from collections.abc import Callable
 from datetime import datetime
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any
 
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # Type alias for telemetry callback
-TelemetryCallback = Callable[[str, Dict[str, Any]], None]
+TelemetryCallback = Callable[[str, dict[str, Any]], None]
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
     TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
 
 Logger = logging.getLogger(__name__)
@@ -43,7 +32,7 @@ Logger = logging.getLogger(__name__)
 class SovereignRedisClient(MCPHardenedMixin, HealerMixin):
     """Sovereign Redis client - audit + safe exec for all cache operations."""
 
-    def __init__(self, url: Optional[str] = None, telemetry_callback: Optional[TelemetryCallback] = None):
+    def __init__(self, url: str | None = None, telemetry_callback: TelemetryCallback | None = None):
         """
         Initialize Redis client.
 
@@ -54,7 +43,7 @@ class SovereignRedisClient(MCPHardenedMixin, HealerMixin):
         """
         super().__init__()
         self.redis_url = url or os.getenv('REDIS_URL', 'redis://localhost:6379')
-        self.audit_log: List[Dict[str, Any]] = []
+        self.audit_log: list[dict[str, Any]] = []
         self._client = None
         self._fallback_cache: OrderedDict = OrderedDict()
         self._max_fallback_size = 1000
@@ -66,14 +55,15 @@ class SovereignRedisClient(MCPHardenedMixin, HealerMixin):
             'get': 0, 'set': 0, 'delete': 0,
             'hits': 0, 'misses': 0, 'total': 0
         }
-        self.recent_operations: List[Dict[str, Any]] = []
+        self.recent_operations: list[dict[str, Any]] = []
 
     def _get_client(self):
         """Lazy-load Redis client with fallback."""
         if self._client is None and not self._use_fallback:
             try:
-                import redis
                 import urllib.parse
+
+                import redis
                 parsed = urllib.parse.urlparse(self.redis_url)
                 params = {
                     'host': parsed.hostname or 'localhost',
@@ -112,7 +102,7 @@ class SovereignRedisClient(MCPHardenedMixin, HealerMixin):
         if len(self._fallback_cache) > self._max_fallback_size:
             self._fallback_cache.popitem(last=False)
 
-    def execute(self, operation: str, **payload) -> Dict[str, Any]:
+    def execute(self, operation: str, **payload) -> dict[str, Any]:
         """
         Route Redis operations safely via dispatch pattern.
 
@@ -149,7 +139,7 @@ class SovereignRedisClient(MCPHardenedMixin, HealerMixin):
         self._audit(operation, key, result)
         return result
 
-    def _handle_set(self, key: str, value: str, ttl: Optional[int] = None, **kwargs) -> Dict[str, Any]:
+    def _handle_set(self, key: str, value: str, ttl: int | None = None, **kwargs) -> dict[str, Any]:
         """Sub-atomic set handler."""
         client = self._get_client()
         if client:
@@ -178,7 +168,7 @@ class SovereignRedisClient(MCPHardenedMixin, HealerMixin):
 
         return {'success': True}
 
-    def _handle_get(self, key: str, **kwargs) -> Dict[str, Any]:
+    def _handle_get(self, key: str, **kwargs) -> dict[str, Any]:
         """Sub-atomic get handler."""
         client = self._get_client()
         if client:
@@ -211,7 +201,7 @@ class SovereignRedisClient(MCPHardenedMixin, HealerMixin):
 
         return {'success': True, 'value': value}
 
-    def _handle_delete(self, key: str, **kwargs) -> Dict[str, Any]:
+    def _handle_delete(self, key: str, **kwargs) -> dict[str, Any]:
         """Sub-atomic delete handler."""
         client = self._get_client()
         if client:
@@ -239,7 +229,7 @@ class SovereignRedisClient(MCPHardenedMixin, HealerMixin):
 
         return {'success': True, 'deleted': deleted}
 
-    def _handle_exists(self, key: str, **kwargs) -> Dict[str, Any]:
+    def _handle_exists(self, key: str, **kwargs) -> dict[str, Any]:
         """Sub-atomic exists handler."""
         client = self._get_client()
         if client:
@@ -248,7 +238,7 @@ class SovereignRedisClient(MCPHardenedMixin, HealerMixin):
             exists = key in self._fallback_cache
         return {'success': True, 'exists': exists}
 
-    def _handle_keys(self, pattern: str = '*', **kwargs) -> Dict[str, Any]:
+    def _handle_keys(self, pattern: str = '*', **kwargs) -> dict[str, Any]:
         """Sub-atomic keys handler."""
         client = self._get_client()
         if client:
@@ -258,21 +248,21 @@ class SovereignRedisClient(MCPHardenedMixin, HealerMixin):
             keys = [k for k in self._fallback_cache.keys() if fnmatch.fnmatch(k, pattern)]
         return {'success': True, 'keys': keys}
 
-    def _handle_expire(self, key: str, ttl: int = 3600, **kwargs) -> Dict[str, Any]:
+    def _handle_expire(self, key: str, ttl: int = 3600, **kwargs) -> dict[str, Any]:
         """Sub-atomic expire handler."""
         client = self._get_client()
         if client:
             client.expire(key, ttl)
         return {'success': True}
 
-    def _handle_ping(self, **kwargs) -> Dict[str, Any]:
+    def _handle_ping(self, **kwargs) -> dict[str, Any]:
         """Sub-atomic ping handler."""
         client = self._get_client()
         if client:
             client.ping()
         return {'success': True, 'pong': True, 'fallback': self._use_fallback}
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get Redis operation statistics for dashboard observability."""
         total_ops = self.operation_stats['hits'] + self.operation_stats['misses']
         hit_rate = self.operation_stats['hits'] / total_ops if total_ops > 0 else 0.0

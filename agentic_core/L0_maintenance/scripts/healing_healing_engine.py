@@ -5,24 +5,22 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """
 Sovereign Healing Engine – Phase 17 (Dec 27, 2025)
 Autonomous self-correction using Filesystem and GitKraken MCPs.
 """
 import logging
 import re
-from typing import List, Dict, Any, Optional
 from pathlib import Path
-from agentic_core.L0_maintenance.P1_core.transaction_manager import HealingTransaction
-from agentic_core.L0_maintenance.P1_core.gitkraken_mcp_client_1 import get_git_client
-from agentic_core.L0_maintenance.P1_core.filesystem_mcp_client_1 import get_filesystem_client
+from typing import Any
+
 from agentic_core.config.blueprint_sovereign.sovereign_config_1 import config
+from agentic_core.L0_maintenance.P1_core.filesystem_mcp_client_1 import get_filesystem_client
+from agentic_core.L0_maintenance.P1_core.gitkraken_mcp_client_1 import get_git_client
+from agentic_core.L0_maintenance.P1_core.transaction_manager import HealingTransaction
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -46,7 +44,7 @@ class SovereignHealingEngine:
         self.applied_fixes = 0
         Logger.info('[L0 HEALING] Engine initialized')
 
-    async def execute_autonomous_cycle(self, issues: List[Dict[str, Any]]) -> Dict[str, Any]:
+    async def execute_autonomous_cycle(self, issues: list[dict[str, Any]]) -> dict[str, Any]:
         """
         Full autonomous self-healing cycle with rollback safety.
 
@@ -103,7 +101,7 @@ class SovereignHealingEngine:
             self.transaction_manager.rollback()
             return {'status': 'error', 'applied_fixes': 0, 'error': str(e), 'message': 'Healing cycle failed and was rolled back'}
 
-    async def _apply_fix(self, issue: Dict[str, Any]) -> bool:
+    async def _apply_fix(self, issue: dict[str, Any]) -> bool:
         """
         Determines the fix strategy and applies it via MCP.
 
@@ -145,7 +143,7 @@ class SovereignHealingEngine:
             Logger.error(f'[L0 HEALING] Error applying fix to {file_path}: {e}')
             return False
 
-    async def _exec_replace_import(self, fix: Dict) -> bool:
+    async def _exec_replace_import(self, fix: dict) -> bool:
         """
         Handles both import swap and instantiation swap.
 
@@ -173,7 +171,7 @@ class SovereignHealingEngine:
             Logger.error(f'[L0 HEALING] Error in _exec_replace_import: {e}')
             return False
 
-    async def _exec_replace_llm(self, fix: Dict) -> bool:
+    async def _exec_replace_llm(self, fix: dict) -> bool:
         """
         Sophisticated LLM SDK removal.
 
@@ -202,7 +200,7 @@ class SovereignHealingEngine:
             Logger.error(f'[L0 HEALING] Error in _exec_replace_llm: {e}')
             return False
 
-    async def _exec_replace_io(self, fix: Dict) -> bool:
+    async def _exec_replace_io(self, fix: dict) -> bool:
         """
         Replace direct file I/O with Filesystem MCP client.
 
@@ -232,7 +230,7 @@ class SovereignHealingEngine:
             Logger.error(f'[L0 HEALING] Error in _exec_replace_io: {e}')
             return False
 
-    async def _generate_fix(self, content: str, ViolationType: str, message: str) -> Optional[str]:
+    async def _generate_fix(self, content: str, ViolationType: str, message: str) -> str | None:
         """
         Generate fixed content based on Violation type (legacy method).
 
@@ -260,7 +258,7 @@ class SovereignHealingEngine:
             new_content = new_content.replace('from agentic_core.tools.', 'from agentic_core.utils.')
         return new_content if new_content != content else None
 
-    async def _create_healing_commit(self, affected_files: List[str]):
+    async def _create_healing_commit(self, affected_files: list[str]):
         """
         Create a git commit for healed files.
 
@@ -288,7 +286,7 @@ class SovereignHealingEngine:
         except Exception as e:
             Logger.error(f'[L0 HEALING] Failed to create PR: {e}')
 
-async def run_autonomous_healing(issues: List[Dict[str, Any]]) -> Dict[str, Any]:
+async def run_autonomous_healing(issues: list[dict[str, Any]]) -> dict[str, Any]:
     """
     Run autonomous healing cycle on detected violations.
 

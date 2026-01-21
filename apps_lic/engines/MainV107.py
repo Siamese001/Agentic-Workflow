@@ -15,25 +15,28 @@
 # - FIXED: All v10_5 imports and class names updated to v10_7.
 # - FIXED: Changed config file name to master_config_v10_7.json.
 
-import os
-import sys
+import argparse
+import asyncio
 import json
 import logging
-import asyncio
-import argparse
+import os
+import sys
 import uuid
-from datetime import datetime
-from typing import Dict, Any, Optional
+from typing import Any
+
+# v10.7: Import from new orchestration/stacks
+from agent_orchestration_v10_7 import get_graph_app
 
 # v10.7: Import from new core
 from core_v10_7 import (
-    ConfigV10_7, WorkflowContext, MainGraphState,
-    FileIOError, CostCeilingExceededError, WorkflowError,
-    create_workflow_context, cleanup_workflow_chroma_collection,
-    get_checkpointer
+    ConfigV10_7,
+    FileIOError,
+    MainGraphState,
+    WorkflowError,
+    cleanup_workflow_chroma_collection,
+    create_workflow_context,
+    get_checkpointer,
 )
-# v10.7: Import from new orchestration/stacks
-from agent_orchestration_v10_7 import get_graph_app
 
 # v10.7: Logger name updated
 logger = logging.getLogger("main_v10_7")
@@ -60,20 +63,20 @@ def setup_logging(config: ConfigV10_7, debug_mode: bool = False):
     metrics_logger.setLevel(logging.INFO)
     try:
         metrics_logger.addHandler(logging.FileHandler(metrics_log_path))
-    except (IOError, OSError) as e:
+    except OSError as e:
         logging.error(f"Failed to add file handler for metrics logger: {e}")
 
     logger.info(f"v10.7 Logging initialized: {config.logging_config.log_file}")
     logger.info(f"v10.7 Metrics logging to: {metrics_log_path}")
 
-def load_job_input(path: str) -> Dict[str, Any]:
+def load_job_input(path: str) -> dict[str, Any]:
     """Load job input JSON"""
     try:
-        with open(path, 'r') as f:
+        with open(path) as f:
             data = json.load(f)
         logger.info(f"Loaded job input: {path}")
         return data
-    except (IOError, OSError) as e:
+    except OSError as e:
         raise FileIOError(f"Failed to load {path}: {e}")
     except json.JSONDecodeError as e:
         raise FileIOError(f"Invalid JSON in {path}: {e}")
@@ -84,11 +87,11 @@ async def run_workflow_async(
     master_resume_path: str,
     debug_mode: bool = False,
     enable_hil: bool = True,
-    enable_mcp: Optional[bool] = None
-) -> Dict[str, Any]:
+    enable_mcp: bool | None = None
+) -> dict[str, Any]:
     """Run workflow asynchronously with v10.7 streaming and validation"""
 
-    logger.info(f"===== Starting v10.7 Instructional Injection Workflow =====")
+    logger.info("===== Starting v10.7 Instructional Injection Workflow =====")
 
     job_input_data = load_job_input(job_input_path)
     master_resume = load_job_input(master_resume_path)
@@ -132,7 +135,7 @@ async def run_workflow_async(
             kind = event["event"]
 
             if kind == "on_graph_start":
-                logger.info(f"Graph execution started.")
+                logger.info("Graph execution started.")
 
             if kind == "on_node_start":
                 current_node = event["data"]["name"]
@@ -181,7 +184,7 @@ async def run_workflow_async(
         cost_summary = context.cost_tracker.get_cost_summary(workflow_id)
         logger.info(f"Total workflow cost: ${cost_summary['total_workflow_cost']:.4f}")
 
-        logger.info(f"--- Workflow Metrics Summary (v10.7) ---")
+        logger.info("--- Workflow Metrics Summary (v10.7) ---")
         for metric in context.metrics_collector.get_summary():
              logger.info(f"  - {metric['agent_name']}::{metric['task_name']} | {metric['duration_ms']:.2f}ms | Success: {metric['success']}")
 
@@ -205,7 +208,7 @@ async def run_workflow_async(
         }
 
     finally:
-        logger.info(f"===== v10.7 Workflow Complete =====")
+        logger.info("===== v10.7 Workflow Complete =====")
 
 def main():
     """Main CLI entry point"""
@@ -230,7 +233,7 @@ def main():
 
     setup_logging(config, debug_mode=args.debug)
 
-    mcp_toggle: Optional[bool] = None
+    mcp_toggle: bool | None = None
     if args.disable_mcp:
         mcp_toggle = False
     elif args.enable_mcp:

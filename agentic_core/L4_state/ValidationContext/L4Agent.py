@@ -21,30 +21,16 @@ L4 agents handle state - caching, persistence, memory.
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import Any, Dict
+from typing import Any
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
-)
 from agentic_core.L5_safety.validators.decorators import standard_heal
+from agentic_core.L5_safety.validators.structure_blueprint import (
+    TESTS_DIR,
+)
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
 @dataclass
@@ -65,15 +51,15 @@ class L4Agent(HealerMixin, MCPHardenedMixin):
     layer: str = "L4"
 
     @standard_heal
-    def heal_repository(self, dry_run: bool = True) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True) -> dict[str, Any]:
         """Override in subclass to implement healing logic."""
         super().heal_repository(dry_run)
         return {"status": "not_implemented", "agent": self.name}
 
-    def _run_self_tests(self) -> Dict[str, Any]:
+    def _run_self_tests(self) -> dict[str, Any]:
         """Override in subclass to implement self-tests."""
         return {"status": "not_implemented", TESTS_DIR: 0}
 
-    async def update_state(self, task: Dict) -> Dict:
+    async def update_state(self, task: dict) -> dict:
         """Override in subclass to implement state update logic."""
         raise NotImplementedError(f"{self.name} must implement update_state()")

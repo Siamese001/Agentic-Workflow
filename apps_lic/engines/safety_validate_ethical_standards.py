@@ -1,30 +1,26 @@
 from __future__ import annotations
+
 import logging
-'''Brief description of functionality and purpose.'''
 
 '''Brief description of functionality and purpose.'''
 
-from typing import Any, Dict, List, Optional, Protocol
+'''Brief description of functionality and purpose.'''
+
 
 _logger = logging.getLogger(__name__)
 # Ownership: apps_lic / L1_cognition
 # -*- coding: utf-8 -*-
 """Validate Ethical Standards - atomic execution layer."""
 
-from typing import Dict
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 
 
-def validate_ethical_standards(data: Dict[str, object]) -> Dict[str, object]:
+def validate_ethical_standards(data: dict[str, object]) -> dict[str, object]:
     """Process validate ethical standards data."""
     return {"status": "processed", "input_keys": list(data.keys())}
 
-def get_validate_ethical_standards_config() -> Dict[str, object]:
+def get_validate_ethical_standards_config() -> dict[str, object]:
     """Get configuration for validate_ethical_standards."""
     return {"enabled": True, "version": "1.0"}

@@ -1,26 +1,28 @@
 from __future__ import annotations
+
 """
 Shared Infrastructure
 Provides shared infrastructure services and domain configuration.
 """
 import logging
 from dataclasses import dataclass
-from typing import Any, Dict, Optional
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 
 @dataclass
 class DomainConfig:
     """Domain-specific configuration."""
     engine_type: str
-    settings: Dict[str, Any]
-    metadata: Dict[str, Any]
+    settings: dict[str, Any]
+    metadata: dict[str, Any]
 
 class SharedInfrastructure:
     """Shared infrastructure services."""
 
     def __init__(self):
         """Initialize shared infrastructure."""
-        self._configs: Dict[str, DomainConfig] = {}
+        self._configs: dict[str, DomainConfig] = {}
         Logger.debug('SharedInfrastructure initialized')
 
     def create_domain_config(self, engine_type: str) -> DomainConfig:
@@ -30,10 +32,10 @@ class SharedInfrastructure:
         Logger.debug(f'Domain config created for: {engine_type}')
         return config
 
-    def get_domain_config(self, engine_type: str) -> Optional[DomainConfig]:
+    def get_domain_config(self, engine_type: str) -> DomainConfig | None:
         """Get domain configuration."""
         return self._configs.get(engine_type)
-_shared_infrastructure: Optional[SharedInfrastructure] = None
+_shared_infrastructure: SharedInfrastructure | None = None
 
 def get_shared_infrastructure() -> SharedInfrastructure:
     """Get shared infrastructure singleton."""

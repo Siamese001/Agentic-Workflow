@@ -5,25 +5,23 @@ __version__ = "11.10"
 
 import asyncio
 import json
-import sys
 import os
+import sys
+from typing import Any
 from uuid import uuid4
-from datetime import datetime
-from pathlib import Path
-from typing import Dict, Any
 
-from workflow import WorkflowOrchestrator
 from models import OutreachMission
+from workflow import WorkflowOrchestrator
 
 __version__ = "11.10"
 
-def load_mission_input(filename: str = "mission_input.json") -> Dict[str, Any]:
+def load_mission_input(filename: str = "mission_input.json") -> dict[str, Any]:
     """Loads the mission input JSON file."""
     if not os.path.exists(filename):
         print(f"FATAL: {filename} not found. Please create it.")
         sys.exit(1)
     try:
-        with open(filename, 'r') as f:
+        with open(filename) as f:
             return json.load(f)
     except json.JSONDecodeError as e:
         print(f"FATAL: Error decoding {filename}: {e}")
@@ -85,7 +83,7 @@ async def main():
         print("-" * 80)
         print(result['message'])
         print("-" * 80)
-        print(f"\nQA Summary:")
+        print("\nQA Summary:")
         print(f"  Critical: {result['qa_summary']['critical_issues']}")
         print(f"  High: {result['qa_summary']['high_issues']}")
         print(f"  Medium: {result['qa_summary']['errors']}")

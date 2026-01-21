@@ -5,20 +5,22 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 """HOP-2: Research Agent - Vector-store-first with fallback RAG."""
 
 __version__ = "13.1"
 
 import asyncio
 import logging
-from typing import Dict, List, Any
+from typing import Any
 
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
-
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from apps_shared.utils.state_manager import StateManager
+
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from apps_shared.utils.vector_memory import VectorMemoryStore
 
 Logger = logging.getLogger(__name__)
@@ -41,7 +43,7 @@ class HOP2ResearchAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
     def __init__(
         self,
-        config: Dict[str, Any],
+        config: dict[str, Any],
         memory_store: VectorMemoryStore,
         search_client: Any = None,
         llm_client: Any = None
@@ -56,14 +58,14 @@ class HOP2ResearchAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             llm_client: Optional LLM client for synthesis
         """
         super().__init__()
-        self.config: Dict[str, Any] = config["research_agent"]
+        self.config: dict[str, Any] = config["research_agent"]
         self.memory_store: VectorMemoryStore = memory_store
         self.search_client: Any = search_client
         self.llm_client: Any = llm_client
 
-        self.vector_params: Dict[str, Any] = self.config["vector_store_query_params"]
-        self.fallback_params: Dict[str, Any] = self.config["fallback_rag_params"]
-        self.critique_params: Dict[str, Any] = self.config["cache_critique_params"]
+        self.vector_params: dict[str, Any] = self.config["vector_store_query_params"]
+        self.fallback_params: dict[str, Any] = self.config["fallback_rag_params"]
+        self.critique_params: dict[str, Any] = self.config["cache_critique_params"]
 
     async def execute(self, state_mgr: StateManager) -> str:
         """Execute HOP-2: Research synthesis with vector-first strategy"""
@@ -88,7 +90,7 @@ class HOP2ResearchAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             final_context = cached_context
         else:
             print(f"  ⚠ Cache has gaps: {gaps}")
-            print(f"\nSTEP 3: Running fallback RAG to fill gaps...")
+            print("\nSTEP 3: Running fallback RAG to fill gaps...")
             fallback_context = await self._run_fallback_rag(company, recipient, gaps)
             print(f"  ✓ Retrieved {len(fallback_context['rag_results'])} additional sources")
             final_context = self._merge_contexts(cached_context, fallback_context)
@@ -106,14 +108,14 @@ class HOP2ResearchAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
         output_path = state_mgr.write_state("HOP-2", output_state)
 
-        print(f"\n✓ Research Complete")
+        print("\n✓ Research Complete")
         print(f"  Total sources: {output_state['total_sources']}")
         print(f"  Signal score: {output_state['signal_score']:.2f}")
         print(f"  Cache hit: {output_state['cache_hit']}\n")
 
         return output_path
 
-    async def _query_vector_store(self, company: str, recipient: str, Archetype: str) -> Dict[str, Any]:
+    async def _query_vector_store(self, company: str, recipient: str, Archetype: str) -> dict[str, Any]:
         """Query vector store for pre-computed intelligence"""
         company_results = self.memory_store.query_by_company(
             company_name=company,
@@ -149,7 +151,7 @@ class HOP2ResearchAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             "cache_confidence": cache_confidence
         }
 
-    def _critique_cache(self, cached_context: Dict[str, Any]) -> tuple[bool, List[str]]:
+    def _critique_cache(self, cached_context: dict[str, Any]) -> tuple[bool, list[str]]:
         """Evaluate if cached context is sufficient"""
         min_confidence = self.critique_params["min_confidence_score"]
         min_recency = self.critique_params["min_recency_days"]
@@ -180,7 +182,7 @@ class HOP2ResearchAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         is_sufficient = len(gaps) == 0
         return is_sufficient, gaps
 
-    async def _run_fallback_rag(self, company: str, recipient: str, gaps: List[str]) -> Dict[str, Any]:
+    async def _run_fallback_rag(self, company: str, recipient: str, gaps: list[str]) -> dict[str, Any]:
         """Run fallback RAG only for identified gaps"""
         fallback_results = []
 
@@ -202,28 +204,28 @@ class HOP2ResearchAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
         return {"rag_results": fallback_results}
 
-    def _merge_contexts(self, cached: Dict[str, Any], fallback: Dict[str, Any]) -> Dict[str, Any]:
+    def _merge_contexts(self, cached: dict[str, Any], fallback: dict[str, Any]) -> dict[str, Any]:
         """Merge cached and fallback contexts"""
         merged = cached.copy()
         merged["all_results"].extend(fallback.get("rag_results", []))
         merged["signal_score"] = self._calculate_signal_score(merged["all_results"])
         return merged
 
-    def _calculate_signal_score(self, results: List[Dict[str, Any]]) -> float:
+    def _calculate_signal_score(self, results: list[dict[str, Any]]) -> float:
         """Calculate aggregate signal quality score"""
         if not results:
             return 0.0
         scores = [r.get("metadata", {}).get("source_weight", 0.5) for r in results]
         return sum(scores) / len(scores) if scores else 0.0
 
-    def _calculate_cache_confidence(self, company_results: List[Dict], exec_results: List[Dict], strategic_briefs: List[Dict]) -> float:
+    def _calculate_cache_confidence(self, company_results: list[dict], exec_results: list[dict], strategic_briefs: list[dict]) -> float:
         """Calculate confidence in cached data"""
         has_strategic = 1.0 if strategic_briefs else 0.0
         has_company = min(1.0, len(company_results) / 10)
         has_exec = min(1.0, len(exec_results) / 5)
         return has_strategic * 0.5 + has_company * 0.3 + has_exec * 0.2
 
-    def _format_search_results(self, results: List[Dict], SourceType: str) -> List[Dict[str, Any]]:
+    def _format_search_results(self, results: list[dict], SourceType: str) -> list[dict[str, Any]]:
         """Format search results for consistency"""
         formatted = []
         for result in results:

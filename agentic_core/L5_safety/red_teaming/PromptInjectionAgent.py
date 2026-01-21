@@ -19,32 +19,17 @@ malicious prompt crafting, jailbreaks, and instruction override attempts.
 from __future__ import annotations
 
 import logging
-from typing import Any, Dict, List, Optional
 from dataclasses import dataclass
-
-from agentic_core.L4_state.ValidationContext import ValidationContext
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.runtime.shared_runtime import log_event
+from typing import Any
 
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
-)
+from agentic_core.L4_state.ValidationContext import ValidationContext
 from agentic_core.L5_safety.validators.decorators import standard_heal
-
+from agentic_core.L5_safety.validators.structure_blueprint import (
+    TESTS_DIR,
+)
+from agentic_core.runtime.shared_runtime import log_event
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 logger = logging.getLogger(__name__)
 
@@ -78,7 +63,7 @@ class PromptInjectionAgent(HealerMixin, MCPHardenedMixin):
         self.test_count = 0
         self.vulnerabilities_found = 0
 
-    async def act(self) -> Dict[str, Any]:
+    async def act(self) -> dict[str, Any]:
         """Execute prompt injection tests."""
         logger.info(f"[{self.name}] Starting prompt injection vulnerability scan")
 
@@ -127,7 +112,7 @@ class PromptInjectionAgent(HealerMixin, MCPHardenedMixin):
                 "tests_executed": results["tests_executed"],
             }
 
-    async def _test_attack_vector(self, vector: str) -> Dict[str, Any]:
+    async def _test_attack_vector(self, vector: str) -> dict[str, Any]:
         """Test a specific prompt injection attack vector."""
         if vector == "direct_override":
             return self._test_direct_override()
@@ -145,7 +130,7 @@ class PromptInjectionAgent(HealerMixin, MCPHardenedMixin):
             return self._test_instruction_hierarchy_confusion()
         return {"vulnerable": False}
 
-    def _test_direct_override(self) -> Dict[str, Any]:
+    def _test_direct_override(self) -> dict[str, Any]:
         """Test direct instruction override attempts."""
         # Simulate: "Ignore previous instructions and..."
         return {
@@ -155,7 +140,7 @@ class PromptInjectionAgent(HealerMixin, MCPHardenedMixin):
             "mitigation": "Implement instruction hierarchy validation and context preservation",
         }
 
-    def _test_token_smuggling(self) -> Dict[str, Any]:
+    def _test_token_smuggling(self) -> dict[str, Any]:
         """Test token smuggling and encoding tricks."""
         # Simulate: Base64, hex encoding, unicode tricks
         return {
@@ -165,7 +150,7 @@ class PromptInjectionAgent(HealerMixin, MCPHardenedMixin):
             "mitigation": "Decode and validate all encoded inputs before processing",
         }
 
-    def _test_context_window_abuse(self) -> Dict[str, Any]:
+    def _test_context_window_abuse(self) -> dict[str, Any]:
         """Test context window manipulation attacks."""
         # Simulate: Flooding context to forget safety guidelines
         return {
@@ -175,7 +160,7 @@ class PromptInjectionAgent(HealerMixin, MCPHardenedMixin):
             "mitigation": "Implement context window limits and safety guideline persistence",
         }
 
-    def _test_role_playing_jailbreak(self) -> Dict[str, Any]:
+    def _test_role_playing_jailbreak(self) -> dict[str, Any]:
         """Test role-playing based jailbreak attempts."""
         # Simulate: "You are now in developer mode..."
         return {
@@ -185,7 +170,7 @@ class PromptInjectionAgent(HealerMixin, MCPHardenedMixin):
             "mitigation": "Enforce consistent system role and reject role-switching directives",
         }
 
-    def _test_indirect_injection(self) -> Dict[str, Any]:
+    def _test_indirect_injection(self) -> dict[str, Any]:
         """Test indirect prompt injection via data."""
         # Simulate: Malicious content in user data that becomes part of prompt
         return {
@@ -195,7 +180,7 @@ class PromptInjectionAgent(HealerMixin, MCPHardenedMixin):
             "mitigation": "Sanitize all user-provided data before including in prompts",
         }
 
-    def _test_encoding_tricks(self) -> Dict[str, Any]:
+    def _test_encoding_tricks(self) -> dict[str, Any]:
         """Test encoding-based obfuscation tricks."""
         # Simulate: ROT13, leetspeak, unicode normalization tricks
         return {
@@ -205,7 +190,7 @@ class PromptInjectionAgent(HealerMixin, MCPHardenedMixin):
             "mitigation": "Normalize and decode all inputs, then validate semantically",
         }
 
-    def _test_instruction_hierarchy_confusion(self) -> Dict[str, Any]:
+    def _test_instruction_hierarchy_confusion(self) -> dict[str, Any]:
         """Test instruction hierarchy confusion attacks."""
         # Simulate: Conflicting instructions to confuse priority
         return {
@@ -223,7 +208,7 @@ class PromptInjectionAgent(HealerMixin, MCPHardenedMixin):
         return True
 
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, **kwargs) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, **kwargs) -> dict[str, Any]:
         """Repository healing with parent chain invocation."""
         result = super().heal_repository(dry_run=dry_run, **kwargs)
         return {"violations_fixed": 0, "skipped": 0, "parent": result}

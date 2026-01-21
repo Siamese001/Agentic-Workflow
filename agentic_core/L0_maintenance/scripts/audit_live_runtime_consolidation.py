@@ -3,8 +3,8 @@
 Audit Live Runtime Tab for Consolidation Opportunities.
 Identifies repeated content, overlapping sections, and weak purpose statements.
 """
-from pathlib import Path
 import re
+from pathlib import Path
 
 project_root = Path(__file__).parent.parent
 dashboard_html = project_root / "agentic_core" / "L6_observability" / "dashboards" / "autonomy_dashboard.html"
@@ -25,7 +25,6 @@ def audit_live_runtime():
 
     # 1. Identify all sections
     print("\n1. CURRENT SECTIONS:")
-    sections = []
 
     # Find all chart-title elements
     titles = re.findall(r'<div class="chart-title">([^<]+)</div>', runtime_content)

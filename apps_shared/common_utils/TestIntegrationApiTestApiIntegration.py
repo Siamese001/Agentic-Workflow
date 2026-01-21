@@ -4,8 +4,10 @@ Auto-generated stub for integration\x07pi	est_api_integration.py
 Original file had syntax errors and has been regenerated as a stub.
 All tests are skipped until the original implementation is fixed.
 """
-import pytest
 from typing import Any
+
+import pytest
+
 
 @pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_process_endpoint() -> Any:

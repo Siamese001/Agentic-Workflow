@@ -1,5 +1,7 @@
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 """
 FileSystemAgent: Sovereign Non-Python File Naming Enforcer
 
@@ -28,23 +30,21 @@ Placed in L5_safety/validators per SSOT extension:
 
 Depth: agentic_core/L5_safety/validators/filesystem_agent.py -> 4 parts -> compliant
 """
-import re
 import ast
-import shutil
 import logging
-from pathlib import Path
-from typing import List, Tuple, Dict, Any, Set
+import re
+import shutil
 from datetime import datetime
+from pathlib import Path
+from typing import Any
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
     FORBIDDEN_PATTERNS,
     HEALING_CONFIG,
     SOVEREIGN_EXCLUDED_FOLDERS,
-    CANON_KEY_TO_FOLDER_MAP
 )
-
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout, HealTimeoutError
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger = logging.getLogger(__name__)
 
@@ -77,14 +77,14 @@ class FilesystemAgent(HealerMixin):
             Logger.info(f"[FileSystemAgent] Backup territory sealed at: {self.backup_dir}")
             Logger.info(f"[FileSystemAgent] Archives root initialized at: {self.archives_root}")
 
-    def run(self) -> List[Tuple[Path, str]]:
+    def run(self) -> list[tuple[Path, str]]:
         """
         Scan project root for naming violations in non-Python files.
         Excludes Python files (delegated to NamingAgent) and protected directories.
         """
-        violations: List[Tuple[Path, str]] = []
+        violations: list[tuple[Path, str]] = []
 
-        from agentic_core.utils.ssot_discovery import get_python_files, get_data_files
+        from agentic_core.utils.ssot_discovery import get_data_files, get_python_files
         all_files = list(get_python_files(self.project_root)) + list(get_data_files(self.project_root))
         for file_path in all_files:
             if not file_path.is_file():
@@ -251,7 +251,7 @@ class FilesystemAgent(HealerMixin):
         shutil.copy2(file_path, backup_path)
         return backup_path
 
-    def cleanup_violations(self, violations: List[Tuple[Path, str]]) -> List[Dict[str, Any]]:
+    def cleanup_violations(self, violations: list[tuple[Path, str]]) -> list[dict[str, Any]]:
         """
         Execute autonomous PURGE missions.
         - Relocates clutter directly to structured archives/
@@ -323,7 +323,7 @@ class FilesystemAgent(HealerMixin):
 
         return actions
 
-    def run_with_cleanup(self, dry_run: bool = False) -> Dict[str, Any]:
+    def run_with_cleanup(self, dry_run: bool = False) -> dict[str, Any]:
         """
         [DEPRECATED - P5 CONSOLIDATION] Use run() + HealerAgent instead.
 
@@ -364,8 +364,8 @@ class FilesystemAgent(HealerMixin):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Set[str] = None,
-    ) -> Dict[str, int]:
+        _call_path: set[str] = None,
+    ) -> dict[str, int]:
         """
         Autonomous full-repository filesystem law healing.
         Canon Key 51 compliance - fully self-orchestrating.

@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Compare archived files against current codebase to identify restoration candidates."""
-from pathlib import Path
 import hashlib
+from pathlib import Path
+
 
 def file_hash(path: Path) -> str:
     """Get MD5 hash of file content."""
@@ -128,7 +129,7 @@ def main():
     if not_found:
         print(f"\n## NOT FOUND ({len(not_found)} files)")
         print("-" * 60)
-        for path, target, reason in not_found:
+        for path, _target, reason in not_found:
             print(f"  {path}: {reason}")
 
     # Summary

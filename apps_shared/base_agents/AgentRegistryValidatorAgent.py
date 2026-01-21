@@ -5,7 +5,9 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 #!/usr/bin/env python3
 """
 AgentRegistryValidatorAgent - L3 Orchestration Framework Agent
@@ -13,13 +15,15 @@ Validates that all required agents in CANON_AGENT_REGISTRY exist and are properl
 """
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
+from typing import Any
 
 Logger = logging.getLogger(__name__)
 
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
 
 @dataclass
 class AgentRegistryValidatorAgent(MCPHardenedMixin, HealerMixin):
@@ -45,7 +49,7 @@ class AgentRegistryValidatorAgent(MCPHardenedMixin, HealerMixin):
         assert hasattr(self, 'missing_agents'), "Missing missing_agents"
         return True
 
-    def validate_agent_exists(self, agent_name: str, search_paths: List[str]) -> Tuple[bool, str]:
+    def validate_agent_exists(self, agent_name: str, search_paths: list[str]) -> tuple[bool, str]:
         """
         Validate that an agent exists in one of the search paths.
 
@@ -68,7 +72,7 @@ class AgentRegistryValidatorAgent(MCPHardenedMixin, HealerMixin):
 
         return False, ""
 
-    def validate_registry(self, registry: Dict[int, List[str]]) -> Dict[str, Any]:
+    def validate_registry(self, registry: dict[int, list[str]]) -> dict[str, Any]:
         """
         Validate all agents in the registry.
 
@@ -108,7 +112,7 @@ class AgentRegistryValidatorAgent(MCPHardenedMixin, HealerMixin):
         }
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L3 orchestration agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -125,7 +129,7 @@ class AgentRegistryValidatorAgent(MCPHardenedMixin, HealerMixin):
         finally:
             _call_path.discard(agent_name)
 
-    def _generate_search_paths(self, key: int, agent_name: str) -> List[str]:
+    def _generate_search_paths(self, key: int, agent_name: str) -> list[str]:
         """
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository()
@@ -158,7 +162,7 @@ class AgentRegistryValidatorAgent(MCPHardenedMixin, HealerMixin):
         base_paths = layer_map.get(key, ['agentic_core.runtime.shared'])
         return [f"{base}.{module_name}" for base in base_paths]
 
-    def run_validation(self, registry: Dict[int, List[str]]) -> bool:
+    def run_validation(self, registry: dict[int, list[str]]) -> bool:
         """
         Run validation and return success status.
 

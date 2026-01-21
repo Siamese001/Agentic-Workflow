@@ -6,8 +6,6 @@ ensuring the most relevant context hits the LLM first.
 
 import logging
 import time
-from functools import lru_cache
-from typing import List, Optional, Tuple, Any
 
 logger = logging.getLogger(__name__)
 
@@ -60,8 +58,8 @@ class LateInteractionReranker:
 
         try:
             # Import sentence_transformers
-            from sentence_transformers import CrossEncoder
             import torch
+            from sentence_transformers import CrossEncoder
 
             logger.info(f"Loading CrossEncoder model: {self.model_name}")
             start_time = time.time()
@@ -92,10 +90,10 @@ class LateInteractionReranker:
     def rerank(
         self,
         query: str,
-        documents: List[str],
-        top_k: Optional[int] = None,
+        documents: list[str],
+        top_k: int | None = None,
         batch_size: int = 32
-    ) -> List[str]:
+    ) -> list[str]:
         """Rerank documents based on query relevance.
 
         Args:
@@ -177,10 +175,10 @@ class LateInteractionReranker:
     def rerank_with_scores(
         self,
         query: str,
-        documents: List[str],
-        top_k: Optional[int] = None,
+        documents: list[str],
+        top_k: int | None = None,
         batch_size: int = 32
-    ) -> List[Tuple[str, float]]:
+    ) -> list[tuple[str, float]]:
         """Rerank documents and return with scores.
 
         Args:
@@ -262,10 +260,10 @@ class LateInteractionReranker:
 # Convenience function for direct usage
 def rerank_documents(
     query: str,
-    documents: List[str],
+    documents: list[str],
     model_name: str = "ms-marco-MiniLM-L-6-v2",
     top_k: int = 5
-) -> List[str]:
+) -> list[str]:
     """Rerank documents using default settings.
 
     Args:
@@ -289,10 +287,10 @@ class PassThroughReranker:
         """Initialize the pass-through reranker."""
         logger.warning("Using PassThroughReranker - no actual reranking will be performed")
 
-    def rerank(self, query: str, documents: List[str], top_k: Optional[int] = None) -> List[str]:
+    def rerank(self, query: str, documents: list[str], top_k: int | None = None) -> list[str]:
         """Return documents in original order."""
         return documents[:top_k] if top_k else documents
 
-    def rerank_with_scores(self, query: str, documents: List[str], top_k: Optional[int] = None) -> List[Tuple[str, float]]:
+    def rerank_with_scores(self, query: str, documents: list[str], top_k: int | None = None) -> list[tuple[str, float]]:
         """Return documents with dummy scores."""
         return [(doc, 0.0) for doc in (documents[:top_k] if top_k else documents)]

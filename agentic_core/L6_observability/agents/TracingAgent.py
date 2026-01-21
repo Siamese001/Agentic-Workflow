@@ -5,6 +5,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """
 TracingAgent: Sovereign Distributed Tracing System
 
@@ -33,17 +34,16 @@ Sovereign tracing Provider:
 - Default: Pure mock (no deps)
 - Optional: OpenTelemetry + OTLP export (if OTEL_EXPORTER_OTLP_ENDPOINT set)
 """
-import os
-import logging
-from pathlib import Path
-from typing import Dict, Any, List, Optional, Callable
-from agentic_core.utils.core_extensions.timeout_decorator import timeoutAny
-from threading import Lock
-from datetime import datetime
-import uuid
-import random
 import json
+import logging
+import os
+import random
+import uuid
 from contextlib import contextmanager
+from datetime import datetime
+from pathlib import Path
+from threading import Lock
+from typing import Any
 
 Logger = logging.getLogger(__name__)
 
@@ -56,17 +56,17 @@ class Span:
         name: str,
         trace_id: str,
         span_id: str,
-        parent_span_id: Optional[str] = None,
-        attributes: Optional[Dict[str, Any]] = None
+        parent_span_id: str | None = None,
+        attributes: dict[str, Any] | None = None
     ):
         self.name = name
         self.trace_id = trace_id
         self.span_id = span_id
         self.parent_span_id = parent_span_id
         self.attributes = attributes or {}
-        self.events: List[Dict[str, Any]] = []
-        self.start_time: Optional[str] = None
-        self.end_time: Optional[str] = None
+        self.events: list[dict[str, Any]] = []
+        self.start_time: str | None = None
+        self.end_time: str | None = None
         self.status: str = "IN_PROGRESS"
 
     def start(self) -> None:
@@ -78,7 +78,7 @@ class Span:
         self.end_time = datetime.now().isoformat(timespec="milliseconds")
         self.status = status
 
-    def add_event(self, name: str, attributes: Optional[Dict[str, Any]] = None) -> None:
+    def add_event(self, name: str, attributes: dict[str, Any] | None = None) -> None:
         """Execute add_event operation."""
         event = {
             "name": name,
@@ -91,7 +91,7 @@ class Span:
         """Set a Span attribute."""
         self.attributes[key] = value
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Execute to_dict operation."""
         duration_ms = 0.0
         if self.start_time and self.end_time:
@@ -116,9 +116,10 @@ class Span:
 # Uppercase alias for backward compatibility
 Span = Span
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+
 
 class TracingAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
@@ -132,15 +133,15 @@ class TracingAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
 
     def __init__(
         self,
-        project_root: Optional[Path] = None,
-        export_path: Optional[Path] = None,
+        project_root: Path | None = None,
+        export_path: Path | None = None,
         timestamped_exports: bool = True,
         auto_export_on_mission_end: bool = True
     ):
         self.project_root = project_root.resolve() if project_root else None
         self._lock = Lock()
-        self._spans: Dict[str, Span] = {}  # Standard Span dict
-        self._trace_map: Dict[str, List[str]] = {}  # trace_id → [span_ids]
+        self._spans: dict[str, Span] = {}  # Standard Span dict
+        self._trace_map: dict[str, list[str]] = {}  # trace_id → [span_ids]
         self._sample_probability: float = 1.0  # Default: sample everything
         self._always_sample_traces: set = set()  # trace_ids to force-sample
 
@@ -179,10 +180,10 @@ class TracingAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         # 2. Optional OpenTelemetry/OTLP Integration
         try:
             from opentelemetry import trace as otel_trace
-            from opentelemetry.sdk.resources import Resource, SERVICE_NAME, SERVICE_VERSION
+            from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+            from opentelemetry.sdk.resources import SERVICE_NAME, SERVICE_VERSION, Resource
             from opentelemetry.sdk.trace import TracerProvider
             from opentelemetry.sdk.trace.export import BatchSpanProcessor
-            from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
             from opentelemetry.trace import set_tracer_provider
 
             endpoint = os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT")
@@ -218,7 +219,7 @@ class TracingAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
                 Logger.error(f"[TracingAgent] Failed to create export directory {self.export_path}: {e}")
                 self.export_path = None
 
-    def _get_export_filepath(self, trace_id: Optional[str] = None) -> Optional[Path]:
+    def _get_export_filepath(self, trace_id: str | None = None) -> Path | None:
         """Resolve actual export file path."""
         if not self.export_path:
             return None
@@ -230,7 +231,7 @@ class TracingAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         else:
             return self.export_path
 
-    def export_trace_to_file(self, trace_id: Optional[str] = None) -> bool:
+    def export_trace_to_file(self, trace_id: str | None = None) -> bool:
         """
         Export one or all completed traces to file.
 
@@ -300,9 +301,9 @@ class TracingAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     def create_span(
         self,
         name: str,
-        trace_id: Optional[str] = None,
-        parent_span_id: Optional[str] = None,
-        attributes: Optional[Dict[str, Any]] = None
+        trace_id: str | None = None,
+        parent_span_id: str | None = None,
+        attributes: dict[str, Any] | None = None
     ) -> Any:
         """
         Context manager for creating and completing a Span.
@@ -354,13 +355,13 @@ class TracingAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
             if span_id in self._spans:
                 self._spans[span_id].attributes[key] = value
 
-    def add_event(self, span_id: str, name: str, attributes: Optional[Dict[str, Any]] = None) -> None:
+    def add_event(self, span_id: str, name: str, attributes: dict[str, Any] | None = None) -> None:
         """Add an event to a span."""
         with self._lock:
             if span_id in self._spans:
                 self._spans[span_id].add_event(name, attributes)
 
-    def get_trace(self, trace_id: str) -> List[Dict[str, Any]]:
+    def get_trace(self, trace_id: str) -> list[dict[str, Any]]:
         """Return all spans for a trace, ordered by start time."""
         with self._lock:
             span_ids = self._trace_map.get(trace_id, [])
@@ -368,7 +369,7 @@ class TracingAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
             spans.sort(key=lambda s: s.start_time or "")
             return [s.to_dict() for s in spans]
 
-    def get_all_traces(self) -> Dict[str, List[Dict[str, Any]]]:
+    def get_all_traces(self) -> dict[str, list[dict[str, Any]]]:
         """Return all completed traces."""
         with self._lock:
             result = {}
@@ -408,7 +409,7 @@ class TracingAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
                     self.export_trace_to_file(trace_id)
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """Observability agent - invoke shared healing chain."""
         if _call_path is None:
             _call_path = set()

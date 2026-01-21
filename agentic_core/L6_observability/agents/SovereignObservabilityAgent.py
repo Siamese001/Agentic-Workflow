@@ -5,14 +5,17 @@
 # This boosts alignment detection — review and integrate appropriately
 
 import json
-import logging
-from typing import Any, Dict, Optional, List, Tuple
-from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
-from agentic_core.utils.core_extensions.event_emission_mixin import EventEmissionMixin
-from agentic_core.utils.core_extensions.context_propagation_mixin import ContextPropagationMixin
+from typing import Any
+
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import (
+    SubatomicTestingMixin,
+)
+from agentic_core.utils.core_extensions.context_propagation_mixin import ContextPropagationMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.core_extensions.event_emission_mixin import EventEmissionMixin
+from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
+
 
 class SovereignObservabilityAgent(SubatomicTestingMixin, MCPHardenedMixin, RedisCacheMixin, EventEmissionMixin, ContextPropagationMixin):
     """
@@ -31,7 +34,7 @@ class SovereignObservabilityAgent(SubatomicTestingMixin, MCPHardenedMixin, Redis
 
 
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -91,20 +94,20 @@ class SovereignObservabilityAgent(SubatomicTestingMixin, MCPHardenedMixin, Redis
         if not self.redis_client:
             return
 
-        messages: List[Tuple[bytes, List[Tuple[bytes, Dict[bytes, bytes]]]]] = self.redis_client.xreadgroup(
+        messages: list[tuple[bytes, list[tuple[bytes, dict[bytes, bytes]]]]] = self.redis_client.xreadgroup(
             self._group_name, self._consumer_name, {self._stream_name: ">"}, count=count
         )
 
         for _, stream_msgs in messages:
             for msg_id, payload in stream_msgs:
                 event_raw: str = payload.get(b"event", b"{}").decode("utf-8")
-                event_data: Dict[str, Any] = json.loads(event_raw)
+                event_data: dict[str, Any] = json.loads(event_raw)
 
                 await self._analyze_event(event_data)
 
                 self.redis_client.xack(self._stream_name, self._group_name, msg_id)
 
-    async def _analyze_event(self, event: Dict[str, Any]) -> None:
+    async def _analyze_event(self, event: dict[str, Any]) -> None:
         """
         Analyze an event and update KPIs.
 

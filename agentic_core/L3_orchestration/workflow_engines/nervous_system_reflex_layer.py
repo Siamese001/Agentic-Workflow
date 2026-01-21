@@ -1,6 +1,8 @@
 from __future__ import annotations
+
 """Reflex Layer for Nervous System."""
-from typing import Dict, Any
+from typing import Any
+
 
 class ReflexLayer:
     """Mock Reflex Layer for testing."""
@@ -14,7 +16,7 @@ class ReflexLayer:
         self.reflexes.append({'trigger': trigger, 'action': action})
         return True
 
-    def trigger_reflex(self, event: str) -> Dict[str, Any]:
+    def trigger_reflex(self, event: str) -> dict[str, Any]:
         """Trigger a reflex based on event."""
         for reflex in self.reflexes:
             if reflex['trigger'] == event:
@@ -22,6 +24,6 @@ class ReflexLayer:
                 return {'handled': True, 'result': result}
         return {'handled': False}
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get reflex layer status."""
         return {'status': self.status, 'reflex_count': len(self.reflexes), 'health': 'ok'}

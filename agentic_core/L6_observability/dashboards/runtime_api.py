@@ -8,7 +8,7 @@ from __future__ import annotations
 import json
 import time
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # Concurrent access retry configuration
 MAX_READ_RETRIES = 3
@@ -20,6 +20,7 @@ from pydantic import BaseModel
 
 from agentic_core.L1_cognition.learning.MetaLearningAgent import MetaLearningAgent
 from agentic_core.L2_execution.mcp.redis import SovereignRedisClient
+
 # ARCHIVED: pinecone_telemetry import removed # PineconeTelemetryWrapper
 
 app = FastAPI(title="Agentic AI Runtime API", version="2.0.0")
@@ -42,7 +43,7 @@ redis_client = SovereignRedisClient()
 pinecone_wrapper = PineconeTelemetryWrapper()
 
 # Simple in-memory log buffer for the Live Runtime tab.
-_LOG_BUFFER: List[str] = []
+_LOG_BUFFER: list[str] = []
 _MAX_LOG_LINES = 250
 
 
@@ -54,14 +55,14 @@ def _append_log(line: str) -> None:
 
 
 class ExperienceIn(BaseModel):
-    state: Dict[str, Any] = {}
+    state: dict[str, Any] = {}
     thought_type: str = "cot"
-    outcome: Dict[str, Any] = {}
+    outcome: dict[str, Any] = {}
     reward: float = 0.0
 
 
 @app.get("/api/health")
-async def health_check() -> Dict[str, Any]:
+async def health_check() -> dict[str, Any]:
     return {
         "status": "healthy",
         "version": "1.0.0",
@@ -70,14 +71,14 @@ async def health_check() -> Dict[str, Any]:
 
 
 @app.get("/api/redis/logs")
-async def get_redis_logs(limit: int = 50) -> Dict[str, Any]:
+async def get_redis_logs(limit: int = 50) -> dict[str, Any]:
     # For now this is an in-memory stream. Hooking it to Redis MCP is optional.
     lim = max(1, min(int(limit), 200))
     return {"logs": _LOG_BUFFER[-lim:]}
 
 
 @app.get("/api/meta-learning/activity")
-async def get_meta_learning() -> Dict[str, Any]:
+async def get_meta_learning() -> dict[str, Any]:
     try:
         return {
             "total_experiences": meta_agent.total_experiences,
@@ -89,7 +90,7 @@ async def get_meta_learning() -> Dict[str, Any]:
 
 
 @app.post("/api/meta-learning/experience")
-async def post_meta_learning_experience(payload: ExperienceIn) -> Dict[str, Any]:
+async def post_meta_learning_experience(payload: ExperienceIn) -> dict[str, Any]:
     """Records a new experience so dashboards can observe exp-count changes."""
     try:
         exp_id = meta_agent.store_experience(
@@ -105,7 +106,7 @@ async def post_meta_learning_experience(payload: ExperienceIn) -> Dict[str, Any]
 
 
 @app.get("/api/metrics/latency")
-async def get_api_latency() -> Dict[str, Any]:
+async def get_api_latency() -> dict[str, Any]:
     # Placeholder until real probes are wired.
     return {
         "pinecone": 42.5,
@@ -118,10 +119,10 @@ async def get_api_latency() -> Dict[str, Any]:
 # Phase 2 Endpoints - Enhanced Telemetry for Dashboard Live Runtime
 # ============================================================================
 
-def _safe_read_json(file_path: Path, retries: int = MAX_READ_RETRIES) -> Dict[str, Any]:
+def _safe_read_json(file_path: Path, retries: int = MAX_READ_RETRIES) -> dict[str, Any]:
     """Read JSON file with retry logic for concurrent access safety."""
     last_error = None
-    for attempt in range(retries):
+    for _attempt in range(retries):
         try:
             if file_path.exists():
                 content = file_path.read_text(encoding='utf-8')
@@ -138,13 +139,13 @@ def _safe_read_json(file_path: Path, retries: int = MAX_READ_RETRIES) -> Dict[st
 
 
 @app.get("/api/runtime/state")
-async def get_runtime_state() -> Dict[str, Any]:
+async def get_runtime_state() -> dict[str, Any]:
     """Get current runtime state from runtime_state.json with retry logic."""
     return _safe_read_json(RUNTIME_STATE_FILE)
 
 
 @app.get("/api/redis/stats")
-async def get_redis_stats() -> Dict[str, Any]:
+async def get_redis_stats() -> dict[str, Any]:
     """Get Redis operation statistics."""
     try:
         return redis_client.get_statistics()
@@ -153,7 +154,7 @@ async def get_redis_stats() -> Dict[str, Any]:
 
 
 @app.get("/api/pinecone/stats")
-async def get_pinecone_stats() -> Dict[str, Any]:
+async def get_pinecone_stats() -> dict[str, Any]:
     """Get Pinecone operation statistics."""
     try:
         return pinecone_wrapper.get_statistics()
@@ -162,7 +163,7 @@ async def get_pinecone_stats() -> Dict[str, Any]:
 
 
 @app.get("/api/execution/timeline")
-async def get_execution_timeline() -> List[Dict[str, Any]]:
+async def get_execution_timeline() -> list[dict[str, Any]]:
     """Get agent execution timeline from runtime_state.json."""
     try:
         if RUNTIME_STATE_FILE.exists():
@@ -174,7 +175,7 @@ async def get_execution_timeline() -> List[Dict[str, Any]]:
 
 
 @app.get("/api/meta-learning/statistics")
-async def get_meta_learning_statistics() -> Dict[str, Any]:
+async def get_meta_learning_statistics() -> dict[str, Any]:
     """Get detailed meta-learning statistics including recent experiences."""
     try:
         return meta_agent.get_live_statistics()

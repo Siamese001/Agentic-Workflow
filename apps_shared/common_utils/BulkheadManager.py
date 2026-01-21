@@ -8,14 +8,15 @@ tasks are not blocked by lower-priority ones.
 import asyncio
 import logging
 import time
+from collections import deque
+from collections.abc import Callable
 from dataclasses import dataclass, field
+from datetime import datetime
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Set
-from datetime import datetime, timedelta
-from collections import defaultdict, deque
+from typing import Any
 
-from .signal_infrastructure import EngineType
 from .circuit_breaker import CircuitBreaker, CircuitBreakerConfig, get_circuit_breaker_registry
+from .signal_infrastructure import EngineType
 
 logger = logging.getLogger(__name__)
 
@@ -91,13 +92,13 @@ class Bulkhead:
         )
 
         # Task tracking
-        self._active_tasks: Set[asyncio.Task] = set()
+        self._active_tasks: set[asyncio.Task] = set()
         self._wait_times: deque = deque(maxlen=1000)
         self._completed_count = 0
         self._rejected_count = 0
 
         # Circuit breaker
-        self.circuit_breaker: Optional[CircuitBreaker] = None
+        self.circuit_breaker: CircuitBreaker | None = None
         if enable_circuit_breaker:
             self._circuit_breaker_config = CircuitBreakerConfig(
                 failure_threshold=max(3, config.max_concurrency // 2),
@@ -107,7 +108,7 @@ class Bulkhead:
 
         logger.info(f"Created bulkhead '{name}' with max_concurrency={config.max_concurrency}")
 
-    async def _get_circuit_breaker(self) -> Optional[CircuitBreaker]:
+    async def _get_circuit_breaker(self) -> CircuitBreaker | None:
         """Get or create circuit breaker.
 
         Returns:
@@ -125,7 +126,7 @@ class Bulkhead:
         self,
         coro: Callable,
         *args,
-        timeout: Optional[float] = None,
+        timeout: float | None = None,
         **kwargs
     ) -> Any:
         """Execute a coroutine within the bulkhead.
@@ -327,7 +328,7 @@ class BulkheadManager:
 
     def __init__(self):
         """Initialize bulkhead manager."""
-        self.bulkheads: Dict[str, Bulkhead] = {}
+        self.bulkheads: dict[str, Bulkhead] = {}
         self._global_metrics = {
             "total_active_tasks": 0,
             "total_queued_tasks": 0,
@@ -385,7 +386,7 @@ class BulkheadManager:
         logger.info(f"Created bulkhead '{name}'")
         return bulkhead
 
-    def get_bulkhead(self, name: str) -> Optional[Bulkhead]:
+    def get_bulkhead(self, name: str) -> Bulkhead | None:
         """Get a bulkhead by name.
 
         Args:
@@ -417,7 +418,7 @@ class BulkheadManager:
         bulkhead_name: str,
         coro: Callable,
         *args,
-        timeout: Optional[float] = None,
+        timeout: float | None = None,
         **kwargs
     ) -> Any:
         """Execute a coroutine in a specific bulkhead.
@@ -463,7 +464,7 @@ class BulkheadManager:
         engine_type: EngineType,
         coro: Callable,
         *args,
-        timeout: Optional[float] = None,
+        timeout: float | None = None,
         **kwargs
     ) -> Any:
         """Execute a coroutine for a specific engine.
@@ -481,7 +482,7 @@ class BulkheadManager:
         bulkhead_name = self.get_engine_bulkhead(engine_type)
         return await self.execute(bulkhead_name, coro, *args, timeout=timeout, **kwargs)
 
-    def get_all_metrics(self) -> Dict[str, Any]:
+    def get_all_metrics(self) -> dict[str, Any]:
         """Get metrics for all bulkheads.
 
         Returns:
@@ -522,7 +523,7 @@ class BulkheadManager:
                 f"Queue: {bulkhead_metrics.queued_tasks}/{bulkhead_metrics.config.queue_size}"
             )
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """Check health of all bulkheads.
 
         Returns:
@@ -556,7 +557,7 @@ class BulkheadManager:
 
 
 # Global bulkhead manager
-_bulkhead_manager: Optional[BulkheadManager] = None
+_bulkhead_manager: BulkheadManager | None = None
 _manager_lock = asyncio.Lock()
 
 
@@ -574,7 +575,7 @@ async def get_bulkhead_manager() -> BulkheadManager:
 
 
 # Decorator for automatic bulkhead execution
-def with_bulkhead(bulkhead_name: str, timeout: Optional[float] = None):
+def with_bulkhead(bulkhead_name: str, timeout: float | None = None):
     """Decorator to execute function within a bulkhead.
 
     Args:
@@ -593,7 +594,7 @@ def with_bulkhead(bulkhead_name: str, timeout: Optional[float] = None):
 
 
 # Engine-specific decorator
-def with_engine_bulkhead(engine_type: EngineType, timeout: Optional[float] = None):
+def with_engine_bulkhead(engine_type: EngineType, timeout: float | None = None):
     """Decorator to execute function within engine-specific bulkhead.
 
     Args:

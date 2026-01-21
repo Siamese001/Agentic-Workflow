@@ -11,18 +11,11 @@ Extracted from LocationAgent.py as part of SRP fission.
 """
 from __future__ import annotations
 
-from pathlib import Path
-from typing import List, Tuple, Dict, Any, Optional
 from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any
 
 from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L5_safety.validators.location_constants import (
-    VIOLATION_THRESHOLDS,
-)
-from agentic_core.L5_safety.validators.location_utils import (
-    is_path_compliant,
-    is_excepted_from_key,
-)
 
 
 @dataclass
@@ -55,7 +48,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
         # Validation-only initialization
         # No backup dirs, no healing state
 
-    def run(self) -> Dict[str, Any]:
+    def run(self) -> dict[str, Any]:
         """
         Execute validation-only scan.
 
@@ -75,11 +68,11 @@ class LocationValidatorAgent(SovereignBaseAgent):
     # MIGRATED VALIDATION METHODS (Phase 3 Batch 1)
     # ========================================================================
 
-    def validate_sovereign_roots(self) -> List[Tuple[Path, str]]:
+    def validate_sovereign_roots(self) -> list[tuple[Path, str]]:
         """Ensure all required sovereign roots exist and are directories."""
         from agentic_core.L5_safety.validators.structure_blueprint import ROOT_WHITELIST
 
-        violations: List[Tuple[Path, str]] = []
+        violations: list[tuple[Path, str]] = []
         for root_name in ROOT_WHITELIST:
             root_path = self.project_root / root_name
             if not root_path.exists():
@@ -88,7 +81,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
                 violations.append((root_path, f"Sovereign root is not a directory: {root_name}"))
         return violations
 
-    def validate_file_location(self, file_path: Path) -> Tuple[bool, str]:
+    def validate_file_location(self, file_path: Path) -> tuple[bool, str]:
         """Per-file location validation with correct forbidden-check ordering."""
         try:
             rel_path = file_path.relative_to(self.project_root)
@@ -126,11 +119,11 @@ class LocationValidatorAgent(SovereignBaseAgent):
 
         return True, f"Location compliant in sovereign territory: {root_folder}"
 
-    def _validate_forbidden_patterns(self, parts: tuple, root_folder: str) -> Tuple[bool, str]:
+    def _validate_forbidden_patterns(self, parts: tuple, root_folder: str) -> tuple[bool, str]:
         """Validate forbidden folder patterns and numbered roots."""
         from agentic_core.L5_safety.validators.structure_blueprint import (
-            FORBIDDEN_ROOT_FOLDERS,
             FORBIDDEN_FOLDER_PATTERN,
+            FORBIDDEN_ROOT_FOLDERS,
         )
 
         # Check all parts for forbidden folders
@@ -149,7 +142,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
 
         return True, "OK"
 
-    def _validate_root_whitelist(self, root_folder: str, rel_path: Path = None) -> Tuple[bool, str]:
+    def _validate_root_whitelist(self, root_folder: str, rel_path: Path = None) -> tuple[bool, str]:
         """Validate path is within an allowed sovereign territory using SSOT helper."""
         from agentic_core.L5_safety.validators.structure_blueprint import (
             ROOT_WHITELIST,
@@ -167,7 +160,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
             return False, f"VOID VIOLATION: Unapproved root folder '{root_folder}'"
         return True, "OK"
 
-    def _validate_depth_requirements(self, parts: tuple, root_folder: str, rel_path: Path) -> Tuple[bool, str]:
+    def _validate_depth_requirements(self, parts: tuple, root_folder: str, rel_path: Path) -> tuple[bool, str]:
         """Validate depth requirements from sovereign registry.
 
         SSOT FIX: Allow variable depth for certain subfolders that legitimately
@@ -196,11 +189,11 @@ class LocationValidatorAgent(SovereignBaseAgent):
 
         return True, "OK"
 
-    def _validate_app_specific_files(self, root_folder: str, file_path: Path) -> Tuple[bool, str]:
+    def _validate_app_specific_files(self, root_folder: str, file_path: Path) -> tuple[bool, str]:
         """Validate app-specific files are not in core."""
         from agentic_core.L5_safety.validators.structure_blueprint import (
-            is_app_specific_file,
             get_correct_app_path,
+            is_app_specific_file,
         )
 
         if root_folder == "agentic_core" and is_app_specific_file(file_path.name):
@@ -211,7 +204,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
             )
         return True, "OK"
 
-    def _validate_filename_patterns(self, file_path: Path) -> Tuple[bool, str]:
+    def _validate_filename_patterns(self, file_path: Path) -> tuple[bool, str]:
         """Validate filename patterns for forbidden prefixes and backup files."""
         from agentic_core.L5_safety.validators.structure_blueprint import (
             has_forbidden_layer_prefix,
@@ -228,7 +221,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
 
         return True, "OK"
 
-    def _validate_final_checks(self, root_folder: str, file_path: Path, parts: tuple) -> Tuple[bool, str]:
+    def _validate_final_checks(self, root_folder: str, file_path: Path, parts: tuple) -> tuple[bool, str]:
         """Final validation checks for root-level files and gravity leaks."""
         from agentic_core.L5_safety.validators.structure_blueprint import (
             ROOT_PROTECTED_FILES,
@@ -245,7 +238,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
     # MIGRATED AST/SEMANTIC VALIDATION METHODS (Phase 3 Batch 2)
     # ========================================================================
 
-    def _validate_ast_violations(self, root_folder: str, file_path: Path, rel_path: Path) -> Tuple[bool, str]:
+    def _validate_ast_violations(self, root_folder: str, file_path: Path, rel_path: Path) -> tuple[bool, str]:
         """Validate AST-based violations for agentic_core Python files."""
         if root_folder != "agentic_core" or file_path.suffix != ".py":
             return True, "OK"
@@ -278,9 +271,8 @@ class LocationValidatorAgent(SovereignBaseAgent):
 
         return True, "OK"
 
-    def _check_forbidden_imports(self, tree: Any, current_l1: str, rel_path: Path) -> Tuple[bool, str]:
+    def _check_forbidden_imports(self, tree: Any, current_l1: str, rel_path: Path) -> tuple[bool, str]:
         """Check for forbidden app imports and layer violations."""
-        import ast
 
         forbidden_app_import, forbidden_layer_import = self._scan_imports_for_violations(tree, current_l1)
 
@@ -297,12 +289,12 @@ class LocationValidatorAgent(SovereignBaseAgent):
 
         return True, "OK"
 
-    def _scan_imports_for_violations(self, tree: Any, current_l1: str) -> Tuple[bool, Optional[str]]:
+    def _scan_imports_for_violations(self, tree: Any, current_l1: str) -> tuple[bool, str | None]:
         """Scan AST for forbidden imports and return violation flags."""
         import ast
 
         for node in ast.walk(tree):
-            if isinstance(node, (ast.Import, ast.ImportFrom)):
+            if isinstance(node, ast.Import | ast.ImportFrom):
                 modules = self._extract_modules_from_node(node)
 
                 for module in modules:
@@ -315,7 +307,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
 
         return False, None
 
-    def _extract_modules_from_node(self, node: Any) -> List[str]:
+    def _extract_modules_from_node(self, node: Any) -> list[str]:
         """Extract module names from import node."""
         import ast
 
@@ -330,7 +322,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
         from agentic_core.L5_safety.validators.structure_blueprint import FORBIDDEN_APP_MODULES
         return module.startswith(("apps_rg.", "apps_lic.")) or module in FORBIDDEN_APP_MODULES
 
-    def _check_layer_import_violation(self, module: str, current_l1: str) -> Optional[str]:
+    def _check_layer_import_violation(self, module: str, current_l1: str) -> str | None:
         """Check for layer import violations and return violation description."""
         from agentic_core.L5_safety.validators.structure_blueprint import LAYER_FORBIDDEN_IMPORTS
 
@@ -344,7 +336,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
 
         return None
 
-    def _check_semantic_alignment(self, tree: Any, current_territory: str, rel_path: Path) -> Tuple[bool, str]:
+    def _check_semantic_alignment(self, tree: Any, current_territory: str, rel_path: Path) -> tuple[bool, str]:
         """Check semantic alignment between file location and content."""
         if not current_territory:
             return True, "OK"
@@ -360,21 +352,22 @@ class LocationValidatorAgent(SovereignBaseAgent):
         # Check territory alignment
         return self._check_territory_alignment(current_territory, territory_scores, rel_path)
 
-    def _calculate_semantic_scores(self, tree: Any) -> Tuple[float, float, Dict[str, float]]:
+    def _calculate_semantic_scores(self, tree: Any) -> tuple[float, float, dict[str, float]]:
         """Calculate semantic scores for app and territory alignment."""
         import ast
+
         from agentic_core.L5_safety.validators.structure_blueprint import (
-            APP_RG_AST_TERMS,
             APP_LIC_AST_TERMS,
+            APP_RG_AST_TERMS,
             CORE_TERRITORY_KEYWORDS,
         )
 
         app_rg_score = 0.0
         app_lic_score = 0.0
-        territory_scores: Dict[str, float] = {t: 0.0 for t in CORE_TERRITORY_KEYWORDS}
+        territory_scores: dict[str, float] = dict.fromkeys(CORE_TERRITORY_KEYWORDS, 0.0)
 
         for node in ast.walk(tree):
-            if isinstance(node, (ast.ClassDef, ast.FunctionDef)):
+            if isinstance(node, ast.ClassDef | ast.FunctionDef):
                 name = node.name.lower()
                 if any(t in name for t in APP_RG_AST_TERMS):
                     app_rg_score += 1.0
@@ -387,11 +380,11 @@ class LocationValidatorAgent(SovereignBaseAgent):
 
         return app_rg_score, app_lic_score, territory_scores
 
-    def _check_app_domain_violation(self, app_rg_score: float, app_lic_score: float, rel_path: Path) -> Tuple[bool, str]:
+    def _check_app_domain_violation(self, app_rg_score: float, app_lic_score: float, rel_path: Path) -> tuple[bool, str]:
         """Check for app-specific domain violations."""
         from agentic_core.L5_safety.validators.structure_blueprint import (
-            AST_DOMAIN_HIT_THRESHOLD,
             APP_SPECIFIC_TARGET_SUBFOLDER,
+            AST_DOMAIN_HIT_THRESHOLD,
             get_correct_app_path,
         )
 
@@ -406,7 +399,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
             )
         return True, "OK"
 
-    def _check_territory_alignment(self, current_territory: str, territory_scores: Dict[str, float], rel_path: Path) -> Tuple[bool, str]:
+    def _check_territory_alignment(self, current_territory: str, territory_scores: dict[str, float], rel_path: Path) -> tuple[bool, str]:
         """Check territory alignment between file location and content."""
         from agentic_core.L5_safety.validators.structure_blueprint import (
             MIN_ALIGNMENT_SCORE,
@@ -434,13 +427,13 @@ class LocationValidatorAgent(SovereignBaseAgent):
         return True, "OK"
 
     # AST Scoring utility methods (used by semantic alignment)
-    def _collect_ast_increments(self, tree: Any, territory_keywords: Dict[str, Any]) -> List[Tuple[str, float]]:
+    def _collect_ast_increments(self, tree: Any, territory_keywords: dict[str, Any]) -> list[tuple[str, float]]:
         """Collect AST-based scoring increments."""
         import ast
         increments = []
 
         for node in ast.walk(tree):
-            if isinstance(node, (ast.ClassDef, ast.FunctionDef)):
+            if isinstance(node, ast.ClassDef | ast.FunctionDef):
                 for terr, cats in territory_keywords.items():
                     for terms in cats.values():
                         if any(t in node.name.lower() for t in terms):
@@ -448,36 +441,36 @@ class LocationValidatorAgent(SovereignBaseAgent):
 
         return increments
 
-    def _aggregate_ast_increments(self, increments: List[Tuple[str, float]]) -> Dict[str, float]:
+    def _aggregate_ast_increments(self, increments: list[tuple[str, float]]) -> dict[str, float]:
         """Aggregate scoring increments into territory scores."""
-        scores: Dict[str, float] = {}
+        scores: dict[str, float] = {}
         for terr, score in increments:
             scores[terr] = scores.get(terr, 0.0) + score
         return scores
 
-    def _recompute_ast_scores(self, tree: Any, territory_keywords: Dict[str, Any]) -> Tuple[float, float, Dict[str, float]]:
+    def _recompute_ast_scores(self, tree: Any, territory_keywords: dict[str, Any]) -> tuple[float, float, dict[str, float]]:
         """Recompute AST scores (wrapper for _calculate_semantic_scores)."""
         return self._calculate_semantic_scores(tree)
 
-    def _score_identifier(self, name: str, territory_keywords: Dict[str, Any]) -> float:
+    def _score_identifier(self, name: str, territory_keywords: dict[str, Any]) -> float:
         """Score an identifier name against territory keywords."""
         score = 0.0
         name_lower = name.lower()
-        for terr, cats in territory_keywords.items():
+        for _terr, cats in territory_keywords.items():
             for terms in cats.values():
                 if any(t in name_lower for t in terms):
                     score += 1.0
         return score
 
-    def _score_string(self, value: str, territory_keywords: Dict[str, Any]) -> float:
+    def _score_string(self, value: str, territory_keywords: dict[str, Any]) -> float:
         """Score a string value against territory keywords."""
         return self._score_identifier(value, territory_keywords)
 
-    def _score_variable(self, name: str, territory_keywords: Dict[str, Any]) -> float:
+    def _score_variable(self, name: str, territory_keywords: dict[str, Any]) -> float:
         """Score a variable name against territory keywords."""
         return self._score_identifier(name, territory_keywords)
 
-    def _score_assignments(self, node: Any, territory_keywords: Dict[str, Any]) -> float:
+    def _score_assignments(self, node: Any, territory_keywords: dict[str, Any]) -> float:
         """Score assignment nodes."""
         import ast
         score = 0.0
@@ -487,17 +480,17 @@ class LocationValidatorAgent(SovereignBaseAgent):
                     score += self._score_identifier(target.id, territory_keywords)
         return score
 
-    def _score_arguments(self, node: Any, territory_keywords: Dict[str, Any]) -> float:
+    def _score_arguments(self, node: Any, territory_keywords: dict[str, Any]) -> float:
         """Score function arguments."""
         import ast
         score = 0.0
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+        if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
             for arg in node.args.args:
                 score += self._score_identifier(arg.arg, territory_keywords)
         return score
 
     # Naming convention validation (used by validation chain)
-    def _check_naming_conventions(self, file_path: Path) -> List[str]:
+    def _check_naming_conventions(self, file_path: Path) -> list[str]:
         """Check naming conventions for file."""
         violations = []
 
@@ -514,7 +507,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
         return violations
 
     # Validation orchestration
-    def run(self) -> Dict[str, Any]:
+    def run(self) -> dict[str, Any]:
         """Execute validation-only scan."""
         from agentic_core.L5_safety.validators.location_utils import get_agent_files
 

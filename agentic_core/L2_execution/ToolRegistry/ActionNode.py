@@ -6,9 +6,10 @@ Isolated from perception and reasoning logic.
 """
 
 from __future__ import annotations
-from typing import Dict, List, Any, Optional
+
 import asyncio
 import time
+from typing import Any
 
 
 class ActionNode:
@@ -28,7 +29,7 @@ class ActionNode:
         self.tools_used = 0
         self.total_execution_time = 0.0
 
-    def act(self, reasoning: Dict[str, Any]) -> Dict[str, Any]:
+    def act(self, reasoning: dict[str, Any]) -> dict[str, Any]:
         """
         Execute action based on reasoning.
 
@@ -63,7 +64,7 @@ class ActionNode:
 
         return action_result
 
-    async def act_async(self, reasoning: Dict[str, Any]) -> Dict[str, Any]:
+    async def act_async(self, reasoning: dict[str, Any]) -> dict[str, Any]:
         """
         Asynchronous action execution.
 
@@ -106,7 +107,7 @@ class ActionNode:
 
         return action_result
 
-    def act_simple(self, perceived: Dict[str, Any]) -> Dict[str, Any]:
+    def act_simple(self, perceived: dict[str, Any]) -> dict[str, Any]:
         """
         Simple action for low-complexity intents (lazy evaluation).
 
@@ -134,7 +135,7 @@ class ActionNode:
             "simple": True
         }
 
-    def _select_tools(self, plan: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def _select_tools(self, plan: dict[str, Any]) -> list[dict[str, Any]]:
         """
         Select tools based on execution plan.
 
@@ -169,7 +170,7 @@ class ActionNode:
 
         return tools
 
-    def _execute_tools(self, tools: List[Dict[str, Any]], reasoning: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def _execute_tools(self, tools: list[dict[str, Any]], reasoning: dict[str, Any]) -> list[dict[str, Any]]:
         """
         Execute selected tools.
 
@@ -196,7 +197,7 @@ class ActionNode:
 
         return results
 
-    def _format_output(self, results: List[Dict[str, Any]], reasoning: Dict[str, Any]) -> str:
+    def _format_output(self, results: list[dict[str, Any]], reasoning: dict[str, Any]) -> str:
         """
         Format final output from tool results.
 
@@ -224,7 +225,7 @@ class ActionNode:
 
         return " | ".join(output_parts) if output_parts else "Execution completed"
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get action statistics."""
         avg_execution_time = (
             self.total_execution_time / self.actions_executed

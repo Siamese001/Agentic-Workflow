@@ -15,11 +15,10 @@ Tests the 5 detailed test cases for:
 # Suggested keywords to add in docstring/code: guardrail, memory, orchestrator, prompt, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-import sys
 import ast
 import logging
+import sys
 from pathlib import Path
-from unittest.mock import patch, MagicMock
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -29,16 +28,15 @@ sys.path.insert(0, str(PROJECT_ROOT))
 logging.basicConfig(level=5, format='%(message)s')  # TRACE level = 5
 
 from apps_rg.engines.full_agent_discovery import (
-    should_exclude_path,
-    should_exclude_file,
+    CLASS_INHERITANCE_MAP,
     EXCLUDED_PATH_PATTERNS,
+    EXPECTED_AGENT_COUNT,
     HEALING_BASES,
+    MINIMUM_AGENT_COUNT,
     has_healing_in_chain,
     is_agent_class,
-    extract_bases,
-    CLASS_INHERITANCE_MAP,
-    MINIMUM_AGENT_COUNT,
-    EXPECTED_AGENT_COUNT,
+    should_exclude_file,
+    should_exclude_path,
     validate_agent_count,
 )
 
@@ -73,8 +71,8 @@ def test_1_test_agent_visibility():
     print(f"   '/tests/' in patterns: {'/tests/' in EXCLUDED_PATH_PATTERNS}")
     print(f"   '/test/' in patterns: {'/test/' in EXCLUDED_PATH_PATTERNS}")
 
-    print(f"✅ PASSED: Test agent visibility enabled")
-    print(f"   /tests/ and /test/ removed from EXCLUDED_PATH_PATTERNS")
+    print("✅ PASSED: Test agent visibility enabled")
+    print("   /tests/ and /test/ removed from EXCLUDED_PATH_PATTERNS")
     return True
 
 
@@ -111,12 +109,12 @@ def test_2_fixture_exclusion():
     assert should_exclude_file(setup_path), \
         f"setup.py should be excluded: {setup_path}"
 
-    print(f"✅ PASSED: Fixture exclusion working")
-    print(f"   tests/fixtures/MockAgent.py: excluded ✓")
-    print(f"   tests/mocks/FakeAgent.py: excluded ✓")
-    print(f"   tests/stubs/StubAgent.py: excluded ✓")
-    print(f"   tests/conftest.py: excluded ✓")
-    print(f"   tests/setup.py: excluded ✓")
+    print("✅ PASSED: Fixture exclusion working")
+    print("   tests/fixtures/MockAgent.py: excluded ✓")
+    print("   tests/mocks/FakeAgent.py: excluded ✓")
+    print("   tests/stubs/StubAgent.py: excluded ✓")
+    print("   tests/conftest.py: excluded ✓")
+    print("   tests/setup.py: excluded ✓")
     return True
 
 
@@ -156,10 +154,10 @@ def test_3_healer_identification():
     assert has_healing_indirect, \
         "Agent with indirect SovereignHealer inheritance should have has_healing=True"
 
-    print(f"✅ PASSED: Healer identification working")
-    print(f"   HEALING_BASES includes: HealerMixin, SovereignHealer")
-    print(f"   Direct SovereignHealer inheritance: has_healing=True ✓")
-    print(f"   Indirect SovereignHealer inheritance: has_healing=True ✓")
+    print("✅ PASSED: Healer identification working")
+    print("   HEALING_BASES includes: HealerMixin, SovereignHealer")
+    print("   Direct SovereignHealer inheritance: has_healing=True ✓")
+    print("   Indirect SovereignHealer inheritance: has_healing=True ✓")
     return True
 
 
@@ -202,7 +200,7 @@ def test_4_infrastructure_noise_reduction():
     assert excluded_count == len(infrastructure_classes), \
         f"Expected all {len(infrastructure_classes)} infrastructure classes to be excluded"
 
-    print(f"✅ PASSED: Infrastructure noise reduction working")
+    print("✅ PASSED: Infrastructure noise reduction working")
     print(f"   {excluded_count}/{len(infrastructure_classes)} infrastructure classes excluded")
     return True
 
@@ -246,11 +244,11 @@ def test_5_baseline_count_verification():
     is_valid, errors = validate_agent_count(150, previous_count=200)
     assert not is_valid, "25% drop should be invalid"
 
-    print(f"✅ PASSED: Baseline count verification working")
-    print(f"   Count 200: valid ✓")
-    print(f"   Count 100: invalid (below minimum) ✓")
-    print(f"   5-agent drop (2.5%): valid ✓")
-    print(f"   50-agent drop (25%): invalid ✓")
+    print("✅ PASSED: Baseline count verification working")
+    print("   Count 200: valid ✓")
+    print("   Count 100: invalid (below minimum) ✓")
+    print("   5-agent drop (2.5%): valid ✓")
+    print("   50-agent drop (25%): invalid ✓")
     return True
 
 
@@ -274,9 +272,9 @@ def test_trace_logging_level():
     log = logging.getLogger("test_trace")
     assert hasattr(log, 'trace'), "Logger should have trace method"
 
-    print(f"✅ PASSED: TRACE logging level configured")
+    print("✅ PASSED: TRACE logging level configured")
     print(f"   TRACE level: {trace_level}")
-    print(f"   Logger.trace method: exists ✓")
+    print("   Logger.trace method: exists ✓")
     return True
 
 

@@ -1,20 +1,19 @@
 from __future__ import annotations
+
 """
 Self-Updating Safety Engine - L5 Safety Enhancement
 
 Dynamically learns and updates safety rules based on detected threats.
 Automatically adapts to new attack patterns and security vulnerabilities.
 """
-import asyncio
 import json
 import logging
 import os
 import re
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Tuple
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from typing import Any
 
 Logger = logging.getLogger(__name__)
 
@@ -44,8 +43,8 @@ class ThreatPattern:
     ThreatLevel: ThreatLevel
     detection_count: int = 0
     false_positive_count: int = 0
-    last_detected: Optional[datetime] = None
-    examples: List[str] = field(default_factory=list)
+    last_detected: datetime | None = None
+    examples: list[str] = field(default_factory=list)
 
     @property
     def confidence_score(self) -> float:
@@ -67,7 +66,7 @@ class SafetyRule:
     enabled: bool = True
     auto_generated: bool = False
     created_at: datetime = field(default_factory=datetime.now)
-    last_triggered: Optional[datetime] = None
+    last_triggered: datetime | None = None
     trigger_count: int = 0
 
     def matches(self, text: str) -> bool:
@@ -80,7 +79,7 @@ class SafetyRule:
 
         return False
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert rule to dictionary."""
         return {
             'rule_id': self.rule_id,
@@ -96,7 +95,7 @@ class SafetyRule:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'SafetyRule':
+    def from_dict(cls, data: dict[str, Any]) -> SafetyRule:
         """Create rule from dictionary."""
         return cls(
             rule_id=data['rule_id'],
@@ -117,9 +116,9 @@ class ThreatDetection:
     """Result of threat detection."""
     detected: bool
     ThreatLevel: ThreatLevel
-    matched_rules: List[SafetyRule]
+    matched_rules: list[SafetyRule]
     confidence: float
-    recommendations: List[str]
+    recommendations: list[str]
 
 
 class SelfUpdatingSafetyEngine:
@@ -134,16 +133,16 @@ class SelfUpdatingSafetyEngine:
     - Rule effectiveness tracking
     """
 
-    def __init__(self, rules_storage_path: Optional[str] = None):
+    def __init__(self, rules_storage_path: str | None = None):
         """Initialize the self-updating safety engine."""
         self.rules_storage_path = rules_storage_path or os.path.join(
             os.getcwd(), ".canon_memory", "safety_rules.json"
         )
 
-        self.rules: Dict[str, SafetyRule] = {}
-        self.threat_patterns: Dict[str, ThreatPattern] = {}
-        self.detection_history: List[Dict[str, Any]] = []
-        self.false_positive_feedback: Dict[str, int] = {}
+        self.rules: dict[str, SafetyRule] = {}
+        self.threat_patterns: dict[str, ThreatPattern] = {}
+        self.detection_history: list[dict[str, Any]] = []
+        self.false_positive_feedback: dict[str, int] = {}
 
         self._initialize_base_rules()
         self._load_rules()
@@ -205,7 +204,7 @@ class SelfUpdatingSafetyEngine:
             return
 
         try:
-            with open(self.rules_storage_path, 'r', encoding='utf-8') as f:
+            with open(self.rules_storage_path, encoding='utf-8') as f:
                 data = json.load(f)
 
             for rule_data in data.get('rules', []):
@@ -234,7 +233,7 @@ class SelfUpdatingSafetyEngine:
         except Exception as e:
             Logger.error(f"Failed to save rules: {e}")
 
-    async def detect_threats(self, text: str, context: Optional[Dict[str, Any]] = None) -> ThreatDetection:
+    async def detect_threats(self, text: str, context: dict[str, Any] | None = None) -> ThreatDetection:
         """
         Detect threats in text.
 
@@ -286,7 +285,7 @@ class SelfUpdatingSafetyEngine:
 
         return detection
 
-    async def _learn_from_detection(self, text: str, matched_rules: List[SafetyRule]):
+    async def _learn_from_detection(self, text: str, matched_rules: list[SafetyRule]):
         """Learn from a threat detection."""
         for rule in matched_rules:
             pattern_id = f"pattern_{rule.rule_id}"
@@ -342,7 +341,7 @@ class SelfUpdatingSafetyEngine:
 
         self._save_rules()
 
-    def _generate_pattern_variations(self, pattern: ThreatPattern) -> List[str]:
+    def _generate_pattern_variations(self, pattern: ThreatPattern) -> list[str]:
         """Generate variations of a threat pattern."""
         base_pattern = pattern.pattern_signature
         variations = [base_pattern]
@@ -392,7 +391,7 @@ class SelfUpdatingSafetyEngine:
         }
         return order[level1] - order[level2]
 
-    def _generate_recommendations(self, matched_rules: List[SafetyRule]) -> List[str]:
+    def _generate_recommendations(self, matched_rules: list[SafetyRule]) -> list[str]:
         """Generate recommendations based on matched rules."""
         recommendations = []
 
@@ -428,7 +427,7 @@ class SelfUpdatingSafetyEngine:
         Logger.info(f"Escalated threat level for rule {rule_id} to {rule.ThreatLevel.value}")
         self._save_rules()
 
-    def get_rule_effectiveness(self) -> Dict[str, Any]:
+    def get_rule_effectiveness(self) -> dict[str, Any]:
         """Get effectiveness metrics for rules."""
         total_rules = len(self.rules)
         enabled_rules = sum(1 for rule in self.rules.values() if rule.enabled)
@@ -459,7 +458,7 @@ class SelfUpdatingSafetyEngine:
             'false_positive_reports': sum(self.false_positive_feedback.values())
         }
 
-    def get_threat_statistics(self) -> Dict[str, Any]:
+    def get_threat_statistics(self) -> dict[str, Any]:
         """Get threat detection statistics."""
         total_detections = len(self.detection_history)
 
@@ -486,6 +485,6 @@ class SelfUpdatingSafetyEngine:
         }
 
 
-def create_self_updating_safety_engine(rules_storage_path: Optional[str] = None) -> SelfUpdatingSafetyEngine:
+def create_self_updating_safety_engine(rules_storage_path: str | None = None) -> SelfUpdatingSafetyEngine:
     """Factory function to create self-updating safety engine."""
     return SelfUpdatingSafetyEngine(rules_storage_path=rules_storage_path)

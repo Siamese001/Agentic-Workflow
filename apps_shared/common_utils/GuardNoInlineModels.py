@@ -1,14 +1,13 @@
 from __future__ import annotations
+
 """
 Sovereign Guard: Block Inline Pydantic Models (Final Sovereign Version)
 Constitutional enforcement - all models must live in core_contracts.py
 Signal-based filtering with timestamped, prefixed logging
 """
 import ast
-import sys
 import logging
-from pathlib import Path
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+import sys
 
 # Logger Setup
 Logger = logging.getLogger("sovereign.models")
@@ -45,7 +44,7 @@ def main():
             Logger.info(f"Skipping Exempt: {arg}")
             continue
         Logger.info(f"Auditing: {arg}")
-        with open(arg, "r", encoding="utf-8") as f:
+        with open(arg, encoding="utf-8") as f:
             try:
                 ModelVisitor().visit(ast.parse(f.read()))
             except Exception as e:

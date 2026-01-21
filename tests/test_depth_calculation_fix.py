@@ -90,8 +90,8 @@ def test_2_hierarchy_agent_fix():
         print(f"   ✗ Found old incorrect pattern at lines: {old_pattern_lines}")
         return False
 
-    print(f"   ✓ No incorrect 'depth = len(rel.parts)' patterns found")
-    print(f"✅ PASSED: HierarchyAgent uses correct depth formula")
+    print("   ✓ No incorrect 'depth = len(rel.parts)' patterns found")
+    print("✅ PASSED: HierarchyAgent uses correct depth formula")
     return True
 
 
@@ -120,8 +120,8 @@ def test_3_hierarchy_enforcer_agent_fix():
 
     assert old_pattern_count == 0, f"Found {old_pattern_count} old incorrect patterns"
 
-    print(f"   ✓ No incorrect patterns found")
-    print(f"✅ PASSED: HierarchyEnforcerAgent uses correct depth formula")
+    print("   ✓ No incorrect patterns found")
+    print("✅ PASSED: HierarchyEnforcerAgent uses correct depth formula")
     return True
 
 
@@ -138,17 +138,17 @@ def test_4_location_agent_fix():
 
     # Check for correct formula in _validate_depth_requirements
     assert "actual_depth = len(parts) - 1" in content, "Missing correct depth formula"
-    print(f"   ✓ Found 'actual_depth = len(parts) - 1'")
+    print("   ✓ Found 'actual_depth = len(parts) - 1'")
 
     # Check that the agentic_core check uses actual_depth, not len(parts)
     assert "actual_depth != 3" in content, "agentic_core check should use actual_depth"
-    print(f"   ✓ agentic_core check uses actual_depth")
+    print("   ✓ agentic_core check uses actual_depth")
 
     # Ensure old pattern is fixed
     assert 'len(parts) != 4' not in content, "Old incorrect pattern 'len(parts) != 4' still present"
-    print(f"   ✓ Old 'len(parts) != 4' pattern removed")
+    print("   ✓ Old 'len(parts) != 4' pattern removed")
 
-    print(f"✅ PASSED: LocationAgent uses correct depth formula")
+    print("✅ PASSED: LocationAgent uses correct depth formula")
     return True
 
 
@@ -177,8 +177,8 @@ def test_5_dry_run_script_fix():
 
     assert old_pattern_count == 0, f"Found {old_pattern_count} old incorrect patterns"
 
-    print(f"   ✓ No incorrect patterns found")
-    print(f"✅ PASSED: Dry run script uses correct depth formula")
+    print("   ✓ No incorrect patterns found")
+    print("✅ PASSED: Dry run script uses correct depth formula")
     return True
 
 
@@ -199,7 +199,7 @@ def test_6_check_key_49_depth_fix():
     print(f"   Found {fix_count} instances of 'len(relative_path.parts) - 1'")
     assert fix_count >= 2, f"Expected at least 2 fixes, found {fix_count}"
 
-    print(f"✅ PASSED: check_key_49_depth.py uses correct depth formula")
+    print("✅ PASSED: check_key_49_depth.py uses correct depth formula")
     return True
 
 
@@ -242,7 +242,7 @@ def test_7_real_file_depth_verification():
             print(f"     depth={depth} != registry_depth={registry_depth}")
 
     print(f"\n   Verified {passed}/{len(test_files)} files")
-    print(f"✅ PASSED: Real files have correct depth")
+    print("✅ PASSED: Real files have correct depth")
     return True
 
 
@@ -283,9 +283,9 @@ def test_8_no_false_positives():
         for path, actual, expected in false_positives:
             print(f"     {path}: depth {actual} vs expected {expected}")
     else:
-        print(f"   ✓ No false positives detected")
+        print("   ✓ No false positives detected")
 
-    print(f"✅ PASSED: False positive check complete")
+    print("✅ PASSED: False positive check complete")
     return True
 
 

@@ -5,9 +5,8 @@ Verifies all fields are correctly sourced from agent_discovery_full.json.
 Checks for data integrity issues and validates critical metrics.
 """
 import json
-from pathlib import Path
 from collections import defaultdict
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from pathlib import Path
 
 project_root = Path(__file__).parent.parent
 dashboard_dir = project_root / "agentic_core" / "L6_observability" / "dashboards"
@@ -15,7 +14,7 @@ dashboard_dir = project_root / "agentic_core" / "L6_observability" / "dashboards
 def load_source_data():
     """Load agent_discovery_full.json source data."""
     source_file = project_root / "agent_discovery_full.json"
-    with open(source_file, 'r', encoding='utf-8') as f:
+    with open(source_file, encoding='utf-8') as f:
         return json.load(f)
 
 def load_dashboard_data():
@@ -132,7 +131,7 @@ def validate_data_sourcing():
                     'field': dash_field,
                     'dashboard': dash_value,
                     'expected': expected_value,
-                    'diff': abs(dash_value - expected_value) if isinstance(dash_value, (int, float)) and isinstance(expected_value, (int, float)) else 'N/A'
+                    'diff': abs(dash_value - expected_value) if isinstance(dash_value, int | float) and isinstance(expected_value, int | float) else 'N/A'
                 })
 
     # Report results
@@ -208,7 +207,7 @@ def check_complexity_health_distribution():
         overall_avg = sum(all_cc_values) / len(all_cc_values)
         overall_health = max(0, 100 - (overall_avg * 2))
 
-        print(f"\n   Overall Statistics:")
+        print("\n   Overall Statistics:")
         print(f"      Total agents analyzed: {len(all_cc_values)}")
         print(f"      Average CC: {overall_avg:.1f}")
         print(f"      Overall Complexity Health: {overall_health:.1f}%")
@@ -216,7 +215,7 @@ def check_complexity_health_distribution():
         print(f"      Max CC: {max(all_cc_values)}")
 
     # Show territories with low complexity health
-    print(f"\n   Territories with Complexity Health < 50%:")
+    print("\n   Territories with Complexity Health < 50%:")
     low_health = [(t, m) for t, m in territory_cc.items() if m['complexity_health'] < 50]
     low_health.sort(key=lambda x: x[1]['complexity_health'])
 

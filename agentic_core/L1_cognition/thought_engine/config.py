@@ -1,10 +1,11 @@
 from __future__ import annotations
+
 """Configuration types for the agentic framework.
 
 Defines OrchestratorConfig and related configuration dataclasses.
 """
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
 
 
 @dataclass
@@ -27,17 +28,17 @@ class OrchestratorConfig:
     """
     mission_id: str = "default-mission"
     max_iterations: int = 10
-    max_phases: Optional[int] = None
+    max_phases: int | None = None
     enable_tri_brain: bool = False
     enable_reflection: bool = True
     enable_state_persistence: bool = True
-    timeout_seconds: Optional[float] = None
+    timeout_seconds: float | None = None
     retry_on_failure: bool = True
     max_retries: int = 3
     parallel_actions: bool = False
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "mission_id": self.mission_id,
@@ -71,7 +72,7 @@ class CognitiveConfig:
     enable_cot: bool = True
     enable_self_critique: bool = False
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "model": self.model,
@@ -98,7 +99,7 @@ class ActionConfig:
     max_concurrent: int = 5
     enable_fallback: bool = True
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "sandbox_enabled": self.sandbox_enabled,

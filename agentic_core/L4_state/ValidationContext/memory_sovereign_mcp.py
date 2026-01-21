@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """L4 State: Sovereign MCP Memory — Eternal Knowledge Graph
 Ultra-hardened persistent memory with entities, relations, observations.
 L5 shielded + Redis/Pinecone hybrid + tampering detection.
@@ -6,14 +7,11 @@ L5 shielded + Redis/Pinecone hybrid + tampering detection.
 import json
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
+
 from agentic_core.L4_state.validation_context.PineconeSovereignAgent import PineconeSovereignAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 Logger: Any = logging.getLogger(__name__)
 max_observation_length: Any = 2000
@@ -29,7 +27,7 @@ class SovereignMemoryMcp:
         self.pinecone = PineconeSovereignAgent(Path('.'))
         self.index_name = 'canon-memory-v1'
 
-    async def create_entities(self, entities: List[Dict]) -> Dict:
+    async def create_entities(self, entities: list[dict]) -> dict:
         """Create sovereign entities with L5 validation and dual-store persistence."""
         created: Any = []
         try:
@@ -47,7 +45,7 @@ class SovereignMemoryMcp:
             mcp_authority.record_breach(f'Memory Entity Creation Failure: {str(e)}')
             return {'status': 'error', 'msg': str(e)}
 
-    async def add_observations(self, observations: List[Dict]) -> Dict:
+    async def add_observations(self, observations: list[dict]) -> dict:
         """Add atomic facts to the graph with L5 size-shielding."""
         added: Any = {}
         try:
@@ -63,7 +61,7 @@ class SovereignMemoryMcp:
             mcp_authority.record_breach(f'Memory Observation Failure: {str(e)}')
             return {'status': 'error', 'msg': str(e)}
 
-    async def search_nodes(self, query: str) -> List[Dict]:
+    async def search_nodes(self, query: str) -> list[dict]:
         """Semantic search across eternal memory with Redis fallback."""
         try:
             vector: Any = await self.engine.get_embedding(query)

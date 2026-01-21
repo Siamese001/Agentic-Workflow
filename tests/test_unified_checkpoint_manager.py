@@ -17,23 +17,21 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import asyncio
 import json
-import os
 import shutil
 import sys
 import tempfile
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 
-def run_self_tests() -> Dict[str, Any]:
+def run_self_tests() -> dict[str, Any]:
     """Run the UnifiedCheckpointManagerAgent's internal self-tests."""
     from agentic_core.L4_state.ValidationContext.UnifiedCheckpointManagerAgent import (
         get_checkpoint_manager,
@@ -44,7 +42,7 @@ def run_self_tests() -> Dict[str, Any]:
         return manager._run_self_tests()
 
 
-def test_mode_switching() -> Dict[str, Any]:
+def test_mode_switching() -> dict[str, Any]:
     """
     Mode Switching Test: Verify SYNC, ASYNC, and AUTONOMOUS modes work correctly.
 
@@ -54,7 +52,6 @@ def test_mode_switching() -> Dict[str, Any]:
     """
     from agentic_core.L4_state.ValidationContext.UnifiedCheckpointManagerAgent import (
         get_checkpoint_manager,
-        UnifiedCheckpointManagerAgent,
     )
 
     results = {
@@ -150,7 +147,7 @@ def test_mode_switching() -> Dict[str, Any]:
     return results
 
 
-def test_corruption_recovery() -> Dict[str, Any]:
+def test_corruption_recovery() -> dict[str, Any]:
     """
     Corruption Recovery Test: Verify auto-recovery from mirrored backups.
 
@@ -217,7 +214,7 @@ def test_corruption_recovery() -> Dict[str, Any]:
                 results["primary_restored"] = True
 
                 # Verify data integrity
-                with open(primary_file, 'r') as f:
+                with open(primary_file) as f:
                     restored_data = json.load(f)
 
                 results["data_intact"] = restored_data.get("state_snapshot", {}).get("important_value") == 42
@@ -232,7 +229,7 @@ def test_corruption_recovery() -> Dict[str, Any]:
     return results
 
 
-def test_performance_benchmark() -> Dict[str, Any]:
+def test_performance_benchmark() -> dict[str, Any]:
     """
     Performance Benchmarking: Measure latency of checkpoint operations.
 
@@ -299,7 +296,7 @@ def test_performance_benchmark() -> Dict[str, Any]:
             results["verify_ms"].append(elapsed)
 
     # Calculate statistics
-    def calc_stats(values: List[float]) -> Dict[str, float]:
+    def calc_stats(values: list[float]) -> dict[str, float]:
         if not values:
             return {"avg": 0, "min": 0, "max": 0}
         return {
@@ -320,7 +317,7 @@ def test_performance_benchmark() -> Dict[str, Any]:
     return results
 
 
-def test_state_integrity() -> Dict[str, Any]:
+def test_state_integrity() -> dict[str, Any]:
     """
     State Integrity Tests: Verify checkpoint persistence and retrieval.
 
@@ -413,7 +410,7 @@ def test_state_integrity() -> Dict[str, Any]:
             index_path = storage_path / "index.json"
             assert index_path.exists(), "Index file not found"
 
-            with open(index_path, 'r') as f:
+            with open(index_path) as f:
                 index_data = json.load(f)
 
             assert "checkpoints" in index_data
@@ -479,12 +476,12 @@ def main():
             results['tests']['mode_switching'] = mode_results
 
             if mode_results.get('status') == 'PASS':
-                print(f"  ✓ Mode switching PASSED")
+                print("  ✓ Mode switching PASSED")
                 print(f"    SYNC: {mode_results['sync_test']['status']}")
                 print(f"    ASYNC: {mode_results['async_test']['status']}")
                 print(f"    AUTONOMOUS: {mode_results['autonomous_test']['status']}")
             else:
-                print(f"  ✗ Mode switching FAILED")
+                print("  ✗ Mode switching FAILED")
                 all_passed = False
         except Exception as e:
             print(f"  ✗ Mode switching test failed: {e}")
@@ -499,7 +496,7 @@ def main():
             results['tests']['corruption_recovery'] = recovery_results
 
             if recovery_results.get('status') == 'PASS':
-                print(f"  ✓ Corruption recovery PASSED")
+                print("  ✓ Corruption recovery PASSED")
                 print(f"    Checkpoint created: {recovery_results['checkpoint_created']}")
                 print(f"    Mirror created: {recovery_results['mirror_created']}")
                 print(f"    Recovery successful: {recovery_results['recovery_successful']}")
@@ -518,7 +515,7 @@ def main():
             bench_results = test_performance_benchmark()
             results['tests']['performance'] = bench_results
 
-            print(f"  ✓ Performance benchmark completed")
+            print("  ✓ Performance benchmark completed")
             print(f"    SYNC create avg: {bench_results['sync_stats']['avg']:.2f}ms")
             print(f"    ASYNC create avg: {bench_results['async_stats']['avg']:.2f}ms")
             print(f"    Retrieval avg: {bench_results['retrieval_stats']['avg']:.2f}ms")
@@ -539,13 +536,13 @@ def main():
             results['tests']['state_integrity'] = integrity_results
 
             if integrity_results.get('status') == 'PASS':
-                print(f"  ✓ State integrity PASSED")
+                print("  ✓ State integrity PASSED")
                 print(f"    Save/Load cycle: {integrity_results['save_load_cycle']['status']}")
                 print(f"    Multiple checkpoints: {integrity_results['multiple_checkpoints']['status']}")
                 print(f"    Rollback: {integrity_results['rollback']['status']}")
                 print(f"    Index integrity: {integrity_results['index_integrity']['status']}")
             else:
-                print(f"  ✗ State integrity FAILED")
+                print("  ✗ State integrity FAILED")
                 all_passed = False
         except Exception as e:
             print(f"  ✗ State integrity test failed: {e}")

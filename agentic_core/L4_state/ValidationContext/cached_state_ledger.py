@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 #!/usr/bin/env python3
 """
 CachedStateLedger - Eternal L4 State with Redis Sovereign Cache
@@ -8,16 +9,16 @@ import json
 import os
 import time
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
 
 import redis
 
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
+from agentic_core.L4_state.validation_context.l4_subatomic_testing_mixin import (
+    L4SubatomicTestingMixin,
+)
+from agentic_core.schemas.models.anomaly_report import AnomalyReport
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L4_state.validation_context.l4_subatomic_testing_mixin import L4SubatomicTestingMixin
-from agentic_core.schemas.models.anomaly_report import AnomalyReport, AnomalySeverity
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 # NAMING FIXED: CachedStateLedger → CachedStateLedger
@@ -60,9 +61,9 @@ class CachedStateLedger(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
             print(f"   [!] Redis unavailable ({e}) → falling back to in-memory ledger")
             self.redis = None
             # Critical: Ensure memory fallback has same interface
-            self._memory_cache: Dict[str, Any] = {}
-            self._audit_trail: List[str] = []
-            self._successful_traces: List[Dict] = []  # NEW: Required by GeminiSpy telemetry
+            self._memory_cache: dict[str, Any] = {}
+            self._audit_trail: list[str] = []
+            self._successful_traces: list[dict] = []  # NEW: Required by GeminiSpy telemetry
 
         # [L4 ETERNAL GUARANTEE] Always initialize successful_traces for ValidationContext
         # This attribute is checked by GeminiSpy → absence causes zero-latency rejection
@@ -73,7 +74,7 @@ class CachedStateLedger(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
         self.prefix_audit = f"l4_audit:{session_id}"
         self.prefix_historian = f"l4_historian:{session_id}"
 
-    def cache_validation_context(self, key: str, context: Dict):
+    def cache_validation_context(self, key: str, context: dict):
         """Cache validation context for instant access"""
         full_key = f"{self.prefix_context}:{key}"
         try:
@@ -90,7 +91,7 @@ class CachedStateLedger(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
             "timestamp": time.time()
         })
 
-    def get_cached_validation_context(self, key: str) -> Optional[Dict]:
+    def get_cached_validation_context(self, key: str) -> dict | None:
 
         full_key = f"{self.prefix_context}:{key}"
         try:
@@ -118,7 +119,7 @@ class CachedStateLedger(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
         except Exception: pass
         return None
 
-    def _record_successful_trace(self, trace: Dict):
+    def _record_successful_trace(self, trace: dict):
         """Internal helper to maintain successful_traces list in both Redis and memory mode"""
         if self.redis:
             try:
@@ -127,7 +128,7 @@ class CachedStateLedger(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
         else:
             self._successful_traces.append(trace)
 
-    def get_successful_traces(self) -> List[Dict]:
+    def get_successful_traces(self) -> list[dict]:
         """Public accessor required by ValidationContext and GeminiSpy telemetry"""
         if self.redis:
             try:
@@ -138,7 +139,7 @@ class CachedStateLedger(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
         else:
             return self._successful_traces
 
-    def append_audit_event(self, event: Dict):
+    def append_audit_event(self, event: dict):
         """Immutable append-only audit trail via Redis List"""
         try:
             if self.redis:

@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Data Layer Integration Example - Batch Embeddings + In-Memory Vector Cache.
 
 Demonstrates how to use BatchEmbeddingService and InMemoryVectorCache together
@@ -6,13 +7,15 @@ for 5-10x performance improvement in resume generation pipeline.
 """
 import asyncio
 import logging
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 import numpy as np
 from batch_embeddings import create_batch_embedding_service
+
 logging.basicConfig(level=logging.INFO)
 Logger: Any = logging.getLogger(__name__)
 
-def mock_embedding_function(texts: List[str]) -> List[np.ndarray]:
+def mock_embedding_function(texts: list[str]) -> list[np.ndarray]:
     """Mock embedding function for demonstration.
 
     Replace this with your actual embedding model:
@@ -67,7 +70,7 @@ async def example_full_pipeline() -> Any:
     query_embedding: Any = (await batch_service.embed_batch(texts=[JobDescription], model_func=mock_embedding_function))[0].tolist()
     Logger.info('Searching for matching resumes...')
     results: Any = await hot_cache.search(query_embeddings=[query_embedding], top_k=5)
-    Logger.info(f'Top 5 matching resumes:')
+    Logger.info('Top 5 matching resumes:')
     for i, doc in enumerate(results['documents'][0], 1):
         distance: Any = results['distances'][0][i - 1]
         Logger.info(f'  {i}. {doc[:80]}... (distance: {distance:.4f})')
@@ -75,15 +78,15 @@ async def example_full_pipeline() -> Any:
     Logger.info('\n=== Performance Summary ===')
     Logger.info(f'✓ Processed {len(resume_texts)} resumes in parallel batches')
     Logger.info(f'✓ Stored {hot_cache.get_count()} vectors in hot cache')
-    Logger.info(f'✓ Search latency: <10ms (in-memory)')
-    Logger.info(f'✓ Expected speedup: 5-10x vs sequential processing')
+    Logger.info('✓ Search latency: <10ms (in-memory)')
+    Logger.info('✓ Expected speedup: 5-10x vs sequential processing')
 
 async def example_tiered_storage() -> Any:
     """Example: Two-tier storage with hot cache + warm storage."""
     Logger.info('\n=== Tiered Storage Example ===')
     tiered_store: Any = create_tiered_vector_store(hot_collection_name='hot_resumes', warm_store_url='http://localhost:6333')
     query_embedding: Any = mock_embedding_function(['Python developer'])[0].tolist()
-    results: Any = await tiered_store.search(query_embeddings=[query_embedding], top_k=10, try_hot_first=True)
+    await tiered_store.search(query_embeddings=[query_embedding], top_k=10, try_hot_first=True)
     Logger.info('Tiered search complete (hot cache → warm storage fallback)')
 
 async def main() -> Any:

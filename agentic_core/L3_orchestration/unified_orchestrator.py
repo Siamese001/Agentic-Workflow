@@ -30,9 +30,8 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol, runtime_checkable
+from typing import Any, Protocol, runtime_checkable
 
-from agentic_core.L5_safety.validators.orchestrator import IOrchestrator
 from agentic_core.utils.core_extensions.infrastructure_mixin import InfrastructureMixin
 
 Logger = logging.getLogger(__name__)
@@ -52,7 +51,7 @@ class MissionStrategy(Protocol):
         """Return the strategy name for logging/identification."""
         ...
 
-    def get_tiers(self) -> Dict[str, List[str]]:
+    def get_tiers(self) -> dict[str, list[str]]:
         """
         Return the tiered execution plan.
 
@@ -62,7 +61,7 @@ class MissionStrategy(Protocol):
         """
         ...
 
-    def get_agent(self, agent_name: str) -> Optional[Any]:
+    def get_agent(self, agent_name: str) -> Any | None:
         """
         Get or create an agent instance by name.
 
@@ -81,7 +80,7 @@ class MissionStrategy(Protocol):
         dry_run: bool = True,
         execute: bool = False,
         **kwargs: Any
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Execute a single agent and return results.
 
@@ -102,7 +101,7 @@ class MissionStrategy(Protocol):
         """
         ...
 
-    def should_abort_tier(self, tier_name: str, tier_results: List[Dict[str, Any]], execute: bool) -> bool:
+    def should_abort_tier(self, tier_name: str, tier_results: list[dict[str, Any]], execute: bool) -> bool:
         """
         Determine if execution should abort after a tier.
 
@@ -125,8 +124,8 @@ class AgentExecutionResult:
     violations_found: int = 0
     violations_fixed: int = 0
     execution_time_ms: float = 0.0
-    error_message: Optional[str] = None
-    details: Dict[str, Any] = field(default_factory=dict)
+    error_message: str | None = None
+    details: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -141,10 +140,10 @@ class MissionReport:
     total_violations: int
     total_fixes: int
     execution_time_ms: float
-    agent_results: List[AgentExecutionResult] = field(default_factory=list)
+    agent_results: list[AgentExecutionResult] = field(default_factory=list)
     overall_status: str = "UNKNOWN"
     aborted: bool = False
-    abort_reason: Optional[str] = None
+    abort_reason: str | None = None
 
     @property
     def success_rate(self) -> float:
@@ -181,7 +180,7 @@ class UnifiedOrchestratorAgent(InfrastructureMixin):
     def __init__(
         self,
         strategy: MissionStrategy,
-        project_root: Optional[Path] = None,
+        project_root: Path | None = None,
         name: str = "UnifiedOrchestrator"
     ) -> None:
         """
@@ -204,7 +203,7 @@ class UnifiedOrchestratorAgent(InfrastructureMixin):
 
         self.logger.debug(f"[{self.name}] Initialized with strategy: {strategy.name}")
 
-    def run_mission(self, context: Dict[str, Any]) -> Dict[str, Any]:
+    def run_mission(self, context: dict[str, Any]) -> dict[str, Any]:
         """
         Execute a mission using the injected strategy.
 
@@ -238,11 +237,11 @@ class UnifiedOrchestratorAgent(InfrastructureMixin):
         self.logger.info(f"  Mode: {'EXECUTE' if execute else 'DRY-RUN'}")
         self.logger.info(f"{'=' * 60}")
 
-        agent_results: List[AgentExecutionResult] = []
+        agent_results: list[AgentExecutionResult] = []
         total_violations = 0
         total_fixes = 0
         aborted = False
-        abort_reason: Optional[str] = None
+        abort_reason: str | None = None
 
         try:
             # Get tiered execution plan from strategy
@@ -257,7 +256,7 @@ class UnifiedOrchestratorAgent(InfrastructureMixin):
 
                 self.logger.info(f"\n[TIER {tier_num}/{len(tiers)}] {tier_name}")
 
-                tier_results: List[Dict[str, Any]] = []
+                tier_results: list[dict[str, Any]] = []
 
                 for agent_name in agent_names:
                     result = self._execute_agent_safely(
@@ -353,7 +352,7 @@ class UnifiedOrchestratorAgent(InfrastructureMixin):
             "success_rate": report.success_rate,
         }
 
-    def validate_stability(self, result: Dict[str, Any]) -> bool:
+    def validate_stability(self, result: dict[str, Any]) -> bool:
         """
         Validate whether the mission result indicates a stable repository.
 

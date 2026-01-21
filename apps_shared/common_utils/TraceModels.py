@@ -5,7 +5,8 @@ Formal data models for separating reasoning from action outputs.
 """
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
+
 from pydantic import BaseModel, Field
 
 
@@ -19,7 +20,7 @@ class ThinkStep(BaseModel):
     confidence: float = Field(default=1.0, ge=0.0, le=1.0, description="Confidence in this reasoning")
     reasoning_type: str = Field(default="general", description="Type of reasoning (e.g., deductive, inductive)")
     timestamp: datetime = Field(default_factory=datetime.now, description="When this thought occurred")
-    metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
+    metadata: dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
 
     class ConfigThinkStep:
         frozen = False
@@ -33,10 +34,10 @@ class ActionStep(BaseModel):
 
     action: str = Field(..., description="The action to be performed")
     action_type: str = Field(default="tool_call", description="Type of action")
-    parameters: Dict[str, Any] = Field(default_factory=dict, description="Action parameters")
-    expected_outcome: Optional[str] = Field(None, description="Expected result of this action")
+    parameters: dict[str, Any] = Field(default_factory=dict, description="Action parameters")
+    expected_outcome: str | None = Field(None, description="Expected result of this action")
     timestamp: datetime = Field(default_factory=datetime.now, description="When this action was taken")
-    metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
+    metadata: dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
 
     class ConfigActionStep:
         frozen = False
@@ -50,10 +51,10 @@ class ObservationStep(BaseModel):
 
     observation: str = Field(..., description="The observed result")
     success: bool = Field(default=True, description="Whether the action succeeded")
-    error: Optional[str] = Field(None, description="Error message if action failed")
-    data: Dict[str, Any] = Field(default_factory=dict, description="Structured observation data")
+    error: str | None = Field(None, description="Error message if action failed")
+    data: dict[str, Any] = Field(default_factory=dict, description="Structured observation data")
     timestamp: datetime = Field(default_factory=datetime.now, description="When this observation was made")
-    metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
+    metadata: dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
 
     class ConfigObservationStep:
         frozen = False
@@ -68,17 +69,17 @@ class ReasoningTraceModel(BaseModel):
 
     trace_id: str = Field(..., description="Unique identifier for this trace")
     task: str = Field(..., description="The task being reasoned about")
-    steps: List[ThinkStep | ActionStep | ObservationStep] = Field(
+    steps: list[ThinkStep | ActionStep | ObservationStep] = Field(
         default_factory=list,
         description="Sequence of reasoning, action, and observation steps"
     )
-    final_answer: Optional[str] = Field(None, description="Final answer or conclusion")
+    final_answer: str | None = Field(None, description="Final answer or conclusion")
     total_steps: int = Field(default=0, description="Total number of steps taken")
     success: bool = Field(default=False, description="Whether the reasoning succeeded")
-    error: Optional[str] = Field(None, description="Error message if reasoning failed")
+    error: str | None = Field(None, description="Error message if reasoning failed")
     started_at: datetime = Field(default_factory=datetime.now, description="When reasoning started")
-    completed_at: Optional[datetime] = Field(None, description="When reasoning completed")
-    metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional trace metadata")
+    completed_at: datetime | None = Field(None, description="When reasoning completed")
+    metadata: dict[str, Any] = Field(default_factory=dict, description="Additional trace metadata")
 
     class ConfigReasoningTrace:
         frozen = False
@@ -101,19 +102,19 @@ class ReasoningTraceModel(BaseModel):
         self.steps.append(step)
         self.total_steps += 1
 
-    def get_think_steps(self) -> List[ThinkStep]:
+    def get_think_steps(self) -> list[ThinkStep]:
         """Get all thinking steps from the trace."""
         return [s for s in self.steps if isinstance(s, ThinkStep)]
 
-    def get_action_steps(self) -> List[ActionStep]:
+    def get_action_steps(self) -> list[ActionStep]:
         """Get all action steps from the trace."""
         return [s for s in self.steps if isinstance(s, ActionStep)]
 
-    def get_observation_steps(self) -> List[ObservationStep]:
+    def get_observation_steps(self) -> list[ObservationStep]:
         """Get all observation steps from the trace."""
         return [s for s in self.steps if isinstance(s, ObservationStep)]
 
-    def complete(self, final_answer: str, success: bool = True, error: Optional[str] = None) -> None:
+    def complete(self, final_answer: str, success: bool = True, error: str | None = None) -> None:
         """Mark the trace as complete."""
         self.final_answer = final_answer
         self.success = success

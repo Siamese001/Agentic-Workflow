@@ -5,17 +5,21 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 import logging
 from dataclasses import dataclass
-'''Brief description of functionality and purpose.'''
 
 '''Brief description of functionality and purpose.'''
 
-from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+'''Brief description of functionality and purpose.'''
+
+from typing import Any
+
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+
 from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger = logging.getLogger(__name__)
 
@@ -24,11 +28,11 @@ Logger = logging.getLogger(__name__)
 class HallucinationDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Stub implementation of hallucination detector."""
 
-    def __init__(self: Any, config: Dict[str, Any]) -> None:
+    def __init__(self: Any, config: dict[str, Any]) -> None:
         """Initialize the instance."""
         self.config = config or {}
 
-    def check(self: Any, text: str, context: Dict[str, Any]) -> Dict[str, Any]:
+    def check(self: Any, text: str, context: dict[str, Any]) -> dict[str, Any]:
         """
         Check text for potential hallucinations.
         Args:
@@ -44,7 +48,7 @@ class HallucinationDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, Healer
             """Invoke healing chain via super()."""
             return super().heal_repository()
 
-def check(self: Any, text: str, context: Dict[str, Any]) -> Dict[str, Any]:
+def check(self: Any, text: str, context: dict[str, Any]) -> dict[str, Any]:
     """
     Check text for potential hallucinations.
     Args:
@@ -56,7 +60,7 @@ def check(self: Any, text: str, context: Dict[str, Any]) -> Dict[str, Any]:
     return {"is_hallucination": False, "confidence": 0.95, "issues": []}
 
 
-def validate_resume_content(self: Any, resume_data: Dict[str, Any]) -> Dict[str, Any]:
+def validate_resume_content(self: Any, resume_data: dict[str, Any]) -> dict[str, Any]:
     """
     Validate resume content for hallucinations.
 

@@ -20,16 +20,14 @@ from __future__ import annotations
 import ast
 import json
 import logging
-import re
-import warnings
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.file_cache import FileCache
@@ -80,12 +78,12 @@ class StructureViolation:
     """Represents a structure violation."""
     violation_type: StructureViolationType
     message: str
-    file_path: Optional[Path] = None
-    source_layer: Optional[str] = None
-    target_layer: Optional[str] = None
+    file_path: Path | None = None
+    source_layer: str | None = None
+    target_layer: str | None = None
     severity: str = "error"
-    rule_id: Optional[str] = None
-    suggestion: Optional[str] = None
+    rule_id: str | None = None
+    suggestion: str | None = None
 
     def __str__(self) -> str:
         loc = str(self.file_path) if self.file_path else "unknown"
@@ -95,7 +93,7 @@ class StructureViolation:
 @dataclass
 class StructureReport:
     """Report of structure validation results."""
-    violations: List[StructureViolation] = field(default_factory=list)
+    violations: list[StructureViolation] = field(default_factory=list)
     agents_found: int = 0
     agents_registered: int = 0
     duplicates_found: int = 0
@@ -127,14 +125,14 @@ class StructureConfig:
     allow_utils_imports: bool = True  # Allow importing from utils at any layer
 
     # Registry settings
-    registry_path: Optional[Path] = None
-    agent_discovery_path: Optional[Path] = None
+    registry_path: Path | None = None
+    agent_discovery_path: Path | None = None
 
     # Paths
-    project_root: Optional[Path] = None
+    project_root: Path | None = None
 
 
-def extract_layer_from_path(file_path: Path) -> Optional[str]:
+def extract_layer_from_path(file_path: Path) -> str | None:
     """Extract the layer (L0-L6, Apps) from a file path."""
     path_str = str(file_path)
 
@@ -156,7 +154,7 @@ def extract_layer_from_path(file_path: Path) -> Optional[str]:
     return None
 
 
-def extract_layer_from_import(import_path: str) -> Optional[str]:
+def extract_layer_from_import(import_path: str) -> str | None:
     """Extract the layer from an import path."""
     for layer in ["L0", "L1", "L2", "L3", "L4", "L5", "L6"]:
         if f".{layer}_" in import_path or f"{layer}_" in import_path:
@@ -174,8 +172,8 @@ class GravityVisitor(ast.NodeVisitor):
     def __init__(self, source_layer: str, file_path: Path):
         self.source_layer = source_layer
         self.file_path = file_path
-        self.violations: List[StructureViolation] = []
-        self.imports: List[Tuple[str, int]] = []  # (import_path, line_number)
+        self.violations: list[StructureViolation] = []
+        self.imports: list[tuple[str, int]] = []  # (import_path, line_number)
 
     def visit_Import(self, node: ast.Import) -> None:
         for alias in node.names:
@@ -187,11 +185,11 @@ class GravityVisitor(ast.NodeVisitor):
             self.imports.append((node.module, node.lineno))
         self.generic_visit(node)
 
-    def check_gravity_violations(self) -> List[StructureViolation]:
+    def check_gravity_violations(self) -> list[StructureViolation]:
         """Check all imports for gravity violations."""
         allowed_layers = GRAVITY_RULES.get(self.source_layer, set())
 
-        for import_path, line_no in self.imports:
+        for import_path, _line_no in self.imports:
             target_layer = extract_layer_from_import(import_path)
 
             if target_layer and target_layer not in allowed_layers:
@@ -207,7 +205,7 @@ class GravityVisitor(ast.NodeVisitor):
                     target_layer=target_layer,
                     severity="error",
                     rule_id="GRAVITY-001",
-                    suggestion=f"Move shared code to a lower layer or use dependency injection",
+                    suggestion="Move shared code to a lower layer or use dependency injection",
                 ))
 
         return self.violations
@@ -237,11 +235,11 @@ class UnifiedStructureValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHard
 
     def __post_init__(self) -> None:
         """Initialize the validator."""
-        self._registry_cache: Optional[Dict[str, Any]] = None
-        self._discovery_cache: Optional[Dict[str, Any]] = None
+        self._registry_cache: dict[str, Any] | None = None
+        self._discovery_cache: dict[str, Any] | None = None
         Logger.info("UnifiedStructureValidatorAgent initialized")
 
-    def _load_registry(self) -> Dict[str, Any]:
+    def _load_registry(self) -> dict[str, Any]:
         """Load agent registry if available."""
         if self._registry_cache is not None:
             return self._registry_cache
@@ -256,7 +254,7 @@ class UnifiedStructureValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHard
         self._registry_cache = {}
         return self._registry_cache
 
-    def _load_discovery(self) -> List[Dict[str, Any]]:
+    def _load_discovery(self) -> list[dict[str, Any]]:
         """Load agent discovery data if available."""
         if self._discovery_cache is not None:
             return self._discovery_cache
@@ -274,8 +272,8 @@ class UnifiedStructureValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHard
     def check_gravity(
         self,
         file_path: Path,
-        source_code: Optional[str] = None,
-    ) -> List[StructureViolation]:
+        source_code: str | None = None,
+    ) -> list[StructureViolation]:
         """
         Check a file for gravity (layer) violations.
 
@@ -314,7 +312,7 @@ class UnifiedStructureValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHard
         self,
         directory: Path,
         pattern: str = "**/*Agent.py",
-    ) -> List[StructureViolation]:
+    ) -> list[StructureViolation]:
         """
         Check for duplicate agent definitions.
 
@@ -326,7 +324,7 @@ class UnifiedStructureValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHard
             List of duplicate violations
         """
         violations = []
-        agent_locations: Dict[str, List[Path]] = {}
+        agent_locations: dict[str, list[Path]] = {}
 
         # Use FileCache instead of raw glob for I/O efficiency
         cache = FileCache.get_instance(directory)
@@ -361,8 +359,8 @@ class UnifiedStructureValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHard
     def check_orphans(
         self,
         directory: Path,
-        registered_agents: Optional[Set[str]] = None,
-    ) -> List[StructureViolation]:
+        registered_agents: set[str] | None = None,
+    ) -> list[StructureViolation]:
         """
         Check for orphaned agents (not in registry).
 
@@ -407,7 +405,7 @@ class UnifiedStructureValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHard
         self,
         agent_name: str,
         agent_path: Path,
-    ) -> List[StructureViolation]:
+    ) -> list[StructureViolation]:
         """
         Check if an agent complies with registry requirements.
 
@@ -437,7 +435,7 @@ class UnifiedStructureValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHard
     def validate_structure(
         self,
         directory: Path,
-        config: Optional[StructureConfig] = None,
+        config: StructureConfig | None = None,
     ) -> StructureReport:
         """
         Perform full structure validation on a directory.
@@ -494,8 +492,8 @@ class UnifiedStructureValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHard
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[set] = None,
-    ) -> Dict[str, int]:
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L5 structure validation agent - operational healing."""
         if _call_path is None:
             _call_path = set()

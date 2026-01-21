@@ -5,11 +5,10 @@ description: Safety tests for utility relocation to apps_shared.
 """
 
 import ast
-import subprocess
 import sys
-import pytest
 from pathlib import Path
-from typing import Set, Dict, List, Tuple
+
+import pytest
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
@@ -97,7 +96,7 @@ class TestCircularDependencyPrevention:
     Tests to detect and prevent circular dependencies in the codebase.
     """
 
-    def _extract_imports(self, file_path: Path) -> Set[str]:
+    def _extract_imports(self, file_path: Path) -> set[str]:
         """Extract all import module roots from a Python file."""
         imports = set()
         try:
@@ -117,7 +116,7 @@ class TestCircularDependencyPrevention:
             pass
         return imports
 
-    def _get_territory_dependencies(self, territory: str) -> Dict[str, Set[str]]:
+    def _get_territory_dependencies(self, territory: str) -> dict[str, set[str]]:
         """Get all external dependencies for files in a territory."""
         territory_dir = PROJECT_ROOT / territory
         if not territory_dir.exists():
@@ -149,7 +148,7 @@ class TestCircularDependencyPrevention:
                 circular_risk.append(file_path)
 
         if circular_risk:
-            pytest.fail(f"Circular dependency risk: apps_shared files importing apps_lic:\n" +
+            pytest.fail("Circular dependency risk: apps_shared files importing apps_lic:\n" +
                        "\n".join(f"  - {f}" for f in circular_risk))
 
     def test_gravity_compliance(self):

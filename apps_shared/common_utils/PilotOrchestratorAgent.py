@@ -4,10 +4,12 @@
 # Suggested keywords to add in docstring/code: engine, guardrail, healer, memory, prompt, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.utils.core_extensions.rate_limit_mixin import RateLimitMixin
-from agentic_core.utils.core_extensions.state_validation_mixin import StateValidationMixin
-from agentic_core.utils.core_extensions.event_emission_mixin import EventEmissionMixin
 from agentic_core.utils.core_extensions.context_propagation_mixin import ContextPropagationMixin
+from agentic_core.utils.core_extensions.state_validation_mixin import StateValidationMixin
+
+from agentic_core.utils.core_extensions.event_emission_mixin import EventEmissionMixin
+from agentic_core.utils.core_extensions.rate_limit_mixin import RateLimitMixin
+
 
 class PilotOrchestrator(RateLimitMixin, StateValidationMixin, EventEmissionMixin, ContextPropagationMixin):
     """

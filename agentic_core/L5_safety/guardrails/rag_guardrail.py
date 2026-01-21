@@ -1,11 +1,14 @@
 from __future__ import annotations
+
 """
 RAGGuardrail - L5 RAG Content Filtering and Reranking
 """
 import asyncio
 import math
-from typing import Any, Dict, List, Optional
+from typing import Any
+
 import torch
+
 
 class RagGuardrail:
     """Brief description of functionality and purpose."""
@@ -21,9 +24,9 @@ class RagGuardrail:
             self.reranker_available = True
             print(f'   [OK] BGE Reranker armed on {device}: {model_name}')
         except ImportError:
-            print(f'   [!] FlagEmbedding not installed — falling back to RRF only')
+            print('   [!] FlagEmbedding not installed — falling back to RRF only')
 
-    async def rerank_documents(self, documents: List[Any], query: str, top_k: int=10) -> List[Any]:
+    async def rerank_documents(self, documents: list[Any], query: str, top_k: int=10) -> list[Any]:
         """
         L5 reranking using BGE-v2-m3 for sovereign precision
         """
@@ -35,11 +38,11 @@ class RagGuardrail:
             def _compute():
                 return self.bge_reranker.compute_score(pairs, batch_size=32)
             raw_logits: Any = await asyncio.to_thread(_compute)
-            if isinstance(raw_logits, (float, int)):
+            if isinstance(raw_logits, float | int):
                 raw_logits: Any = [raw_logits]
             confident_docs: Any = []
             min_confidence: Any = 0.75
-            for doc, logit in zip(documents, raw_logits):
+            for doc, logit in zip(documents, raw_logits, strict=False):
                 confidence: Any = 1 / (1 + math.exp(-logit))
                 if confidence >= min_confidence:
                     doc.score = float(confidence)
@@ -49,13 +52,13 @@ class RagGuardrail:
             if dropped > 0:
                 print(f'   [FILTER] Dropped {dropped} low-confidence docs (<{min_confidence})')
             if not confident_docs:
-                print(f'   [!] SOVEREIGN ALERT: Zero documents passed confidence threshold.')
+                print('   [!] SOVEREIGN ALERT: Zero documents passed confidence threshold.')
             return confident_docs[:top_k]
         except Exception as e:
             print(f'   [!] BGE reranking failed: {e}')
             return documents
 
-    async def filter_hallucinations(self, documents: List[Any], query: str) -> List[Any]:
+    async def filter_hallucinations(self, documents: list[Any], query: str) -> list[Any]:
         """
         Filter out potentially hallucinated content
         """
@@ -63,7 +66,7 @@ class RagGuardrail:
             return documents
         return documents
 
-    async def apply_safety_filters(self, documents: List[Any]) -> List[Any]:
+    async def apply_safety_filters(self, documents: list[Any]) -> list[Any]:
         """
         Apply L5 safety filters to RAG results
         """
@@ -73,12 +76,12 @@ class RagGuardrail:
                 continue
             forbidden: Any = ['password', 'secret', 'api_key', 'private_key']
             text_lower: Any = doc.text.lower()
-            if any((word in text_lower for word in forbidden)):
+            if any(word in text_lower for word in forbidden):
                 continue
             filtered.append(doc)
         return filtered
 
-    async def process(self, documents: List[Any], query: str) -> List[Any]:
+    async def process(self, documents: list[Any], query: str) -> list[Any]:
         """
         Full RAG guardrail processing pipeline
         """

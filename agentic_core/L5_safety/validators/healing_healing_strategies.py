@@ -1,19 +1,16 @@
 from __future__ import annotations
+
 """
 Sovereign Healing Engine: Strategy Registry
 Proactive repair strategies for L0 governance violations.
 
 Phase 10: Sovereign Self-Correction (Dec 26, 2025)
 """
-from typing import List, Dict, Any
-from pathlib import Path
 import logging
+from pathlib import Path
+from typing import Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 
 Logger = logging.getLogger(__name__)
@@ -26,7 +23,7 @@ class HealingStrategy:
         self.name = name
         self.priority = priority  # Lower = higher priority
 
-    async def diagnose(self, issues: List[Dict]) -> List[Dict]:
+    async def diagnose(self, issues: list[dict]) -> list[dict]:
         """
         Analyze issues and return actionable fixes.
 
@@ -38,7 +35,7 @@ class HealingStrategy:
         """
         return []
 
-    async def apply(self, fix: Dict, ctx: Any) -> bool:
+    async def apply(self, fix: dict, ctx: Any) -> bool:
         """
         Apply a specific fix and return success status.
 
@@ -59,7 +56,7 @@ class StructureHealing(HealingStrategy):
     def __init__(self):
         super().__init__("Structure", priority=1)
 
-    async def diagnose(self, issues: List[Dict]) -> List[Dict]:
+    async def diagnose(self, issues: list[dict]) -> list[dict]:
 
         fixes = []
         for issue in issues:
@@ -84,7 +81,7 @@ class StructureHealing(HealingStrategy):
                 })
         return fixes
 
-    async def apply(self, fix: Dict, ctx: Any = None) -> bool:
+    async def apply(self, fix: dict, ctx: Any = None) -> bool:
         """Physically relocate files to compliant territories."""
         try:
             import shutil
@@ -98,11 +95,11 @@ class StructureHealing(HealingStrategy):
             # SSOT COMPLIANCE: All moves require user approval
             if sys.stdin.isatty():
                 print(f"\n{'='*60}")
-                print(f"MOVE APPROVAL REQUIRED")
+                print("MOVE APPROVAL REQUIRED")
                 print(f"{'='*60}")
                 print(f"Source: {source}")
                 print(f"Target: {target}")
-                print(f"Reason: L0 Structure relocation")
+                print("Reason: L0 Structure relocation")
                 print(f"{'='*60}")
                 try:
                     response = input("Approve? [y/n]: ").strip().lower()
@@ -110,7 +107,7 @@ class StructureHealing(HealingStrategy):
                         Logger.info(f"[L0 STRUCTURE] Skipped move of {source.name} - user declined")
                         return False
                 except (EOFError, KeyboardInterrupt):
-                    Logger.info(f"[L0 STRUCTURE] Move cancelled by user")
+                    Logger.info("[L0 STRUCTURE] Move cancelled by user")
                     return False
             else:
                 Logger.warning(f"[L0 STRUCTURE] Non-interactive mode - skipping move: {source.name}")
@@ -135,7 +132,7 @@ class UnderscoreFieldHealing(HealingStrategy):
     def __init__(self):
         super().__init__("UnderscoreFields", priority=2)
 
-    async def diagnose(self, issues: List[Dict]) -> List[Dict]:
+    async def diagnose(self, issues: list[dict]) -> list[dict]:
 
         fixes = []
         for issue in issues:
@@ -162,7 +159,7 @@ class UnderscoreFieldHealing(HealingStrategy):
                 })
         return fixes
 
-    async def apply(self, fix: Dict, ctx: Any = None) -> bool:
+    async def apply(self, fix: dict, ctx: Any = None) -> bool:
         """Rename illegal underscore fields in SSOT schema files."""
         try:
             import re
@@ -194,7 +191,7 @@ class DarkReasoningHealing(HealingStrategy):
     def __init__(self):
         super().__init__("DarkReasoning", priority=3)
 
-    async def diagnose(self, issues: List[Dict]) -> List[Dict]:
+    async def diagnose(self, issues: list[dict]) -> list[dict]:
 
         fixes = []
         for issue in issues:
@@ -210,7 +207,7 @@ class DarkReasoningHealing(HealingStrategy):
                 })
         return fixes
 
-    async def apply(self, fix: Dict, ctx: Any = None) -> bool:
+    async def apply(self, fix: dict, ctx: Any = None) -> bool:
         """Inject structured logging around dark reasoning calls."""
         try:
             file_path = Path(fix["file"])
@@ -241,7 +238,7 @@ class DddAlignmentHealing(HealingStrategy):
     def __init__(self):
         super().__init__("DDDAlignment", priority=4)
 
-    async def diagnose(self, issues: List[Dict]) -> List[Dict]:
+    async def diagnose(self, issues: list[dict]) -> list[dict]:
         """Diagnose DDD violations and propose import refactoring."""
         fixes = []
 
@@ -266,7 +263,7 @@ class DddAlignmentHealing(HealingStrategy):
 
         return fixes
 
-    async def apply(self, fix: Dict, ctx: Any = None) -> bool:
+    async def apply(self, fix: dict, ctx: Any = None) -> bool:
         """Apply DDD import refactoring by commenting out illegal imports."""
         try:
             file_path = Path(fix.get("file", ""))
@@ -276,7 +273,7 @@ class DddAlignmentHealing(HealingStrategy):
 
             module_info = fix.get("module", "")
             if not module_info:
-                Logger.warning(f"[L0 DDD HEALING] No module info in fix")
+                Logger.warning("[L0 DDD HEALING] No module info in fix")
                 return False
 
             # Read file content
@@ -319,7 +316,7 @@ class ObservabilityHealing(HealingStrategy):
     def __init__(self):
         super().__init__("Observability", priority=3)
 
-    async def diagnose(self, issues: List[Dict]) -> List[Dict]:
+    async def diagnose(self, issues: list[dict]) -> list[dict]:
         """Diagnose observability violations and propose logging injections."""
         fixes = []
 
@@ -365,7 +362,7 @@ class ObservabilityHealing(HealingStrategy):
 
         return fixes
 
-    async def apply(self, fix: Dict, ctx: Any = None) -> bool:
+    async def apply(self, fix: dict, ctx: Any = None) -> bool:
         """Apply observability logging injection."""
         try:
             file_path = Path(fix.get("file", ""))
@@ -410,7 +407,7 @@ class DirectRedisHealing(HealingStrategy):
     def __init__(self):
         super().__init__("DirectRedis", priority=1)
 
-    async def diagnose(self, issues: List[Dict]) -> List[Dict]:
+    async def diagnose(self, issues: list[dict]) -> list[dict]:
 
         fixes = []
         for issue in issues:
@@ -426,7 +423,7 @@ class DirectRedisHealing(HealingStrategy):
                 })
         return fixes
 
-    async def apply(self, fix: Dict, ctx: Any = None) -> bool:
+    async def apply(self, fix: dict, ctx: Any = None) -> bool:
 
         try:
             import re
@@ -458,7 +455,7 @@ class DirectLlmHealing(HealingStrategy):
     def __init__(self):
         super().__init__("DirectLLM", priority=1)
 
-    async def diagnose(self, issues: List[Dict]) -> List[Dict]:
+    async def diagnose(self, issues: list[dict]) -> list[dict]:
 
         fixes = []
         for issue in issues:
@@ -477,7 +474,7 @@ class DirectLlmHealing(HealingStrategy):
                 })
         return fixes
 
-    async def apply(self, fix: Dict, ctx: Any = None) -> bool:
+    async def apply(self, fix: dict, ctx: Any = None) -> bool:
         """Replace direct OpenAI/Anthropic calls with sovereign LLM router."""
         try:
             import re
@@ -509,7 +506,7 @@ class FilesystemBypassHealing(HealingStrategy):
     def __init__(self):
         super().__init__("FilesystemBypass", priority=2)
 
-    async def diagnose(self, issues: List[Dict]) -> List[Dict]:
+    async def diagnose(self, issues: list[dict]) -> list[dict]:
 
         fixes = []
         for issue in issues:
@@ -528,7 +525,7 @@ class FilesystemBypassHealing(HealingStrategy):
                 })
         return fixes
 
-    async def apply(self, fix: Dict, ctx: Any = None) -> bool:
+    async def apply(self, fix: dict, ctx: Any = None) -> bool:
         """Flag direct filesystem operations for MCP routing."""
         try:
             import re
@@ -563,15 +560,18 @@ class FilesystemBypassHealing(HealingStrategy):
 
 
 # Import Phase 17B Vector Healing Strategy
-from agentic_core.L0_maintenance.P1_core.VectorHealingStrategy import VectorHealingStrategy
-# Import Phase 17C Knowledge Graph Healing Strategy
-from agentic_core.L0_maintenance.P1_core.kg_healing_strategy import KnowledgeGraphHealingStrategy
-# Import Phase 17D GitKraken Healing Strategy
-from agentic_core.L0_maintenance.P1_core.gitkraken_healing_strategy import GitKrakenHealingStrategy
 # Import Phase 17E DeepWiki Healing Strategy
 from agentic_core.L0_maintenance.P1_core.deepwiki_healing_strategy import DeepWikiHealingStrategy
+
+# Import Phase 17D GitKraken Healing Strategy
+from agentic_core.L0_maintenance.P1_core.gitkraken_healing_strategy import GitKrakenHealingStrategy
+
+# Import Phase 17C Knowledge Graph Healing Strategy
+from agentic_core.L0_maintenance.P1_core.kg_healing_strategy import KnowledgeGraphHealingStrategy
+
 # Import Phase 17F L6 Audit Healing Strategy
 from agentic_core.L0_maintenance.P1_core.L6AuditHealingStrategy import L6AuditHealingStrategy
+from agentic_core.L0_maintenance.P1_core.VectorHealingStrategy import VectorHealingStrategy
 
 # Registry of all available healing strategies
 # NAMING FIXED: HEALING_STRATEGIES → healing_strategies
@@ -602,6 +602,6 @@ def get_strategy_by_name(name: str) -> HealingStrategy:
     return None
 
 
-def get_strategies_by_priority() -> List[HealingStrategy]:
+def get_strategies_by_priority() -> list[HealingStrategy]:
     """Get all strategies sorted by priority (lower number = higher priority)."""
     return sorted(HEALING_STRATEGIES, key=lambda s: s.priority)

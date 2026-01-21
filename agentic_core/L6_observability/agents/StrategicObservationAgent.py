@@ -4,13 +4,13 @@
 # Suggested keywords to add in docstring/code: engine, guardrail, healer, memory, orchestrator, prompt, state
 # This boosts alignment detection — review and integrate appropriately
 
-import logging
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
 from datetime import datetime
+from typing import Any
 
-from agentic_core.L6_observability.L6ObservabilityBaseAgent import L6ObservabilityBaseAgent
 from agentic_core.L5_safety.validators.decorators import standard_heal
+from agentic_core.L6_observability.L6ObservabilityBaseAgent import L6ObservabilityBaseAgent
+
 
 @dataclass
 class StrategicObservationAgent(L6ObservabilityBaseAgent):
@@ -21,13 +21,13 @@ class StrategicObservationAgent(L6ObservabilityBaseAgent):
     complex execution logs into strategic observations for the dashboard.
     """
     agent_name: str = "StrategicObservationAgent"
-    observations_cache: List[Dict[str, Any]] = field(default_factory=list)
+    observations_cache: list[dict[str, Any]] = field(default_factory=list)
 
     def get_timestamp(self) -> str:
         """Get current timestamp in ISO format."""
         return datetime.now().isoformat()
 
-    async def generate_observations(self, raw_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def generate_observations(self, raw_data: dict[str, Any]) -> dict[str, Any]:
         """
         Transforms raw execution data into dashboard-ready strategic observations.
 
@@ -53,7 +53,7 @@ class StrategicObservationAgent(L6ObservabilityBaseAgent):
         self.observations_cache.append(observation)
         return observation
 
-    async def analyze(self, target_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def analyze(self, target_data: dict[str, Any]) -> dict[str, Any]:
         """
         Implementation of L6ObservabilityBaseAgent abstract method.
 
@@ -72,7 +72,7 @@ class StrategicObservationAgent(L6ObservabilityBaseAgent):
         return True
 
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
         """Autonomous healing with proper invocation chain."""
         super().heal_repository(dry_run=dry_run, execute=execute, **kwargs)
         return {"violations_found": 0, "violations_fixed": 0, "errors": 0}

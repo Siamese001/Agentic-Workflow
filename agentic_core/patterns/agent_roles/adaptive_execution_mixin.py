@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 AdaptiveExecutionMixin – Sovereign Agent Role Mixin (Phase 29 – Dec 30, 2025)
 
@@ -16,7 +17,7 @@ Constitutional Alignment:
 """
 
 import logging
-from typing import Dict, Any, Awaitable
+from typing import Any
 
 
 class AdaptiveExecutionMixin:
@@ -38,7 +39,7 @@ class AdaptiveExecutionMixin:
         """Current execution mode — readable by orchestrators and logs."""
         return self._current_mode
 
-    async def select_execution_mode(self, context: Dict[str, Any]) -> str:
+    async def select_execution_mode(self, context: dict[str, Any]) -> str:
         """
         Constitutional decision engine for mode selection.
         Override or extend for agent-specific logic.
@@ -69,7 +70,7 @@ class AdaptiveExecutionMixin:
         # Default
         return "standard"
 
-    async def _get_recent_failure_rate(self, context: Dict[str, Any]) -> float:
+    async def _get_recent_failure_rate(self, context: dict[str, Any]) -> float:
         """
         Hook for agents with history tracking.
         Default: assume healthy.
@@ -105,11 +106,11 @@ class AdaptiveExecutionMixin:
 
     # === Mode Implementations — Agents override as needed ===
 
-    async def _execute_standard(self, ctx: Any, **context: Dict[str, Any]) -> Any:
+    async def _execute_standard(self, ctx: Any, **context: dict[str, Any]) -> Any:
         """Default mode — full capability execution."""
         raise NotImplementedError("Agent must implement _execute_standard or override execute()")
 
-    async def _execute_conservative(self, ctx: Any, **context: Dict[str, Any]) -> Any:
+    async def _execute_conservative(self, ctx: Any, **context: dict[str, Any]) -> Any:
         """Safer, more verified execution — e.g., extra validation, smaller steps."""
         self.Logger.info("Conservative mode: adding extra constitutional checks")
         # Example: run predictive safety first
@@ -117,12 +118,12 @@ class AdaptiveExecutionMixin:
         # ... apply extra guards
         return await self._execute_standard(ctx, **context)
 
-    async def _execute_aggressive(self, ctx: Any, **context: Dict[str, Any]) -> Any:
+    async def _execute_aggressive(self, ctx: Any, **context: dict[str, Any]) -> Any:
         """Faster execution — e.g., parallelize, skip non-critical checks."""
         self.Logger.info("Aggressive mode: prioritizing speed")
         return await self._execute_standard(ctx, **context)
 
-    async def _execute_minimal(self, ctx: Any, **context: Dict[str, Any]) -> Any:
+    async def _execute_minimal(self, ctx: Any, **context: dict[str, Any]) -> Any:
         """Bare minimum — skip non-essential work to preserve resources."""
         self.Logger.warning("Minimal mode: skipping non-critical operations")
         return {

@@ -18,11 +18,9 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 import shutil
 import sys
 from pathlib import Path
-from typing import Dict, List, Tuple, Optional
 
 PROJECT_ROOT = Path(__file__).parent.parent
 ARCHIVES = PROJECT_ROOT / "archives"
@@ -53,7 +51,7 @@ def get_current_agents() -> set:
     return agents
 
 
-def infer_target_directory(agent_name: str, source_path: str) -> Optional[str]:
+def infer_target_directory(agent_name: str, source_path: str) -> str | None:
     """Infer the target directory for an agent based on its name and source."""
     name_lower = agent_name.lower()
 
@@ -89,7 +87,7 @@ def infer_target_directory(agent_name: str, source_path: str) -> Optional[str]:
     return TARGETS["L5"]
 
 
-def restore_agent(source: Path, target: Path, dry_run: bool = False) -> Tuple[bool, str]:
+def restore_agent(source: Path, target: Path, dry_run: bool = False) -> tuple[bool, str]:
     """Restore a single agent file."""
     if not source.exists():
         return False, "Source not found"

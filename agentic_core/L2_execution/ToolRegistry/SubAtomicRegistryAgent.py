@@ -5,7 +5,9 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 #!/usr/bin/env python3
 """
 SubAtomicRegistry - Live Semantic Index of Every Method
@@ -23,24 +25,16 @@ import json
 import logging
 import os
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Type
+from typing import Any
 
 from agentic_core.L4_state.validation_context.PineconeSovereignAgent import PineconeSovereignAgent
+
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 from agentic_core.L4_state.validation_context.RedisSovereignAgent import RedisSovereignAgent
-
-
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeoutList
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.sovereign_index import SovereignIndex
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 
 Logger = logging.getLogger(__name__)
 
@@ -51,7 +45,7 @@ Logger = logging.getLogger(__name__)
 # Maps legacy micro-agent keys to consolidated unified handlers.
 # This ensures backward compatibility for dynamic agent instantiation.
 
-def _get_unified_agent_mapping() -> Dict[str, Type]:
+def _get_unified_agent_mapping() -> dict[str, type]:
     """
     Lazy-load unified agent mapping to avoid circular imports.
 
@@ -59,11 +53,19 @@ def _get_unified_agent_mapping() -> Dict[str, Type]:
         Dictionary mapping legacy agent IDs to unified agent classes.
     """
     # Import unified agents lazily to avoid circular dependencies
-    from agentic_core.L1_cognition.thought_engine.UnifiedASTValidatorAgent import UnifiedASTValidatorAgent
-    from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import UnifiedStructureValidatorAgent
-    from agentic_core.L4_state.ValidationContext.UnifiedCheckpointManagerAgent import UnifiedCheckpointManagerAgent
+    from agentic_core.L1_cognition.thought_engine.UnifiedASTValidatorAgent import (
+        UnifiedASTValidatorAgent,
+    )
+    from agentic_core.L4_state.ValidationContext.UnifiedCheckpointManagerAgent import (
+        UnifiedCheckpointManagerAgent,
+    )
+    from agentic_core.L4_state.ValidationContext.UnifiedStateManagementAgent import (
+        UnifiedStateManagementAgent,
+    )
     from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import UnifiedCodeEnforcerAgent
-    from agentic_core.L4_state.ValidationContext.UnifiedStateManagementAgent import UnifiedStateManagementAgent
+    from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import (
+        UnifiedStructureValidatorAgent,
+    )
 
     return {
         # Phase 1: L1 AST Validator Consolidation
@@ -108,17 +110,23 @@ def _get_unified_agent_mapping() -> Dict[str, Type]:
     }
 
 
-def _get_phase3_manager_enforcer_mapping() -> Dict[str, Type]:
+def _get_phase3_manager_enforcer_mapping() -> dict[str, type]:
     """
     Phase 3 Manager & Enforcer Consolidation: Hard Migration mappings.
 
     Returns:
         Dictionary mapping legacy manager/enforcer names to unified classes.
     """
-    from agentic_core.L5_safety.unified.UnifiedResourceManagerAgent import UnifiedResourceManagerAgent
-    from agentic_core.L5_safety.unified.UnifiedSecurityManagerAgent import UnifiedSecurityManagerAgent
     from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import UnifiedCodeEnforcerAgent
-    from agentic_core.L5_safety.unified.UnifiedStructureEnforcerAgent import UnifiedStructureEnforcerAgent
+    from agentic_core.L5_safety.unified.UnifiedResourceManagerAgent import (
+        UnifiedResourceManagerAgent,
+    )
+    from agentic_core.L5_safety.unified.UnifiedSecurityManagerAgent import (
+        UnifiedSecurityManagerAgent,
+    )
+    from agentic_core.L5_safety.unified.UnifiedStructureEnforcerAgent import (
+        UnifiedStructureEnforcerAgent,
+    )
 
     return {
         # Resource Managers -> UnifiedResourceManagerAgent
@@ -149,19 +157,21 @@ def _get_phase3_manager_enforcer_mapping() -> Dict[str, Type]:
     }
 
 
-def _get_phase4_detector_healer_router_executor_mapping() -> Dict[str, Type]:
+def _get_phase4_detector_healer_router_executor_mapping() -> dict[str, type]:
     """
     Phase 4 Detector/Healer/Router/Executor Consolidation: Hard Migration mappings.
 
     Returns:
         Dictionary mapping legacy detector/healer/router/executor names to unified classes.
     """
-    from agentic_core.L5_safety.unified.UnifiedCodeDetectorAgent import UnifiedCodeDetectorAgent
-    from agentic_core.L5_safety.unified.UnifiedSafetyDetectorAgent import UnifiedSafetyDetectorAgent
-    from agentic_core.L5_safety.unified.UnifiedCodeHealerAgent import UnifiedCodeHealerAgent
-    from agentic_core.L5_safety.unified.UnifiedStructureHealerAgent import UnifiedStructureHealerAgent
     from agentic_core.L2_execution.unified.UnifiedModelRouterAgent import UnifiedModelRouterAgent
+    from agentic_core.L5_safety.unified.UnifiedCodeDetectorAgent import UnifiedCodeDetectorAgent
+    from agentic_core.L5_safety.unified.UnifiedCodeHealerAgent import UnifiedCodeHealerAgent
+    from agentic_core.L5_safety.unified.UnifiedSafetyDetectorAgent import UnifiedSafetyDetectorAgent
     from agentic_core.L5_safety.unified.UnifiedSafetyExecutorAgent import UnifiedSafetyExecutorAgent
+    from agentic_core.L5_safety.unified.UnifiedStructureHealerAgent import (
+        UnifiedStructureHealerAgent,
+    )
 
     return {
         # Code Detectors -> UnifiedCodeDetectorAgent
@@ -202,7 +212,7 @@ def _get_phase4_detector_healer_router_executor_mapping() -> Dict[str, Type]:
     }
 
 
-def _get_phase2_validator_mapping() -> Dict[str, Type]:
+def _get_phase2_validator_mapping() -> dict[str, type]:
     """
     Phase 2 Validator Consolidation: Maps legacy validators to unified agents.
 
@@ -210,7 +220,9 @@ def _get_phase2_validator_mapping() -> Dict[str, Type]:
         Dictionary mapping legacy validator names to unified validator classes.
     """
     from agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent import UnifiedCodeValidatorAgent
-    from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import UnifiedStructureValidatorAgent
+    from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import (
+        UnifiedStructureValidatorAgent,
+    )
     from apps_lic.shared.validation.AppContentValidatorAgent import AppContentValidatorAgent
 
     return {
@@ -235,7 +247,7 @@ def _get_phase2_validator_mapping() -> Dict[str, Type]:
     }
 
 
-def get_unified_agent_class(agent_id: str) -> Type:
+def get_unified_agent_class(agent_id: str) -> type:
     """
     Returns the unified agent class for a given legacy agent ID.
     Ensures backward compatibility for dynamic agent instantiation.
@@ -318,7 +330,7 @@ class SubAtomicRegistryAgent(HealerMixin, MCPHardenedMixin):
         assert hasattr(self, 'pinecone'), "Missing pinecone"
         return True
 
-    def extract_methods(self) -> List[Dict]:
+    def extract_methods(self) -> list[dict]:
         """Deep crawl of all .py files to find callables"""
         methods = []
         # Phase 6.8: Use ssot_discovery instead of rglob
@@ -328,7 +340,7 @@ class SubAtomicRegistryAgent(HealerMixin, MCPHardenedMixin):
             try:
                 tree = ast.parse(py_file.read_text())
                 for node in ast.walk(tree):
-                    if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
                         # Enhanced metadata extraction
                         doc = ast.get_docstring(node) or "No docstring provided."
                         source_lines = ast.get_source_segment(open(py_file).read(), node) or ""
@@ -368,7 +380,7 @@ class SubAtomicRegistryAgent(HealerMixin, MCPHardenedMixin):
             self.method_index.upsert(vectors=vectors)
             print(f"   [OK] SubAtomicRegistry: Indexed {len(vectors)} methods + Cache Warmed")
 
-    def find_method(self, Task: str, top_k: int = 3) -> List[Dict]:
+    def find_method(self, Task: str, top_k: int = 3) -> list[dict]:
         """Hybrid search for best method — now cache-first"""
         cache_key = f"method_search:{hashlib.sha256(Task.encode()).hexdigest()}_{top_k}"
         try:
@@ -404,7 +416,7 @@ class SubAtomicRegistryAgent(HealerMixin, MCPHardenedMixin):
         # Dynamic import and execution logic would go here
         return meta
 
-    def invoke_method(self, method_meta: Dict, *args, **kwargs) -> Any:
+    def invoke_method(self, method_meta: dict, *args, **kwargs) -> Any:
         """Dynamically invoke a method by metadata"""
         try:
             # Import the module
@@ -433,7 +445,7 @@ class SubAtomicRegistryAgent(HealerMixin, MCPHardenedMixin):
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L4 state agent - operational only."""
         if _call_path is None:
             # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)

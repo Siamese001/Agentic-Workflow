@@ -8,27 +8,24 @@ maintaining domain-specific optimizations.
 import hashlib
 import json
 import logging
+import threading
 import time
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
-from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Tuple, Union
-from datetime import datetime, timedelta
-import threading
 from collections import defaultdict
+from dataclasses import dataclass, field
+from datetime import datetime, timedelta
+from enum import Enum
+from typing import Any
 
-from .signal_infrastructure import EngineType, DomainConfig, get_shared_infrastructure
-from .signal_quality_pipeline import SignalQualityPipeline, QualityAssessment
-from .rag_components import SemanticCache, SelfRAGProcessor, KnowledgeGraphInjector
 from .claim_confidence import ClaimConfidenceScorer, analyze_claims
+from .core.checkpoint_manager import CheckpointConfig, CheckpointManager, get_checkpoint_manager
+from .core.envelope import EnvelopeFactory, PipelineStageStatus, SignalEnvelope
+from .hyde_processor import HyDEProcessor
 from .prompt_optimizer import PromptOptimizer, optimize_prompt
-from .hyde_processor import HyDEProcessor, expand_query_with_hyde
+from .rag_components import KnowledgeGraphInjector, SelfRAGProcessor, SemanticCache
+from .signal_infrastructure import DomainConfig, EngineType, get_shared_infrastructure
+from .signal_quality_pipeline import SignalQualityPipeline
 from .tone_model import ToneModel, adapt_tone
-from .core.envelope import (
-    SignalEnvelope, EnvelopeFactory, PipelineStageStatus,
-    ResumeEnvelope, OutreachEnvelope, TextEnvelope, DictEnvelope
-)
-from .core.checkpoint_manager import CheckpointManager, CheckpointConfig, get_checkpoint_manager
 
 logger = logging.getLogger(__name__)
 
@@ -49,9 +46,9 @@ class PipelineContext:
     engine_type: EngineType
     domain_config: DomainConfig
     original_input: Any
-    processed_data: Dict[str, Any] = field(default_factory=dict)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-    cache_keys: Set[str] = field(default_factory=set)
+    processed_data: dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
+    cache_keys: set[str] = field(default_factory=set)
 
     def get_cache_key(self, component: str, data: Any) -> str:
         """Generate cache key for component.
@@ -191,7 +188,7 @@ class InputProcessingStage(PipelineStage):
         else:
             return str(payload)
 
-    async def _process_content(self, content: str, envelope: SignalEnvelope) -> Dict[str, Any]:
+    async def _process_content(self, content: str, envelope: SignalEnvelope) -> dict[str, Any]:
         """Process text content.
 
         Args:
@@ -220,7 +217,7 @@ class InputProcessingStage(PipelineStage):
 
         return result
 
-    def _update_payload_with_processed_data(self, envelope: SignalEnvelope, processed: Dict[str, Any]) -> None:
+    def _update_payload_with_processed_data(self, envelope: SignalEnvelope, processed: dict[str, Any]) -> None:
         """Update payload with processed data.
 
         Args:
@@ -355,7 +352,7 @@ class ContextEnrichmentStage(PipelineStage):
 
         return ""
 
-    def _update_envelope_with_context(self, envelope: SignalEnvelope, enriched: Dict[str, Any]) -> None:
+    def _update_envelope_with_context(self, envelope: SignalEnvelope, enriched: dict[str, Any]) -> None:
         """Update envelope with enriched context.
 
         Args:
@@ -367,7 +364,7 @@ class ContextEnrichmentStage(PipelineStage):
         else:
             envelope.metadata.update({f"enriched_{k}": v for k, v in enriched.items()})
 
-    def _combine_contexts(self, rag_results: List[Dict], kg_context: Dict) -> str:
+    def _combine_contexts(self, rag_results: list[dict], kg_context: dict) -> str:
         """Combine RAG and KG contexts.
 
         Args:
@@ -495,7 +492,7 @@ class SignalAugmentationStage(PipelineStage):
         else:
             return str(payload)
 
-    async def _perform_augmentation(self, content: str, envelope: SignalEnvelope) -> Dict[str, Any]:
+    async def _perform_augmentation(self, content: str, envelope: SignalEnvelope) -> dict[str, Any]:
         """Perform signal augmentation.
 
         Args:
@@ -546,7 +543,7 @@ class SignalAugmentationStage(PipelineStage):
 
         return augmented
 
-    def _get_enriched_context(self, envelope: SignalEnvelope) -> Dict[str, Any]:
+    def _get_enriched_context(self, envelope: SignalEnvelope) -> dict[str, Any]:
         """Get enriched context from envelope.
 
         Args:
@@ -565,7 +562,7 @@ class SignalAugmentationStage(PipelineStage):
 
         return {}
 
-    def _update_envelope_with_augmented(self, envelope: SignalEnvelope, augmented: Dict[str, Any]) -> None:
+    def _update_envelope_with_augmented(self, envelope: SignalEnvelope, augmented: dict[str, Any]) -> None:
         """Update envelope with augmented data.
 
         Args:
@@ -658,7 +655,7 @@ class QualityValidationStage(PipelineStage):
             )
             raise
 
-    def _get_augmented_signal(self, envelope: SignalEnvelope) -> Dict[str, Any]:
+    def _get_augmented_signal(self, envelope: SignalEnvelope) -> dict[str, Any]:
         """Get augmented signal from envelope.
 
         Args:
@@ -695,7 +692,7 @@ class QualityValidationStage(PipelineStage):
         else:
             return str(payload)
 
-    def _get_enriched_context(self, envelope: SignalEnvelope) -> Dict[str, Any]:
+    def _get_enriched_context(self, envelope: SignalEnvelope) -> dict[str, Any]:
         """Get enriched context from envelope.
 
         Args:
@@ -714,7 +711,7 @@ class QualityValidationStage(PipelineStage):
 
         return {}
 
-    def _update_envelope_with_validation(self, envelope: SignalEnvelope, validation: Dict[str, Any]) -> None:
+    def _update_envelope_with_validation(self, envelope: SignalEnvelope, validation: dict[str, Any]) -> None:
         """Update envelope with validation results.
 
         Args:
@@ -802,7 +799,7 @@ class OutputFormattingStage(PipelineStage):
             )
             raise
 
-    def _format_resume_output(self, envelope: SignalEnvelope) -> Dict[str, Any]:
+    def _format_resume_output(self, envelope: SignalEnvelope) -> dict[str, Any]:
         """Format resume-specific output.
 
         Args:
@@ -818,7 +815,7 @@ class OutputFormattingStage(PipelineStage):
             "sections": self._get_resume_sections(envelope)
         }
 
-    def _format_outreach_output(self, envelope: SignalEnvelope) -> Dict[str, Any]:
+    def _format_outreach_output(self, envelope: SignalEnvelope) -> dict[str, Any]:
         """Format outreach-specific output.
 
         Args:
@@ -834,7 +831,7 @@ class OutputFormattingStage(PipelineStage):
             "recipient_info": self._get_recipient_info(envelope)
         }
 
-    def _extract_bullets(self, envelope: SignalEnvelope) -> List[str]:
+    def _extract_bullets(self, envelope: SignalEnvelope) -> list[str]:
         """Extract bullet points from envelope.
 
         Args:
@@ -851,7 +848,7 @@ class OutputFormattingStage(PipelineStage):
             return bullets[:5]  # Limit to 5 bullets
         return []
 
-    def _extract_achievements(self, envelope: SignalEnvelope) -> List[str]:
+    def _extract_achievements(self, envelope: SignalEnvelope) -> list[str]:
         """Extract achievements from envelope.
 
         Args:
@@ -864,7 +861,7 @@ class OutputFormattingStage(PipelineStage):
         claims = augmented.get("claims", [])
         return [c.claim for c in claims if hasattr(c, 'claim') and c.confidence > 0.7][:3]
 
-    def _extract_skills(self, envelope: SignalEnvelope) -> List[str]:
+    def _extract_skills(self, envelope: SignalEnvelope) -> list[str]:
         """Extract skills from envelope.
 
         Args:
@@ -882,7 +879,7 @@ class OutputFormattingStage(PipelineStage):
         skill_keywords = ["python", "java", "leadership", "analytics", "communication"]
         return [skill for skill in skill_keywords if skill.lower() in content.lower()]
 
-    def _get_resume_sections(self, envelope: SignalEnvelope) -> Dict[str, Any]:
+    def _get_resume_sections(self, envelope: SignalEnvelope) -> dict[str, Any]:
         """Get resume sections from envelope.
 
         Args:
@@ -895,7 +892,7 @@ class OutputFormattingStage(PipelineStage):
             return envelope.payload.sections
         return {}
 
-    def _extract_personalization(self, envelope: SignalEnvelope) -> List[str]:
+    def _extract_personalization(self, envelope: SignalEnvelope) -> list[str]:
         """Extract personalization points from envelope.
 
         Args:
@@ -939,7 +936,7 @@ class OutputFormattingStage(PipelineStage):
             return first_claim.claim if hasattr(first_claim, 'claim') else str(first_claim)
         return "Experienced professional with proven track record"
 
-    def _get_recipient_info(self, envelope: SignalEnvelope) -> Dict[str, Any]:
+    def _get_recipient_info(self, envelope: SignalEnvelope) -> dict[str, Any]:
         """Get recipient information from envelope.
 
         Args:
@@ -952,7 +949,7 @@ class OutputFormattingStage(PipelineStage):
             return envelope.payload.recipient_info
         return {}
 
-    def _get_augmented_data(self, envelope: SignalEnvelope) -> Dict[str, Any]:
+    def _get_augmented_data(self, envelope: SignalEnvelope) -> dict[str, Any]:
         """Get augmented data from envelope.
 
         Args:
@@ -971,7 +968,7 @@ class OutputFormattingStage(PipelineStage):
 
         return {}
 
-    def _get_enriched_data(self, envelope: SignalEnvelope) -> Dict[str, Any]:
+    def _get_enriched_data(self, envelope: SignalEnvelope) -> dict[str, Any]:
         """Get enriched data from envelope.
 
         Args:
@@ -1021,7 +1018,7 @@ class OutputFormattingStage(PipelineStage):
         else:
             return str(payload)
 
-    def _update_envelope_with_formatted(self, envelope: SignalEnvelope, formatted: Dict[str, Any]) -> None:
+    def _update_envelope_with_formatted(self, envelope: SignalEnvelope, formatted: dict[str, Any]) -> None:
         """Update envelope with formatted output.
 
         Args:
@@ -1042,7 +1039,7 @@ class OutputFormattingStage(PipelineStage):
 class UnifiedSignalPipeline:
     """Unified pipeline for signal processing across engines."""
 
-    def __init__(self, checkpoint_config: Optional[CheckpointConfig] = None):
+    def __init__(self, checkpoint_config: CheckpointConfig | None = None):
         """Initialize the unified pipeline.
 
         Args:
@@ -1088,8 +1085,8 @@ class UnifiedSignalPipeline:
         self,
         input_data: Any,
         engine_type: EngineType,
-        domain_config: Optional[DomainConfig] = None,
-        resume_trace_id: Optional[str] = None
+        domain_config: DomainConfig | None = None,
+        resume_trace_id: str | None = None
     ) -> SignalEnvelope:
         """Process input through the unified pipeline.
 
@@ -1172,7 +1169,7 @@ class UnifiedSignalPipeline:
 
         return envelope
 
-    async def _resume_from_checkpoint(self, trace_id: str) -> Optional[SignalEnvelope]:
+    async def _resume_from_checkpoint(self, trace_id: str) -> SignalEnvelope | None:
         """Resume pipeline from checkpoint.
 
         Args:
@@ -1195,7 +1192,7 @@ class UnifiedSignalPipeline:
 
         return envelope
 
-    async def get_checkpoint_status(self, trace_id: str) -> Optional[Dict[str, Any]]:
+    async def get_checkpoint_status(self, trace_id: str) -> dict[str, Any] | None:
         """Get status of a checkpointed pipeline.
 
         Args:
@@ -1223,7 +1220,7 @@ class UnifiedSignalPipeline:
             "total_duration_ms": envelope.calculate_total_duration()
         }
 
-    async def cleanup_checkpoints(self, older_than: Optional[timedelta] = None) -> int:
+    async def cleanup_checkpoints(self, older_than: timedelta | None = None) -> int:
         """Clean up old checkpoints.
 
         Args:
@@ -1235,7 +1232,7 @@ class UnifiedSignalPipeline:
         checkpoint_manager = await self._get_checkpoint_manager()
         return await checkpoint_manager.cleanup_old_checkpoints(older_than)
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get pipeline statistics.
 
         Returns:
@@ -1249,7 +1246,7 @@ class UnifiedSignalPipeline:
                 stats["cache_hit_rate"] = 0.0
             return stats
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """Check health of pipeline and checkpoint system.
 
         Returns:
@@ -1275,7 +1272,7 @@ class PipelineExecutionError(Exception):
         message: str,
         envelope: SignalEnvelope,
         failed_stage: str,
-        cause: Optional[Exception] = None
+        cause: Exception | None = None
     ):
         """Initialize pipeline execution error.
 
@@ -1292,7 +1289,7 @@ class PipelineExecutionError(Exception):
 
 
 # Global pipeline instance
-_pipeline: Optional[UnifiedSignalPipeline] = None
+_pipeline: UnifiedSignalPipeline | None = None
 _pipeline_lock = threading.Lock()
 
 
@@ -1310,7 +1307,7 @@ def get_unified_pipeline() -> UnifiedSignalPipeline:
 
 
 # Convenience functions
-def process_resume_signal(input_data: Any, strict_mode: bool = True) -> Dict[str, Any]:
+def process_resume_signal(input_data: Any, strict_mode: bool = True) -> dict[str, Any]:
     """Process resume signal through unified pipeline.
 
     Args:
@@ -1329,7 +1326,7 @@ def process_resume_signal(input_data: Any, strict_mode: bool = True) -> Dict[str
     return pipeline.process(input_data, EngineType.RESUME, config)
 
 
-def process_outreach_signal(input_data: Any, strict_mode: bool = True) -> Dict[str, Any]:
+def process_outreach_signal(input_data: Any, strict_mode: bool = True) -> dict[str, Any]:
     """Process outreach signal through unified pipeline.
 
     Args:

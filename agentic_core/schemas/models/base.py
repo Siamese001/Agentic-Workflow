@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Base Sovereign Schemas
 ======================
@@ -7,7 +8,6 @@ All primary system entities should inherit from SovereignBaseModel to
 ensure strict validation and immutability.
 """
 
-from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
 
@@ -35,4 +35,4 @@ class Territory(SovereignBaseModel):
     name: str
     depth: int
     path: str
-    canon_key: Optional[int] = None
+    canon_key: int | None = None

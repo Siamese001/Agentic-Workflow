@@ -1,5 +1,5 @@
 from __future__ import annotations
-import os
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
@@ -8,11 +8,6 @@ from pathlib import Path
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from typing import Any
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 root: Any = Path('C:/Git/Agentic-Workflow')
 violations: Any = [{'file': 'agentic_core/L1_cognition/agent_logic.py', 'pattern': 'from schemas', 'comment': '# GRAVITY FIX: Level 0 cannot import from Level 1 (schemas)\n# '}, {'file': 'agentic_core/L3_orchestration/mission_runner.py', 'pattern': 'from scripts', 'comment': '# GRAVITY FIX: Level 0 cannot import from Level 1 (scripts)\n# '}, {'file': 'apps_shared/verify_hardening.py', 'pattern': 'from apps_rg', 'comment': '# GRAVITY FIX: Level 3 cannot import from Level 4 (apps_rg)\n# '}]
@@ -20,7 +15,7 @@ violations: Any = [{'file': 'agentic_core/L1_cognition/agent_logic.py', 'pattern
 def comment_out_import_line(file_path: Path, pattern: str, comment: str) -> Any:
     """Comment out import lines matching the pattern."""
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, encoding='utf-8') as f:
             lines: Any = f.readlines()
         modified: Any = False
         new_lines: Any = []

@@ -9,10 +9,10 @@ Integrates all L1 components:
 """
 
 from __future__ import annotations
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass, field
-import asyncio
+
 import time
+from dataclasses import dataclass, field
+from typing import Any
 
 
 @dataclass
@@ -20,9 +20,9 @@ class CognitiveResult:
     """Result of cognitive processing."""
     output: str
     thought_type: str
-    plan: Dict[str, Any] = field(default_factory=dict)
-    memory_used: List[str] = field(default_factory=list)
-    governance: Dict[str, Any] = field(default_factory=dict)
+    plan: dict[str, Any] = field(default_factory=dict)
+    memory_used: list[str] = field(default_factory=list)
+    governance: dict[str, Any] = field(default_factory=dict)
     latency_ms: float = 0.0
     success: bool = True
 
@@ -30,7 +30,7 @@ class CognitiveResult:
 class PerceptionNode:
     """Perception component - processes raw input."""
 
-    async def process_async(self, raw_input: Dict, context: Dict) -> Dict:
+    async def process_async(self, raw_input: dict, context: dict) -> dict:
         """Process raw input into perceived state."""
         return {
             "query": raw_input.get("user_query", ""),
@@ -39,7 +39,7 @@ class PerceptionNode:
             "input_type": self._classify_input(raw_input)
         }
 
-    def _classify_input(self, raw_input: Dict) -> str:
+    def _classify_input(self, raw_input: dict) -> str:
         """Classify input type."""
         query = raw_input.get("user_query", "").lower()
 
@@ -56,7 +56,7 @@ class PerceptionNode:
 class ReasoningNode:
     """Reasoning component - generates thoughts and conclusions."""
 
-    async def reason_async(self, perceived: Dict) -> Dict:
+    async def reason_async(self, perceived: dict) -> dict:
         """Generate reasoning with adaptive strategy selection."""
         # Get strategy bias from meta-learner
         strategy_bias = perceived.get("strategy_bias", {})
@@ -78,7 +78,7 @@ class ReasoningNode:
             "confidence": reasoning.get("confidence", 0.7)
         }
 
-    def _biased_select(self, strategy_bias: Dict[str, float]) -> str:
+    def _biased_select(self, strategy_bias: dict[str, float]) -> str:
         """Select strategy using weighted bias."""
         if not strategy_bias:
             return "cot"  # Default: Chain of Thought
@@ -95,14 +95,14 @@ class ReasoningNode:
         r = random.random() * total
         cumulative = 0.0
 
-        for strategy, weight in zip(strategies, weights):
+        for strategy, weight in zip(strategies, weights, strict=False):
             cumulative += weight
             if r <= cumulative:
                 return strategy
 
         return strategies[-1] if strategies else "cot"
 
-    def _generate_reasoning(self, query: str, thought_type: str, patterns: List[Any]) -> Dict[str, Any]:
+    def _generate_reasoning(self, query: str, thought_type: str, patterns: list[Any]) -> dict[str, Any]:
         """Generate reasoning based on query and thought type."""
         reasoning = {
             "goal": query,
@@ -133,7 +133,7 @@ class ReasoningNode:
 class PlanningCoordinator:
     """Planning component - creates action plans."""
 
-    def plan(self, goal: str, domain: str, context: Dict) -> Dict[str, Any]:
+    def plan(self, goal: str, domain: str, context: dict) -> dict[str, Any]:
         """Create plan from reasoning."""
         # Get memory patterns
         memory_patterns = context.get("memory", [])
@@ -153,7 +153,7 @@ class PlanningCoordinator:
 
         return plan
 
-    def _generate_steps(self, goal: str, domain: str) -> List[str]:
+    def _generate_steps(self, goal: str, domain: str) -> list[str]:
         """Generate plan steps."""
         if "math" in goal.lower() or "calculate" in goal.lower():
             return ["Parse input", "Apply operation", "Verify result"]
@@ -162,7 +162,7 @@ class PlanningCoordinator:
         else:
             return ["Understand goal", "Identify approach", "Execute", "Validate"]
 
-    def _adjust_with_patterns(self, plan: Dict, patterns: List[Any]) -> Dict:
+    def _adjust_with_patterns(self, plan: dict, patterns: list[Any]) -> dict:
         """Adjust plan based on memory patterns."""
         plan["patterns_applied"] = len(patterns)
         plan["score"] = min(0.95, plan["score"] + 0.1)
@@ -177,10 +177,10 @@ class PlanningCoordinator:
 class ActionNode:
     """Action component - executes plans."""
 
-    def act(self, reasoned: Dict) -> str:
+    def act(self, reasoned: dict) -> str:
         """Execute action based on reasoning."""
         goal = reasoned.get("goal", "")
-        reasoning = reasoned.get("reasoning", {})
+        reasoned.get("reasoning", {})
 
         # Simple action execution
         if "2+2" in goal or "2 + 2" in goal:
@@ -230,7 +230,7 @@ class CognitiveNode:
         self.total_latency_ms = 0.0
         self.average_confidence = 0.0
 
-    async def process_async(self, raw_input: Dict, context: Dict) -> CognitiveResult:
+    async def process_async(self, raw_input: dict, context: dict) -> CognitiveResult:
         """
         Process input through full cognitive pipeline.
 
@@ -310,7 +310,7 @@ class CognitiveNode:
                 success=False
             )
 
-    async def _query_semantic_memory(self, query: str) -> List[Dict[str, Any]]:
+    async def _query_semantic_memory(self, query: str) -> list[dict[str, Any]]:
         """Query semantic memory for relevant patterns."""
         if not self.semantic_memory:
             return []
@@ -321,7 +321,7 @@ class CognitiveNode:
         except Exception:
             return []
 
-    def _compute_mission_reward(self, output: str, plan: Dict, reasoned: Dict) -> float:
+    def _compute_mission_reward(self, output: str, plan: dict, reasoned: dict) -> float:
         """Compute reward signal for learning."""
         reward = 0.0
 
@@ -347,7 +347,7 @@ class CognitiveNode:
             except Exception:
                 pass
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get pipeline statistics."""
         avg_latency = (self.total_latency_ms / self.missions_processed) if self.missions_processed > 0 else 0
 

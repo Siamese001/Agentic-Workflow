@@ -15,10 +15,9 @@ Date: January 19, 2026
 Phase: 4 - Performance Hardening (rglob Elimination)
 """
 import sys
-import time
 import tempfile
+import time
 from pathlib import Path
-from typing import Dict, Any
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
@@ -59,7 +58,7 @@ def test_tc13_cache_accuracy():
         cached_names = [f.name for f in cached_files]
 
         if "test_module1.py" not in cached_names or "test_module2.py" not in cached_names:
-            print(f"❌ FAIL: Initial cache should contain both test files")
+            print("❌ FAIL: Initial cache should contain both test files")
             print(f"   Cached: {cached_names}")
             return False
 
@@ -108,7 +107,7 @@ def test_tc14_exclusion_integrity():
     print("TC-14: Exclusion Integrity")
     print("="*60)
 
-    from agentic_core.utils.ssot_discovery import get_python_files, DEFAULT_EXCLUDE_DIRS
+    from agentic_core.utils.ssot_discovery import DEFAULT_EXCLUDE_DIRS, get_python_files
 
     # Get all Python files
     files = get_python_files(PROJECT_ROOT)
@@ -138,7 +137,7 @@ def test_tc14_exclusion_integrity():
         print(f"❌ FAIL: DEFAULT_EXCLUDE_DIRS missing: {missing_excludes}")
         return False
 
-    print(f"✅ PASS: No files from excluded directories in results")
+    print("✅ PASS: No files from excluded directories in results")
     print(f"   Total files: {len(files)}")
     print(f"   Excluded patterns: {excluded_patterns}")
     return True
@@ -156,10 +155,10 @@ def test_tc15_performance_delta():
     print("="*60)
 
     from agentic_core.utils.ssot_discovery import (
-        get_python_files,
+        DEFAULT_EXCLUDE_DIRS,
         get_cached_python_files,
+        get_python_files,
         invalidate_cache,
-        DEFAULT_EXCLUDE_DIRS
     )
 
     # Warm up the LRU cache
@@ -178,7 +177,6 @@ def test_tc15_performance_delta():
     for _ in range(10):
         rglob_files = []
         # Phase 6.8: Use ssot_discovery instead of rglob
-        from agentic_core.utils.ssot_discovery import get_python_files
         for py_file in get_python_files(PROJECT_ROOT):
             path_parts = py_file.parts
             skip = False
@@ -249,7 +247,8 @@ def test_scan_guard():
     print("="*60)
 
     import warnings
-    from agentic_core.utils.scan_guard import guarded_rglob, audit_rglob_usage
+
+    from agentic_core.utils.scan_guard import audit_rglob_usage, guarded_rglob
 
     # Test guarded_rglob emits warning
     with warnings.catch_warnings(record=True) as w:
@@ -273,7 +272,7 @@ def test_scan_guard():
     # Test audit_rglob_usage
     audit = audit_rglob_usage(PROJECT_ROOT / "agentic_core")
 
-    print(f"   guarded_rglob warning: ✓")
+    print("   guarded_rglob warning: ✓")
     print(f"   audit_rglob_usage: {audit['total_rglob_calls']} rglob calls in {audit['files_with_rglob']} files")
 
     print("✅ PASS: Scan guard utilities working correctly")

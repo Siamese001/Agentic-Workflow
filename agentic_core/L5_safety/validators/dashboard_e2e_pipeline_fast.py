@@ -15,17 +15,15 @@ Steps:
 """
 import json
 import re
-import subprocess
 import sys
 from pathlib import Path
-from typing import List, Dict, Tuple
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
+    DASHBOARD_DIR,
     get_validated_project_root,
-    DASHBOARD_DIR
 )
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 from agentic_core.utils.security import safe_execute
+
 
 class FastDashboardE2EPipeline:
     """Fast automated dashboard pipeline."""
@@ -312,19 +310,19 @@ class FastDashboardE2EPipeline:
         print("┏" + "━" * 78 + "┓")
         print("┃" + " " * 25 + "DASHBOARD UPDATE SUMMARY" + " " * 29 + "┃")
         print("┣" + "━" * 78 + "┫")
-        print(f"┃  Heal Invocation Coverage:                                              ┃")
+        print("┃  Heal Invocation Coverage:                                              ┃")
         print(f"┃    Before: {before:5.1f}%  →  After: {after:5.1f}%  (Δ +{improvement:4.1f}%)                    ┃")
 
         if after >= 100.0:
-            print(f"┃    🎯 TARGET ACHIEVED: 100% heal invocation coverage!                   ┃")
+            print("┃    🎯 TARGET ACHIEVED: 100% heal invocation coverage!                   ┃")
         elif after >= 99.0:
             print(f"┃    ⚠️  Nearly complete: {100-after:.1f}% gap remaining                             ┃")
 
-        print(f"┃                                                                              ┃")
+        print("┃                                                                              ┃")
         print(f"┃  Code Fixes: {self.stats['heal_fixes']:3d} agents                                              ┃")
         print(f"┃  Total Agents: {self.stats['agents_discovered']:3d}                                              ┃")
         print(f"┃  Dashboard Rows: {self.stats['dashboard_rows']:2d}                                                   ┃")
-        print(f"┃                                                                              ┃")
+        print("┃                                                                              ┃")
         print(f"┃  📊 Dashboard: {str(self.dashboard_path.relative_to(self.project_root)):<58}┃")
         print("┗" + "━" * 78 + "┛")
         print()

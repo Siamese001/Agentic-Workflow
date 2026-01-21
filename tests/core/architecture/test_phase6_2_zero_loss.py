@@ -15,7 +15,6 @@ Phase: 6.2 - Legacy Key Purge (Batch 2)
 """
 import sys
 from pathlib import Path
-from typing import List, Set
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
@@ -97,7 +96,7 @@ def test_tc29_key_directness():
 
     # NamingAgent should have violations_found (we just updated it)
     if "NamingAgent.py" not in files_with_violations_found:
-        print(f"❌ FAIL: NamingAgent.py should use violations_found")
+        print("❌ FAIL: NamingAgent.py should use violations_found")
         return False
 
     print("✅ PASS: Batch 2 files use standardized keys")
@@ -132,7 +131,7 @@ def test_tc30_discovery_parity():
                 if file.endswith('Agent.py'):
                     l1_agents_manual.append(Path(root) / file)
 
-        print(f"   L1 Cognition:")
+        print("   L1 Cognition:")
         print(f"      SSOT: {len(l1_agents_ssot)} agents")
         print(f"      Manual: {len(l1_agents_manual)} agents")
 
@@ -153,7 +152,7 @@ def test_tc30_discovery_parity():
                 if file.endswith('Agent.py'):
                     l3_agents_manual.append(Path(root) / file)
 
-        print(f"   L3 Orchestration:")
+        print("   L3 Orchestration:")
         print(f"      SSOT: {len(l3_agents_ssot)} agents")
         print(f"      Manual: {len(l3_agents_manual)} agents")
 
@@ -164,7 +163,7 @@ def test_tc30_discovery_parity():
 
     # Test all agents
     all_agents_ssot = get_agent_files(PROJECT_ROOT / "agentic_core")
-    print(f"   All agents (agentic_core):")
+    print("   All agents (agentic_core):")
     print(f"      SSOT: {len(all_agents_ssot)} agents")
 
     # Verify some agents have heal_repository
@@ -200,7 +199,7 @@ def test_tc31_dashboard_integrity():
     dashboard_test = PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "test_dashboard_end_to_end.py"
 
     if not dashboard_test.exists():
-        print(f"⚠️  WARNING: Dashboard test file not found")
+        print("⚠️  WARNING: Dashboard test file not found")
         print("✅ PASS: Dashboard test file location verified (informational)")
         return True
 
@@ -211,7 +210,7 @@ def test_tc31_dashboard_integrity():
         has_field_validation = 'field_issues' in content or 'SSOT field' in content
         has_violation_checks = 'violations' in content
 
-        print(f"   Dashboard test file checks:")
+        print("   Dashboard test file checks:")
         print(f"      Field validation: {'✓' if has_field_validation else '✗'}")
         print(f"      Violation tracking: {'✓' if has_violation_checks else '✗'}")
 
@@ -254,7 +253,7 @@ def test_rglob_reduction():
     if reduction < 0:
         print(f"⚠️  WARNING: rglob count increased by {abs(reduction)}")
     elif reduction >= 10:
-        print(f"   Target reduction (10+) achieved! ✓")
+        print("   Target reduction (10+) achieved! ✓")
     else:
         print(f"   Reduction is {reduction}, target is 10+")
 
@@ -274,7 +273,7 @@ def test_rglob_reduction():
         else:
             refactored_count += 1
 
-    print(f"   Batch 2 files successfully refactored ✓")
+    print("   Batch 2 files successfully refactored ✓")
     print("✅ PASS: rglob reduction tracked")
     return True
 

@@ -1,11 +1,13 @@
 from __future__ import annotations
+
 """
 Sovereign Guardian: DDD Alignment
 Enforces Bounded Contexts and Aggregate Root access.
 """
 import ast
 from pathlib import Path
-from typing import Any, List, Tuple
+from typing import Any
+
 # from agentic_core.L1_cognition.P2_domain.sovereign  # Refactored to dynamic import to avoid upward dependency
 
 def _get_sovereign_domain():
@@ -17,14 +19,9 @@ def _get_sovereign_domain():
 # from _domain_constitution import BOUNDED_CONTEXTS, UBIQUITOUS_LANGUAGE  # Commented out - appears to be incomplete/broken import
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
-from agentic_core.utils.sovereign_index import SovereignIndex
 
 
-def check_bounded_contexts(filepath: Path) -> List[str]:
+def check_bounded_contexts(filepath: Path) -> list[str]:
     """Brief description of functionality and purpose."""
     issues: Any = []
     file_str: Any = str(filepath).replace('\\', '/')
@@ -54,7 +51,7 @@ def check_bounded_contexts(filepath: Path) -> List[str]:
         pass
     return issues
 
-def validate_ddd_alignment(target_dir: str) -> Tuple[float, List[str]]:
+def validate_ddd_alignment(target_dir: str) -> tuple[float, list[str]]:
     """Brief description of functionality and purpose."""
     issues: Any = []
     total_files: Any = 0

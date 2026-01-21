@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Golden State & Evaluation Schemas
 ================================
@@ -7,9 +8,9 @@ evaluation workflows.
 """
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Literal
+from typing import Any, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 @dataclass
@@ -18,7 +19,7 @@ class GoldenStateTestCase:
     id: str
     input_text: str
     expected_behavior: str
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 @dataclass
 class JudgeVerdict:
@@ -33,21 +34,21 @@ class EvalResult:
     test_id: str
     Verdict: JudgeVerdict
     raw_output: str
-    reasoning_trace: List[Dict[str, Any]] = field(default_factory=list)
+    reasoning_trace: list[dict[str, Any]] = field(default_factory=list)
 
 class GoldenCase(BaseModel):
     """Structured benchmark case for automated evaluation pipelines."""
     id: str
     input_text: str
-    agent_sequence: List[str]
-    expected_keypoints: List[str]
-    correctness_criteria: Dict[str, Any]
+    agent_sequence: list[str]
+    expected_keypoints: list[str]
+    correctness_criteria: dict[str, Any]
 
 class GoldenOutput(BaseModel):
     """Benchmark results including safety and metacognitive summaries."""
     case_id: str
-    produced_keypoints: List[str]
-    correctness_map: Dict[str, bool]
-    safety_decisions: Dict[str, Any]
-    metacognition_summary: Dict[str, Any]
+    produced_keypoints: list[str]
+    correctness_map: dict[str, bool]
+    safety_decisions: dict[str, Any]
+    metacognition_summary: dict[str, Any]
     final_verdict: Literal["pass", "fail", "borderline"]

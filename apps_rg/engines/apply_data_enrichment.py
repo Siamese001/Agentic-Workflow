@@ -1,11 +1,12 @@
 from __future__ import annotations
+
 """
 Data enrichment for resume generation HOP-2.
 
 Enriches bullet pool with canonical verbs and deduplication.
 """
-import logging
-from typing import Any, Dict, List, Optional, Protocol, Tuple
+from typing import Any
+
 
 class DataEnricher:
     """HOP-2: Enrich bullet pool with canonical verbs, deduplication, etc."""
@@ -15,9 +16,9 @@ class DataEnricher:
         self.VerbCanonicalizer = VerbCanonicalizer()
         self.duplicate_detector = DuplicateDetector()
 
-    def enrich(self, extracted_data: Dict, ThematicAnalysis: Optional[Dict]=None, orchestrator: Optional[object]=None) -> Tuple[Dict, List[ValidationResult]]:
+    def enrich(self, extracted_data: dict, ThematicAnalysis: dict | None=None, orchestrator: object | None=None) -> tuple[dict, list[ValidationResult]]:
         """Enrich extracted data with additional metadata."""
-        validation_results: List[ValidationResult] = []
+        validation_results: list[ValidationResult] = []
         if orchestrator is not None:
             orchestrator.dup_detector = self.duplicate_detector
         experience_sections: Any = extracted_data.get('experience_sections', [])

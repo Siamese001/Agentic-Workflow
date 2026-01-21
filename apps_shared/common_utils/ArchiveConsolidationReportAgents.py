@@ -17,13 +17,12 @@ import argparse
 import shutil
 import sys
 from pathlib import Path
-from typing import Dict, List, Tuple
 
 PROJECT_ROOT = Path(__file__).parent.parent
 ARCHIVE_DIR = PROJECT_ROOT / "archives" / "consolidated_agents"
 
 # Agents from WORKER_AGENT_CONSOLIDATION_REPORT.md marked with ⭐ CONSOLIDATE
-LEGACY_AGENTS: Dict[str, List[str]] = {
+LEGACY_AGENTS: dict[str, list[str]] = {
     # Priority 1: L1 AST Validators -> UnifiedASTValidatorAgent
     "L1_AST_Validators": [
         "BareExceptValidatorAgent.py",
@@ -96,7 +95,7 @@ def find_agent(filename: str) -> Path | None:
     return None
 
 
-def archive_file(source: Path, category: str, dry_run: bool = False) -> Tuple[bool, str]:
+def archive_file(source: Path, category: str, dry_run: bool = False) -> tuple[bool, str]:
     """Archive a single file to category subfolder."""
     target_dir = ARCHIVE_DIR / category
     target = target_dir / source.name

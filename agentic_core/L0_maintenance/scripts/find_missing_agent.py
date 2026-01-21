@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 """Find which agent is missing from dashboard territories."""
 import json
-from pathlib import Path
 from collections import defaultdict
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent
 DISCOVERY_PATH = PROJECT_ROOT / 'agent_discovery_full.json'
 
-with open(DISCOVERY_PATH, 'r', encoding='utf-8') as f:
+with open(DISCOVERY_PATH, encoding='utf-8') as f:
     agents = json.load(f)
 
 # Group by territory

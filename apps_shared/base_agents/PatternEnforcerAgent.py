@@ -14,10 +14,12 @@ from __future__ import annotations
 import ast
 import logging
 import re
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Callable, List, Optional, Protocol, Tuple
+from typing import Any, Protocol
 
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
@@ -28,7 +30,7 @@ class CanonBaseAgentInterface(Protocol):
     """Protocol for CanonBaseAgent interface compatibility."""
     ctx: Any
     name: str
-    python_files: List[str]
+    python_files: list[str]
 
 
 @dataclass
@@ -89,7 +91,7 @@ class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
         keys: Any = [(26, self.check_key_26_no_mutable_defaults), (27, self.check_key_27_prefer_str_join), (28, self.check_key_28_no_bare_except), (29, self.check_key_29_no_assert_in_prod), (30, self.check_key_30_prefer_fstrings), (31, self.check_key_31_no_complex_comprehensions), (32, self.check_key_32_no_dict_keys_check), (33, self.check_key_33_no_float_equality), (34, self.check_key_34_use_is_for_none), (36, self.check_key_36_no_shadowed_builtins), (37, self.check_key_37_no_redundant_self), (38, self.check_key_38_prefer_comprehensions), (39, self.check_key_39_no_useless_return)]
         self._execute_pattern_checks(keys)
 
-    def _execute_pattern_checks(self, keys: List[Tuple[int, Callable[[], Tuple[bool, List[str]]]]]) -> None:
+    def _execute_pattern_checks(self, keys: list[tuple[int, Callable[[], tuple[bool, list[str]]]]]) -> None:
         """
         Execute pattern checks and report violations.
 
@@ -100,7 +102,7 @@ class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
             passed, details = check_func()
             self.agent.ctx.report(self.agent.name, key, passed, details)
 
-    def _parse_file_ast(self, filepath: str) -> Optional[ast.AST]:
+    def _parse_file_ast(self, filepath: str) -> ast.AST | None:
         """
         Safely parse a Python file into an AST.
 
@@ -111,7 +113,7 @@ class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
             Parsed AST or None if parsing failed.
         """
         try:
-            with open(filepath, 'r', encoding='utf-8') as f:
+            with open(filepath, encoding='utf-8') as f:
                 return ast.parse(f.read(), filename=filepath)
         except FileNotFoundError:
             Logger.warning(f'File not found: {filepath}')
@@ -121,7 +123,7 @@ class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
             Logger.error(f'Error parsing AST for {filepath}: {e}')
         return None
 
-    def _read_file_lines(self, filepath: str) -> Optional[List[str]]:
+    def _read_file_lines(self, filepath: str) -> list[str] | None:
         """
         Safely read a Python file line by line.
 
@@ -132,7 +134,7 @@ class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
             List of lines or None if reading failed.
         """
         try:
-            with open(filepath, 'r', encoding='utf-8') as f:
+            with open(filepath, encoding='utf-8') as f:
                 return f.readlines()
         except FileNotFoundError:
             Logger.warning(f'File not found: {filepath}')
@@ -143,8 +145,8 @@ class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
     def _check_ast_pattern(
         self,
         node_filter: Callable[[ast.AST], bool],
-        violation_formatter: Callable[[str, ast.AST], Optional[str]]
-    ) -> Tuple[bool, List[str]]:
+        violation_formatter: Callable[[str, ast.AST], str | None]
+    ) -> tuple[bool, list[str]]:
         """Generic AST pattern checker to reduce code duplication.
 
         Args:
@@ -154,7 +156,7 @@ class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
         Returns:
             Tuple of (passed, violations_list).
         """
-        violations: List[str] = []
+        violations: list[str] = []
         for fp in self.agent.ctx.python_files:
             tree = self._parse_file_ast(fp)
             if not tree:
@@ -166,12 +168,12 @@ class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
                         violations.append(violation)
         return (len(violations) == 0, violations)
 
-    def check_key_26_no_mutable_defaults(self) -> Tuple[bool, List[str]]:
+    def check_key_26_no_mutable_defaults(self) -> tuple[bool, list[str]]:
         """Check for mutable default arguments in function definitions."""
         def check_node(node: ast.AST) -> bool:
             return isinstance(node, ast.FunctionDef)
 
-        def format_violation(fp: str, node: ast.AST) -> Optional[str]:
+        def format_violation(fp: str, node: ast.AST) -> str | None:
             if not isinstance(node, ast.FunctionDef):
                 return None
             for default in node.args.defaults:
@@ -181,7 +183,7 @@ class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
 
         return self._check_ast_pattern(check_node, format_violation)
 
-    def check_key_27_prefer_str_join(self) -> Tuple[bool, List[str]]:
+    def check_key_27_prefer_str_join(self) -> tuple[bool, list[str]]:
         """
         Checks for string concatenation using '+' operator, preferring `str.join()`.
         Note: This check uses regex and might have false positives/negatives.
@@ -197,7 +199,7 @@ class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
                             violations.append(f'{fp}:{i}')
         return (len(violations) == 0, violations)
 
-    def check_key_28_no_bare_except(self) -> Tuple[bool, List[str]]:
+    def check_key_28_no_bare_except(self) -> tuple[bool, list[str]]:
         """
         Checks for bare `except:` clauses without specifying an exception type.
         """
@@ -211,7 +213,7 @@ class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
                             violations.append(f'{fp}:{node.lineno}')
         return (len(violations) == 0, violations)
 
-    def check_key_29_no_assert_in_prod(self) -> Tuple[bool, List[str]]:
+    def check_key_29_no_assert_in_prod(self) -> tuple[bool, list[str]]:
         """
         Checks for `assert` statements, which should generally be avoided in production code.
         """
@@ -224,7 +226,7 @@ class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
                         violations.append(f'{fp}:{node.lineno}')
         return (len(violations) == 0, violations)
 
-    def check_key_30_prefer_fstrings(self) -> Tuple[bool, List[str]]:
+    def check_key_30_prefer_fstrings(self) -> tuple[bool, list[str]]:
         """
         Checks for older string formatting methods (`.format()` or `%` operator),
         preferring f-strings.
@@ -238,20 +240,20 @@ class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
                         violations.append(f'{fp}:{i}')
         return (len(violations) == 0, violations)
 
-    def check_key_31_no_complex_comprehensions(self) -> Tuple[bool, List[str]]:
+    def check_key_31_no_complex_comprehensions(self) -> tuple[bool, list[str]]:
         """
         Placeholder: Checks for overly complex list/dict/set comprehensions.
         Implementation would require defining 'complexity' (e.g., multiple `if`s, nested loops).
         """
         return (True, [])
 
-    def check_key_32_no_dict_keys_check(self) -> Tuple[bool, List[str]]:
+    def check_key_32_no_dict_keys_check(self) -> tuple[bool, list[str]]:
         """
         Placeholder: Checks for `dict.keys()` usage when `in` operator is sufficient.
         """
         return (True, [])
 
-    def check_key_33_no_float_equality(self) -> Tuple[bool, List[str]]:
+    def check_key_33_no_float_equality(self) -> tuple[bool, list[str]]:
         """
         Checks for direct equality comparisons (`==`) involving floating-point numbers.
         """
@@ -261,13 +263,13 @@ class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
             if tree:
                 for node in ast.walk(tree):
                     if isinstance(node, ast.Compare):
-                        if any((isinstance(op, ast.Eq) for op in node.ops)):
+                        if any(isinstance(op, ast.Eq) for op in node.ops):
                             operands: Any = [node.left] + node.comparators
-                            if any((isinstance(val, ast.Constant) and isinstance(val.value, float) for val in operands)):
+                            if any(isinstance(val, ast.Constant) and isinstance(val.value, float) for val in operands):
                                 violations.append(f'{fp}:{node.lineno}')
         return (len(violations) == 0, violations)
 
-    def check_key_34_use_is_for_none(self) -> Tuple[bool, List[str]]:
+    def check_key_34_use_is_for_none(self) -> tuple[bool, list[str]]:
         """
         Checks for `== None` or `!= None` comparisons, preferring `is None` or `is not None`.
         """
@@ -277,12 +279,12 @@ class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
             if tree:
                 for node in ast.walk(tree):
                     if isinstance(node, ast.Compare):
-                        if any((isinstance(comp, ast.Constant) and comp.value is None for comp in node.comparators)):
-                            if not all((isinstance(op, (ast.Is, ast.IsNot)) for op in node.ops)):
+                        if any(isinstance(comp, ast.Constant) and comp.value is None for comp in node.comparators):
+                            if not all(isinstance(op, (ast.Is, ast.IsNot)) for op in node.ops):
                                 violations.append(f'{fp}:{node.lineno}')
         return (len(violations) == 0, violations)
 
-    def check_key_36_no_shadowed_builtins(self) -> Tuple[bool, List[str]]:
+    def check_key_36_no_shadowed_builtins(self) -> tuple[bool, list[str]]:
         """
         Checks for function parameters that shadow Python's built-in names.
         """
@@ -298,19 +300,19 @@ class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
                                 violations.append(f"{fp}:{node.lineno} function '{node.name}' parameter '{arg.arg}'")
         return (len(violations) == 0, violations)
 
-    def check_key_37_no_redundant_self(self) -> Tuple[bool, List[str]]:
+    def check_key_37_no_redundant_self(self) -> tuple[bool, list[str]]:
         """
         Placeholder: Checks for redundant `self` usage (e.g., `self.x = self.x`).
         """
         return (True, [])
 
-    def check_key_38_prefer_comprehensions(self) -> Tuple[bool, List[str]]:
+    def check_key_38_prefer_comprehensions(self) -> tuple[bool, list[str]]:
         """
         Placeholder: Checks for explicit loops that could be replaced by comprehensions.
         """
         return (True, [])
 
-    def check_key_39_no_useless_return(self) -> Tuple[bool, List[str]]:
+    def check_key_39_no_useless_return(self) -> tuple[bool, list[str]]:
         """
         Checks for explicit `return None` or `return` at the end of a function
         where the function implicitly returns `None`.

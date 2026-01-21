@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Memory Architect Sync - L4 State Synchronization
 
@@ -13,8 +14,8 @@ Strategy:
 """
 import logging
 import os
-import re
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 try:
     from pinecone import Pinecone
     PINECONE_AVAILABLE: Any = True
@@ -32,11 +33,6 @@ except ImportError:
 from dotenv import load_dotenv
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 load_dotenv()
 Logger: Any = logging.getLogger(__name__)
@@ -87,7 +83,7 @@ class MemoryArchitectSync:
             else:
                 self.genai_available = False
 
-    def sync_fission_state(self, monolith_path: str, new_files: List[str]) -> bool:
+    def sync_fission_state(self, monolith_path: str, new_files: list[str]) -> bool:
         """
         L4 State Sync: Updates Pinecone to reflect the new modular architecture.
 
@@ -126,7 +122,7 @@ class MemoryArchitectSync:
         except Exception as e:
             Logger.warning(f'    [!]  Could not purge embeddings: {e}')
 
-    def _index_file(self, file_path: str, parent_monolith: Optional[str]=None):
+    def _index_file(self, file_path: str, parent_monolith: str | None=None):
         """
         Index a file in Pinecone with embeddings.
 
@@ -135,7 +131,7 @@ class MemoryArchitectSync:
             parent_monolith: Optional parent monolith path for cross-linking
         """
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 content = f.read()
             vector = self._generate_embedding(content)
             if vector is None:
@@ -151,7 +147,7 @@ class MemoryArchitectSync:
         except Exception as e:
             Logger.error(f'    [X] Failed to index {file_path}: {e}')
 
-    def _generate_embedding(self, text: str) -> Optional[List[float]]:
+    def _generate_embedding(self, text: str) -> list[float] | None:
         """
         Generate embedding vector for text.
 
@@ -174,7 +170,7 @@ class MemoryArchitectSync:
             Logger.error(f'    [X] Embedding generation failed: {e}')
             return None
 
-    def verify_sync(self, file_paths: List[str]) -> Dict[str, bool]:
+    def verify_sync(self, file_paths: list[str]) -> dict[str, bool]:
         """
         Verify files are properly indexed in Pinecone.
 
@@ -185,7 +181,7 @@ class MemoryArchitectSync:
             Dictionary mapping file paths to verification status
         """
         if not self.pinecone_available:
-            return {path: False for path in file_paths}
+            return dict.fromkeys(file_paths, False)
         results: Any = {}
         for file_path in file_paths:
             try:
@@ -202,7 +198,7 @@ class MemoryArchitectSync:
                 results[file_path] = False
         return results
 
-    def query_related_files(self, file_path: str, top_k: int=5) -> List[Dict]:
+    def query_related_files(self, file_path: str, top_k: int=5) -> list[dict]:
         """
         Query Pinecone for files related to given file.
 
@@ -216,7 +212,7 @@ class MemoryArchitectSync:
         if not self.pinecone_available or not self.genai_available:
             return []
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 content: Any = f.read()
             vector: Any = self._generate_embedding(content)
             if vector is None:

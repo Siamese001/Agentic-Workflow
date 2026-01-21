@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Any
 
 Logger = logging.getLogger(__name__)
 
@@ -20,7 +20,7 @@ class SystemTelemetry:
         component: str,
         operation: str,
         latency_ms: float,
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ) -> None:
         Logger.debug(
             f"[TELEMETRY] {component}.{operation} {OperationStatus.SUCCESS} {latency_ms:.1f}ms {metadata or {}}"
@@ -34,7 +34,7 @@ class SystemTelemetry:
         latency_ms: float,
         error_type: str,
         error_message: str,
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ) -> None:
         Logger.warning(
             f"[TELEMETRY] {component}.{operation} {OperationStatus.FAILURE} {latency_ms:.1f}ms {error_type}: {error_message} {metadata or {}}"
@@ -46,14 +46,14 @@ class SystemTelemetry:
         component: str,
         breaker_name: str,
         state: str,
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ) -> None:
         Logger.warning(
             f"[TELEMETRY] {component} breaker={breaker_name} state={state} {metadata or {}}"
         )
 
 
-_default_telemetry: Optional[SystemTelemetry] = None
+_default_telemetry: SystemTelemetry | None = None
 
 
 def get_telemetry() -> SystemTelemetry:

@@ -16,9 +16,7 @@ Covers:
 
 import sys
 import tempfile
-import asyncio
 from pathlib import Path
-from unittest.mock import Mock, patch
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
@@ -193,7 +191,7 @@ def test_hash_computation():
         # Test different content
         file3 = tmpdir / "test3.txt"
         file3.write_text("Different content")
-        hash3 = hashlib.sha256("Different content".encode()).hexdigest()
+        hash3 = hashlib.sha256(b"Different content").hexdigest()
 
         if hash1 != hash3:
             test_pass("HASH_DIFFERENT", "Different content produces different hash")
@@ -263,7 +261,8 @@ def test_canonical_prefixes():
 
         # Test specific prefixes
         from agentic_core.L5_safety.validators.structure_blueprint import (
-            L5_SAFETY_DIR, L2_EXECUTION_DIR, L0_MAINTENANCE_DIR
+            L2_EXECUTION_DIR,
+            L5_SAFETY_DIR,
         )
 
         if L5_SAFETY_DIR in agent.CANONICAL_PREFIXES:

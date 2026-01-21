@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Claim Confidence Scorer
 Atomic Claim extraction and confidence scoring.
@@ -6,7 +7,8 @@ Atomic Claim extraction and confidence scoring.
 import logging
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 
 class ClaimType(Enum):
@@ -29,13 +31,13 @@ class Claim:
     text: str
     ClaimType: ClaimType
     confidence: float
-    evidence: List[str]
-    metadata: Dict[str, Any]
+    evidence: list[str]
+    metadata: dict[str, Any]
 
 @dataclass
 class ClaimAnalysisResult:
     """Result of Claim analysis."""
-    claims: List[Claim]
+    claims: list[Claim]
     overall_confidence: float
     summary: str
 
@@ -46,7 +48,7 @@ class ClaimConfidenceScorer:
         """Initialize Claim confidence scorer."""
         Logger.debug('ClaimConfidenceScorer initialized')
 
-    def extract_claims(self, text: str) -> List[Claim]:
+    def extract_claims(self, text: str) -> list[Claim]:
         """Extract atomic claims from text."""
         return []
 
@@ -57,7 +59,7 @@ class ClaimConfidenceScorer:
     def analyze_claims(self, text: str) -> ClaimAnalysisResult:
         """Analyze all claims in text."""
         claims: Any = self.extract_claims(text)
-        overall_confidence: Any = sum((c.confidence for c in claims)) / len(claims) if claims else 0.0
+        overall_confidence: Any = sum(c.confidence for c in claims) / len(claims) if claims else 0.0
         return ClaimAnalysisResult(claims=claims, overall_confidence=overall_confidence, summary=f'Analyzed {len(claims)} claims')
 
 def create_claim_scorer() -> ClaimConfidenceScorer:

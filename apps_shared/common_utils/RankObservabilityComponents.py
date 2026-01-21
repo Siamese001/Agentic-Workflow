@@ -9,12 +9,11 @@ to support resume timeline analysis and job alignment.
 """
 
 
-from typing import List, Optional
 from datetime import datetime
 
 try:
 #     from archives.legacy_root_folders.database.graph_store_neo4j import Neo4jGraphStore  # DEPRECATED: Archive import removed to protect archives from validation edits
-    _neo4j_graph: Optional[Neo4jGraphStore] = Neo4jGraphStore()
+    _neo4j_graph: Neo4jGraphStore | None = Neo4jGraphStore()
     _NEO4J_AVAILABLE = True
 except ImportError:
     _neo4j_graph = None
@@ -107,7 +106,7 @@ async def insert_event(event: TemporalEvent) -> None:
 
 
 async def batch_process_invalidation(
-    events_to_update: List[TemporalEvent]
+    events_to_update: list[TemporalEvent]
 ) -> None:
     """
     Processes batch invalidation updates for resume timeline analysis.
@@ -123,9 +122,9 @@ async def batch_process_invalidation(
 
 async def ingest_transcript(
     transcript_id: str,
-    entities: List[TemporalEntity],
-    triplets: List[TemporalTriplet],
-    events: List[TemporalEvent],
+    entities: list[TemporalEntity],
+    triplets: list[TemporalTriplet],
+    events: list[TemporalEvent],
 ) -> None:
     """
     Ingests complete resume transcript data for timeline analysis.

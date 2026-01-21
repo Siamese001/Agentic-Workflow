@@ -6,16 +6,15 @@
 
 from __future__ import annotations
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
-
-import numpy as np
 import time
 import uuid
-import math
-from typing import Dict, List, Optional, Any
+from dataclasses import dataclass
+from typing import Any
+
+import numpy as np
 
 from agentic_core.L6_observability.metrics.layer_decorator import layer_entry
-from dataclasses import dataclass
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 # Gravity-safe imports for active interventions
 try:
@@ -44,14 +43,14 @@ class CoverageAgent(SovereignBaseAgent):
     """CoverageAgent agent for autonomous operations."""
     def __init__(
         self,
-        layers: Optional[List[str]] = None,
+        layers: list[str] | None = None,
         threshold_entropy: float = 2.2,  # Tuned lower than max for early triggers (base-2; ~12 layers → max ~3.58)
         dashboard_api_url: str = "http://localhost:8000/api/metrics",
         intervention_mode: str = "full_active",  # Options: "report" (log only), "bias_only", "full_active" (bias + inject)
         bias_weight: float = 4.0,                # Selection score multiplier (tunable; 3-5 recommended)
         bias_duration_cycles: int = 30,          # How many orchestration cycles to sustain bias
         synthetic_tasks_per_trigger: int = 10,   # Safe no-ops injected per act() imbalance detection
-        priority_boost_layers: Optional[List[str]] = None, # Ordered forced exploration (Phase roadmap)
+        priority_boost_layers: list[str] | None = None, # Ordered forced exploration (Phase roadmap)
     ) -> None:
         """
         Initialize coverage agent.
@@ -67,7 +66,7 @@ class CoverageAgent(SovereignBaseAgent):
             priority_boost_layers: Ordered list of layers for forced exploration
         """
         self.name: str = "CoverageAgent"
-        self.layers: List[str] = layers or [
+        self.layers: list[str] = layers or [
             "L0_maintenance", "L1_cognition", "L2_execution", "L3_orchestration",
             "L4_state", "L5_safety", "config", "schemas", "prompt_governance",
             "observability", "utils", "apps_rg", "apps_lic", "apps_shared"
@@ -78,7 +77,7 @@ class CoverageAgent(SovereignBaseAgent):
         self.bias_weight: float = bias_weight
         self.bias_duration_cycles: int = bias_duration_cycles
         self.synthetic_tasks_per_trigger: int = synthetic_tasks_per_trigger
-        self.priority_boost_layers: List[str] = priority_boost_layers or [
+        self.priority_boost_layers: list[str] = priority_boost_layers or [
             "L5_safety",    # Phase 2 target (highest risk)
             "L4_state",     # Phase 3
             "L1_cognition", # Phase 4
@@ -88,7 +87,7 @@ class CoverageAgent(SovereignBaseAgent):
         # PHASE 8: Subscribe to parameter updates from MetaCoverageOptimizerAgent
         subscribe_event("coverage_params_updated", self._handle_param_update)
 
-    def _handle_param_update(self, event_data: Dict) -> None:
+    def _handle_param_update(self, event_data: dict) -> None:
         """Handle parameter updates from MetaCoverageOptimizerAgent."""
         if "bias_weight" in event_data:
             self.bias_weight = event_data["bias_weight"]
@@ -97,7 +96,7 @@ class CoverageAgent(SovereignBaseAgent):
             self.synthetic_tasks_per_trigger = event_data["synthetic_tasks_per_trigger"]
             print(f"[{self.name}] Updated synthetic_tasks_per_trigger to {self.synthetic_tasks_per_trigger}")
 
-    def _fetch_metrics(self) -> Optional[Dict[str, int]]:
+    def _fetch_metrics(self) -> dict[str, int] | None:
         """Pull layer activation counts from dashboard backend."""
         try:
             response = requests.get(self.dashboard_api_url, timeout=5)
@@ -109,14 +108,14 @@ class CoverageAgent(SovereignBaseAgent):
             print(f"[{self.name}] Metrics fetch failed: {e}")
             return None
 
-    def _compute_proportions(self, counts: Dict[str, int]) -> Dict[str, float]:
+    def _compute_proportions(self, counts: dict[str, int]) -> dict[str, float]:
         """Compute proportions."""
         total = sum(counts.values())
         if total == 0:
-            return {layer: 0.0 for layer in self.layers}
+            return dict.fromkeys(self.layers, 0.0)
         return {layer: counts.get(layer, 0) / total for layer in self.layers}
 
-    def _shannon_entropy(self, proportions: Dict[str, float]) -> float:
+    def _shannon_entropy(self, proportions: dict[str, float]) -> float:
         """Shannon entropy."""
         props = np.array([p for p in proportions.values() if p > 0])
         if len(props) == 0:
@@ -178,7 +177,7 @@ class CoverageAgent(SovereignBaseAgent):
         """Enqueue safe no-op tasks targeting layer — direct metric increment."""
         from agentic_core.L5_safety.validators.structure_blueprint import EXERCISER_REGISTRY
         exerciser_class_name = EXERCISER_REGISTRY.get(layer, "GeneralExerciserAgent")
-        for i in range(self.synthetic_tasks_per_trigger):
+        for _i in range(self.synthetic_tasks_per_trigger):
             task_payload = {
                 "task_id": f"coverage_synthetic_{layer}_{uuid.uuid4().hex[:8]}",
                 "task_type": "layer_coverage_exercise",

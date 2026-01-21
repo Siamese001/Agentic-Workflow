@@ -11,10 +11,10 @@ Composable Rules:
 """
 
 from __future__ import annotations
-from typing import Dict, List, Any, Optional, Set
-from dataclasses import dataclass, field
+
 import re
-import time
+from dataclasses import dataclass, field
+from typing import Any
 
 
 @dataclass
@@ -31,8 +31,8 @@ class MCPSecurityViolation:
 class MCPSecurityResult:
     """Result of MCP security check."""
     allowed: bool
-    violations: List[MCPSecurityViolation] = field(default_factory=list)
-    sanitized_args: Optional[Dict[str, Any]] = None
+    violations: list[MCPSecurityViolation] = field(default_factory=list)
+    sanitized_args: dict[str, Any] | None = None
 
 
 class MCPSecurityGuardrail:
@@ -48,13 +48,13 @@ class MCPSecurityGuardrail:
 
     def __init__(self):
         """Initialize MCP security guardrail."""
-        self.enabled_rules: List[str] = [
+        self.enabled_rules: list[str] = [
             "tool_validation",
             "mcp_hardening",
         ]
 
         # Tool whitelist
-        self.tool_whitelist: Set[str] = {
+        self.tool_whitelist: set[str] = {
             "read_file", "write_file", "edit", "run_command",
             "grep_search", "find_by_name", "list_dir",
             "git_status", "git_commit", "git_push",
@@ -83,7 +83,7 @@ class MCPSecurityGuardrail:
     async def validate_tool_call(
         self,
         tool_name: str,
-        args: Dict[str, Any]
+        args: dict[str, Any]
     ) -> MCPSecurityResult:
         """
         Validate MCP tool call.
@@ -140,7 +140,7 @@ class MCPSecurityGuardrail:
 
         return False
 
-    def _check_arguments(self, tool_name: str, args: Dict[str, Any]) -> List[MCPSecurityViolation]:
+    def _check_arguments(self, tool_name: str, args: dict[str, Any]) -> list[MCPSecurityViolation]:
         """Check arguments for dangerous patterns."""
         violations = []
 
@@ -159,7 +159,7 @@ class MCPSecurityGuardrail:
 
         return violations
 
-    def _sanitize_arguments(self, args: Dict[str, Any]) -> Dict[str, Any]:
+    def _sanitize_arguments(self, args: dict[str, Any]) -> dict[str, Any]:
         """Sanitize arguments by removing dangerous patterns."""
         sanitized = {}
 
@@ -173,7 +173,7 @@ class MCPSecurityGuardrail:
                 sanitized[key] = self._sanitize_arguments(value)
             elif isinstance(value, list):
                 sanitized[key] = [
-                    self._sanitize_arguments({"v": v})["v"] if isinstance(v, (str, dict)) else v
+                    self._sanitize_arguments({"v": v})["v"] if isinstance(v, str | dict) else v
                     for v in value
                 ]
             else:
@@ -189,7 +189,7 @@ class MCPSecurityGuardrail:
         """Remove tool from whitelist."""
         self.tool_whitelist.discard(tool_name.lower())
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get MCP security statistics."""
         return {
             "checks_performed": self.checks_performed,

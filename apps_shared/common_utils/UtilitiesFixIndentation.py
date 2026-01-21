@@ -1,16 +1,16 @@
 from __future__ import annotations
+
 #!/usr/bin/env python3
 """Fix indentation errors in canon_validator_engine.py"""
 
 import re
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 
 def fix_indentation_errors():
     '''Brief description of functionality and purpose.'''
 
     # Read the file
-    with open('canon_validator_engine.py', 'r') as f:
+    with open('canon_validator_engine.py') as f:
         content = f.read()
 
     # Fix pattern 1: except Exception as e: followed by misaligned pass/pass/return

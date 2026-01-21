@@ -1,4 +1,3 @@
-import ast
 """
 02_schemas/logic/synthesis/pick_best_result/understand_request/rank_schema_components.py
 AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
@@ -14,20 +13,12 @@ Implements L1 Cognitive Planning Layer for rank data components operations
 """
 
 
-from typing import Dict, List, Optional
-
-
-from dataclasses import field
-
-
-from enum import Enum
 
 
 import logging
-
-
 from abc import ABC, abstractmethod
-
+from dataclasses import field
+from enum import Enum
 
 logging.basicConfig(level=logging.INFO)
 
@@ -45,7 +36,7 @@ class RankDataComponentsPlanType(Enum):
 class RankDataComponentsPlanConstraints:
     """L5 Safety constraints - fail-closed behavior"""
     max_depth: int = 5
-    allowed_operations: List[str] = field(default_factory=lambda: ["read", "validate", "filter"])
+    allowed_operations: list[str] = field(default_factory=lambda: ["read", "validate", "filter"])
     safety_level: str = "strict"
     requires_approval: bool = True
 
@@ -53,8 +44,8 @@ class RankDataComponentsPlanConstraints:
 class RankDataComponentsPlanResult:
     """L5 Result structure with full type safety"""
     success: bool
-    data: Dict[str, object] = field(default_factory=dict)
-    errors: List[str] = field(default_factory=list)
+    data: dict[str, object] = field(default_factory=dict)
+    errors: list[str] = field(default_factory=list)
     safety_validated: bool = False
     timestamp: str = ""
 
@@ -63,12 +54,12 @@ class RankDataComponentsPlanProcessor(ABC):
     """L5 interface foundation - ensures L1 pure planning behavior"""
 
     @abstractmethod
-    def process(self, input_data: Dict[str, object]) -> RankDataComponentsPlanResult:
+    def process(self, input_data: dict[str, object]) -> RankDataComponentsPlanResult:
         """Process data with L5 safety constraints"""
         ...
 
     @abstractmethod
-    def validate_safety(self, data: Dict[str, object]) -> bool:
+    def validate_safety(self, data: dict[str, object]) -> bool:
         """L5 Safety validation - fail-closed by default"""
         ...
 
@@ -79,11 +70,11 @@ class RankDataComponentsPlanImpl(RankDataComponentsPlanProcessor):
     Pure planning functionality with no side effects
     """
 
-    def __init__(self, constraints: Optional[RankDataComponentsPlanConstraints] = None):
+    def __init__(self, constraints: RankDataComponentsPlanConstraints | None = None):
         self.constraints = constraints or RankDataComponentsPlanConstraints()
         self.logger = logging.getLogger(self.__class__.__name__)
 
-    def process(self, input_data: Dict[str, object]) -> RankDataComponentsPlanResult:
+    def process(self, input_data: dict[str, object]) -> RankDataComponentsPlanResult:
         """Process input following L5 architecture principles"""
         self.logger.info(f"Processing {input_data}")
 
@@ -105,7 +96,7 @@ class RankDataComponentsPlanImpl(RankDataComponentsPlanProcessor):
         self.logger.info(f"Successfully processed: {result.success}")
         return result
 
-    def validate_safety(self, data: Dict[str, object]) -> bool:
+    def validate_safety(self, data: dict[str, object]) -> bool:
         """L5 Safety validation with fail-closed behavior"""
         try:
             # Check for dangerous patterns
@@ -127,7 +118,7 @@ class RankDataComponentsPlanImpl(RankDataComponentsPlanProcessor):
             self.logger.error(f"Safety validation error: {e}")
             return False  # Fail-closed
 
-    def _validate_input(self, input_data: Dict[str, object]) -> None:
+    def _validate_input(self, input_data: dict[str, object]) -> None:
         """L5 Input validation"""
         if not isinstance(input_data, dict):
             raise ValueError("Input must be a dictionary")
@@ -152,7 +143,7 @@ class RankDataComponentsPlanInterface:
     def __init__(self, engine: RankDataComponentsPlanProcessor):
         self._processor = engine
 
-    def execute(self, input_data: Dict[str, object]) -> Dict[str, object]:
+    def execute(self, input_data: dict[str, object]) -> dict[str, object]:
         """L5 Interface method - executes safely"""
         try:
             result = self._processor.process(input_data)
@@ -178,7 +169,7 @@ class RankDataComponentsPlanFactory:
         return RankDataComponentsPlanInterface(engine)
 
 
-def rank_data_components(input_data: Dict[str, object]) -> Dict[str, object]:
+def rank_data_components(input_data: dict[str, object]) -> dict[str, object]:
     """
     L5 Main function - rank data components operations
 

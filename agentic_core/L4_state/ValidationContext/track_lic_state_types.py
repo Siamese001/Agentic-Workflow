@@ -1,8 +1,8 @@
 from __future__ import annotations
+
 """Types and models for track_lic_state."""
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Protocol
 
 _logger = logging.getLogger(__name__)
 
@@ -25,5 +25,5 @@ class StateValidationResult:
     """Result of state validation."""
 
     _is_valid: bool
-    _errors: List[str] = field(default_factory=list)
-    _warnings: List[str] = field(default_factory=list)
+    _errors: list[str] = field(default_factory=list)
+    _warnings: list[str] = field(default_factory=list)

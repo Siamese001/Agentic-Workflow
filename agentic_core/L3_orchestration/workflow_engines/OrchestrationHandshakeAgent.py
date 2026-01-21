@@ -11,6 +11,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """
 OrchestrationHandshakeAgent - Multi-Hop Agent Collaboration
 Renamed from OrchestrationHandshake for consistent Agent suffix pattern (Jan 6, 2026)
@@ -18,16 +19,12 @@ Renamed from OrchestrationHandshake for consistent Agent suffix pattern (Jan 6, 
 import hashlib
 import json
 from pathlib import Path
-from typing import Any, Dict, List, Optional
-from agentic_core.config.blueprint_sovereign.SovereignEnv import get_env
+from typing import Any
+
 from agentic_core.L3_orchestration.unified.CoreOrchestrationAgent import CoreOrchestrationAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 from agentic_core.utils.core_extensions.decorators import standard_heal
 
 
@@ -41,7 +38,7 @@ class OrchestrationHandshakeAgent(CoreOrchestrationAgent, MCPHardenedMixin):
         super().__init__(project_root, mission_id=requesting_agent)
         self.registry = SubAtomicRegistry(project_root)
 
-    def discover_capable_agents(self, Task: str, min_confidence: float=0.85) -> List[Dict]:
+    def discover_capable_agents(self, Task: str, min_confidence: float=0.85) -> list[dict]:
         """
         Discover agents/methods capable of Task via hybrid registry search.
         Cache-first — Redis hit -> instant discovery.
@@ -64,7 +61,7 @@ class OrchestrationHandshakeAgent(CoreOrchestrationAgent, MCPHardenedMixin):
                 pass
         return sorted(capable, key=lambda x: x['confidence'], reverse=True)
 
-    def delegate_task(self, Task: str, args: Optional[Dict]=None, kwargs: Optional[Dict]=None, min_confidence: float=0.85) -> Dict:
+    def delegate_task(self, Task: str, args: dict | None=None, kwargs: dict | None=None, min_confidence: float=0.85) -> dict:
         """
         Sovereign delegation — find best method and invoke.
         """
@@ -88,7 +85,7 @@ class OrchestrationHandshakeAgent(CoreOrchestrationAgent, MCPHardenedMixin):
         except Exception as e:
             return {'status': 'delegation_failed', 'error': str(e)}
 
-    def execute_mission(self, steps: List[Dict]) -> List[Dict]:
+    def execute_mission(self, steps: list[dict]) -> list[dict]:
         """
         Multi-hop mission logic: Sequential delegation.
         """

@@ -5,13 +5,13 @@ including version tracking, change history, and evolution analysis.
 Follows the functional component pattern with proper logging.
 """
 
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any, Union, Tuple
-import logging
 import json
+import logging
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -33,24 +33,24 @@ class SchemaChangeRecord:
     schema_id: str
     action: HistoryAction
     timestamp: datetime
-    version_from: Optional[str]
-    version_to: Optional[str]
-    changed_by: Optional[str]
-    change_summary: Optional[str]
-    changes: Dict[str, Any] = field(default_factory=dict)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    version_from: str | None
+    version_to: str | None
+    changed_by: str | None
+    change_summary: str | None
+    changes: dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
 class SchemaHistoryQuery:
     """Query configuration for schema history."""
-    schema_id: Optional[str] = None
-    actions: List[HistoryAction] = field(default_factory=list)
-    changed_by: Optional[str] = None
-    version_from: Optional[str] = None
-    version_to: Optional[str] = None
-    date_from: Optional[datetime] = None
-    date_to: Optional[datetime] = None
+    schema_id: str | None = None
+    actions: list[HistoryAction] = field(default_factory=list)
+    changed_by: str | None = None
+    version_from: str | None = None
+    version_to: str | None = None
+    date_from: datetime | None = None
+    date_to: datetime | None = None
     include_changes: bool = True
     limit: int = 100
     offset: int = 0
@@ -59,10 +59,10 @@ class SchemaHistoryQuery:
 @dataclass
 class SchemaHistoryResult:
     """Result of schema history query."""
-    records: List[SchemaChangeRecord]
+    records: list[SchemaChangeRecord]
     total_count: int
     query: SchemaHistoryQuery
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -75,8 +75,8 @@ class SchemaEvolutionSummary:
     creation_date: datetime
     last_modified: datetime
     modification_count: int
-    contributors: List[str]
-    major_changes: List[str] = field(default_factory=list)
+    contributors: list[str]
+    major_changes: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -92,10 +92,10 @@ class SchemaHistoryConfig:
 class SchemaHistoryFetcher:
     """Main class for fetching schema history."""
 
-    def __init__(self, config: Optional[SchemaHistoryConfig] = None):
+    def __init__(self, config: SchemaHistoryConfig | None = None):
         self.config = config or SchemaHistoryConfig()
         self.logger = logging.getLogger(self.__class__.__name__)
-        self._history_records: Dict[str, List[SchemaChangeRecord]] = {}
+        self._history_records: dict[str, list[SchemaChangeRecord]] = {}
         self._load_history()
 
     def fetch_history(self, query: SchemaHistoryQuery) -> SchemaHistoryResult:
@@ -209,7 +209,7 @@ class SchemaHistoryFetcher:
             self.logger.error(f"Failed to add change record: {str(e)}")
             return False
 
-    def get_evolution_summary(self, schema_id: str) -> Optional[SchemaEvolutionSummary]:
+    def get_evolution_summary(self, schema_id: str) -> SchemaEvolutionSummary | None:
         """Get evolution summary for a schema.
 
         Args:
@@ -256,7 +256,7 @@ class SchemaHistoryFetcher:
             major_changes=major_changes[:10]  # Limit to 10 major changes
         )
 
-    def get_version_timeline(self, schema_id: str) -> List[Tuple[str, datetime, str]]:
+    def get_version_timeline(self, schema_id: str) -> list[tuple[str, datetime, str]]:
         """Get timeline of versions for a schema.
 
         Args:
@@ -284,7 +284,7 @@ class SchemaHistoryFetcher:
 
         return timeline
 
-    def get_contributor_stats(self) -> Dict[str, Dict[str, Any]]:
+    def get_contributor_stats(self) -> dict[str, dict[str, Any]]:
         """Get statistics for all contributors.
 
         Returns:
@@ -362,7 +362,7 @@ class SchemaHistoryFetcher:
                 try:
                     schema_id = history_file.stem
 
-                    with open(history_file, 'r', encoding='utf-8') as f:
+                    with open(history_file, encoding='utf-8') as f:
                         data = json.load(f)
 
                     # Convert to change records
@@ -393,7 +393,7 @@ class SchemaHistoryFetcher:
         except Exception as e:
             self.logger.error(f"Failed to load schema history: {str(e)}")
 
-    def _apply_filters(self, records: List[SchemaChangeRecord], query: SchemaHistoryQuery) -> List[SchemaChangeRecord]:
+    def _apply_filters(self, records: list[SchemaChangeRecord], query: SchemaHistoryQuery) -> list[SchemaChangeRecord]:
         """Apply filters to history records."""
         filtered = records.copy()
 
@@ -476,16 +476,16 @@ def create_schema_history_fetcher(storage_path: str = "data/schema_history", max
 
 # Convenience function for direct usage
 def fetch_schema_history(
-    schema_id: Optional[str] = None,
-    actions: List[str] = None,
-    changed_by: Optional[str] = None,
-    date_from: Optional[datetime] = None,
-    date_to: Optional[datetime] = None,
+    schema_id: str | None = None,
+    actions: list[str] = None,
+    changed_by: str | None = None,
+    date_from: datetime | None = None,
+    date_to: datetime | None = None,
     include_changes: bool = True,
     limit: int = 100,
     offset: int = 0,
-    config: Optional[Dict[str, Any]] = None
-) -> Dict[str, Any]:
+    config: dict[str, Any] | None = None
+) -> dict[str, Any]:
     """Fetch schema history.
 
     Args:

@@ -9,7 +9,8 @@ Enhanced with Titanium RAG Pipeline for SOTA company research and insights.
 
 import logging
 from datetime import datetime
-from typing import Dict, List, Optional, Tuple, Any, Union
+from typing import Any
+
 from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
@@ -64,7 +65,7 @@ class ExecutiveBriefAgent:
     Enhanced with Titanium RAG Pipeline for SOTA company research and insights.
     """
 
-    def __init__(self, candidate_name: str, candidate_background: Dict[str, Any]):
+    def __init__(self, candidate_name: str, candidate_background: dict[str, Any]):
         """Initialize the executive brief agent.
 
         Args:
@@ -136,7 +137,7 @@ class ExecutiveBriefAgent:
             }
         }
 
-    async def _research_company_with_titanium(self, company_name: str, industry: str) -> Dict[str, Any]:
+    async def _research_company_with_titanium(self, company_name: str, industry: str) -> dict[str, Any]:
         """Research company using Titanium RAG Pipeline for enhanced insights.
 
         Args:
@@ -199,7 +200,7 @@ class ExecutiveBriefAgent:
         company_name: str,
         industry: str,
         job_description: str,
-        recipient_name: Optional[str] = None
+        recipient_name: str | None = None
     ) -> ExecutiveBrief:
         """Generate executive brief using Titanium RAG for enhanced research.
 
@@ -230,9 +231,9 @@ class ExecutiveBriefAgent:
 
     def generate_brief(
         self,
-        company_data: Dict[str, Any],
+        company_data: dict[str, Any],
         job_description: str,
-        recipient_name: Optional[str] = None
+        recipient_name: str | None = None
     ) -> ExecutiveBrief:
         """Generate a complete executive brief.
 
@@ -271,7 +272,7 @@ class ExecutiveBriefAgent:
             # Return safe fallback
             return self._generate_fallback_brief(company_data)
 
-    def _assemble_context(self, company_data: Dict[str, Any], job_description: str) -> Dict[str, Any]:
+    def _assemble_context(self, company_data: dict[str, Any], job_description: str) -> dict[str, Any]:
         """Assemble strategic context from company data and JD.
 
         Args:
@@ -374,7 +375,7 @@ class ExecutiveBriefAgent:
                 "jd_challenges": []
             }
 
-    def _generate_observation(self, context: Dict[str, Any]) -> BriefSection:
+    def _generate_observation(self, context: dict[str, Any]) -> BriefSection:
         """Generate the observation section.
 
         Args:
@@ -463,7 +464,7 @@ class ExecutiveBriefAgent:
             logger.error(f"Error applying tone enforcement: {str(e)}")
             return content
 
-    def _generate_insight(self, context: Dict[str, Any], observation: BriefSection) -> BriefSection:
+    def _generate_insight(self, context: dict[str, Any], observation: BriefSection) -> BriefSection:
         """Generate the insight section.
 
         Args:
@@ -504,7 +505,7 @@ class ExecutiveBriefAgent:
                 confidence=0.4
             )
 
-    def _generate_proposition(self, context: Dict[str, Any], insight: BriefSection) -> BriefSection:
+    def _generate_proposition(self, context: dict[str, Any], insight: BriefSection) -> BriefSection:
         """Generate the proposition section.
 
         Args:
@@ -542,7 +543,7 @@ class ExecutiveBriefAgent:
                 confidence=0.3
             )
 
-    def _generate_fallback_brief(self, company_data: Dict[str, Any]) -> ExecutiveBrief:
+    def _generate_fallback_brief(self, company_data: dict[str, Any]) -> ExecutiveBrief:
         """Generate a safe fallback brief when errors occur.
 
         Args:
@@ -649,7 +650,7 @@ From: {self.candidate_name}
 # Factory function for easy instantiation
 def create_executive_brief_agent(
     candidate_name: str,
-    candidate_background: Dict[str, Any]
+    candidate_background: dict[str, Any]
 ) -> ExecutiveBriefAgent:
     """Create an ExecutiveBriefAgent instance.
 
@@ -666,8 +667,8 @@ def create_executive_brief_agent(
 # Convenience function for quick brief generation
 def generate_executive_brief(
     candidate_name: str,
-    candidate_background: Dict[str, Any],
-    company_data: Dict[str, Any],
+    candidate_background: dict[str, Any],
+    company_data: dict[str, Any],
     job_description: str
 ) -> str:
     """Generate and render an executive brief.

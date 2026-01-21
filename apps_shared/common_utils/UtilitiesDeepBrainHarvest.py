@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 ⚛️ Deep Brain Harvest - Pinecone Pattern Storage
 
@@ -13,7 +14,8 @@ import logging
 import os
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 sys.path.insert(0, str(Path(__file__).parent.parent))
 try:
     from pinecone import Pinecone, ServerlessSpec
@@ -22,6 +24,7 @@ except ImportError:
     PINECONE_AVAILABLE: Any = False
     print('⚠️  Pinecone not available. Install with: pip install pinecone-client')
 from agentic_core.patterns.subatomic_flattening_rule import get_flattening_pattern
+
 logging.basicConfig(level=logging.INFO)
 Logger: Any = logging.getLogger(__name__)
 
@@ -57,7 +60,7 @@ class DeepBrainHarvester:
         else:
             Logger.info(f'✅ Index already exists: {self.index_name}')
 
-    def _generate_embedding(self, text: str) -> List[float]:
+    def _generate_embedding(self, text: str) -> list[float]:
         """
         Generate embedding for text using OpenAI.
 
@@ -76,7 +79,7 @@ class DeepBrainHarvester:
             Logger.error(f'Error generating embedding: {e}')
             return [0.0] * 1536
 
-    def harvest_flattening_pattern(self, namespace: str='structural_patterns') -> Dict:
+    def harvest_flattening_pattern(self, namespace: str='structural_patterns') -> dict:
         """
         Harvest the Subatomic Flattening Pattern and store in Pinecone.
 
@@ -97,7 +100,7 @@ class DeepBrainHarvester:
         Logger.info(f'✅ Pattern harvested successfully: {result}')
         return result
 
-    def _create_pattern_text(self, pattern: Dict) -> str:
+    def _create_pattern_text(self, pattern: dict) -> str:
         """
         Create searchable text representation of pattern.
 
@@ -110,7 +113,7 @@ class DeepBrainHarvester:
         text_parts = ['# Subatomic Flattening Pattern', '', f"## Trigger: {pattern['reusable_pattern']['trigger']}", '', '## Problem:', f"Method with {pattern['before']['lines']} lines and {pattern['before']['nesting_depth']} nesting levels", 'Issues: ' + ', '.join(pattern['before']['issues']), '', '## Solution:', 'Extract nested logic into focused helper methods', '', '## Recognition Patterns:', *[f'- {p}' for p in pattern['reusable_pattern']['recognition']], '', '## Extraction Heuristic:', *[f'{i}. {step}' for i, step in enumerate(pattern['reusable_pattern']['extraction_heuristic'], 1)], '', '## Naming Convention:', *[f'- {k}: {v}' for k, v in pattern['reusable_pattern']['naming_convention'].items()], '', '## Results:', f"- Line reduction: {pattern['success_metrics']['complexity_reduction']}%", f"- Nesting reduction: {pattern['success_metrics']['nesting_reduction']}%", f"- Preservation: {pattern['success_metrics']['preservation_rate']}%", f"- Healing readiness: {pattern['success_metrics']['healing_readiness']}", '', '## Example:', f"Source: {pattern['source_file']}", f"Method: {pattern['method_name']}", f"Before: {pattern['before']['lines']} lines, {pattern['before']['nesting_depth']} levels", f"After: {pattern['after']['lines']} lines, {pattern['after']['nesting_depth']} levels", '', '## Extracted Helpers:', *[f"- {helper['name']}: {helper['purpose']} ({helper['lines']} lines, {helper['nesting']} nesting)" for helper in pattern['helper_methods']]]
         return '\n'.join(text_parts)
 
-    def query_pattern(self, query: str, namespace: str='structural_patterns', top_k: int=3) -> List[Dict]:
+    def query_pattern(self, query: str, namespace: str='structural_patterns', top_k: int=3) -> list[dict]:
         """
         Query Pinecone for similar patterns.
 

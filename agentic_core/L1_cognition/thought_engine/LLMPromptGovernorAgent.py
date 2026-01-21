@@ -6,8 +6,10 @@
 
 from __future__ import annotations
 
-from agentic_core.utils.core_extensions.SovereignBaseAgent import SovereignBaseAgent
 from dataclasses import dataclass
+
+from agentic_core.utils.core_extensions.SovereignBaseAgent import SovereignBaseAgent
+
 """
 LLMPromptGovernorAgent - Hardened Prompt Governor for LLM Safety
 
@@ -24,12 +26,11 @@ Placed in prompt_governance per SSOT semantic registry:
   "Centralized governance for all LLM prompt construction"
 """
 import hashlib
-import re
-from typing import Dict, Optional
 import logging
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
+import re
+
 from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger = logging.getLogger(__name__)
 
@@ -104,7 +105,7 @@ QUALITY REQUIREMENTS:
         code: str,
         file_path: str = "unknown",
         context: str = ""
-    ) -> Dict[str, str]:
+    ) -> dict[str, str]:
         """
         Build a hardened healing prompt with safety guards.
 
@@ -139,7 +140,7 @@ QUALITY REQUIREMENTS:
             "user": user_prompt
         }
 
-    def build_fission_prompt(self, code: str, file_path: str) -> Dict[str, str]:
+    def build_fission_prompt(self, code: str, file_path: str) -> dict[str, str]:
         """
         Build a hardened fission prompt for file splitting.
 
@@ -263,7 +264,7 @@ Return ONLY JSON in this format:
 
         return False
 
-    def compute_prompt_hash(self, prompt_dict: Dict[str, str]) -> str:
+    def compute_prompt_hash(self, prompt_dict: dict[str, str]) -> str:
         """
         Compute hash of prompt for audit logging.
 
@@ -277,14 +278,14 @@ Return ONLY JSON in this format:
         return hashlib.sha256(combined.encode('utf-8')).hexdigest()
 
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, int]:
         """Autonomous healing implementation as per Canon Key 51."""
         super().heal_repository()
 
         return {"violations_found": 0, "violations_fixed": 0, "errors": 0}
 
 @timeout(300)
-def heal_repository_old(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+def heal_repository_old(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
     """Prompt governance - operational only."""
     if _call_path is None:
         _call_path = set()

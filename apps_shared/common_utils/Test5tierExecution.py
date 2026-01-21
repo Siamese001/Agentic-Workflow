@@ -10,11 +10,7 @@ Tests the 3 detailed test cases for:
 All 3 tests must pass 100%.
 """
 import sys
-import os
-import tempfile
-import shutil
 from pathlib import Path
-from unittest.mock import patch, MagicMock
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -79,9 +75,9 @@ def test_1_syntax_gate():
 
     # Verify the gate logic would prevent Tier 1 execution
     # (The actual abort happens in canon_validator, we're testing the signal)
-    print(f"   Gate signal correct: is_stable=False triggers abort")
+    print("   Gate signal correct: is_stable=False triggers abort")
 
-    print(f"✅ PASSED: Syntax Gate correctly signals abort")
+    print("✅ PASSED: Syntax Gate correctly signals abort")
     return True
 
 
@@ -102,10 +98,10 @@ def test_2_deduplication_detection():
     # Check that TwoPhaseDeduplicationAgent exists and can be imported
     try:
         from apps_lic.engines.TwoPhaseDeduplicationAgent import (
+            TwoPhaseDeduplicationAgent,
             get_two_phase_deduplication_agent,
-            TwoPhaseDeduplicationAgent
         )
-        print(f"   TwoPhaseDeduplicationAgent: importable ✓")
+        print("   TwoPhaseDeduplicationAgent: importable ✓")
     except ImportError as e:
         print(f"   ❌ FAILED: Cannot import TwoPhaseDeduplicationAgent: {e}")
         return False
@@ -116,8 +112,8 @@ def test_2_deduplication_detection():
     assert hasattr(agent, 'heal_repository'), "Agent must have heal_repository method"
     assert hasattr(agent, 'run_phase_a'), "Agent must have run_phase_a method for identity collisions"
 
-    print(f"   heal_repository method: exists ✓")
-    print(f"   run_phase_a method: exists ✓")
+    print("   heal_repository method: exists ✓")
+    print("   run_phase_a method: exists ✓")
 
     # Verify Tier 1 order in canon_validator
     # TwoPhaseDeduplicationAgent should come BEFORE NamingAgent
@@ -136,7 +132,7 @@ def test_2_deduplication_detection():
 
     print(f"   Tier 1 order: Deduplication @ {dedup_index}, Naming @ {naming_index} ✓")
 
-    print(f"✅ PASSED: Deduplication runs before Naming in Tier 1")
+    print("✅ PASSED: Deduplication runs before Naming in Tier 1")
     return True
 
 
@@ -177,7 +173,7 @@ def test_3_roster_cleanliness():
         return False
 
     print(f"\n   Total core agents skipped: {len(all_core_agents)}")
-    print(f"✅ PASSED: All core agents are in SKIP_AGENTS")
+    print("✅ PASSED: All core agents are in SKIP_AGENTS")
     return True
 
 
@@ -199,21 +195,21 @@ def test_4_tier_assembly_verification():
     assert "mandatory_preflight" in content, "Tier 0 (mandatory_preflight) not found"
     assert "SyntaxValidatorAgent" in content, "SyntaxValidatorAgent not in Tier 0"
     assert "HygieneGuardianAgent" in content, "HygieneGuardianAgent not in Tier 0"
-    print(f"   Tier 0 (Pre-Flight): defined ✓")
+    print("   Tier 0 (Pre-Flight): defined ✓")
 
     # Check for Tier 1 with Deduplication
     assert "TwoPhaseDeduplicationAgent" in content, "TwoPhaseDeduplicationAgent not in Tier 1"
-    print(f"   Tier 1 (Structural): includes Deduplication ✓")
+    print("   Tier 1 (Structural): includes Deduplication ✓")
 
     # Check for 5-tier total_phases
     assert "total_phases=5" in content, "5-tier system not configured"
-    print(f"   5-tier system: configured ✓")
+    print("   5-tier system: configured ✓")
 
     # Check for Syntax Gate abort logic
     assert 'not t0_results.get("is_stable"' in content, "Syntax Gate abort logic not found"
-    print(f"   Syntax Gate abort: implemented ✓")
+    print("   Syntax Gate abort: implemented ✓")
 
-    print(f"✅ PASSED: 5-tier assembly verified")
+    print("✅ PASSED: 5-tier assembly verified")
     return True
 
 

@@ -20,13 +20,12 @@ import argparse
 import shutil
 import sys
 from pathlib import Path
-from typing import List, Tuple
 
 PROJECT_ROOT = Path(__file__).parent.parent
 ARCHIVE_DIR = PROJECT_ROOT / "archives" / "legacy_agents"
 
 # Phase 4 legacy agents to archive
-LEGACY_DETECTORS: List[str] = [
+LEGACY_DETECTORS: list[str] = [
     "BiasDetectorAgent.py",
     "DeadCodeDetectorAgent.py",
     "DeadlockDetectorAgent.py",
@@ -37,7 +36,7 @@ LEGACY_DETECTORS: List[str] = [
     "MemoryLeakDetectorAgent.py",
 ]
 
-LEGACY_HEALERS: List[str] = [
+LEGACY_HEALERS: list[str] = [
     "CanonHealerAgent.py",
     "GravityHealerAgent.py",
     "HealerAgent.py",
@@ -50,7 +49,7 @@ LEGACY_HEALERS: List[str] = [
     "BlueprintHierarchyHealerAgent_1.py",
 ]
 
-LEGACY_ROUTERS: List[str] = [
+LEGACY_ROUTERS: list[str] = [
     "DynamicModelRouterAgent.py",
     "McpRouterAgent.py",
     "ModelRouterAgent.py",
@@ -58,7 +57,7 @@ LEGACY_ROUTERS: List[str] = [
     "ReasoningRouterAgent.py",
 ]
 
-LEGACY_EXECUTORS: List[str] = [
+LEGACY_EXECUTORS: list[str] = [
     "IntegrityGateExecutorAgent.py",
     "L5IntegrityGateExecutorAgent.py",
     "SafetyExecutorAgent.py",
@@ -76,7 +75,7 @@ def find_agent(filename: str) -> Path | None:
     return None
 
 
-def archive_file(source: Path, category: str, dry_run: bool = False) -> Tuple[bool, str]:
+def archive_file(source: Path, category: str, dry_run: bool = False) -> tuple[bool, str]:
     """Archive a single file to category subfolder."""
     target_dir = ARCHIVE_DIR / category
     target = target_dir / source.name

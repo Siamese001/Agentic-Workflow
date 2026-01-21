@@ -4,15 +4,13 @@ Test suite for CredentialScannerAgent
 Risk 4: Hardcoded Credential Detection
 Tests the scanner's ability to detect various types of credentials.
 """
-import pytest
-from pathlib import Path
-import tempfile
 import shutil
+import tempfile
+from pathlib import Path
 
-from agentic_core.L5_safety.validators.CredentialScannerAgent import (
-    CredentialScannerAgent,
-    CredentialMatch
-)
+import pytest
+
+from agentic_core.L5_safety.validators.CredentialScannerAgent import CredentialScannerAgent
 
 
 class TestCredentialScannerAgent:

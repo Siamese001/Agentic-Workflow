@@ -5,7 +5,9 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 """
 GitAgent - L6 GitOps & Remote Synchronization
 CANONICAL: True - Standalone extraction 2026-01-06 (from infrastructure.py)
@@ -16,12 +18,13 @@ Ensures changes are committed and pushed to remote repository.
 import logging
 import os
 import subprocess
-import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol, Tuple
+from typing import Any
+
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.security import safe_git_execute
+
 Logger: Any = logging.getLogger(__name__)
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
@@ -29,10 +32,6 @@ from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMix
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 try:
     from agentic_core.L4_state.ValidationContext.CachedStateLedger import CachedStateLedger
@@ -111,7 +110,7 @@ class GitAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         return git_dir.exists()
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L2 execution agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -128,7 +127,7 @@ class GitAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         finally:
             _call_path.discard(agent_name)
 
-    def _run_git(self, args: List[str], check: bool=True) -> subprocess.CompletedProcess:
+    def _run_git(self, args: list[str], check: bool=True) -> subprocess.CompletedProcess:
         """
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository()
@@ -149,7 +148,7 @@ class GitAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             Logger.error(f'Error: {e.stderr}')
             raise
 
-    def _generate_git_metadata(self, cycle_id: int) -> Dict[str, str]:
+    def _generate_git_metadata(self, cycle_id: int) -> dict[str, str]:
         """
         Generate git metadata for a healing cycle.
 
@@ -164,7 +163,7 @@ class GitAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         commit_message = f'Self-healing cycle {cycle_id}\n\nAutomated fixes applied at {timestamp}\nModified files: {len(self._get_modified_files())} files\nStatus: COMPLETED\n'
         return {'branch_name': branch_name, 'commit_message': commit_message, 'timestamp': timestamp, 'cycle_id': cycle_id}
 
-    def _get_modified_files(self) -> List[Path]:
+    def _get_modified_files(self) -> list[Path]:
         """Get list of modified files in the repository."""
         try:
             result = self._run_git(['status', '--porcelain'])
@@ -180,7 +179,7 @@ class GitAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             Logger.error(f'Failed to get modified files: {e}')
             return []
 
-    def _check_for_secrets(self, file_paths: List[Path]) -> List[str]:
+    def _check_for_secrets(self, file_paths: list[Path]) -> list[str]:
         """
         Check files for potential secrets.
 
@@ -196,7 +195,7 @@ class GitAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             if not file_path.exists():
                 continue
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
+                with open(file_path, encoding='utf-8') as f:
                     content = f.read().lower()
                 for pattern in secret_patterns:
                     if pattern in content:
@@ -206,7 +205,7 @@ class GitAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
                 pass
         return suspicious
 
-    def stage_files(self, file_paths: List[Path]) -> bool:
+    def stage_files(self, file_paths: list[Path]) -> bool:
         """
         Stage specific files for commit.
 
@@ -300,7 +299,7 @@ class GitAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             Logger.error(f'Failed to push to remote: {e}')
             return False
 
-    def commit_healing_cycle(self, cycle_id: int, modified_files: List[Path]) -> bool:
+    def commit_healing_cycle(self, cycle_id: int, modified_files: list[Path]) -> bool:
         """
         Commit changes from a healing cycle.
 
@@ -337,7 +336,7 @@ class GitAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             Logger.error(f'Failed to commit healing cycle: {e}')
             return False
 
-    def get_repo_status(self) -> Dict[str, Any]:
+    def get_repo_status(self) -> dict[str, Any]:
         """
         Get current repository status.
 
@@ -362,7 +361,7 @@ class GitAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             return {'status': 'error', 'error': str(e)}
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L2 execution agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -380,9 +379,9 @@ class GitAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             _call_path.discard(agent_name)
 
 
-_git_agent: Optional["GitAgent"] = None
+_git_agent: GitAgent | None = None
 
-def get_git_agent() -> "GitAgent":
+def get_git_agent() -> GitAgent:
     """Get or create the global GitAgent instance."""
     # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
     super().heal_repository()
@@ -408,7 +407,7 @@ def initialize_git_agent(repo_root: Path=None) -> Any:
     else:
         Logger.warning('GitAgent disabled - not in a git repository')
 
-def commit_healing_cycle(cycle_id: int, modified_files: List[Path]) -> bool:
+def commit_healing_cycle(cycle_id: int, modified_files: list[Path]) -> bool:
     """
     Commit a healing cycle.
 

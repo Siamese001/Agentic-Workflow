@@ -1,19 +1,17 @@
 from __future__ import annotations
+
 """
 Sovereign GitKraken Healing Strategy – Phase 17D (Dec 27, 2025)
 Autonomous version control operations using official GitKraken MCP.
 Replaces all direct subprocess git calls.
 """
 import logging
-from typing import List, Dict, Any
-from agentic_core.L0_maintenance.P1_core.gitkraken_mcp_client_1 import get_git_client
+from typing import Any
+
 from agentic_core.config.blueprint_sovereign.sovereign_config_1 import config
+from agentic_core.L0_maintenance.P1_core.gitkraken_mcp_client_1 import get_git_client
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -36,7 +34,7 @@ class GitKrakenHealingStrategy:
         self.commits_today = 0
         Logger.info('[L0 GITKRAKEN HEALING] Strategy initialized')
 
-    async def diagnose(self, issues: List[Dict]) -> List[Dict]:
+    async def diagnose(self, issues: list[dict]) -> list[dict]:
         """
         Group detected violations into atomic Git transactions.
 
@@ -59,7 +57,7 @@ class GitKrakenHealingStrategy:
         Logger.info(f'[L0 GITKRAKEN HEALING] Diagnosed {len(fixes)} version control operations')
         return fixes
 
-    async def apply(self, fix: Dict, ctx: Any=None) -> bool:
+    async def apply(self, fix: dict, ctx: Any=None) -> bool:
         """
         Execute the commit and optional PR via the L3-routed MCP.
 
@@ -86,18 +84,18 @@ class GitKrakenHealingStrategy:
                 Logger.info(f'[L0 GITKRAKEN HEALING] Commit Successful: {(commit_sha[:8] if len(commit_sha) > 8 else commit_sha)}')
                 if config.GITKRAKEN_HEALING_AUTO_PR:
                     pr_desc: Any = '\n'.join([f"- {i.get('reason', 'Unknown reason')}" for i in fix.get('details', [])])
-                    Logger.info(f'[L0 GITKRAKEN HEALING] Creating PR for review')
+                    Logger.info('[L0 GITKRAKEN HEALING] Creating PR for review')
                     await self._create_pr(summary, pr_desc)
                 self.commits_today += 1
                 return True
             else:
-                Logger.error(f'[L0 GITKRAKEN HEALING] Failed to create commit')
+                Logger.error('[L0 GITKRAKEN HEALING] Failed to create commit')
                 return False
         except Exception as e:
             Logger.error(f'[L0 GITKRAKEN HEALING] Sovereign Git operation failed: {e}')
             return False
 
-    async def _create_healing_commit(self, files: List[str], message: str) -> Dict[str, Any]:
+    async def _create_healing_commit(self, files: list[str], message: str) -> dict[str, Any]:
         """
         Create a healing commit via GitKraken MCP.
 

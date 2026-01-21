@@ -3,12 +3,11 @@
 Simple script to generate agent duplicates table.
 Runs find_duplicate_agents.py internally and processes output.
 """
-import subprocess
 import json
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
+
 from agentic_core.utils.security import safe_execute
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 
 def is_agent_file(path: str) -> bool:

@@ -3,10 +3,10 @@
 Provides scoring algorithms for retrieved documents in RAG systems.
 """
 
-from typing import Any, Dict, List, Optional, Tuple
-from dataclasses import dataclass
 import math
 import re
+from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass
@@ -33,7 +33,7 @@ class DocumentScore:
 class RAGScorer:
     """Scores and ranks documents for RAG retrieval."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: dict[str, Any] | None = None):
         """Initialize RAG scorer.
 
         Args:
@@ -49,11 +49,11 @@ class RAGScorer:
 
     def score_documents(
         self,
-        documents: List[Dict[str, Any]],
+        documents: list[dict[str, Any]],
         query: str,
-        query_embedding: Optional[List[float]] = None,
-        document_embeddings: Optional[List[List[float]]] = None
-    ) -> List[DocumentScore]:
+        query_embedding: list[float] | None = None,
+        document_embeddings: list[list[float]] | None = None
+    ) -> list[DocumentScore]:
         """Score a list of documents against a query.
 
         Args:
@@ -107,10 +107,10 @@ class RAGScorer:
 
     def _calculate_semantic_score(
         self,
-        doc: Dict[str, Any],
+        doc: dict[str, Any],
         query: str,
-        query_embedding: Optional[List[float]],
-        doc_embedding: Optional[List[float]]
+        query_embedding: list[float] | None,
+        doc_embedding: list[float] | None
     ) -> float:
         """Calculate semantic similarity score."""
         if not query_embedding or not doc_embedding:
@@ -142,7 +142,7 @@ class RAGScorer:
 
         return min(score / len(query_terms), 1.0) if query_terms else 0.0
 
-    def _calculate_freshness_score(self, doc: Dict[str, Any]) -> float:
+    def _calculate_freshness_score(self, doc: dict[str, Any]) -> float:
         """Calculate freshness score based on document metadata."""
         # Default to neutral score if no date info
         if "timestamp" not in doc and "date" not in doc:
@@ -152,7 +152,7 @@ class RAGScorer:
         return 0.5
 
 
-def create_rag_scorer(config: Optional[Dict[str, Any]] = None) -> RAGScorer:
+def create_rag_scorer(config: dict[str, Any] | None = None) -> RAGScorer:
     """Create a RAG scorer instance.
 
     Args:

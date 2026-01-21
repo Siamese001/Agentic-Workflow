@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Fix all Unicode emojis in Python files to ASCII equivalents.
 Prevents Windows encoding issues.
@@ -7,29 +8,15 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
-from agentic_core.utils.sovereign_index import SovereignIndex
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+
 emoji_map: Any = {'✅': '[OK]', '⚠️': '[!]', '🔧': '[+]', '🔄': '[~]', '🆕': '[NEW]', '♻️': '[REUSE]', '🚨': '[ALERT]', '🚫': '[X]', '❌': '[X]', '🧹': '[CLEAN]', '🏛️': '[ARCH]', '💾': '[SAVE]', '🔍': '[SCAN]', '📊': '[STATS]', '📂': '[DIR]', '📋': '[PLAN]', '🚀': '[START]', '🌱': '[GIT]', '🧬': '[CYCLE]'}
 
 def fix_emojis_in_file(file_path: str) -> bool:
     """Replace all emojis in a file with ASCII equivalents."""
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, encoding='utf-8') as f:
             content: Any = f.read()
         original_content: Any = content
         for emoji, replacement in EMOJI_MAP.items():

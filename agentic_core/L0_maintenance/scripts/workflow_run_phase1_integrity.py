@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Phase 1 Integrity Test with L5 Safety Layer Validation.
 
 This script tests the L5 safety layer integration with the NervousSystem.
@@ -7,6 +8,7 @@ It should show L5 validation logs during execution.
 import asyncio
 import logging
 from typing import Any
+
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 Logger: Any = logging.getLogger('Phase1_Integrity_With_L5')
 

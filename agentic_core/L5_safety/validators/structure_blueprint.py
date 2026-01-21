@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 SOVEREIGN BRAIN: THE MASTER CONSTITUTION
 Enforces Depth-2 for Apps/Tests and Depth-3 for the Agentic Core.
@@ -9,7 +10,7 @@ CONSOLIDATED VERSION: Reduced redundancy while preserving all information.
 import os
 import re
 from pathlib import Path
-from typing import Any, Dict, FrozenSet, List, Optional, Protocol, Set, Union
+from typing import Any
 
 SOVEREIGN_REGISTRY: Any = {'agentic_core': {'depth': 3, 'subfolders': ['L0_maintenance', 'L1_cognition', 'L2_execution', 'L3_orchestration', 'L4_state', 'L5_safety', 'L6_observability', 'config', 'schemas', 'prompt_governance', 'runtime', 'utils', 'patterns', 'semantic_memory', 'knowledge', 'observability', 'common']}, 'apps_rg': {'depth': 2, 'subfolders': ['logic_nodes', 'asset_library', 'system_flow', 'engines', 'templates', 'domain']}, 'apps_lic': {'depth': 2, 'subfolders': ['logic_nodes', 'asset_library', 'system_flow', 'engines', 'templates', 'domain', 'core']}, 'apps_shared': {'depth': 3, 'subfolders': ['base_definitions', 'common_utils', 'core_components', 'base_agents', 'models', 'utils', 'mixins', 'P1_core', 'config', 'data', 'domain', 'templates'], 'description': 'Global utilities and shared logic accessible by all apps and core.'}, 'tests': {'depth': 2, 'subfolders': ['unit', 'integration', 'e2e', 'functional', 'fixtures', 'automation', 'core', 'data', 'performance', 'security', 'autogen', 'utils']}, 'scripts': {'depth': 1, 'subfolders': [], 'purpose': 'Standalone utility scripts'}, '.sovereign_healing_backup': {'depth': 2, 'subfolders': ['filesystem', 'location', 'naming', 'transactions'], 'purpose': 'Backup directory for healing operations', 'volatile': True}}
 
@@ -19,7 +20,7 @@ SOVEREIGN_REGISTRY: Any = {'agentic_core': {'depth': 3, 'subfolders': ['L0_maint
 # - Base agents at layer root (e.g., L6ObservabilityBaseAgent.py)
 # - Unified orchestrators (e.g., unified_orchestrator.py)
 # - Core utilities (e.g., sovereign_index.py)
-VARIABLE_DEPTH_SUBFOLDERS: FrozenSet[str] = frozenset({
+VARIABLE_DEPTH_SUBFOLDERS: frozenset[str] = frozenset({
     'utils',              # utils/sovereign_index.py at depth 2
     'config',             # config/blueprint_sovereign/* variable depth
     'common',             # common/healing/* variable depth
@@ -98,7 +99,7 @@ COVERAGE_HTML_DIR: str = "coverage_html"
 # This map defines the approved L4 structure for these folders.
 # Criteria for L4: >50 files, >5 subdirs, or high functional diversity.
 
-L4_SUBFOLDER_MAP: Dict[str, Dict[str, List[str]]] = {
+L4_SUBFOLDER_MAP: dict[str, dict[str, list[str]]] = {
     # L6_observability/dashboards/ - 13 .py files, 7 subdirs, mixed concerns
     'dashboards': {
         'generators': ['dashboard_generators', 'data_generators'],
@@ -176,7 +177,7 @@ L4_SUBFOLDER_MAP: Dict[str, Dict[str, List[str]]] = {
 }
 
 # Folders that are approved for L4 depth (depth=4 instead of depth=3)
-L4_APPROVED_FOLDERS: Set[str] = {
+L4_APPROVED_FOLDERS: set[str] = {
     'agentic_core/L6_observability/dashboards',
     'agentic_core/L0_maintenance/scripts',
     'agentic_core/L3_orchestration/workflow_engines',
@@ -205,7 +206,7 @@ CANON_SIGNALS: set[str] = {'agent', 'manager', 'engine', 'validator', 'healer', 
 # Files with these prefixes MUST be placed in their respective app folders, NOT agentic_core
 # This is enforced by LocationAgent and HierarchyAgent during validation
 
-APP_SPECIFIC_PREFIXES: Dict[str, str] = {
+APP_SPECIFIC_PREFIXES: dict[str, str] = {
     'rg_': 'apps_rg',      # Resume Gen executors/tools
     'lic_': 'apps_lic',    # LinkedIn Canonical executors/tools
     'resume_': 'apps_rg',  # Resume-related files
@@ -221,7 +222,7 @@ APP_SPECIFIC_PREFIXES: Dict[str, str] = {
 APP_SPECIFIC_TARGET_SUBFOLDER: str = "engines"
 
 # Files matching these patterns should NEVER be in agentic_core
-APP_SPECIFIC_PATTERNS: List[str] = [
+APP_SPECIFIC_PATTERNS: list[str] = [
     r'^rg_.*\.py$',           # Resume Gen files
     r'^lic_.*\.py$',          # LinkedIn Canonical files
     r'^resume_.*\.py$',       # Resume-related files
@@ -232,7 +233,7 @@ APP_SPECIFIC_PATTERNS: List[str] = [
 # === FORBIDDEN FILENAME PREFIXES ===
 # Files should NEVER begin with layer/priority prefixes - these belong in folder structure, not filenames
 # Examples: l1_cms_schemas.py, P1_core___init__.py
-FORBIDDEN_LAYER_PREFIXES: List[str] = [
+FORBIDDEN_LAYER_PREFIXES: list[str] = [
     'l0_', 'l1_', 'l2_', 'l3_', 'l4_', 'l5_', 'l6_',  # Layer prefixes (lowercase)
     'L0_', 'L1_', 'L2_', 'L3_', 'L4_', 'L5_', 'L6_',  # Layer prefixes (uppercase)
     'p0_', 'p1_', 'p2_', 'p3_',                        # Priority prefixes (lowercase)
@@ -242,14 +243,14 @@ FORBIDDEN_LAYER_PREFIXES: List[str] = [
 # === FORBIDDEN BACKUP FILE PATTERNS ===
 # Broken backup files that archiving agents cannot find - must be cleaned up
 # Examples: golden_record.json.bak.174742, config.yaml.bak.123456
-FORBIDDEN_BACKUP_PATTERNS: List[str] = [
+FORBIDDEN_BACKUP_PATTERNS: list[str] = [
     r'.*\.bak\.\d+$',         # .bak.NNNNNN pattern (broken backup)
     r'.*\.backup\.\d+$',      # .backup.NNNNNN pattern
     r'.*\.old\.\d+$',         # .old.NNNNNN pattern
     r'.*\.tmp\.\d+$',         # .tmp.NNNNNN pattern (temp files)
 ]
 
-def has_forbidden_layer_prefix(filename: str) -> Optional[str]:
+def has_forbidden_layer_prefix(filename: str) -> str | None:
     """
     Check if filename starts with a forbidden layer/priority prefix.
     Returns the matched prefix or None if compliant.
@@ -273,47 +274,47 @@ def is_broken_backup_file(filename: str) -> bool:
 
 # === AST-BASED DOMAIN SIGNALS (2026-01-02 hardening) ===
 # High-confidence identifier terms for structural detection of leaked app logic
-APP_RG_AST_TERMS: Set[str] = {
+APP_RG_AST_TERMS: set[str] = {
     "resume", "cv", "skill", "experience", "education", "section",
     "job", "outreach", "dispatch", "generation", "formatter", "parser",
     "header", "summary", "achievement", "certification"
 }
-APP_LIC_AST_TERMS: Set[str] = {
+APP_LIC_AST_TERMS: set[str] = {
     "linkedin", "lic", "profile", "connection", "invite", "message",
     "connect", "campaign", "cadence", "note", "scrap", "navigate", "browser"
 }
-APP_RG_VARIABLE_TERMS: Set[str] = {
+APP_RG_VARIABLE_TERMS: set[str] = {
     "resume", "cv", "skill", "experience", "education", "section",
     "job", "header", "summary", "achievement", "certification",
     "applicant", "candidate", "position", "role"
 }
-APP_LIC_VARIABLE_TERMS: Set[str] = {
+APP_LIC_VARIABLE_TERMS: set[str] = {
     "profile", "linkedin", "connection", "invite", "message", "note",
     "campaign", "cadence", "lead", "contact", "person", "url"
 }
 VARIABLE_HIT_WEIGHT: float = 0.5
 STRING_HIT_WEIGHT: float = 0.25
 AST_DOMAIN_HIT_THRESHOLD: float = 2.0
-FORBIDDEN_APP_MODULES: Set[str] = {"apps_rg", "apps_lic"}
+FORBIDDEN_APP_MODULES: set[str] = {"apps_rg", "apps_lic"}
 
 # String literal signals (docstrings, comments, etc.)
-APP_RG_STRING_TERMS: Set[str] = {
+APP_RG_STRING_TERMS: set[str] = {
     "resume", "cv", "skill", "experience", "education",
     "job posting", "outreach", "candidate", "applicant"
 }
-APP_LIC_STRING_TERMS: Set[str] = {
+APP_LIC_STRING_TERMS: set[str] = {
     "linkedin", "profile", "connection", "invite", "campaign", "cadence"
 }
 
 # === CORE LAYER GRAVITY RULES (Internal dependency direction) ===
-LAYER_FORBIDDEN_IMPORTS: Dict[str, Set[str]] = {
+LAYER_FORBIDDEN_IMPORTS: dict[str, set[str]] = {
     "L1_cognition": {"L2_execution", "L3_orchestration", "L4_state", "L5_safety"},
     "L2_execution": {"L1_cognition", "L3_orchestration", "L5_safety"},
     "L3_orchestration": {"L5_safety"},
 }
 
 # === STRUCTURED TERRITORY KEYWORDS FOR ALIGNMENT SCORING ===
-CORE_TERRITORY_KEYWORDS: Dict[str, Dict[str, Set[str]]] = {
+CORE_TERRITORY_KEYWORDS: dict[str, dict[str, set[str]]] = {
     "L1_cognition/thought_engine": {"primary": {"think", "reason", "plan", "decompose", "critique", "reflect"}},
     "L1_cognition/intent_analysis": {"primary": {"intent", "goal", "understand", "parse", "user"}},
     "L2_execution/ToolRegistry": {"primary": {"tool", "execute", "call", "registry", "runner"}},
@@ -342,7 +343,7 @@ DEFAULT_APP_HEALING_TARGET: str = "apps_rg/engines"  # Most common leak destinat
 DEFAULT_CORE_HEALING_TERRITORY: str = "L2_execution/ToolRegistry"  # Safe neutral territory
 
 # Violation severity levels for prioritized healing
-VIOLATION_SEVERITY: Dict[str, int] = {
+VIOLATION_SEVERITY: dict[str, int] = {
     "GRAVITY VIOLATION": 10,
     "AST DOMAIN VIOLATION": 9,
     "TERRITORY MISMATCH VIOLATION": 8,
@@ -350,7 +351,7 @@ VIOLATION_SEVERITY: Dict[str, int] = {
     "TERRITORY ALIGNMENT WEAK": 5,
 }
 
-def get_correct_app_folder(filename: str) -> Optional[str]:
+def get_correct_app_folder(filename: str) -> str | None:
     """
     Return the correct root app folder (e.g., 'apps_rg') for a file based on prefix.
     Legacy — kept for backward compatibility with existing agent code.
@@ -361,7 +362,7 @@ def get_correct_app_folder(filename: str) -> Optional[str]:
             return folder
     return None
 
-def get_correct_app_path(filename: str) -> Optional[str]:
+def get_correct_app_path(filename: str) -> str | None:
     """
     Return the full recommended path (e.g., 'apps_rg/engines') for app-specific files.
     Uses centralized target subfolder — all migrated files went here.
@@ -442,7 +443,7 @@ def safe_path_join(project_root, *parts):
 # === COMPREHENSIVE NAMING CONVENTIONS (SSOT) ===
 # All naming rules for all file types in the repository
 
-NAMING_CONVENTIONS: Dict[str, Dict[str, Any]] = {
+NAMING_CONVENTIONS: dict[str, dict[str, Any]] = {
     # Python Agent files - PascalCase, must end with Agent
     "agent": {
         "pattern": r"^[A-Z][a-zA-Z0-9]*Agent\.py$",
@@ -584,7 +585,7 @@ NAMING_EXEMPT_DIRS: frozenset[str] = frozenset({
 })
 FORBIDDEN_PATTERNS: Any = [re.compile('^utils\\.py$'), re.compile('^helper\\.py$'), re.compile('^temp\\.py$'), re.compile('.*_v\\d+\\.py$'), re.compile('^main\\.py$'), re.compile('^test\\.py$'), re.compile('.*_final\\.py$'), re.compile('.*_new\\.py$'), re.compile('.*_old\\.py$'), re.compile('.*_copy\\.py$'), re.compile('.*_backup\\.py$'), re.compile('^legacy_.*\\.py$'), re.compile('^.+_\\d+\\.py$'), re.compile('^draft_.*\\.py$')]
 # Static protected files (hard-coded core infrastructure)
-_STATIC_ROOT_PROTECTED_FILES: FrozenSet[str] = frozenset({
+_STATIC_ROOT_PROTECTED_FILES: frozenset[str] = frozenset({
     'canon_validator_agentic_v2.py',
     'canon_validator_agentic_v2_thin.py',
     'pyproject.toml',
@@ -596,14 +597,14 @@ _STATIC_ROOT_PROTECTED_FILES: FrozenSet[str] = frozenset({
 })
 
 # Dynamic protected files derived from SSOT constants
-_DYNAMIC_ROOT_PROTECTED_FILES: FrozenSet[str] = frozenset({
+_DYNAMIC_ROOT_PROTECTED_FILES: frozenset[str] = frozenset({
     AGENT_DISCOVERY_JSON,
     AGENT_DISCOVERY_MANIFEST_JSON,
     RUNTIME_STATE_JSON,
 })
 
 # Final combined immutable set - Single Source of Truth for all root-level protection
-ROOT_PROTECTED_FILES: FrozenSet[str] = _STATIC_ROOT_PROTECTED_FILES | _DYNAMIC_ROOT_PROTECTED_FILES
+ROOT_PROTECTED_FILES: frozenset[str] = _STATIC_ROOT_PROTECTED_FILES | _DYNAMIC_ROOT_PROTECTED_FILES
 SOVEREIGN_EXCLUDED_FOLDERS: frozenset[str] = frozenset({'.git', '.venv', 'venv', 'venv_stable', '__pycache__', '.pytest_cache', '.ruff_cache', 'node_modules', '.mypy_cache', '.tox', 'archives', 'legacy_code', 'legacy_engines', 'legacy_resume_gen', 'data', 'docs', 'env', 'build', 'dist', '_build', 'Lib', 'site-packages', 'google', 'gapic', 'logging', 'licenses', 'src', 'pip', 'dist-info', 'raw', 'golden_state', 'logs', 'processed', 'shared', 'refs', 'remotes', 'v', 'stubs', '.sovereign_healing_backup', '.idea', '.vscode', '.DS_Store', 'Thumbs.db'})
 FORBIDDEN_FOLDER_PATTERN: Any = re.compile('^\\d+_')
 FORBIDDEN_ROOT_FOLDERS: frozenset[str] = frozenset({'legacy_code', 'legacy_engines', 'legacy_resume_gen', 'old_core'})
@@ -691,7 +692,7 @@ def safe_prefixed_filename(prefix: str, filename: str) -> str:
 
     # Check if filename already starts with the prefix
     stem = filename.rsplit('.', 1)[0] if '.' in filename else filename
-    suffix = '.' + filename.rsplit('.', 1)[1] if '.' in filename else ''
+    '.' + filename.rsplit('.', 1)[1] if '.' in filename else ''
 
     # If already has prefix, return unchanged
     if stem.startswith(prefix + '_') or stem == prefix:
@@ -744,7 +745,7 @@ GLOBAL_EXCLUDED_DIRS: frozenset[str] = frozenset({
 })
 
 
-def is_path_allowed(rel_path: Union[str, Path]) -> bool:
+def is_path_allowed(rel_path: str | Path) -> bool:
     """
     [SSOT] Determines if a path conforms to the SOVEREIGN_REGISTRY structure.
     Used by agents (Filesystem/Hierarchy) as a safety brake to prevent
@@ -792,7 +793,7 @@ _semantic_templates = {'node_pattern': {'entity_types': ['Class'], 'examples_suf
 # === AST PLACEMENT SIGNAL REGISTRY ===
 # Maps AST patterns to exact L1/L2 paths for file placement
 # This is the SSOT for AST-based file placement decisions
-AST_PLACEMENT_SIGNALS: Dict[str, Dict[str, Any]] = {
+AST_PLACEMENT_SIGNALS: dict[str, dict[str, Any]] = {
     # L1_cognition placements
     "agentic_core/L1_cognition/thought_engine": {
         "class_patterns": [".*Node$", ".*Thought.*", ".*Reason.*", ".*Chain.*"],
@@ -1020,7 +1021,7 @@ PLACEMENT_CONFIDENCE = {
 
 # === REVERSE LOOKUP: L2 -> L1 MAPPING ===
 # For quick parent resolution
-L2_TO_L1_MAP: Dict[str, str] = {
+L2_TO_L1_MAP: dict[str, str] = {
     "thought_engine": "L1_cognition",
     "intent_analysis": "L1_cognition",
     "planning": "L1_cognition",
@@ -1064,7 +1065,7 @@ L2_TO_L1_MAP: Dict[str, str] = {
 
 # === GENERALIZED EXERCISER REGISTRY (Phase 7 SSOT) ===
 # Map layer → exerciser class (or "GeneralExerciserAgent" for fallback)
-EXERCISER_REGISTRY: Dict[str, str] = {
+EXERCISER_REGISTRY: dict[str, str] = {
     "L5_safety": "L5SafetyExerciserAgent",  # Existing specialized
     "L4_state": "L4StateExerciserAgent",
     "L1_cognition": "L1CognitionExerciserAgent",

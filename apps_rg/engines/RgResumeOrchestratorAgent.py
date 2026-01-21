@@ -5,12 +5,13 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 import logging
-'''Brief description of functionality and purpose.'''
 
 '''Brief description of functionality and purpose.'''
 
-from typing import Any, Dict, List, Optional, Protocol
+'''Brief description of functionality and purpose.'''
+
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 _logger = logging.getLogger(__name__)
@@ -24,34 +25,30 @@ _logger = logging.getLogger(__name__)
 # -*- coding: utf-8 -*-
 """Pure orchestration of resume generation using shared atoms."""
 
-from typing import Dict, List
 
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from shared.configuration.config import ContentConstraintsConfig
 
-# [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
-
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+
 
 # NAMING FIXED: RgResumeOrchestratorAgent → RgResumeOrchestratorAgent
 class RgResumeOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Orchestrate the multi-hop resume generation workflow."""
 
-    def __init__(self, master_resume: Dict = None, test_mode: bool = False) -> None:
+    def __init__(self, master_resume: dict = None, test_mode: bool = False) -> None:
         """Initialize the orchestrator."""
         self.master_resume = master_resume
         self.test_mode = test_mode
-        self.hop_checkpoints: List = []
+        self.hop_checkpoints: list = []
         self.constraints = ContentConstraintsConfig() if master_resume else None
         self.jd_enforcer = None
 
-    def run(self, JobDescription: str) -> Dict[str, object]:
+    def run(self, JobDescription: str) -> dict[str, object]:
         """Execute the full resume generation workflow."""
         # HOP-0: JD Analysis
         if self.jd_enforcer:
@@ -75,14 +72,14 @@ class RgResumeOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerM
             "checkpoints": [c.get("hop_id") for c in self.hop_checkpoints],
         }
 
-    def _record_hop(self, hop_id: str, results: List = None) -> None:
+    def _record_hop(self, hop_id: str, results: list = None) -> None:
         """Record a hop Checkpoint."""
         status = "COMPLETED" if not results or all(getattr(r, 'passed', True) for r in results) else "FAILED"
         self.hop_checkpoints.append({"hop_id": hop_id, "status": status})
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L3 orchestration agent - operational only."""
         if _call_path is None:
             _call_path = set()
@@ -100,7 +97,7 @@ class RgResumeOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerM
             _call_path.discard(agent_name)
 
 
-def orchestrate_resume(master_resume: Dict, JobDescription: str) -> Dict[str, object]:
+def orchestrate_resume(master_resume: dict, JobDescription: str) -> dict[str, object]:
     """Single public function - pure routing between atoms."""
     orchestrator = RgResumeOrchestratorAgent(master_resume)
     return orchestrator.run(JobDescription)

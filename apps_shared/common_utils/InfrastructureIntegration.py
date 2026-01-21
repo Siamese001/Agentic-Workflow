@@ -7,18 +7,16 @@ infrastructure, ensuring all components work together seamlessly.
 
 import asyncio
 import logging
-from typing import Any, Dict, List, Optional, Callable, Awaitable
+from typing import Any
 
-from .core.event_bus import EventType, SystemEvent, get_event_bus
-from .event_bus_integration import HardenedEventBus, get_hardened_event_bus
-from .core.provenance_tracker import ProvenanceTracker, get_provenance_tracker, ProvenanceContext
-from .core.model_router import ModelRouter, TaskType, get_model_router
 from .bulkhead_manager import BulkheadManager, TaskPriority, get_bulkhead_manager
 from .circuit_breaker import get_circuit_breaker_registry
-from .retry_policy import get_retry_executor
-from .dead_letter_queue import get_dead_letter_queue, FailureReason
+from .core.event_bus import EventType, SystemEvent
+from .core.model_router import ModelRouter, TaskType, get_model_router
+from .core.provenance_tracker import ProvenanceTracker, get_provenance_tracker
+from .dead_letter_queue import FailureReason, get_dead_letter_queue
+from .event_bus_integration import HardenedEventBus, get_hardened_event_bus
 from .health_check import HealthCheckRegistry, initialize_system_health_checks
-from .rate_limiter import get_rate_limit_manager
 
 logger = logging.getLogger(__name__)
 
@@ -32,13 +30,13 @@ class InfrastructureOrchestrator:
         self._components = {}
 
         # Core infrastructure
-        self.event_bus: Optional[HardenedEventBus] = None
-        self.provenance_tracker: Optional[ProvenanceTracker] = None
-        self.model_router: Optional[ModelRouter] = None
+        self.event_bus: HardenedEventBus | None = None
+        self.provenance_tracker: ProvenanceTracker | None = None
+        self.model_router: ModelRouter | None = None
 
         # Hardened infrastructure
-        self.bulkhead_manager: Optional[BulkheadManager] = None
-        self.health_registry: Optional[HealthCheckRegistry] = None
+        self.bulkhead_manager: BulkheadManager | None = None
+        self.health_registry: HealthCheckRegistry | None = None
 
         logger.info("Initialized InfrastructureOrchestrator")
 
@@ -83,7 +81,7 @@ class InfrastructureOrchestrator:
 
     async def _register_component_health_checks(self) -> None:
         """Register health checks for new components."""
-        from .health_check import HealthChecker, ComponentType, HealthCheckResult, HealthStatus
+        from .health_check import ComponentType, HealthChecker, HealthCheckResult, HealthStatus
 
         # Event bus health check
         class EventBusHealthChecker(HealthChecker):
@@ -278,11 +276,11 @@ class InfrastructureOrchestrator:
         self,
         task_type: TaskType,
         prompt: str,
-        sources: Optional[List[tuple]] = None,
+        sources: list[tuple] | None = None,
         complexity_score: int = 1,
-        trace_id: Optional[str] = None,
+        trace_id: str | None = None,
         priority: TaskPriority = TaskPriority.MEDIUM
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Execute a task with full infrastructure support.
 
         Args:
@@ -420,7 +418,7 @@ class InfrastructureOrchestrator:
 
             raise
 
-    async def get_system_health(self) -> Dict[str, Any]:
+    async def get_system_health(self) -> dict[str, Any]:
         """Get comprehensive system health.
 
         Returns:
@@ -458,7 +456,7 @@ class InfrastructureOrchestrator:
 
 
 # Global orchestrator
-_orchestrator: Optional[InfrastructureOrchestrator] = None
+_orchestrator: InfrastructureOrchestrator | None = None
 _orchestrator_lock = asyncio.Lock()
 
 
@@ -480,11 +478,11 @@ async def get_infrastructure_orchestrator() -> InfrastructureOrchestrator:
 async def execute_task(
     task_type: TaskType,
     prompt: str,
-    sources: Optional[List[tuple]] = None,
+    sources: list[tuple] | None = None,
     complexity_score: int = 1,
-    trace_id: Optional[str] = None,
+    trace_id: str | None = None,
     priority: TaskPriority = TaskPriority.MEDIUM
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Execute a task with full infrastructure support.
 
     Args:
@@ -509,7 +507,7 @@ async def execute_task(
     )
 
 
-async def get_system_status() -> Dict[str, Any]:
+async def get_system_status() -> dict[str, Any]:
     """Get comprehensive system status.
 
     Returns:

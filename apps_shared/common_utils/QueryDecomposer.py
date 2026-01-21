@@ -7,7 +7,8 @@ that can be answered by the retrieval system.
 import asyncio
 import logging
 import re
-from typing import List, Dict, Optional, Any
+from typing import Any
+
 from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
@@ -17,7 +18,7 @@ class DecomposedQuery(BaseModel):
     """Result of query decomposition."""
 
     original_query: str = Field(..., description="Original complex query")
-    sub_queries: List[str] = Field(..., description="Decomposed atomic sub-queries")
+    sub_queries: list[str] = Field(..., description="Decomposed atomic sub-queries")
     reasoning: str = Field(..., description="Reasoning for decomposition")
     complexity_score: int = Field(..., ge=1, le=10, description="Complexity score (1-10)")
 
@@ -123,7 +124,7 @@ class QueryDecomposer(SimpleAgentBase):
         """
         try:
             # Import here to avoid circular imports
-            from .multi_provider_clients import get_client, Provider
+            from .multi_provider_clients import Provider, get_client
 
             # Get Anthropic client
             client = get_client(Provider.ANTHROPIC)
@@ -251,7 +252,7 @@ Output: {{
         decomposed_query: DecomposedQuery,
         search_function: callable,
         **kwargs
-    ) -> List[Any]:
+    ) -> list[Any]:
         """Execute search for all sub-queries in parallel.
 
         Args:

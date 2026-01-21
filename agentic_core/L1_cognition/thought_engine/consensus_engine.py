@@ -1,10 +1,12 @@
 from __future__ import annotations
+
 import logging
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
-import re
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 Logger: Any = logging.getLogger('ConsensusEngine')
 if not logging.root.handlers:
     logging.basicConfig(level=logging.INFO)
@@ -19,17 +21,19 @@ class ConsensusEngine:
     MAJORITY_THRESHOLD: Any = 0.66
     MODEL_CHECK_CONFIG: Any = {'gpt-5.1': {'keywords': ['broken', 'infinite loop'], 'reason': 'GPT-5.1 Thinking: Detected functional regression or infinite loop risk.'}, 'claude-sonnet-4-5': {'keywords': ['unsafe', 'race condition'], 'reason': 'Claude Sonnet 4.5 Analysis: Identified potential race condition or unsafe memory access.'}, 'gemini-3-pro': {'keywords': ['contradiction', 'hallucination'], 'reason': 'Gemini 3 Pro Deep Think: Found contradiction with known context or library definitions.'}}
 
-    def __init__(self, providers: List[str]=['gpt-5.1', 'claude-sonnet-4-5', 'gemini-3-pro']):
+    def __init__(self, providers: list[str]=None):
         """
         Initializes the ConsensusEngine with a list of verified SOTA Reasoning model providers.
 
         Args:
             providers: A list of model names to be used as jurors.
         """
+        if providers is None:
+            providers = ['gpt-5.1', 'claude-sonnet-4-5', 'gemini-3-pro']
         self.providers = providers
         self.threshold = ConsensusEngine.MAJORITY_THRESHOLD
 
-    def _get_model_specific_verdict(self, model_name: str, artifact_lower: str) -> Dict[str, str]:
+    def _get_model_specific_verdict(self, model_name: str, artifact_lower: str) -> dict[str, str]:
         """
         Helper to determine model-specific Verdict and reason.
         To address strict linter depth counting for dictionary literals, dictionaries are built incrementally.
@@ -47,7 +51,7 @@ class ConsensusEngine:
             verdict_data['Verdict'] = 'YES'
             verdict_data['reason'] = 'Compliance verified.'
             return verdict_data
-        has_violating_keyword = any((keyword in artifact_lower for keyword in ModelConfig['keywords']))
+        has_violating_keyword = any(keyword in artifact_lower for keyword in ModelConfig['keywords'])
         if has_violating_keyword:
             verdict_data = {}
             verdict_data['Verdict'] = 'NO'
@@ -74,7 +78,7 @@ class ConsensusEngine:
                 return True
         return False
 
-    def _call_juror(self, model_name: str, Artifact: str, prompt: str) -> Dict[str, Any]:
+    def _call_juror(self, model_name: str, Artifact: str, prompt: str) -> dict[str, Any]:
         """
         Simulates calling a specific High-Reasoning AI model API to get its Verdict.
         To address strict linter depth counting for dictionary literals, dictionaries are built incrementally.
@@ -102,7 +106,7 @@ class ConsensusEngine:
         result['reason'] = model_verdict['reason']
         return result
 
-    def _count_yes_votes(self, votes: List[Dict[str, Any]]) -> int:
+    def _count_yes_votes(self, votes: list[dict[str, Any]]) -> int:
         """
         Helper to count 'YES' votes from a list of juror verdicts.
 
@@ -112,9 +116,9 @@ class ConsensusEngine:
         Returns:
             The total count of 'YES' votes.
         """
-        return sum((1 for vote in votes if vote['Verdict'] == 'YES'))
+        return sum(1 for vote in votes if vote['Verdict'] == 'YES')
 
-    def judge_artifact(self, artifact_content: str, context: str='Code Review') -> Dict[str, Any]:
+    def judge_artifact(self, artifact_content: str, context: str='Code Review') -> dict[str, Any]:
         """
         Orchestrates the voting process among the configured AI model providers.
 
@@ -172,7 +176,7 @@ class ConsensusEngine:
             imports_to_prepend.append('import json\n')
         return ''.join(imports_to_prepend)
 
-    def propose_fix(self, code: str, error_message: str, context: str='') -> Dict[str, Any]:
+    def propose_fix(self, code: str, error_message: str, context: str='') -> dict[str, Any]:
         """
         Proposes a fix for code that failed validation based on common error messages.
         To address strict linter depth counting for dictionary literals, dictionaries are built incrementally.

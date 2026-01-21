@@ -9,8 +9,8 @@ Verifies all 5 test cases for the Controlled Burns feature:
 4. Burn Verification - Execute mode works correctly
 5. State Integrity - Strategy correctly filters tiers
 """
-import sys
 import subprocess
+import sys
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -79,7 +79,7 @@ def test_default_behavior():
     if all_run:
         test_pass("TEST-2", "Default behavior - All 5 tiers run when target_tier=None")
     else:
-        test_fail("TEST-2", f"Default behavior failed: Not all tiers run")
+        test_fail("TEST-2", "Default behavior failed: Not all tiers run")
 
 # =============================================================================
 # Test 3: Out-of-Bounds
@@ -100,7 +100,7 @@ def test_out_of_bounds():
     if result.returncode != 0 and "invalid choice: 9" in result.stderr:
         test_pass("TEST-3", "Out-of-bounds - argparse rejects --tier 9")
     else:
-        test_fail("TEST-3", f"Out-of-bounds not rejected properly")
+        test_fail("TEST-3", "Out-of-bounds not rejected properly")
 
 # =============================================================================
 # Test 4: Burn Verification (Structural)
@@ -138,8 +138,9 @@ def test_state_integrity():
     print("Test 5: State Integrity")
     print("=" * 70)
 
-    from agentic_core.L5_safety.validators.healing_strategy import HealingStrategy
     from agentic_core.core.orchestrator_main import UnifiedOrchestratorAgent
+
+    from agentic_core.L5_safety.validators.healing_strategy import HealingStrategy
 
     # Create strategy with target_tier=0 (Pre-Flight only)
     strategy = HealingStrategy(project_root=PROJECT_ROOT, target_tier=0)

@@ -8,7 +8,6 @@ instead of slow rglob calls that cause timeouts.
 import ast
 import sys
 from pathlib import Path
-from unittest.mock import patch, MagicMock
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))

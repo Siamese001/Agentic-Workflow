@@ -9,7 +9,6 @@ Integrated with: apps_lic/L3_orchestration/kx_nodes_outreach.py
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set
 
 
 class Route(str, Enum):
@@ -41,8 +40,8 @@ class ValidationSeverity(str, Enum):
 @dataclass
 class CharLimitConstraint:
     """Character limit constraint for a Route."""
-    min: Optional[int] = None
-    max: Optional[int] = None
+    min: int | None = None
+    max: int | None = None
 
     def validate(self, count: int) -> bool:
         """Validate character count against constraints."""
@@ -56,8 +55,8 @@ class CharLimitConstraint:
 @dataclass
 class WordLimitConstraint:
     """Word limit constraint for a Route."""
-    min: Optional[int] = None
-    max: Optional[int] = None
+    min: int | None = None
+    max: int | None = None
 
     def validate(self, count: int) -> bool:
         """Validate word count against constraints."""
@@ -72,12 +71,12 @@ class WordLimitConstraint:
 class RouteConfig:
     """Configuration for a message Route."""
     Route: Route
-    char_limit: Optional[CharLimitConstraint] = None
-    word_limit: Optional[WordLimitConstraint] = None
-    k_nodes_enabled: Dict[str, bool] = field(default_factory=dict)
-    k_nodes_format: Dict[str, str] = field(default_factory=dict)
-    constraints: List[str] = field(default_factory=list)
-    cta_word_limit: Optional[int] = None
+    char_limit: CharLimitConstraint | None = None
+    word_limit: WordLimitConstraint | None = None
+    k_nodes_enabled: dict[str, bool] = field(default_factory=dict)
+    k_nodes_format: dict[str, str] = field(default_factory=dict)
+    constraints: list[str] = field(default_factory=list)
+    cta_word_limit: int | None = None
     signature_format: str = "standard"
     subject_line: bool = True
     attachments_allowed: bool = True
@@ -108,7 +107,7 @@ class ValidationRule:
     description: str
     enforcement: str
     validation_method: str
-    threshold: Optional[float] = None
+    threshold: float | None = None
 
 
 # Route Configurations (from v10.10)
@@ -659,7 +658,7 @@ BOOT_VALIDATOR_CONFIG = {
 }
 
 
-def get_route_config(Route: Route) -> Optional[RouteConfig]:
+def get_route_config(Route: Route) -> RouteConfig | None:
     """Get Route configuration.
 
     Args:
@@ -671,7 +670,7 @@ def get_route_config(Route: Route) -> Optional[RouteConfig]:
     return ROUTE_CONFIGS.get(Route)
 
 
-def get_archetype_config(Archetype: Archetype) -> Optional[ArchetypeConfig]:
+def get_archetype_config(Archetype: Archetype) -> ArchetypeConfig | None:
     """Get Archetype configuration.
 
     Args:
@@ -724,7 +723,7 @@ def classify_archetype(title: str, about: str = "") -> Archetype:
     return Archetype.EXECUTIVE
 
 
-def get_validation_rules(phase: str) -> List[ValidationRule]:
+def get_validation_rules(phase: str) -> list[ValidationRule]:
     """Get validation rules for a specific phase.
 
     Args:

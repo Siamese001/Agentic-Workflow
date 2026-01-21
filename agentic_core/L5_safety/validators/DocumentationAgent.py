@@ -13,10 +13,10 @@ from __future__ import annotations
 
 import ast
 from dataclasses import dataclass
-from typing import List, Tuple
 
 from agentic_core.L3_orchestration.fission_logic.SubAtomicAgent import SubAtomicAgent
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+
 
 @dataclass
 class DocumentationAgent(SubatomicTestingMixin, SubAtomicAgent):
@@ -59,7 +59,7 @@ class DocumentationAgent(SubatomicTestingMixin, SubAtomicAgent):
         """
         return not ast.get_docstring(node)
 
-    def _find_missing_docstring_violations_in_tree(self, tree: ast.AST, fp: str) -> List[str]:
+    def _find_missing_docstring_violations_in_tree(self, tree: ast.AST, fp: str) -> list[str]:
         """
         Find all missing docstring violations in an AST tree.
 
@@ -70,13 +70,13 @@ class DocumentationAgent(SubatomicTestingMixin, SubAtomicAgent):
         Returns:
             List of violation strings in 'filepath:line name' format.
         """
-        file_violations: List[str] = []
+        file_violations: list[str] = []
         for node in ast.walk(tree):
-            if isinstance(node, (ast.FunctionDef, ast.ClassDef)) and self._has_missing_docstring(node):
+            if isinstance(node, ast.FunctionDef | ast.ClassDef) and self._has_missing_docstring(node):
                 file_violations.append(f'{fp}:{node.lineno} {node.name}')
         return file_violations
 
-    def check_no_missing_docstrings(self) -> Tuple[bool, List[str]]:
+    def check_no_missing_docstrings(self) -> tuple[bool, list[str]]:
         """
         Check for missing docstrings in classes and functions.
 
@@ -88,10 +88,10 @@ class DocumentationAgent(SubatomicTestingMixin, SubAtomicAgent):
             - passed: True if no violations found.
             - violations: List of 'filepath:line name' strings.
         """
-        violations: List[str] = []
+        violations: list[str] = []
         for fp in self.agent.ctx.python_files:
             try:
-                with open(fp, 'r', encoding='utf-8') as f:
+                with open(fp, encoding='utf-8') as f:
                     tree = ast.parse(f.read())
                 violations.extend(self._find_missing_docstring_violations_in_tree(tree, fp))
             except Exception:

@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 """Bloat analysis script for approved folders."""
-import os
 import ast
-import json
-from pathlib import Path
 from collections import defaultdict
 from datetime import datetime
+from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
 APPROVED = ['agentic_core', 'apps_rg', 'apps_lic', 'apps_shared', 'scripts', 'tests', 'docs', 'schemas']

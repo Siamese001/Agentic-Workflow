@@ -3,12 +3,11 @@
 Combines multiple scoring strategies for optimal document ranking.
 """
 
-from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
 import math
 import re
 from collections import Counter
-from datetime import datetime, timedelta
+from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass
@@ -29,7 +28,7 @@ class ScoringResult:
     tfidf_score: float
     freshness_score: float
     final_score: float
-    metadata: Dict[str, Any] = None
+    metadata: dict[str, Any] = None
 
     def __post_init__(self):
         if self.metadata is None:
@@ -48,11 +47,11 @@ class BM25Scorer:
         """
         self.k1 = k1
         self.b = b
-        self.doc_freqs: Dict[str, int] = {}
-        self.doc_lengths: List[int] = []
+        self.doc_freqs: dict[str, int] = {}
+        self.doc_lengths: list[int] = []
         self.avg_doc_length = 0.0
 
-    def build_index(self, documents: List[str]) -> None:
+    def build_index(self, documents: list[str]) -> None:
         """Build BM25 index from documents.
 
         Args:
@@ -113,7 +112,7 @@ class BM25Scorer:
 
         return score
 
-    def _tokenize(self, text: str) -> List[str]:
+    def _tokenize(self, text: str) -> list[str]:
         """Tokenize text into terms."""
         return re.findall(r"\b\w+\b", text.lower())
 
@@ -121,7 +120,7 @@ class BM25Scorer:
 class HybridScorer:
     """Hybrid scorer combining multiple scoring strategies."""
 
-    def __init__(self, weights: Optional[ScoringWeights] = None):
+    def __init__(self, weights: ScoringWeights | None = None):
         """Initialize hybrid scorer.
 
         Args:
@@ -129,9 +128,9 @@ class HybridScorer:
         """
         self.weights = weights or ScoringWeights()
         self.bm25_scorer = BM25Scorer()
-        self.documents: List[Dict[str, Any]] = []
+        self.documents: list[dict[str, Any]] = []
 
-    def index_documents(self, documents: List[Dict[str, Any]]) -> None:
+    def index_documents(self, documents: list[dict[str, Any]]) -> None:
         """Index documents for scoring.
 
         Args:
@@ -141,7 +140,7 @@ class HybridScorer:
         doc_texts = [doc["content"] for doc in documents]
         self.bm25_scorer.build_index(doc_texts)
 
-    def score_documents(self, query: str, top_k: Optional[int] = None) -> List[ScoringResult]:
+    def score_documents(self, query: str, top_k: int | None = None) -> list[ScoringResult]:
         """Score all documents against query.
 
         Args:
@@ -222,12 +221,12 @@ class HybridScorer:
 
         return min(score, 1.0)
 
-    def _calculate_freshness_score(self, doc: Dict[str, Any]) -> float:
+    def _calculate_freshness_score(self, doc: dict[str, Any]) -> float:
         """Calculate freshness score."""
         # Default to neutral score
         return 0.5
 
-    def calculate_hybrid_score(self, vector_score: float, keyword_score: float, weights: Optional[Dict[str, float]] = None, metadata: Optional[Dict[str, Any]] = None) -> float:
+    def calculate_hybrid_score(self, vector_score: float, keyword_score: float, weights: dict[str, float] | None = None, metadata: dict[str, Any] | None = None) -> float:
         """Calculate hybrid score from vector and keyword scores.
 
         Args:
@@ -283,7 +282,7 @@ class HybridScorer:
         # Clamp to [0, 1] range
         return min(max(normalized, 0.0), 1.0)
 
-    def _calculate_recency_boost(self, document: Dict[str, Any]) -> float:
+    def _calculate_recency_boost(self, document: dict[str, Any]) -> float:
         """Calculate recency boost for document.
 
         Args:

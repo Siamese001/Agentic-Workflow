@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Self-Healing Engine - Phase 2 Implementation
 
@@ -8,14 +9,14 @@ This module provides the core self-healing capabilities:
 - RgHealingOrchestratorAgent: Coordinates multiple healing cycles
 - AutomaticRollback: Handles rollback on critical failures
 """
-from typing import Any, Optional, Protocol, Dict, List
-from enum import Enum, auto
-
-
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
+
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 from .agents import (
     ATSCompatibilityAgent,
@@ -28,11 +29,8 @@ from .agents import (
     TemplateOptimizerAgent,
     TestPilot,
 )
-from .resume_base import ResumeAgent
 from .context import ResumeEngineContext
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import L3SubatomicTestingMixin
+from .resume_base import ResumeAgent
 
 
 class HealingStrategy(Enum):
@@ -49,11 +47,11 @@ class CycleResult:
     """Result of a single healing cycle."""
     cycle_number: int
     strategy: HealingStrategy
-    agents_executed: List[str]
-    signals_before: Set[str]
-    signals_after: Set[str]
-    passed_agents: List[str]
-    failed_agents: List[str]
+    agents_executed: list[str]
+    signals_before: set[str]
+    signals_after: set[str]
+    passed_agents: list[str]
+    failed_agents: list[str]
     rollback_triggered: bool
     converged: bool
     duration_ms: float
@@ -65,12 +63,12 @@ class HealingResult:
     """Result of the complete healing process."""
     success: bool
     total_cycles: int
-    final_signals: Set[str]
-    cycle_results: List[CycleResult]
-    convergence_cycle: Optional[int]
+    final_signals: set[str]
+    cycle_results: list[CycleResult]
+    convergence_cycle: int | None
     budget_exhausted: bool
     total_duration_ms: float
-    final_resume: Dict[str, Any]
+    final_resume: dict[str, Any]
 
 
 class SignalRouterAgent(MCPHardenedMixin, HealerMixin):
@@ -91,7 +89,7 @@ class SignalRouterAgent(MCPHardenedMixin, HealerMixin):
     CRITICAL_SIGNALS = {"CRITICAL_FAILURE", "DATA_CORRUPTION", "SCHEMA_VIOLATION"}
 
     @classmethod
-    def get_agents_for_signals(cls, signals: Set[str]) -> List[str]:
+    def get_agents_for_signals(cls, signals: set[str]) -> list[str]:
         """
         Get list of agent names that should handle the given signals.
 
@@ -101,14 +99,14 @@ class SignalRouterAgent(MCPHardenedMixin, HealerMixin):
         Returns:
             List of agent class names that should handle these signals
         """
-        agents: Set[str] = set()
+        agents: set[str] = set()
         for signal in signals:
             if signal in cls.SIGNAL_AGENT_MAP:
                 agents.update(cls.SIGNAL_AGENT_MAP[signal])
         return list(agents)
 
     @classmethod
-    def has_critical_signal(cls, signals: Set[str]) -> bool:
+    def has_critical_signal(cls, signals: set[str]) -> bool:
         """
         Check if any critical signals are present.
 
@@ -121,7 +119,7 @@ class SignalRouterAgent(MCPHardenedMixin, HealerMixin):
         return bool(signals & cls.CRITICAL_SIGNALS)
 
     @classmethod
-    def determine_strategy(cls, cycle: int, signals: Set[str], modified_sections: Set[str]) -> HealingStrategy:
+    def determine_strategy(cls, cycle: int, signals: set[str], modified_sections: set[str]) -> HealingStrategy:
         """
         Determine the healing strategy based on current state.
 
@@ -139,8 +137,8 @@ class SignalRouterAgent(MCPHardenedMixin, HealerMixin):
         if not signals and not modified_sections:
             return HealingStrategy.VERIFICATION_ONLY
 
-        quality_signals: Set[str] = {"QUALITY_FAILURE", "HALLUCINATION_DETECTED"}
-        compliance_signals: Set[str] = {"BRAND_VIOLATION", "ATS_FAILURE", "BALANCE_ISSUE"}
+        quality_signals: set[str] = {"QUALITY_FAILURE", "HALLUCINATION_DETECTED"}
+        compliance_signals: set[str] = {"BRAND_VIOLATION", "ATS_FAILURE", "BALANCE_ISSUE"}
 
         if signals & quality_signals and not (signals & compliance_signals):
             return HealingStrategy.QUALITY_FOCUS
@@ -159,7 +157,7 @@ class AgentFactory(MCPHardenedMixin, HealerMixin):
     """Factory for creating agent instances."""
 
     @staticmethod
-    def create_all_agents(ctx: ResumeEngineContext) -> List[ResumeAgent]:
+    def create_all_agents(ctx: ResumeEngineContext) -> list[ResumeAgent]:
         """
         Create all available agents.
 
@@ -180,7 +178,7 @@ class AgentFactory(MCPHardenedMixin, HealerMixin):
         ]
 
     @staticmethod
-    def create_agents_by_name(ctx: ResumeEngineContext, names: List[str]) -> List[ResumeAgent]:
+    def create_agents_by_name(ctx: ResumeEngineContext, names: list[str]) -> list[ResumeAgent]:
         """
         Create specific agents by name.
 
@@ -210,7 +208,7 @@ class AgentFactory(MCPHardenedMixin, HealerMixin):
         return agents
 
     @staticmethod
-    def create_quality_agents(ctx: ResumeEngineContext) -> List[ResumeAgent]:
+    def create_quality_agents(ctx: ResumeEngineContext) -> list[ResumeAgent]:
         """
         Create quality-focused agents.
 
@@ -227,7 +225,7 @@ class AgentFactory(MCPHardenedMixin, HealerMixin):
         ]
 
     @staticmethod
-    def create_compliance_agents(ctx: ResumeEngineContext) -> List[ResumeAgent]:
+    def create_compliance_agents(ctx: ResumeEngineContext) -> list[ResumeAgent]:
         """
         Create compliance-focused agents.
 
@@ -262,8 +260,8 @@ class HealingCycle:
         """
         self.ctx: ResumeEngineContext = ctx
         self.cycle_number: int = cycle_number
-        self.start_time: Optional[float] = None
-        self.end_time: Optional[float] = None
+        self.start_time: float | None = None
+        self.end_time: float | None = None
 
     async def execute(self, strategy: HealingStrategy) -> CycleResult:
         """
@@ -329,7 +327,7 @@ class HealingCycle:
             duration_ms=duration_ms,
         )
 
-    def _build_agenda(self, strategy: HealingStrategy) -> List[ResumeAgent]:
+    def _build_agenda(self, strategy: HealingStrategy) -> list[ResumeAgent]:
         """
         Build the agent agenda based on strategy.
 
@@ -400,8 +398,8 @@ class HealingCycle:
 
 async def run_self_healing_mission(
     JobDescription: str,
-    master_resume: Dict[str, Any],
-    user_profile: Optional[Dict[str, Any]] = None,
+    master_resume: dict[str, Any],
+    user_profile: dict[str, Any] | None = None,
     max_cycles: int = 5,
     enable_reflection: bool = True,
 ) -> HealingResult:

@@ -7,16 +7,14 @@ Phase 2 - Resilient Routing Layer
 """
 
 import logging
-from typing import Optional
 
 from .router import HardenedRouter
-from .schema import DEFAULT_ROUTING_CONFIGS
 
 logger = logging.getLogger(__name__)
 
 
 # Global singleton instance
-_router_instance: Optional[HardenedRouter] = None
+_router_instance: HardenedRouter | None = None
 
 
 def get_resilient_router() -> HardenedRouter:

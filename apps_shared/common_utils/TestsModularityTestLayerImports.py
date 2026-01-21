@@ -3,7 +3,6 @@ from __future__ import annotations
 import ast
 import pathlib
 
-
 PROJECT_ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 

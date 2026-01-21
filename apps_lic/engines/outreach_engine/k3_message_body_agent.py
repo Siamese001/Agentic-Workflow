@@ -6,9 +6,9 @@ micro-structure enforcement, and placeholder detection blocking.
 
 import logging
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
-from runtime.shared.agent_base import Agent, ReasoningConfig
+from typing import Any
 
+from runtime.shared.agent_base import Agent, ReasoningConfig
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +23,7 @@ class K3Output:
     bullets_count: int
     word_count: int
     char_count: int
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
 
 
 # Archetype-specific transition phrases (from LinkedInCanonical v2.90)
@@ -86,7 +86,7 @@ class K3_MessageBodyAgent(Agent):
         config: ReasoningConfig,
         archetype: str,
         route: str,
-        char_limit: Optional[int] = None,
+        char_limit: int | None = None,
     ):
         """Initialize K.3 message body agent.
 
@@ -108,7 +108,7 @@ class K3_MessageBodyAgent(Agent):
             f"archetype={archetype}, route={route}, char_limit={char_limit}"
         )
 
-    async def execute(self, context: Dict[str, Any]) -> K3Output:
+    async def execute(self, context: dict[str, Any]) -> K3Output:
         """Execute K.3 message body generation.
 
         Args:
@@ -191,8 +191,8 @@ class K3_MessageBodyAgent(Agent):
         self,
         company_name: str,
         recipient_name: str,
-        rag_insights: List[str],
-        sender_bullets: List[str],
+        rag_insights: list[str],
+        sender_bullets: list[str],
     ) -> str:
         """Build initial generation prompt.
 
@@ -257,7 +257,7 @@ Generate the message body now:
 
     def _build_regeneration_prompt(
         self,
-        context: Dict[str, Any],
+        context: dict[str, Any],
         feedback: str,
     ) -> str:
         """Build regeneration prompt with validation feedback.

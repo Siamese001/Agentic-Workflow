@@ -1,8 +1,8 @@
 from __future__ import annotations
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
-from typing import Any, List
 import os
 
 try:
@@ -30,7 +30,7 @@ class GeminiEmbedder:
         self.client = genai.Client(api_key=api_key)
         self.model = os.getenv('GEMINI_EMBEDDING_MODEL', 'text-embedding-004')
 
-    def embed_texts(self, texts: List[str]) -> List[List[float]]:
+    def embed_texts(self, texts: list[str]) -> list[list[float]]:
         """
         Generate embeddings for list of text chunks.
 
@@ -52,7 +52,7 @@ class GeminiEmbedder:
         except Exception as e:
             raise RuntimeError(f'Gemini embedding failed: {e}')
 
-    def embed_query(self, query: str) -> List[float]:
+    def embed_query(self, query: str) -> list[float]:
         """
         Generates semantic vectors with built-in error handling.
 
@@ -67,7 +67,7 @@ class GeminiEmbedder:
             if result and len(result) > 0:
                 return result[0]
             else:
-                print(f"⚠️  Meta-Learning Error: Empty embedding result for query")
+                print("⚠️  Meta-Learning Error: Empty embedding result for query")
                 return None
         except Exception as e:
             print(f"⚠️  Meta-Learning Error: Failed to generate embedding: {e}")

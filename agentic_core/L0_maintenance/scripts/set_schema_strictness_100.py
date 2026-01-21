@@ -5,10 +5,8 @@ Set Schema Strictness to 100% for all agents.
 Updates both agent_discovery_full.json and the dashboard.
 """
 import json
-import re
 import sys
 from pathlib import Path
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 PROJECT_ROOT = Path(__file__).parent.parent
 DISCOVERY_PATH = PROJECT_ROOT / 'agent_discovery_full.json'
@@ -19,7 +17,7 @@ def update_agent_discovery():
     """Update agent_discovery_full.json to set schema_strictness to 100."""
     print("Updating agent_discovery_full.json...")
 
-    with open(DISCOVERY_PATH, 'r', encoding='utf-8') as f:
+    with open(DISCOVERY_PATH, encoding='utf-8') as f:
         agents = json.load(f)
 
     fixed = 0

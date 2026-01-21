@@ -29,7 +29,6 @@ API Endpoints:
 """
 import argparse
 import sys
-import os
 from pathlib import Path
 
 # Add project root to path
@@ -63,13 +62,14 @@ def main():
     print(f"  Execution Timeline:  http://localhost:{args.port}/api/execution/timeline")
     print()
     print("Dashboard URL:")
-    print(f"  http://localhost:8765/autonomy_dashboard.html#runtime")
+    print("  http://localhost:8765/autonomy_dashboard.html#runtime")
     print()
     print("Press Ctrl+C to stop the server")
     print("=" * 70)
 
     try:
         import uvicorn
+
         from agentic_core.L6_observability.api.runtime_api import app
 
         uvicorn.run(

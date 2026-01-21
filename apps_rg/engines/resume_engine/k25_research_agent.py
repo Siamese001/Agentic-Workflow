@@ -1,19 +1,17 @@
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional
 
 from apps_rg.L1_cognition.k2_5_deep_research_models import (
     CitationMap,
     DeepResearchOutput,
-    ExecutiveProfile,
-    FinancialMetric,
     LeadershipLayer,
     ResearchHopPhase,
     ResearchHopResult,
     StrategicLayer,
-    TechnicalImplementation,
     TechnicalLayer,
 )
+
+
 # Local validation function to avoid architectural Violation
 def validate_research_output_local(output: DeepResearchOutput) -> bool:
     """Local validation for research output to avoid L2 dependency."""
@@ -38,7 +36,7 @@ class K25DeepResearchAgent:
     strategic, technical, and organizational analysis.
     """
 
-    def __init__(self, company_name: str, company_url: Optional[str] = None):
+    def __init__(self, company_name: str, company_url: str | None = None):
         self.company_name = company_name
         self.company_url = company_url
         self.config = K25_REASONING_CONFIG
@@ -158,7 +156,7 @@ Requirements:
 
     def _assemble_research_output(
         self,
-        hop_results: List[ResearchHopResult]
+        hop_results: list[ResearchHopResult]
     ) -> DeepResearchOutput:
         StrategicLayer = StrategicLayer(
             core_thesis=f"{self.company_name} strategic positioning",
@@ -257,6 +255,6 @@ Begin research execution.
 
 def create_k25_research_agent(
     company_name: str,
-    company_url: Optional[str] = None
+    company_url: str | None = None
 ) -> K25DeepResearchAgent:
     return K25DeepResearchAgent(company_name=company_name, company_url=company_url)

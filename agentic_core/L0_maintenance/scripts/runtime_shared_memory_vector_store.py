@@ -1,12 +1,15 @@
 from __future__ import annotations
+
 """In-Memory Vector Cache - Ultra-fast ChromaDB hot cache for 10-50x speedup.
 
 Provides ephemeral in-memory vector storage for frequently accessed collections.
 Optimized for 8GB hot cache allocation within 32GB WSL2 environment.
 """
 import logging
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 import chromadb
+
 Logger: Any = logging.getLogger(__name__)
 
 class InMemoryVectorCache:
@@ -16,7 +19,7 @@ class InMemoryVectorCache:
     similarity search without network or disk I/O overhead.
     """
 
-    def __init__(self, collection_name: str='hot_cache', max_memory_gb: Optional[int]=8):
+    def __init__(self, collection_name: str='hot_cache', max_memory_gb: int | None=8):
         """Initialize in-memory ChromaDB cache.
 
         Args:
@@ -33,7 +36,7 @@ class InMemoryVectorCache:
             Logger.error(f'Failed to initialize InMemoryVectorCache: {e}')
             raise
 
-    async def add_documents(self, documents: List[str], metadatas: List[Dict[str, Any]], ids: List[str], embeddings: List[List[float]]) -> bool:
+    async def add_documents(self, documents: list[str], metadatas: list[dict[str, Any]], ids: list[str], embeddings: list[list[float]]) -> bool:
         """Add vectors to the hot cache.
 
         Args:
@@ -62,7 +65,7 @@ class InMemoryVectorCache:
             Logger.error(f'Failed to add to hot cache: {e}')
             return False
 
-    async def search(self, query_embeddings: List[List[float]], top_k: int=5, where: Optional[Dict[str, Any]]=None, where_document: Optional[Dict[str, Any]]=None) -> Dict[str, Any]:
+    async def search(self, query_embeddings: list[list[float]], top_k: int=5, where: dict[str, Any] | None=None, where_document: dict[str, Any] | None=None) -> dict[str, Any]:
         """Perform ultra-fast in-memory similarity search.
 
         Args:
@@ -130,7 +133,7 @@ class InMemoryVectorCache:
             Logger.error(f'Failed to delete collection: {e}')
             return False
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get cache statistics.
 
         Returns:
@@ -155,7 +158,7 @@ class TieredVectorStore:
         self.warm_store_url = warm_store_url
         Logger.info(f'Initialized TieredVectorStore: hot_cache={hot_cache.collection_name}, warm_store={warm_store_url}')
 
-    async def search(self, query_embeddings: List[List[float]], top_k: int=10, try_hot_first: bool=True) -> Dict[str, Any]:
+    async def search(self, query_embeddings: list[list[float]], top_k: int=10, try_hot_first: bool=True) -> dict[str, Any]:
         """Search with hot cache fallback to warm storage.
 
         Args:

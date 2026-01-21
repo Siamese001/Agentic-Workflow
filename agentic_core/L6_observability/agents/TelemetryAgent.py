@@ -5,7 +5,9 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 """
 TelemetryAgent: Sovereign Structured Event Emitter
 
@@ -30,19 +32,18 @@ Depth: agentic_core/observability/telemetry/telemetry_agent.py
 In-memory buffer + optional file persistence.
 Thread-safe via lock.
 """
-from pathlib import Path
-from typing import Dict, Any, List, Optional
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from datetime import datetime
 import json
 import logging
+from datetime import datetime
+from pathlib import Path
 from threading import Lock
+from typing import Any
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger = logging.getLogger(__name__)
 
@@ -59,8 +60,8 @@ class TelemetryAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
 
     def __init__(
         self,
-        project_root: Optional[Path] = None,
-        log_file: Optional[Path] = None,
+        project_root: Path | None = None,
+        log_file: Path | None = None,
         max_events: int = 10_000
     ) -> None:
         """
@@ -71,12 +72,12 @@ class TelemetryAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
             log_file: If provided, append events to file (JSONL format)
             max_events: In-memory buffer limit (oldest dropped)
         """
-        self.project_root: Optional[Path] = project_root.resolve() if project_root else None
-        self.log_file: Optional[Path] = log_file
+        self.project_root: Path | None = project_root.resolve() if project_root else None
+        self.log_file: Path | None = log_file
         self.max_events: int = max_events
 
         self._lock: Lock = Lock()
-        self._events: List[Dict[str, Any]] = []
+        self._events: list[dict[str, Any]] = []
 
         # Emit agent startup
         self.emit(
@@ -90,7 +91,7 @@ class TelemetryAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         event_type: str,
         level: str = "INFO",
         agent: str = "TelemetryAgent",
-        details: Optional[Dict[str, Any]] = None
+        details: dict[str, Any] | None = None
     ) -> None:
         """
         Emit a structured telemetry event.
@@ -135,7 +136,7 @@ class TelemetryAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         else:
             Logger.info(log_msg)
 
-    def _write_to_file(self, event: Dict[str, Any]) -> None:
+    def _write_to_file(self, event: dict[str, Any]) -> None:
         """Append event to log file (JSONL format)."""
         try:
             with open(self.log_file, "a", encoding="utf-8") as f:
@@ -145,10 +146,10 @@ class TelemetryAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
 
     def get_events(
         self,
-        event_type: Optional[str] = None,
-        level: Optional[str] = None,
-        limit: Optional[int] = None
-    ) -> List[Dict[str, Any]]:
+        event_type: str | None = None,
+        level: str | None = None,
+        limit: int | None = None
+    ) -> list[dict[str, Any]]:
         """
         Query in-memory event buffer.
 
@@ -234,7 +235,7 @@ class TelemetryAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         agent: str,
         action: str,
         success: bool,
-        details: Optional[Dict[str, Any]] = None
+        details: dict[str, Any] | None = None
     ) -> None:
         """Emit agent action event."""
         self.emit(
@@ -266,7 +267,7 @@ class TelemetryAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """Observability agent - invoke shared healing chain."""
         if _call_path is None:
             _call_path = set()

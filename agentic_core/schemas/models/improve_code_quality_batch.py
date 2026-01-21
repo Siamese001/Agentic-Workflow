@@ -4,11 +4,8 @@ Batch improve code quality metrics for agents below 100%.
 This script adds missing type hints, docstrings, and improves schema strictness.
 """
 import json
-import ast
 import re
 from pathlib import Path
-from typing import List, Dict, Any, Set
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 PROJECT_ROOT = Path(__file__).parent.parent
 DISCOVERY_FILE = PROJECT_ROOT / "agent_discovery_full.json"
@@ -142,7 +139,7 @@ def main():
     print("=" * 70)
 
     # Load agent discovery
-    with open(DISCOVERY_FILE, 'r', encoding='utf-8') as f:
+    with open(DISCOVERY_FILE, encoding='utf-8') as f:
         agents = json.load(f)
 
     # Find agents needing improvement
@@ -182,28 +179,28 @@ def main():
         print(f"  Current: Typed={agent['typed']:.0f}% | Doc={agent['doc']:.0f}% | Schema={agent['schema']:.0f}%")
 
         if not agent['path'].exists():
-            print(f"  [SKIP] File not found")
+            print("  [SKIP] File not found")
             failed_count += 1
             continue
 
         success = False
 
         if agent['needs_types']:
-            print(f"  [ACTION] Adding type hints...")
+            print("  [ACTION] Adding type hints...")
             if add_type_hints_to_file(agent['path']):
-                print(f"  [OK] Type hints added")
+                print("  [OK] Type hints added")
                 success = True
 
         if agent['needs_docs']:
-            print(f"  [ACTION] Adding docstrings...")
+            print("  [ACTION] Adding docstrings...")
             if add_docstrings_to_file(agent['path']):
-                print(f"  [OK] Docstrings added")
+                print("  [OK] Docstrings added")
                 success = True
 
         if agent['needs_schema']:
-            print(f"  [ACTION] Improving schema strictness...")
+            print("  [ACTION] Improving schema strictness...")
             if improve_schema_strictness(agent['path']):
-                print(f"  [OK] Schema improved")
+                print("  [OK] Schema improved")
                 success = True
 
         if success:

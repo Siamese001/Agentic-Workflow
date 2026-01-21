@@ -24,10 +24,7 @@ Usage:
 """
 
 import sys
-import time
-from typing import Optional
 from datetime import datetime
-
 
 # Alias for backward compatibility
 PrintColors = None  # Will be set after Colors class definition
@@ -197,8 +194,8 @@ def progress_bar(
 
 def phase_header(
     phase_name: str,
-    phase_num: Optional[int] = None,
-    total_phases: Optional[int] = None,
+    phase_num: int | None = None,
+    total_phases: int | None = None,
     status: str = "running"
 ) -> str:
     """Generate a prominent phase/tier header."""
@@ -233,7 +230,7 @@ def agent_status(
     status: str,
     fixes: int = 0,
     violations: int = 0,
-    duration_ms: Optional[int] = None
+    duration_ms: int | None = None
 ) -> str:
     """Generate agent execution status line."""
     status_styles = {

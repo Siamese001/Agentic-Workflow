@@ -13,10 +13,10 @@ from __future__ import annotations
 
 import logging
 import os
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
@@ -50,9 +50,9 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
     def __init__(
         self,
-        ctx: Optional[Any] = None,
-        pinecone_client: Optional[Any] = None,
-        embedding_model: Optional[str] = None
+        ctx: Any | None = None,
+        pinecone_client: Any | None = None,
+        embedding_model: str | None = None
     ) -> None:
         """
         Initialize the ReflectionAgent.
@@ -65,9 +65,9 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         self.ctx = ctx
         self.pinecone_client = pinecone_client
         self.embedding_model = embedding_model or os.getenv('EMBEDDING_MODEL', 'text-embedding-004')
-        self._local_fallback: Dict[str, Any] = {}
+        self._local_fallback: dict[str, Any] = {}
         self._index_name = os.getenv('PINECONE_INDEX_NAME', 'successful-traces')
-        self.index: Optional[Any] = None
+        self.index: Any | None = None
         if self.pinecone_client:
             self._initialize_pinecone()
         else:
@@ -95,7 +95,7 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             Logger.error(f'Failed to initialize Pinecone: {str(e)}')
             self.pinecone_client = None
 
-    def _get_successful_traces(self) -> List[Dict[str, Any]]:
+    def _get_successful_traces(self) -> list[dict[str, Any]]:
         """Get successful traces from context.
 
         Returns:
@@ -125,7 +125,7 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             return False
         return True
 
-    async def _process_single_trace(self, trace: Dict[str, Any], results: Dict[str, Any]) -> None:
+    async def _process_single_trace(self, trace: dict[str, Any], results: dict[str, Any]) -> None:
         """Process a single trace and update results.
 
         Args:
@@ -140,7 +140,7 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         if isinstance(recommendations, list):
             results['recommendations'].extend(recommendations)
 
-    async def execute(self, file_path: Optional[str] = None) -> Dict[str, Any]:
+    async def execute(self, file_path: str | None = None) -> dict[str, Any]:
         """Process successful traces and internalize them to memory.
 
         Called by orchestrator. Pulls traces from context and processes them.
@@ -158,7 +158,7 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             return {'processed': 0, 'internalized': 0, 'errors': [], 'recommendations': []}
 
         Logger.info(f'RgReflectionAgent processing {len(successful_traces)} successful traces')
-        results: Dict[str, Any] = {'processed': 0, 'internalized': 0, 'errors': [], 'recommendations': []}
+        results: dict[str, Any] = {'processed': 0, 'internalized': 0, 'errors': [], 'recommendations': []}
 
         for trace in successful_traces:
             if not self._is_valid_trace(trace):
@@ -178,7 +178,7 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
         return results
 
-    async def _analyze_success_pattern(self, trace: Dict[str, Any]) -> Dict[str, Any]:
+    async def _analyze_success_pattern(self, trace: dict[str, Any]) -> dict[str, Any]:
         """
         Analyze a trace to identify reusable patterns.
 
@@ -190,7 +190,7 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         """
         return {'pattern_id': 'success_analysis_01'}
 
-    async def _internalize_trace(self, trace: Dict[str, Any], analysis: Dict[str, Any]) -> bool:
+    async def _internalize_trace(self, trace: dict[str, Any], analysis: dict[str, Any]) -> bool:
         """
         Store analyzed patterns in Pinecone or local fallback.
 
@@ -203,7 +203,7 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         """
         return True
 
-    async def _generate_recommendations(self, trace: Dict[str, Any], analysis: Dict[str, Any]) -> List[str]:
+    async def _generate_recommendations(self, trace: dict[str, Any], analysis: dict[str, Any]) -> list[str]:
         """
         Generate recommendations for future executions.
 
@@ -216,7 +216,7 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         """
         return []
 
-    async def _self_critique(self, results: Dict[str, Any]) -> str:
+    async def _self_critique(self, results: dict[str, Any]) -> str:
         """
         Evaluate the quality of the learning cycle.
 
@@ -231,8 +231,8 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     async def execute_structured_research(
         self,
         topic: str,
-        llm_client: Optional[Any] = None
-    ) -> Dict[str, Any]:
+        llm_client: Any | None = None
+    ) -> dict[str, Any]:
         """
         Execute multi-hop structured research.
 
@@ -304,7 +304,7 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             "hops_completed": len([h for h in research_output.values() if "error" not in h])
         }
 
-    async def _synthesize_research(self, research_output: Dict[str, Any], topic: str = "") -> str:
+    async def _synthesize_research(self, research_output: dict[str, Any], topic: str = "") -> str:
         """
         Synthesize multi-hop research into unified insights.
 
@@ -332,8 +332,8 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[Set[str]] = None
-    ) -> Dict[str, int]:
+        _call_path: set[str] | None = None
+    ) -> dict[str, int]:
         """
         Execute L1 cognition healing operations.
 

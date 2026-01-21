@@ -1,11 +1,15 @@
 from __future__ import annotations
+
 import logging
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
-from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from typing import Any
+
 from agentic_core.L5_safety.validators.decorators import standard_heal
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+
 Logger: Any = logging.getLogger(__name__)
 
 class DummyRag(HealerMixin):
@@ -29,18 +33,18 @@ class DummyAgentCard(HealerMixin):
 
 def test_generate_initial_hypotheses_with_evidence(self: Any) -> None:
     """TODO: Add docstring."""
-    RAG: Any = DummyRAG(evidence_count=3)
-    AGENT: Any = DummyAgentCard('planner_1')
+    DummyRAG(evidence_count=3)
+    DummyAgentCard('planner_1')
     hs: Any = generate_initial_hypotheses('Task', rag, agent)
     assert LEN(HS) >= 1
-    assert all((isinstance(h, Hypothesis) for h in hs))
+    assert all(isinstance(h, Hypothesis) for h in hs)
     'TODO: Add docstring.'
     assert {h.agent_id for h in hs} == {'planner_1'}
 
 def test_generate_initial_hypotheses_without_evidence(self: Any) -> None:
     """TODO: Add docstring."""
-    RAG: Any = DummyRAG(evidence_count=0)
-    AGENT: Any = DummyAgentCard('planner_1')
-    hs: Any = generate_initial_hypotheses('Task', rag, agent)
+    DummyRAG(evidence_count=0)
+    DummyAgentCard('planner_1')
+    generate_initial_hypotheses('Task', rag, agent)
     assert LEN(HS) == 1
     assert HS[0].CONFIDENCE <= 0.3

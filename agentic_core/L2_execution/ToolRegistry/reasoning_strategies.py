@@ -6,9 +6,10 @@ Each strategy encapsulates a distinct reasoning approach (CoT, ToT, ReAct, etc.)
 """
 
 from __future__ import annotations
-from abc import ABC, abstractmethod
-from typing import List, Dict, Any, Optional
+
 import logging
+from abc import ABC, abstractmethod
+from typing import Any
 
 Logger = logging.getLogger(__name__)
 
@@ -16,7 +17,7 @@ Logger = logging.getLogger(__name__)
 class ReasoningStrategy(ABC):
     """Base strategy for polymorphic reasoning execution."""
 
-    def __init__(self, max_steps: int = 8, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, max_steps: int = 8, config: dict[str, Any] | None = None):
         """
         Initialize reasoning strategy.
 
@@ -28,7 +29,7 @@ class ReasoningStrategy(ABC):
         self.config = config or {}
 
     @abstractmethod
-    def execute(self, problem: str, context: Dict[str, Any]) -> List[str]:
+    def execute(self, problem: str, context: dict[str, Any]) -> list[str]:
         """
         Execute reasoning strategy.
 
@@ -41,7 +42,7 @@ class ReasoningStrategy(ABC):
         """
         pass
 
-    def _validate_input(self, problem: str, context: Dict) -> bool:
+    def _validate_input(self, problem: str, context: dict) -> bool:
         """Validate inputs before execution."""
         return bool(problem) and isinstance(context, dict)
 
@@ -49,7 +50,7 @@ class ReasoningStrategy(ABC):
 class ChainOfThoughtStrategy(ReasoningStrategy):
     """Chain of Thought (CoT) reasoning - sequential step-by-step."""
 
-    def execute(self, problem: str, context: Dict[str, Any]) -> List[str]:
+    def execute(self, problem: str, context: dict[str, Any]) -> list[str]:
         """Execute CoT reasoning."""
         if not self._validate_input(problem, context):
             return ["Invalid input for CoT"]
@@ -69,7 +70,7 @@ class ChainOfThoughtStrategy(ReasoningStrategy):
 class TreeOfThoughtsStrategy(ReasoningStrategy):
     """Tree of Thoughts (ToT) reasoning - branching exploration."""
 
-    def execute(self, problem: str, context: Dict[str, Any]) -> List[str]:
+    def execute(self, problem: str, context: dict[str, Any]) -> list[str]:
         """Execute ToT reasoning with branching."""
         if not self._validate_input(problem, context):
             return ["Invalid input for ToT"]
@@ -95,7 +96,7 @@ class TreeOfThoughtsStrategy(ReasoningStrategy):
 class ReActStrategy(ReasoningStrategy):
     """ReAct (Reasoning + Acting) - interleaved reasoning and action."""
 
-    def execute(self, problem: str, context: Dict[str, Any]) -> List[str]:
+    def execute(self, problem: str, context: dict[str, Any]) -> list[str]:
         """Execute ReAct reasoning with actions."""
         if not self._validate_input(problem, context):
             return ["Invalid input for ReAct"]
@@ -121,7 +122,7 @@ class ReActStrategy(ReasoningStrategy):
 class ReflectionStrategy(ReasoningStrategy):
     """Reflection reasoning - self-critique and refinement."""
 
-    def execute(self, problem: str, context: Dict[str, Any]) -> List[str]:
+    def execute(self, problem: str, context: dict[str, Any]) -> list[str]:
         """Execute reflection reasoning."""
         if not self._validate_input(problem, context):
             return ["Invalid input for Reflection"]
@@ -145,7 +146,7 @@ class ReflectionStrategy(ReasoningStrategy):
 class CritiqueStrategy(ReasoningStrategy):
     """Critique reasoning - adversarial evaluation."""
 
-    def execute(self, problem: str, context: Dict[str, Any]) -> List[str]:
+    def execute(self, problem: str, context: dict[str, Any]) -> list[str]:
         """Execute critique reasoning."""
         if not self._validate_input(problem, context):
             return ["Invalid input for Critique"]
@@ -170,7 +171,7 @@ class CritiqueStrategy(ReasoningStrategy):
 class MultiPathStrategy(ReasoningStrategy):
     """Multi-path reasoning - parallel exploration."""
 
-    def execute(self, problem: str, context: Dict[str, Any]) -> List[str]:
+    def execute(self, problem: str, context: dict[str, Any]) -> list[str]:
         """Execute multi-path reasoning."""
         if not self._validate_input(problem, context):
             return ["Invalid input for MultiPath"]
@@ -211,7 +212,7 @@ class ReasoningStrategyFactory:
         cls,
         strategy_type: str,
         max_steps: int = 8,
-        config: Optional[Dict[str, Any]] = None
+        config: dict[str, Any] | None = None
     ) -> ReasoningStrategy:
         """
         Create reasoning strategy instance.
@@ -243,6 +244,6 @@ class ReasoningStrategyFactory:
         cls._strategies[name.lower()] = strategy_class
 
     @classmethod
-    def available_strategies(cls) -> List[str]:
+    def available_strategies(cls) -> list[str]:
         """Get list of available strategies."""
         return list(cls._strategies.keys())

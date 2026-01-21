@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Circuit Breaker implementation for fault tolerance.
 
 Migrated from archives/legacy_root_folders/tools/runtime_utils.py
@@ -8,7 +9,6 @@ Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 import time
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, Optional
 
 
 class CircuitBreakerState(Enum):
@@ -97,7 +97,7 @@ class CircuitBreaker:
             self.opened_at = time.time()
 
 
-_BREAKERS: Dict[str, CircuitBreaker] = {}
+_BREAKERS: dict[str, CircuitBreaker] = {}
 
 
 def get_breaker(

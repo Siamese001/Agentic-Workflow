@@ -1,7 +1,7 @@
 from __future__ import annotations
+
 import logging
-import time
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
 
 
 class TraceEvent:
@@ -20,7 +20,7 @@ class TelemetryRecorder:
     L0 Maintenance: The Flight Recorder.
     Captures all system events for observability and audit.
     """
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: dict[str, Any]):
         self.config = config
 
     def record(self, event: TraceEvent):

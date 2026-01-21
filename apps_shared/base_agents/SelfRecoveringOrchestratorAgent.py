@@ -5,6 +5,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """
 Self-Recovering Orchestrator - L3 Orchestration Enhancement
 
@@ -13,14 +14,16 @@ Automatically mutates workflows to Route around failures and optimize execution.
 """
 import asyncio
 import logging
-from collections import defaultdict
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Tuple
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from typing import Any
+
 import networkx as nx
+
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
+
 Logger: Any = logging.getLogger(__name__)
 
 class RecoveryStrategy(Enum):
@@ -37,8 +40,8 @@ class NodeFailurePattern:
     node_id: str
     failure_count: int = 0
     success_count: int = 0
-    last_failure: Optional[datetime] = None
-    failure_reasons: List[str] = field(default_factory=list)
+    last_failure: datetime | None = None
+    failure_reasons: list[str] = field(default_factory=list)
     avg_execution_time: float = 0.0
     recovery_attempts: int = 0
 
@@ -59,16 +62,17 @@ class WorkflowMutation:
     mutation_id: str
     mutation_type: RecoveryStrategy
     target_node: str
-    replacement_node: Optional[str] = None
+    replacement_node: str | None = None
     reason: str = ''
-    applied_at: Optional[datetime] = None
+    applied_at: datetime | None = None
     success: bool = False
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+
 from agentic_core.utils.core_extensions.CognitiveRecoveryMixin import CognitiveRecoveryMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+
 
 class SelfRecoveringOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin, CognitiveRecoveryMixin):
     """
@@ -85,16 +89,16 @@ class SelfRecoveringOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
 
     def __init__(self) -> None:
         """Initialize the self-recovering orchestrator."""
-        self.node_patterns: Dict[str, NodeFailurePattern] = {}
-        self.mutation_history: List[WorkflowMutation] = []
-        self.active_graphs: Dict[str, nx.DiGraph] = {}
-        self.recovery_strategies: Dict[str, RecoveryStrategy] = {}
-        self.alternative_routes: Dict[str, List[str]] = {}
+        self.node_patterns: dict[str, NodeFailurePattern] = {}
+        self.mutation_history: list[WorkflowMutation] = []
+        self.active_graphs: dict[str, nx.DiGraph] = {}
+        self.recovery_strategies: dict[str, RecoveryStrategy] = {}
+        self.alternative_routes: dict[str, list[str]] = {}
         self.max_retries = 3
         self.retry_backoff_base = 2.0
         self.mutation_threshold = 0.45
         self.max_mutations_per_node = 3
-        self.probation_list: Dict[str, Dict[str, int]] = {}
+        self.probation_list: dict[str, dict[str, int]] = {}
         self._mutation_task = None
         Logger.info('Self-Recovering Orchestrator initialized')
 
@@ -125,7 +129,7 @@ class SelfRecoveringOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
                 await asyncio.sleep(600)
                 for node_id, pattern in self.node_patterns.items():
                     if pattern.failure_rate > self.mutation_threshold and pattern.failure_count >= 3:
-                        mutation_count: Any = sum((1 for m in self.mutation_history if m.target_node == node_id))
+                        mutation_count: Any = sum(1 for m in self.mutation_history if m.target_node == node_id)
                         if mutation_count < self.max_mutations_per_node:
                             Logger.info(f'L3: Auto-mutating problematic node {node_id}')
                             await self.mutate_node(node_id, pattern.failure_rate)
@@ -134,7 +138,7 @@ class SelfRecoveringOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
                 Logger.error(f'L3 Mutation cycle error: {e}')
                 await asyncio.sleep(60)
 
-    async def execute_with_recovery(self, graph: nx.DiGraph, initial_inputs: Dict[str, Any], graph_id: str) -> Dict[str, Any]:
+    async def execute_with_recovery(self, graph: nx.DiGraph, initial_inputs: dict[str, Any], graph_id: str) -> dict[str, Any]:
         """
         Execute a workflow graph with automatic recovery.
 
@@ -165,7 +169,7 @@ class SelfRecoveringOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
             execution_state['duration'] = (execution_state['end_time'] - execution_state['start_time']).total_seconds()
         return execution_state
 
-    async def _execute_graph_with_recovery(self, graph_id: str, initial_inputs: Dict[str, Any], execution_state: Dict[str, Any]) -> Any:
+    async def _execute_graph_with_recovery(self, graph_id: str, initial_inputs: dict[str, Any], execution_state: dict[str, Any]) -> Any:
         """Execute graph with recovery logic."""
         graph = self.active_graphs[graph_id]
         ready_nodes = self._get_ready_nodes(graph, execution_state['completed_nodes'])
@@ -184,7 +188,7 @@ class SelfRecoveringOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
                         execution_state['recovery_attempts'] += 1
             ready_nodes = self._get_ready_nodes(graph, execution_state['completed_nodes'])
 
-    async def _execute_node_with_retry(self, node: Any, node_id: str, initial_inputs: Dict[str, Any], execution_state: Dict[str, Any]) -> bool:
+    async def _execute_node_with_retry(self, node: Any, node_id: str, initial_inputs: dict[str, Any], execution_state: dict[str, Any]) -> bool:
         """
         Execute a node with intelligent retry logic.
 
@@ -254,7 +258,7 @@ class SelfRecoveringOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
                 Logger.warning(f"Healing attempt failed: {heal_error}")
         return False
 
-    async def _execute_single_node(self, node: Any, initial_inputs: Dict[str, Any], execution_state: Dict[str, Any]) -> Any:
+    async def _execute_single_node(self, node: Any, initial_inputs: dict[str, Any], execution_state: dict[str, Any]) -> Any:
         """Execute a single node."""
         if hasattr(node, 'run'):
             return await node.run(**initial_inputs)
@@ -263,7 +267,7 @@ class SelfRecoveringOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
         else:
             return {'status': 'mock_success', 'node': str(node)}
 
-    async def _apply_recovery_strategy(self, graph_id: str, failed_node: Any, node_id: str, execution_state: Dict[str, Any]) -> bool:
+    async def _apply_recovery_strategy(self, graph_id: str, failed_node: Any, node_id: str, execution_state: dict[str, Any]) -> bool:
         """
         Apply recovery strategy for a failed node.
 
@@ -288,7 +292,7 @@ class SelfRecoveringOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
             return self._apply_replace_strategy(node_id, failed_node, graph, execution_state)
         return False
 
-    def _apply_skip_strategy(self, node_id: str, failed_node: Any, execution_state: Dict[str, Any]) -> bool:
+    def _apply_skip_strategy(self, node_id: str, failed_node: Any, execution_state: dict[str, Any]) -> bool:
         """Apply SKIP recovery strategy."""
         Logger.info(f'Applying SKIP strategy for {node_id}')
         execution_state['completed_nodes'].add(failed_node)
@@ -305,7 +309,7 @@ class SelfRecoveringOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
         execution_state['mutations_applied'].append(mutation)
         return True
 
-    def _apply_fork_strategy(self, node_id: str, failed_node: Any, graph: nx.DiGraph, execution_state: Dict[str, Any]) -> bool:
+    def _apply_fork_strategy(self, node_id: str, failed_node: Any, graph: nx.DiGraph, execution_state: dict[str, Any]) -> bool:
         """Apply FORK recovery strategy."""
         Logger.info(f'Applying FORK strategy for {node_id}')
         successors = list(graph.successors(failed_node))
@@ -326,7 +330,7 @@ class SelfRecoveringOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
             return True
         return False
 
-    def _apply_replace_strategy(self, node_id: str, failed_node: Any, graph: nx.DiGraph, execution_state: Dict[str, Any]) -> bool:
+    def _apply_replace_strategy(self, node_id: str, failed_node: Any, graph: nx.DiGraph, execution_state: dict[str, Any]) -> bool:
         """Apply REPLACE recovery strategy."""
         Logger.info(f'Applying REPLACE strategy for {node_id}')
         replacement = self._find_replacement_node(node_id, graph)
@@ -391,13 +395,13 @@ class SelfRecoveringOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
         self.mutation_history.append(mutation)
         return new_node
 
-    def _find_replacement_node(self, node_id: str, graph: nx.DiGraph) -> Optional[Any]:
+    def _find_replacement_node(self, node_id: str, graph: nx.DiGraph) -> Any | None:
         """Find a replacement node for a failed node."""
         if node_id in self.alternative_routes and self.alternative_routes[node_id]:
             return self.alternative_routes[node_id][0]
         return None
 
-    def _get_ready_nodes(self, graph: nx.DiGraph, completed_nodes: Set) -> List[Any]:
+    def _get_ready_nodes(self, graph: nx.DiGraph, completed_nodes: set) -> list[Any]:
         """Get nodes ready for execution."""
         ready = []
         for node in graph.nodes():
@@ -472,16 +476,16 @@ class SelfRecoveringOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
         if total_executions > 0:
             pattern.avg_execution_time = (pattern.avg_execution_time * (total_executions - 1) + execution_time) / total_executions
 
-    def get_failure_analysis(self) -> Dict[str, Any]:
+    def get_failure_analysis(self) -> dict[str, Any]:
         """Get analysis of node failures."""
         problematic_nodes: Any = [{'node_id': node_id, 'failure_rate': pattern.failure_rate, 'failure_count': pattern.failure_count, 'recent_reasons': pattern.failure_reasons[-3:]} for node_id, pattern in self.node_patterns.items() if pattern.is_problematic]
         total_mutations: Any = len(self.mutation_history)
-        successful_mutations: Any = sum((1 for m in self.mutation_history if m.success))
+        successful_mutations: Any = sum(1 for m in self.mutation_history if m.success)
         return {'problematic_nodes': problematic_nodes, 'total_mutations': total_mutations, 'successful_mutations': successful_mutations, 'mutation_success_rate': successful_mutations / total_mutations if total_mutations > 0 else 0.0, 'total_nodes_tracked': len(self.node_patterns)}
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L3 orchestration agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:

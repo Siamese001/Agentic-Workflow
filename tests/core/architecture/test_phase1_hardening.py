@@ -9,11 +9,10 @@ Tests for the foundational hardening components:
 
 All tests must pass 100%.
 """
-import sys
 import os
-import tempfile
+import sys
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
@@ -30,10 +29,10 @@ class TestIOrchestrator:
         from agentic_core.L5_safety.validators.orchestrator import IOrchestrator
 
         class CompleteOrchestrator:
-            def run_mission(self, context: Dict[str, Any]) -> Dict[str, Any]:
+            def run_mission(self, context: dict[str, Any]) -> dict[str, Any]:
                 return {"status": "SUCCESS"}
 
-            def validate_stability(self, result: Dict[str, Any]) -> bool:
+            def validate_stability(self, result: dict[str, Any]) -> bool:
                 return True
 
         obj = CompleteOrchestrator()
@@ -44,7 +43,7 @@ class TestIOrchestrator:
         from agentic_core.L5_safety.validators.orchestrator import IOrchestrator
 
         class IncompleteOrchestrator:
-            def run_mission(self, context: Dict[str, Any]) -> Dict[str, Any]:
+            def run_mission(self, context: dict[str, Any]) -> dict[str, Any]:
                 return {"status": "SUCCESS"}
             # Missing validate_stability!
 
@@ -57,7 +56,7 @@ class TestIOrchestrator:
 
         class IncompleteOrchestrator:
             # Missing run_mission!
-            def validate_stability(self, result: Dict[str, Any]) -> bool:
+            def validate_stability(self, result: dict[str, Any]) -> bool:
                 return True
 
         obj = IncompleteOrchestrator()
@@ -73,7 +72,7 @@ class TestIOrchestrator:
                 dry_run: bool = True,
                 execute: bool = False,
                 **kwargs: Any
-            ) -> Dict[str, Any]:
+            ) -> dict[str, Any]:
                 return {"violations_found": 0, "violations_fixed": 0}
 
         obj = CompleteHealer()

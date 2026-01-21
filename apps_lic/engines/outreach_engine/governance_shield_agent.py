@@ -14,9 +14,8 @@ address security, privacy, and evaluation frameworks.
 import logging
 import re
 from enum import Enum
-from typing import Dict, List, Optional, Tuple, Any, Union
-from pydantic import BaseModel, Field, validator
 
+from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -32,8 +31,8 @@ class RiskProfile(BaseModel):
     """Risk profile for target company and role."""
 
     industry_sensitivity: IndustrySensitivity = Field(..., description="Industry risk level")
-    compliance_keywords: List[str] = Field(default_factory=list, description="Required compliance frameworks")
-    data_sensitivity: List[str] = Field(default_factory=list, description="Sensitive data types")
+    compliance_keywords: list[str] = Field(default_factory=list, description="Required compliance frameworks")
+    data_sensitivity: list[str] = Field(default_factory=list, description="Sensitive data types")
 
     @property
     def is_high_risk(self) -> bool:
@@ -47,7 +46,7 @@ class SafetyProtocol(BaseModel):
     validation_strategy: str = Field(..., description="Model validation approach")
     data_privacy_approach: str = Field(..., description="Data privacy protection method")
     human_in_the_loop_policy: str = Field(..., description="Human oversight requirements")
-    compliance_frameworks: List[str] = Field(default_factory=list, description="Compliance standards")
+    compliance_frameworks: list[str] = Field(default_factory=list, description="Compliance standards")
 
     @property
     def is_comprehensive(self) -> bool:

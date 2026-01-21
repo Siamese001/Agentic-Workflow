@@ -1,9 +1,8 @@
-import logging
-import asyncio
 import inspect
-from typing import Any, Dict, List, Optional, Callable
-from pydantic import BaseModel, Field
+import logging
 from datetime import datetime
+from typing import Any
+
 
 class MigrationError(Exception):
     """Raised when a schema migration fails or is invalid."""
@@ -27,15 +26,15 @@ class MigrationMixin:
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._mm_logger = logging.getLogger(self.__class__.__name__)
-        self._migration_history: List[Dict[str, str]] = []
+        self._migration_history: list[dict[str, str]] = []
 
     def get_current_version(self) -> str:
         """Returns the current schema version of the agent."""
         return self._schema_version
 
-    async def migrate_data(self, data: Dict[str, Any], from_version: str) -> Dict[str, Any]:
+    async def migrate_data(self, data: dict[str, Any], from_version: str) -> dict[str, Any]:
         """Hardened: rollback snapshot + post-migration validation."""
-        original_data = data.copy()
+        data.copy()
         """
         Orchestrates the migration of data from an older version to current.
 
@@ -85,7 +84,7 @@ class MigrationMixin:
                 })
 
                 if hasattr(self, '_validate_after_migration_step'):
-                    hook = getattr(self, '_validate_after_migration_step')
+                    hook = self._validate_after_migration_step
                     hook_result = hook(data, current_v)
                     if inspect.isawaitable(hook_result):
                         await hook_result

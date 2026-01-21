@@ -6,7 +6,6 @@ Ported from: archives/LIC_capabilities/reconstructed_capabilities.py
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Dict, List, Optional, Tuple
 
 
 class MessageRoute(Enum):
@@ -50,23 +49,23 @@ class CTAFormat(Enum):
 class RouteConditions:
     """Conditions for Route selection."""
 
-    connection_status: Optional[str] = None
-    prior_message_count: Optional[int] = None
-    prior_message_count_gt: Optional[int] = None
-    prior_message_count_gte: Optional[int] = None
+    connection_status: str | None = None
+    prior_message_count: int | None = None
+    prior_message_count_gt: int | None = None
+    prior_message_count_gte: int | None = None
 
 
 @dataclass
 class RouteConstraints:
     """Constraints for a message Route."""
 
-    char_limit: Optional[int] = None
-    word_range: Optional[Tuple[int, int]] = None
+    char_limit: int | None = None
+    word_range: tuple[int, int] | None = None
     signature_format: SignatureFormat = SignatureFormat.STANDARD
     subject_line_enabled: bool = False
     attachments_enabled: bool = False
     cta_format: CTAFormat = CTAFormat.STANDARD
-    cta_max_words: Optional[int] = None
+    cta_max_words: int | None = None
     greeting_format: str = "Hi {first_name},"
 
 
@@ -80,7 +79,7 @@ class RouteConfig:
 
 
 # Route configurations
-ROUTE_CONFIGS: Dict[MessageRoute, RouteConfig] = {
+ROUTE_CONFIGS: dict[MessageRoute, RouteConfig] = {
     MessageRoute.CONNECTION_REQ: RouteConfig(
         Route=MessageRoute.CONNECTION_REQ,
         conditions=RouteConditions(
@@ -169,14 +168,14 @@ class ArchetoneConfig:
     """Tone configuration for an Archetype."""
 
     message_tone: str
-    verb_preference: List[str]
+    verb_preference: list[str]
     jargon_level: str
     formality: str
     focus: str
 
 
 # Archetype tone mappings
-ARCHETYPE_TONES: Dict[RecipientArchetype, ArchetoneConfig] = {
+ARCHETYPE_TONES: dict[RecipientArchetype, ArchetoneConfig] = {
     RecipientArchetype.C_LEVEL: ArchetoneConfig(
         message_tone="strategic",
         verb_preference=["discuss", "align", "explore", "advance"],
@@ -226,7 +225,7 @@ class TemperatureConfig:
 
 
 # Adaptive temperature by Archetype
-ARCHETYPE_TEMPERATURES: Dict[RecipientArchetype, float] = {
+ARCHETYPE_TEMPERATURES: dict[RecipientArchetype, float] = {
     RecipientArchetype.C_LEVEL: 0.45,
     RecipientArchetype.EXECUTIVE: 0.5,
     RecipientArchetype.SENIOR_TA: 0.6,
@@ -241,11 +240,11 @@ class ToolCallBudget:
 
     minimum: int = 0
     maximum: int = 20
-    guidance: Dict[str, str] = field(default_factory=dict)
+    guidance: dict[str, str] = field(default_factory=dict)
 
 
 # Tool call budget by Route
-TOOL_CALL_BUDGETS: Dict[MessageRoute, str] = {
+TOOL_CALL_BUDGETS: dict[MessageRoute, str] = {
     MessageRoute.CONNECTION_REQ: "0-8",
     MessageRoute.SHORT_NEW: "3-6",
     MessageRoute.LONG_NEW: "8-12",
@@ -267,7 +266,7 @@ class LICRouter:
         self,
         connection_status: str,
         prior_message_count: int,
-        route_override: Optional[MessageRoute] = None,
+        route_override: MessageRoute | None = None,
     ) -> MessageRoute:
         """
         Determine the appropriate message Route.
@@ -323,7 +322,7 @@ class LICRouter:
         self,
         text: str,
         Route: MessageRoute,
-    ) -> Dict[str, object]:
+    ) -> dict[str, object]:
         """
         Validate message length against Route constraints.
 
@@ -335,7 +334,7 @@ class LICRouter:
             Validation result dictionary
         """
         constraints = self.get_constraints(Route)
-        result: Dict[str, object] = {
+        result: dict[str, object] = {
             "is_valid": True,
             "violations": [],
             "word_count": len(text.split()),

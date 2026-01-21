@@ -27,7 +27,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple
+from typing import Any
 
 Logger = logging.getLogger(__name__)
 
@@ -57,7 +57,7 @@ class CodeViolation:
     enforcement_type: EnforcementType
     severity: ViolationSeverity
     message: str
-    suggested_fix: Optional[str] = None
+    suggested_fix: str | None = None
     auto_fixable: bool = False
 
 
@@ -70,7 +70,7 @@ class SignedException:
     target_file: str
     granted_by: str
     granted_at: datetime = field(default_factory=datetime.utcnow)
-    expires_at: Optional[datetime] = None
+    expires_at: datetime | None = None
     reason: str = ""
 
 
@@ -83,8 +83,8 @@ class EnforcementConfig:
     enable_type_hints: bool = True
     enable_sovereignty: bool = True
     auto_fix: bool = False
-    ssot_registry_path: Optional[Path] = None
-    protected_layers: Set[str] = field(default_factory=lambda: {"L5", "L6"})
+    ssot_registry_path: Path | None = None
+    protected_layers: set[str] = field(default_factory=lambda: {"L5", "L6"})
 
 
 class UnifiedCodeEnforcerAgent:
@@ -113,15 +113,15 @@ class UnifiedCodeEnforcerAgent:
 
     def __init__(
         self,
-        project_root: Optional[Path] = None,
-        config: Optional[EnforcementConfig] = None,
+        project_root: Path | None = None,
+        config: EnforcementConfig | None = None,
     ):
         self.project_root = project_root or Path.cwd()
         self.config = config or EnforcementConfig()
         self._lock = threading.RLock()
-        self._ssot_registry: Dict[str, Any] = {}
-        self._signed_exceptions: Dict[str, SignedException] = {}
-        self._violations: List[CodeViolation] = []
+        self._ssot_registry: dict[str, Any] = {}
+        self._signed_exceptions: dict[str, SignedException] = {}
+        self._violations: list[CodeViolation] = []
 
         # Pattern definitions
         self._forbidden_patterns = {
@@ -137,7 +137,7 @@ class UnifiedCodeEnforcerAgent:
 
         Logger.info("UnifiedCodeEnforcerAgent initialized")
 
-    def validate_file(self, file_path: Path) -> List[CodeViolation]:
+    def validate_file(self, file_path: Path) -> list[CodeViolation]:
         """Validate a file for all enforcement types."""
         violations = []
 
@@ -165,7 +165,7 @@ class UnifiedCodeEnforcerAgent:
 
         return violations
 
-    def _check_standards(self, file_path: Path, content: str) -> List[CodeViolation]:
+    def _check_standards(self, file_path: Path, content: str) -> list[CodeViolation]:
         """Check code standards compliance."""
         violations = []
         lines = content.split("\n")
@@ -188,7 +188,7 @@ class UnifiedCodeEnforcerAgent:
 
         return violations
 
-    def _check_patterns(self, file_path: Path, content: str) -> List[CodeViolation]:
+    def _check_patterns(self, file_path: Path, content: str) -> list[CodeViolation]:
         """Check for forbidden patterns."""
         violations = []
         lines = content.split("\n")
@@ -206,7 +206,7 @@ class UnifiedCodeEnforcerAgent:
 
         return violations
 
-    def _check_type_hints(self, file_path: Path, content: str) -> List[CodeViolation]:
+    def _check_type_hints(self, file_path: Path, content: str) -> list[CodeViolation]:
         """Check for type hint compliance."""
         violations = []
 
@@ -229,7 +229,7 @@ class UnifiedCodeEnforcerAgent:
 
         return violations
 
-    def _check_sovereignty_violations(self, file_path: Path, content: str) -> List[CodeViolation]:
+    def _check_sovereignty_violations(self, file_path: Path, content: str) -> list[CodeViolation]:
         """Check for sovereignty violations (cross-layer access)."""
         violations = []
 
@@ -245,7 +245,7 @@ class UnifiedCodeEnforcerAgent:
             return violations
 
         for node in ast.walk(tree):
-            if isinstance(node, (ast.Import, ast.ImportFrom)):
+            if isinstance(node, ast.Import | ast.ImportFrom):
                 import_layer = self._extract_layer_from_import(node)
                 if import_layer and self._is_sovereignty_violation(file_layer, import_layer):
                     violations.append(CodeViolation(
@@ -258,7 +258,7 @@ class UnifiedCodeEnforcerAgent:
 
         return violations
 
-    def _extract_layer(self, path: Path) -> Optional[str]:
+    def _extract_layer(self, path: Path) -> str | None:
         """Extract layer from file path."""
         path_str = str(path)
         for layer in ["L0", "L1", "L2", "L3", "L4", "L5", "L6"]:
@@ -266,7 +266,7 @@ class UnifiedCodeEnforcerAgent:
                 return layer
         return None
 
-    def _extract_layer_from_import(self, node: ast.AST) -> Optional[str]:
+    def _extract_layer_from_import(self, node: ast.AST) -> str | None:
         """Extract layer from import statement."""
         if isinstance(node, ast.ImportFrom) and node.module:
             for layer in ["L0", "L1", "L2", "L3", "L4", "L5", "L6"]:
@@ -292,8 +292,8 @@ class UnifiedCodeEnforcerAgent:
         self,
         source_layer: str,
         target_file: Path,
-        agent_id: Optional[str] = None,
-    ) -> Tuple[bool, str]:
+        agent_id: str | None = None,
+    ) -> tuple[bool, str]:
         """
         Check if a layer can modify a target file.
 
@@ -338,7 +338,7 @@ class UnifiedCodeEnforcerAgent:
         target_file: Path,
         granted_by: str,
         reason: str,
-        expires_at: Optional[datetime] = None,
+        expires_at: datetime | None = None,
     ) -> SignedException:
         """Grant a signed exception for cross-layer access."""
         import secrets
@@ -359,7 +359,7 @@ class UnifiedCodeEnforcerAgent:
         Logger.info(f"Granted exception: {source_layer} -> {target_file} by {granted_by}")
         return exception
 
-    def sync_ssot_registry(self) -> Dict[str, Any]:
+    def sync_ssot_registry(self) -> dict[str, Any]:
         """Synchronize with SSOT registry."""
         with self._lock:
             if not self.config.ssot_registry_path:
@@ -377,7 +377,7 @@ class UnifiedCodeEnforcerAgent:
 
             return self._ssot_registry
 
-    def update_ssot_registry(self, updates: Dict[str, Any]) -> bool:
+    def update_ssot_registry(self, updates: dict[str, Any]) -> bool:
         """Update SSOT registry with changes."""
         with self._lock:
             if not self.config.ssot_registry_path:
@@ -397,7 +397,7 @@ class UnifiedCodeEnforcerAgent:
                 Logger.error(f"Failed to update SSOT registry: {e}")
                 return False
 
-    def get_violations(self) -> List[CodeViolation]:
+    def get_violations(self) -> list[CodeViolation]:
         """Get all recorded violations."""
         return self._violations.copy()
 

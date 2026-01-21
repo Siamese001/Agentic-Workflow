@@ -1,9 +1,12 @@
 from __future__ import annotations
+
 import logging
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 
 class DockerSandbox:
     """
@@ -11,10 +14,10 @@ class DockerSandbox:
     Executes generated code in an isolated, temporary environment.
     """
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: dict[str, Any]):
         self.config = config
 
-    def run_code(self, code: str) -> Dict[str, Any]:
+    def run_code(self, code: str) -> dict[str, Any]:
         """Executes code and returns the result/stdout."""
         logging.info('Sandbox: Spinning up isolated container for execution...')
         try:

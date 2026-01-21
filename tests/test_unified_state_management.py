@@ -17,24 +17,20 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
-import os
-import shutil
 import sys
 import tempfile
 import threading
-import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 
-def run_self_tests() -> Dict[str, Any]:
+def run_self_tests() -> dict[str, Any]:
     """Run the UnifiedStateManagementAgent's internal self-tests."""
     from agentic_core.L4_state.ValidationContext.UnifiedStateManagementAgent import (
         get_state_manager,
@@ -45,7 +41,7 @@ def run_self_tests() -> Dict[str, Any]:
         return manager._run_self_tests()
 
 
-def test_atomic_state_transaction() -> Dict[str, Any]:
+def test_atomic_state_transaction() -> dict[str, Any]:
     """
     Atomic State Transaction Test:
     - Trigger a "deep cleanup" and a manifest update simultaneously
@@ -134,7 +130,7 @@ def test_atomic_state_transaction() -> Dict[str, Any]:
     return results
 
 
-def test_drift_detection() -> Dict[str, Any]:
+def test_drift_detection() -> dict[str, Any]:
     """
     Drift Detection Verification:
     - Manually modify a file in .canon_memory/ without updating the manifest
@@ -194,7 +190,7 @@ def test_drift_detection() -> Dict[str, Any]:
     return results
 
 
-def test_ghost_detection() -> Dict[str, Any]:
+def test_ghost_detection() -> dict[str, Any]:
     """
     Ghost File Detection:
     - Create a file in .canon_memory/ without adding to manifest
@@ -240,7 +236,7 @@ def test_ghost_detection() -> Dict[str, Any]:
     return results
 
 
-def test_registry_synchronization() -> Dict[str, Any]:
+def test_registry_synchronization() -> dict[str, Any]:
     """
     Registry Synchronization Test:
     - Register a callback for state changes
@@ -305,17 +301,18 @@ def test_registry_synchronization() -> Dict[str, Any]:
     return results
 
 
-def test_cleanup_with_retention() -> Dict[str, Any]:
+def test_cleanup_with_retention() -> dict[str, Any]:
     """
     Cleanup with Retention Test:
     - Create states with different ages
     - Run cleanup with retention policy
     - Verify only old states are removed
     """
+    from datetime import timedelta
+
     from agentic_core.L4_state.ValidationContext.UnifiedStateManagementAgent import (
         get_state_manager,
     )
-    from datetime import timedelta
 
     results = {
         "status": "PASS",
@@ -416,7 +413,7 @@ def main():
             results['tests']['atomic_transaction'] = atomic_results
 
             if atomic_results.get('status') == 'PASS':
-                print(f"  ✓ Atomic transaction PASSED")
+                print("  ✓ Atomic transaction PASSED")
                 print(f"    States created: {atomic_results.get('states_created')}")
                 print(f"    Consistency verified: {atomic_results.get('consistency_verified')}")
             else:
@@ -435,7 +432,7 @@ def main():
             results['tests']['drift_detection'] = drift_results
 
             if drift_results.get('status') == 'PASS':
-                print(f"  ✓ Drift detection PASSED")
+                print("  ✓ Drift detection PASSED")
                 print(f"    File modified: {drift_results.get('file_modified')}")
                 print(f"    Drift detected: {drift_results.get('drift_detected')}")
             else:
@@ -454,7 +451,7 @@ def main():
             results['tests']['ghost_detection'] = ghost_results
 
             if ghost_results.get('status') == 'PASS':
-                print(f"  ✓ Ghost detection PASSED")
+                print("  ✓ Ghost detection PASSED")
                 print(f"    Ghost file created: {ghost_results.get('ghost_file_created')}")
                 print(f"    Ghost detected: {ghost_results.get('ghost_detected')}")
             else:
@@ -473,7 +470,7 @@ def main():
             results['tests']['registry_sync'] = registry_results
 
             if registry_results.get('status') == 'PASS':
-                print(f"  ✓ Registry synchronization PASSED")
+                print("  ✓ Registry synchronization PASSED")
                 print(f"    Callback registered: {registry_results.get('callback_registered')}")
                 print(f"    Callback notified: {registry_results.get('callback_notified')}")
                 print(f"    Notifications: {len(registry_results.get('notifications', []))}")
@@ -493,7 +490,7 @@ def main():
             results['tests']['cleanup_retention'] = cleanup_results
 
             if cleanup_results.get('status') == 'PASS':
-                print(f"  ✓ Cleanup with retention PASSED")
+                print("  ✓ Cleanup with retention PASSED")
                 print(f"    States created: {cleanup_results.get('states_created')}")
                 print(f"    Correct retention: {cleanup_results.get('correct_retention')}")
             else:

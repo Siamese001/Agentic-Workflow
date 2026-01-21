@@ -13,23 +13,12 @@ Implements L5 Safety/Policy Layer for update observability usage operations
 """
 
 
-from typing import Dict, List, Optional
-
-
-from dataclasses import field
-
-
-from enum import Enum
 
 
 import logging
-
-
-import scripts.validation.check_canonical_structure
-
-
 from abc import ABC, abstractmethod
-
+from dataclasses import field
+from enum import Enum
 
 logging.basicConfig(level=logging.INFO)
 
@@ -47,7 +36,7 @@ class UpdateObservabilityUsageSafetyType(Enum):
 class UpdateObservabilityUsageSafetyConstraints:
     """L5 Safety constraints - fail-closed behavior"""
     max_risk_score: float = 0.5
-    allowed_operations: List[str] = field(default_factory=lambda: ["apply", "enforce", "validate"])
+    allowed_operations: list[str] = field(default_factory=lambda: ["apply", "enforce", "validate"])
     safety_level: str = "strict"
     requires_approval: bool = True
 
@@ -56,8 +45,8 @@ class UpdateObservabilityUsageSafetyResult:
     """L5 Safety result with full type safety"""
     success: bool
     safety_score: float = 0.0
-    risk_assessment: Dict[str, object] = field(default_factory=dict)
-    errors: List[str] = field(default_factory=list)
+    risk_assessment: dict[str, object] = field(default_factory=dict)
+    errors: list[str] = field(default_factory=list)
     safety_validated: bool = False
     timestamp: str = ""
 
@@ -66,12 +55,12 @@ class UpdateObservabilityUsageSafetySafety(ABC):
     """L5 interface foundation - ensures L5 pure safety behavior"""
 
     @abstractmethod
-    def apply_safety(self, data: Dict[str, object]) -> UpdateObservabilityUsageSafetyResult:
+    def apply_safety(self, data: dict[str, object]) -> UpdateObservabilityUsageSafetyResult:
         """Apply safety checks with L5 constraints"""
         pass
 
     @abstractmethod
-    def validate_safety(self, data: Dict[str, object]) -> bool:
+    def validate_safety(self, data: dict[str, object]) -> bool:
         """L5 Safety validation - fail-closed by default"""
         pass
 
@@ -82,12 +71,12 @@ class UpdateObservabilityUsageSafetyImpl(UpdateObservabilityUsageSafetySafety):
     Fail-closed safety enforcement with comprehensive policy checks
     """
 
-    def __init__(self, constraints: Optional[UpdateObservabilityUsageSafetyConstraints] = None):
+    def __init__(self, constraints: UpdateObservabilityUsageSafetyConstraints | None = None):
         self.constraints = constraints or UpdateObservabilityUsageSafetyConstraints()
         self.logger = logging.getLogger(self.__class__.__name__)
         self._safety_rules = self._initialize_safety_rules()
 
-    def apply_safety(self, data: Dict[str, object]) -> UpdateObservabilityUsageSafetyResult:
+    def apply_safety(self, data: dict[str, object]) -> UpdateObservabilityUsageSafetyResult:
         """Apply safety checks following L5 architecture principles"""
         self.logger.info("Applying safety checks to data")
 
@@ -116,7 +105,7 @@ class UpdateObservabilityUsageSafetyImpl(UpdateObservabilityUsageSafetySafety):
         self.logger.info(f"Safety check completed: score={safety_score}, passed={result.success}")
         return result
 
-    def validate_safety(self, data: Dict[str, object]) -> bool:
+    def validate_safety(self, data: dict[str, object]) -> bool:
         """L5 Safety validation with fail-closed behavior"""
         try:
             # Check for critical dangerous patterns
@@ -148,7 +137,7 @@ class UpdateObservabilityUsageSafetyImpl(UpdateObservabilityUsageSafetySafety):
             self.logger.error(f"Safety validation error: {e}")
             return False  # Fail-closed
 
-    def _validate_input(self, data: Dict[str, object]) -> None:
+    def _validate_input(self, data: dict[str, object]) -> None:
         """L5 Input validation"""
         if not isinstance(data, dict):
             raise ValueError("Input must be a dictionary")
@@ -156,7 +145,7 @@ class UpdateObservabilityUsageSafetyImpl(UpdateObservabilityUsageSafetySafety):
         if not data:
             raise ValueError("Input cannot be empty")
 
-    def _calculate_safety_score(self, data: Dict[str, object]) -> float:
+    def _calculate_safety_score(self, data: dict[str, object]) -> float:
         """Calculate L5 safety score (0.0 = safe, 1.0 = dangerous)"""
         score = 0.0
         data_str = str(data).lower()
@@ -181,7 +170,7 @@ class UpdateObservabilityUsageSafetyImpl(UpdateObservabilityUsageSafetySafety):
 
         return min(score, 1.0)
 
-    def _assess_risks(self, data: Dict[str, object]) -> Dict[str, object]:
+    def _assess_risks(self, data: dict[str, object]) -> dict[str, object]:
         """Perform comprehensive risk assessment"""
         risks = {
             "injection_risk": self._check_injection_risk(data),
@@ -195,7 +184,7 @@ class UpdateObservabilityUsageSafetyImpl(UpdateObservabilityUsageSafetySafety):
             "overall_risk": "low" if all(r == "low" for r in risks.values()) else "medium" if any(r == "medium" for r in risks.values()) else "high"
         }
 
-    def _check_injection_risk(self, data: Dict[str, object]) -> str:
+    def _check_injection_risk(self, data: dict[str, object]) -> str:
         """Check for injection risks"""
         injection_patterns = ["'", '"', ";", "--", "/*", "*/", "xp_", "sp_"]
         data_str = str(data)
@@ -206,7 +195,7 @@ class UpdateObservabilityUsageSafetyImpl(UpdateObservabilityUsageSafetySafety):
 
         return "low"
 
-    def _check_size_risk(self, data: Dict[str, object]) -> str:
+    def _check_size_risk(self, data: dict[str, object]) -> str:
         """Check size-related risks"""
         size = len(str(data))
 
@@ -217,7 +206,7 @@ class UpdateObservabilityUsageSafetyImpl(UpdateObservabilityUsageSafetySafety):
         else:
             return "low"
 
-    def _check_complexity_risk(self, data: Dict[str, object]) -> str:
+    def _check_complexity_risk(self, data: dict[str, object]) -> str:
         """Check complexity risks"""
         try:
             # Check nesting depth
@@ -228,10 +217,10 @@ class UpdateObservabilityUsageSafetyImpl(UpdateObservabilityUsageSafetySafety):
                 return "medium"
             else:
                 return "low"
-        except (ValueError, TypeError, RuntimeError) as e:
+        except (ValueError, TypeError, RuntimeError):
             return "high"
 
-    def _check_pattern_risk(self, data: Dict[str, object]) -> str:
+    def _check_pattern_risk(self, data: dict[str, object]) -> str:
         """Check for risky patterns"""
         risky_patterns = ["eval", "exec", "import", "subprocess", "os.system"]
         data_str = str(data).lower()
@@ -251,7 +240,7 @@ class UpdateObservabilityUsageSafetyImpl(UpdateObservabilityUsageSafetySafety):
         else:
             return current_depth
 
-    def _initialize_safety_rules(self) -> List[Dict[str, object]]:
+    def _initialize_safety_rules(self) -> list[dict[str, object]]:
         """Initialize L5 safety rules"""
         return [
             {"name": "no_injection", "pattern": r"(union|select|insert|update|delete|drop)", "severity": "high"},
@@ -277,7 +266,7 @@ class UpdateObservabilityUsageSafetyInterface:
     def __init__(self, safety: UpdateObservabilityUsageSafetySafety):
         self._safety = safety
 
-    def apply_safety(self, data: Dict[str, object]) -> Dict[str, object]:
+    def apply_safety(self, data: dict[str, object]) -> dict[str, object]:
         """L5 Interface method - applies safety safely"""
         try:
             result = self._safety.apply_safety(data)
@@ -304,7 +293,7 @@ class UpdateObservabilityUsageSafetyFactory:
         return UpdateObservabilityUsageSafetyInterface(safety)
 
 
-def update_observability_usage(data: Dict[str, object]) -> Dict[str, object]:
+def update_observability_usage(data: dict[str, object]) -> dict[str, object]:
     """
     L5 Main function - update observability usage operations
 

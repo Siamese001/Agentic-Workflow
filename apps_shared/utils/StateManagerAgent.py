@@ -5,6 +5,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 # File: state_manager.py
 # Description: State Manager for HOP-based architecture - v13.0
 # Manages explicit state files for auditable, debuggable, resumable workflow
@@ -12,15 +13,14 @@ from __future__ import annotations
 
 __version__ = "13.1"
 
+import hashlib
 import json
 import os
-import hashlib
-from pathlib import Path
-from typing import Dict, List, Any, Optional
-from datetime import datetime
 import shutil
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from datetime import datetime
+from pathlib import Path
+from typing import Any
+
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
@@ -64,7 +64,7 @@ class StateManager:
     def write_state(
         self,
         hop_id: str,
-        data: Dict[str, Any],
+        data: dict[str, Any],
         atomic: bool = True
     ) -> str:
         """
@@ -119,7 +119,7 @@ class StateManager:
         self,
         hop_id: str,
         validate_checksum: bool = False
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Read state file for a HOP
 
@@ -151,7 +151,7 @@ class StateManager:
             if stored_checksum and stored_checksum != current_checksum:
                 raise ValueError(f"Checksum mismatch for {filename}: file may be corrupted")
 
-        with open(filepath, 'r') as f:
+        with open(filepath) as f:
             data = json.load(f)
 
         print(f"[StateManager] Read state: {filename}")
@@ -175,7 +175,7 @@ class StateManager:
         filepath = self.mission_dir / filename
         return filepath.exists()
 
-    def list_states(self) -> List[str]:
+    def list_states(self) -> list[str]:
         """
         List all state files for this mission
 
@@ -192,7 +192,7 @@ class StateManager:
 
         return state_files
 
-    def get_workflow_progress(self) -> Dict[str, Any]:
+    def get_workflow_progress(self) -> dict[str, Any]:
         """
         Get workflow progress summary
 
@@ -266,7 +266,7 @@ class StateManager:
             raise FileNotFoundError(f"Checkpoint not found: {checkpoint_name}")
 
         # Read Checkpoint metadata
-        with open(checkpoint_dir / "checkpoint_metadata.json", 'r') as f:
+        with open(checkpoint_dir / "checkpoint_metadata.json") as f:
             metadata = json.load(f)
 
         # Clear current state files
@@ -310,9 +310,9 @@ class StateManager:
         for state_file in self.list_states():
             (self.mission_dir / state_file).unlink()
 
-        print(f"[StateManager] All states cleared")
+        print("[StateManager] All states cleared")
 
-    def export_mission_archive(self, output_path: Optional[str] = None) -> str:
+    def export_mission_archive(self, output_path: str | None = None) -> str:
         """
         Export all mission state files as a compressed archive
 
@@ -371,7 +371,7 @@ class StateManager:
 
         return sha256.hexdigest()
 
-    def _get_stored_checksum(self, hop_id: str) -> Optional[str]:
+    def _get_stored_checksum(self, hop_id: str) -> str | None:
         """
         Get stored checksum for a state file
 
@@ -386,7 +386,7 @@ class StateManager:
         if not checksums_file.exists():
             return None
 
-        with open(checksums_file, 'r') as f:
+        with open(checksums_file) as f:
             checksums = json.load(f)
 
         return checksums.get(hop_id)
@@ -403,7 +403,7 @@ class StateManager:
 
         # Load existing checksums
         if checksums_file.exists():
-            with open(checksums_file, 'r') as f:
+            with open(checksums_file) as f:
                 checksums = json.load(f)
         else:
             checksums = {}
@@ -511,7 +511,7 @@ def test_state_manager():
 
 
 @timeout(300)
-def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
     """Apps_shared/utils - operational only."""
     if _call_path is None:
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)

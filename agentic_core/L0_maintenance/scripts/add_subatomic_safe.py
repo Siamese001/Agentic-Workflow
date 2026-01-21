@@ -3,18 +3,17 @@
 Safely add SubatomicTestingMixin to agents without tests.
 This version handles multi-line class definitions and validates syntax.
 """
+import ast
 import json
 import re
-import ast
-from pathlib import Path
 import sys
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from pathlib import Path
 
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 # Load agents without tests
-with open(project_root / "agent_discovery_full.json", 'r', encoding='utf-8') as f:
+with open(project_root / "agent_discovery_full.json", encoding='utf-8') as f:
     agents = json.load(f)
 
 no_tests = [a for a in agents if not a.get('has_tests', False)]
@@ -130,7 +129,7 @@ if errors:
     for e in errors[:20]:
         print(f"  {e}")
 
-print(f"\nNext steps:")
-print(f"1. Run: python scripts/full_agent_discovery.py --force")
-print(f"2. Run: python scripts/analyze_compliance.py")
-print(f"3. Verify test coverage increased")
+print("\nNext steps:")
+print("1. Run: python scripts/full_agent_discovery.py --force")
+print("2. Run: python scripts/analyze_compliance.py")
+print("3. Verify test coverage increased")

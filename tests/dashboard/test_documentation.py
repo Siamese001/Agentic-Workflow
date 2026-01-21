@@ -6,9 +6,10 @@ Tests for dashboard documentation.
 
 Migrated from: agentic_core/L1_cognition/intent_analysis/test_phase7_documentation.py
 """
-import pytest
 import sys
 from pathlib import Path
+
+import pytest
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))

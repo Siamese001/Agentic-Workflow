@@ -1,21 +1,21 @@
 from __future__ import annotations
+
 """
 Secure Filesystem Operations - Sandboxed File I/O with Blackboard Integration
 Prevents path traversal, protects critical directories, and integrates with HealingLease.
+
+DELEGATION NOTICE (2026-01-21):
+- move_file() and delete_file() now delegate to ArchivalGatekeeper
+- This ensures all destructive operations go through the governance layer
+- Direct shutil/os operations have been removed for security
 """
-import logging
 import os
-import re
+import warnings
 from functools import wraps
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol, Set
+from typing import Any, Protocol
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
-
 from agentic_core.L2_execution.ToolRegistry.definitions import (
     CreateDirectoryArgs,
     DeleteFileArgs,
@@ -24,8 +24,7 @@ from agentic_core.L2_execution.ToolRegistry.definitions import (
     ReadFileArgs,
     WriteFileArgs,
 )
-from agentic_core.utils.sovereign_index import SovereignIndex
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
 
 
 # Define a Protocol for the Blackboard interface required by this module
@@ -38,12 +37,12 @@ class blackboard_lease_verifier(Protocol):
     def verify_healing_lease(self, agent_id: str, file_path: str) -> bool:
 
         ...
-    def log_security_event(self, agent_id: str, event_type: str, file_path: str, details: Dict[str, Any]) -> None:
+    def log_security_event(self, agent_id: str, event_type: str, file_path: str, details: dict[str, Any]) -> None:
 
         ...
 
 
-EXCLUDED_DIRS: Set[str] = {
+EXCLUDED_DIRS: set[str] = {
     '.git',
     '__pycache__',
     '.pytest_cache',
@@ -169,7 +168,7 @@ def read_file(args: ReadFileArgs) -> str:
     if not resolved_path.is_file():
         raise ValueError(f"Not a file: {args.path}")
 
-    with open(resolved_path, 'r', encoding='utf-8') as f:
+    with open(resolved_path, encoding='utf-8') as f:
         return f.read()
 
 
@@ -177,7 +176,7 @@ def read_file(args: ReadFileArgs) -> str:
 def write_file(
     args: WriteFileArgs,
     blackboard=None,
-    agent_id: Optional[str] = None,
+    agent_id: str | None = None,
     override_preservation: bool = False
 ) -> None:
     """
@@ -202,7 +201,7 @@ def write_file(
     # Preservation enforcement: Check line count if file exists
     if resolved_path.exists() and not override_preservation:
         try:
-            with open(resolved_path, 'r', encoding='utf-8') as f:
+            with open(resolved_path, encoding='utf-8') as f:
                 original_lines = len(f.readlines())
 
             new_lines = len(args.content.splitlines())
@@ -236,7 +235,7 @@ def write_file(
                     f"This would delete {round((1 - new_lines/original_lines) * 100, 2)}% of the file. "
                     f"Set override_preservation=True if this is intentional (SystemArchitect only)."
                 )
-        except (IOError, UnicodeDecodeError):
+        except (OSError, UnicodeDecodeError):
             # If we can't read the file, allow the write
             pass
 
@@ -251,10 +250,13 @@ def write_file(
 def move_file(
     args: MoveFileArgs,
     blackboard=None,
-    agent_id: Optional[str] = None
+    agent_id: str | None = None
 ) -> None:
     """
     Move or rename a file with sandbox validation and HealingLease verification.
+
+    DELEGATION: This function now delegates to ArchivalGatekeeper for all moves.
+    The gatekeeper handles approval flow and audit logging.
 
     Args:
         args: MoveFileArgs with source, destination, and options
@@ -266,7 +268,14 @@ def move_file(
         HealingLeaseError: If agent doesn't hold HealingLease
         FileNotFoundError: If source doesn't exist
         FileExistsError: If destination exists and overwrite=False
+        PermissionError: If user denies approval
     """
+    warnings.warn(
+        "filesystem.move_file() is deprecated. Use ArchivalGatekeeper.safe_move() directly.",
+        DeprecationWarning,
+        stacklevel=2
+    )
+
     source_path = validate_sandbox(args.source)
     dest_path = validate_sandbox(args.destination)
 
@@ -278,32 +287,23 @@ def move_file(
             f"Destination exists: {args.destination}. Set overwrite=True to replace."
         )
 
-    # SSOT COMPLIANCE: All moves require user approval
-    import sys
-    if sys.stdin.isatty():
-        print(f"\n{'='*60}")
-        print(f"MOVE APPROVAL REQUIRED")
-        print(f"{'='*60}")
-        print(f"Source: {source_path}")
-        print(f"Target: {dest_path}")
-        print(f"Reason: Filesystem move operation")
-        print(f"{'='*60}")
-        try:
-            response = input("Approve? [y/n]: ").strip().lower()
-            if response != 'y':
-                raise PermissionError("Move declined by user")
-        except (EOFError, KeyboardInterrupt):
-            raise PermissionError("Move cancelled by user")
-    else:
-        # Non-interactive mode - log warning but allow (caller should handle)
-        import logging
-        logging.getLogger(__name__).warning(f"Non-interactive mode - proceeding with move: {source_path.name}")
+    # DELEGATION: Use ArchivalGatekeeper for safe move (handles approval internally)
+    gatekeeper = ArchivalGatekeeper.get_instance(get_project_root())
+    result = gatekeeper.safe_move(
+        source_path,
+        dest_path,
+        agent_id or "filesystem.move_file",
+        "Filesystem move operation",
+        overwrite=args.overwrite
+    )
 
-    dest_path.parent.mkdir(parents=True, exist_ok=True)
-    shutil.move(str(source_path), str(dest_path))
+    if not result.success:
+        if result.approval_status == "DENIED":
+            raise PermissionError("Move declined by user")
+        raise OSError(f"Move failed: {result.error}")
 
 
-def list_files(args: ListFilesArgs) -> List[str]:
+def list_files(args: ListFilesArgs) -> list[str]:
     """
     List files in a directory with sandbox validation.
 
@@ -357,10 +357,13 @@ def list_files(args: ListFilesArgs) -> List[str]:
 def delete_file(
     args: DeleteFileArgs,
     blackboard=None,
-    agent_id: Optional[str] = None
+    agent_id: str | None = None
 ) -> None:
     """
     Delete a file with sandbox validation and HealingLease verification.
+
+    DELEGATION: This function now delegates to ArchivalGatekeeper for all deletes.
+    The gatekeeper performs SOFT DELETE (archive) and handles approval flow.
 
     Args:
         args: DeleteFileArgs with path
@@ -371,7 +374,14 @@ def delete_file(
         SandboxViolationError: If path violates sandbox
         HealingLeaseError: If agent doesn't hold HealingLease
         FileNotFoundError: If file doesn't exist
+        PermissionError: If user denies approval
     """
+    warnings.warn(
+        "filesystem.delete_file() is deprecated. Use ArchivalGatekeeper.safe_delete() directly.",
+        DeprecationWarning,
+        stacklevel=2
+    )
+
     resolved_path = validate_sandbox(args.path)
 
     if not resolved_path.exists():
@@ -380,7 +390,18 @@ def delete_file(
     if resolved_path.is_dir():
         raise IsADirectoryError(f"Cannot delete directory with delete_file: {args.path}")
 
-    resolved_path.unlink()
+    # DELEGATION: Use ArchivalGatekeeper for safe delete (soft delete to archive)
+    gatekeeper = ArchivalGatekeeper.get_instance(get_project_root())
+    result = gatekeeper.safe_delete(
+        resolved_path,
+        agent_id or "filesystem.delete_file",
+        "Filesystem delete operation"
+    )
+
+    if not result.success:
+        if result.approval_status == "DENIED":
+            raise PermissionError("Delete declined by user")
+        raise OSError(f"Delete failed: {result.error}")
 
 
 def create_directory(args: CreateDirectoryArgs) -> None:

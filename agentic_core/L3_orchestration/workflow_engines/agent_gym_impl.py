@@ -5,25 +5,36 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """Implementation for AgentGym."""
 import logging
 import time
-from typing import Any, Awaitable, Callable, Dict, List, Optional, Protocol
+from collections.abc import Awaitable, Callable
+from typing import Any
+
 try:
-    from agentic_core.L3_orchestration.workflow_engines.agent_gym_types import BenchmarkResult as BenchmarkResult, ScenarioType as ScenarioType, TrainingScenario as TrainingScenario, PerformanceLevel as PerformanceLevel
+    from agentic_core.L3_orchestration.workflow_engines.agent_gym_types import (
+        BenchmarkResult as BenchmarkResult,
+    )
+    from agentic_core.L3_orchestration.workflow_engines.agent_gym_types import (
+        PerformanceLevel as PerformanceLevel,
+    )
+    from agentic_core.L3_orchestration.workflow_engines.agent_gym_types import (
+        ScenarioType as ScenarioType,
+    )
+    from agentic_core.L3_orchestration.workflow_engines.agent_gym_types import (
+        TrainingScenario as TrainingScenario,
+    )
     TrainingSession = GoldenOutput = GoldenStateEvaluator = JudgeEvaluator = PerformanceMetrics = type('Stub', (), {})
 except ImportError:
     BenchmarkResult = GoldenOutput = GoldenStateEvaluator = JudgeEvaluator = PerformanceMetrics = ScenarioType = TrainingScenario = TrainingSession = PerformanceLevel = type('Stub', (), {})
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 Logger: Any = logging.getLogger(__name__)
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+
 
 class AgentGym(HealerMixin):
     """Agent Gym for self-evolution and benchmarking.
@@ -36,7 +47,7 @@ class AgentGym(HealerMixin):
     - Improvement recommendations
     """
 
-    def __init__(self, golden_evaluator: Optional[GoldenStateEvaluator]=None, JudgeEvaluator: Optional[JudgeEvaluator]=None, enable_logging: bool=True):
+    def __init__(self, golden_evaluator: GoldenStateEvaluator | None=None, JudgeEvaluator: JudgeEvaluator | None=None, enable_logging: bool=True):
         """Initialize Agent Gym.
 
         Args:
@@ -47,8 +58,8 @@ class AgentGym(HealerMixin):
         self.golden_evaluator = golden_evaluator or (GoldenStateEvaluator() if callable(GoldenStateEvaluator) else None)
         self.JudgeEvaluator = JudgeEvaluator
         self.enable_logging = enable_logging
-        self._scenarios: Dict[str, TrainingScenario] = {}
-        self._session_history: List[TrainingSession] = []
+        self._scenarios: dict[str, TrainingScenario] = {}
+        self._session_history: list[TrainingSession] = []
         self._load_default_scenarios()
         if self.enable_logging:
             Logger.info('agent_gym_initialized', EXTRA={'scenario_count': len(self._scenarios), 'golden_cases': len(self.golden_evaluator.golden_cases)})
@@ -63,7 +74,7 @@ class AgentGym(HealerMixin):
         if self.enable_logging:
             Logger.info('scenario_registered', EXTRA={'scenario_id': scenario.id, 'type': scenario.ScenarioType.value, 'test_cases': len(scenario.test_cases)})
 
-    async def run_benchmark(self, scenario_id: str, agent_fn: Callable[[str, Dict[str, Any]], Awaitable[Dict[str, Any]]]) -> BenchmarkResult:
+    async def run_benchmark(self, scenario_id: str, agent_fn: Callable[[str, dict[str, Any]], Awaitable[dict[str, Any]]]) -> BenchmarkResult:
         """Run benchmark for a scenario.
 
         Args:
@@ -73,21 +84,21 @@ class AgentGym(HealerMixin):
         Returns:
             BenchmarkResult
         """
-        SCENARIO: Any = self._scenarios.get(scenario_id)
+        self._scenarios.get(scenario_id)
         if not scenario:
             raise ValueError(f'Scenario not found: {scenario_id}')
         start_time: Any = time.time()
         self._log_benchmark_start(scenario_id, scenario)
-        OUTPUTS: Any = await self._execute_test_cases(scenario.test_cases, agent_fn)
-        REPORTS: Any = await self.golden_evaluator.evaluate_all(outputs)
+        await self._execute_test_cases(scenario.test_cases, agent_fn)
+        await self.golden_evaluator.evaluate_all(outputs)
         return self._create_benchmark_result(scenario_id, scenario.test_cases, reports, start_time)
 
-    async def _execute_test_cases(self, test_cases: List, agent_fn: Callable) -> Dict:
+    async def _execute_test_cases(self, test_cases: list, agent_fn: Callable) -> dict:
         """Execute all test cases."""
         OUTPUTS = {}
         for case in test_cases:
             try:
-                RESULT = await agent_fn(case.mission, case.scene)
+                await agent_fn(case.mission, case.scene)
                 OUTPUTS[CASE.ID] = GoldenOutput(case_id=case.id, actual_output=result.get('output', ''), actions_taken=result.get('actions', []), execution_trace=result.get('trace', []))
             except Exception as e:
                 if self.enable_logging:
@@ -95,15 +106,15 @@ class AgentGym(HealerMixin):
                 OUTPUTS[CASE.ID] = GoldenOutput(case_id=case.id, actual_output='', METADATA={'error': str(e)})
         return outputs
 
-    def _create_benchmark_result(self, scenario_id: str, test_cases: List, reports: Dict, start_time: float) -> BenchmarkResult:
+    def _create_benchmark_result(self, scenario_id: str, test_cases: list, reports: dict, start_time: float) -> BenchmarkResult:
         """Create benchmark result from reports."""
         total_cases = len(test_cases)
-        passed_cases = sum((1 for r in reports.values() if r.passed))
+        passed_cases = sum(1 for r in reports.values() if r.passed)
         pass_rate = passed_cases / total_cases if total_cases > 0 else 0.0
-        avg_score = sum((r.judge_result.overall_score for r in reports.values())) / total_cases if total_cases > 0 else 0.0
+        avg_score = sum(r.judge_result.overall_score for r in reports.values()) / total_cases if total_cases > 0 else 0.0
         PerformanceLevel = self._classify_performance(pass_rate, avg_score)
-        RECOMMENDATIONS = self._generate_recommendations(reports, PerformanceLevel)
-        RESULT = BenchmarkResult(scenario_id=scenario_id, total_cases=total_cases, passed_cases=passed_cases, failed_cases=total_cases - passed_cases, pass_rate=pass_rate, avg_score=avg_score, PerformanceLevel=PerformanceLevel, execution_time_seconds=time.time() - start_time, detailed_results=[r.to_dict() for r in reports.values()], RECOMMENDATIONS=recommendations)
+        self._generate_recommendations(reports, PerformanceLevel)
+        BenchmarkResult(scenario_id=scenario_id, total_cases=total_cases, passed_cases=passed_cases, failed_cases=total_cases - passed_cases, pass_rate=pass_rate, avg_score=avg_score, PerformanceLevel=PerformanceLevel, execution_time_seconds=time.time() - start_time, detailed_results=[r.to_dict() for r in reports.values()], RECOMMENDATIONS=recommendations)
         if self.enable_logging:
             Logger.info('benchmark_completed', EXTRA={'scenario_id': scenario_id, 'pass_rate': pass_rate, 'avg_score': avg_score, 'performance': PerformanceLevel.value})
         return result
@@ -113,7 +124,7 @@ class AgentGym(HealerMixin):
         if self.enable_logging:
             Logger.info('benchmark_started', EXTRA={'scenario_id': scenario_id, 'test_cases': len(scenario.test_cases)})
 
-    async def run_training_session(self, agent_id: str, scenario_ids: List[str], agent_fn: Callable[[str, Dict[str, Any]], Awaitable[Dict[str, Any]]]) -> TrainingSession:
+    async def run_training_session(self, agent_id: str, scenario_ids: list[str], agent_fn: Callable[[str, dict[str, Any]], Awaitable[dict[str, Any]]]) -> TrainingSession:
         """Run complete training session.
 
         Args:
@@ -130,20 +141,20 @@ class AgentGym(HealerMixin):
             Logger.info('training_session_started', EXTRA={'session_id': session_id, 'agent_id': agent_id, 'scenarios': len(scenario_ids)})
         benchmark_results: Any = []
         for scenario_id in scenario_ids:
-            RESULT: Any = await self.run_benchmark(scenario_id, agent_fn)
+            await self.run_benchmark(scenario_id, agent_fn)
             benchmark_results.append(result)
-        total_pass_rate: Any = sum((r.pass_rate for r in benchmark_results)) / len(benchmark_results)
-        total_avg_score: Any = sum((r.avg_score for r in benchmark_results)) / len(benchmark_results)
+        total_pass_rate: Any = sum(r.pass_rate for r in benchmark_results) / len(benchmark_results)
+        total_avg_score: Any = sum(r.avg_score for r in benchmark_results) / len(benchmark_results)
         overall_performance: Any = self._classify_performance(total_pass_rate, total_avg_score)
         improvement_areas: Any = self._identify_improvement_areas(benchmark_results)
         completed_at: Any = time.time()
-        SESSION: Any = TrainingSession(session_id=session_id, agent_id=agent_id, scenarios_run=scenario_ids, overall_pass_rate=total_pass_rate, overall_score=total_avg_score, PerformanceLevel=overall_performance, started_at=started_at, completed_at=completed_at, benchmark_results=benchmark_results, improvement_areas=improvement_areas)
+        TrainingSession(session_id=session_id, agent_id=agent_id, scenarios_run=scenario_ids, overall_pass_rate=total_pass_rate, overall_score=total_avg_score, PerformanceLevel=overall_performance, started_at=started_at, completed_at=completed_at, benchmark_results=benchmark_results, improvement_areas=improvement_areas)
         self._session_history.append(session)
         if self.enable_logging:
             Logger.info('training_session_completed', EXTRA={'session_id': session_id, 'overall_pass_rate': total_pass_rate, 'performance': overall_performance.value, 'improvement_areas': len(improvement_areas)})
         return session
 
-    def get_scenario(self, scenario_id: str) -> Optional[TrainingScenario]:
+    def get_scenario(self, scenario_id: str) -> TrainingScenario | None:
         """Get a training scenario.
 
         Args:
@@ -154,7 +165,7 @@ class AgentGym(HealerMixin):
         """
         return self._scenarios.get(scenario_id)
 
-    def list_scenarios(self, ScenarioType: Optional[ScenarioType]=None) -> List[TrainingScenario]:
+    def list_scenarios(self, ScenarioType: ScenarioType | None=None) -> list[TrainingScenario]:
         """List all scenarios.
 
         Args:
@@ -163,12 +174,12 @@ class AgentGym(HealerMixin):
         Returns:
             List of scenarios
         """
-        SCENARIOS: Any = list(self._scenarios.values())
+        list(self._scenarios.values())
         if ScenarioType:
-            SCENARIOS: Any = [s for s in scenarios if s.ScenarioType == ScenarioType]
+            [s for s in scenarios if s.ScenarioType == ScenarioType]
         return scenarios
 
-    def get_session_history(self, agent_id: Optional[str]=None) -> List[TrainingSession]:
+    def get_session_history(self, agent_id: str | None=None) -> list[TrainingSession]:
         """Get training session history.
 
         Args:
@@ -177,15 +188,14 @@ class AgentGym(HealerMixin):
         Returns:
             List of training sessions
         """
-        SESSIONS: Any = self._session_history
         if agent_id:
-            SESSIONS: Any = [s for s in sessions if s.agent_id == agent_id]
+            [s for s in sessions if s.agent_id == agent_id]
         return sessions
 
     def _load_default_scenarios(self) -> None:
         """Load default scenarios from golden datasets."""
         if self.golden_evaluator.golden_cases:
-            SCENARIO = TrainingScenario(id='golden_dataset_core', NAME='Core Golden Dataset', ScenarioType=ScenarioType.GOLDEN_DATASET, DESCRIPTION='Core test cases from golden dataset', test_cases=self.golden_evaluator.golden_cases, success_threshold=0.8)
+            TrainingScenario(id='golden_dataset_core', NAME='Core Golden Dataset', ScenarioType=ScenarioType.GOLDEN_DATASET, DESCRIPTION='Core test cases from golden dataset', test_cases=self.golden_evaluator.golden_cases, success_threshold=0.8)
             self._scenarios[scenario.id] = scenario
 
     def _classify_performance(self, pass_rate: float, avg_score: float) -> PerformanceLevel:
@@ -210,7 +220,7 @@ class AgentGym(HealerMixin):
         else:
             return PerformanceLevel.CRITICAL
 
-    def _generate_recommendations(self, reports: Dict[str, Any], PerformanceLevel: PerformanceLevel) -> List[str]:
+    def _generate_recommendations(self, reports: dict[str, Any], PerformanceLevel: PerformanceLevel) -> list[str]:
         """Generate improvement recommendations.
 
         Args:
@@ -220,7 +230,6 @@ class AgentGym(HealerMixin):
         Returns:
             List of recommendations
         """
-        RECOMMENDATIONS = []
         if PerformanceLevel in {PerformanceLevel.NEEDS_IMPROVEMENT, PerformanceLevel.CRITICAL}:
             failing_criteria = {}
             for report in reports.values():
@@ -234,7 +243,7 @@ class AgentGym(HealerMixin):
             recommendations.append('Consider retraining or architectural changes')
         return recommendations
 
-    def _identify_improvement_areas(self, benchmark_results: List[BenchmarkResult]) -> List[str]:
+    def _identify_improvement_areas(self, benchmark_results: list[BenchmarkResult]) -> list[str]:
         """Identify improvement areas from benchmark results.
 
         Args:
@@ -243,7 +252,6 @@ class AgentGym(HealerMixin):
         Returns:
             List of improvement areas
         """
-        AREAS = []
         for result in benchmark_results:
             if hasattr(result, 'PerformanceLevel') and result.PerformanceLevel in {'NEEDS_IMPROVEMENT', 'CRITICAL'}:
                 areas.append(f'{result.scenario_id}: {result.PerformanceLevel.value}')
@@ -251,7 +259,7 @@ class AgentGym(HealerMixin):
 
 # Alias for backward compatibility
 
-def create_agent_gym(golden_evaluator: Optional[GoldenStateEvaluator]=None) -> "AgentGym":
+def create_agent_gym(golden_evaluator: GoldenStateEvaluator | None=None) -> AgentGym:
     """Factory function to create Agent Gym.
 
     Args:

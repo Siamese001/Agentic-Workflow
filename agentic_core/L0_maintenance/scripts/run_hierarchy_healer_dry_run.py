@@ -17,6 +17,7 @@ sys.path.insert(0, str(project_root))
 
 from agentic_core.L5_safety.validators.HierarchyHealerAgent import HierarchyHealerAgent
 
+
 def main():
     print("=" * 80)
     print("HIERARCHY HEALER - DRY RUN MODE")

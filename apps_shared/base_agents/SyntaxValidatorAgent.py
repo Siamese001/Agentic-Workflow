@@ -11,6 +11,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """
 SyntaxValidatorAgent - Python Syntax Validation (GAP-1 Resolution)
 Territory: agentic_core/L5_safety/validators/
@@ -29,35 +30,21 @@ Canon Key 51 Compliance: Includes heal_repository() method
 """
 import ast
 import logging
-from pathlib import Path
-from typing import List, Dict, Any, Optional, Tuple
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
-
+from agentic_core.L5_safety.validators.decorators import standard_heal
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
     APPS_RG_DIR,
     ARCHIVES_DIR,
     SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
-from agentic_core.L5_safety.validators.decorators import standard_heal
-from archives.location_violations.sovereign_index import SovereignIndex
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger = logging.getLogger(__name__)
 
@@ -96,7 +83,7 @@ class SyntaxValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin)
         self.logger = Logger
         super().__init__()
 
-    def validate_file(self, file_path: Path) -> Optional[SyntaxViolation]:
+    def validate_file(self, file_path: Path) -> SyntaxViolation | None:
         """
         Validate a single Python file for syntax errors.
 
@@ -137,7 +124,7 @@ class SyntaxValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin)
                 error_type=type(e).__name__
             )
 
-    def scan_directory(self, directory: Path) -> List[SyntaxViolation]:
+    def scan_directory(self, directory: Path) -> list[SyntaxViolation]:
         """
         Scan a directory for Python files with syntax errors.
 
@@ -161,7 +148,7 @@ class SyntaxValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin)
 
         return violations
 
-    def validate_repository(self) -> Dict[str, Any]:
+    def validate_repository(self) -> dict[str, Any]:
         """
         Validate all Python files in approved folders.
 
@@ -189,8 +176,8 @@ class SyntaxValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin)
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[List[str]] = None
-    ) -> Dict[str, Any]:
+        _call_path: list[str] | None = None
+    ) -> dict[str, Any]:
         """
         Canon Key 51 compliance: Audit and report syntax state.
 
@@ -247,7 +234,7 @@ class SyntaxValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin)
             "summary": f"Found {len(violations)} syntax errors, fixed {fixed_count}"
         }
 
-    def get_violation_summary(self, violations: List[SyntaxViolation]) -> Dict[str, Any]:
+    def get_violation_summary(self, violations: list[SyntaxViolation]) -> dict[str, Any]:
         """
         Generate a summary of syntax violations.
 

@@ -20,37 +20,26 @@ MRO HARDENING:
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import Any, Dict
+from typing import Any
 
 from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # L0DelegationTestingMixin - archived, use stub for backward compatibility
 try:
-    from agentic_core.utils.core_extensions.l0_delegation_testing_mixin import L0DelegationTestingMixin
+    from agentic_core.utils.core_extensions.l0_delegation_testing_mixin import (
+        L0DelegationTestingMixin,
+    )
 except ImportError:
     class L0DelegationTestingMixin:
         """Stub mixin for L0 delegation testing - original archived."""
         pass
 
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
-)
 from agentic_core.L5_safety.validators.decorators import standard_heal
+from agentic_core.L5_safety.validators.structure_blueprint import (
+    TESTS_DIR,
+)
 
 
 @dataclass
@@ -82,7 +71,7 @@ class L0MaintenanceBaseAgent(L0DelegationTestingMixin, SovereignBaseAgent):
         super().__post_init__()
 
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set = None) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set = None) -> dict[str, Any]:
         """Invoke shared healing chain then allow subclass override."""
         if _call_path is None:
             _call_path = set()

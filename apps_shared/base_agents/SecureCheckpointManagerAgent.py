@@ -5,32 +5,31 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 """Secure Checkpoint Manager - Protected persistence with encryption and integrity.
 
 This module provides a secure Checkpoint implementation that encrypts data at rest,
 validates integrity on load, and prevents tampering or unauthorized access.
 """
 
+import base64
 import hashlib
 import hmac
 import json
 import logging
 import time
 from pathlib import Path
-from typing import Any, Dict, Optional
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from cryptography.fernet import Fernet
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-import base64
 
 from agentic_core.schemas.models.runtime_models import MicroCheckpoint
+from cryptography.fernet import Fernet
+
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger = logging.getLogger(__name__)
 
@@ -48,8 +47,8 @@ class SecureCheckpointManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
         self,
         hop_id: str,
         checkpoint_dir: Path,
-        encryption_key: Optional[bytes] = None,
-        integrity_key: Optional[bytes] = None
+        encryption_key: bytes | None = None,
+        integrity_key: bytes | None = None
     ) -> None:
         """Initialize the secure Checkpoint manager.
 
@@ -168,9 +167,9 @@ class SecureCheckpointManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
 
         except Exception as e:
             Logger.error(f"Failed to save secure Checkpoint: {e}")
-            raise IOError(f"Checkpoint save failed: {e}")
+            raise OSError(f"Checkpoint save failed: {e}")
 
-    async def load_latest_checkpoint(self) -> Optional[MicroCheckpoint]:
+    async def load_latest_checkpoint(self) -> MicroCheckpoint | None:
         """Load the most recent Checkpoint with integrity validation.
 
         Returns:
@@ -210,7 +209,7 @@ class SecureCheckpointManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
 
         return None
 
-    async def _load_checkpoint_file(self, checkpoint_file: Path) -> Optional[MicroCheckpoint]:
+    async def _load_checkpoint_file(self, checkpoint_file: Path) -> MicroCheckpoint | None:
         """Load and validate a single Checkpoint file.
 
         Args:
@@ -222,7 +221,7 @@ class SecureCheckpointManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
         Raises:
             CheckpointIntegrityError: If integrity validation fails
         """
-        with open(checkpoint_file, 'r') as f:
+        with open(checkpoint_file) as f:
             secure_data = json.load(f)
 
         # Verify basic structure
@@ -295,8 +294,8 @@ class SecureCheckpointManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[set] = None
-    ) -> Dict[str, int]:
+        _call_path: set | None = None
+    ) -> dict[str, int]:
         """
         Secure Checkpoint Healing - Validates integrity and cleans up old snapshots.
 
@@ -334,8 +333,8 @@ class SecureCheckpointManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
 class CheckpointManagerFactory:
     """Factory for creating and managing secure Checkpoint managers."""
 
-    _managers: Dict[str, SecureCheckpointManagerAgent] = {}
-    _global_key: Optional[bytes] = None
+    _managers: dict[str, SecureCheckpointManagerAgent] = {}
+    _global_key: bytes | None = None
 
     @classmethod
     def get_manager(
@@ -379,7 +378,7 @@ class CheckpointManagerFactory:
             if manager.checkpoint_dir == checkpoint_dir:
                 manager.quarantine_all_checkpoints()
 
-def get_secure_checkpoint_manager(checkpoint_dir: Optional[Path] = None) -> SecureCheckpointManagerAgent:
+def get_secure_checkpoint_manager(checkpoint_dir: Path | None = None) -> SecureCheckpointManagerAgent:
     """Factory function to get secure checkpoint manager."""
     if checkpoint_dir is None:
         checkpoint_dir = Path("checkpoints")

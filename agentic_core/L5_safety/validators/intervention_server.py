@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Human-in-the-Loop Intervention Server for L5+ Autonomy.
 
@@ -14,11 +15,11 @@ Canon Validator Patterns Implemented:
 """
 import asyncio
 import logging
-import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 try:
     import uvicorn
@@ -35,14 +36,14 @@ class InterventionContext:
     workflow_id: str
     cycle: int
     reason: str
-    risk_factors: List[str] = field(default_factory=list)
-    modified_items: List[str] = field(default_factory=list)
-    signals: List[str] = field(default_factory=list)
-    quality_score: Optional[float] = None
-    recommendations: List[str] = field(default_factory=list)
+    risk_factors: list[str] = field(default_factory=list)
+    modified_items: list[str] = field(default_factory=list)
+    signals: list[str] = field(default_factory=list)
+    quality_score: float | None = None
+    recommendations: list[str] = field(default_factory=list)
     timestamp: datetime = field(default_factory=datetime.utcnow)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for API response."""
         return {'workflow_id': self.workflow_id, 'cycle': self.cycle, 'reason': self.reason, 'risk_factors': self.risk_factors, 'modified_items': self.modified_items, 'signals': self.signals, 'quality_score': self.quality_score, 'recommendations': self.recommendations, 'timestamp': self.timestamp.isoformat()}
 
@@ -77,11 +78,11 @@ class InterventionServer:
         self.port = port
         self.instructions_path = Path(instructions_path)
         self.approval_event = asyncio.Event()
-        self.current_context: Optional[InterventionContext] = None
-        self.decision: Optional[str] = None
+        self.current_context: InterventionContext | None = None
+        self.decision: str | None = None
         self.decision_reason: str = ''
-        self._server_task: Optional[asyncio.Task] = None
-        self._app: Optional[Any] = None
+        self._server_task: asyncio.Task | None = None
+        self._app: Any | None = None
         if FASTAPI_AVAILABLE:
             self._setup_app()
         Logger.info(f'InterventionServer initialized at {host}:{port}')
@@ -96,10 +97,10 @@ class InterventionServer:
             if not self.current_context:
                 return HTMLResponse(content='<h1>No pending intervention</h1>', status_code=200)
             ctx = self.current_context
-            risk_html = ''.join((f'<li>{r}</li>' for r in ctx.risk_factors))
-            modified_html = ''.join((f'<li>{m}</li>' for m in ctx.modified_items[:10]))
-            signals_html = ''.join((f'<li>{s}</li>' for s in ctx.signals))
-            recs_html = ''.join((f'<li>{r}</li>' for r in ctx.recommendations))
+            risk_html = ''.join(f'<li>{r}</li>' for r in ctx.risk_factors)
+            modified_html = ''.join(f'<li>{m}</li>' for m in ctx.modified_items[:10])
+            signals_html = ''.join(f'<li>{s}</li>' for s in ctx.signals)
+            recs_html = ''.join(f'<li>{r}</li>' for r in ctx.recommendations)
             html = f"""\n            <!DOCTYPE html>\n            <html>\n            <head>\n                <title>L5+ Intervention Required</title>\n                <style>\n                    body {{ font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }}\n                    .warning {{ background: #fff3cd; border: 1px solid #ffc107; padding: 15px; border-radius: 5px; }}\n                    .risk {{ background: #f8d7da; border: 1px solid #f5c6cb; padding: 10px; border-radius: 5px; margin: 10px 0; }}\n                    .btn {{ padding: 15px 30px; font-size: 18px; margin: 10px; cursor: pointer; border: none; border-radius: 5px; }}\n                    .approve {{ background: #28a745; color: white; }}\n                    .veto {{ background: #dc3545; color: white; }}\n                    .info {{ background: #e7f3ff; padding: 10px; border-radius: 5px; margin: 10px 0; }}\n                    ul {{ margin: 5px 0; }}\n                </style>\n            </head>\n            <body>\n                <h1>[ALERT] Human Intervention Required</h1>\n\n                <div class="warning">\n                    <h2>Workflow: {ctx.workflow_id}</h2>\n                    <p><strong>Cycle:</strong> {ctx.cycle}</p>\n                    <p><strong>Reason:</strong> {ctx.reason}</p>\n                    <p><strong>Quality Score:</strong> {ctx.quality_score or 'N/A'}</p>\n                </div>\n\n                <div class="risk">\n                    <h3>[!] Risk Factors</h3>\n                    <ul>{risk_html or '<li>None specified</li>'}</ul>\n                </div>\n\n                <div class="info">\n                    <h3>📝 Modified Items ({len(ctx.modified_items)})</h3>\n                    <ul>{modified_html or '<li>None</li>'}</ul>\n                </div>\n\n                <div class="info">\n                    <h3>📡 Active Signals</h3>\n                    <ul>{signals_html or '<li>None</li>'}</ul>\n                </div>\n\n                <div class="info">\n                    <h3>💡 Recommendations</h3>\n                    <ul>{recs_html or '<li>None</li>'}</ul>\n                </div>\n\n                <h2>Decision</h2>\n                <form action="/approve" method="post" style="display: inline;">\n                    <button type="submit" class="btn approve">[OK] APPROVE</button>\n                </form>\n                <form action="/veto" method="post" style="display: inline;">\n                    <button type="submit" class="btn veto">[X] VETO</button>\n                </form>\n\n                <p><small>Timestamp: {ctx.timestamp.isoformat()}</small></p>\n            </body>\n            </html>\n            """
             return HTMLResponse(content=html)
 
@@ -161,7 +162,7 @@ class InterventionServer:
             self._server_task = None
             Logger.info('Intervention server stopped')
 
-    async def request_intervention(self, context: InterventionContext, timeout: Optional[float]=None) -> bool:
+    async def request_intervention(self, context: InterventionContext, timeout: float | None=None) -> bool:
         """
         Request human intervention and wait for decision.
 
@@ -192,7 +193,7 @@ class InterventionServer:
         finally:
             self.current_context = None
 
-    def check_telepathy(self) -> Optional[str]:
+    def check_telepathy(self) -> str | None:
         """
         Check for human instructions via telepathy file.
 
@@ -212,7 +213,7 @@ class InterventionServer:
             Logger.error(f'Failed to read telepathy file: {e}')
         return None
 
-    def parse_telepathy_commands(self, instructions: str) -> Dict[str, Any]:
+    def parse_telepathy_commands(self, instructions: str) -> dict[str, Any]:
         """Parse telepathy instructions for commands."""
         commands: Any = {'stop': False, 'pause': False, 'skip_files': [], 'force_test': False, 'custom': []}
         instructions_lower: Any = instructions.lower()
@@ -226,11 +227,11 @@ class InterventionServer:
             if line.strip().startswith('skip:'):
                 pattern: Any = line.split(':', 1)[1].strip()
                 commands['skip_files'].append(pattern)
-            elif line.strip() and (not any((cmd in line.lower() for cmd in ['stop', 'pause', 'test', 'skip']))):
+            elif line.strip() and (not any(cmd in line.lower() for cmd in ['stop', 'pause', 'test', 'skip'])):
                 commands['custom'].append(line.strip())
         return commands
 
-def check_intervention_required(cycle: int, modified_count: int, signals: List[str], quality_score: Optional[float]=None, high_risk_threshold: int=3, signal_threshold: int=5) -> tuple[bool, List[str]]:
+def check_intervention_required(cycle: int, modified_count: int, signals: list[str], quality_score: float | None=None, high_risk_threshold: int=3, signal_threshold: int=5) -> tuple[bool, list[str]]:
     """
     Check if human intervention is required based on Canon Validator thresholds.
 
@@ -247,7 +248,7 @@ def check_intervention_required(cycle: int, modified_count: int, signals: List[s
     """
     risk_factors: Any = []
     high_risk_signals: Any = ['HIGH_RISK', 'CRITICAL_FAIL', 'SECURE_REBOOT', 'VETOED']
-    if any((s in signals for s in high_risk_signals)):
+    if any(s in signals for s in high_risk_signals):
         risk_factors.append(f'High-risk signals present: {[s for s in signals if s in high_risk_signals]}')
     if modified_count > high_risk_threshold:
         risk_factors.append(f'Many modifications ({modified_count} > {high_risk_threshold})')
@@ -259,7 +260,7 @@ def check_intervention_required(cycle: int, modified_count: int, signals: List[s
         risk_factors.append(f'Low quality score ({quality_score:.2f})')
     intervention_required: Any = len(risk_factors) > 0
     return (intervention_required, risk_factors)
-_intervention_server: Optional[InterventionServer] = None
+_intervention_server: InterventionServer | None = None
 
 def get_intervention_server(host: str='127.0.0.1', port: int=8080) -> InterventionServer:
     """Get or create the global InterventionServer instance."""

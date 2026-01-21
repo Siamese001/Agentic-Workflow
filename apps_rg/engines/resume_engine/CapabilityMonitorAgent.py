@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Proactive Scheduling and Predictive Handoff for L4.5 Autonomy
 
@@ -7,21 +8,17 @@ Provides:
 - PredictiveHandoff: Signals before reaching capability edge
 - CapabilityMonitorAgent: Tracks agent capabilities and limits
 """
-from typing import Any, Optional, Protocol, Dict, List
-from enum import Enum, auto
-import time
-
-
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
-from .resume_base import ResumeAgent
-from .context import ResumeEngineContext
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+
+from .context import ResumeEngineContext
 
 
 class TaskPriority(Enum):
@@ -66,7 +63,7 @@ class ProactiveTask:
     auto_execute: bool
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
     executed: bool = False
-    result: Optional[str] = None
+    result: str | None = None
 
 
 @dataclass
@@ -76,8 +73,8 @@ class HandoffRequest:
     reason: HandoffReason
     context: str
     urgency: TaskPriority
-    suggested_actions: List[str]
-    CapabilityGap: Optional[str] = None
+    suggested_actions: list[str]
+    CapabilityGap: str | None = None
     confidence_score: float = 0.0
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
 
@@ -86,10 +83,10 @@ class HandoffRequest:
 class CapabilityProfile:
     """Profile of agent capabilities."""
     agent_name: str
-    supported_tasks: List[str]
+    supported_tasks: list[str]
     confidence_threshold: float
     max_complexity: int
-    known_limitations: List[str]
+    known_limitations: list[str]
     success_rate: float = 0.0
 
 
@@ -114,11 +111,11 @@ class ProactiveScheduler:
         task identification capabilities.
         """
         self.ctx = ctx
-        self._tasks: List[ProactiveTask] = []
+        self._tasks: list[ProactiveTask] = []
         self._task_counter = 0
-        self._patterns: Dict[str, int] = {}
+        self._patterns: dict[str, int] = {}
 
-    def identify_tasks(self) -> List[ProactiveTask]:
+    def identify_tasks(self) -> list[ProactiveTask]:
         """
         Identify tasks based on current context.
 
@@ -213,7 +210,7 @@ class ProactiveScheduler:
             auto_execute=auto_execute,
         )
 
-    def get_pending_tasks(self) -> List[ProactiveTask]:
+    def get_pending_tasks(self) -> list[ProactiveTask]:
         """
         Get pending tasks sorted by priority.
 
@@ -244,7 +241,7 @@ class ProactiveScheduler:
                 Task.result = result
                 break
 
-    def get_auto_executable_tasks(self) -> List[ProactiveTask]:
+    def get_auto_executable_tasks(self) -> list[ProactiveTask]:
         """
         Get tasks that can be auto-executed.
 
@@ -264,9 +261,9 @@ class PredictiveHandoff:
 
     def __init__(self, ctx: ResumeEngineContext) -> None:
         self.ctx = ctx
-        self._handoff_requests: List[HandoffRequest] = []
+        self._handoff_requests: list[HandoffRequest] = []
         self._request_counter = 0
-        self._capability_profiles: Dict[str, CapabilityProfile] = {}
+        self._capability_profiles: dict[str, CapabilityProfile] = {}
 
     def register_capability(self, profile: CapabilityProfile) -> None:
         """
@@ -282,7 +279,7 @@ class PredictiveHandoff:
         agent_name: str,
         TaskComplexity: int,
         confidence: float,
-    ) -> Optional[HandoffRequest]:
+    ) -> HandoffRequest | None:
         """Predict if handoff will be needed."""
         profile = self._capability_profiles.get(agent_name)
 
@@ -319,7 +316,7 @@ class PredictiveHandoff:
         reason: HandoffReason,
         context: str,
         urgency: TaskPriority = TaskPriority.MEDIUM,
-        CapabilityGap: Optional[str] = None,
+        CapabilityGap: str | None = None,
         confidence_score: float = 0.0,
     ) -> HandoffRequest:
         """Create a handoff request."""
@@ -341,7 +338,7 @@ class PredictiveHandoff:
         self._handoff_requests.append(request)
         return request
 
-    def _get_suggested_actions(self, reason: HandoffReason) -> List[str]:
+    def _get_suggested_actions(self, reason: HandoffReason) -> list[str]:
         """Get suggested actions for a handoff reason."""
         actions = {
             HandoffReason.CAPABILITY_LIMIT: [
@@ -377,7 +374,7 @@ class PredictiveHandoff:
         }
         return actions.get(reason, ["Review and provide guidance"])
 
-    def get_pending_handoffs(self) -> List[HandoffRequest]:
+    def get_pending_handoffs(self) -> list[HandoffRequest]:
         """Get all pending handoff requests."""
         return self._handoff_requests
 
@@ -400,8 +397,8 @@ class CapabilityMonitorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixi
 
     def __init__(self, ctx: ResumeEngineContext) -> None:
         self.ctx = ctx
-        self._execution_history: List[Dict[str, Any]] = []
-        self._agent_stats: Dict[str, Dict[str, Any]] = {}
+        self._execution_history: list[dict[str, Any]] = []
+        self._agent_stats: dict[str, dict[str, Any]] = {}
 
     def record_execution(
         self,
@@ -488,7 +485,7 @@ class CapabilityMonitorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixi
             success_rate=self.get_success_rate(agent_name),
         )
 
-    def _get_supported_tasks(self, agent_name: str) -> List[str]:
+    def _get_supported_tasks(self, agent_name: str) -> list[str]:
         """
         Get list of tasks an agent has successfully completed.
 
@@ -504,11 +501,11 @@ class CapabilityMonitorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixi
                 tasks.add(execution["TaskType"])
         return list(tasks)
 
-    def get_all_stats(self) -> Dict[str, Dict[str, Any]]:
+    def get_all_stats(self) -> dict[str, dict[str, Any]]:
         """Get stats for all agents."""
         return self._agent_stats.copy()
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, int]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 

@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Outreach Engine Observability Module
 
@@ -7,35 +8,14 @@ Provides comprehensive observability:
 - Metrics collection
 - Audit reporting
 """
-from typing import Any, Optional, Protocol, Dict, List
-from enum import Enum, auto
-import time
-
-
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
-from .context import OutreachEngineContext
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
-)
+from .context import OutreachEngineContext
 
 
 class OutreachTraceLevel(Enum):
@@ -83,9 +63,9 @@ class OutreachExecutionTrace:
     """Complete execution trace for a mission."""
     trace_id: str
     mission_name: str
-    steps: List[OutreachTraceStep]
+    steps: list[OutreachTraceStep]
     start_time: str
-    end_time: Optional[str]
+    end_time: str | None
     success: bool
     total_duration_ms: float
 
@@ -96,7 +76,7 @@ class OutreachMetric:
     name: str
     metric_type: OutreachMetricType
     value: float
-    labels: Dict[str, str] = field(default_factory=dict)
+    labels: dict[str, str] = field(default_factory=dict)
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
 
 
@@ -107,8 +87,8 @@ class OutreachExecutionTracer:
 
     def __init__(self, ctx: OutreachEngineContext) -> None:
         self.ctx = ctx
-        self._traces: Dict[str, OutreachExecutionTrace] = {}
-        self._current_trace: Optional[str] = None
+        self._traces: dict[str, OutreachExecutionTrace] = {}
+        self._current_trace: str | None = None
         self._step_counter = 0
 
     def start_trace(self, mission_name: str) -> str:
@@ -158,7 +138,7 @@ class OutreachExecutionTracer:
         self._traces[self._current_trace].steps.append(step)
         return step_id
 
-    def end_trace(self, success: bool = True) -> Optional[OutreachExecutionTrace]:
+    def end_trace(self, success: bool = True) -> OutreachExecutionTrace | None:
         """End the current trace."""
         if not self._current_trace:
             return None
@@ -174,11 +154,11 @@ class OutreachExecutionTracer:
         self._current_trace = None
         return trace
 
-    def get_trace(self, trace_id: str) -> Optional[OutreachExecutionTrace]:
+    def get_trace(self, trace_id: str) -> OutreachExecutionTrace | None:
         """Get a trace by ID."""
         return self._traces.get(trace_id)
 
-    def get_all_traces(self) -> List[OutreachExecutionTrace]:
+    def get_all_traces(self) -> list[OutreachExecutionTrace]:
         """Get all traces."""
         return list(self._traces.values())
 
@@ -190,11 +170,11 @@ class OutreachMetricsCollector:
 
     def __init__(self, ctx: OutreachEngineContext) -> None:
         self.ctx = ctx
-        self._metrics: List[OutreachMetric] = []
-        self._counters: Dict[str, float] = {}
-        self._gauges: Dict[str, float] = {}
+        self._metrics: list[OutreachMetric] = []
+        self._counters: dict[str, float] = {}
+        self._gauges: dict[str, float] = {}
 
-    def counter(self, name: str, value: float = 1, labels: Dict[str, str] = None) -> Any:
+    def counter(self, name: str, value: float = 1, labels: dict[str, str] = None) -> Any:
         """Increment a counter Metric."""
         self._counters[name] = self._counters.get(name, 0) + value
 
@@ -205,7 +185,7 @@ class OutreachMetricsCollector:
             labels=labels or {},
         ))
 
-    def gauge(self, name: str, value: float, labels: Dict[str, str] = None) -> Any:
+    def gauge(self, name: str, value: float, labels: dict[str, str] = None) -> Any:
         """Set a gauge Metric."""
         self._gauges[name] = value
 
@@ -216,7 +196,7 @@ class OutreachMetricsCollector:
             labels=labels or {},
         ))
 
-    def timer(self, name: str, duration_ms: float, labels: Dict[str, str] = None) -> Any:
+    def timer(self, name: str, duration_ms: float, labels: dict[str, str] = None) -> Any:
         """Record a timer Metric."""
         self._metrics.append(OutreachMetric(
             name=name,
@@ -233,11 +213,11 @@ class OutreachMetricsCollector:
         """Get a gauge value."""
         return self._gauges.get(name, 0)
 
-    def get_all_metrics(self) -> List[OutreachMetric]:
+    def get_all_metrics(self) -> list[OutreachMetric]:
         """Get all metrics."""
         return self._metrics
 
-    def get_summary(self) -> Dict[str, Any]:
+    def get_summary(self) -> dict[str, Any]:
         """Get a summary of all metrics."""
         return {
             "counters": dict(self._counters),
@@ -253,14 +233,14 @@ class OutreachAuditReporter:
 
     def __init__(self, ctx: OutreachEngineContext) -> None:
         self.ctx = ctx
-        self._reports: List[Dict[str, Any]] = []
+        self._reports: list[dict[str, Any]] = []
 
     def generate_report(
         self,
         mission_name: str,
-        trace: Optional[OutreachExecutionTrace] = None,
-        metrics: Optional[List[OutreachMetric]] = None,
-    ) -> Dict[str, Any]:
+        trace: OutreachExecutionTrace | None = None,
+        metrics: list[OutreachMetric] | None = None,
+    ) -> dict[str, Any]:
         """Generate an audit report."""
         report = {
             "mission_name": mission_name,
@@ -291,7 +271,7 @@ class OutreachAuditReporter:
         self._reports.append(report)
         return report
 
-    def get_reports(self) -> List[Dict[str, Any]]:
+    def get_reports(self) -> list[dict[str, Any]]:
         """Get all reports."""
         return self._reports
 
@@ -306,7 +286,7 @@ class OutreachPhase5OrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
         self.tracer = OutreachExecutionTracer(ctx)
         self.metrics = OutreachMetricsCollector(ctx)
         self.reporter = OutreachAuditReporter(ctx)
-        self._current_mission: Optional[str] = None
+        self._current_mission: str | None = None
 
     def start_mission(self, mission_name: str) -> str:
         """Start observability for a mission."""
@@ -330,7 +310,7 @@ class OutreachPhase5OrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
 
         self.metrics.timer("agent_duration", duration_ms)
 
-    def end_mission(self, success: bool = True) -> Optional[OutreachExecutionTrace]:
+    def end_mission(self, success: bool = True) -> OutreachExecutionTrace | None:
         """End observability for a mission."""
         trace = self.tracer.end_trace(success)
 
@@ -342,7 +322,7 @@ class OutreachPhase5OrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
         self._current_mission = None
         return trace
 
-    def generate_report(self, mission_name: str = None) -> Dict[str, Any]:
+    def generate_report(self, mission_name: str = None) -> dict[str, Any]:
         """Generate an audit report."""
         name = mission_name or self._current_mission or "unknown"
 
@@ -356,7 +336,7 @@ class OutreachPhase5OrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, H
             metrics=self.metrics.get_all_metrics(),
         )
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get comprehensive statistics."""
         return {
             "traces": len(self.tracer.get_all_traces()),

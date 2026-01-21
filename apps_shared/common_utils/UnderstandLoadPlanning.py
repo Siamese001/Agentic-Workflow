@@ -5,11 +5,11 @@ including metric parsing, log analysis, and trace extraction.
 Follows the canonical pattern with dataclass-first design and proper logging.
 """
 
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any, Union
 import logging
+from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -48,8 +48,8 @@ class MetricDefinition:
     """Definition of a metric to be loaded."""
     name: str
     query: str
-    labels: Dict[str, str] = field(default_factory=dict)
-    aggregation: Optional[AggregationType] = None
+    labels: dict[str, str] = field(default_factory=dict)
+    aggregation: AggregationType | None = None
     time_range: str = "1h"
     step: int = 60
 
@@ -59,7 +59,7 @@ class LogQuery:
     """Definition of a log search query."""
     index: str
     query: str
-    filters: Dict[str, Any] = field(default_factory=dict)
+    filters: dict[str, Any] = field(default_factory=dict)
     time_range: str = "1h"
     size: int = 1000
     sort_field: str = "@timestamp"
@@ -69,10 +69,10 @@ class LogQuery:
 @dataclass
 class TraceQuery:
     """Definition of a trace lookup query."""
-    service: Optional[str] = None
-    operation: Optional[str] = None
-    trace_id: Optional[str] = None
-    tags: Dict[str, str] = field(default_factory=dict)
+    service: str | None = None
+    operation: str | None = None
+    trace_id: str | None = None
+    tags: dict[str, str] = field(default_factory=dict)
     time_range: str = "1h"
     limit: int = 100
 
@@ -84,14 +84,14 @@ class ObservabilityLoadPlan:
     name: str
     request_type: RequestType
     data_source: DataSource
-    metrics: List[MetricDefinition] = field(default_factory=list)
-    log_queries: List[LogQuery] = field(default_factory=list)
-    trace_queries: List[TraceQuery] = field(default_factory=list)
+    metrics: list[MetricDefinition] = field(default_factory=list)
+    log_queries: list[LogQuery] = field(default_factory=list)
+    trace_queries: list[TraceQuery] = field(default_factory=list)
     enable_caching: bool = True
     cache_ttl: int = 300
     enable_sampling: bool = False
     sample_rate: float = 1.0
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -110,25 +110,25 @@ class ObservabilityLoadConfig:
 class ObservabilityLoadResult:
     """Result of observability load planning."""
     success: bool
-    load_plan: Optional[ObservabilityLoadPlan] = None
+    load_plan: ObservabilityLoadPlan | None = None
     estimated_data_points: int = 0
     query_count: int = 0
     load_time_estimate: int = 0
     memory_estimate: int = 0
-    warnings: List[str] = field(default_factory=list)
-    errors: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    warnings: list[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class ObservabilityLoadPlanner:
     """Planner for observability data loading operations."""
 
-    def __init__(self, config: Optional[ObservabilityLoadConfig] = None):
+    def __init__(self, config: ObservabilityLoadConfig | None = None):
         self.config = config or ObservabilityLoadConfig()
         self.logger = logging.getLogger(self.__class__.__name__)
         self.logger.setLevel(self.config.log_level)
 
-    def plan_load(self, load_request: Dict[str, Any]) -> ObservabilityLoadResult:
+    def plan_load(self, load_request: dict[str, Any]) -> ObservabilityLoadResult:
         """Plan observability data loading operations.
 
         Args:
@@ -218,7 +218,7 @@ class ObservabilityLoadPlanner:
                 }
             )
 
-    def _validate_request(self, request: Dict[str, Any]) -> None:
+    def _validate_request(self, request: dict[str, Any]) -> None:
         """Validate observability load planning request."""
         if not request:
             raise ValueError("Observability load planning request cannot be empty")
@@ -229,7 +229,7 @@ class ObservabilityLoadPlanner:
         if "request_type" not in request:
             raise ValueError("Request type is required in observability load planning request")
 
-    def _parse_request_type(self, request: Dict[str, Any]) -> RequestType:
+    def _parse_request_type(self, request: dict[str, Any]) -> RequestType:
         """Parse request type from request."""
         type_mapping = {
             "metric_query": RequestType.METRIC_QUERY,
@@ -242,7 +242,7 @@ class ObservabilityLoadPlanner:
         request_type_str = request.get("request_type", "metric_query")
         return type_mapping.get(request_type_str, RequestType.METRIC_QUERY)
 
-    def _parse_data_source(self, request: Dict[str, Any]) -> DataSource:
+    def _parse_data_source(self, request: dict[str, Any]) -> DataSource:
         """Parse data source from request."""
         source_mapping = {
             "prometheus": DataSource.PROMETHEUS,
@@ -256,7 +256,7 @@ class ObservabilityLoadPlanner:
         source_str = request.get("data_source", "prometheus")
         return source_mapping.get(source_str, DataSource.PROMETHEUS)
 
-    def _parse_metrics(self, request: Dict[str, Any]) -> List[MetricDefinition]:
+    def _parse_metrics(self, request: dict[str, Any]) -> list[MetricDefinition]:
         """Parse metrics from request."""
         metrics = []
         raw_metrics = request.get("metrics", [])
@@ -298,7 +298,7 @@ class ObservabilityLoadPlanner:
 
         return metrics
 
-    def _parse_log_queries(self, request: Dict[str, Any]) -> List[LogQuery]:
+    def _parse_log_queries(self, request: dict[str, Any]) -> list[LogQuery]:
         """Parse log queries from request."""
         queries = []
         raw_queries = request.get("log_queries", [])
@@ -325,7 +325,7 @@ class ObservabilityLoadPlanner:
 
         return queries
 
-    def _parse_trace_queries(self, request: Dict[str, Any]) -> List[TraceQuery]:
+    def _parse_trace_queries(self, request: dict[str, Any]) -> list[TraceQuery]:
         """Parse trace queries from request."""
         queries = []
         raw_queries = request.get("trace_queries", [])
@@ -353,12 +353,12 @@ class ObservabilityLoadPlanner:
 
     def _create_load_plan(
         self,
-        request: Dict[str, Any],
+        request: dict[str, Any],
         request_type: RequestType,
         data_source: DataSource,
-        metrics: List[MetricDefinition],
-        log_queries: List[LogQuery],
-        trace_queries: List[TraceQuery]
+        metrics: list[MetricDefinition],
+        log_queries: list[LogQuery],
+        trace_queries: list[TraceQuery]
     ) -> ObservabilityLoadPlan:
         """Create observability load plan from parsed components."""
         return ObservabilityLoadPlan(
@@ -470,11 +470,11 @@ def plan_observability_load(
     plan_name: str,
     request_type: str,
     data_source: str = "prometheus",
-    metrics: Optional[List[Dict[str, Any]]] = None,
-    log_queries: Optional[List[Dict[str, Any]]] = None,
-    trace_queries: Optional[List[Dict[str, Any]]] = None,
-    config: Optional[Dict[str, Any]] = None
-) -> Dict[str, Any]:
+    metrics: list[dict[str, Any]] | None = None,
+    log_queries: list[dict[str, Any]] | None = None,
+    trace_queries: list[dict[str, Any]] | None = None,
+    config: dict[str, Any] | None = None
+) -> dict[str, Any]:
     """Plan observability data load from simple parameters.
 
     Args:
@@ -568,11 +568,11 @@ class LoadDataPlanningPlanImpl(LoadDataPlanningPlanProcessor):
     Pure planning functionality with no side effects
     """
 
-    def __init__(self, constraints: Optional[LoadDataPlanningPlanConstraints] = None):
+    def __init__(self, constraints: LoadDataPlanningPlanConstraints | None = None):
         self.constraints = constraints or LoadDataPlanningPlanConstraints()
         self.logger = logging.getLogger(self.__class__.__name__)
 
-    def process(self, input_data: Dict[str, object]) -> LoadDataPlanningPlanResult:
+    def process(self, input_data: dict[str, object]) -> LoadDataPlanningPlanResult:
         """Process input following L5 architecture principles"""
         self.logger.info(f"Processing {input_data}")
 
@@ -594,7 +594,7 @@ class LoadDataPlanningPlanImpl(LoadDataPlanningPlanProcessor):
         self.logger.info(f"Successfully processed: {result.success}")
         return result
 
-    def validate_safety(self, data: Dict[str, object]) -> bool:
+    def validate_safety(self, data: dict[str, object]) -> bool:
         """L5 Safety validation with fail-closed behavior"""
         try:
             # Check for dangerous patterns
@@ -616,7 +616,7 @@ class LoadDataPlanningPlanImpl(LoadDataPlanningPlanProcessor):
             self.logger.error(f"Safety validation error: {e}")
             return False  # Fail-closed
 
-    def _validate_input(self, input_data: Dict[str, object]) -> None:
+    def _validate_input(self, input_data: dict[str, object]) -> None:
         """L5 Input validation"""
         if not isinstance(input_data, dict):
             raise ValueError("Input must be a dictionary")
@@ -640,7 +640,7 @@ class LoadDataPlanningPlanInterface:
     def __init__(self, engine: LoadDataPlanningPlanProcessor):
         self._processor = engine
 
-    def execute(self, input_data: Dict[str, object]) -> Dict[str, object]:
+    def execute(self, input_data: dict[str, object]) -> dict[str, object]:
         """L5 Interface method - executes safely"""
         try:
             result = self._processor.process(input_data)
@@ -666,7 +666,7 @@ class LoadDataPlanningPlanFactory:
         return LoadDataPlanningPlanInterface(engine)
 
 # L5 Main execution point
-def load_data_planning(input_data: Dict[str, object]) -> Dict[str, object]:
+def load_data_planning(input_data: dict[str, object]) -> dict[str, object]:
     """
     L5 Main function - load data planning operations
 

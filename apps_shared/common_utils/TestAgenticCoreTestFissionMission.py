@@ -1,4 +1,5 @@
 import pytest
+
 pytestmark = pytest.mark.skip(reason="DEPRECATED: Test requires external modules")
 
 """
@@ -8,12 +9,12 @@ Responsible for:
 - Validating physical file splitting occurs
 - Ensuring AST integrity post-transformation
 """
-import pytest
-import os
 import asyncio
+import os
 import sys
 from pathlib import Path
-import shutil
+
+import pytest
 
 # Add project root to path
 project_root = Path(__file__).resolve().parent.parent.parent.parent
@@ -22,10 +23,6 @@ sys.path.insert(0, str(project_root))
 from canon_validator_agentic_v2 import run_mission
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 
 @pytest.mark.asyncio

@@ -5,8 +5,7 @@ Targets agents with 50-83% quality scores.
 """
 import json
 from pathlib import Path
-from typing import List, Dict, Any
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from typing import Any
 
 PROJECT_ROOT = Path(__file__).parent.parent
 DISCOVERY_FILE = PROJECT_ROOT / "agent_discovery_full.json"
@@ -25,9 +24,9 @@ TARGET_AGENTS = [
     "ConvergenceDetectorAgent",
 ]
 
-def get_agent_info(agent_name: str) -> Dict[str, Any]:
+def get_agent_info(agent_name: str) -> dict[str, Any]:
     """Get agent info from discovery data."""
-    with open(DISCOVERY_FILE, 'r', encoding='utf-8') as f:
+    with open(DISCOVERY_FILE, encoding='utf-8') as f:
         agents = json.load(f)
 
     for agent in agents:

@@ -3,16 +3,14 @@
 Batch fix typing issues in agent files.
 Adds missing type hints to function parameters and return types.
 """
-import ast
-import re
 import json
+import re
 from pathlib import Path
-from typing import Dict, List, Set, Tuple, Any
 
 PROJECT_ROOT = Path(__file__).parent.parent
 
 
-def get_agents_needing_fixes() -> List[Dict]:
+def get_agents_needing_fixes() -> list[dict]:
     """Get agents with low typed_pct."""
     data = json.load(open(PROJECT_ROOT / 'agent_discovery_full.json'))
     # Filter to agents with typed_pct < 100 and in agentic_core (not test files)
@@ -25,7 +23,7 @@ def get_agents_needing_fixes() -> List[Dict]:
     return sorted(low_typed, key=lambda x: x.get('typed_pct', 0))
 
 
-def fix_missing_return_types(source: str) -> Tuple[str, int]:
+def fix_missing_return_types(source: str) -> tuple[str, int]:
     """Add missing return types to functions."""
     fixes = 0
     lines = source.split('\n')
@@ -35,8 +33,8 @@ def fix_missing_return_types(source: str) -> Tuple[str, int]:
         # Pattern: def func_name(...): or async def func_name(...):
         match = re.match(r'^(\s*)(async\s+)?def\s+(\w+)\s*\([^)]*\)\s*:\s*$', line)
         if match:
-            indent = match.group(1)
-            is_async = match.group(2) is not None
+            match.group(1)
+            match.group(2) is not None
             func_name = match.group(3)
 
             # Skip if already has return type (->)
@@ -69,7 +67,7 @@ def fix_missing_return_types(source: str) -> Tuple[str, int]:
     return '\n'.join(lines), fixes
 
 
-def fix_missing_param_types(source: str) -> Tuple[str, int]:
+def fix_missing_param_types(source: str) -> tuple[str, int]:
     """Add missing parameter types to functions."""
     fixes = 0
     lines = source.split('\n')
@@ -160,7 +158,7 @@ def ensure_typing_imports(source: str) -> str:
     typing_import_match = re.search(r'^from typing import (.+)$', source, re.MULTILINE)
 
     if typing_import_match:
-        existing = set(t.strip() for t in typing_import_match.group(1).split(','))
+        existing = {t.strip() for t in typing_import_match.group(1).split(',')}
         missing = needed_types - existing
         if missing:
             all_types = sorted(existing | needed_types)
@@ -180,7 +178,7 @@ def ensure_typing_imports(source: str) -> str:
     return source
 
 
-def fix_file(file_path: Path, dry_run: bool = True) -> Dict:
+def fix_file(file_path: Path, dry_run: bool = True) -> dict:
     """Fix typing issues in a single file."""
     try:
         source = file_path.read_text(encoding='utf-8')
@@ -241,7 +239,7 @@ def main(dry_run: bool = True):
             print(f"  Param type fixes: {result.get('param_type_fixes', 0)}")
 
     print("\n" + "=" * 70)
-    print(f"Summary:")
+    print("Summary:")
     print(f"  Files with fixes: {files_fixed}")
     print(f"  Total fixes: {total_fixes}")
     if dry_run:

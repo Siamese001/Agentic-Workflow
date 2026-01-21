@@ -1,13 +1,12 @@
 from __future__ import annotations
-import logging
-'''Brief description of functionality and purpose.'''
 
 '''Brief description of functionality and purpose.'''
 
-import re
-from dataclasses import dataclass, field
-from enum import Enum, auto
-from typing import Any, Dict, List, Optional, Protocol
+'''Brief description of functionality and purpose.'''
+
+from dataclasses import dataclass
+from enum import Enum
+from typing import Any
 
 """
 
@@ -32,9 +31,9 @@ class PromptSchema:
 
     _name: str
     _prompt_type: PromptType
-    _required_fields: List[str]
-    _optional_fields: List[str] = None
-    _validation_rules: Dict[str, object] = None
+    _required_fields: list[str]
+    _optional_fields: list[str] = None
+    _validation_rules: dict[str, object] = None
 
 
 @dataclass
@@ -43,8 +42,8 @@ class ValidationResult:
     """Result of prompt validation."""
 
     _is_valid: bool
-    errors: List[str] = None
-    warnings: List[str] = None
+    errors: list[str] = None
+    warnings: list[str] = None
 
 
 def __post_init__(self: Any) -> None:

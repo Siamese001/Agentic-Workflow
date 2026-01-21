@@ -1,24 +1,23 @@
 from __future__ import annotations
+
 # mission_utils.py
 # L0 Utility Functions for Canon Validator Mission
 # PURPOSE: Provides helper functions for dynamic imports, layer ranking, and L2 lookups
 # LOCATION: agentic_core/utils/general_helpers/ (SSOT-compliant)
-
 import importlib
-from pathlib import Path
-from typing import Any, List, Optional
+from typing import Any
 
 # Import SSOT registries
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-    APPS_RG_SUBFOLDER_MAP,
     APPS_LIC_SUBFOLDER_MAP,
+    APPS_RG_SUBFOLDER_MAP,
     APPS_SHARED_SUBFOLDER_MAP,
+    CORE_SUBFOLDER_MAP,
+    SOVEREIGN_REGISTRY,
 )
 
 
-def dynamic_import(module_path: str, class_name: str) -> Optional[Any]:
+def dynamic_import(module_path: str, class_name: str) -> Any | None:
     """
     Dynamically import classes to avoid gravity violations.
 
@@ -54,7 +53,7 @@ def get_layer_rank(path_str: str) -> int:
     return -1
 
 
-def get_legal_l2_for_l1(root: str, l1_name: str) -> List[str]:
+def get_legal_l2_for_l1(root: str, l1_name: str) -> list[str]:
     """
     Pull valid L2 folders directly from imported SSOT maps.
 

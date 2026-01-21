@@ -4,11 +4,9 @@ Find agents that have healing capability but invocation='No'.
 These need to have invocation added to reach 100% invocation rate.
 """
 import json
-from pathlib import Path
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # Load agent discovery data
-with open('agent_discovery_full.json', 'r') as f:
+with open('agent_discovery_full.json') as f:
     agents = json.load(f)
 
 print(f"Total agents: {len(agents)}")
@@ -38,7 +36,7 @@ else:
         print(f"    Has Healing: {agent.get('has_healing')}")
 
 print(f"\n{'='*70}")
-print(f"SUMMARY")
+print("SUMMARY")
 print(f"{'='*70}")
 print(f"Total agents: {len(agents)}")
 print(f"Agents with healing: {sum(1 for a in agents if a.get('has_healing'))}")
@@ -46,4 +44,4 @@ print(f"Agents with invocation=Yes: {sum(1 for a in agents if a.get('invocation'
 print(f"Missing invocation: {len(missing_invocation)}")
 current_pct = sum(1 for a in agents if a.get('invocation') == 'Yes') / len(agents) * 100
 print(f"Current Invocation %: {current_pct:.1f}%")
-print(f"Target: 100%")
+print("Target: 100%")

@@ -1,6 +1,6 @@
-import traceback
 import logging
-from typing import Optional, List, Dict, Any
+import traceback
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +25,7 @@ class CognitiveRecoveryMixin:
 
     def consult_knowledge_base(
         self, query: str, namespace: str = "architecture-docs"
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Generic query to the semantic brain.
         Useful for 'Just-in-Time' learning about system architecture.
@@ -48,7 +48,7 @@ class CognitiveRecoveryMixin:
             )
             return []
 
-    def perform_cognitive_rca(self, exception: Exception) -> Optional[str]:
+    def perform_cognitive_rca(self, exception: Exception) -> str | None:
         """
         When an error occurs, this method queries the 'healing-patterns' namespace
         to see if this specific error has a known fix or RCA document.

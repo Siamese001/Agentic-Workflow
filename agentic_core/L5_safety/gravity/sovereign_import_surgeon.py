@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 SOVEREIGN IMPORT SURGEON
 Scans all .py files and identifies import statements that need updating
@@ -10,15 +11,9 @@ import os
 import re
 from collections import defaultdict
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
+from typing import Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
-from agentic_core.utils.sovereign_index import SovereignIndex
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 exclude_dirs: Any = {'.venv', '__pycache', '.git', 'node_modules', 'archives'}
 exclude_files: Any = {'SovereignImportSurgeon.py'}
@@ -41,7 +36,7 @@ class SovereignImportSurgeon:
 
     def __init__(self, root_path: str):
         self.root_path = Path(root_path)
-        self.violations: Dict[str, List[ImportViolation]] = defaultdict(list)
+        self.violations: dict[str, list[ImportViolation]] = defaultdict(list)
         self.import_patterns = [('L0_maintancne', 'L0_maintenance', 'TYPO_FIX')]
         self.test_file_pattern = re.compile('[\\\\/]tests?[\\\\/]|[\\\\/]test_.*\\.py$')
         self.commented_import_pattern = re.compile('^\\s*#\\s*(from\\s+\\.\\.|from\\s+agentic_core)')
@@ -51,13 +46,13 @@ class SovereignImportSurgeon:
         self.apps_templates_pattern = re.compile('from\\s+(apps_rg|apps_lic)\\.templates\\s+import')
         self.relative_import_pattern = re.compile('^from\\s+\\.\\.')
 
-    def scan_file(self, file_path: Path) -> List[ImportViolation]:
+    def scan_file(self, file_path: Path) -> list[ImportViolation]:
         """Scan a single Python file for import violations."""
         violations: Any = []
         if self.test_file_pattern.search(str(file_path)):
             return violations
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 lines: Any = f.readlines()
             for line_num, line in enumerate(lines, start=1):
                 if not line.strip():
@@ -70,7 +65,7 @@ class SovereignImportSurgeon:
                     match: Any = re.search('#\\s*(from\\s+\\.\\.(\\w+)\\s+import\\s+.+)', line)
                     if match:
                         import_stmt: Any = match.group(1)
-                        module: Any = match.group(2)
+                        match.group(2)
                         suggested: Any = self._convert_relative_to_absolute(import_stmt, file_path)
                         violations.append(ImportViolation(str(file_path), line_num, line, 'COMMENTED_IMPORT', suggested))
                 if 'apps_shared' in str(file_path) and 'P1_core' in str(file_path):
@@ -90,8 +85,8 @@ class SovereignImportSurgeon:
         """Convert relative imports to absolute imports."""
         match = re.match('from\\s+\\.\\.(\\w+)\\s+import\\s+(.+)', line)
         if match:
-            module_name = match.group(1)
-            imports = match.group(2)
+            match.group(1)
+            match.group(2)
         return line.strip()
 
     def scan_all_files(self) -> Any:
@@ -113,7 +108,7 @@ class SovereignImportSurgeon:
         """Generate a detailed dry run report."""
         if not self.violations:
             return '✅ NO IMPORT VIOLATIONS FOUND - Your imports are already sovereign-compliant!'
-        by_type: Dict[str, List[ImportViolation]] = defaultdict(list)
+        by_type: dict[str, list[ImportViolation]] = defaultdict(list)
         for file_violations in self.violations.values():
             for v in file_violations:
                 by_type[v.ViolationType].append(v)
@@ -122,8 +117,8 @@ class SovereignImportSurgeon:
         report.append('SOVEREIGN IMPORT SURGERY - DRY RUN REPORT')
         report.append('=' * 80)
         report.append('')
-        total_violations: Any = sum((len(v) for v in self.violations.values()))
-        report.append(f'📊 SUMMARY:')
+        total_violations: Any = sum(len(v) for v in self.violations.values())
+        report.append('📊 SUMMARY:')
         report.append(f'   Files affected: {len(self.violations)}')
         report.append(f'   Total violations: {total_violations}')
         report.append('')
@@ -169,7 +164,7 @@ class SovereignImportSurgeon:
         fixed_count: Any = 0
         for file_path, violations in self.violations.items():
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
+                with open(file_path, encoding='utf-8') as f:
                     lines: Any = f.readlines()
                 for v in sorted(violations, key=lambda x: x.line_num, reverse=True):
                     lines[v.line_num - 1] = v.suggested_fix + '\n'

@@ -2,7 +2,6 @@
 """Find all agents missing heal_repository and add it to them."""
 import json
 from pathlib import Path
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # Load agent discovery
 discovery_json = Path('C:/Git/Agentic-Workflow/agent_discovery_full.json')
@@ -10,7 +9,7 @@ if not discovery_json.exists():
     print("ERROR: agent_discovery_full.json not found. Run full_agent_discovery.py first.")
     exit(1)
 
-with open(discovery_json, 'r', encoding='utf-8') as f:
+with open(discovery_json, encoding='utf-8') as f:
     agents = json.load(f)
 
 # Find agents missing heal_repository
@@ -88,7 +87,7 @@ for agent in missing:
     except Exception as e:
         print(f"  ❌ Error fixing {agent['path']}: {e}")
 
-print(f"\n=== Summary ===")
+print("\n=== Summary ===")
 print(f"Total missing: {len(missing)}")
 print(f"Fixed: {fixed_count}")
 print(f"Remaining: {len(missing) - fixed_count}")

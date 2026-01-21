@@ -15,11 +15,9 @@ Date: January 19, 2026
 Phase: 4.1 - Scaled Refactoring & CI Enforcement
 """
 import sys
-import os
-import time
 import tempfile
+import time
 from pathlib import Path
-from typing import Dict, Any
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
@@ -37,7 +35,7 @@ def test_tc17_scaled_discovery():
     print("TC-17: Scaled Discovery")
     print("="*60)
 
-    from agentic_core.utils.ssot_discovery import get_python_files, DEFAULT_EXCLUDE_DIRS
+    from agentic_core.utils.ssot_discovery import DEFAULT_EXCLUDE_DIRS, get_python_files
 
     agentic_core = PROJECT_ROOT / "agentic_core"
 
@@ -75,7 +73,7 @@ def test_tc17_scaled_discovery():
     print(f"   rglob (filtered): {len(rglob_files)} files")
 
     if only_in_ssot or only_in_rglob:
-        print(f"❌ FAIL: Delta detected")
+        print("❌ FAIL: Delta detected")
         if only_in_ssot:
             print(f"   Only in SSOT: {list(only_in_ssot)[:3]}")
         if only_in_rglob:
@@ -98,7 +96,7 @@ def test_tc18_ci_enforcement():
 
     # Import the CI check functions
     sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
-    from check_rglob_usage import scan_for_rglob_usage, MAX_ALLOWED_RGLOB
+    from check_rglob_usage import MAX_ALLOWED_RGLOB, scan_for_rglob_usage
 
     agentic_core = PROJECT_ROOT / "agentic_core"
 
@@ -144,12 +142,7 @@ def test_tc19_auto_invalidation():
     print("TC-19: Auto-Invalidation")
     print("="*60)
 
-    from agentic_core.utils.ssot_discovery import (
-        FileCache,
-        get_python_files,
-        invalidate_cache,
-        get_global_cache
-    )
+    from agentic_core.utils.ssot_discovery import FileCache, get_python_files
 
     # Use a temporary directory for this test
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -187,7 +180,7 @@ def test_tc19_auto_invalidation():
             print("❌ FAIL: Cache should detect directory change")
             return False
 
-        print(f"   Cache detected directory change: ✓")
+        print("   Cache detected directory change: ✓")
         print("✅ PASS: Auto-invalidation detects directory changes")
         return True
 
@@ -245,7 +238,7 @@ def test_rglob_reduction():
     print("="*60)
 
     sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
-    from check_rglob_usage import scan_for_rglob_usage, MAX_ALLOWED_RGLOB
+    from check_rglob_usage import MAX_ALLOWED_RGLOB, scan_for_rglob_usage
 
     agentic_core = PROJECT_ROOT / "agentic_core"
     total_count, offenders = scan_for_rglob_usage(agentic_core)

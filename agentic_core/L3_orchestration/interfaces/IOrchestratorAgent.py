@@ -18,12 +18,13 @@ Date: January 19, 2026
 Phase: 1 - Foundation & Zero-Loss Protocols
 """
 from __future__ import annotations
-from enum import Enum
-from typing import Any, Dict, List, Optional, Protocol, runtime_checkable, TYPE_CHECKING
+
 from dataclasses import dataclass, field
+from enum import Enum
+from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
 
 if TYPE_CHECKING:
-    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+    pass
 
 
 class ExecutionPhase(str, Enum):
@@ -48,8 +49,8 @@ class ExecutionContext:
     max_depth: int = 3
     current_depth: int = 0
     phase: ExecutionPhase = ExecutionPhase.PLANNING
-    call_path: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    call_path: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def with_depth(self, new_depth: int) -> ExecutionContext:
         """Create new context with updated depth."""
@@ -91,9 +92,9 @@ class AgentResult:
     skipped: int = 0
     status: str = "UNKNOWN"
     message: str = ""
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
             "agent_name": self.agent_name,
@@ -122,11 +123,11 @@ class MissionResult:
     total_violations_found: int = 0
     total_violations_fixed: int = 0
     total_errors: int = 0
-    agent_results: List[AgentResult] = field(default_factory=list)
+    agent_results: list[AgentResult] = field(default_factory=list)
     phase: ExecutionPhase = ExecutionPhase.COMPLETE
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
             "success": self.success,
@@ -165,10 +166,10 @@ class IOrchestratorAgent(Protocol):
 
     def run_mission(
         self,
-        agents: List[str],
+        agents: list[str],
         dry_run: bool = True,
         execute: bool = False,
-        context: Optional[ExecutionContext] = None
+        context: ExecutionContext | None = None
     ) -> MissionResult:
         """
         Execute a mission across multiple agents.
@@ -188,7 +189,7 @@ class IOrchestratorAgent(Protocol):
         self,
         agent_name: str,
         dry_run: bool = True,
-        context: Optional[ExecutionContext] = None
+        context: ExecutionContext | None = None
     ) -> AgentResult:
         """
         Execute a single agent with standardized result.
@@ -203,7 +204,7 @@ class IOrchestratorAgent(Protocol):
         """
         ...
 
-    def get_available_agents(self) -> List[str]:
+    def get_available_agents(self) -> list[str]:
         """
         Get list of agents this orchestrator can coordinate.
 
@@ -214,8 +215,8 @@ class IOrchestratorAgent(Protocol):
 
     def validate_mission(
         self,
-        agents: List[str],
-        context: Optional[ExecutionContext] = None
+        agents: list[str],
+        context: ExecutionContext | None = None
     ) -> bool:
         """
         Pre-flight validation before mission execution.
@@ -250,7 +251,7 @@ class IHealable(Protocol):
         depth: int = 0,
         max_depth: int = 3,
         **kwargs
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Repository-level healing method.
 

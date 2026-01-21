@@ -7,21 +7,18 @@ Redis-speed responses.
 Run with: python runtime.shared.test_sota_layer.py
 """
 
-import time
-import json
-import tempfile
 import os
-from typing import List, Dict, Any
+import tempfile
+import time
 
 # Import the SOTA layer components
 from runtime.shared import (
-    LateInteractionReranker,
-    PassThroughReranker,
-    rerank_documents,
     ContrastiveSemanticCache,
+    LateInteractionReranker,
     NullCache,
-    CacheEntry,
+    PassThroughReranker,
     get_cached_response,
+    rerank_documents,
 )
 
 
@@ -121,19 +118,19 @@ class SOTALayerTestSuite:
                 expected_doc = self.sample_docs[test_case['expected_top_idx']]
 
                 if top_doc == expected_doc:
-                    print(f"   ✅ Correct document ranked #1")
+                    print("   ✅ Correct document ranked #1")
                 else:
-                    print(f"   ⚠️  Expected different document at #1")
+                    print("   ⚠️  Expected different document at #1")
                     print(f"      Expected: {expected_doc[:50]}...")
                     print(f"      Got: {top_doc[:50]}...")
 
                 # Show top 3 results
-                print(f"   Top 3 results:")
+                print("   Top 3 results:")
                 for j, doc in enumerate(reranked[:3], 1):
                     print(f"     {j}. {doc[:60]}...")
 
             # Test with scores
-            print(f"\n   Testing with scores:")
+            print("\n   Testing with scores:")
             scored_results = self.reranker.rerank_with_scores(
                 query=test_case['query'],
                 documents=self.sample_docs[:3],
@@ -167,9 +164,9 @@ class SOTALayerTestSuite:
             success = self.cache.put(test_case['query'], original_response)
 
             if success:
-                print(f"✅ Cached original query")
+                print("✅ Cached original query")
             else:
-                print(f"⚠️  Failed to cache original query")
+                print("⚠️  Failed to cache original query")
                 continue
 
             # Test similar queries
@@ -183,11 +180,11 @@ class SOTALayerTestSuite:
                 if cached_response:
                     print(f"   ✅ Cache hit in {elapsed*1000:.2f}ms")
                     if cached_response == original_response:
-                        print(f"   ✅ Correct response retrieved")
+                        print("   ✅ Correct response retrieved")
                     else:
-                        print(f"   ⚠️  Different response retrieved")
+                        print("   ⚠️  Different response retrieved")
                 else:
-                    print(f"   ❌ Cache miss (threshold not met)")
+                    print("   ❌ Cache miss (threshold not met)")
 
             # Clear cache for next test
             self.cache.clear()
@@ -302,23 +299,23 @@ class SOTALayerTestSuite:
             rerank_time = time.time() - start_time
             print(f"   ✅ Reranked in {rerank_time:.3f}s")
 
-            print(f"   Top 3 reranked documents:")
+            print("   Top 3 reranked documents:")
             for i, doc in enumerate(reranked_docs, 1):
                 print(f"     {i}. {doc[:70]}...")
         else:
-            print(f"   ⚠️  Reranker not available, using original order")
+            print("   ⚠️  Reranker not available, using original order")
             reranked_docs = retrieved_docs[:3]
 
         # Step 4: Generate response (mock)
         print("\n4. Generating response...")
-        response = f"Based on analysis: Our system shows 50ms latency while industry averages are 100ms. This represents a 2x performance advantage."
-        print(f"   Response generated")
+        response = "Based on analysis: Our system shows 50ms latency while industry averages are 100ms. This represents a 2x performance advantage."
+        print("   Response generated")
 
         # Step 5: Cache the result
         print("\n5. Caching the result...")
         success = self.cache.put(executive_query, response)
         if success:
-            print(f"   ✅ Response cached for future queries")
+            print("   ✅ Response cached for future queries")
 
         # Step 6: Test cache hit with similar query
         print("\n6. Testing cache hit with similar query...")
@@ -331,7 +328,7 @@ class SOTALayerTestSuite:
             print(f"   ✅ Similar query hit cache in {cache_time*1000:.2f}ms")
             print(f"   Response: {cached_result[:100]}...")
         else:
-            print(f"   ❌ Similar query missed cache")
+            print("   ❌ Similar query missed cache")
 
     def test_fallback_modes(self):
         """Test fallback behavior when dependencies are missing."""
@@ -392,7 +389,7 @@ class SOTALayerTestSuite:
             response = get_cached_response("test query", self.cache)
             print(f"   Retrieved: {response}")
         else:
-            print(f"   Cache not available")
+            print("   Cache not available")
 
     def run_all_tests(self):
         """Run all tests sequentially."""

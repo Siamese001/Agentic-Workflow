@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 schemas/models – Sovereign Territory
 
@@ -26,14 +27,14 @@ Future Curation Roadmap:
 # Public API surface — expose only what's intended (lazy imports for healing resilience)
 try:
     from .CognitiveContractValidatorSchema import (
-        CognitiveContractValidatorSchema,
         CognitiveContract,
         CognitiveContractEnforcer,
-        ContractStage,
+        CognitiveContractValidatorSchema,
+        ConsistencyError,
         Constraint,
+        ContractStage,
         Plan,
         PlanQualityError,
-        ConsistencyError,
     )
 except ImportError:
     CognitiveContractValidatorSchema = None
@@ -47,18 +48,18 @@ except ImportError:
 
 try:
     from .runtime_models import (
-        MicroStage,
-        HopState,
-        RetryPolicy,
-        MicroCheckpoint,
-        StageTransition,
-        InjectionType,
-        InjectionScope,
-        InjectionPattern,
-        InjectionMatch,
-        InjectionConfig,
-        ValidationResult,
         ExecutionResult,
+        HopState,
+        InjectionConfig,
+        InjectionMatch,
+        InjectionPattern,
+        InjectionScope,
+        InjectionType,
+        MicroCheckpoint,
+        MicroStage,
+        RetryPolicy,
+        StageTransition,
+        ValidationResult,
     )
 except ImportError:
     MicroStage = None

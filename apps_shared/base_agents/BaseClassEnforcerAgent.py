@@ -14,6 +14,7 @@ Migration:
     )
 """
 import warnings
+
 warnings.warn(
     "BaseClassEnforcerAgent is deprecated. Use CodeStandardsEnforcerAgent instead.",
     DeprecationWarning,
@@ -52,25 +53,13 @@ import json
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from agentic_core.bases import L5Agent
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
     TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
 
 
@@ -87,7 +76,7 @@ class BaseClassEnforcerAgent(L5Agent):
     project_root: Path = field(default_factory=Path.cwd)
 
     # Canonical layer bases
-    LAYER_BASES: Dict[str, str] = field(default_factory=lambda: {
+    LAYER_BASES: dict[str, str] = field(default_factory=lambda: {
         'L0': 'L0MaintenanceBaseAgent',
         'L1': 'L1CognitionBaseAgent',
         'L2': 'L2Agent',
@@ -97,7 +86,7 @@ class BaseClassEnforcerAgent(L5Agent):
     })
 
     # Layer directory patterns
-    LAYER_PATTERNS: Dict[str, str] = field(default_factory=lambda: {
+    LAYER_PATTERNS: dict[str, str] = field(default_factory=lambda: {
         'L0_maintenance': 'L0',
         'L1_cognition': 'L1',
         'L2_execution': 'L2',
@@ -107,7 +96,7 @@ class BaseClassEnforcerAgent(L5Agent):
     })
 
     # Import statement for each layer base
-    LAYER_IMPORTS: Dict[str, str] = field(default_factory=lambda: {
+    LAYER_IMPORTS: dict[str, str] = field(default_factory=lambda: {
         'L0': 'from agentic_core.bases import L0MaintenanceBaseAgent',
         'L1': 'from agentic_core.bases import L1CognitionBaseAgent',
         'L2': 'from agentic_core.bases import L2Agent',
@@ -121,7 +110,7 @@ class BaseClassEnforcerAgent(L5Agent):
         if isinstance(self.project_root, str):
             self.project_root = Path(self.project_root)
 
-    def scan_violations(self) -> Dict[str, Any]:
+    def scan_violations(self) -> dict[str, Any]:
         """
         Scan for base class violations.
 
@@ -173,7 +162,7 @@ class BaseClassEnforcerAgent(L5Agent):
 
     def heal_repository(self, dry_run: bool = True, execute: bool = False,
                         depth: int = 0, max_depth: int = 3,
-                        _call_path: Optional[set] = None) -> Dict[str, Any]:
+                        _call_path: set | None = None) -> dict[str, Any]:
         """
         Heal base class violations by updating imports and class definitions.
 
@@ -222,8 +211,8 @@ class BaseClassEnforcerAgent(L5Agent):
             'failed': failed if len(failed) <= 10 else failed[:10],
         }
 
-    def _heal_single_agent(self, file_path: Path, violation: Dict,
-                           dry_run: bool, execute: bool) -> Dict[str, Any]:
+    def _heal_single_agent(self, file_path: Path, violation: dict,
+                           dry_run: bool, execute: bool) -> dict[str, Any]:
         """Heal a single agent file to use correct layer base."""
         try:
             content = file_path.read_text(encoding='utf-8')
@@ -291,13 +280,13 @@ class BaseClassEnforcerAgent(L5Agent):
                 'reason': str(e),
             }
 
-    def validate(self, target: Any = None) -> Dict[str, Any]:
+    def validate(self, target: Any = None) -> dict[str, Any]:
         """Validate base class inheritance patterns."""
         result = self.scan_violations()
         result['valid'] = result.get('violation_count', 0) == 0
         return result
 
-    def _run_self_tests(self) -> Dict[str, Any]:
+    def _run_self_tests(self) -> dict[str, Any]:
         """Self-tests for the enforcer."""
         super()._run_self_tests()
 
@@ -331,14 +320,14 @@ if __name__ == "__main__":
 
     if args.scan or (not args.heal):
         result = enforcer.scan_violations()
-        print(f"\n=== Base Class Enforcement Report ===")
+        print("\n=== Base Class Enforcement Report ===")
         print(f"Total Layer Agents: {result.get('total_layer_agents', 0)}")
         print(f"Compliant: {result.get('compliant_count', 0)}")
         print(f"Violations: {result.get('violation_count', 0)}")
         print(f"Compliance Rate: {result.get('compliance_rate', 0)}%")
 
         if result.get('violations'):
-            print(f"\nSample Violations:")
+            print("\nSample Violations:")
             for v in result['violations'][:10]:
                 print(f"  {v['class_name']} in {v['layer']}: expected {v['expected_base']}")
                 print(f"    current: {v['current_bases']}")

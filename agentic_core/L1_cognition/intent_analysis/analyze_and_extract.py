@@ -1,13 +1,12 @@
 from __future__ import annotations
-import os
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
-import sys
-from typing import Any, List, Dict, Optional
-from agentic_core.utils.sovereign_index import SovereignIndex
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
-from agentic_core.utils.ssot_discovery import get_python_files, get_data_files
+from typing import Any
+
+from agentic_core.utils.ssot_discovery import get_data_files, get_python_files
+
 
 def analyze_and_extract() -> None:
     """Analyze legacy files and extract unique content (Python, JSON, and Markdown)."""

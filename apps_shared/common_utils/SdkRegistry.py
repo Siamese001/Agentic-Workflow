@@ -8,9 +8,9 @@ Phase 1C - SDK Integration Layer
 
 import logging
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, Optional, Tuple
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -35,8 +35,8 @@ class SDKEntry:
     category: SDKCategory
     module: str
     required: bool = False
-    env_var: Optional[str] = None
-    fallback: Optional[str] = None
+    env_var: str | None = None
+    fallback: str | None = None
     description: str = ""
 
     def is_available(self) -> bool:
@@ -55,7 +55,7 @@ class SDKEntry:
 
 
 # Global SDK Registry
-SDK_REGISTRY: Dict[str, SDKEntry] = {
+SDK_REGISTRY: dict[str, SDKEntry] = {
     # Core LLM Providers
     "openai": SDKEntry(
         name="openai",
@@ -239,7 +239,7 @@ SDK_REGISTRY: Dict[str, SDKEntry] = {
 }
 
 
-def validate_sdk(sdk_name: str) -> Tuple[bool, Optional[str]]:
+def validate_sdk(sdk_name: str) -> tuple[bool, str | None]:
     """Validate SDK availability and configuration.
 
     Args:
@@ -268,7 +268,7 @@ def validate_sdk(sdk_name: str) -> Tuple[bool, Optional[str]]:
     return True, None
 
 
-def validate_all_sdks() -> Dict[str, Any]:
+def validate_all_sdks() -> dict[str, Any]:
     """Validate all SDKs in registry.
 
     Returns:
@@ -339,7 +339,7 @@ def get_available_sdks() -> list[str]:
 
 
 # Singleton client cache
-_CLIENT_CACHE: Dict[str, Any] = {}
+_CLIENT_CACHE: dict[str, Any] = {}
 
 
 def reset_all_clients() -> None:
@@ -347,7 +347,7 @@ def reset_all_clients() -> None:
     _CLIENT_CACHE.clear()
 
 
-def get_vector_store(config: Optional[Dict[str, Any]] = None) -> Any:
+def get_vector_store(config: dict[str, Any] | None = None) -> Any:
     """Get a vector store client.
 
     Args:
@@ -370,7 +370,7 @@ def get_vector_store(config: Optional[Dict[str, Any]] = None) -> Any:
 
     # Always return mock vector store for testing
     class MockVectorStore:
-        def __init__(self, config: Optional[Dict[str, Any]] = None):
+        def __init__(self, config: dict[str, Any] | None = None):
             self.config = config or {}
             self.collections = {}
 

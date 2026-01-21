@@ -1,5 +1,7 @@
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 '''Brief description of functionality and purpose.'''
 
 '''Brief description of functionality and purpose.'''
@@ -8,7 +10,6 @@ from dataclasses import dataclass
 """L1 Result Parser - Pure result parsing logic only."""
 
 import logging
-from dataclasses import dataclass, field
 
 _logger = logging.getLogger(__name__)
 

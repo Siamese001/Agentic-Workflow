@@ -7,12 +7,11 @@ from __future__ import annotations
 
 import logging
 import re
-from typing import Any, Dict, List, Optional
 from dataclasses import dataclass, field
+from typing import Any
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.validators.decorators import standard_heal
-
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +24,7 @@ class InputValidationGuardrail(HealerMixin):
     """
 
     debug_mode: bool = False
-    enabled_rules: List[str] = field(default_factory=lambda: [
+    enabled_rules: list[str] = field(default_factory=lambda: [
         "pii_detection",
         "prompt_injection",
         "bias_detection",
@@ -37,7 +36,7 @@ class InputValidationGuardrail(HealerMixin):
         self.validation_count = 0
         self.violations_found = 0
 
-    async def validate(self, input_text: str, context: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    async def validate(self, input_text: str, context: dict[str, Any] | None = None) -> dict[str, Any]:
         """Validate input against enabled rules."""
         logger.info(f"[{self.name}] Validating input")
 
@@ -70,7 +69,7 @@ class InputValidationGuardrail(HealerMixin):
                 "error": str(e),
             }
 
-    async def _apply_rule(self, rule: str, input_text: str, context: Optional[Dict] = None) -> Dict[str, Any]:
+    async def _apply_rule(self, rule: str, input_text: str, context: dict | None = None) -> dict[str, Any]:
         """Apply a specific validation rule."""
         if rule == "pii_detection":
             return self._detect_pii(input_text)
@@ -82,7 +81,7 @@ class InputValidationGuardrail(HealerMixin):
             return self._validate_format(input_text)
         return {"valid": True}
 
-    def _detect_pii(self, text: str) -> Dict[str, Any]:
+    def _detect_pii(self, text: str) -> dict[str, Any]:
         """Detect personally identifiable information."""
         violations = []
 
@@ -115,7 +114,7 @@ class InputValidationGuardrail(HealerMixin):
             "violations": violations,
         }
 
-    def _detect_prompt_injection(self, text: str) -> Dict[str, Any]:
+    def _detect_prompt_injection(self, text: str) -> dict[str, Any]:
         """Detect prompt injection attempts."""
         violations = []
         injection_patterns = [
@@ -139,7 +138,7 @@ class InputValidationGuardrail(HealerMixin):
             "violations": violations,
         }
 
-    def _detect_bias(self, text: str) -> Dict[str, Any]:
+    def _detect_bias(self, text: str) -> dict[str, Any]:
         """Detect biased language patterns."""
         violations = []
         bias_patterns = {
@@ -160,7 +159,7 @@ class InputValidationGuardrail(HealerMixin):
             "violations": violations,
         }
 
-    def _validate_format(self, text: str) -> Dict[str, Any]:
+    def _validate_format(self, text: str) -> dict[str, Any]:
         """Validate input format."""
         violations = []
 
@@ -190,7 +189,7 @@ class InputValidationGuardrail(HealerMixin):
         return True
 
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, **kwargs) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, **kwargs) -> dict[str, Any]:
         """Repository healing with parent chain invocation."""
         result = super().heal_repository(dry_run=dry_run, **kwargs)
         return {"violations_fixed": 0, "skipped": 0, "parent": result}

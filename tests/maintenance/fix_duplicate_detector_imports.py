@@ -18,7 +18,7 @@ OLD_MODULE = r"import apps_lic\.engines\.DuplicateCodeDetectorAgent"
 NEW_MODULE = "import apps_shared.utils.DuplicateCodeDetectorAgent"
 
 def fix_imports():
-    print(f"--- Starting Global Import Repair for DuplicateCodeDetectorAgent ---")
+    print("--- Starting Global Import Repair for DuplicateCodeDetectorAgent ---")
     count = 0
 
     # We scan everything EXCEPT the archives and the agent itself

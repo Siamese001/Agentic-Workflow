@@ -1,8 +1,8 @@
 from __future__ import annotations
+
 """Dataclass models for orchestrate_workflow_types."""
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Protocol
 
 _logger = logging.getLogger(__name__)
 # from agentic_core.orchestrate_workflow_types_enums import *  # Star import removed
@@ -28,9 +28,9 @@ class HopCheckpoint:
     _hop_id: str
     _status: HopStatus
     _start_time: datetime
-    _end_time: Optional[datetime] = None
-    _output_artifacts: List[str] = field(default_factory=list)
-    _error_message: Optional[str] = None
+    _end_time: datetime | None = None
+    _output_artifacts: list[str] = field(default_factory=list)
+    _error_message: str | None = None
 
 
 @dataclass
@@ -41,4 +41,4 @@ class ValidationResult:
     _gate_id: str
     _decision: GateDecision
     _message: str
-    _details: Dict[str, object] = field(default_factory=dict)
+    _details: dict[str, object] = field(default_factory=dict)

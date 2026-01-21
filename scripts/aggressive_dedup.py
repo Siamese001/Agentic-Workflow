@@ -10,16 +10,13 @@ Strategies:
 """
 
 import ast
-import os
-import hashlib
 import re
-from pathlib import Path
-from typing import Dict, List, Set, Tuple
 from collections import defaultdict
+from pathlib import Path
 
 APPS_DIRS = ['apps_rg', 'apps_lic', 'apps_shared']
 
-def get_all_classes_in_codebase(dirs: List[str]) -> Dict[str, List[str]]:
+def get_all_classes_in_codebase(dirs: list[str]) -> dict[str, list[str]]:
     """Get all classes and which files they appear in."""
     class_files = defaultdict(list)
 
@@ -40,7 +37,7 @@ def get_all_classes_in_codebase(dirs: List[str]) -> Dict[str, List[str]]:
 
     return class_files
 
-def find_redundant_files(dirs: List[str], class_files: Dict[str, List[str]]) -> List[str]:
+def find_redundant_files(dirs: list[str], class_files: dict[str, list[str]]) -> list[str]:
     """Find files where ALL classes exist in other files."""
     redundant = []
 
@@ -75,7 +72,7 @@ def find_redundant_files(dirs: List[str], class_files: Dict[str, List[str]]) -> 
 
     return redundant
 
-def find_similar_named_files(dirs: List[str]) -> List[Tuple[str, str]]:
+def find_similar_named_files(dirs: list[str]) -> list[tuple[str, str]]:
     """Find files with similar names that might be duplicates."""
     all_files = {}
 
@@ -99,7 +96,7 @@ def find_similar_named_files(dirs: List[str]) -> List[Tuple[str, str]]:
     similar_groups = {k: v for k, v in all_files.items() if len(v) > 1}
     return similar_groups
 
-def find_low_value_files(dirs: List[str]) -> List[str]:
+def find_low_value_files(dirs: list[str]) -> list[str]:
     """Find files that are likely low value (small, no docstrings, test-like)."""
     low_value = []
 
@@ -166,7 +163,7 @@ def main():
         to_delete.add(f)
 
     # For similar named files, keep the shortest path (likely the canonical one)
-    for name, files in similar_groups.items():
+    for _name, files in similar_groups.items():
         if len(files) > 1:
             # Sort by path length, keep shortest
             files_sorted = sorted(files, key=lambda x: len(x))

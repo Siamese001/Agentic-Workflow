@@ -1,12 +1,14 @@
 from __future__ import annotations
+
 """
 Standalone Key 49 Depth Violation Checker
 [SSOT] All depth requirements derived from SOVEREIGN_REGISTRY in structure_blueprint.py
 """
 from pathlib import Path
-from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
 from typing import Any
-from archives.location_violations.sovereign_index import SovereignIndex
+
+from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
+
 
 def check_key_49_depth() -> Any:
     """Check directory depth violations per Key 49 using SSOT"""
@@ -20,7 +22,7 @@ def check_key_49_depth() -> Any:
         relative_path: Any = py_file.relative_to(project_root)
         # [FIX] Depth = folder level where file resides, not path length
         depth: Any = len(relative_path.parts) - 1  # Subtract 1 because file itself is not a level
-        if any((exclude in str(py_file) for exclude in excludes)):
+        if any(exclude in str(py_file) for exclude in excludes):
             continue
         if relative_path.parts and relative_path.parts[0] in DEPTH_MAP:
             root_folder: Any = relative_path.parts[0]
@@ -45,7 +47,7 @@ def check_key_49_depth() -> Any:
             print(f'  ⚠ {w}')
         if len(warnings) > 10:
             print(f'  ... and {len(warnings) - 10} more')
-    print(f'\n[DEEPEST FILES] Current maximum depth in repository:')
+    print('\n[DEEPEST FILES] Current maximum depth in repository:')
     all_depths: Any = []
     # Phase 6.7: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_python_files

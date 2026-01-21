@@ -10,7 +10,7 @@ Phase 1C - Knowledge Extraction Integration
 import logging
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +41,7 @@ class RAGConfig:
     min_retrievers: int = 3
     max_retrievers: int = 6
     hops: int = 2
-    source_weighting: Dict[str, float] = field(default_factory=dict)
+    source_weighting: dict[str, float] = field(default_factory=dict)
 
     def __post_init__(self):
         """Initialize default source weighting."""
@@ -66,7 +66,7 @@ class DecodingParams:
     top_k: int = 40
     min_p: float = 0.04
     repetition_penalty: float = 1.1
-    max_tokens: Optional[int] = None
+    max_tokens: int | None = None
 
 
 @dataclass
@@ -76,18 +76,18 @@ class KNodeConfig:
     element: str
     node_type: KNodeType
     reasoning_strategy: ReasoningStrategy = ReasoningStrategy.COT
-    rag_config: Optional[RAGConfig] = None
-    decoding_params: Optional[DecodingParams] = None
+    rag_config: RAGConfig | None = None
+    decoding_params: DecodingParams | None = None
     tot_branches: int = 3
     tot_depth: int = 2
     self_consistency_runs: int = 1
     beam_width: int = 1
     scratchpad_enabled: bool = True
-    max_chars: Optional[int] = None
-    max_words: Optional[int] = None
-    structure_template: Optional[str] = None
-    validation_rules: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    max_chars: int | None = None
+    max_words: int | None = None
+    structure_template: str | None = None
+    validation_rules: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self):
         """Initialize default configurations."""
@@ -446,7 +446,7 @@ class KXNodeRegistry:
         self._connection_req_nodes = OUTREACH_CONNECTION_REQ_NODES.copy()
         logger.info("K.X node registry initialized")
 
-    def get_resume_node(self, node_key: str) -> Optional[KNodeConfig]:
+    def get_resume_node(self, node_key: str) -> KNodeConfig | None:
         """Get resume engine K.X node configuration.
 
         Args:
@@ -461,7 +461,7 @@ class KXNodeRegistry:
         self,
         node_key: str,
         connection_request: bool = False
-    ) -> Optional[KNodeConfig]:
+    ) -> KNodeConfig | None:
         """Get outreach engine K.X node configuration.
 
         Args:
@@ -475,7 +475,7 @@ class KXNodeRegistry:
             return self._connection_req_nodes[node_key]
         return self._outreach_nodes.get(node_key)
 
-    def list_resume_nodes(self) -> List[str]:
+    def list_resume_nodes(self) -> list[str]:
         """List all resume engine K.X node keys.
 
         Returns:
@@ -483,7 +483,7 @@ class KXNodeRegistry:
         """
         return list(self._resume_nodes.keys())
 
-    def list_outreach_nodes(self) -> List[str]:
+    def list_outreach_nodes(self) -> list[str]:
         """List all outreach engine K.X node keys.
 
         Returns:
@@ -491,7 +491,7 @@ class KXNodeRegistry:
         """
         return list(self._outreach_nodes.keys())
 
-    def get_nodes_by_type(self, node_type: KNodeType) -> Dict[str, KNodeConfig]:
+    def get_nodes_by_type(self, node_type: KNodeType) -> dict[str, KNodeConfig]:
         """Get all nodes of a specific type.
 
         Args:
@@ -530,7 +530,7 @@ class KXNodeRegistry:
 
 
 # Global K.X node registry instance
-_KX_REGISTRY: Optional[KXNodeRegistry] = None
+_KX_REGISTRY: KXNodeRegistry | None = None
 
 
 def get_kx_registry() -> KXNodeRegistry:
@@ -547,7 +547,7 @@ def get_kx_registry() -> KXNodeRegistry:
     return _KX_REGISTRY
 
 
-def get_resume_kx_node(node_key: str) -> Optional[KNodeConfig]:
+def get_resume_kx_node(node_key: str) -> KNodeConfig | None:
     """Get resume engine K.X node configuration.
 
     Args:
@@ -563,7 +563,7 @@ def get_resume_kx_node(node_key: str) -> Optional[KNodeConfig]:
 def get_outreach_kx_node(
     node_key: str,
     connection_request: bool = False
-) -> Optional[KNodeConfig]:
+) -> KNodeConfig | None:
     """Get outreach engine K.X node configuration.
 
     Args:

@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Secure Tools - Atomic Module
 Extracted from ActionNode.py via Atomic Fission Protocol
@@ -7,15 +8,15 @@ Implements sandboxed file operations and command execution
 import logging
 import subprocess
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from typing import Any
+
 Logger: Any = logging.getLogger('ActionNode.SecureTools')
 
 class SecureToolsImpl:
     """
     Secure tool implementations with path validation and command blacklisting.
     """
-    BLACKLIST_COMMANDS: List[str] = ['rm -rf', 'sudo', 'format', '> /dev/sda', 'mkfs']
+    BLACKLIST_COMMANDS: list[str] = ['rm -rf', 'sudo', 'format', '> /dev/sda', 'mkfs']
 
     def __init__(self, work_dir: Path):
         """
@@ -80,7 +81,7 @@ class SecureToolsImpl:
         if not target.is_file():
             Logger.warning(f'Attempted to read a non-file path: {filename}')
             return f"Error: Path '{filename}' is not a file."
-        with open(target, 'r', encoding='utf-8') as f:
+        with open(target, encoding='utf-8') as f:
             content: Any = f.read()
         Logger.info(f"File '{target.name}' read successfully.")
         return content
@@ -103,7 +104,7 @@ class SecureToolsImpl:
         if not target.is_dir():
             Logger.warning(f'Attempted to list a non-directory path: {subdir}')
             return f"Error: Path '{subdir}' is not a directory."
-        files: List[str] = [f.name for f in target.iterdir()]
+        files: list[str] = [f.name for f in target.iterdir()]
         output: Any = '\n'.join(files) if files else '(empty directory)'
         Logger.info(f"Listed files in '{subdir}':\n{output}")
         return output
@@ -123,7 +124,7 @@ class SecureToolsImpl:
         Raises:
             ValueError: If the command contains blacklisted patterns.
         """
-        if any((b in command for b in self.BLACKLIST_COMMANDS)):
+        if any(b in command for b in self.BLACKLIST_COMMANDS):
             Logger.error(f"SECURITY VIOLATION: Command '{command}' contains blacklisted patterns.")
             raise ValueError('SECURITY VIOLATION: Command contains blacklisted patterns. Refusing to execute.')
         Logger.warning(f"Executing potentially dangerous command: '{command}' in '{self.work_dir}'")

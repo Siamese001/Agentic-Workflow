@@ -11,7 +11,9 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 #!/usr/bin/env python3
 """
 AutonomousThreatEvolution – L5 Sovereign Threat Self-Evolution
@@ -23,56 +25,39 @@ import asyncio
 import json
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict, List, Optional, Any
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from typing import Any
+
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
+from agentic_core.L5_safety.validators.decorators import standard_heal
 
 # 2. THIRDPARTY (Gravity-ordered)
 # [Note: No thirdparty needed for base logic to prevent bootstrap failure]
-
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
-)
-from agentic_core.L5_safety.validators.decorators import standard_heal
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
 @dataclass
 class AutonomousThreatEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
     """L5: Self-healing security agent"""
-    def __init__(self, SafetyEngine: Optional[Any] = None) -> None:
+    def __init__(self, SafetyEngine: Any | None = None) -> None:
         """
         Initialize autonomous threat evolution agent.
 
         Args:
             SafetyEngine: Optional safety engine instance
         """
-        self.safety: Optional[Any] = SafetyEngine
+        self.safety: Any | None = SafetyEngine
         # Use relative pathing to stay within the AGENTIC_CORE_DIR root gravity
         self.log_path: Path = Path("observability/logs/threat_detections.json")
         self.evolution_interval: int = 3600
         self.running: bool = True
         self.confidence_threshold: float = 0.78
 
-    async def run(self) -> Dict[str, Any]:
+    async def run(self) -> dict[str, Any]:
         """Standardized entry point for L6 Coordinator"""
-        print(f"   [L5] Threat Evolution Agent: Online")
+        print("   [L5] Threat Evolution Agent: Online")
         await self.threat_evolution_loop()
 
     async def threat_evolution_loop(self) -> Any:
@@ -96,19 +81,19 @@ class AutonomousThreatEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, He
                         rule_id = self.safety.auto_generate_rule(p)
                         print(f"   [L5] Evolution: New rule {rule_id} deployed.")
 
-    def _load_recent_detections(self, hours: int) -> List[Dict]:
+    def _load_recent_detections(self, hours: int) -> list[dict]:
         """Load recent detections."""
         if not self.log_path.exists():
             return []
         try:
-            with open(self.log_path, "r") as f:
+            with open(self.log_path) as f:
                 data = json.load(f)
                 cutoff = datetime.now() - timedelta(hours=hours)
                 return [d for d in data if datetime.fromisoformat(d['ts']) > cutoff]
         except (json.JSONDecodeError, KeyError):
             return []
 
-    def _analyze_patterns(self, detections: List[Dict]) -> List[Dict]:
+    def _analyze_patterns(self, detections: list[dict]) -> list[dict]:
         """Clustering logic for emerging threats"""
         # Placeholder for heuristic/LLM-based pattern matching
         return []
@@ -119,7 +104,7 @@ class AutonomousThreatEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, He
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L5 safety agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -142,9 +127,9 @@ class AutonomousThreatEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, He
         super().heal_repository()
 
         self.running = False
-        print(f"   [L5] Threat Evolution Agent: Stopping")
+        print("   [L5] Threat Evolution Agent: Stopping")
 
-    def get_status(self) -> Dict:
+    def get_status(self) -> dict:
         """Get current agent status"""
         return {
             "running": self.running,

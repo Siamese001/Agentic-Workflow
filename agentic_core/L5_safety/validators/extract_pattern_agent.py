@@ -10,13 +10,11 @@ Also removes SubAtomicAgent stub and adds proper import.
 
 import ast
 from pathlib import Path
-from typing import Tuple
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 SOURCE_FILE = Path("agentic_core/L1_cognition/thought_engine/canon_agents_pattern.py")
 TARGET_DIR = Path("agentic_core/L1_cognition/thought_engine")
 
-def extract_class_with_context(content: str, class_name: str) -> Tuple[str, int, int]:
+def extract_class_with_context(content: str, class_name: str) -> tuple[str, int, int]:
     """Extract class source with preceding comments."""
     lines = content.split('\n')
     tree = ast.parse(content)
@@ -74,7 +72,7 @@ Logger: Any = logging.getLogger(__name__)
 
 def update_source_file(source_file: Path):
     """Remove PatternEnforcerAgent and SubAtomicAgent stub, add proper import."""
-    with open(source_file, 'r', encoding='utf-8') as f:
+    with open(source_file, encoding='utf-8') as f:
         content = f.read()
 
     lines = content.split('\n')
@@ -105,7 +103,7 @@ def update_source_file(source_file: Path):
     # Backup original
     backup_file = source_file.with_suffix('.py.bak')
     print(f"  Creating backup: {backup_file}")
-    with open(source_file, 'r', encoding='utf-8') as f:
+    with open(source_file, encoding='utf-8') as f:
         with open(backup_file, 'w', encoding='utf-8') as b:
             b.write(f.read())
 
@@ -140,11 +138,11 @@ def main():
 
     # Read source file
     print(f"\nReading {SOURCE_FILE}")
-    with open(SOURCE_FILE, 'r', encoding='utf-8') as f:
+    with open(SOURCE_FILE, encoding='utf-8') as f:
         content = f.read()
 
     # Extract PatternEnforcerAgent
-    print(f"\n📦 Extracting PatternEnforcerAgent...")
+    print("\n📦 Extracting PatternEnforcerAgent...")
     try:
         class_source, start, end = extract_class_with_context(content, 'PatternEnforcerAgent')
         target_file = create_pattern_enforcer_file(class_source)
@@ -155,22 +153,22 @@ def main():
 
     # Update source file
     print(f"\nUpdating {SOURCE_FILE}...")
-    print(f"  - Removing PatternEnforcerAgent")
-    print(f"  - Removing SubAtomicAgent stub")
-    print(f"  - Adding SubAtomicAgent import")
+    print("  - Removing PatternEnforcerAgent")
+    print("  - Removing SubAtomicAgent stub")
+    print("  - Adding SubAtomicAgent import")
     update_source_file(SOURCE_FILE)
     print(f"  ✅ Updated {SOURCE_FILE}")
 
     print("\n" + "=" * 60)
     print("EXTRACTION COMPLETE")
     print("=" * 60)
-    print(f"\n✅ PatternEnforcerAgent.py created")
-    print(f"✅ canon_agents_pattern.py updated with proper import")
+    print("\n✅ PatternEnforcerAgent.py created")
+    print("✅ canon_agents_pattern.py updated with proper import")
 
-    print(f"\n⚠️  Next steps:")
-    print(f"  1. Rename _GenerativeGuard_Deprecated in CanonHealerAgent.py")
-    print(f"  2. Update imports for PatternEnforcerAgent")
-    print(f"  3. Run discovery to verify 281 agents")
+    print("\n⚠️  Next steps:")
+    print("  1. Rename _GenerativeGuard_Deprecated in CanonHealerAgent.py")
+    print("  2. Update imports for PatternEnforcerAgent")
+    print("  3. Run discovery to verify 281 agents")
 
     return True
 

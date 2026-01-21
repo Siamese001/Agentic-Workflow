@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Systematic fix for all indentation errors caused by the reorganization.
 Pattern: except ...:
@@ -6,17 +7,15 @@ Pattern: except ...:
 pass
 Logger.error
 """
-import logging
 import os
 import re
 from typing import Any
-from agentic_core.utils.sovereign_index import SovereignIndex
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+
 
 def fix_indentation_errors(file_path: Any) -> Any:
     """Fix indentation errors in a Python file."""
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, encoding='utf-8') as f:
             content: Any = f.read()
         original: Any = content
         patterns: Any = [('(\\s+except\\s+.*?:\\s*\\n)\\s+pass\\n\\s+pass\\n(.+?Logger\\.)', '\\1            \\2'), ('(\\s+except\\s+.*?:\\s*\\n)\\s+pass\\n\\s+pass\\n(.+?return)', '\\1            \\2'), ('(\\s+except\\s+.*?:\\s*\\n)\\s+pass\\n\\s+pass\\n(.+?raise)', '\\1            \\2'), ('(\\s+except\\s+.*?:\\s*\\n)\\s+pass\\n\\s+pass\\n(.+?if\\s)', '\\1            \\2'), ('\\n\\s+pass\\n\\s+pass\\n(.+)', '\\n            \\1')]

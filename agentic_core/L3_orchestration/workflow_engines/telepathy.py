@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 L6 Codebase Telepathy - Human Instruction Watcher
 
@@ -7,7 +8,8 @@ Allows humans to telepathically control mission execution by writing commands.
 """
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 
 class TelepathyInterface:
@@ -31,7 +33,7 @@ class TelepathyInterface:
         self.instructions_path.parent.mkdir(parents=True, exist_ok=True)
         LOGGER.info(f'Telepathy interface initialized: {self.instructions_path}')
 
-    def check_instructions(self, cycle: int) -> Optional[str]:
+    def check_instructions(self, cycle: int) -> str | None:
         """
         Check for new human instructions.
 
@@ -56,7 +58,7 @@ class TelepathyInterface:
             LOGGER.error(f'Failed to read telepathy instructions: {e}')
             return None
 
-    def parse_instructions(self, instructions: str) -> Dict[str, Any]:
+    def parse_instructions(self, instructions: str) -> dict[str, Any]:
         """
         Parse human instructions into executable commands.
 
@@ -68,7 +70,7 @@ class TelepathyInterface:
         """
         commands: Any = {'stop': False, 'pause': False, 'skip_files': [], 'force_agents': [], 'force_test': False, 'force_style': False, 'force_safety': False, 'force_dependency': False, 'custom_signals': set(), 'raw': instructions}
         instructions_lower: Any = instructions.lower()
-        if any((word in instructions_lower for word in ['stop', 'abort', 'halt'])):
+        if any(word in instructions_lower for word in ['stop', 'abort', 'halt']):
             commands['stop'] = True
             commands['custom_signals'].add('TELEPATHY_STOP')
         if 'pause' in instructions_lower:
@@ -116,7 +118,7 @@ class TelepathyInterface:
         except Exception as e:
             LOGGER.error(f'Failed to mark instructions as done: {e}')
 
-    def inject_into_context(self, context: Any, commands: Dict[str, Any]) -> Any:
+    def inject_into_context(self, context: Any, commands: dict[str, Any]) -> Any:
         """
         Inject parsed commands into execution context.
 
@@ -145,7 +147,7 @@ class TelepathyInterface:
                 LOGGER.info('Telepathy instructions cleared')
         except Exception as e:
             LOGGER.error(f'Failed to clear instructions: {e}')
-_telepathy: Optional[TelepathyInterface] = None
+_telepathy: TelepathyInterface | None = None
 
 def get_telepathy_interface(instructions_path: str='observability/human_instructions.md') -> TelepathyInterface:
     """Get or create the global telepathy interface instance."""

@@ -12,23 +12,14 @@ Migrated from LocationAgent.py during Phase 4 of the fission process.
 """
 from __future__ import annotations
 
-from pathlib import Path
-from typing import List, Dict, Any, Optional, Tuple
 import ast
+import logging
 import re
 import shutil
-import logging
+from pathlib import Path
+from typing import Any
+
 Logger = logging.getLogger(__name__)
-from agentic_core.L5_safety.validators.location_utils import (
-    normalize_location_path,
-    compute_module_path,
-    get_agent_files,
-    is_path_compliant,
-    is_excepted_from_key,
-)
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-)
 # Gravity-specific constants - define locally if not in location_constants
 CORE_TERRITORY_KEYWORDS = {"core", "sovereign", "canon", "base", "mixin", "agent"}
 APP_RG_AST_TERMS = {"rg", "regulatory", "compliance"}
@@ -71,12 +62,12 @@ class GravityLeakDetector:
     # AST SCORE COMPUTATION (Phase 4)
     # ========================================================================
 
-    def _recompute_ast_scores(self, tree: ast.AST) -> Tuple[float, float, Dict[str, float]]:
+    def _recompute_ast_scores(self, tree: ast.AST) -> tuple[float, float, dict[str, float]]:
         """AST score recomputation orchestrator — linear walk + aggregation."""
         initial_scores = {
             "app_rg": 0.0,
             "app_lic": 0.0,
-            "territories": {t: 0.0 for t in CORE_TERRITORY_KEYWORDS}
+            "territories": dict.fromkeys(CORE_TERRITORY_KEYWORDS, 0.0)
         }
 
         # Phase 1: Walk and collect raw increments
@@ -89,10 +80,10 @@ class GravityLeakDetector:
 
     def _collect_ast_increments(self, tree: ast.AST) -> dict:
         """Phase 1: Pure AST walk — collect raw risk increments."""
-        increments = {"app_rg": 0.0, "app_lic": 0.0, "territories": {t: 0.0 for t in CORE_TERRITORY_KEYWORDS}}
+        increments = {"app_rg": 0.0, "app_lic": 0.0, "territories": dict.fromkeys(CORE_TERRITORY_KEYWORDS, 0.0)}
 
         for node in ast.walk(tree):
-            if isinstance(node, (ast.ClassDef, ast.FunctionDef)):
+            if isinstance(node, ast.ClassDef | ast.FunctionDef):
                 self._score_identifier(node.name.lower(), 1.0, increments)
             elif isinstance(node, ast.arguments):
                 self._score_arguments(node, increments)
@@ -155,7 +146,7 @@ class GravityLeakDetector:
     # GRAVITY VIOLATION HEALING (Phase 4)
     # ========================================================================
 
-    def _heal_gravity_violations(self, gravity_issues: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def _heal_gravity_violations(self, gravity_issues: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Helper method to heal gravity violations by removing offending imports."""
         gravity_heal_actions = []
         for grav in gravity_issues:
@@ -171,7 +162,9 @@ class GravityLeakDetector:
                 lines = content.splitlines()
 
                 # Import from LocationHealerAgent
-                from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
+                from agentic_core.L5_safety.validators.LocationHealerAgent import (
+                    LocationHealerAgent,
+                )
                 healer = LocationHealerAgent(project_root=self.project_root)
                 new_lines, removed_modules = healer._remove_offending_imports(lines, downstream_roots)
 
@@ -194,7 +187,7 @@ class GravityLeakDetector:
 
         return gravity_heal_actions
 
-    def _extract_downstream_roots(self, msg: str) -> List[str]:
+    def _extract_downstream_roots(self, msg: str) -> list[str]:
         """Extract downstream roots from gravity violation message."""
         downstream_match = re.search(r"downstream roots: \[(.*?)\]", msg)
         if downstream_match:
@@ -206,7 +199,7 @@ class GravityLeakDetector:
 
         return []
 
-    def _insert_gravity_heal_todo(self, lines: List[str], msg: str, removed_modules: List[str]) -> str:
+    def _insert_gravity_heal_todo(self, lines: list[str], msg: str, removed_modules: list[str]) -> str:
         """Insert TODO block after shebang/docstring."""
         todo_block = [
             "",
@@ -221,7 +214,7 @@ class GravityLeakDetector:
         new_lines = lines[:insert_idx] + todo_block + lines[insert_idx:]
         return "\n".join(new_lines)
 
-    def _find_todo_insert_position(self, lines: List[str]) -> int:
+    def _find_todo_insert_position(self, lines: list[str]) -> int:
         """Find position to insert TODO block after shebang/docstring."""
         insert_idx = 0
 

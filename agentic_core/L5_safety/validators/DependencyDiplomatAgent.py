@@ -5,6 +5,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """
 ⚛️ Dependency Diplomat - Graph Optimizer
 
@@ -21,27 +22,25 @@ import json
 import logging
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol, Set
-from agentic_core.utils.ssot_discovery import get_python_files
+from typing import Any
+
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.utils.ssot_discovery import get_python_files
+
 try:
     import redis
     REDIS_AVAILABLE: Any = True
 except ImportError:
     REDIS_AVAILABLE: Any = False
 from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
+from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import (
+    SubatomicTestingMixin,
+)
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.decorators import standard_heal
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.sovereign_index import SovereignIndex
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -49,15 +48,15 @@ Logger: Any = logging.getLogger(__name__)
 class ImportNode:
     """Represents a file in the import graph."""
     file_path: str
-    imports: Set[str] = field(default_factory=set)
-    imported_by: Set[str] = field(default_factory=set)
+    imports: set[str] = field(default_factory=set)
+    imported_by: set[str] = field(default_factory=set)
 
 @dataclass
 class BlastRadius:
     """Blast radius analysis for a modified file."""
     modified_file: str
-    direct_dependents: List[str]
-    indirect_dependents: List[str]
+    direct_dependents: list[str]
+    indirect_dependents: list[str]
     total_affected: int
     depth: int
 
@@ -106,7 +105,7 @@ class DependencyDiplomatAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
             except Exception as e:
                 Logger.warning(f'[!]  Could not connect to Redis: {e}')
                 self.redis_available = False
-        self.graph: Dict[str, ImportNode] = {}
+        self.graph: dict[str, ImportNode] = {}
 
     async def execute(self) -> Any:
         """
@@ -140,17 +139,17 @@ class DependencyDiplomatAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
         if self.redis_available:
             self._persist_to_redis()
 
-    def _find_python_files(self) -> List[str]:
+    def _find_python_files(self) -> list[str]:
         """Find all Python files in agentic_core using SSOT discovery."""
         project_root = Path(__file__).parent.parent.parent.parent
         all_py = get_python_files(project_root)
         return [str(f) for f in all_py if 'agentic_core' in str(f)]
 
-    def _parse_imports(self, file_path: str) -> Set[str]:
+    def _parse_imports(self, file_path: str) -> set[str]:
         """Parse imports from a Python file."""
         imports = set()
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 source = f.read()
         except Exception:
             return imports
@@ -220,7 +219,7 @@ class DependencyDiplomatAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
     def _report_blast_radius(self, BlastRadius: BlastRadius) -> Any:
         """Report blast radius analysis."""
         Logger.info(f"\n{'=' * 80}")
-        Logger.info(f'🔗 BLAST RADIUS ANALYSIS')
+        Logger.info('🔗 BLAST RADIUS ANALYSIS')
         Logger.info(f"{'=' * 80}")
         Logger.info(f'Modified File: {BlastRadius.modified_file}')
         Logger.info(f'Direct Dependents: {len(BlastRadius.direct_dependents)}')
@@ -228,20 +227,20 @@ class DependencyDiplomatAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
         Logger.info(f'Total Affected: {BlastRadius.total_affected}')
         Logger.info(f'Max Depth: {BlastRadius.depth}')
         if BlastRadius.direct_dependents:
-            Logger.info(f'\nDirect Dependents (showing first 10):')
+            Logger.info('\nDirect Dependents (showing first 10):')
             for dep in BlastRadius.direct_dependents[:10]:
                 Logger.info(f'  - {dep}')
             if len(BlastRadius.direct_dependents) > 10:
                 Logger.info(f'  ... and {len(BlastRadius.direct_dependents) - 10} more')
         if BlastRadius.indirect_dependents:
-            Logger.info(f'\nIndirect Dependents (showing first 10):')
+            Logger.info('\nIndirect Dependents (showing first 10):')
             for dep in BlastRadius.indirect_dependents[:10]:
                 Logger.info(f'  - {dep}')
             if len(BlastRadius.indirect_dependents) > 10:
                 Logger.info(f'  ... and {len(BlastRadius.indirect_dependents) - 10} more')
         Logger.info(f"{'=' * 80}\n")
 
-    def calculate_impact_scope(self, modified_files: List[str], max_depth: int=2) -> List[str]:
+    def calculate_impact_scope(self, modified_files: list[str], max_depth: int=2) -> list[str]:
         """
         Calculate impact scope for modified files using BFS on reverse dependency graph.
 
@@ -275,7 +274,7 @@ class DependencyDiplomatAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
         Logger.info(f'   Impact scope: {len(result)} files (depth limit: {max_depth})')
         return result
 
-    def get_surgical_target_list(self, modified_files: List[str]) -> List[str]:
+    def get_surgical_target_list(self, modified_files: list[str]) -> list[str]:
         """
         Get surgical target list for modified files.
 
@@ -302,7 +301,7 @@ class DependencyDiplomatAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L2 execution agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:

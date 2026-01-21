@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Sovereign Migration Script - Physical Path Remediation
 Responsible for:
@@ -9,9 +10,11 @@ Responsible for:
 import os
 import shutil
 from pathlib import Path
-from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
 from typing import Any
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+
+from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
+
+
 # [PHASE 20] DEPRECATION: void_compliance.py removed
 def get_placement_guidance(content_preview):
     if any(x in content_preview for x in ['planner', 'strategy', 'reasoning', 'mission']):
@@ -36,7 +39,7 @@ def migrate_shallow_files(project_root: str) -> Any:
     print(f'[*] Found {len(shallow_files)} shallow files requiring migration.')
     for file_path in shallow_files:
         try:
-            with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
+            with open(file_path, encoding='utf-8', errors='replace') as f:
                 content: Any = f.read(3000)
             target_subpath: Any = get_placement_guidance(content)
             target_dir: Any = root_path / target_subpath

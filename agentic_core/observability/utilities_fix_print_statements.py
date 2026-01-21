@@ -1,14 +1,15 @@
 from __future__ import annotations
+
 """
 Script to replace print statements with logging calls.
 This will fix Key 2 (print statements) violations.
 """
 import os
 import re
-from services.configuration import ConfigurationService
 from typing import Any
-from agentic_core.utils.sovereign_index import SovereignIndex
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+
+from services.configuration import ConfigurationService
+
 
 def _should_add_logging_imports(content):
     """Check if logging import and Logger instance already exist in the content."""
@@ -41,7 +42,7 @@ def _replace_prints_with_logger(content):
 def replace_prints_in_file(filepath: Any) -> Any:
     """Replace print statements with logging calls."""
     try:
-        with open(filepath, 'r', encoding='utf-8') as f:
+        with open(filepath, encoding='utf-8') as f:
             content: Any = f.read()
         if _should_add_logging_imports(content):
             content: Any = _add_logging_imports(content)

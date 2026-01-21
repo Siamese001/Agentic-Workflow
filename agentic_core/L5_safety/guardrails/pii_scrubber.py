@@ -1,15 +1,15 @@
 from __future__ import annotations
+
 """PII Detection and Sanitization.
 
 Phase 1 - Pillar 9: Safety & Policy (Control Plane & Guardrails)
 Migrated from archives/engines/legacy_engines/safety_enhancements.py
 """
 
-import re
 import logging
-from dataclasses import dataclass, field
+import re
+from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, List, Optional, Tuple
 
 Logger = logging.getLogger(__name__)
 
@@ -32,7 +32,7 @@ class PIIMatch:
     PiiType: PIIType
     original: str
     redaction_token: str
-    position: Tuple[int, int]
+    position: tuple[int, int]
     confidence: float = 1.0
 
 
@@ -41,17 +41,17 @@ class PIIResult:
     """PII detection and scrubbing result."""
     original_text: str
     scrubbed_text: str
-    detected_pii: List[PIIMatch]
-    redaction_tokens: Dict[str, str]
+    detected_pii: list[PIIMatch]
+    redaction_tokens: dict[str, str]
     is_compliant: bool
 
     def has_pii(self) -> bool:
         """Check if any PII was detected."""
         return len(self.detected_pii) > 0
 
-    def get_pii_types(self) -> List[PIIType]:
+    def get_pii_types(self) -> list[PIIType]:
         """Get list of detected PII types."""
-        return list(set(match.PiiType for match in self.detected_pii))
+        return list({match.PiiType for match in self.detected_pii})
 
 
 class PIIScrubber:
@@ -79,7 +79,7 @@ class PIIScrubber:
             PIIType.DOB: r'\b(?:0?[1-9]|1[0-2])[/-](?:0?[1-9]|[12][0-9]|3[01])[/-](?:19|20)\d{2}\b',
         }
 
-        self.redaction_map: Dict[str, str] = {}
+        self.redaction_map: dict[str, str] = {}
         self.redaction_counter = 0
 
     def scrub_text(self, text: str) -> PIIResult:
@@ -100,7 +100,7 @@ class PIIScrubber:
                 is_compliant=True,
             )
 
-        detected_pii: List[PIIMatch] = []
+        detected_pii: list[PIIMatch] = []
         scrubbed_text = text
 
         for PiiType, pattern in self.pii_patterns.items():

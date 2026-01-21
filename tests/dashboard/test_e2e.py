@@ -6,10 +6,10 @@ Comprehensive end-to-end tests for the dashboard.
 
 Migrated from: agentic_core/L5_safety/validators/test_dashboard_end_to_end.py
 """
-import json
-import pytest
 import sys
 from pathlib import Path
+
+import pytest
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))

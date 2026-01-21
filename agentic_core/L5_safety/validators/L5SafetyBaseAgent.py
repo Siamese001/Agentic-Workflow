@@ -5,6 +5,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """L5SafetyBaseAgent — L5 Base with Healing Capability (Phase 3)
 
 L5 Safety agents perform validation, enforcement, and compliance checking.
@@ -19,15 +20,15 @@ MRO HARDENING:
 - MCPHardenedMixin is now in SovereignBaseAgent - DO NOT add it here
 - MRO: RedisCacheMixin -> PineconeVectorMixin -> SovereignBaseAgent -> MCPHardenedMixin -> object
 """
-from typing import Any, Dict, List, Optional
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 import logging
 import re
+from typing import Any
 
 from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
-from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
+from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger = logging.getLogger(__name__)
 
@@ -86,7 +87,7 @@ class L5SafetyBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent
         r'DAN\s+mode',
     ]
 
-    def __init__(self, project_root: Optional[Any] = None, ctx: Optional[Any] = None, **kwargs: Any) -> None:
+    def __init__(self, project_root: Any | None = None, ctx: Any | None = None, **kwargs: Any) -> None:
         """
         Initialize with cooperative MRO inheritance.
 
@@ -99,8 +100,8 @@ class L5SafetyBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent
         mixins in the MRO are properly initialized.
         """
         super().__init__(**kwargs)  # Propagate up MRO chain
-        self.project_root: Optional[Any] = project_root
-        self._l5_ctx: Optional[Any] = ctx
+        self.project_root: Any | None = project_root
+        self._l5_ctx: Any | None = ctx
 
     def _run_self_tests(self) -> bool:
         """Phase 1: Self-testing for L5 compliance."""
@@ -111,7 +112,7 @@ class L5SafetyBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent
     # L5-SPECIFIC LAYER METHODS: Safety/Validation
     # =========================================================================
 
-    def validate(self, input_text: str, context: Dict[str, Any] = None) -> Dict[str, Any]:
+    def validate(self, input_text: str, context: dict[str, Any] = None) -> dict[str, Any]:
         """L5-specific: Multi-stage validation pipeline with cascading checks.
 
         Args:
@@ -165,7 +166,7 @@ class L5SafetyBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent
             'failure_count': len(failures)
         }
 
-    def redact(self, output_text: str, redact_types: List[str] = None) -> str:
+    def redact(self, output_text: str, redact_types: list[str] = None) -> str:
         """L5-specific: PII and sensitive data masking.
 
         Args:
@@ -185,11 +186,11 @@ class L5SafetyBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent
                 redacted = re.sub(pattern, replacement, redacted, flags=re.IGNORECASE)
 
         if redacted != output_text:
-            self.log_info(f"Redacted sensitive data from output")
+            self.log_info("Redacted sensitive data from output")
 
         return redacted
 
-    def sanitize_output(self, output: str, context: Dict[str, Any] = None) -> Dict[str, Any]:
+    def sanitize_output(self, output: str, context: dict[str, Any] = None) -> dict[str, Any]:
         """L5-specific: Full output sanitization pipeline.
 
         Args:
@@ -219,7 +220,7 @@ class L5SafetyBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent
             'was_modified': sanitized != output
         }
 
-    def _check_toxicity(self, text: str) -> Dict[str, Any]:
+    def _check_toxicity(self, text: str) -> dict[str, Any]:
         """Check for toxic/harmful content."""
         matches = []
         for pattern in self.TOXICITY_PATTERNS:
@@ -234,7 +235,7 @@ class L5SafetyBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent
             'message': f"Found {len(matches)} toxic patterns" if matches else "No toxicity detected"
         }
 
-    def _check_pii(self, text: str) -> Dict[str, Any]:
+    def _check_pii(self, text: str) -> dict[str, Any]:
         """Check for PII in text."""
         found_pii = {}
         for pii_type, pattern in self.PII_PATTERNS.items():
@@ -249,7 +250,7 @@ class L5SafetyBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent
             'message': f"Found PII: {list(found_pii.keys())}" if found_pii else "No PII detected"
         }
 
-    def _check_jailbreak(self, text: str) -> Dict[str, Any]:
+    def _check_jailbreak(self, text: str) -> dict[str, Any]:
         """Check for jailbreak/prompt injection attempts."""
         matches = []
         for pattern in self.JAILBREAK_PATTERNS:
@@ -264,7 +265,7 @@ class L5SafetyBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent
             'message': f"Detected {len(matches)} jailbreak attempts" if matches else "No jailbreak detected"
         }
 
-    def _check_policy_violation(self, text: str, policies: List[Dict]) -> Dict[str, Any]:
+    def _check_policy_violation(self, text: str, policies: list[dict]) -> dict[str, Any]:
         """Check against custom policy rules."""
         violations = []
 
@@ -282,7 +283,7 @@ class L5SafetyBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L5 safety base - operational healing with validation."""
         if _call_path is None:
             _call_path = set()

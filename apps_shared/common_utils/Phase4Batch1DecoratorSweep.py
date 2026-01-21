@@ -10,11 +10,9 @@ Usage:
 """
 from __future__ import annotations
 
-import ast
 import argparse
 import re
 from pathlib import Path
-from typing import List, Tuple, Set
 
 # Files to EXCLUDE from refactoring (sources of truth)
 EXCLUDED_FILES = {
@@ -40,7 +38,7 @@ DECORATOR_IMPORT = "from agentic_core.L5_safety.validators.decorators import sta
 DECORATOR_NAME = "@standard_heal"
 
 
-def find_python_files(root: Path) -> List[Path]:
+def find_python_files(root: Path) -> list[Path]:
     """Find all Python files in agentic_core, excluding specified directories."""
     files = []
     for path in root.rglob("*.py"):
@@ -102,7 +100,7 @@ def find_import_insertion_point(content: str) -> int:
     return last_import_line
 
 
-def add_decorator_to_heal_repository(content: str) -> Tuple[str, int]:
+def add_decorator_to_heal_repository(content: str) -> tuple[str, int]:
     """Add @standard_heal decorator to heal_repository methods.
 
     Returns:
@@ -249,7 +247,7 @@ def main():
             rel_path = file_path.relative_to(root.parent)
             print(f"  {'[WOULD MODIFY]' if dry_run else '[MODIFIED]'} {rel_path}")
             if result["import_added"]:
-                print(f"    + Added import")
+                print("    + Added import")
             if result["decorators_added"]:
                 print(f"    + Added {result['decorators_added']} decorator(s)")
 

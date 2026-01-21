@@ -23,7 +23,7 @@ def test_1_ssot_discovery_utility_exists():
 
     utility_path = PROJECT_ROOT / "agentic_core" / "utils" / "ssot_discovery.py"
     assert utility_path.exists(), "ssot_discovery.py not found"
-    print(f"   ✓ ssot_discovery.py exists")
+    print("   ✓ ssot_discovery.py exists")
 
     # Check it has the expected functions
     content = utility_path.read_text(encoding='utf-8')
@@ -40,7 +40,7 @@ def test_1_ssot_discovery_utility_exists():
         assert f"def {func}" in content, f"Missing function: {func}"
         print(f"   ✓ Has function: {func}")
 
-    print(f"✅ PASSED: SSOT discovery utility exists with all functions")
+    print("✅ PASSED: SSOT discovery utility exists with all functions")
     return True
 
 
@@ -52,9 +52,9 @@ def test_2_ssot_utility_works():
 
     try:
         from agentic_core.utils.ssot_discovery import (
-            load_agent_discovery,
-            get_agent_paths,
             get_agent_names,
+            get_agent_paths,
+            load_agent_discovery,
         )
 
         # Test load_agent_discovery
@@ -75,7 +75,7 @@ def test_2_ssot_utility_works():
         assert len(names) > 0, "Should have at least some names"
         print(f"   ✓ get_agent_names: {len(names)} names")
 
-        print(f"✅ PASSED: SSOT discovery utility works correctly")
+        print("✅ PASSED: SSOT discovery utility works correctly")
         return True
 
     except ImportError as e:
@@ -93,7 +93,7 @@ def test_3_autonomy_guardian_uses_ssot():
     content = agent_path.read_text(encoding='utf-8')
 
     assert "agent_discovery_full.json" in content, "Should use discovery JSON"
-    print(f"   ✓ Uses agent_discovery_full.json")
+    print("   ✓ Uses agent_discovery_full.json")
 
     # Check that project_root.rglob is not used for agent scanning
     lines = content.split('\n')
@@ -108,9 +108,9 @@ def test_3_autonomy_guardian_uses_ssot():
                 print(f"   ✗ Problematic rglob at line {i+1}")
 
     assert not problematic, "Should not have problematic project_root.rglob"
-    print(f"   ✓ No problematic project_root.rglob patterns")
+    print("   ✓ No problematic project_root.rglob patterns")
 
-    print(f"✅ PASSED: AutonomyGuardianAgent uses SSOT")
+    print("✅ PASSED: AutonomyGuardianAgent uses SSOT")
     return True
 
 
@@ -126,13 +126,13 @@ def test_4_compliance_orchestrator_uses_ssot():
     # Check for SSOT usage
     assert "ssot_discovery" in content or "agent_discovery_full.json" in content, \
         "Should use SSOT discovery"
-    print(f"   ✓ Uses SSOT discovery")
+    print("   ✓ Uses SSOT discovery")
 
     # Check that the old full scan is replaced
     assert "[SSOT]" in content, "Should have SSOT comments"
-    print(f"   ✓ Has SSOT comments")
+    print("   ✓ Has SSOT comments")
 
-    print(f"✅ PASSED: ComplianceOrchestratorAgent uses SSOT")
+    print("✅ PASSED: ComplianceOrchestratorAgent uses SSOT")
     return True
 
 
@@ -148,14 +148,14 @@ def test_5_naming_agent_uses_ssot():
     # Check for SSOT usage
     assert "ssot_discovery" in content or "agentic_core_dir" in content, \
         "Should use SSOT or limited fallback"
-    print(f"   ✓ Uses SSOT or limited fallback")
+    print("   ✓ Uses SSOT or limited fallback")
 
     # Check that fallback is limited to agentic_core
     assert 'agentic_core_dir = self.project_root / "agentic_core"' in content, \
         "Fallback should be limited to agentic_core"
-    print(f"   ✓ Fallback limited to agentic_core")
+    print("   ✓ Fallback limited to agentic_core")
 
-    print(f"✅ PASSED: NamingAgent uses SSOT")
+    print("✅ PASSED: NamingAgent uses SSOT")
     return True
 
 
@@ -170,13 +170,13 @@ def test_6_agent_discovery_audit_uses_ssot():
 
     # Check for SSOT usage
     assert "agent_discovery_full.json" in content, "Should use discovery JSON"
-    print(f"   ✓ Uses agent_discovery_full.json")
+    print("   ✓ Uses agent_discovery_full.json")
 
     # Check for SSOT comment
     assert "[SSOT]" in content, "Should have SSOT comment"
-    print(f"   ✓ Has SSOT comment")
+    print("   ✓ Has SSOT comment")
 
-    print(f"✅ PASSED: agent_discovery_audit.py uses SSOT")
+    print("✅ PASSED: agent_discovery_audit.py uses SSOT")
     return True
 
 
@@ -191,13 +191,13 @@ def test_7_filesystem_reconciler_uses_ssot():
 
     # Check for SSOT usage
     assert "agent_discovery_full.json" in content, "Should use discovery JSON"
-    print(f"   ✓ Uses agent_discovery_full.json")
+    print("   ✓ Uses agent_discovery_full.json")
 
     # Check for SSOT comment
     assert "[SSOT]" in content, "Should have SSOT comment"
-    print(f"   ✓ Has SSOT comment")
+    print("   ✓ Has SSOT comment")
 
-    print(f"✅ PASSED: FilesystemSSOTReconcilerAgent uses SSOT")
+    print("✅ PASSED: FilesystemSSOTReconcilerAgent uses SSOT")
     return True
 
 
@@ -232,7 +232,7 @@ def test_8_no_backup_scanning():
 
         print(f"   ✓ {file_path.name}: No unprotected project_root.rglob")
 
-    print(f"✅ PASSED: No backup directory scanning")
+    print("✅ PASSED: No backup directory scanning")
     return True
 
 

@@ -18,7 +18,6 @@ from __future__ import annotations
 import argparse
 import re
 from pathlib import Path
-from typing import List, Tuple, Optional
 
 # Files to EXCLUDE from refactoring
 EXCLUDED_FILES = {
@@ -43,7 +42,7 @@ EXCLUDED_DIRS = {
 STANDARD_HEAL_IMPORT = "from agentic_core.L5_safety.validators.decorators import standard_heal"
 
 
-def find_python_files(root: Path) -> List[Path]:
+def find_python_files(root: Path) -> list[Path]:
     """Find all Python files, excluding specified directories."""
     files = []
     for path in root.rglob("*.py"):
@@ -142,7 +141,7 @@ def insert_import_safely(content: str, import_line: str) -> str:
     return '\n'.join(lines)
 
 
-def add_decorator_to_heal_repository(content: str) -> Tuple[str, int]:
+def add_decorator_to_heal_repository(content: str) -> tuple[str, int]:
     """Add @standard_heal decorator to heal_repository methods.
 
     Returns:
@@ -279,7 +278,7 @@ def main():
             rel_path = file_path.relative_to(root.parent)
             print(f"  {'[WOULD MODIFY]' if dry_run else '[MODIFIED]'} {rel_path}")
             if result["import_added"]:
-                print(f"    + Added standard_heal import")
+                print("    + Added standard_heal import")
             if result["decorators_added"]:
                 print(f"    + Added {result['decorators_added']} @standard_heal decorator(s)")
 

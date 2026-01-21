@@ -1,9 +1,10 @@
 from __future__ import annotations
+
 """
 Validation Protocol - Dependency Inversion for L1 → L4
 Defines the interface L1 needs without depending on L4 implementation.
 """
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any, Protocol
 
 
 # NAMING FIXED: ValidationProtocol → ValidationProtocol
@@ -26,7 +27,7 @@ class ValidationProtocol(Protocol):
         """Add a validation Violation."""
         ...
 
-    def get_violations(self) -> List[Dict[str, Any]]:
+    def get_violations(self) -> list[dict[str, Any]]:
         """Get all recorded violations."""
         ...
 
@@ -34,7 +35,7 @@ class ValidationProtocol(Protocol):
         """Check if any violations were recorded."""
         ...
 
-    def get_cache(self, key: str) -> Optional[Any]:
+    def get_cache(self, key: str) -> Any | None:
         """Get cached value."""
         ...
 
@@ -42,7 +43,7 @@ class ValidationProtocol(Protocol):
         """Set cached value."""
         ...
 
-    def get_metadata(self, key: str) -> Optional[Any]:
+    def get_metadata(self, key: str) -> Any | None:
         """Get metadata value."""
         ...
 

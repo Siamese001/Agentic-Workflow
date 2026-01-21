@@ -1,4 +1,4 @@
-from orchestration.control_plane import SafetyContext, PolicyRule, evaluate_rules
+from orchestration.control_plane import PolicyRule, SafetyContext, evaluate_rules
 
 
 def test_rules_engine_detects_pii_email() -> None:

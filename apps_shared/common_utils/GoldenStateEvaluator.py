@@ -8,11 +8,11 @@ import json
 import logging
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from observability.golden_state import (
-    JudgeEvaluator,
     JudgeEvaluationResult,
+    JudgeEvaluator,
     create_judge_evaluator,
 )
 
@@ -26,13 +26,13 @@ class GoldenCase:
     name: str
     category: str
     mission: str
-    scene: Dict[str, Any]
-    expected_output: Dict[str, Any]
-    expected_actions: List[Dict[str, Any]]
-    quality_criteria: Dict[str, float]
+    scene: dict[str, Any]
+    expected_output: dict[str, Any]
+    expected_actions: list[dict[str, Any]]
+    quality_criteria: dict[str, float]
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "GoldenCase":
+    def from_dict(cls, data: dict[str, Any]) -> "GoldenCase":
         """Create from dictionary."""
         return cls(
             id=data["id"],
@@ -51,9 +51,9 @@ class GoldenOutput:
     """Output from agent execution."""
     case_id: str
     actual_output: str
-    actions_taken: List[Dict[str, Any]] = field(default_factory=list)
-    execution_trace: List[Dict[str, Any]] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    actions_taken: list[dict[str, Any]] = field(default_factory=list)
+    execution_trace: list[dict[str, Any]] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -64,9 +64,9 @@ class EvaluationReport:
     passed: bool
     judge_result: JudgeEvaluationResult
     action_match_score: float
-    errors: List[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "case_id": self.case_id,
@@ -87,8 +87,8 @@ class GoldenStateEvaluator:
 
     def __init__(
         self,
-        dataset_path: Optional[Path] = None,
-        JudgeEvaluator: Optional[JudgeEvaluator] = None,
+        dataset_path: Path | None = None,
+        JudgeEvaluator: JudgeEvaluator | None = None,
         enable_logging: bool = True,
     ):
         """Initialize evaluator.
@@ -102,13 +102,13 @@ class GoldenStateEvaluator:
         self.JudgeEvaluator = JudgeEvaluator or create_judge_evaluator()
         self.enable_logging = enable_logging
 
-        self.golden_cases: List[GoldenCase] = []
+        self.golden_cases: list[GoldenCase] = []
         self._load_cases()
 
     def _load_cases(self) -> None:
         """Load golden test cases from dataset."""
         try:
-            with open(self.dataset_path, 'r') as f:
+            with open(self.dataset_path) as f:
                 data = json.load(f)
 
             for case_data in data.get("test_cases", []):
@@ -149,7 +149,7 @@ class GoldenStateEvaluator:
         Returns:
             EvaluationReport with results
         """
-        errors: List[str] = []
+        errors: list[str] = []
 
         # Evaluate with judge
         expected_output = case.expected_output
@@ -212,8 +212,8 @@ class GoldenStateEvaluator:
 
     def _evaluate_actions(
         self,
-        expected: List[Dict[str, Any]],
-        actual: List[Dict[str, Any]],
+        expected: list[dict[str, Any]],
+        actual: list[dict[str, Any]],
     ) -> float:
         """Evaluate action matching.
 
@@ -244,9 +244,9 @@ class GoldenStateEvaluator:
 
     def _check_output_constraints(
         self,
-        expected: Dict[str, Any],
+        expected: dict[str, Any],
         actual: str,
-        errors: List[str],
+        errors: list[str],
     ) -> None:
         """Check output constraints.
 
@@ -281,8 +281,8 @@ class GoldenStateEvaluator:
 
     async def evaluate_all(
         self,
-        outputs: Dict[str, GoldenOutput],
-    ) -> Dict[str, EvaluationReport]:
+        outputs: dict[str, GoldenOutput],
+    ) -> dict[str, EvaluationReport]:
         """Evaluate all golden cases.
 
         Args:
@@ -291,7 +291,7 @@ class GoldenStateEvaluator:
         Returns:
             Dict of case_id -> EvaluationReport
         """
-        reports: Dict[str, EvaluationReport] = {}
+        reports: dict[str, EvaluationReport] = {}
 
         for case in self.golden_cases:
             if case.id in outputs:
@@ -302,8 +302,8 @@ class GoldenStateEvaluator:
 
     def generate_summary(
         self,
-        reports: Dict[str, EvaluationReport],
-    ) -> Dict[str, Any]:
+        reports: dict[str, EvaluationReport],
+    ) -> dict[str, Any]:
         """Generate summary of evaluation results.
 
         Args:
@@ -343,7 +343,7 @@ class GoldenStateEvaluator:
         }
 
 
-def load_golden_cases(dataset_path: Optional[Path] = None) -> List[GoldenCase]:
+def load_golden_cases(dataset_path: Path | None = None) -> list[GoldenCase]:
     """Load golden test cases.
 
     Args:

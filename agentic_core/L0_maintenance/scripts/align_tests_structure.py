@@ -1,16 +1,18 @@
 from __future__ import annotations
+
 """
 TEST STRUCTURE ALIGNMENT
 Ensures all test directories have __init__.py for Python package recognition.
 """
 import os
-from agentic_core.L5_safety.validators.structure_blueprint import TESTS_L2_SUBFOLDER_MAP
 from typing import Any
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+
+from agentic_core.L5_safety.validators.structure_blueprint import TESTS_L2_SUBFOLDER_MAP
+
 
 def align_tests_structure(root_path: Any) -> Any:
     """Brief description of functionality and purpose."""
-    print(f'--- ALIGNING TESTS WITH SOVEREIGN LAW ---')
+    print('--- ALIGNING TESTS WITH SOVEREIGN LAW ---')
     tests_root: Any = os.path.join(root_path, 'tests')
     for l1, l2_list in TESTS_L2_SUBFOLDER_MAP.items():
         l1_path: Any = os.path.join(tests_root, l1)

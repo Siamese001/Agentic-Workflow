@@ -11,7 +11,6 @@ These tests ensure the 715-test baseline is maintained.
 """
 import sys
 from pathlib import Path
-from typing import List, Tuple
 
 import pytest
 
@@ -50,7 +49,6 @@ class TestGravityLeakDetectionConsistency:
 
     def test_gravity_detector_has_detection_methods(self):
         """Verify GravityLeakDetector has expected detection methods."""
-        from agentic_core.L5_safety.validators.GravityLeakDetector import GravityLeakDetector
 
         expected_attributes = [
             'CORE_TERRITORY_KEYWORDS',
@@ -65,9 +63,9 @@ class TestGravityLeakDetectionConsistency:
 
     def test_validator_and_gravity_use_same_utils(self):
         """Verify both agents use the same utility functions."""
-        from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
-        from agentic_core.L5_safety.validators.GravityLeakDetector import GravityLeakDetector
         from agentic_core.L5_safety.validators import location_utils
+        from agentic_core.L5_safety.validators.GravityLeakDetector import GravityLeakDetector
+        from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
 
         # Both should be importable without conflict
         assert LocationValidatorAgent is not None
@@ -91,17 +89,21 @@ class TestNoCircularLocationImports:
         """Import all location modules in sequence without errors."""
         try:
             # Core modules
-            from agentic_core.L5_safety.validators import location_utils
-            from agentic_core.L5_safety.validators import location_constants
-            from agentic_core.L5_safety.validators import structure_blueprint
-
-            # Specialist agents
-            from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
-            from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
+            from agentic_core.L5_safety.validators import (
+                location_constants,
+                location_utils,
+                structure_blueprint,
+            )
             from agentic_core.L5_safety.validators.GravityLeakDetector import GravityLeakDetector
 
             # Original monolith (backwards compat)
             from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+            from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
+
+            # Specialist agents
+            from agentic_core.L5_safety.validators.LocationValidatorAgent import (
+                LocationValidatorAgent,
+            )
 
             # All imports successful
             assert location_utils is not None
@@ -119,13 +121,17 @@ class TestNoCircularLocationImports:
         """Import in reverse order to catch order-dependent cycles."""
         try:
             # Reverse order from previous test
-            from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+            from agentic_core.L5_safety.validators import (
+                location_constants,
+                location_utils,
+                structure_blueprint,
+            )
             from agentic_core.L5_safety.validators.GravityLeakDetector import GravityLeakDetector
+            from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
             from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
-            from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
-            from agentic_core.L5_safety.validators import structure_blueprint
-            from agentic_core.L5_safety.validators import location_constants
-            from agentic_core.L5_safety.validators import location_utils
+            from agentic_core.L5_safety.validators.LocationValidatorAgent import (
+                LocationValidatorAgent,
+            )
 
             assert all([
                 LocationAgent, GravityLeakDetector, LocationHealerAgent,
@@ -139,8 +145,12 @@ class TestNoCircularLocationImports:
         """Verify L5 can import from L1 and vice versa without cycles."""
         try:
             # L5 importing L1
-            from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
-            from agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent import L1CognitionBaseAgent
+            from agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent import (
+                L1CognitionBaseAgent,
+            )
+            from agentic_core.L5_safety.validators.LocationValidatorAgent import (
+                LocationValidatorAgent,
+            )
 
             # Both should be available
             assert LocationValidatorAgent is not None
@@ -160,8 +170,8 @@ class TestCICollectionEnforcement:
 
     def test_minimum_test_count_715(self):
         """Verify at least 715 tests are collected."""
-        import subprocess
         import re
+        import subprocess
 
         result = subprocess.run(
             [sys.executable, "-m", "pytest", "--collect-only", "-q"],
@@ -215,8 +225,8 @@ class TestCICollectionEnforcement:
 
     def test_no_test_count_regression(self):
         """Verify test count hasn't regressed from baseline."""
-        import subprocess
         import re
+        import subprocess
 
         BASELINE_COUNT = 715  # Established baseline
 

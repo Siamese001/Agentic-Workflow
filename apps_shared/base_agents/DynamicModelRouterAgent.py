@@ -5,6 +5,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """
 ⚛️ Dynamic Model Router - The Throttler
 
@@ -23,26 +24,21 @@ Complexity-to-Budget Ratio ensures reasoning tokens never wasted on trivial task
 """
 import ast
 import logging
-import re
-from dataclasses import dataclass, field
-from enum import Enum, auto
-from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from dataclasses import dataclass
+from enum import Enum
+from typing import Any
+
+from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import (
+    SubatomicTestingMixin,
+)
+from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 
 from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.schemas.models.anomaly_report import AnomalyReport, AnomalySeverity
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
-
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger = logging.getLogger(__name__)
 
@@ -219,7 +215,7 @@ class DynamicModelRouterAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
             Complexity profile
         """
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 source = f.read()
         except Exception as e:
             Logger.warning(f"Could not read {file_path}: {e}")
@@ -287,7 +283,7 @@ class DynamicModelRouterAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
         visit(tree)
         return max_depth
 
-    def _extract_functions(self, tree: ast.AST) -> Dict:
+    def _extract_functions(self, tree: ast.AST) -> dict:
         """Extract function metadata."""
         functions = {}
 
@@ -397,7 +393,7 @@ class DynamicModelRouterAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
             complexity_score=30.0  # Medium default
         )
 
-    def get_routing_for_file(self, file_path: str) -> Optional[RoutingDecision]:
+    def get_routing_for_file(self, file_path: str) -> RoutingDecision | None:
         """
         Get routing decision for a specific file.
 
@@ -450,7 +446,7 @@ class DynamicModelRouterAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L2 execution agent - operational only."""
         if _call_path is None:
             _call_path = set()

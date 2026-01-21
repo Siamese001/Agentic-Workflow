@@ -3,12 +3,13 @@
 Detailed RCA for Strategic Health Tab - Critical Data Delay
 Diagnoses why Observations, Actions, Table 1, and Table 2 are not loading.
 """
-from playwright.sync_api import sync_playwright
-import time
-import threading
 import http.server
 import socketserver
+import threading
+import time
 from pathlib import Path
+
+from playwright.sync_api import sync_playwright
 
 project_root = Path(__file__).parent.parent
 
@@ -208,7 +209,7 @@ def diagnose_strategic_health():
         # Take screenshot
         print("\n8. SCREENSHOT:")
         page.screenshot(path=str(project_root / "rca_strategic_health.png"), full_page=True)
-        print(f"   Saved: rca_strategic_health.png")
+        print("   Saved: rca_strategic_health.png")
 
         # Analysis
         print("\n" + "="*80)

@@ -1,18 +1,20 @@
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 """HOP-1: Profile Analysis Agent - Classify recipient Archetype."""
 
 __version__ = "13.1"
 
 import logging
-from typing import Dict, Any
+from typing import Any
 
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
-
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from apps_lic.domain.lic_models import OutreachMission
 from apps_shared.utils.state_manager import StateManager
+
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 Logger = logging.getLogger(__name__)
 
@@ -28,7 +30,7 @@ class HOP1ProfileAnalysisAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMi
     Output: state/1_profile_analysis.json
     """
 
-    def __init__(self, config: Dict[str, Any]) -> None:
+    def __init__(self, config: dict[str, Any]) -> None:
         """
         Initialize with externalized configuration
 
@@ -100,7 +102,7 @@ class HOP1ProfileAnalysisAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMi
         # Write to state
         output_path = state_mgr.write_state("HOP-1", output_state)
 
-        print(f"✓ Profile Analysis Complete")
+        print("✓ Profile Analysis Complete")
         print(f"  Archetype: {Archetype}")
         print(f"  Confidence: {confidence:.2f}")
         print(f"  Reasoning: {reasoning}\n")

@@ -6,10 +6,13 @@ Investigates why dashboard rows were collapsed from 29 to fewer rows
 and analyzes the health score calculation logic.
 """
 import json
-from pathlib import Path
 
 # Import SSOT for dashboard directory - NO HARDCODING
-from agentic_core.L5_safety.validators.structure_blueprint import DASHBOARD_DIR, get_validated_project_root
+from agentic_core.L5_safety.validators.structure_blueprint import (
+    DASHBOARD_DIR,
+    get_validated_project_root,
+)
+
 
 def investigate_row_collapse():
     """Investigate why rows were collapsed."""
@@ -29,15 +32,15 @@ def investigate_row_collapse():
     json_str = html[start_idx+len(start_marker)-1:end_idx-1]
     data = json.loads(json_str)
 
-    print(f"\n📊 Current Dashboard State:")
+    print("\n📊 Current Dashboard State:")
     print(f"   Total rows: {len(data)}")
-    print(f"   Expected: 29 rows (TOTAL + 28 territories)")
+    print("   Expected: 29 rows (TOTAL + 28 territories)")
 
     # Analyze rows
     total_row = data[0]
     territory_rows = data[1:]
 
-    print(f"\n🔍 Row Analysis:")
+    print("\n🔍 Row Analysis:")
     print(f"   TOTAL row: {total_row.get('Territory')}")
     print(f"   Territory rows: {len(territory_rows)}")
 
@@ -45,43 +48,43 @@ def investigate_row_collapse():
     empty_territories = [r for r in territory_rows if r.get('Total', 0) == 0]
     non_empty_territories = [r for r in territory_rows if r.get('Total', 0) > 0]
 
-    print(f"\n📈 Territory Distribution:")
+    print("\n📈 Territory Distribution:")
     print(f"   Non-empty territories: {len(non_empty_territories)}")
     print(f"   Empty territories: {len(empty_territories)}")
 
     if empty_territories:
-        print(f"\n   Empty territories:")
+        print("\n   Empty territories:")
         for r in empty_territories:
             print(f"      - {r.get('Territory')}")
 
     # Analyze health score calculation
-    print(f"\n" + "=" * 70)
+    print("\n" + "=" * 70)
     print("HEALTH SCORE CALCULATION ANALYSIS")
     print("=" * 70)
 
-    print(f"\n🧮 Territory-Level Health Formula:")
-    print(f"   health = (test_pct + heal_inv_pct + obs_pct) / 3")
-    print(f"   This is NOT a weighted average of the 5 breakdown components!")
+    print("\n🧮 Territory-Level Health Formula:")
+    print("   health = (test_pct + heal_inv_pct + obs_pct) / 3")
+    print("   This is NOT a weighted average of the 5 breakdown components!")
 
-    print(f"\n⚠️  ISSUE FOUND: Health formula uses only 3 components:")
-    print(f"   1. Test %")
-    print(f"   2. Heal Invocation %")
-    print(f"   3. Observable %")
-    print(f"   Missing: Heal Cap %, Complexity Health")
+    print("\n⚠️  ISSUE FOUND: Health formula uses only 3 components:")
+    print("   1. Test %")
+    print("   2. Heal Invocation %")
+    print("   3. Observable %")
+    print("   Missing: Heal Cap %, Complexity Health")
 
-    print(f"\n📊 Health Breakdown String:")
-    print(f"   'Heal:XX+Inv:XX+Test:XX+Obs:XX+CC:XX'")
-    print(f"   Shows 5 components but Health only uses 3!")
+    print("\n📊 Health Breakdown String:")
+    print("   'Heal:XX+Inv:XX+Test:XX+Obs:XX+CC:XX'")
+    print("   Shows 5 components but Health only uses 3!")
 
     # Analyze TOTAL row calculation
-    print(f"\n" + "=" * 70)
+    print("\n" + "=" * 70)
     print("TOTAL ROW CALCULATION ANALYSIS")
     print("=" * 70)
 
     total_agents = total_row.get('Total', 0)
     total_health = total_row.get('Health', 0)
 
-    print(f"\n📊 TOTAL Row:")
+    print("\n📊 TOTAL Row:")
     print(f"   Total Agents: {total_agents}")
     print(f"   Health: {total_health}%")
 
@@ -89,18 +92,18 @@ def investigate_row_collapse():
     l6_rows = [r for r in territory_rows if 'L6_Observability' in r.get('Territory', '')]
     l6_agents = sum(r.get('Total', 0) for r in l6_rows)
 
-    print(f"\n🔍 L6 Observability Rows:")
+    print("\n🔍 L6 Observability Rows:")
     print(f"   Count: {len(l6_rows)}")
     print(f"   Total agents: {l6_agents}")
 
     if l6_rows:
-        print(f"   Territories:")
+        print("   Territories:")
         for r in l6_rows:
             print(f"      - {r.get('Territory')}: {r.get('Total', 0)} agents, Health: {r.get('Health', 0)}%")
 
     # Verify weighted average calculation
-    print(f"\n🧮 TOTAL Health Calculation:")
-    print(f"   Formula: weighted_avg(Health) = sum(territory_health * territory_agents) / total_agents")
+    print("\n🧮 TOTAL Health Calculation:")
+    print("   Formula: weighted_avg(Health) = sum(territory_health * territory_agents) / total_agents")
 
     # Calculate manually
     manual_health_sum = sum(r.get('Health', 0) * r.get('Total', 0) for r in non_empty_territories)
@@ -111,9 +114,9 @@ def investigate_row_collapse():
     print(f"   Match: {'✅ YES' if abs(manual_health_avg - total_health) < 0.1 else '❌ NO'}")
 
     # Check if empty rows are included in TOTAL calculation
-    print(f"\n⚠️  Empty Row Handling:")
-    print(f"   Empty territories are created to maintain wireframe")
-    print(f"   TOTAL calculation uses only non-empty rows (correct)")
+    print("\n⚠️  Empty Row Handling:")
+    print("   Empty territories are created to maintain wireframe")
+    print("   TOTAL calculation uses only non-empty rows (correct)")
 
     return {
         'total_rows': len(data),
@@ -127,60 +130,60 @@ def investigate_row_collapse():
 
 def analyze_health_formula():
     """Analyze the health formula in detail."""
-    print(f"\n" + "=" * 70)
+    print("\n" + "=" * 70)
     print("DETAILED HEALTH FORMULA ANALYSIS")
     print("=" * 70)
 
-    print(f"\n📋 Current Formula (Line 241):")
-    print(f"   health = round((test_pct + heal_inv_pct + obs_pct) / 3, 1)")
+    print("\n📋 Current Formula (Line 241):")
+    print("   health = round((test_pct + heal_inv_pct + obs_pct) / 3, 1)")
 
-    print(f"\n📋 Health Breakdown String (Line 288):")
-    print(f"   'Heal:{{heal_cap_pct}}+Inv:{{heal_inv_pct}}+Test:{{test_pct}}+Obs:{{obs_pct}}+CC:{{complexity_health}}'")
+    print("\n📋 Health Breakdown String (Line 288):")
+    print("   'Heal:{heal_cap_pct}+Inv:{heal_inv_pct}+Test:{test_pct}+Obs:{obs_pct}+CC:{complexity_health}'")
 
-    print(f"\n❌ MISMATCH DETECTED:")
-    print(f"   Health Breakdown shows 5 components:")
-    print(f"      1. Heal Cap %")
-    print(f"      2. Heal Invocation %")
-    print(f"      3. Test %")
-    print(f"      4. Observable %")
-    print(f"      5. Complexity Health")
+    print("\n❌ MISMATCH DETECTED:")
+    print("   Health Breakdown shows 5 components:")
+    print("      1. Heal Cap %")
+    print("      2. Heal Invocation %")
+    print("      3. Test %")
+    print("      4. Observable %")
+    print("      5. Complexity Health")
 
-    print(f"\n   But Health calculation uses only 3:")
-    print(f"      1. Test %")
-    print(f"      2. Heal Invocation %")
-    print(f"      3. Observable %")
+    print("\n   But Health calculation uses only 3:")
+    print("      1. Test %")
+    print("      2. Heal Invocation %")
+    print("      3. Observable %")
 
-    print(f"\n💡 RECOMMENDATION:")
-    print(f"   If Health should be weighted average of 5 components:")
-    print(f"   health = (heal_cap_pct + heal_inv_pct + test_pct + obs_pct + complexity_health) / 5")
+    print("\n💡 RECOMMENDATION:")
+    print("   If Health should be weighted average of 5 components:")
+    print("   health = (heal_cap_pct + heal_inv_pct + test_pct + obs_pct + complexity_health) / 5")
 
-    print(f"\n   Or if current 3-component formula is correct:")
-    print(f"   Update Health Breakdown to only show: 'Inv:XX+Test:XX+Obs:XX'")
+    print("\n   Or if current 3-component formula is correct:")
+    print("   Update Health Breakdown to only show: 'Inv:XX+Test:XX+Obs:XX'")
 
 if __name__ == "__main__":
     results = investigate_row_collapse()
     analyze_health_formula()
 
-    print(f"\n" + "=" * 70)
+    print("\n" + "=" * 70)
     print("RCA SUMMARY")
     print("=" * 70)
 
-    print(f"\n🔍 Row Collapse Root Cause:")
-    print(f"   ✅ RESOLVED: Generator now creates all 29 rows (including empty territories)")
-    print(f"   Previous issue: Generator only created rows for territories with agents")
-    print(f"   Fix: Lines 340-372 now create empty rows to maintain wireframe")
+    print("\n🔍 Row Collapse Root Cause:")
+    print("   ✅ RESOLVED: Generator now creates all 29 rows (including empty territories)")
+    print("   Previous issue: Generator only created rows for territories with agents")
+    print("   Fix: Lines 340-372 now create empty rows to maintain wireframe")
 
-    print(f"\n⚠️  Health Score Issue:")
-    print(f"   ❌ UNRESOLVED: Health formula uses 3 components, breakdown shows 5")
-    print(f"   Location: generate_dashboard.py line 241")
-    print(f"   Action needed: Decide if formula should use 3 or 5 components")
+    print("\n⚠️  Health Score Issue:")
+    print("   ❌ UNRESOLVED: Health formula uses 3 components, breakdown shows 5")
+    print("   Location: generate_dashboard.py line 241")
+    print("   Action needed: Decide if formula should use 3 or 5 components")
 
-    print(f"\n✅ TOTAL Row Calculation:")
+    print("\n✅ TOTAL Row Calculation:")
     print(f"   Status: {'CORRECT' if results['total_calculation_correct'] else 'INCORRECT'}")
     print(f"   L6 Observability rows: {results['l6_rows']} territories, {results['l6_agents']} agents")
-    print(f"   These ARE included in TOTAL calculation (weighted by agent count)")
+    print("   These ARE included in TOTAL calculation (weighted by agent count)")
 
-    print(f"\n📊 Current State:")
+    print("\n📊 Current State:")
     print(f"   Total rows: {results['total_rows']}")
     print(f"   Expected: {results['expected_rows']}")
     print(f"   Status: {'✅ CORRECT' if results['total_rows'] == results['expected_rows'] else '❌ INCORRECT'}")

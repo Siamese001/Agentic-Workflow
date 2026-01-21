@@ -9,9 +9,9 @@ Verifies:
 
 Opportunity #3: rglob Scan Proliferation - Phase 6 Hardening
 """
+import shutil
 import sys
 import tempfile
-import shutil
 import warnings
 from pathlib import Path
 
@@ -20,7 +20,7 @@ import pytest
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.utils.scan_guard import guarded_rglob, DANGEROUS_DIRECTORIES
+from agentic_core.utils.scan_guard import DANGEROUS_DIRECTORIES, guarded_rglob
 
 
 class TestScanGuardBlocksBackups:

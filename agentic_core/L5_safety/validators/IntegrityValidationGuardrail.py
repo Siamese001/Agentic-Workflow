@@ -11,10 +11,11 @@ Composable Rules:
 """
 
 from __future__ import annotations
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass, field
+
 import hashlib
 import time
+from dataclasses import dataclass, field
+from typing import Any
 
 
 @dataclass
@@ -25,15 +26,15 @@ class IntegrityViolation:
     description: str
     expected: Any = None
     actual: Any = None
-    location: Optional[str] = None
+    location: str | None = None
 
 
 @dataclass
 class IntegrityResult:
     """Result of integrity validation."""
     valid: bool
-    violations: List[IntegrityViolation] = field(default_factory=list)
-    checksum: Optional[str] = None
+    violations: list[IntegrityViolation] = field(default_factory=list)
+    checksum: str | None = None
     validation_time_ms: float = 0.0
 
 
@@ -49,7 +50,7 @@ class IntegrityValidationGuardrail:
 
     def __init__(self):
         """Initialize integrity validation guardrail."""
-        self.enabled_rules: List[str] = [
+        self.enabled_rules: list[str] = [
             "integrity_checks",
             "gravity_compliance",
         ]
@@ -65,7 +66,7 @@ class IntegrityValidationGuardrail:
         }
 
         # Checksum registry
-        self.checksums: Dict[str, str] = {}
+        self.checksums: dict[str, str] = {}
 
         # Statistics
         self.validations_performed = 0
@@ -75,8 +76,8 @@ class IntegrityValidationGuardrail:
     async def validate_integrity(
         self,
         data: Any,
-        expected_checksum: Optional[str] = None,
-        data_id: Optional[str] = None
+        expected_checksum: str | None = None,
+        data_id: str | None = None
     ) -> IntegrityResult:
         """
         Validate data integrity.
@@ -135,8 +136,8 @@ class IntegrityValidationGuardrail:
     async def validate_gravity(
         self,
         source_layer: str,
-        imported_layers: List[str],
-        file_path: Optional[str] = None
+        imported_layers: list[str],
+        file_path: str | None = None
     ) -> IntegrityResult:
         """
         Validate gravity compliance (layer import rules).
@@ -196,7 +197,7 @@ class IntegrityValidationGuardrail:
         actual = self.calculate_checksum(data)
         return actual == expected
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get integrity validation statistics."""
         return {
             "validations_performed": self.validations_performed,

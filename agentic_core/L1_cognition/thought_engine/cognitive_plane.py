@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Cognitive Plane Interface - The Brain.
 
 Phase 2 - Pillar 1: Layering Model
@@ -9,7 +10,7 @@ L1 Cognition: Pure thought, no side effects.
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class CognitiveCapability(Enum):
@@ -26,13 +27,13 @@ class CognitiveCapability(Enum):
 class PlanningRequest:
     """Request for cognitive planning."""
     Task: str
-    context: Dict[str, Any] = field(default_factory=dict)
-    constraints: Dict[str, Any] = field(default_factory=dict)
-    capabilities_required: List[CognitiveCapability] = field(default_factory=list)
+    context: dict[str, Any] = field(default_factory=dict)
+    constraints: dict[str, Any] = field(default_factory=dict)
+    capabilities_required: list[CognitiveCapability] = field(default_factory=list)
     max_steps: int = 10
     reasoning_mode: str = "react"
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "Task": self.Task,
@@ -48,13 +49,13 @@ class PlanningRequest:
 class PlanningResult:
     """Result from cognitive planning."""
     success: bool
-    plan: List[Dict[str, Any]]
-    reasoning_trace: List[Dict[str, Any]] = field(default_factory=list)
+    plan: list[dict[str, Any]]
+    reasoning_trace: list[dict[str, Any]] = field(default_factory=list)
     confidence: float = 0.0
-    metadata: Dict[str, Any] = field(default_factory=dict)
-    errors: List[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
+    errors: list[str] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "success": self.success,
@@ -95,9 +96,9 @@ class ICognitivePlane(ABC):
     async def reason(
         self,
         query: str,
-        context: Dict[str, Any],
+        context: dict[str, Any],
         mode: str = "react",
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Apply reasoning to a query.
 
         Args:
@@ -113,9 +114,9 @@ class ICognitivePlane(ABC):
     @abstractmethod
     async def decide(
         self,
-        options: List[Dict[str, Any]],
-        criteria: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        options: list[dict[str, Any]],
+        criteria: dict[str, Any],
+    ) -> dict[str, Any]:
         """Make a decision between options.
 
         Args:
@@ -130,9 +131,9 @@ class ICognitivePlane(ABC):
     @abstractmethod
     async def reflect(
         self,
-        execution_trace: List[Dict[str, Any]],
-        outcome: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        execution_trace: list[dict[str, Any]],
+        outcome: dict[str, Any],
+    ) -> dict[str, Any]:
         """Reflect on execution to identify improvements.
 
         Args:
@@ -145,7 +146,7 @@ class ICognitivePlane(ABC):
         pass
 
     @abstractmethod
-    def get_capabilities(self) -> List[CognitiveCapability]:
+    def get_capabilities(self) -> list[CognitiveCapability]:
         """Get list of supported cognitive capabilities.
 
         Returns:

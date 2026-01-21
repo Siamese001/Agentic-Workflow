@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Verify dashboard row order"""
 import json
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # Load dashboard_data.js
 with open('agentic_core/L6_observability/dashboards/data/dashboard_data.js', encoding='utf-8') as f:
@@ -28,6 +27,6 @@ expected_last = "TOTAL"
 if data[0]['Territory'] == expected_first and data[-1]['Territory'] == expected_last:
     print("\n✅ Row order is CORRECT!")
 else:
-    print(f"\n❌ Row order is WRONG!")
+    print("\n❌ Row order is WRONG!")
     print(f"   Expected first: {expected_first}, got: {data[0]['Territory']}")
     print(f"   Expected last: {expected_last}, got: {data[-1]['Territory']}")

@@ -7,27 +7,10 @@ Comprehensive Agent Audit - Scans ALL agents to map detection capabilities
 # Suggested keywords to add in docstring/code: engine, guardrail, healer, memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from pathlib import Path
-import ast
-import re
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
     get_validated_project_root,
 )
-from agentic_core.utils.sovereign_index import SovereignIndex
 
 # Keywords that indicate what violations an agent should detect
 DETECTION_KEYWORDS = {
@@ -96,7 +79,7 @@ def analyze_agents():
                 'detects': detects,
                 'has_heal': has_heal
             })
-        except Exception as e:
+        except Exception:
             pass
 
     return agents_analysis

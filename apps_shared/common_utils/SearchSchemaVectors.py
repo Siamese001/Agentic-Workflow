@@ -5,12 +5,13 @@ including semantic search, similarity matching, and schema-aware retrieval.
 Follows the functional component pattern with proper logging.
 """
 
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any, Union, Tuple
 import logging
-import numpy as np
+from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
+from typing import Any
+
+import numpy as np
 
 logger = logging.getLogger(__name__)
 
@@ -36,26 +37,26 @@ class SchemaVectorEntry:
     """Entry in the schema vector store."""
     schema_id: str
     schema_name: str
-    vector: List[float]
-    field_vectors: Dict[str, List[float]] = field(default_factory=dict)
+    vector: list[float]
+    field_vectors: dict[str, list[float]] = field(default_factory=dict)
     schema_type: str = "json"
     field_count: int = 0
     complexity_score: float = 0.0
     timestamp: datetime = field(default_factory=datetime.utcnow)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
 class SchemaSearchQuery:
     """Search query for schema vectors."""
-    query_text: Optional[str] = None
-    query_schema: Optional[Dict[str, Any]] = None
-    query_vector: Optional[List[float]] = None
+    query_text: str | None = None
+    query_schema: dict[str, Any] | None = None
+    query_vector: list[float] | None = None
     search_mode: SchemaSearchMode = SchemaSearchMode.SEMANTIC
     similarity_type: SchemaSimilarityType = SchemaSimilarityType.SEMANTIC
     top_k: int = 10
     threshold: float = 0.7
-    schema_type_filter: Optional[str] = None
+    schema_type_filter: str | None = None
     min_field_overlap: int = 0
     include_field_matches: bool = False
 
@@ -63,11 +64,11 @@ class SchemaSearchQuery:
 @dataclass
 class SchemaSearchResult:
     """Result of schema vector search."""
-    entries: List[SchemaVectorEntry]
-    scores: List[float]
-    field_matches: Optional[List[Dict[str, Any]]] = None
+    entries: list[SchemaVectorEntry]
+    scores: list[float]
+    field_matches: list[dict[str, Any]] | None = None
     search_time_ms: float = 0.0
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -83,12 +84,12 @@ class SchemaVectorConfig:
 class SchemaVectorSearcher:
     """Main class for schema vector search operations."""
 
-    def __init__(self, config: Optional[SchemaVectorConfig] = None):
+    def __init__(self, config: SchemaVectorConfig | None = None):
         self.config = config or SchemaVectorConfig()
         self.logger = logging.getLogger(self.__class__.__name__)
-        self._schema_vectors: Dict[str, SchemaVectorEntry] = {}
-        self._vector_index: Dict[str, np.ndarray] = {}
-        self._field_index: Dict[str, Dict[str, np.ndarray]] = {}
+        self._schema_vectors: dict[str, SchemaVectorEntry] = {}
+        self._vector_index: dict[str, np.ndarray] = {}
+        self._field_index: dict[str, dict[str, np.ndarray]] = {}
 
     def search_schema_vectors(self, query: SchemaSearchQuery) -> SchemaSearchResult:
         """Search schema vectors based on query.
@@ -152,8 +153,8 @@ class SchemaVectorSearcher:
                 metadata={"error": str(e)}
             )
 
-    def add_schema_vector(self, schema_id: str, schema_name: str, schema: Dict[str, Any],
-                         vector: Optional[List[float]] = None, metadata: Optional[Dict[str, Any]] = None) -> bool:
+    def add_schema_vector(self, schema_id: str, schema_name: str, schema: dict[str, Any],
+                         vector: list[float] | None = None, metadata: dict[str, Any] | None = None) -> bool:
         """Add a schema vector to the store.
 
         Args:
@@ -207,7 +208,7 @@ class SchemaVectorSearcher:
             self.logger.error(f"Failed to add schema vector: {str(e)}")
             return False
 
-    def find_similar_schemas(self, schema_id: str, top_k: int = 10) -> List[Tuple[str, float]]:
+    def find_similar_schemas(self, schema_id: str, top_k: int = 10) -> list[tuple[str, float]]:
         """Find schemas similar to a given schema.
 
         Args:
@@ -238,7 +239,7 @@ class SchemaVectorSearcher:
 
         return similar_schemas[:top_k]
 
-    def get_schema_statistics(self) -> Dict[str, Any]:
+    def get_schema_statistics(self) -> dict[str, Any]:
         """Get statistics about the schema vector store.
 
         Returns:
@@ -271,7 +272,7 @@ class SchemaVectorSearcher:
             "has_field_vectors": len(self._field_index)
         }
 
-    def _generate_query_vector(self, query: SchemaSearchQuery) -> List[float]:
+    def _generate_query_vector(self, query: SchemaSearchQuery) -> list[float]:
         """Generate query vector from search criteria."""
         if query.query_text:
             # Generate from text
@@ -283,7 +284,7 @@ class SchemaVectorSearcher:
             # Return zero vector
             return [0.0] * self.config.dimension
 
-    def _generate_schema_vector(self, schema: Dict[str, Any]) -> List[float]:
+    def _generate_schema_vector(self, schema: dict[str, Any]) -> list[float]:
         """Generate vector representation of a schema."""
         # Extract schema features
         fields = self._extract_fields(schema)
@@ -292,7 +293,7 @@ class SchemaVectorSearcher:
         # Convert to vector
         return self._text_to_vector(schema_text)
 
-    def _generate_field_vectors(self, schema: Dict[str, Any]) -> Dict[str, List[float]]:
+    def _generate_field_vectors(self, schema: dict[str, Any]) -> dict[str, list[float]]:
         """Generate vectors for individual fields."""
         field_vectors = {}
         fields = self._extract_fields(schema)
@@ -302,7 +303,7 @@ class SchemaVectorSearcher:
 
         return field_vectors
 
-    def _extract_fields(self, schema: Dict[str, Any]) -> List[str]:
+    def _extract_fields(self, schema: dict[str, Any]) -> list[str]:
         """Extract field names from schema."""
         fields = []
 
@@ -320,7 +321,7 @@ class SchemaVectorSearcher:
         extract_recursive(schema)
         return fields
 
-    def _calculate_complexity(self, schema: Dict[str, Any]) -> float:
+    def _calculate_complexity(self, schema: dict[str, Any]) -> float:
         """Calculate complexity score for a schema."""
         fields = self._extract_fields(schema)
 
@@ -333,7 +334,7 @@ class SchemaVectorSearcher:
 
         return complexity
 
-    def _filter_entries(self, query: SchemaSearchQuery) -> List[SchemaVectorEntry]:
+    def _filter_entries(self, query: SchemaSearchQuery) -> list[SchemaVectorEntry]:
         """Filter schema entries based on query criteria."""
         filtered = list(self._schema_vectors.values())
 
@@ -351,7 +352,7 @@ class SchemaVectorSearcher:
 
         return filtered
 
-    def _semantic_search(self, query: SchemaSearchQuery, entries: List[SchemaVectorEntry]) -> Tuple[List[SchemaVectorEntry], List[float]]:
+    def _semantic_search(self, query: SchemaSearchQuery, entries: list[SchemaVectorEntry]) -> tuple[list[SchemaVectorEntry], list[float]]:
         """Perform semantic search."""
         if not query.query_vector:
             return [], []
@@ -377,7 +378,7 @@ class SchemaVectorSearcher:
 
         return entries, scores
 
-    def _structural_search(self, query: SchemaSearchQuery, entries: List[SchemaVectorEntry]) -> Tuple[List[SchemaVectorEntry], List[float]]:
+    def _structural_search(self, query: SchemaSearchQuery, entries: list[SchemaVectorEntry]) -> tuple[list[SchemaVectorEntry], list[float]]:
         """Perform structural similarity search."""
         if not query.query_schema:
             return self._semantic_search(query, entries)
@@ -408,7 +409,7 @@ class SchemaVectorSearcher:
 
         return entries, scores
 
-    def _hybrid_search(self, query: SchemaSearchQuery, entries: List[SchemaVectorEntry]) -> Tuple[List[SchemaVectorEntry], List[float]]:
+    def _hybrid_search(self, query: SchemaSearchQuery, entries: list[SchemaVectorEntry]) -> tuple[list[SchemaVectorEntry], list[float]]:
         """Perform hybrid search combining semantic and structural."""
         # Get semantic results
         semantic_entries, semantic_scores = self._semantic_search(query, entries)
@@ -439,7 +440,7 @@ class SchemaVectorSearcher:
 
         return entries, scores
 
-    def _field_based_search(self, query: SchemaSearchQuery, entries: List[SchemaVectorEntry]) -> Tuple[List[SchemaVectorEntry], List[float], List[Dict[str, Any]]]:
+    def _field_based_search(self, query: SchemaSearchQuery, entries: list[SchemaVectorEntry]) -> tuple[list[SchemaVectorEntry], list[float], list[dict[str, Any]]]:
         """Perform field-based search."""
         if not query.query_schema or not self.config.enable_field_vectors:
             return self._semantic_search(query, entries), [], []
@@ -490,7 +491,7 @@ class SchemaVectorSearcher:
 
         return entries, scores, field_matches
 
-    def _text_to_vector(self, text: str) -> List[float]:
+    def _text_to_vector(self, text: str) -> list[float]:
         """Convert text to vector representation."""
         # Placeholder for actual text-to-vector conversion
         # In production, this would use an embedding model
@@ -526,14 +527,14 @@ def create_schema_vector_searcher(
 
 # Convenience function for direct usage
 def search_schema_vectors(
-    query_text: Optional[str] = None,
-    query_schema: Optional[Dict[str, Any]] = None,
+    query_text: str | None = None,
+    query_schema: dict[str, Any] | None = None,
     search_mode: str = "semantic",
     similarity_type: str = "semantic",
     top_k: int = 10,
     threshold: float = 0.7,
-    config: Optional[Dict[str, Any]] = None
-) -> Dict[str, Any]:
+    config: dict[str, Any] | None = None
+) -> dict[str, Any]:
     """Search schema vectors.
 
     Args:

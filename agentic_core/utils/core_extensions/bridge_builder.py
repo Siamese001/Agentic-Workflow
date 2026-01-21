@@ -1,5 +1,5 @@
 from __future__ import annotations
-import os
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
@@ -7,23 +7,6 @@ import re
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
-)
-from agentic_core.utils.sovereign_index import SovereignIndex
 from agentic_core.utils.ssot_discovery import get_python_files
 
 ROOT: Any = Path(__file__).parent.parent.parent.parent

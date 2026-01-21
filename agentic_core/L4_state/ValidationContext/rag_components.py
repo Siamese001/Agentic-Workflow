@@ -1,18 +1,20 @@
 from __future__ import annotations
+
 """
 RAG Enhancement Components
 Ported from archives - provides semantic caching, self-RAG, knowledge graph injection, and episodic memory.
 """
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 
 @dataclass
 class CacheSufficiencyResult:
     """Result of cache sufficiency check."""
     is_sufficient: bool
-    cached_response: Optional[Any] = None
+    cached_response: Any | None = None
     confidence: float = 0.0
     reason: str = ''
 
@@ -21,10 +23,10 @@ class SemanticCache:
 
     def __init__(self):
         """Initialize semantic cache."""
-        self._cache: Dict[str, Any] = {}
+        self._cache: dict[str, Any] = {}
         Logger.debug('SemanticCache initialized')
 
-    def get(self, key: str) -> Optional[Any]:
+    def get(self, key: str) -> Any | None:
         """Get cached value by key."""
         return self._cache.get(key)
 
@@ -59,13 +61,13 @@ class SelfRagProcessor:
         """Initialize self-RAG processor."""
         Logger.debug('SelfRAGProcessor initialized')
 
-    def identify_gaps(self, query: str, context: str) -> List[KnowledgeGap]:
+    def identify_gaps(self, query: str, context: str) -> list[KnowledgeGap]:
         """Identify knowledge gaps in the context."""
         gaps: Any = []
         Logger.debug(f'Analyzing knowledge gaps for query: {query}')
         return gaps
 
-    def should_retrieve_more(self, gaps: List[KnowledgeGap]) -> bool:
+    def should_retrieve_more(self, gaps: list[KnowledgeGap]) -> bool:
         """Determine if more retrieval is needed."""
         return len(gaps) > 0
 
@@ -75,44 +77,44 @@ class Episode:
     id: str
     content: str
     timestamp: float
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 class EpisodicMemory:
     """Episodic memory for storing interaction history."""
 
     def __init__(self):
         """Initialize episodic memory."""
-        self._episodes: List[Episode] = []
+        self._episodes: list[Episode] = []
         Logger.debug('EpisodicMemory initialized')
 
     def add_episode(self, Episode: Episode) -> None:
         """Add an Episode to memory."""
         self._episodes.append(Episode)
 
-    def retrieve_relevant(self, query: str, top_k: int=5) -> List[Episode]:
+    def retrieve_relevant(self, query: str, top_k: int=5) -> list[Episode]:
         """Retrieve relevant episodes."""
         return self._episodes[:top_k]
 
 @dataclass
 class KgContext:
     """Knowledge graph context."""
-    entities: List[str] = field(default_factory=list)
-    relationships: List[Dict[str, str]] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    entities: list[str] = field(default_factory=list)
+    relationships: list[dict[str, str]] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 class KnowledgeGraphInjector:
     """Injects knowledge graph context into queries."""
 
     def __init__(self):
         """Initialize knowledge graph injector."""
-        self._graph: Dict[str, Any] = {}
+        self._graph: dict[str, Any] = {}
         Logger.debug('KnowledgeGraphInjector initialized')
 
-    def extract_entities(self, text: str) -> List[str]:
+    def extract_entities(self, text: str) -> list[str]:
         """Extract entities from text."""
         return []
 
-    def get_context(self, entities: List[str]) -> KGContext:
+    def get_context(self, entities: list[str]) -> KGContext:
         """Get knowledge graph context for entities."""
         return KGContext(entities=entities)
 
@@ -128,25 +130,25 @@ class FewShotExample:
     """Few-shot learning example."""
     input: str
     output: str
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 class FewShotInjector:
     """Injects few-shot examples into prompts."""
 
     def __init__(self):
         """Initialize few-shot injector."""
-        self._examples: List[FewShotExample] = []
+        self._examples: list[FewShotExample] = []
         Logger.debug('FewShotInjector initialized')
 
     def add_example(self, example: FewShotExample) -> None:
         """Add a few-shot example."""
         self._examples.append(example)
 
-    def get_relevant_examples(self, query: str, top_k: int=3) -> List[FewShotExample]:
+    def get_relevant_examples(self, query: str, top_k: int=3) -> list[FewShotExample]:
         """Get relevant few-shot examples."""
         return self._examples[:top_k]
 
-    def inject_examples(self, prompt: str, examples: List[FewShotExample]) -> str:
+    def inject_examples(self, prompt: str, examples: list[FewShotExample]) -> str:
         """Inject examples into prompt."""
         if not examples:
             return prompt

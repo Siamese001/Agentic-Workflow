@@ -7,19 +7,17 @@ zero-trust security constraints are properly enforced.
 
 Created: 2026-01-20
 """
-import pytest
 import subprocess
-import sys
-from pathlib import Path
+
+import pytest
 
 from agentic_core.utils.security import (
+    SecurityViolationError,
+    _is_shell_injection_risk,
     safe_execute,
+    safe_git_execute,
     safe_popen,
     validate_command_whitelist,
-    safe_git_execute,
-    SecurityViolationError,
-    INJECTION_REGEX,
-    _is_shell_injection_risk,
 )
 
 

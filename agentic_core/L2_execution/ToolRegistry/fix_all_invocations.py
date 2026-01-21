@@ -1,26 +1,11 @@
 """Comprehensive fix for ALL heal_repository methods across the entire codebase."""
 import ast
-import os
 from pathlib import Path
-from typing import List, Tuple, Optional, Dict
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
     TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
-from agentic_core.utils.sovereign_index import SovereignIndex
 
 PROJECT_ROOT = Path(__file__).parent.parent
 
@@ -45,7 +30,7 @@ def has_super_heal_call(func_node: ast.FunctionDef) -> bool:
     return False
 
 
-def find_heal_methods_in_file(filepath: Path) -> List[Tuple[ast.FunctionDef, bool, int]]:
+def find_heal_methods_in_file(filepath: Path) -> list[tuple[ast.FunctionDef, bool, int]]:
     """Find all heal_repository methods in a file.
 
     Returns: List of (func_node, is_class_method, line_number)
@@ -82,7 +67,7 @@ def add_super_call_to_method(filepath: Path, func_node: ast.FunctionDef) -> bool
     # Check if first statement is a docstring
     is_docstring = (
         isinstance(first_stmt, ast.Expr) and
-        isinstance(first_stmt.value, (ast.Constant, ast.Str))
+        isinstance(first_stmt.value, ast.Constant | ast.Str)
     )
 
     if is_docstring and len(func_node.body) > 1:

@@ -5,6 +5,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from dataclasses import dataclass
+
 """
 FileManagerAgent - Filesystem Operations & Healing
 
@@ -14,27 +15,15 @@ Implements parent chain activation for full repository healing integration.
 
 from __future__ import annotations
 
-from agentic_core.utils.core_extensions.SovereignBaseAgent import SovereignBaseAgent
-from typing import Dict, Any, Optional, List, Tuple
-from pathlib import Path
 import logging
 from functools import wraps
+from pathlib import Path
+from typing import Any
+
+from agentic_core.utils.core_extensions.SovereignBaseAgent import SovereignBaseAgent
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
     TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
 from agentic_core.utils.core_extensions.decorators import standard_heal
 
@@ -58,7 +47,7 @@ def timeout(seconds: int) -> Any:
 class FileManagerAgent(SovereignBaseAgent):
     """Filesystem operations agent with parent chain healing."""
 
-    def __init__(self, project_root: Optional[Path] = None) -> None:
+    def __init__(self, project_root: Path | None = None) -> None:
         """Initialize FileManagerAgent."""
         self.project_root = project_root or Path.cwd()
         self.backup_dir = self.project_root / '.backups'
@@ -71,8 +60,8 @@ class FileManagerAgent(SovereignBaseAgent):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[set] = None
-    ) -> Dict[str, int]:
+        _call_path: set | None = None
+    ) -> dict[str, int]:
         """
         Repository-wide filesystem healing - invoke shared chain.
 
@@ -123,7 +112,7 @@ class FileManagerAgent(SovereignBaseAgent):
         finally:
             _call_path.discard(agent_name)
 
-    def _perform_filesystem_healing(self, dry_run: bool, execute: bool) -> Dict[str, int]:
+    def _perform_filesystem_healing(self, dry_run: bool, execute: bool) -> dict[str, int]:
         """
         Perform filesystem-specific healing operations.
 
@@ -212,7 +201,7 @@ class FileManagerAgent(SovereignBaseAgent):
         fixed = 0
         try:
             # Phase 6.9: Use ssot_discovery instead of rglob
-            from agentic_core.utils.ssot_discovery import get_python_files, get_data_files
+            from agentic_core.utils.ssot_discovery import get_data_files, get_python_files
             all_items = list(get_python_files(self.project_root)) + list(get_data_files(self.project_root))
             for item in all_items:
                 if item.is_symlink() and not item.resolve().exists():
@@ -228,7 +217,7 @@ class FileManagerAgent(SovereignBaseAgent):
 
         return fixed
 
-    def _merge_healing_results(self, parent: Dict[str, Any], fs: Dict[str, Any]) -> Dict[str, Any]:
+    def _merge_healing_results(self, parent: dict[str, Any], fs: dict[str, Any]) -> dict[str, Any]:
         """
         Merge parent healing results with filesystem-specific results.
 

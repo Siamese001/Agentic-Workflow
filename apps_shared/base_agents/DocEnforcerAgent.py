@@ -5,6 +5,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from dataclasses import dataclass
+
 """
 DocEnforcerAgent - Extracted for one-class-per-file pattern.
 
@@ -14,10 +15,16 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 
 from __future__ import annotations
+
 import asyncio
+
+from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import (
+    SubatomicTestingMixin,
+)
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
+
 from agentic_core.utils.core_extensions.decorators import standard_heal
+
 
 @dataclass
 class DocEnforcerAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin):

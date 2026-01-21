@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Fix gravity breaches caused by force_app_depth.py moving app-specific code to core.
 Move app-specific orchestrators and engines back to their respective apps.
@@ -8,10 +9,6 @@ from pathlib import Path
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from typing import Any
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 root: Any = Path('C:/Git/Agentic-Workflow')
 core: Any = ROOT / 'agentic_core'

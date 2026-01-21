@@ -15,10 +15,9 @@ USAGE:
 """
 from __future__ import annotations
 
+from unittest.mock import MagicMock
+
 import pytest
-from pathlib import Path
-from typing import Any, Dict, List, Optional
-from unittest.mock import MagicMock, patch
 
 
 class TestCaseA_TheBigSwitch:
@@ -74,7 +73,6 @@ class TestCaseA_TheBigSwitch:
     def test_sovereign_base_agent_mro_order(self):
         """Verify MRO includes InfrastructureMixin before object."""
         from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.utils.core_extensions.infrastructure_mixin import InfrastructureMixin
 
         mro = SovereignBaseAgent.__mro__
         mro_names = [cls.__name__ for cls in mro]
@@ -102,13 +100,13 @@ class TestCaseB_StrategyInjection:
         """Verify UnifiedOrchestratorAgent accepts a strategy in __init__."""
         try:
             from agentic_core.L3_orchestration.unified_orchestrator import (
-                UnifiedOrchestratorAgent,
                 MissionStrategy,
+                UnifiedOrchestratorAgent,
             )
         except ImportError:
             from archives.location_violations.unified_orchestrator import (
-                UnifiedOrchestratorAgent,
                 MissionStrategy,
+                UnifiedOrchestratorAgent,
             )
 
         # Create mock strategy
@@ -125,13 +123,13 @@ class TestCaseB_StrategyInjection:
         """Verify run_mission calls strategy.get_tiers()."""
         try:
             from agentic_core.L3_orchestration.unified_orchestrator import (
-                UnifiedOrchestratorAgent,
                 MissionStrategy,
+                UnifiedOrchestratorAgent,
             )
         except ImportError:
             from archives.location_violations.unified_orchestrator import (
-                UnifiedOrchestratorAgent,
                 MissionStrategy,
+                UnifiedOrchestratorAgent,
             )
 
         # Create mock strategy
@@ -151,13 +149,13 @@ class TestCaseB_StrategyInjection:
         """Verify run_mission calls strategy.get_agent() for each agent."""
         try:
             from agentic_core.L3_orchestration.unified_orchestrator import (
-                UnifiedOrchestratorAgent,
                 MissionStrategy,
+                UnifiedOrchestratorAgent,
             )
         except ImportError:
             from archives.location_violations.unified_orchestrator import (
-                UnifiedOrchestratorAgent,
                 MissionStrategy,
+                UnifiedOrchestratorAgent,
             )
 
         # Create mock strategy with one tier and one agent
@@ -179,13 +177,13 @@ class TestCaseB_StrategyInjection:
         """Verify run_mission calls strategy.execute_agent() for available agents."""
         try:
             from agentic_core.L3_orchestration.unified_orchestrator import (
-                UnifiedOrchestratorAgent,
                 MissionStrategy,
+                UnifiedOrchestratorAgent,
             )
         except ImportError:
             from archives.location_violations.unified_orchestrator import (
-                UnifiedOrchestratorAgent,
                 MissionStrategy,
+                UnifiedOrchestratorAgent,
             )
 
         # Create mock agent

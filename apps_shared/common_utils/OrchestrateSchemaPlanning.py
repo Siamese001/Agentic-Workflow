@@ -5,11 +5,11 @@ including validation, transformation, mapping, and compatibility checks.
 Follows the canonical pattern with dataclass-first design and proper logging.
 """
 
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any, Union
 import logging
+from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -43,10 +43,10 @@ class SchemaDefinition:
     name: str
     schema_type: SchemaType
     version: str
-    content: Dict[str, Any]
-    namespace: Optional[str] = None
-    description: Optional[str] = None
-    tags: List[str] = field(default_factory=list)
+    content: dict[str, Any]
+    namespace: str | None = None
+    description: str | None = None
+    tags: list[str] = field(default_factory=list)
 
 @dataclass
 class ValidationRule:
@@ -63,9 +63,9 @@ class TransformationPlan:
     transformation_type: TransformationType
     source_schema: str
     target_schema: str
-    mapping_rules: Dict[str, Any] = field(default_factory=dict)
-    validation_rules: List[ValidationRule] = field(default_factory=list)
-    dependencies: List[str] = field(default_factory=list)
+    mapping_rules: dict[str, Any] = field(default_factory=dict)
+    validation_rules: list[ValidationRule] = field(default_factory=list)
+    dependencies: list[str] = field(default_factory=list)
 
 @dataclass
 class SchemaPlanningConfig:
@@ -81,23 +81,23 @@ class SchemaPlanningConfig:
 class SchemaPlanningResult:
     """Result of schema planning orchestration."""
     success: bool
-    validated_schemas: List[SchemaDefinition] = field(default_factory=list)
-    transformation_plans: List[TransformationPlan] = field(default_factory=list)
-    compatibility_report: Dict[str, Any] = field(default_factory=dict)
-    validation_errors: List[str] = field(default_factory=list)
-    warnings: List[str] = field(default_factory=list)
-    errors: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    validated_schemas: list[SchemaDefinition] = field(default_factory=list)
+    transformation_plans: list[TransformationPlan] = field(default_factory=list)
+    compatibility_report: dict[str, Any] = field(default_factory=dict)
+    validation_errors: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 class SchemaPlanningOrchestrator:
     """Orchestrator for planning schema operations."""
 
-    def __init__(self, config: Optional[SchemaPlanningConfig] = None):
+    def __init__(self, config: SchemaPlanningConfig | None = None):
         self.config = config or SchemaPlanningConfig()
         self.logger = logging.getLogger(self.__class__.__name__)
         self.logger.setLevel(self.config.log_level)
 
-    def execute(self, schema_request: Dict[str, Any]) -> SchemaPlanningResult:
+    def execute(self, schema_request: dict[str, Any]) -> SchemaPlanningResult:
         """Execute the schema planning orchestration.
 
         Args:
@@ -159,7 +159,7 @@ class SchemaPlanningOrchestrator:
                 }
             )
 
-    def _validate_request(self, request: Dict[str, Any]) -> None:
+    def _validate_request(self, request: dict[str, Any]) -> None:
         """Validate schema planning request."""
         if not request:
             raise ValueError("Schema request cannot be empty")
@@ -170,7 +170,7 @@ class SchemaPlanningOrchestrator:
         if "schemas" not in request:
             raise ValueError("Schemas are required in schema request")
 
-    def _validate_schemas(self, request: Dict[str, Any]) -> List[SchemaDefinition]:
+    def _validate_schemas(self, request: dict[str, Any]) -> list[SchemaDefinition]:
         """Validate and parse schemas from request."""
         schemas = []
         raw_schemas = request.get("schemas", [])
@@ -190,7 +190,7 @@ class SchemaPlanningOrchestrator:
 
         return schemas
 
-    def _plan_transformations(self, request: Dict[str, Any], schemas: List[SchemaDefinition]) -> List[TransformationPlan]:
+    def _plan_transformations(self, request: dict[str, Any], schemas: list[SchemaDefinition]) -> list[TransformationPlan]:
         """Plan schema transformations based on request."""
         plans = []
         transformations = request.get("transformations", [])
@@ -207,7 +207,7 @@ class SchemaPlanningOrchestrator:
 
         return plans
 
-    def _check_compatibility(self, schemas: List[SchemaDefinition]) -> Dict[str, Any]:
+    def _check_compatibility(self, schemas: list[SchemaDefinition]) -> dict[str, Any]:
         """Check compatibility between schemas."""
         report = {
             "compatible": True,
@@ -226,7 +226,7 @@ class SchemaPlanningOrchestrator:
 
         return report
 
-    def _collect_validation_errors(self, request: Dict[str, Any]) -> List[str]:
+    def _collect_validation_errors(self, request: dict[str, Any]) -> list[str]:
         """Collect validation errors from schemas."""
         errors = []
         schemas = request.get("schemas", [])
@@ -248,7 +248,7 @@ class SchemaPlanningOrchestrator:
 def create_schema_planning_orchestrator(
     enable_validation: bool = True,
     enable_transformation: bool = True,
-    **kwargs: Dict[str, object]) -> SchemaPlanningOrchestrator:
+    **kwargs: dict[str, object]) -> SchemaPlanningOrchestrator:
     """Create a configured schema planning orchestrator."""
     config = SchemaPlanningConfig(
         enable_validation=enable_validation,
@@ -260,10 +260,10 @@ def create_schema_planning_orchestrator(
 # Convenience function for direct usage
 def plan_schema_operations(
     operation: str,
-    schemas: List[Dict[str, Any]],
-    transformations: Optional[List[Dict[str, Any]]] = None,
-    config: Optional[Dict[str, Any]] = None
-) -> Dict[str, Any]:
+    schemas: list[dict[str, Any]],
+    transformations: list[dict[str, Any]] | None = None,
+    config: dict[str, Any] | None = None
+) -> dict[str, Any]:
     """Plan schema operations from simple parameters.
 
     Args:
@@ -341,11 +341,11 @@ class OrchestrateDataPlanningOrchestratorImpl(OrchestrateDataPlanningOrchestrato
     Pure planning functionality with no side effects
     """
 
-    def __init__(self, constraints: Optional[OrchestrateDataPlanningOrchestratorConstraints] = None):
+    def __init__(self, constraints: OrchestrateDataPlanningOrchestratorConstraints | None = None):
         self.constraints = constraints or OrchestrateDataPlanningOrchestratorConstraints()
         self.logger = logging.getLogger(self.__class__.__name__)
 
-    def process(self, input_data: Dict[str, object]) -> OrchestrateDataPlanningOrchestratorResult:
+    def process(self, input_data: dict[str, object]) -> OrchestrateDataPlanningOrchestratorResult:
         """Process input following L5 architecture principles"""
         self.logger.info(f"Processing {input_data}")
 
@@ -367,7 +367,7 @@ class OrchestrateDataPlanningOrchestratorImpl(OrchestrateDataPlanningOrchestrato
         self.logger.info(f"Successfully processed: {result.success}")
         return result
 
-    def validate_safety(self, data: Dict[str, object]) -> bool:
+    def validate_safety(self, data: dict[str, object]) -> bool:
         """L5 Safety validation with fail-closed behavior"""
         try:
             # Check for dangerous patterns
@@ -389,7 +389,7 @@ class OrchestrateDataPlanningOrchestratorImpl(OrchestrateDataPlanningOrchestrato
             self.logger.error(f"Safety validation error: {e}")
             return False  # Fail-closed
 
-    def _validate_input(self, input_data: Dict[str, object]) -> None:
+    def _validate_input(self, input_data: dict[str, object]) -> None:
         """L5 Input validation"""
         if not isinstance(input_data, dict):
             raise ValueError("Input must be a dictionary")
@@ -413,7 +413,7 @@ class OrchestrateDataPlanningOrchestratorInterface:
     def __init__(self, engine: OrchestrateDataPlanningOrchestratorProcessor):
         self._processor = engine
 
-    def execute(self, input_data: Dict[str, object]) -> Dict[str, object]:
+    def execute(self, input_data: dict[str, object]) -> dict[str, object]:
         """L5 Interface method - executes safely"""
         try:
             result = self._processor.process(input_data)
@@ -439,7 +439,7 @@ class OrchestrateDataPlanningOrchestratorFactory:
         return OrchestrateDataPlanningOrchestratorInterface(engine)
 
 # L5 Main execution point
-def orchestrate_data_planning(input_data: Dict[str, object]) -> Dict[str, object]:
+def orchestrate_data_planning(input_data: dict[str, object]) -> dict[str, object]:
     """
     L5 Main function - orchestrate data planning operations
 

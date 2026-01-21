@@ -6,11 +6,12 @@ and improve latency on repeated sub-problems.
 """
 
 from __future__ import annotations
-import hashlib
+
 import functools
-from typing import Dict, Any, Optional, Tuple
-from collections import OrderedDict
+import hashlib
 import json
+from collections import OrderedDict
+from typing import Any
 
 
 class ReasoningCache:
@@ -19,11 +20,11 @@ class ReasoningCache:
     def __init__(self, maxsize: int = 10000):
         """Initialize reasoning cache."""
         self.maxsize = maxsize
-        self.cache: OrderedDict[str, Dict[str, Any]] = OrderedDict()
+        self.cache: OrderedDict[str, dict[str, Any]] = OrderedDict()
         self.hits = 0
         self.misses = 0
 
-    def _make_key(self, problem: str, context: Dict[str, Any], params: Tuple) -> str:
+    def _make_key(self, problem: str, context: dict[str, Any], params: tuple) -> str:
         """
         Create cache key from problem, context, and parameters.
 
@@ -42,7 +43,7 @@ class ReasoningCache:
         key_input = f"{problem}|{context_str}|{params_str}"
         return hashlib.sha256(key_input.encode()).hexdigest()
 
-    def get(self, problem: str, context: Dict[str, Any], params: Tuple) -> Optional[Dict[str, Any]]:
+    def get(self, problem: str, context: dict[str, Any], params: tuple) -> dict[str, Any] | None:
         """
         Get cached reasoning result.
 
@@ -65,7 +66,7 @@ class ReasoningCache:
         self.misses += 1
         return None
 
-    def put(self, problem: str, context: Dict[str, Any], params: Tuple, result: Dict[str, Any]) -> None:
+    def put(self, problem: str, context: dict[str, Any], params: tuple, result: dict[str, Any]) -> None:
         """
         Cache reasoning result.
 
@@ -89,7 +90,7 @@ class ReasoningCache:
         self.hits = 0
         self.misses = 0
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get cache statistics."""
         total = self.hits + self.misses
         hit_rate = (self.hits / total * 100) if total > 0 else 0
@@ -128,7 +129,7 @@ class ObservationCache:
         key_input = f"{action}|{context_hash}"
         return hashlib.sha256(key_input.encode()).hexdigest()
 
-    def get(self, action: str, context_hash: str) -> Optional[str]:
+    def get(self, action: str, context_hash: str) -> str | None:
         """
         Get cached observation.
 
@@ -171,7 +172,7 @@ class ObservationCache:
         self.hits = 0
         self.misses = 0
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get cache statistics."""
         total = self.hits + self.misses
         hit_rate = (self.hits / total * 100) if total > 0 else 0
@@ -194,7 +195,7 @@ observation_cache = ObservationCache(maxsize=5000)
 def cached_reasoning(func):
     """Decorator for caching reasoning results."""
     @functools.wraps(func)
-    def wrapper(self, problem: str, context: Dict[str, Any], *args, **kwargs):
+    def wrapper(self, problem: str, context: dict[str, Any], *args, **kwargs):
         # Create parameter tuple
         params = (
             context.get('temperature', 0.7),
@@ -223,7 +224,7 @@ def cached_reasoning(func):
 def cached_observation(func):
     """Decorator for caching observations."""
     @functools.wraps(func)
-    def wrapper(self, action: str, context: Dict[str, Any], *args, **kwargs):
+    def wrapper(self, action: str, context: dict[str, Any], *args, **kwargs):
         # Create context hash
         context_str = json.dumps(context, sort_keys=True, default=str)
         context_hash = hashlib.sha256(context_str.encode()).hexdigest()

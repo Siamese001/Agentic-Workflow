@@ -13,9 +13,9 @@ Tests:
 # Suggested keywords to add in docstring/code: prompt
 # This boosts alignment detection — review and integrate appropriately
 
-import sys
 import ast
 import re
+import sys
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent

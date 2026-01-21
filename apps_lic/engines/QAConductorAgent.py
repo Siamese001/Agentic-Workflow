@@ -25,31 +25,37 @@
 #   'check_constitution' conditional edge for final safety review.
 # - FIXED: All v10_5 imports and class names updated to v10_7.
 
-import json
-import logging
 import asyncio
-import os
 import importlib.util
 import inspect
-from typing import Dict, Any, List, Callable, Awaitable, Tuple, Optional
-from functools import wraps, partial
+import json
+import logging
+import os
+from collections.abc import Awaitable, Callable
+from functools import partial, wraps
+from typing import Any
 
 # v10.7: Import from new core
 from core_v10_7 import (
-    WorkflowContext, BaseAgent, StrategyPlan, PydanticSchemaError,
-    exponential_backoff_retry, CircuitBreakerOpenError,
-    CircuitBreaker, WorkflowTimeoutError, AsyncTimeoutError, WorkflowError,
-    ConfigV10_7, BaseTool,
-    track_metrics,
-    _format_prompt_with_defaults,
-    ConstitutionalReviewResult, # v10.7 (Fix #30)
+    AsyncTimeoutError,
+    BaseAgent,
+    BaseTool,
+    CircuitBreaker,
+    CircuitBreakerOpenError,
+    MCPClientStub,
     PersonaConsensus,
+    PydanticSchemaError,
+    StrategyPlan,
+    WorkflowContext,
+    WorkflowError,
+    WorkflowTimeoutError,
+    exponential_backoff_retry,
+    track_metrics,
     wrap_mcp,
-    MCPClientStub
 )
-from mcp import get_agent
-from langgraph.graph import StateGraph, END
 from langgraph.errors import GraphRecursionError
+from langgraph.graph import END, StateGraph
+from mcp import get_agent
 from telemetry_v10_7 import log_event
 
 # Make HIL import conditional for environment compatibility
@@ -65,41 +71,32 @@ except ImportError:
 
 # v10.7: Import from new stacks
 from agent_stacks_v10_7 import (
-    PIISanitizerAgent,
-    BiasDetectorAgent,
-    PromptInjectionDetectorAgent,
-    QueryComplexityClassifier,
-    ToTStrategistAgent,
-    PromptEngineerAgent,
-    RAG_SearchAgent,
-    AsyncBulletGeneratorAgent,
     AsyncBulletCritiqueAgent,
+    AsyncBulletGeneratorAgent,
+    BiasDetectorAgent,
+    ConstitutionalReviewerAgent,  # v10.7 (Fix #30)
     HILAmbiguityDetectorAgent,
-    HILFeedbackRouterAgent,
-    ConstitutionalReviewerAgent, # v10.7 (Fix #30)
-    DraftingGuildCoordinator
+    PIISanitizerAgent,
+    PromptEngineerAgent,
+    QueryComplexityClassifier,
 )
 
 # v10.7: Import from new tools file
 from agent_tools_v10_7 import (
-    QAClaimValidatorTool,
-    QAToneValidatorTool,
-    QAThematicAlignmentTool,
-    QASemanticEntailmentTool,
-    QANarrativeThreadTool,
     QAAdversarialReviewerTool,
-    QAJDSkillsValidatorTool,
-    QASignalScoreValidatorTool,
     QABiasDetectorTool,
-    QATenureValidatorTool,
+    QAClaimValidatorTool,
+    QAJDSkillsValidatorTool,
     QAMissedOpportunityTool,
+    QANarrativeThreadTool,
+    QASemanticEntailmentTool,
+    QASignalScoreValidatorTool,
+    QATenureValidatorTool,
+    QAThematicAlignmentTool,
+    QAToneValidatorTool,
     QAWordCountValidatorTool,
-    HyDETool,
-    ChromaDBSearchTool,
-    BM25SearchTool,
-    # v10.7 (Fix #8): Import UI tool stubs
+    UIFireEventTool,
     UIUpdateElementTool,
-    UIFireEventTool
 )
 
 # v10.7: Logger name updated
@@ -163,7 +160,7 @@ def get_timeout_decorator(timeout_seconds: float):
 # v10.7: DYNAMIC TOOLING (Fix #7)
 # ============================================================================
 
-def load_dynamic_tools(context: WorkflowContext, debug_mode: bool) -> Dict[str, BaseTool]:
+def load_dynamic_tools(context: WorkflowContext, debug_mode: bool) -> dict[str, BaseTool]:
     """
     v10.7 (Fix #7): Scans the generated_tools_path and dynamically
     loads any valid BaseTool subclasses.
@@ -245,7 +242,7 @@ class QAConductorAgent(BaseAgent):
 
     def __init__(self, context: 'WorkflowContext', debug_mode: bool = False):
         super().__init__(context, debug_mode)
-        static_tools: List[Tuple[str, BaseTool]] = [
+        static_tools: list[tuple[str, BaseTool]] = [
             # Standard QA Suite
             ("validate_claims", QAClaimValidatorTool(context, debug_mode)),
             ("validate_tone", QAToneValidatorTool(context, debug_mode)),
@@ -264,7 +261,7 @@ class QAConductorAgent(BaseAgent):
             ("ui_fire_event", UIFireEventTool(context, debug_mode)),
         ]
 
-        self.tools: Dict[str, BaseTool] = {}
+        self.tools: dict[str, BaseTool] = {}
         for tool_name, tool_instance in static_tools:
             if tool_name in self.tools:
                 logger.error(
@@ -296,7 +293,7 @@ class QAConductorAgent(BaseAgent):
         self.style_guide = "Style: Ensure professional, clear, and unbiased language."
 
     @track_metrics('run_react_qa_conductor')
-    async def run_async(self, state: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, state: dict[str, Any], workflow_id: str) -> dict[str, Any]:
         self.log_info("Running ReAct QA Conductor (v10.7)...")
 
         max_steps = self.config.agent_stacks.conductor_max_steps
@@ -407,7 +404,7 @@ When finished, output:
 class MetaLearningLoop(BaseAgent):
     """Placeholder MCP agent for telemetry-aligned meta learning."""
 
-    async def run_async(self, state: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, state: dict[str, Any], workflow_id: str) -> dict[str, Any]:
         self.log_info("MetaLearningLoop invoked - emitting telemetry only.")
         log_event("MetaLearningLoop", "executed", {"workflow_id": workflow_id})
         return {"meta_learning": {"status": "noop"}}
@@ -689,7 +686,7 @@ async def run_reconcile_specialists(state: dict, workflow_context: WorkflowConte
 def check_prompt_injection(state: dict) -> str:
     """Node 0.5 conditional"""
     if state.get("safety", {}).get("injection_detected", False):
-        logger.error(f"!!! PROMPT INJECTION DETECTED. Halting workflow. !!!")
+        logger.error("!!! PROMPT INJECTION DETECTED. Halting workflow. !!!")
         return "injection_detected"
     return "injection_safe"
 
@@ -735,7 +732,7 @@ def check_constitution(state: dict) -> str:
     if review.get("review_passed", False):
         return "passed_constitution"
     else:
-        logger.error(f"!!! CONSTITUTIONAL REVIEW FAILED. Halting workflow. !!!")
+        logger.error("!!! CONSTITUTIONAL REVIEW FAILED. Halting workflow. !!!")
         logger.error(f"Violations: {review.get('violations_found')}")
         return "failed_constitution"
 
@@ -757,7 +754,7 @@ def get_graph_app(
     workflow_context: WorkflowContext,
     enable_hil: bool = True,
     *,
-    enable_mcp: Optional[bool] = None,
+    enable_mcp: bool | None = None,
 ):
     """Build complete LangGraph workflow with v10.7 resilience."""
 
@@ -776,7 +773,7 @@ def get_graph_app(
     )
     timeout_wrapper = get_timeout_decorator(timeout_seconds)
 
-    def add_async_node(name: str, func: Callable[..., Awaitable[Dict[str, Any]]]):
+    def add_async_node(name: str, func: Callable[..., Awaitable[dict[str, Any]]]):
         workflow.add_node(name, timeout_wrapper(func))
 
     # --- ADD NODES (v10.7: Added new nodes) ---

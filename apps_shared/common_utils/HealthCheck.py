@@ -10,9 +10,9 @@ import logging
 import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -45,10 +45,10 @@ class HealthCheckResult:
     status: HealthStatus
     message: str
     timestamp: datetime
-    metrics: Dict[str, Any] = field(default_factory=dict)
-    details: Dict[str, Any] = field(default_factory=dict)
+    metrics: dict[str, Any] = field(default_factory=dict)
+    details: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary.
 
         Returns:
@@ -334,7 +334,7 @@ class CheckpointManagerHealthChecker(HealthChecker):
             test_trace_id = f"health_check_{int(time.time())}"
 
             # Test save
-            from .core.envelope import SignalEnvelope, TextEnvelope
+            from .core.envelope import TextEnvelope
             test_envelope = TextEnvelope(
                 text="health check test",
                 trace_id=test_trace_id
@@ -392,10 +392,10 @@ class HealthCheckRegistry:
 
     def __init__(self):
         """Initialize health check registry."""
-        self.checkers: Dict[str, HealthChecker] = {}
+        self.checkers: dict[str, HealthChecker] = {}
         self._lock = asyncio.Lock()
-        self._last_check: Optional[datetime] = None
-        self._last_results: Dict[str, HealthCheckResult] = {}
+        self._last_check: datetime | None = None
+        self._last_results: dict[str, HealthCheckResult] = {}
 
     async def register_checker(self, checker: HealthChecker) -> None:
         """Register a health checker.
@@ -418,7 +418,7 @@ class HealthCheckRegistry:
                 del self.checkers[component_name]
                 logger.debug(f"Unregistered health checker: {component_name}")
 
-    async def check_all(self) -> Dict[str, Any]:
+    async def check_all(self) -> dict[str, Any]:
         """Check health of all registered components.
 
         Returns:
@@ -505,7 +505,7 @@ class HealthCheckRegistry:
                 timestamp=datetime.utcnow()
             )
 
-    async def check_component(self, component_name: str) -> Optional[HealthCheckResult]:
+    async def check_component(self, component_name: str) -> HealthCheckResult | None:
         """Check health of specific component.
 
         Args:
@@ -521,7 +521,7 @@ class HealthCheckRegistry:
 
             return await self._safe_check(checker)
 
-    def list_components(self) -> List[str]:
+    def list_components(self) -> list[str]:
         """List all registered components.
 
         Returns:
@@ -529,7 +529,7 @@ class HealthCheckRegistry:
         """
         return list(self.checkers.keys())
 
-    def get_last_results(self) -> Dict[str, HealthCheckResult]:
+    def get_last_results(self) -> dict[str, HealthCheckResult]:
         """Get results from last health check.
 
         Returns:
@@ -539,7 +539,7 @@ class HealthCheckRegistry:
 
 
 # Global health check registry
-_health_registry: Optional[HealthCheckRegistry] = None
+_health_registry: HealthCheckRegistry | None = None
 _registry_lock = asyncio.Lock()
 
 

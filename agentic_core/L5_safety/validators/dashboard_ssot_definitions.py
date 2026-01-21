@@ -16,8 +16,7 @@ DO NOT define metric calculations elsewhere. This eliminates "split brain" issue
 
 Last Generated: 2026-01-18 10:20:33
 """
-from typing import Dict, Any, List, Set
-
+from typing import Any
 
 # ============================================================================
 # DASHBOARD COLUMN NAMES (display names in dashboard HTML)
@@ -125,8 +124,8 @@ try:
     assert abs(sum([WEIGHT_HEALTH_HEAL_CAP, WEIGHT_HEALTH_INVOCATION, WEIGHT_HEALTH_TEST, WEIGHT_HEALTH_OBSERVABLE, WEIGHT_HEALTH_COMPLEXITY]) - 1.0) < 0.001
     assert abs(sum([WEIGHT_HEALTH_L0_TEST, WEIGHT_HEALTH_L0_HARDENED, WEIGHT_HEALTH_L0_COMPLEXITY]) - 1.0) < 0.001
     assert abs(sum([WEIGHT_CODE_QUALITY_TYPED, WEIGHT_CODE_QUALITY_DOCUMENTED, WEIGHT_CODE_QUALITY_SCHEMA_STRICTNESS, WEIGHT_CODE_QUALITY_CANONICAL_INHERITANCE]) - 1.0) < 0.001
-except AssertionError as e:
-    print(f'❌ CRITICAL: SSOT Weight mismatch detected in dashboard_ssot.yaml')
+except AssertionError:
+    print('❌ CRITICAL: SSOT Weight mismatch detected in dashboard_ssot.yaml')
     raise
 
 
@@ -166,7 +165,7 @@ HEALER_BASES = {
 # METRIC CALCULATION FUNCTIONS (SSOT)
 # ============================================================================
 
-def calc_heal_cap_pct(agents: List[Dict], is_l0: bool = False) -> float:
+def calc_heal_cap_pct(agents: list[dict], is_l0: bool = False) -> float:
     """
     Calculate Heal Capability % for a set of agents.
 
@@ -189,7 +188,7 @@ def calc_heal_cap_pct(agents: List[Dict], is_l0: bool = False) -> float:
     return round(count / len(agents) * 100, 1)
 
 
-def calc_invocation_pct(agents: List[Dict], is_l0: bool = False) -> float:
+def calc_invocation_pct(agents: list[dict], is_l0: bool = False) -> float:
     """
     Calculate Heal Invocation % for a set of agents.
 
@@ -211,7 +210,7 @@ def calc_invocation_pct(agents: List[Dict], is_l0: bool = False) -> float:
     return round(count / len(agents) * 100, 1)
 
 
-def calc_test_pct(agents: List[Dict]) -> float:
+def calc_test_pct(agents: list[dict]) -> float:
     """
     Calculate Test Coverage % for a set of agents.
 
@@ -230,7 +229,7 @@ def calc_test_pct(agents: List[Dict]) -> float:
     return round(count / len(agents) * 100, 1)
 
 
-def calc_hardened_pct(agents: List[Dict]) -> float:
+def calc_hardened_pct(agents: list[dict]) -> float:
     """
     Calculate MCP Hardened % for a set of agents.
 
@@ -249,7 +248,7 @@ def calc_hardened_pct(agents: List[Dict]) -> float:
     return round(count / len(agents) * 100, 1)
 
 
-def calc_typed_pct(agents: List[Dict]) -> float:
+def calc_typed_pct(agents: list[dict]) -> float:
     """
     Calculate average Typed % for a set of agents.
 
@@ -267,7 +266,7 @@ def calc_typed_pct(agents: List[Dict]) -> float:
     return round(total / len(agents), 1)
 
 
-def calc_documented_pct(agents: List[Dict]) -> float:
+def calc_documented_pct(agents: list[dict]) -> float:
     """
     Calculate average Documented % for a set of agents.
 
@@ -285,7 +284,7 @@ def calc_documented_pct(agents: List[Dict]) -> float:
     return round(total / len(agents), 1)
 
 
-def calc_schema_strictness_pct(agents: List[Dict]) -> float:
+def calc_schema_strictness_pct(agents: list[dict]) -> float:
     """
     Calculate average Schema Strictness % for a set of agents.
 
@@ -303,7 +302,7 @@ def calc_schema_strictness_pct(agents: List[Dict]) -> float:
     return round(total / len(agents), 1)
 
 
-def calc_canonical_inheritance_pct(agents: List[Dict]) -> float:
+def calc_canonical_inheritance_pct(agents: list[dict]) -> float:
     """
     Calculate Canonical Inheritance % for a set of agents.
 
@@ -321,7 +320,7 @@ def calc_canonical_inheritance_pct(agents: List[Dict]) -> float:
     return round(count / len(agents) * 100, 1)
 
 
-def calc_avg_cc(agents: List[Dict]) -> float:
+def calc_avg_cc(agents: list[dict]) -> float:
     """
     Calculate average Cyclomatic Complexity for a set of agents.
 
@@ -501,12 +500,12 @@ def get_territory_sort_key(territory: str) -> tuple:
     return (999, 0, territory)
 
 
-def sort_territories(territories: List[str]) -> List[str]:
+def sort_territories(territories: list[str]) -> list[str]:
     """Sort territories with Base/Root first."""
     return sorted(territories, key=get_territory_sort_key)
 
 
-def sort_dashboard_data(dashboard_data: List[Dict]) -> List[Dict]:
+def sort_dashboard_data(dashboard_data: list[dict]) -> list[dict]:
     """
     Sort dashboard data with correct ordering.
 
@@ -539,7 +538,7 @@ def sort_dashboard_data(dashboard_data: List[Dict]) -> List[Dict]:
 # VALIDATION HELPERS
 # ============================================================================
 
-def validate_agent_has_required_fields(agent: Dict) -> List[str]:
+def validate_agent_has_required_fields(agent: dict) -> list[str]:
     """Validate an agent dictionary has all required fields."""
     required = [
         'path', 'class_name', 'layer', FIELD_HAS_HEALING, FIELD_INVOCATION,
@@ -550,7 +549,7 @@ def validate_agent_has_required_fields(agent: Dict) -> List[str]:
     return missing
 
 
-def get_canonical_health_score(metrics_dict: Dict[str, Any], is_l0: bool = False) -> float:
+def get_canonical_health_score(metrics_dict: dict[str, Any], is_l0: bool = False) -> float:
     """
     Calculate health score using SSOT weights and field constants.
 
@@ -584,7 +583,7 @@ def get_canonical_health_score(metrics_dict: Dict[str, Any], is_l0: bool = False
     )
 
 
-def get_canonical_code_quality_score(metrics_dict: Dict[str, Any]) -> float:
+def get_canonical_code_quality_score(metrics_dict: dict[str, Any]) -> float:
     """
     Calculate code quality score using SSOT weights and field constants.
 

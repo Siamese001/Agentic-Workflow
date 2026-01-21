@@ -4,12 +4,14 @@ L4 State Management - Core Types
 Defines the fundamental types for state management with strict immutability.
 """
 from __future__ import annotations
-from typing import Any, Dict, Optional, TypeVar, Generic, Callable
+
+import hashlib
+import json
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-import hashlib
-import json
+from typing import Any, Generic, TypeVar
 
 T = TypeVar('T')
 
@@ -52,8 +54,8 @@ class StateTransition(Generic[T]):
     operation: StateOperation
     path: StatePath
     value: Any = None
-    condition: Optional[Callable[[T], bool]] = field(default=None, compare=False)
-    metadata: Dict[str, object] = field(default_factory=dict, compare=False)
+    condition: Callable[[T], bool] | None = field(default=None, compare=False)
+    metadata: dict[str, object] = field(default_factory=dict, compare=False)
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc), compare=False)
 
     def with_metadata(self, **kwargs: object) -> StateTransition[T]:
@@ -72,10 +74,10 @@ class StateSnapshot(Generic[T]):
     """Immutable snapshot of state at a point in time."""
     state_id: str
     data: T
-    parent_id: Optional[str] = None
-    transition: Optional[StateTransition[T]] = None
+    parent_id: str | None = None
+    transition: StateTransition[T] | None = None
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    metadata: Dict[str, object] = field(default_factory=dict)
+    metadata: dict[str, object] = field(default_factory=dict)
 
     def get_hash(self) -> str:
         """Generate a deterministic hash of this snapshot."""

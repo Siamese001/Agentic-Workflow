@@ -5,12 +5,11 @@ with specific mitigations, demonstrating executive maturity and foresight.
 """
 
 import logging
-from typing import Dict, List, Optional, Tuple, Any
 from enum import Enum
-from pydantic import BaseModel, Field, validator
+
+from pydantic import BaseModel, Field
 
 from .models import LLMResponse
-
 
 logger = logging.getLogger(__name__)
 
@@ -43,8 +42,8 @@ class FailureMode(BaseModel):
     probability: float = Field(..., ge=0.0, le=1.0, description="Probability of occurrence (0-1)")
     impact: ImpactLevel = Field(..., description="Impact if risk materializes")
     mitigation_strategy: str = Field(..., description="Specific mitigation approach")
-    early_warning_signs: List[str] = Field(default_factory=list, description="Early warning indicators")
-    owner: Optional[str] = Field(None, description="Who owns this risk")
+    early_warning_signs: list[str] = Field(default_factory=list, description="Early warning indicators")
+    owner: str | None = Field(None, description="Who owns this risk")
 
     @property
     def risk_score(self) -> float:
@@ -62,11 +61,11 @@ class PreMortemReport(BaseModel):
     """Complete pre-mortem analysis report."""
 
     plan_summary: str = Field(..., description="Summary of the plan being analyzed")
-    top_risks: List[FailureMode] = Field(..., description="Top identified risks")
+    top_risks: list[FailureMode] = Field(..., description="Top identified risks")
     overall_risk_score: float = Field(..., ge=0.0, le=1.0, description="Overall plan risk score")
     go_no_go_recommendation: str = Field(..., description="Go/No-Go recommendation")
-    critical_success_factors: List[str] = Field(default_factory=list, description="Critical success factors")
-    monitoring_plan: Dict[str, str] = Field(default_factory=dict, description="Risk monitoring plan")
+    critical_success_factors: list[str] = Field(default_factory=list, description="Critical success factors")
+    monitoring_plan: dict[str, str] = Field(default_factory=dict, description="Risk monitoring plan")
 
 
 class SimpleAgentBase:
@@ -185,7 +184,7 @@ class PreMortemAgent(SimpleAgentBase):
             monitoring_plan=monitoring
         )
 
-    async def _identify_failure_modes(self, plan_text: str, plan_type: str) -> List[FailureMode]:
+    async def _identify_failure_modes(self, plan_text: str, plan_type: str) -> list[FailureMode]:
         """Identify potential failure modes using LLM.
 
         Args:
@@ -295,7 +294,7 @@ class PreMortemAgent(SimpleAgentBase):
             logger.error(f"Failed to generate mitigation: {e}")
             return "Implement regular check-ins and monitoring to address early signs of this risk."
 
-    def _identify_warning_signs(self, failure: FailureMode) -> List[str]:
+    def _identify_warning_signs(self, failure: FailureMode) -> list[str]:
         """Identify early warning signs for a failure mode.
 
         Args:
@@ -345,7 +344,7 @@ class PreMortemAgent(SimpleAgentBase):
 
         return warning_signs_map.get(failure.category, ["Unexpected deviations from plan"])
 
-    def _calculate_overall_risk(self, risks: List[FailureMode]) -> float:
+    def _calculate_overall_risk(self, risks: list[FailureMode]) -> float:
         """Calculate overall risk score for the plan.
 
         Args:
@@ -363,7 +362,7 @@ class PreMortemAgent(SimpleAgentBase):
 
         return min(1.0, weighted_score / total_weight * 2)  # Normalize and amplify
 
-    def _generate_recommendation(self, risk_score: float, risks: List[FailureMode]) -> str:
+    def _generate_recommendation(self, risk_score: float, risks: list[FailureMode]) -> str:
         """Generate go/no-go recommendation.
 
         Args:
@@ -384,7 +383,7 @@ class PreMortemAgent(SimpleAgentBase):
         else:
             return "GO: Low risk, proceed as planned"
 
-    def _identify_success_factors(self, plan_text: str, risks: List[FailureMode]) -> List[str]:
+    def _identify_success_factors(self, plan_text: str, risks: list[FailureMode]) -> list[str]:
         """Identify critical success factors.
 
         Args:
@@ -420,7 +419,7 @@ class PreMortemAgent(SimpleAgentBase):
 
         return factors[:5]  # Top 5 factors
 
-    def _create_monitoring_plan(self, risks: List[FailureMode]) -> Dict[str, str]:
+    def _create_monitoring_plan(self, risks: list[FailureMode]) -> dict[str, str]:
         """Create risk monitoring plan.
 
         Args:
@@ -507,7 +506,7 @@ class PreMortemAgent(SimpleAgentBase):
         """
         try:
             # Import here to avoid circular imports
-            from .multi_provider_clients import get_client, Provider
+            from .multi_provider_clients import Provider, get_client
 
             # Get Anthropic client
             client = get_client(Provider.ANTHROPIC)

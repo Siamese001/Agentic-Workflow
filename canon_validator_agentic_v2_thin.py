@@ -10,37 +10,29 @@
 # VERSION 3.2 - FULL REPO SCAN (All folders, all agents)
 # RATIONALE: All logic extracted to SSOT-compliant modules. This file is entry point only.
 
-import sys
-import os
-import asyncio
 import argparse
+import os
+import sys
 import traceback
-from pathlib import Path
 from datetime import datetime
-import importlib
+from pathlib import Path
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
 
 # Color-coded terminal output for progress visibility
 try:
     from agentic_core.utils.terminal_colors import (
-        phase_header, tier_summary, mission_header, mission_summary,
-        agent_status, progress_bar, log_status, Colors, heartbeat
+        Colors,
+        agent_status,
+        heartbeat,
+        log_status,
+        mission_header,
+        mission_summary,
+        phase_header,
+        progress_bar,
+        tier_summary,
     )
     COLORS_AVAILABLE = True
 except ImportError:
@@ -406,7 +398,7 @@ def main():
     # Global mission timeout: 30 minutes
     MISSION_TIMEOUT = int(os.getenv("MISSION_TIMEOUT_SECONDS", "1800"))
 
-    print(f"\n[*] Canon Validator v3.2 - Full Repo Scan (Thin Wrapper)")
+    print("\n[*] Canon Validator v3.2 - Full Repo Scan (Thin Wrapper)")
     print(f"   [OK] Sovereign Neural Link Active at Root: {project_root_str}")
 
     # Handle reset if requested
@@ -475,7 +467,10 @@ def main():
         try:
             # Import Guardian and Targets Config
             from agentic_core.config.autonomy_targets import get_target
-            from agentic_core.L5_safety.validators.AutonomyGuardianAgent import get_autonomy_guardian
+
+            from agentic_core.L5_safety.validators.AutonomyGuardianAgent import (
+                get_autonomy_guardian,
+            )
             guardian = get_autonomy_guardian(project_root)
             # Pass extra config if needed to inject targets during JSON generation
             print("   [TARGETS] Exceptions config loaded from agentic_core/config/autonomy_targets.py")
@@ -521,7 +516,7 @@ def main():
             print("   Available agents (use any unique prefix):")
             for class_name, _ in list_available_agents()[:30]:  # Show first 30
                 print(f"      - {class_name}")
-            print(f"   ... and more. Use --list-agents for full list.")
+            print("   ... and more. Use --list-agents for full list.")
             sys.exit(1)
 
         module_path, agent_name = discovery_result
@@ -565,18 +560,18 @@ def main():
                     depth=0,
                     max_depth=3,
                 )
-                print(f"\n[AGENT COMPLETE]")
+                print("\n[AGENT COMPLETE]")
                 print(f"   Renamed: {result.get('renamed', 0)}")
                 print(f"   Errors: {result.get('errors', 0)}")
             elif method_name == "generate_compliance_report":
                 method()
             elif method_name == "run":
                 result = method()
-                print(f"\n[AGENT COMPLETE]")
+                print("\n[AGENT COMPLETE]")
                 print(f"   Result: {result}")
             else:
                 result = method()
-                print(f"\n[AGENT COMPLETE]")
+                print("\n[AGENT COMPLETE]")
                 if result:
                     print(f"   Result: {result}")
 
@@ -589,9 +584,9 @@ def main():
 
     # Handle hygiene modes
     if args.preflight_only or args.hygiene or args.full_hygiene:
+        from agentic_core.config.core_hygiene_agents import CORE_HYGIENE_AGENTS, MANDATORY_PREFLIGHT
         from agentic_core.L3_orchestration.unified_orchestrator import UnifiedOrchestratorAgent
         from agentic_core.L5_safety.validators.healing_strategy import HealingStrategy
-        from agentic_core.config.core_hygiene_agents import CORE_HYGIENE_AGENTS, MANDATORY_PREFLIGHT
 
         execute_heal = getattr(args, 'execute_heal', False) or getattr(args, 'execute', False)
         mode_str = "EXECUTE" if execute_heal else "DRY-RUN"
@@ -668,9 +663,12 @@ def main():
         try:
             # [PHASE 3] UNIFIED ORCHESTRATION - Strategy Pattern
             # The 5-tier logic is now encapsulated in HealingStrategy
+            from agentic_core.L4_state.ValidationContext.CheckpointManagerAgent import (
+                get_checkpoint_manager,
+            )
+
             from agentic_core.L3_orchestration.unified_orchestrator import UnifiedOrchestratorAgent
             from agentic_core.L5_safety.validators.healing_strategy import HealingStrategy
-            from agentic_core.L4_state.ValidationContext.CheckpointManagerAgent import get_checkpoint_manager
 
             # Helper to safely load Performance Analyst (L6)
             def get_performance_analyst_safe(root):
@@ -692,7 +690,7 @@ def main():
             if args.tier is not None:
                 print(f"\n   [TIER FILTER] Running ONLY Tier {args.tier}")
             else:
-                print(f"\n   [TIER FILTER] Running ALL tiers (0-4)")
+                print("\n   [TIER FILTER] Running ALL tiers (0-4)")
             orchestrator = UnifiedOrchestratorAgent(
                 strategy=strategy,
                 project_root=project_root,
@@ -720,7 +718,9 @@ def main():
             # Check for Gemini activation
             gemini_active = False
             try:
-                from agentic_core.L5_safety.validators.AutonomyGuardianAgent import get_autonomy_guardian
+                from agentic_core.L5_safety.validators.AutonomyGuardianAgent import (
+                    get_autonomy_guardian,
+                )
                 guardian = get_autonomy_guardian(project_root)
                 gemini_active = hasattr(guardian, 'gemini_embedder') and guardian.gemini_embedder is not None
             except: pass
@@ -851,10 +851,10 @@ def report_consolidated_summary(results, gemini_active):
 
     # Display Meta-Learning memory growth
     if gemini_active:
-        print(f"\n  Meta-Learning: ACTIVE (Gemini 768D)")
-        print(f"  L4 Memory: Historical snapshots persisted")
+        print("\n  Meta-Learning: ACTIVE (Gemini 768D)")
+        print("  L4 Memory: Historical snapshots persisted")
     else:
-        print(f"\n  Meta-Learning: LOGGING ONLY (Set GOOGLE_API_KEY to activate)")
+        print("\n  Meta-Learning: LOGGING ONLY (Set GOOGLE_API_KEY to activate)")
 
     print("="*60)
 

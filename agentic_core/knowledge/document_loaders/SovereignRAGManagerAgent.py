@@ -11,13 +11,13 @@ Restored: 2026-01-13 | Version: 2.1.0 (Modernized)
 
 import logging
 from pathlib import Path
-from typing import Dict, List, Any, Optional, Union
+from typing import Any
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.common.healing.healer_mixin import HealerMixin
-
-from agentic_core.knowledge.document_loaders.text_loader import TextDocumentLoader
 from agentic_core.knowledge.document_loaders.pdf_loader import PDFDocumentLoader
+from agentic_core.knowledge.document_loaders.text_loader import TextDocumentLoader
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
+
 
 class SovereignRAGManager(MCPHardenedMixin, HealerMixin):
     """Orchestrates the retrieval-augmented generation pipeline."""
@@ -49,16 +49,16 @@ class SovereignRAGManager(MCPHardenedMixin, HealerMixin):
         except Exception as e:
             self.logger.warning(f"Bm25Store unavailable: {e}")
 
-        self.static_knowledge: Dict[str, Any] = self._load_static_index()
+        self.static_knowledge: dict[str, Any] = self._load_static_index()
 
         super().__init__()
 
-    def _load_static_index(self) -> Dict[str, Any]:
+    def _load_static_index(self) -> dict[str, Any]:
         return {"action_verbs": [], "skill_taxonomy": {}}
 
     def ingest(self, file_path: Path) -> bool:
         suffix = Path(file_path).suffix.lower()
-        loader: Optional[Union[TextDocumentLoader, PDFDocumentLoader]] = None
+        loader: TextDocumentLoader | PDFDocumentLoader | None = None
 
         if suffix == ".txt":
             loader = TextDocumentLoader(Path(file_path))
@@ -74,10 +74,10 @@ class SovereignRAGManager(MCPHardenedMixin, HealerMixin):
         self.index_document(Path(file_path).name, chunks)
         return True
 
-    def _chunk_content(self, content: str, chunk_size: int = 1000) -> List[str]:
+    def _chunk_content(self, content: str, chunk_size: int = 1000) -> list[str]:
         return [content[i : i + chunk_size] for i in range(0, len(content), chunk_size)]
 
-    def index_document(self, doc_id: str, chunks: List[str]):
+    def index_document(self, doc_id: str, chunks: list[str]):
         if not chunks:
             return
 
@@ -96,15 +96,15 @@ class SovereignRAGManager(MCPHardenedMixin, HealerMixin):
                 embeddings = self.embedder.embed_texts(chunks)
                 vectors = [
                     (f"{doc_id}_chunk_{i}", emb, {"text": chunk, "doc_id": doc_id})
-                    for i, (emb, chunk) in enumerate(zip(embeddings, chunks))
+                    for i, (emb, chunk) in enumerate(zip(embeddings, chunks, strict=False))
                 ]
                 self.vector_store.upsert(vectors)
             except Exception as e:
                 self.logger.warning(f"Vector indexing failed: {e}")
 
-    def retrieve(self, query: str, top_k: int = 5) -> List[Dict[str, Any]]:
-        vector_results: List[Dict[str, Any]] = []
-        bm25_results: List[Dict[str, Any]] = []
+    def retrieve(self, query: str, top_k: int = 5) -> list[dict[str, Any]]:
+        vector_results: list[dict[str, Any]] = []
+        bm25_results: list[dict[str, Any]] = []
 
         if self.embedder and self.vector_store:
             try:
@@ -144,8 +144,8 @@ class SovereignRAGManager(MCPHardenedMixin, HealerMixin):
         combined = self._fuse_results(vector_results, bm25_results)
         return combined[:top_k]
 
-    def _fuse_results(self, vector: List[Dict[str, Any]], bm25: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def _fuse_results(self, vector: list[dict[str, Any]], bm25: list[dict[str, Any]]) -> list[dict[str, Any]]:
         return vector + bm25
 
-    def format_context(self, results: List[Dict[str, Any]]) -> str:
+    def format_context(self, results: list[dict[str, Any]]) -> str:
         return "\n\n".join([r.get("text", "") for r in results if r.get("text")])

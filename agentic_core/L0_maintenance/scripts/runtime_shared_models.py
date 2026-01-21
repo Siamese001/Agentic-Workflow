@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 RESIDUAL SWEEP COMPLETE: Phase 2C
 All models centralized in sovereign SSOT: agentic_core/schemas/models/core_contracts.py

@@ -1,12 +1,12 @@
 from __future__ import annotations
-import glob
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
 import logging
 import os
 from typing import Any
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+
 Logger: Any = logging.getLogger('Toolbox')
 
 def repository_get_file_content(file_path: Any) -> Any:
@@ -14,7 +14,7 @@ def repository_get_file_content(file_path: Any) -> Any:
     try:
         if not os.path.exists(file_path):
             return f"Error: File '{file_path}' does not exist."
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, encoding='utf-8') as f:
             return f.read()
     except Exception as e:
         return f'Error reading file: {e}'
@@ -25,8 +25,9 @@ def repository_list_files(directory: Any='.') -> Any:
         if '..' in directory:
             return 'Error: Cannot navigate up the directory tree.'
         # Phase 6.8: Use ssot_discovery instead of glob
-        from agentic_core.utils.ssot_discovery import get_python_files
         from pathlib import Path
+
+        from agentic_core.utils.ssot_discovery import get_python_files
         return [str(f) for f in get_python_files(Path(directory))]
     except Exception as e:
         return f'Error listing files: {e}'

@@ -1,19 +1,13 @@
 from __future__ import annotations
+
 """
 Simple validation summary without complex imports.
 Reports on the sovereign convergence completion status.
 """
-import os
 from pathlib import Path
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from typing import Any
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
-from agentic_core.utils.sovereign_index import SovereignIndex
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 root: Any = Path('C:/Git/Agentic-Workflow')
 core: Any = ROOT / 'agentic_core'
@@ -47,7 +41,7 @@ def check_structure() -> Any:
     for layer in layers:
         init_file: Any = CORE / layer / '__init__.py'
         if init_file.exists():
-            with open(init_file, 'r', encoding='utf-8') as f:
+            with open(init_file, encoding='utf-8') as f:
                 content: Any = f.read()
                 has_all: Any = '__all__' in content
                 has_imports: Any = 'from .' in content or 'import' in content
@@ -66,7 +60,7 @@ def check_structure() -> Any:
     from agentic_core.utils.ssot_discovery import get_python_files
     for py_file in get_python_files(CORE):
         try:
-            with open(py_file, 'r', encoding='utf-8') as f:
+            with open(py_file, encoding='utf-8') as f:
                 content: Any = f.read()
                 if 'from apps_rg' in content or 'from apps_lic' in content:
                     violations.append(py_file.relative_to(ROOT))

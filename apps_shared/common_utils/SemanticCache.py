@@ -3,12 +3,10 @@
 Provides semantic similarity-based caching for query results.
 """
 
-from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Tuple
 import hashlib
-import json
-import time
+from dataclasses import dataclass
 from datetime import datetime, timedelta
+from typing import Any
 
 
 @dataclass
@@ -17,7 +15,7 @@ class VectorSimilarityResult:
     cache_key: str
     similarity_score: float
     cached_content: str
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
     timestamp: datetime
 
     def __post_init__(self):
@@ -30,8 +28,8 @@ class CacheEntry:
     """Entry in the semantic cache."""
     key: str
     content: str
-    embedding: List[float]
-    metadata: Dict[str, Any]
+    embedding: list[float]
+    metadata: dict[str, Any]
     timestamp: datetime
     ttl_seconds: int = 3600
 
@@ -51,18 +49,18 @@ class EnhancedSemanticCache:
             ttl_seconds: Time-to-live for cache entries in seconds
             similarity_threshold: Minimum similarity threshold for matches
         """
-        self.entries: Dict[str, CacheEntry] = {}
+        self.entries: dict[str, CacheEntry] = {}
         self.max_entries = max_size
         self.max_size = max_size
         self.ttl_seconds = ttl_seconds
         self.default_ttl = ttl_seconds
         self.similarity_threshold = similarity_threshold
-        self.embedding_cache: Dict[str, List[float]] = {}
+        self.embedding_cache: dict[str, list[float]] = {}
 
     def get(self,
             query: str,
-            query_embedding: Optional[List[float]] = None,
-            top_k: int = 5) -> List[VectorSimilarityResult]:
+            query_embedding: list[float] | None = None,
+            top_k: int = 5) -> list[VectorSimilarityResult]:
         """Retrieve cached entries similar to query.
 
         Args:
@@ -103,9 +101,9 @@ class EnhancedSemanticCache:
     def put(self,
             query: str,
             content: str,
-            metadata: Optional[Dict[str, Any]] = None,
-            embedding: Optional[List[float]] = None,
-            ttl_seconds: Optional[int] = None) -> str:
+            metadata: dict[str, Any] | None = None,
+            embedding: list[float] | None = None,
+            ttl_seconds: int | None = None) -> str:
         """Store content in semantic cache.
 
         Args:
@@ -168,7 +166,7 @@ class EnhancedSemanticCache:
         combined = f"{query}:{content}"
         return hashlib.sha256(combined.encode()).hexdigest()[:16]
 
-    def _get_embedding(self, text: str) -> List[float]:
+    def _get_embedding(self, text: str) -> list[float]:
         """Get embedding for text (mock implementation)."""
         # Check cache first
         if text in self.embedding_cache:
@@ -189,7 +187,7 @@ class EnhancedSemanticCache:
         self.embedding_cache[text] = embedding
         return embedding
 
-    def _cosine_similarity(self, vec1: List[float], vec2: List[float]) -> float:
+    def _cosine_similarity(self, vec1: list[float], vec2: list[float]) -> float:
         """Calculate cosine similarity between two vectors."""
         if len(vec1) != len(vec2):
             return 0.0
@@ -203,7 +201,7 @@ class EnhancedSemanticCache:
 
         return dot_product / (norm1 * norm2)
 
-    def generate_fingerprint(self, prompt: str, model: str, temperature: float = 0.7, system_prompt: Optional[str] = None) -> str:
+    def generate_fingerprint(self, prompt: str, model: str, temperature: float = 0.7, system_prompt: str | None = None) -> str:
         """Generate fingerprint for cache lookup.
 
         Args:
@@ -226,7 +224,7 @@ class EnhancedSemanticCache:
         combined = "|".join(components)
         return hashlib.sha256(combined.encode()).hexdigest()
 
-    def lookup(self, fingerprint: str) -> Optional[Dict[str, Any]]:
+    def lookup(self, fingerprint: str) -> dict[str, Any] | None:
         """Lookup cache entries by fingerprint.
 
         Args:
@@ -245,7 +243,7 @@ class EnhancedSemanticCache:
                 del self.entries[fingerprint]
         return None
 
-    def store(self, fingerprint: str, data: Dict[str, Any], ttl_hours: Optional[float] = None) -> None:
+    def store(self, fingerprint: str, data: dict[str, Any], ttl_hours: float | None = None) -> None:
         """Store content in cache.
 
         Args:
@@ -268,7 +266,7 @@ class EnhancedSemanticCache:
 
         self.entries[fingerprint] = entry
 
-    def get_cache_stats(self) -> Dict[str, Any]:
+    def get_cache_stats(self) -> dict[str, Any]:
         """Get cache statistics.
 
         Returns:

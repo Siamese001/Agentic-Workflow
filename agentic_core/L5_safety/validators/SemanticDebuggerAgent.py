@@ -5,19 +5,23 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 """
 SemanticDebuggerAgent — L5 Safety Agent for Just-In-Time RCA
 
 Analyzes runtime errors using the Semantic Knowledge Base (Pinecone)
 to find known healing patterns and fixes.
 """
-from typing import Dict, Any, List
 import logging
+from typing import Any
 
+from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import (
+    SubatomicTestingMixin,
+)
 from agentic_core.L5_safety.guardrails.L5SafetyBaseAgent import L5SafetyBaseAgent
 from agentic_core.utils.core_extensions.CognitiveRecoveryMixin import CognitiveRecoveryMixin
-from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
 
 Logger = logging.getLogger(__name__)
@@ -46,7 +50,7 @@ class SemanticDebuggerAgent(SubatomicTestingMixin, L5SafetyBaseAgent, CognitiveR
         self.layer: str = "L5"
         self.description: str = "Analyzes runtime errors using semantic memory to find known fixes."
 
-    def run(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+    def run(self, payload: dict[str, Any]) -> dict[str, Any]:
         """
         Main execution method for semantic debugging.
 
@@ -104,7 +108,7 @@ class SemanticDebuggerAgent(SubatomicTestingMixin, L5SafetyBaseAgent, CognitiveR
             "suggested_reading": [d["id"] for d in docs] if docs else [],
         }
 
-    def _find_healing_patterns(self, error_context: str) -> List[Any]:
+    def _find_healing_patterns(self, error_context: str) -> list[Any]:
         """
         Wrapper around the Mixin's client to search healing namespace directly.
 
@@ -118,7 +122,7 @@ class SemanticDebuggerAgent(SubatomicTestingMixin, L5SafetyBaseAgent, CognitiveR
         return client.find_healing_pattern(error_context)
 
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
         """Autonomous healing with proper invocation chain."""
         super().heal_repository(dry_run=dry_run, execute=execute, **kwargs)
         return {"violations_found": 0, "violations_fixed": 0, "errors": 0}

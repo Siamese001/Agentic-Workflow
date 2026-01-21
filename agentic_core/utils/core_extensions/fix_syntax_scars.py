@@ -1,5 +1,5 @@
 from __future__ import annotations
-import os
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
@@ -7,10 +7,6 @@ from pathlib import Path
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from typing import Any
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 root: Any = Path('C:/Git/Agentic-Workflow')
 core: Any = ROOT / 'agentic_core'
@@ -41,7 +37,7 @@ def fix_syntax_errors() -> Any:
             content: Any = '\n'.join(fixed_lines)
             content: Any = content.replace('from agentic_core.', '# [INCOMPLETE IMPORT] from agentic_core.')
             content: Any = content.replace('from agentic_core..', '# [INCOMPLETE IMPORT] from agentic_core..')
-            content: Any = '\n'.join([line if not line.strip() in ['from .', 'from ..'] else f'# [INCOMPLETE] {line}' for line in content.splitlines()])
+            content: Any = '\n'.join([line if line.strip() not in ['from .', 'from ..'] else f'# [INCOMPLETE] {line}' for line in content.splitlines()])
             if content != original:
                 file_path.write_text(content, encoding='utf-8')
                 print(f'  [✓] Fixed: {file_rel_path}')

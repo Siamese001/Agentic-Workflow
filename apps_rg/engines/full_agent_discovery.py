@@ -38,11 +38,11 @@ import importlib.util
 import json
 import logging
 import os
-import sys
 import platform
-from pathlib import Path
-from typing import Dict, List, Any, Optional, Set, Tuple
+import sys
 from collections import defaultdict
+from pathlib import Path
+from typing import Any
 
 # SSOT discovery - replaces rglob
 try:
@@ -53,38 +53,34 @@ except ImportError:
 
 # SSOT: Import territory name definitions
 sys.path.insert(0, str(Path(__file__).parent))
-from territory_ssot_definitions import get_territory_from_path, refine_territory_by_ast
-
 # SSOT: Import field name constants for agent_discovery_full.json
 from dashboard_ssot_definitions import (
-    FIELD_CLASS_NAME, FIELD_PATH, FIELD_LAYER, FIELD_TERRITORY, FIELD_CATEGORY,
-    FIELD_HAS_HEALING, FIELD_HAS_TESTS, FIELD_HAS_TOOLS, FIELD_HAS_MEMORY,
-    FIELD_MCP_HARDENED, FIELD_INVOCATION, FIELD_TYPED_PCT, FIELD_DOCUMENTED_PCT,
-    FIELD_SCHEMA_STRICTNESS, FIELD_PROPER_BASE_CLASS, FIELD_CYCLOMATIC_COMPLEXITY,
-    FIELD_INHERITANCE, FIELD_BASE_CLASSES
+    FIELD_CATEGORY,
+    FIELD_CLASS_NAME,
+    FIELD_CYCLOMATIC_COMPLEXITY,
+    FIELD_DOCUMENTED_PCT,
+    FIELD_HAS_HEALING,
+    FIELD_HAS_MEMORY,
+    FIELD_HAS_TESTS,
+    FIELD_HAS_TOOLS,
+    FIELD_INHERITANCE,
+    FIELD_INVOCATION,
+    FIELD_LAYER,
+    FIELD_MCP_HARDENED,
+    FIELD_PATH,
+    FIELD_PROPER_BASE_CLASS,
+    FIELD_SCHEMA_STRICTNESS,
+    FIELD_TERRITORY,
+    FIELD_TYPED_PCT,
 )
+from territory_ssot_definitions import get_territory_from_path, refine_territory_by_ast
 
+# SSOT: Import canonical functions (Phase 3 Migration)
+from agentic_core.L5_safety.validators.canonical_truth import categorize_agent, get_canonical_layer
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
     AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root
-)
-
-# SSOT: Import canonical functions (Phase 3 Migration)
-from agentic_core.L5_safety.validators.canonical_truth import (
-    get_canonical_layer,
-    categorize_agent
 )
 
 # Fix Windows console UnicodeEncodeError when printing warnings/emojis
@@ -110,8 +106,15 @@ log = logging.getLogger("full_agent_discovery")
 # Color-coded terminal output
 try:
     from agentic_core.utils.terminal_colors import (
-        discovery_status, progress_bar, phase_header, log_status, Colors,
-        print_success, print_warning, print_error, print_info
+        Colors,
+        discovery_status,
+        log_status,
+        phase_header,
+        print_error,
+        print_info,
+        print_success,
+        print_warning,
+        progress_bar,
     )
     COLORS_AVAILABLE = True
 except ImportError:
@@ -312,7 +315,7 @@ def should_exclude_file(py_file: Path) -> bool:
     return False
 
 
-def validate_agent_count(agent_count: int, previous_count: Optional[int] = None) -> Tuple[bool, List[str]]:
+def validate_agent_count(agent_count: int, previous_count: int | None = None) -> tuple[bool, list[str]]:
     """
     HARDENING: Validate agent count against safety thresholds.
 
@@ -366,7 +369,7 @@ def validate_agent_count(agent_count: int, previous_count: Optional[int] = None)
     return True, errors
 
 
-def get_previous_agent_count() -> Optional[int]:
+def get_previous_agent_count() -> int | None:
     """Get agent count from previous discovery run (from manifest or JSON)."""
     # Try manifest first
     if MANIFEST_JSON.exists():
@@ -387,7 +390,7 @@ def get_previous_agent_count() -> Optional[int]:
     return None
 
 
-def generate_manifest(agents: List[Dict], scan_duration: float, parse_errors: List[str]) -> Dict:
+def generate_manifest(agents: list[dict], scan_duration: float, parse_errors: list[str]) -> dict:
     """Generate manifest with metadata for staleness detection and validation."""
     import hashlib
     from datetime import datetime
@@ -459,7 +462,7 @@ DELEGATION_BASES = {
 }
 
 
-def safe_parse(code: str, file_path: Path) -> Optional[ast.AST]:
+def safe_parse(code: str, file_path: Path) -> ast.AST | None:
     """Parse code with error tolerance."""
     try:
         return ast.parse(code)
@@ -472,7 +475,7 @@ def safe_parse(code: str, file_path: Path) -> Optional[ast.AST]:
 # All layer inference now uses get_canonical_layer() from canonical_truth.py
 
 
-def extract_bases(class_node: ast.ClassDef) -> Set[str]:
+def extract_bases(class_node: ast.ClassDef) -> set[str]:
     """Extract base class names from class definition."""
     bases = set()
     for base in class_node.bases:
@@ -486,7 +489,7 @@ def extract_bases(class_node: ast.ClassDef) -> Set[str]:
     return bases
 
 
-def extract_decorators(node: ast.ClassDef) -> List[str]:
+def extract_decorators(node: ast.ClassDef) -> list[str]:
     """Extract decorator names from class definition."""
     decorators = []
     for dec in node.decorator_list:
@@ -502,7 +505,7 @@ def extract_decorators(node: ast.ClassDef) -> List[str]:
     return decorators
 
 
-def extract_class_attributes(node: ast.ClassDef) -> List[str]:
+def extract_class_attributes(node: ast.ClassDef) -> list[str]:
     """Extract class-level attribute assignments."""
     attrs = []
     for item in node.body:
@@ -516,7 +519,7 @@ def extract_class_attributes(node: ast.ClassDef) -> List[str]:
     return attrs
 
 
-def extract_imports(tree: ast.AST) -> Tuple[List[str], List[str]]:
+def extract_imports(tree: ast.AST) -> tuple[list[str], list[str]]:
     """Extract all imports from a module."""
     imports = []
     from_imports = []
@@ -531,7 +534,7 @@ def extract_imports(tree: ast.AST) -> Tuple[List[str], List[str]]:
     return imports, from_imports
 
 
-def extract_method_signatures(node: ast.ClassDef) -> List[Dict[str, Any]]:
+def extract_method_signatures(node: ast.ClassDef) -> list[dict[str, Any]]:
     """Extract method signatures with parameters."""
     methods = []
     for item in node.body:
@@ -549,7 +552,7 @@ def extract_method_signatures(node: ast.ClassDef) -> List[Dict[str, Any]]:
 
 
 # Build inheritance map for MRO-like traversal
-CLASS_INHERITANCE_MAP: Dict[str, Set[str]] = {}
+CLASS_INHERITANCE_MAP: dict[str, set[str]] = {}
 
 
 def build_inheritance_map(tree: ast.AST) -> None:
@@ -560,7 +563,7 @@ def build_inheritance_map(tree: ast.AST) -> None:
             CLASS_INHERITANCE_MAP[node.name] = bases
 
 
-def has_healing_in_chain(class_name: str, bases: Set[str], visited: Set[str] = None) -> bool:
+def has_healing_in_chain(class_name: str, bases: set[str], visited: set[str] = None) -> bool:
     """Check if class has healing capability through inheritance chain."""
     if visited is None:
         visited = set()
@@ -588,7 +591,7 @@ def has_healing_in_chain(class_name: str, bases: Set[str], visited: Set[str] = N
     return False
 
 
-def extract_methods(class_node: ast.ClassDef) -> List[str]:
+def extract_methods(class_node: ast.ClassDef) -> list[str]:
     """Extract method names from class definition."""
     methods = []
     for item in class_node.body:
@@ -606,7 +609,7 @@ def has_method(class_node: ast.ClassDef, method_name: str) -> bool:
     return False
 
 
-def get_method(class_node: ast.ClassDef, method_name: str) -> Optional[ast.FunctionDef]:
+def get_method(class_node: ast.ClassDef, method_name: str) -> ast.FunctionDef | None:
     """Get a specific method from a class, or None if not found."""
     for item in class_node.body:
         if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
@@ -792,8 +795,7 @@ def check_proper_base(class_node: ast.ClassDef, layer: str) -> bool:
     # Check for canonical architectural patterns
     canonical_patterns = {
         "SovereignBaseAgent",
-        "L0MaintenanceBaseAgent", "L1CognitionBaseAgent", "L1CognitionBaseAgent",
-        "L2Agent", "L2ExecutionBaseAgent",
+        "L0MaintenanceBaseAgent", "L1CognitionBaseAgent", "L2Agent", "L2ExecutionBaseAgent",
         "L3Agent", "L3OrchestrationBaseAgent",
         "L4Agent", "L4StateBaseAgent",
         "L5Agent", "L5SafetyBaseAgent",
@@ -1092,7 +1094,7 @@ def count_loc(source: str) -> int:
     return count
 
 
-def is_agent_class(class_node: ast.ClassDef, bases: Set[str], rel_path: Optional[Path] = None) -> bool:
+def is_agent_class(class_node: ast.ClassDef, bases: set[str], rel_path: Path | None = None) -> bool:
     """
     STRICT Agent Classification (Post-Bulk Extraction Enforcement – Jan 06, 2026)
 
@@ -1298,7 +1300,7 @@ def get_docstring(class_node: ast.ClassDef) -> str:
     return ""
 
 
-def discover_all_agents(project_root: Path = None) -> List[Dict[str, Any]]:
+def discover_all_agents(project_root: Path = None) -> list[dict[str, Any]]:
     """
     SSOT Discovery API: Returns list of all discovered agents.
     This is the canonical entry point for programmatic agent discovery.
@@ -1408,7 +1410,7 @@ def main():
     # Get previous count BEFORE deleting files (for validation)
     previous_agents = []
     previous_count = get_previous_agent_count()  # Fallback for validation
-    changed_rel_paths: Set[str] = set()
+    changed_rel_paths: set[str] = set()
 
     if incremental_mode:
         # ====================================================================
@@ -1435,7 +1437,7 @@ def main():
             except json.JSONDecodeError as e:
                 log.error(f"[INCREMENTAL] JSON corrupted ({e}) → falling back to full scan")
                 incremental_mode = False
-            except IOError as e:
+            except OSError as e:
                 log.error(f"[INCREMENTAL] Failed to read JSON ({e}) → falling back to full scan")
                 incremental_mode = False
             except Exception as e:
@@ -1508,7 +1510,7 @@ def main():
 
     agents = []
     parse_errors = []
-    seen_agents: Set[Tuple[str, str]] = set()
+    seen_agents: set[tuple[str, str]] = set()
     duplicates_skipped = 0
 
     # Scan ALL Python files in project (collect once for hashing later)
@@ -1522,15 +1524,15 @@ def main():
     print(f"   {Colors.DIM}→ Excluded vendor/cache/docs via should_exclude_path(){Colors.RESET}")
     print(f"   {Colors.DIM}→ Including tests/ for TestAgent discovery{Colors.RESET}")
     log.info(f"Scanning {len(all_py_files)} Python files...")
-    log.info(f"   -> Excluded vendor/cache/docs via should_exclude_path()")
-    log.info(f"   -> Including tests/ for TestAgent discovery (filtered by file patterns)")
+    log.info("   -> Excluded vendor/cache/docs via should_exclude_path()")
+    log.info("   -> Including tests/ for TestAgent discovery (filtered by file patterns)")
 
     # ====================================================================
     # INCREMENTAL: Hash-based Change Detection
     # ====================================================================
     if incremental_mode:
         log.info("[INCREMENTAL] Computing MD5 hashes for change detection...")
-        current_hashes: Dict[str, str] = {}
+        current_hashes: dict[str, str] = {}
         hash_compute_errors = 0
 
         for py_file in all_py_files:
@@ -1538,7 +1540,7 @@ def main():
             try:
                 file_hash = hashlib.md5(py_file.read_bytes()).hexdigest()
                 current_hashes[rel_path] = file_hash
-            except IOError as e:
+            except OSError as e:
                 # File read error - mark as changed to force re-parse
                 log.debug(f"[HASH ERROR] {rel_path}: {e}")
                 changed_rel_paths.add(rel_path)
@@ -1569,7 +1571,7 @@ def main():
         changed_rel_paths.update(new_files)
 
         # Log change detection results
-        log.info(f"[INCREMENTAL] Change detection results:")
+        log.info("[INCREMENTAL] Change detection results:")
         log.info(f"  - Changed files: {len(changed_files)}")
         log.info(f"  - New files: {len(new_files)}")
         log.info(f"  - Removed files: {len(removed_rel_paths)}")
@@ -1841,7 +1843,7 @@ def main():
 
     # Compute file hashes for manifest (centralized here)
     log.info(f"[MANIFEST] Computing hashes for {len(all_py_files)} scanned files...")
-    file_hashes: Dict[str, str] = {}
+    file_hashes: dict[str, str] = {}
     hash_errors = 0
     for py_file in all_py_files:
         rel_path = str(py_file.relative_to(PROJECT_ROOT)).replace("\\", "/")
@@ -1965,7 +1967,7 @@ def main():
     return agents, parse_errors
 
 
-def check_compliance_gate(agents: List[Dict], parse_errors: List[str]) -> int:
+def check_compliance_gate(agents: list[dict], parse_errors: list[str]) -> int:
     """
     Phase 3.3 Compliance Gate: Validate agent discovery for critical issues.
     Returns 0 if compliant, 1 if issues found.

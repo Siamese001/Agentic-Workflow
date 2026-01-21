@@ -12,28 +12,14 @@ full_agent_discovery.py is the canonical SSOT for agent discovery.
 
 import json
 from collections import defaultdict
-from pathlib import Path
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
     TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # Load full analysis
-with open(AGENT_DISCOVERY_JSON, 'r') as f:
+with open(AGENT_DISCOVERY_JSON) as f:
     agents = json.load(f)
 
 # Calculate stats
@@ -204,7 +190,7 @@ lines.append("---")
 lines.append("")
 lines.append("## DISCOVERY VALIDATION")
 lines.append("")
-lines.append(f"- **Expected agents**: 63+ core + apps")
+lines.append("- **Expected agents**: 63+ core + apps")
 lines.append(f"- **Discovered agents**: {total}")
 lines.append(f"- **Core agents (L0-L5)**: {sum(len(by_layer[l]) for l in ['L0', 'L1', 'L2', 'L3', 'L4', 'L5'])}")
 lines.append(f"- **Apps agents**: {sum(len(by_layer[l]) for l in [APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR])}")

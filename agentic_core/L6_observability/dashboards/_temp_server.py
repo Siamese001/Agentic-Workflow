@@ -1,11 +1,8 @@
 
-import os
-import sys
-from waitress import serve
-from wsgiref.simple_server import make_server
-from wsgiref.util import FileWrapper
 import mimetypes
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+import os
+
+from waitress import serve
 
 os.chdir(r"C:\Git\Agentic-Workflow\agentic_core\L6_observability\dashboards")
 
@@ -61,5 +58,5 @@ class StaticFileApp:
             return [b'File not found']
 
 app = StaticFileApp(r"C:\Git\Agentic-Workflow\agentic_core\L6_observability\dashboards")
-print(f"Serving at port 8765", flush=True)
+print("Serving at port 8765", flush=True)
 serve(app, host='0.0.0.0', port=8765, threads=6)

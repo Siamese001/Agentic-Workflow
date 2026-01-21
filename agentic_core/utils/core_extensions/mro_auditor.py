@@ -11,7 +11,6 @@ The auditor performs two primary checks:
 2. Dynamic Propagation Check: Verifies instantiation triggers __post_init__ in SovereignBaseAgent
 """
 import inspect
-from typing import Type, List, Tuple, Optional
 from pathlib import Path
 
 
@@ -26,7 +25,7 @@ class MROAuditor:
     """
 
     @staticmethod
-    def audit_class_hierarchy(agent_cls: Type) -> List[str]:
+    def audit_class_hierarchy(agent_cls: type) -> list[str]:
         """
         Validates that SovereignBaseAgent is at the correct position in MRO.
 
@@ -36,8 +35,8 @@ class MROAuditor:
         Returns:
             List of error messages (empty if no errors)
         """
-        from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
         from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
+        from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
         mro = inspect.getmro(agent_cls)
         errors = []
@@ -51,7 +50,7 @@ class MROAuditor:
         # Expected order: ... -> SovereignBaseAgent -> MCPHardenedMixin -> object
         sovereign_idx = mro.index(SovereignBaseAgent)
         mcp_idx = mro.index(MCPHardenedMixin) if MCPHardenedMixin in mro else None
-        object_idx = mro.index(object)
+        mro.index(object)
 
         # Check: SovereignBaseAgent should be immediately before MCPHardenedMixin
         if mcp_idx is not None:
@@ -77,7 +76,7 @@ class MROAuditor:
         return errors
 
     @staticmethod
-    def verify_initialization_propagation(agent_instance: object) -> Tuple[bool, Optional[str]]:
+    def verify_initialization_propagation(agent_instance: object) -> tuple[bool, str | None]:
         """
         Check if SovereignBaseAgent's initialization was actually reached.
 
@@ -105,7 +104,7 @@ class MROAuditor:
             )
 
     @staticmethod
-    def audit_agent_class(agent_cls: Type, instantiate: bool = False) -> Tuple[bool, List[str]]:
+    def audit_agent_class(agent_cls: type, instantiate: bool = False) -> tuple[bool, list[str]]:
         """
         Comprehensive audit of an agent class.
 
@@ -144,7 +143,7 @@ class MROAuditor:
         return len(errors) == 0, errors
 
 
-def find_all_agent_classes(root_dir: Path) -> List[Type]:
+def find_all_agent_classes(root_dir: Path) -> list[type]:
     """
     Find all classes ending in 'Agent' in the agentic_core directory.
 
@@ -154,8 +153,8 @@ def find_all_agent_classes(root_dir: Path) -> List[Type]:
     Returns:
         List of agent classes found
     """
-    import sys
     import importlib.util
+    import sys
 
     agent_classes = []
 
@@ -183,7 +182,7 @@ def find_all_agent_classes(root_dir: Path) -> List[Type]:
                     if name.endswith("Agent") and obj.__module__ == module_name:
                         agent_classes.append(obj)
 
-        except Exception as e:
+        except Exception:
             # Skip files that can't be imported
             pass
 

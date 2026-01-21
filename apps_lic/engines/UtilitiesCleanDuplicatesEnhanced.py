@@ -1,5 +1,7 @@
 from __future__ import annotations
+
 import argparse
+
 '''Brief description of functionality and purpose.'''
 
 import ast
@@ -8,7 +10,6 @@ import logging
 import os
 import shutil
 from collections import defaultdict
-from typing import Any, Dict, List, Optional, Protocol
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 Logger = logging.getLogger(__name__)
@@ -30,10 +31,11 @@ def aggressive_cleanup():
     # Remove temporary and cache files
     temp_patterns = ["*.tmp", "*.temp", "*.bak", "*~", ".DS_Store", "Thumbs.db"]
     for pattern in temp_patterns:
-        import glob
+        pass
         # Absolute Zero: Use ssot_discovery instead of glob
-    from agentic_core.utils.ssot_discovery import get_python_files
     from pathlib import Path
+
+    from agentic_core.utils.ssot_discovery import get_python_files
     search_path = Path(pattern.split('**')[0] if '**' in pattern else '.')
     for file in [str(f) for f in get_python_files(search_path)]:
             try:
@@ -116,7 +118,7 @@ def get_file_hash(filepath):
 def extract_functions(filepath):
     """Extract function definitions from a Python file"""
     try:
-        with open(filepath, 'r', encoding='utf-8') as f:
+        with open(filepath, encoding='utf-8') as f:
             content = f.read()
 
         tree = ast.parse(content)

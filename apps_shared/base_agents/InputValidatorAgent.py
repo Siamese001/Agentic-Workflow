@@ -5,6 +5,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """Input Validator - Comprehensive validation beyond prompt injection.
 
 This module provides schema-based validation, type safety, and protection
@@ -15,12 +16,12 @@ import json
 import logging
 import re
 import xml.etree.ElementTree as ET
+from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Type, Union, get_type_hints
-from dataclasses import dataclass, field
 from enum import Enum
+from typing import Any
+
 from pydantic import BaseModel, ValidationError, validator
-import math
 
 Logger = logging.getLogger(__name__)
 
@@ -70,14 +71,14 @@ class ValidationRule:
     name: str
     validation_type: ValidationType
     required: bool = True
-    min_length: Optional[int] = None
-    max_length: Optional[int] = None
-    min_value: Optional[Union[int, float]] = None
-    max_value: Optional[Union[int, float]] = None
-    pattern: Optional[str] = None
-    allowed_values: Optional[List[Any]] = None
-    schema: Optional[Dict[str, Any]] = None
-    custom_validator: Optional[callable] = None
+    min_length: int | None = None
+    max_length: int | None = None
+    min_value: int | float | None = None
+    max_value: int | float | None = None
+    pattern: str | None = None
+    allowed_values: list[Any] | None = None
+    schema: dict[str, Any] | None = None
+    custom_validator: callable | None = None
     sanitize: bool = True
 
 
@@ -97,9 +98,10 @@ class InputValidationError(Exception):
         self.value = value
         super().__init__(f"Validation failed for {field}: {message}")
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+
 
 class InputValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
     """
@@ -125,8 +127,8 @@ class InputValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
             name: Validator name for logging (default: 'default')
         """
         self.name = name
-        self._rules: Dict[str, ValidationRule] = {}
-        self._schemas: Dict[str, Dict[str, Any]] = {}
+        self._rules: dict[str, ValidationRule] = {}
+        self._schemas: dict[str, dict[str, Any]] = {}
 
         Logger.debug(f"Initialized InputValidatorAgent: {name}")
 
@@ -140,7 +142,7 @@ class InputValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
         self._rules[field] = rule
         Logger.debug(f"Added validation rule for field: {field}")
 
-    def add_schema(self, schema_name: str, schema: Dict[str, Any]) -> None:
+    def add_schema(self, schema_name: str, schema: dict[str, Any]) -> None:
         """Add a JSON schema.
 
         Args:
@@ -150,7 +152,7 @@ class InputValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
         self._schemas[schema_name] = schema
         Logger.debug(f"Added schema: {schema_name}")
 
-    def validate(self, data: Dict[str, Any], strict: bool = True) -> Dict[str, Any]:
+    def validate(self, data: dict[str, Any], strict: bool = True) -> dict[str, Any]:
         """Validate input data.
 
         Args:
@@ -179,7 +181,7 @@ class InputValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
 
         return validated
 
-    def _validate_single_field(self, field: str, rule: ValidationRule, data: Dict[str, Any], validated: Dict[str, Any], errors: List[InputValidationError]) -> None:
+    def _validate_single_field(self, field: str, rule: ValidationRule, data: dict[str, Any], validated: dict[str, Any], errors: list[InputValidationError]) -> None:
         """Validate a single field and add to validated dict or errors list."""
         try:
             value = data.get(field)
@@ -199,13 +201,13 @@ class InputValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
         except InputValidationError as e:
             errors.append(e)
 
-    def _check_unknown_fields(self, data: Dict[str, Any]) -> None:
+    def _check_unknown_fields(self, data: dict[str, Any]) -> None:
         """Check for unknown fields in strict mode."""
         for field in data:
             if field not in self._rules:
                 Logger.warning(f"Unknown field in input: {field}")
 
-    def _raise_validation_errors(self, errors: List[InputValidationError]) -> None:
+    def _raise_validation_errors(self, errors: list[InputValidationError]) -> None:
         """Raise validation errors if any exist."""
         if errors:
             error_messages = [f"{e.field}: {e.message}" for e in errors]
@@ -337,7 +339,7 @@ class InputValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
         ET.fromstring(value)  # Parse to ensure valid
         return value
 
-    def _validate_json_schema(self, value: Any, schema: Dict[str, Any]) -> None:
+    def _validate_json_schema(self, value: Any, schema: dict[str, Any]) -> None:
         """Validate JSON against schema.
 
         Args:
@@ -371,7 +373,7 @@ class InputValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
                     validator.add_rule(prop, rule)
                     validator.validate({prop: value[prop]}, strict=False)
 
-    def _validate_dict_schema(self, value: Dict[str, Any], schema: Dict[str, Any]) -> None:
+    def _validate_dict_schema(self, value: dict[str, Any], schema: dict[str, Any]) -> None:
         """Validate dictionary against schema.
 
         Args:
@@ -388,7 +390,7 @@ class InputValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
                 if expected_type and not isinstance(value[key], expected_type):
                     raise InputValidationError(key, f"Expected {expected_type.__name__}")
 
-    def _get_validation_type_from_schema(self, schema: Dict[str, Any]) -> ValidationType:
+    def _get_validation_type_from_schema(self, schema: dict[str, Any]) -> ValidationType:
         """Get validation type from schema.
 
         Args:
@@ -439,7 +441,7 @@ class InputValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
         return value
 
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
         """
         Wired Input Validation Healing - Validates input schemas and sanitizes fields.
 
@@ -594,7 +596,7 @@ class ValidatedInput(BaseModel):
         return v
 
 
-def validate_with_pydantic(data: Dict[str, Any], model_class: Type[ValidatedInput]) -> ValidatedInput:
+def validate_with_pydantic(data: dict[str, Any], model_class: type[ValidatedInput]) -> ValidatedInput:
     """Validate data using Pydantic model.
 
     Args:

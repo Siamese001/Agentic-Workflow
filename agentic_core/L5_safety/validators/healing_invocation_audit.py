@@ -6,29 +6,13 @@ Comprehensive audit of all heal_repository() methods to verify super() presence
 and chain completeness across the entire codebase.
 """
 
-import sys
-from pathlib import Path
-from agentic_core.utils.security import safe_execute
-from typing import Dict, List, Tuple
 from datetime import datetime
+from pathlib import Path
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.security import safe_execute
 
 
 class HealingInvocationAudit:
@@ -47,7 +31,7 @@ class HealingInvocationAudit:
             'chain_depth_estimates': {}
         }
 
-    def audit_all_methods(self) -> Dict:
+    def audit_all_methods(self) -> dict:
         """
         Audit all heal_repository() methods in codebase.
 
@@ -105,7 +89,7 @@ class HealingInvocationAudit:
     def _extract_agent_name(self, file_path: Path) -> str:
         """Extract agent class name from file path and content."""
         try:
-            with open(file_path, 'r') as f:
+            with open(file_path) as f:
                 content = f.read()
                 # Find class definition
                 match = re.search(r'class\s+(\w+Agent)\s*[\(:]', content)
@@ -119,7 +103,7 @@ class HealingInvocationAudit:
     def _check_super_presence(self, file_path: Path) -> bool:
         """Check if super().heal_repository() is present in method."""
         try:
-            with open(file_path, 'r') as f:
+            with open(file_path) as f:
                 content = f.read()
 
                 # Find heal_repository method
@@ -184,7 +168,7 @@ class HealingInvocationAudit:
         for agent in self.results['confirmed_agents']:
             report += f"| {agent['file']} | {agent['agent']} | {agent['status']} | {agent['notes']} |\n"
 
-        report += f"""
+        report += """
 ---
 
 ## Missed Agents (Without super())

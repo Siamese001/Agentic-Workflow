@@ -5,6 +5,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """
 ⚛️ Memory Architect - Autonomous Knowledge Distillation
 
@@ -42,29 +43,23 @@ import difflib
 import hashlib
 import json
 import logging
-import re
-import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
+from typing import Any
+
 try:
     from pinecone import Pinecone
     PINECONE_AVAILABLE: Any = True
 except ImportError:
     PINECONE_AVAILABLE: Any = False
 from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -73,9 +68,9 @@ class MemoryViolation:
     """Structured violation for memory/pattern healing."""
     is_valid: bool
     message: str
-    pattern_id: Optional[str] = None
-    file_path: Optional[Path] = None
-    suggested_action: Optional[str] = None
+    pattern_id: str | None = None
+    file_path: Path | None = None
+    suggested_action: str | None = None
     severity: int = 5
 
 @dataclass
@@ -85,8 +80,8 @@ class HealingSuccess:
     key_id: int
     before_code: str
     after_code: str
-    before_metrics: Dict
-    after_metrics: Dict
+    before_metrics: dict
+    after_metrics: dict
     timestamp: str
     healing_round: int
 
@@ -108,12 +103,12 @@ class DistilledPattern:
     source_file: str
     key_id: int
     trigger_condition: str
-    transformation_steps: List[str]
-    before_metrics: Dict
-    after_metrics: Dict
+    transformation_steps: list[str]
+    before_metrics: dict
+    after_metrics: dict
     improvement_percentage: float
     generalized_rule: str
-    code_examples: Dict
+    code_examples: dict
     timestamp: str
 
     def _run_self_tests(self) -> bool:
@@ -136,7 +131,7 @@ class HealingDiffAnalyzer:
     def __init__(self, Logger: logging.Logger) -> None:
         self.Logger = Logger
 
-    def analyze_diff(self, success: HealingSuccess) -> Optional[Dict]:
+    def analyze_diff(self, success: HealingSuccess) -> dict | None:
         """
         Analyze the before/after AST to identify the specific refactoring mutation.
 
@@ -153,7 +148,7 @@ class HealingDiffAnalyzer:
             after_functions: Any = self._extract_functions(after_tree)
             added_functions: Any = set(after_functions.keys()) - set(before_functions.keys())
             removed_functions: Any = set(before_functions.keys()) - set(after_functions.keys())
-            modified_functions: Any = set(before_functions.keys()) & set(after_functions.keys())
+            set(before_functions.keys()) & set(after_functions.keys())
             modifications: Any = self._compare_functions(before_functions, after_functions)
             text_diff: Any = list(difflib.unified_diff(success.before_code.split('\n'), success.after_code.split('\n'), lineterm='', n=3))
             return {'added_functions': list(added_functions), 'removed_functions': list(removed_functions), 'modified_functions': modifications, 'text_diff': '\n'.join(text_diff[:50]), 'total_line_reduction': success.before_metrics.get('lines', 0) - success.after_metrics.get('lines', 0), 'total_nesting_reduction': success.before_metrics.get('nesting', 0) - success.after_metrics.get('nesting', 0)}
@@ -161,10 +156,10 @@ class HealingDiffAnalyzer:
             self.Logger.error(f'Error analyzing diff: {e}')
             return None
 
-    def _compare_functions(self, before_functions: Dict, after_functions: Dict) -> List:
+    def _compare_functions(self, before_functions: dict, after_functions: dict) -> list:
         """Compare before and after functions to identify changes."""
-        added_functions: Any = set(after_functions.keys()) - set(before_functions.keys())
-        removed_functions: Any = set(before_functions.keys()) - set(after_functions.keys())
+        set(after_functions.keys()) - set(before_functions.keys())
+        set(before_functions.keys()) - set(after_functions.keys())
         modified_functions: Any = set(before_functions.keys()) & set(after_functions.keys())
         modifications: Any = []
         for func in modified_functions:
@@ -174,11 +169,11 @@ class HealingDiffAnalyzer:
                 modifications.append({'function': func, 'before': before_func, 'after': after_func})
         return modifications
 
-    def _extract_functions(self, tree: ast.AST) -> Dict[str, ast.FunctionDef]:
+    def _extract_functions(self, tree: ast.AST) -> dict[str, ast.FunctionDef]:
         """Extract function metadata from AST."""
         functions = {}
         for node in ast.walk(tree):
-            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
                 lines = (node.end_lineno or node.lineno) - node.lineno + 1
                 nesting = self._calculate_nesting(node)
                 functions[node.name] = {'lines': lines, 'nesting': nesting, 'is_private': node.name.startswith('_'), 'is_async': isinstance(node, ast.AsyncFunctionDef)}
@@ -189,7 +184,7 @@ class HealingDiffAnalyzer:
         max_depth = depth
         for child in ast.iter_child_nodes(node):
             child_depth = depth
-            if isinstance(child, (ast.If, ast.For, ast.While, ast.With, ast.Try)):
+            if isinstance(child, ast.If | ast.For | ast.While | ast.With | ast.Try):
                 child_depth += 1
             max_depth = max(max_depth, self._calculate_nesting(child, child_depth))
         return max_depth
@@ -271,7 +266,7 @@ class MemoryArchitectAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
             except Exception as e:
                 Logger.error(f'[X] Error harvesting success from {success.file_path}: {e}')
 
-    def _detect_healing_successes(self) -> List[HealingSuccess]:
+    def _detect_healing_successes(self) -> list[HealingSuccess]:
         """
         Stage 1: Detection
 
@@ -320,7 +315,7 @@ class MemoryArchitectAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
         await self._inoculate_pattern(pattern)
         Logger.info(f'[OK] Successfully harvested pattern from {success.file_path}')
 
-    async def _synthesize_pattern(self, success: HealingSuccess, diff_analysis: Dict) -> Optional[DistilledPattern]:
+    async def _synthesize_pattern(self, success: HealingSuccess, diff_analysis: dict) -> DistilledPattern | None:
         """
         Stage 3: Generalization - Rule Synthesis
 
@@ -342,13 +337,13 @@ class MemoryArchitectAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
             Logger.error(f'Error synthesizing pattern: {e}')
             return None
 
-    def _build_synthesis_prompt(self, success: HealingSuccess, diff_analysis: Dict) -> str:
+    def _build_synthesis_prompt(self, success: HealingSuccess, diff_analysis: dict) -> str:
         """Build prompt for pattern synthesis."""
         key_name = 'Nesting Depth' if success.key_id == 41 else 'File Size'
-        prompt_parts = [f'# Subatomic Pattern Synthesis', f'', f'## Context', f'A successful healing operation fixed a {key_name} Violation (Key {success.key_id}) in `{success.file_path}`.', f'', f'## Before Metrics', f"- Lines: {success.before_metrics.get('lines', 'N/A')}", f"- Nesting: {success.before_metrics.get('nesting', 'N/A')}", f'', f'## After Metrics', f"- Lines: {success.after_metrics.get('lines', 'N/A')}", f"- Nesting: {success.after_metrics.get('nesting', 'N/A')}", f'', f'## Structural Changes', f"- Added functions: {(', '.join(diff_analysis['added_functions']) if diff_analysis['added_functions'] else 'None')}", f"- Modified functions: {len(diff_analysis['modified_functions'])}", f"- Line reduction: {diff_analysis['total_line_reduction']}", f"- Nesting reduction: {diff_analysis['total_nesting_reduction']}", f'', f'## Diff Sample', f'```', diff_analysis['text_diff'][:500], f'```', f'', f'## Task', f'Analyze this successful refactoring and extract a **generalized Subatomic Pattern** that can be applied to ANY file in the codebase with similar complexity issues.', f'', f'Your response must include:', f"1. **Trigger Condition**: When should this pattern be applied? (e.g., 'method > 40 lines AND nesting > 3')", f"2. **Transformation Steps**: What specific refactoring steps were taken? (e.g., 'Extract nested conditionals into _process_* helpers')", f"3. **Naming Convention**: How should extracted helpers be named? (e.g., '_process_[action]', '_validate_[aspect]')", f"4. **Recognition Pattern**: What code smells indicate this pattern is needed? (e.g., 'if/elif chains with similar structure')", f'5. **Generalized Rule**: A one-sentence rule that captures the essence of this transformation.', f'', f'Format your response as JSON with these exact keys: trigger_condition, transformation_steps (array), naming_convention, recognition_pattern (array), generalized_rule']
+        prompt_parts = ['# Subatomic Pattern Synthesis', '', '## Context', f'A successful healing operation fixed a {key_name} Violation (Key {success.key_id}) in `{success.file_path}`.', '', '## Before Metrics', f"- Lines: {success.before_metrics.get('lines', 'N/A')}", f"- Nesting: {success.before_metrics.get('nesting', 'N/A')}", '', '## After Metrics', f"- Lines: {success.after_metrics.get('lines', 'N/A')}", f"- Nesting: {success.after_metrics.get('nesting', 'N/A')}", '', '## Structural Changes', f"- Added functions: {(', '.join(diff_analysis['added_functions']) if diff_analysis['added_functions'] else 'None')}", f"- Modified functions: {len(diff_analysis['modified_functions'])}", f"- Line reduction: {diff_analysis['total_line_reduction']}", f"- Nesting reduction: {diff_analysis['total_nesting_reduction']}", '', '## Diff Sample', '```', diff_analysis['text_diff'][:500], '```', '', '## Task', 'Analyze this successful refactoring and extract a **generalized Subatomic Pattern** that can be applied to ANY file in the codebase with similar complexity issues.', '', 'Your response must include:', "1. **Trigger Condition**: When should this pattern be applied? (e.g., 'method > 40 lines AND nesting > 3')", "2. **Transformation Steps**: What specific refactoring steps were taken? (e.g., 'Extract nested conditionals into _process_* helpers')", "3. **Naming Convention**: How should extracted helpers be named? (e.g., '_process_[action]', '_validate_[aspect]')", "4. **Recognition Pattern**: What code smells indicate this pattern is needed? (e.g., 'if/elif chains with similar structure')", '5. **Generalized Rule**: A one-sentence rule that captures the essence of this transformation.', '', 'Format your response as JSON with these exact keys: trigger_condition, transformation_steps (array), naming_convention, recognition_pattern (array), generalized_rule']
         return '\n'.join(prompt_parts)
 
-    def _parse_synthesis_response(self, response: str, success: HealingSuccess, diff_analysis: Dict) -> DistilledPattern:
+    def _parse_synthesis_response(self, response: str, success: HealingSuccess, diff_analysis: dict) -> DistilledPattern:
         """Parse Gemini response into structured pattern."""
         try:
             json_start = response.find('{')
@@ -367,11 +362,11 @@ class MemoryArchitectAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
             Logger.error(f'Error parsing synthesis response: {e}')
             return self._create_fallback_pattern_object(success, diff_analysis)
 
-    def _create_fallback_pattern(self, diff_analysis: Dict) -> Dict:
+    def _create_fallback_pattern(self, diff_analysis: dict) -> dict:
         """Create fallback pattern when parsing fails."""
         return {'trigger_condition': 'method > 40 lines OR nesting > 3', 'transformation_steps': ['Identify complex nested blocks', 'Extract into private helper methods', 'Name helpers with _[action]_[noun] convention', 'Verify nesting ≤ 3 after extraction'], 'naming_convention': '_[action]_[noun] (e.g., _process_data, _validate_input)', 'recognition_pattern': ['Nested if/elif chains', 'Repeated code patterns', 'Large initialization blocks'], 'generalized_rule': 'Extract nested logic into focused helper methods to reduce complexity'}
 
-    def _create_fallback_pattern_object(self, success: HealingSuccess, diff_analysis: Dict) -> DistilledPattern:
+    def _create_fallback_pattern_object(self, success: HealingSuccess, diff_analysis: dict) -> DistilledPattern:
         """Create fallback DistilledPattern object."""
         pattern_id = f"pattern_{success.key_id}_{hashlib.sha256(success.file_path.encode()).hexdigest()[:8]}_{datetime.now().strftime('%Y%m%d')}"
         before_lines = success.before_metrics.get('lines', 1)
@@ -405,7 +400,7 @@ class MemoryArchitectAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
 
     def _create_pattern_text(self, pattern: DistilledPattern) -> str:
         """Create searchable text representation of pattern."""
-        text_parts = [f"# {pattern.pattern_type.replace('_', ' ').title()} Pattern", f'', f'Source: {pattern.source_file}', f'Key: {pattern.key_id}', f'', f'## Trigger', pattern.trigger_condition, f'', f'## Rule', pattern.generalized_rule, f'', f'## Transformation Steps', *[f'{i}. {step}' for i, step in enumerate(pattern.transformation_steps, 1)], f'', f'## Results', f"- Line reduction: {pattern.before_metrics.get('lines', 0)} → {pattern.after_metrics.get('lines', 0)}", f"- Nesting reduction: {pattern.before_metrics.get('nesting', 0)} → {pattern.after_metrics.get('nesting', 0)}", f'- Improvement: {pattern.improvement_percentage:.1f}%', f'', f'## Examples', f"Added functions: {', '.join(pattern.code_examples.get('added_functions', []))}", f"Modified functions: {', '.join(pattern.code_examples.get('modified_functions', []))}"]
+        text_parts = [f"# {pattern.pattern_type.replace('_', ' ').title()} Pattern", '', f'Source: {pattern.source_file}', f'Key: {pattern.key_id}', '', '## Trigger', pattern.trigger_condition, '', '## Rule', pattern.generalized_rule, '', '## Transformation Steps', *[f'{i}. {step}' for i, step in enumerate(pattern.transformation_steps, 1)], '', '## Results', f"- Line reduction: {pattern.before_metrics.get('lines', 0)} → {pattern.after_metrics.get('lines', 0)}", f"- Nesting reduction: {pattern.before_metrics.get('nesting', 0)} → {pattern.after_metrics.get('nesting', 0)}", f'- Improvement: {pattern.improvement_percentage:.1f}%', '', '## Examples', f"Added functions: {', '.join(pattern.code_examples.get('added_functions', []))}", f"Modified functions: {', '.join(pattern.code_examples.get('modified_functions', []))}"]
         return '\n'.join(text_parts)
 
     def _store_pattern_locally(self, pattern: DistilledPattern) -> Any:
@@ -417,7 +412,7 @@ class MemoryArchitectAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
             json.dump({'pattern_id': pattern.pattern_id, 'pattern_type': pattern.pattern_type, 'source_file': pattern.source_file, 'key_id': pattern.key_id, 'trigger_condition': pattern.trigger_condition, 'transformation_steps': pattern.transformation_steps, 'before_metrics': pattern.before_metrics, 'after_metrics': pattern.after_metrics, 'improvement_percentage': pattern.improvement_percentage, 'generalized_rule': pattern.generalized_rule, 'code_examples': pattern.code_examples, 'timestamp': pattern.timestamp}, f, indent=2)
         Logger.info(f'[OK] Pattern stored locally: {pattern_file}')
 
-    def post_heal_validation(self, pattern: DistilledPattern, dry_run: bool = True) -> Dict[str, Any]:
+    def post_heal_validation(self, pattern: DistilledPattern, dry_run: bool = True) -> dict[str, Any]:
         """
         GOLD STANDARD: Post-heal validation confirming pattern inoculation.
         Verifies pattern was successfully stored in Pinecone or locally.
@@ -471,10 +466,10 @@ class MemoryArchitectAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
 
     def cleanup_violations(
         self,
-        violations: List[MemoryViolation],
+        violations: list[MemoryViolation],
         dry_run: bool = True,
         max_actions: int = 50
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         GOLD STANDARD: Cleanup memory violations with pattern re-inoculation.
 
@@ -527,7 +522,7 @@ class MemoryArchitectAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
 
         return actions
 
-    def run_with_cleanup(self, dry_run: bool = True) -> Dict[str, Any]:
+    def run_with_cleanup(self, dry_run: bool = True) -> dict[str, Any]:
         """
         GOLD STANDARD: Full memory orchestration with autonomous cleanup.
         Detects healing successes, distills patterns, and validates storage.
@@ -538,7 +533,7 @@ class MemoryArchitectAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
         Returns:
             Dict with comprehensive execution and cleanup summaries
         """
-        all_violations: List[MemoryViolation] = []
+        all_violations: list[MemoryViolation] = []
         patterns_processed = 0
         patterns_stored = 0
 
@@ -575,7 +570,7 @@ class MemoryArchitectAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[Set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L2 execution agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:

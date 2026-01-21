@@ -3,15 +3,14 @@
 Phase 3.3: Naming Standardization Audit
 Identifies files ending in Agent.py that don't inherit from SovereignBaseAgent
 """
-import json
 import ast
-import re
+import json
 from pathlib import Path
-from typing import List, Dict, Set
+
 
 def load_discovery():
     """Load agent discovery data."""
-    with open('agent_discovery_full.json', 'r') as f:
+    with open('agent_discovery_full.json') as f:
         return json.load(f)
 
 def find_all_agent_files():
@@ -23,7 +22,7 @@ def find_all_agent_files():
 
     return agent_files
 
-def check_inheritance(file_path: Path) -> Dict:
+def check_inheritance(file_path: Path) -> dict:
     """Check if a file inherits from SovereignBaseAgent or any base agent."""
     try:
         content = file_path.read_text(encoding='utf-8')

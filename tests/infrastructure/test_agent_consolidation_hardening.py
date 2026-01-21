@@ -1,10 +1,9 @@
-import pytest
 import ast
 import importlib
 import inspect
-import sys
 from pathlib import Path
-from typing import List, Set, Tuple
+
+import pytest
 
 # -------------------------------------------------------------------------
 # CONSTANTS & CONFIGURATION
@@ -73,7 +72,7 @@ class TestConsolidationStaticAnalysis:
     are importing from deprecated locations.
     """
 
-    def _get_python_files(self) -> List[Path]:
+    def _get_python_files(self) -> list[Path]:
         """Recursively get all .py files in relevant directories."""
         # Exclude this test file and archives
         exclude_dirs = ["archives", ".git", "__pycache__", "venv", "env"]
@@ -88,14 +87,14 @@ class TestConsolidationStaticAnalysis:
                 files.append(path)
         return files
 
-    def _check_imports_in_file(self, file_path: Path) -> List[str]:
+    def _check_imports_in_file(self, file_path: Path) -> list[str]:
         """
         Parses a file and checks for forbidden imports.
         Returns a list of violation messages.
         """
         violations = []
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 tree = ast.parse(f.read(), filename=str(file_path))
         except SyntaxError:
             return []  # Skip unparseable files

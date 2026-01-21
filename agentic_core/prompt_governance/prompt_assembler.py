@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Prompt Assembler - XML-based semantic fencing for robust prompt construction.
 
 This module implements Strategy 3: Semantic Fencing, providing a structured
@@ -10,14 +11,14 @@ import json
 import logging
 import re
 import xml.etree.ElementTree as ET
-from typing import Dict, List, Any, Optional, Union
 from dataclasses import dataclass
 from pathlib import Path
-from pydantic import BaseModel, Field
+from typing import Any
 
-from agentic_core.L5_safety.validators.input_validator import InputValidator as InputValidatorAgent
+from pydantic import BaseModel
+
 from agentic_core.L4_state.ValidationContext.runtime_models import InjectionMatch
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+
 
 # Compatibility aliases
 class InputSanitizer:
@@ -48,12 +49,12 @@ class PromptComponents:
     """Components for prompt assembly."""
     role: str
     objective: str
-    context_data: Dict[str, Any]
-    directives: List[str]
-    negative_constraints: List[str]
-    examples: Optional[str] = None
-    output_schema: Optional[Dict[str, Any]] = None
-    metadata: Dict[str, Any] = None
+    context_data: dict[str, Any]
+    directives: list[str]
+    negative_constraints: list[str]
+    examples: str | None = None
+    output_schema: dict[str, Any] | None = None
+    metadata: dict[str, Any] = None
 
 
 class PromptTemplate(BaseModel):
@@ -88,7 +89,7 @@ You are {role}. Your objective is {objective}.
 {output_format}
 </OUTPUT_FORMAT>"""
 
-    def __init__(self, template: Optional[str] = None, legacy_mode: bool = False):
+    def __init__(self, template: str | None = None, legacy_mode: bool = False):
         """Initialize the prompt assembler.
 
         Args:
@@ -97,7 +98,7 @@ You are {role}. Your objective is {objective}.
         """
         self.template = template or self.DEFAULT_TEMPLATE
         self.legacy_mode = legacy_mode
-        self.templates: Dict[str, PromptTemplate] = {}
+        self.templates: dict[str, PromptTemplate] = {}
 
         # Load custom templates
         self._load_templates()
@@ -110,14 +111,14 @@ You are {role}. Your objective is {objective}.
         template_dir.mkdir(parents=True, exist_ok=True)
 
         from agentic_core.utils.ssot_discovery import get_data_files
-        xml_files = [f for f in get_data_files(template_dir, extensions=['.xml'])]
+        xml_files = list(get_data_files(template_dir, extensions=['.xml']))
         for file_path in xml_files:
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
+                with open(file_path, encoding='utf-8') as f:
                     template_content = f.read()
 
                 # Parse template metadata
-                root = ET.fromstring(f"<root>{template_content}</root>")
+                ET.fromstring(f"<root>{template_content}</root>")
 
                 # Extract template name from file
                 template_name = file_path.stem
@@ -137,15 +138,15 @@ You are {role}. Your objective is {objective}.
         self,
         role: str,
         objective: str,
-        context_data: Union[Dict[str, Any], str],
-        injections: List[InjectionMatch],
-        negative_constraints: Optional[List[str]] = None,
-        examples: Optional[str] = None,
-        output_schema: Optional[Dict[str, Any]] = None,
-        template_name: Optional[str] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        context_data: dict[str, Any] | str,
+        injections: list[InjectionMatch],
+        negative_constraints: list[str] | None = None,
+        examples: str | None = None,
+        output_schema: dict[str, Any] | None = None,
+        template_name: str | None = None,
+        metadata: dict[str, Any] | None = None,
         enforce_contract: bool = False,
-        contract_id: Optional[str] = None
+        contract_id: str | None = None
     ) -> str:
         """Assemble a prompt with semantic fencing and security hardening.
 
@@ -241,9 +242,8 @@ You are {role}. Your objective is {objective}.
             negative_str += "</NEGATIVE_CONSTRAINTS>"
 
         # Format examples
-        examples_str = ""
         if examples:
-            examples_str = f"<FEW_SHOT_EXAMPLES>\n{examples}\n</FEW_SHOT_EXAMPLES>"
+            pass
 
         # Format output requirements
         output_format = "Respond clearly and professionally."
@@ -300,12 +300,12 @@ You are {role}. Your objective is {objective}.
         Logger.debug("Prompt assembled successfully with security hardening")
         return prompt
 
-    def _format_context_data(self, context: Dict[str, Any]) -> str:
+    def _format_context_data(self, context: dict[str, Any]) -> str:
         """Format context data as XML."""
         lines = ["<!-- UNTRUSTED USER DATA - READ ONLY -->"]
 
         for key, value in context.items():
-            if isinstance(value, (dict, list)):
+            if isinstance(value, dict | list):
                 value_str = json.dumps(value, indent=2)
             else:
                 value_str = str(value)
@@ -314,7 +314,7 @@ You are {role}. Your objective is {objective}.
 
         return "\n".join(lines)
 
-    def _format_directives(self, injections: List[InjectionMatch]) -> str:
+    def _format_directives(self, injections: list[InjectionMatch]) -> str:
         """Format injection patterns as directives."""
         lines = []
 
@@ -334,7 +334,7 @@ You are {role}. Your objective is {objective}.
             # Add as directive
             lines.append(f"  <PRIMARY_RULE priority='{match.injection.priority}'>")
             lines.append(f"    {self._sanitize_xml(template)}")
-            lines.append(f"  </PRIMARY_RULE>")
+            lines.append("  </PRIMARY_RULE>")
 
         return "\n".join(lines) if lines else "  <!-- No specific directives -->"
 
@@ -359,7 +359,7 @@ You are {role}. Your objective is {objective}.
 """
         return notice + prompt
 
-    def parse_response(self, response: str) -> Dict[str, Any]:
+    def parse_response(self, response: str) -> dict[str, Any]:
         """Parse a response that follows the XML structure.
 
         Args:
@@ -395,7 +395,7 @@ You are {role}. Your objective is {objective}.
 
         return result
 
-    def validate_structure(self, prompt: str) -> List[str]:
+    def validate_structure(self, prompt: str) -> list[str]:
         """Validate that a prompt follows the semantic fencing structure.
 
         Args:
@@ -465,7 +465,7 @@ You are {role}. Your objective is {objective}.
 
 
 # Global assembler instance
-_prompt_assembler: Optional[PromptAssembler] = None
+_prompt_assembler: PromptAssembler | None = None
 
 
 def get_prompt_assembler(legacy_mode: bool = False) -> PromptAssembler:
@@ -489,8 +489,8 @@ def get_prompt_assembler(legacy_mode: bool = False) -> PromptAssembler:
 def assemble_prompt(
     role: str,
     objective: str,
-    context_data: Union[Dict[str, Any], str],
-    injections: List[InjectionMatch],
+    context_data: dict[str, Any] | str,
+    injections: list[InjectionMatch],
     **kwargs
 ) -> str:
     """Assemble a prompt using the global assembler.
@@ -515,7 +515,7 @@ def assemble_prompt(
     )
 
 
-def parse_response(response: str) -> Dict[str, Any]:
+def parse_response(response: str) -> dict[str, Any]:
     """Parse a response using the global assembler.
 
     Args:
@@ -531,10 +531,10 @@ def parse_response(response: str) -> Dict[str, Any]:
 # Backward compatibility wrapper
 def enhance_prompt_with_fencing(
     base_prompt: str,
-    injections: List[InjectionMatch],
+    injections: list[InjectionMatch],
     role: str = "Assistant",
     objective: str = "Follow the instructions",
-    context: Optional[Dict[str, Any]] = None
+    context: dict[str, Any] | None = None
 ) -> str:
     """Enhance a prompt with semantic fencing (backward compatibility).
 

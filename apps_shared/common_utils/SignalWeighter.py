@@ -6,9 +6,8 @@ outreach and resume generation.
 """
 
 import logging
-from typing import Dict, List, Optional, Union, Any
-from pydantic import BaseModel, Field, confloat
 
+from pydantic import BaseModel, Field, confloat
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +24,7 @@ class SignalWeights(BaseModel):
         """Pydantic configuration."""
         validate_assignment = True
 
-    def as_dict(self) -> Dict[str, float]:
+    def as_dict(self) -> dict[str, float]:
         """Convert weights to dictionary."""
         return {
             "technical_depth": self.technical_depth,
@@ -43,7 +42,7 @@ class WeightingResult(BaseModel):
     weights_applied: SignalWeights = Field(..., description="Weights that were applied")
     signal_type: str = Field(..., description="Type of signal detected")
     adjustment_factor: confloat(ge=0.0, le=1.0) = Field(..., description="Weight factor applied")
-    doc_id: Optional[str] = Field(None, description="Document identifier for logging")
+    doc_id: str | None = Field(None, description="Document identifier for logging")
 
     @property
     def score_change(self) -> float:
@@ -67,7 +66,7 @@ class SignalWeighter:
 
     def __init__(
         self,
-        default_weights: Optional[SignalWeights] = None
+        default_weights: SignalWeights | None = None
     ):
         """Initialize the signal weighter.
 
@@ -221,7 +220,7 @@ class SignalWeighter:
 
         logger.info(f"Initialized SignalWeighter with {len(self._archetype_mappings)} archetype mappings")
 
-    def get_weights(self, archetype: str, industry: Optional[str] = None) -> SignalWeights:
+    def get_weights(self, archetype: str, industry: str | None = None) -> SignalWeights:
         """Get weights for a specific archetype and industry.
 
         Args:
@@ -280,9 +279,9 @@ class SignalWeighter:
     def reweight_score(
         self,
         original_score: float,
-        doc_metadata: Dict[str, Union[str, float]],
+        doc_metadata: dict[str, str | float],
         weights: SignalWeights,
-        doc_id: Optional[str] = None
+        doc_id: str | None = None
     ) -> WeightingResult:
         """Apply dynamic weighting to a document score.
 
@@ -351,7 +350,7 @@ class SignalWeighter:
                 doc_id=doc_id
             )
 
-    def _extract_signal_type(self, metadata: Dict[str, Union[str, float]]) -> str:
+    def _extract_signal_type(self, metadata: dict[str, str | float]) -> str:
         """Extract signal type from document metadata.
 
         Args:
@@ -423,10 +422,10 @@ class SignalWeighter:
 
     def batch_reweight(
         self,
-        documents: List[Dict[str, Union[str, float]]],
+        documents: list[dict[str, str | float]],
         archetype: str,
-        industry: Optional[str] = None
-    ) -> List[WeightingResult]:
+        industry: str | None = None
+    ) -> list[WeightingResult]:
         """Apply dynamic weighting to a batch of documents.
 
         Args:
@@ -456,7 +455,7 @@ class SignalWeighter:
 
 
 # Factory function for easy instantiation
-def create_signal_weighter(default_weights: Optional[SignalWeights] = None) -> SignalWeighter:
+def create_signal_weighter(default_weights: SignalWeights | None = None) -> SignalWeighter:
     """Create a SignalWeighter instance.
 
     Args:
@@ -470,10 +469,10 @@ def create_signal_weighter(default_weights: Optional[SignalWeights] = None) -> S
 
 # Convenience function for quick reweighting
 def weight_results(
-    documents: List[Dict[str, Union[str, float]]],
+    documents: list[dict[str, str | float]],
     archetype: str,
-    industry: Optional[str] = None
-) -> List[WeightingResult]:
+    industry: str | None = None
+) -> list[WeightingResult]:
     """Quickly weight a batch of results for an archetype.
 
     Args:

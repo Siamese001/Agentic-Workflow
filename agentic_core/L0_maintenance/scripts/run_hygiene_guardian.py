@@ -3,24 +3,22 @@ Standalone script to run HygieneGuardianAgent on entire repo.
 Reports findings before and after fixes.
 """
 import os
-import sys
 import shutil
+import sys
 from pathlib import Path
-from typing import List, Tuple, Set
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from agentic_core.L5_safety.validators.structure_blueprint import ROOT_WHITELIST
-from agentic_core.utils.sovereign_index import SovereignIndex
 
 ALLOWED_ROOT_FOLDERS = set(ROOT_WHITELIST)
 ARTIFACT_PATTERNS = ["*.heal_tmp", "*.temp", "*.tmp", ".pytest_cache", "__pycache__"]
 IGNORE_FILES = {".gitkeep", ".git"}
 
 
-def scan_temp_artifacts(root: Path) -> List[Path]:
+def scan_temp_artifacts(root: Path) -> list[Path]:
     """Scan for temporary artifacts without removing them."""
     artifacts = []
     # Phase 6.7: Use ssot_discovery instead of rglob
@@ -32,7 +30,7 @@ def scan_temp_artifacts(root: Path) -> List[Path]:
     return artifacts
 
 
-def scan_empty_folders(root: Path) -> List[Path]:
+def scan_empty_folders(root: Path) -> list[Path]:
     """Scan for empty folders without removing them."""
     empty_folders = []
 
@@ -42,7 +40,7 @@ def scan_empty_folders(root: Path) -> List[Path]:
             continue
 
         # Walk bottom-up
-        for dirpath, dirnames, filenames in os.walk(root_path, topdown=False):
+        for dirpath, _dirnames, _filenames in os.walk(root_path, topdown=False):
             current_dir = Path(dirpath)
 
             # Skip .git and sovereign roots
@@ -62,7 +60,7 @@ def scan_empty_folders(root: Path) -> List[Path]:
     return empty_folders
 
 
-def scan_folders_with_only_init(root: Path) -> List[Path]:
+def scan_folders_with_only_init(root: Path) -> list[Path]:
     """Scan for folders that only contain __init__.py (no other meaningful content)."""
     init_only_folders = []
 
@@ -71,7 +69,7 @@ def scan_folders_with_only_init(root: Path) -> List[Path]:
         if not root_path.exists():
             continue
 
-        for dirpath, dirnames, filenames in os.walk(root_path, topdown=False):
+        for dirpath, _dirnames, _filenames in os.walk(root_path, topdown=False):
             current_dir = Path(dirpath)
 
             # Skip .git and sovereign roots
@@ -99,7 +97,7 @@ def scan_folders_with_only_init(root: Path) -> List[Path]:
     return init_only_folders
 
 
-def remove_artifacts(artifacts: List[Path]) -> Tuple[int, List[str]]:
+def remove_artifacts(artifacts: list[Path]) -> tuple[int, list[str]]:
     """Remove artifacts and return count and errors."""
     removed = 0
     errors = []
@@ -118,7 +116,7 @@ def remove_artifacts(artifacts: List[Path]) -> Tuple[int, List[str]]:
     return removed, errors
 
 
-def remove_empty_folders(folders: List[Path]) -> Tuple[int, List[str]]:
+def remove_empty_folders(folders: list[Path]) -> tuple[int, list[str]]:
     """Remove empty folders and return count and errors."""
     removed = 0
     errors = []

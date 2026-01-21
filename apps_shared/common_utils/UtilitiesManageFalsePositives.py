@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Human-in-the-Loop False Positive Management
 Allows humans to review and mark violations as false positives
@@ -8,9 +9,10 @@ import logging
 import sys
 from datetime import datetime
 from pathlib import Path
-from services.configuration import ConfigurationService
 from typing import Any
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+
+from services.configuration import ConfigurationService
+
 Logger: Any = logging.getLogger(__name__)
 
 def load_review_log() -> Any:
@@ -19,14 +21,14 @@ def load_review_log() -> Any:
     if not ConfigurationService().review_path.exists():
         ConfigurationService().Logger.info('No review log found. Run the validator first.')
         return []
-    with open(ConfigurationService().review_path, 'r') as f:
+    with open(ConfigurationService().review_path) as f:
         return json.load(f)
 
 def load_false_positives() -> Any:
     """Load known false positives."""
     Path('cache/false_positives.json')
     if ConfigurationService().fp_path.exists():
-        with open(ConfigurationService().fp_path, 'r') as f:
+        with open(ConfigurationService().fp_path) as f:
             return json.load(f)
     return {'false_positives': [], 'last_updated': None}
 
@@ -99,9 +101,9 @@ def show_stats() -> Any:
     ConfigurationService().log = load_review_log()
     ConfigurationService().fp_data = load_false_positives()
     total_violations: Any = len(ConfigurationService().log)
-    reviewed_count: Any = sum((1 for e in ConfigurationService().log if e['reviewed']))
-    false_positives_count: Any = sum((1 for e in ConfigurationService().log if e.get('is_false_positive') == True))
-    valid_count: Any = sum((1 for e in ConfigurationService().log if e.get('is_false_positive') == False))
+    reviewed_count: Any = sum(1 for e in ConfigurationService().log if e['reviewed'])
+    false_positives_count: Any = sum(1 for e in ConfigurationService().log if e.get('is_false_positive') == True)
+    valid_count: Any = sum(1 for e in ConfigurationService().log if e.get('is_false_positive') == False)
     pending_count: Any = total_violations - reviewed_count
     ConfigurationService().Logger.info('\n📊 Review Statistics:')
     ConfigurationService().Logger.info(f'   Total violations: {total_violations}')

@@ -5,6 +5,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """
 FissionManagerAgent - L3 Orchestration Layer
 CANONICAL: True - Consolidated 2026-01-06 (merged from WorkflowFissionManagerAgent.py)
@@ -21,12 +22,13 @@ Strategy:
 import json
 import logging
 import os
-import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol, Tuple
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from typing import Any
+
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
+
 try:
     from google import genai
     from google.genai import types
@@ -36,10 +38,11 @@ except ImportError:
     genai: Any = None
     types: Any = None
 from dotenv import load_dotenv
+
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+
 load_dotenv()
 Logger: Any = logging.getLogger(__name__)
 
@@ -48,10 +51,10 @@ class FissionResult:
     """Result of atomic fission decomposition."""
     triggered: bool
     reason: str
-    new_files: Dict[str, str]
+    new_files: dict[str, str]
     original_file: str
     success: bool
-    error_message: Optional[str] = None
+    error_message: str | None = None
 
 class FissionManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
@@ -69,7 +72,7 @@ class FissionManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     - Distribute complexity across smaller files
     """
 
-    def __init__(self, gemini_client: Optional[Any]=None, line_limit: int=800, deletion_guardrail: int=110, max_rounds: int=3) -> None:
+    def __init__(self, gemini_client: Any | None=None, line_limit: int=800, deletion_guardrail: int=110, max_rounds: int=3) -> None:
         """
         Initialize Fission Manager.
 
@@ -99,7 +102,7 @@ class FissionManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
             self._client = None
             Logger.warning('[!]  Fission Manager: Gemini not available')
 
-    def should_trigger_fission(self, file_path: str, current_round: int, last_error: Optional[str]=None, lines_deleted: int=0) -> Tuple[bool, Optional[str]]:
+    def should_trigger_fission(self, file_path: str, current_round: int, last_error: str | None=None, lines_deleted: int=0) -> tuple[bool, str | None]:
         """
         Determines if L4 State requires partitioning based on L1/L5 signals.
 
@@ -114,7 +117,7 @@ class FissionManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         """
         if os.path.exists(file_path):
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
+                with open(file_path, encoding='utf-8') as f:
                     line_count: Any = len(f.readlines())
                     if line_count > self.line_limit:
                         return (True, f'Static Metric: File exceeds L4 line limit (Key 42): {line_count} > {self.line_limit}')
@@ -173,7 +176,7 @@ class FissionManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
             Logger.error(f'   [X] Fission failed: {e}')
             return FissionResult(triggered=True, reason=reason, new_files={}, original_file=file_path, success=False, error_message=str(e))
 
-    def _parse_fission_response(self, response: Any, original_file: str) -> Dict[str, str]:
+    def _parse_fission_response(self, response: Any, original_file: str) -> dict[str, str]:
         """
         Parse Gemini response to extract decomposed files.
 
@@ -207,7 +210,7 @@ class FissionManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
             Logger.debug(f'Response text: {text[:500]}')
             return {}
 
-    def handle_architect_output(self, output_text: str, mission_type: str, current_target: Optional[str]=None) -> bool:
+    def handle_architect_output(self, output_text: str, mission_type: str, current_target: str | None=None) -> bool:
         """
         L3 Orchestrator: Decides how to write L1 Cognition results to L4 State.
 
@@ -275,7 +278,7 @@ class FissionManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
             Logger.error(f'   [X] Failed to write decomposed files: {e}')
             return False
 
-    def heal(self, ctx: Any) -> Dict[str, Any]:
+    def heal(self, ctx: Any) -> dict[str, Any]:
         """
         Healing method for canon validator integration.
 
@@ -312,13 +315,13 @@ class FissionManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
 
         return results
 
-    def run_validation(self, ctx: Any) -> Dict[str, Any]:
+    def run_validation(self, ctx: Any) -> dict[str, Any]:
         """Alias for heal() for validator compatibility."""
         return self.heal(ctx)
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L3 orchestration agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -336,7 +339,7 @@ class FissionManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
             _call_path.discard(agent_name)
 
 
-def get_fission_manager(gemini_client: Optional[Any]=None) -> FissionManagerAgent:
+def get_fission_manager(gemini_client: Any | None=None) -> FissionManagerAgent:
     """
     # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
     super().heal_repository()

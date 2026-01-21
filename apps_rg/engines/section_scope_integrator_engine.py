@@ -5,6 +5,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """Section Scope Integrator Agent - Overview Synthesis (K.5B & K.6B)
 This agent synthesizes clean overviews after bullets are generated.
 Enforces anti-prefix validation and strict deduplication constraints.
@@ -24,14 +25,10 @@ Non-responsibilities:
 
 import logging
 import re
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Protocol
+from dataclasses import dataclass
+from typing import Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 
 # NAMING FIXED: LOGGER → Logger
@@ -52,7 +49,6 @@ class ValidationResult: # Placeholder for ValidationResult
         self.details = DETAILS
         self.signature = SIGNATURE
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 # IntegrityGateExecutorAgent removed - was archived dependency
 
 # NAMING FIXED: AdaptiveRecoveryLoop → AdaptiveRecoveryLoop
@@ -94,8 +90,8 @@ class SectionIntegratorResult:
     """Docstring."""
     overview: str
     similarity_score: float
-    validation_results: List[ValidationResult]
-    temperature_log: List[Dict[str, Any]]
+    validation_results: list[ValidationResult]
+    temperature_log: list[dict[str, Any]]
     success: bool
     attempts: int
 
@@ -127,9 +123,9 @@ class SectionScopeIntegrator:
 
     def __init__(
         self,
-        config: Optional[SectionIntegratorConfig] = None,
-        gate_executor: Optional[IntegrityGateExecutorAgent] = None,
-        recovery_loop: Optional[AdaptiveRecoveryLoop] = None
+        config: SectionIntegratorConfig | None = None,
+        gate_executor: IntegrityGateExecutorAgent | None = None,
+        recovery_loop: AdaptiveRecoveryLoop | None = None
     ):
         self.config = config or SectionIntegratorConfig() # Fixed: Changed SELF.CONFIG to self.config
         self.gate_executor = gate_executor or IntegrityGateExecutorAgent()
@@ -139,9 +135,9 @@ class SectionScopeIntegrator:
 
     def generate_overview( # Fixed: Removed misplaced docstring from here
         self,
-        bullets: List[str],
+        bullets: list[str],
         master_baseline: str,
-        context: Dict[str, Any]
+        context: dict[str, Any]
     ) -> SectionIntegratorResult:
         """
         Generate section overview with anti-prefix and deduplication validation.
@@ -228,8 +224,8 @@ class SectionScopeIntegrator:
 
     def _generate_content(
         self,
-        bullets: List[str],
-        context: Dict[str, Any],
+        bullets: list[str],
+        context: dict[str, Any],
         temperature: float,
         attempt: int
     ) -> str:
@@ -266,7 +262,7 @@ class SectionScopeIntegrator:
             PASSED=True,
             SEVERITY='INFO',
             MESSAGE="No redundant prefix detected",
-            SIGNATURE=f"ANTIPREFIX:OK"
+            SIGNATURE="ANTIPREFIX:OK"
         )
 
     def _calculate_similarity(self, text1: str, text2: str) -> float:
@@ -317,7 +313,7 @@ class SectionScopeIntegrator:
         )
 
 def create_section_scope_integrator( # Fixed: Removed misplaced docstring from here
-    config: Optional[SectionIntegratorConfig] = None
+    config: SectionIntegratorConfig | None = None
 ) -> SectionScopeIntegrator:
     """Factory function to create SectionScopeIntegrator instance"""
     return SectionScopeIntegrator(config=config)

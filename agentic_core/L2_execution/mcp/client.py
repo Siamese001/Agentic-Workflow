@@ -6,9 +6,9 @@ Migrated from archives/legacy_resume_gen/Agentic-Workflow-10_7_main/core_v10_7/m
 
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Dict, Optional, Protocol
+from typing import Any, Protocol
 
-from .providers import get_default_module, get_default_class
+from .providers import get_default_class, get_default_module
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +19,7 @@ class MCPClient(Protocol):
     All MCP clients must implement this protocol for type safety.
     """
 
-    def __call__(self, *args: object, **kwargs: object) -> Dict[str, object]:
+    def __call__(self, *args: object, **kwargs: object) -> dict[str, object]:
         """Execute the client operation.
 
         Args:
@@ -50,12 +50,12 @@ class MCPClientSpec:
 
     name: str
     provider: str = "stub"
-    module: Optional[str] = None
-    class_name: Optional[str] = None
-    parameters: Dict[str, Any] = field(default_factory=dict)
+    module: str | None = None
+    class_name: str | None = None
+    parameters: dict[str, Any] = field(default_factory=dict)
     optional: bool = False
 
-    def resolved_module(self) -> Optional[str]:
+    def resolved_module(self) -> str | None:
         """Return explicit module or provider-mapped default.
 
         Returns:
@@ -65,7 +65,7 @@ class MCPClientSpec:
             return self.module
         return get_default_module(self.provider)
 
-    def resolved_class(self) -> Optional[str]:
+    def resolved_class(self) -> str | None:
         """Return explicit class_name or provider-mapped default.
 
         Returns:
@@ -109,7 +109,7 @@ class MCPClientStub:
     while maintaining type safety.
     """
 
-    def __init__(self, name: str, parameters: Optional[Dict[str, Any]] = None):
+    def __init__(self, name: str, parameters: dict[str, Any] | None = None):
         """Initialize stub client.
 
         Args:
@@ -127,7 +127,7 @@ class MCPClientStub:
             }
         )
 
-    def __call__(self, *args, **kwargs) -> Dict[str, Any]:
+    def __call__(self, *args, **kwargs) -> dict[str, Any]:
         """All calls return a structured stub result.
 
         Returns:
@@ -157,8 +157,8 @@ class MCPClientRegistry:
 
     def __init__(self):
         """Initialize empty registry."""
-        self._clients: Dict[str, MCPClient] = {}
-        self._specs: Dict[str, MCPClientSpec] = {}
+        self._clients: dict[str, MCPClient] = {}
+        self._specs: dict[str, MCPClientSpec] = {}
 
     def register(self, name: str, client: MCPClient) -> None:
         """Register a client instance.
@@ -182,7 +182,7 @@ class MCPClientRegistry:
             }
         )
 
-    def get(self, name: str) -> Optional[Any]:
+    def get(self, name: str) -> Any | None:
         """Get a client by name.
 
         Args:
@@ -193,7 +193,7 @@ class MCPClientRegistry:
         """
         return self._clients.get(name)
 
-    def get_spec(self, name: str) -> Optional[MCPClientSpec]:
+    def get_spec(self, name: str) -> MCPClientSpec | None:
         """Get a client spec by name.
 
         Args:

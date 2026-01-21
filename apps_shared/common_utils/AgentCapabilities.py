@@ -5,14 +5,12 @@ numbered system. Agents are identified by their function, not by numbers.
 """
 
 import logging
-from enum import Enum
-from typing import Dict, Any, Optional, List, Callable
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from pathlib import Path
+from enum import Enum
+from typing import Any
 
 from ..core.subatomic_hop import SubatomicHop, SubatomicHopConfig
-from ..core.dynamic_dag_manager import HopSpec
-from ..shared.validation_gates import ValidationGateRegistry
 
 logger = logging.getLogger(__name__)
 
@@ -54,14 +52,14 @@ class AgentCapability:
     display_name: str
     description: str
     primary_function: str
-    inputs: List[str]
-    outputs: List[str]
-    tools: List[str] = field(default_factory=list)
-    constraints: List[str] = field(default_factory=list)
+    inputs: list[str]
+    outputs: list[str]
+    tools: list[str] = field(default_factory=list)
+    constraints: list[str] = field(default_factory=list)
     system_prompt_template: str = ""
 
     # Legacy mapping for transition
-    legacy_k_nodes: List[str] = field(default_factory=list)
+    legacy_k_nodes: list[str] = field(default_factory=list)
 
 
 class AgentSpec:
@@ -71,7 +69,7 @@ class AgentSpec:
         self,
         role: AgentRole,
         hop_function: Callable,
-        config: Optional[SubatomicHopConfig] = None,
+        config: SubatomicHopConfig | None = None,
         **kwargs
     ):
         """Initialize agent specification.
@@ -119,7 +117,7 @@ class AgentSpec:
 
 
 # Registry of agent capabilities
-AGENT_CAPABILITIES: Dict[AgentRole, AgentCapability] = {
+AGENT_CAPABILITIES: dict[AgentRole, AgentCapability] = {
 
     # Context Gathering
     AgentRole.CONTEXT_GATHERER: AgentCapability(
@@ -272,7 +270,7 @@ Your downstream consumer: Quality Critic.
 
 
 # Legacy mapping for transition
-LEGACY_MAPPING: Dict[str, AgentRole] = {
+LEGACY_MAPPING: dict[str, AgentRole] = {
     # Direct mappings
     "K.2": AgentRole.CONTEXT_GATHERER,
     "K2": AgentRole.CONTEXT_GATHERER,
@@ -300,8 +298,8 @@ class AgentRegistry:
     def __init__(self):
         """Initialize the agent registry."""
         self._capabilities = AGENT_CAPABILITIES
-        self._specs: Dict[AgentRole, AgentSpec] = {}
-        self._custom_capabilities: Dict[AgentRole, AgentCapability] = {}
+        self._specs: dict[AgentRole, AgentSpec] = {}
+        self._custom_capabilities: dict[AgentRole, AgentCapability] = {}
 
         logger.info("Initialized AgentRegistry")
 
@@ -325,7 +323,7 @@ class AgentRegistry:
         self._specs[spec.role] = spec
         logger.info(f"Registered agent for role: {spec.role.value}")
 
-    def get_agent_spec(self, role: AgentRole) -> Optional[AgentSpec]:
+    def get_agent_spec(self, role: AgentRole) -> AgentSpec | None:
         """Get a registered agent specification.
 
         Args:
@@ -336,7 +334,7 @@ class AgentRegistry:
         """
         return self._specs.get(role)
 
-    def create_agent(self, role: AgentRole, **kwargs) -> Optional[SubatomicHop]:
+    def create_agent(self, role: AgentRole, **kwargs) -> SubatomicHop | None:
         """Create an agent instance for the given role.
 
         Args:
@@ -353,7 +351,7 @@ class AgentRegistry:
 
         return spec.create_hop()
 
-    def list_roles(self) -> List[AgentRole]:
+    def list_roles(self) -> list[AgentRole]:
         """List all available agent roles.
 
         Returns:
@@ -361,7 +359,7 @@ class AgentRegistry:
         """
         return list(self._capabilities.keys()) + list(self._custom_capabilities.keys())
 
-    def map_legacy_to_role(self, legacy_reference: str) -> Optional[AgentRole]:
+    def map_legacy_to_role(self, legacy_reference: str) -> AgentRole | None:
         """Map a legacy K-node reference to a functional role.
 
         Args:
@@ -372,7 +370,7 @@ class AgentRegistry:
         """
         return LEGACY_MAPPING.get(legacy_reference)
 
-    def validate_no_legacy_references(self, text: str) -> List[str]:
+    def validate_no_legacy_references(self, text: str) -> list[str]:
         """Check text for legacy K-node references.
 
         Args:
@@ -387,7 +385,7 @@ class AgentRegistry:
                 found.append(legacy_ref)
         return found
 
-    def get_registry_stats(self) -> Dict[str, Any]:
+    def get_registry_stats(self) -> dict[str, Any]:
         """Get statistics about the registry.
 
         Returns:
@@ -408,7 +406,7 @@ class AgentRegistry:
 
 
 # Global registry instance
-_agent_registry: Optional[AgentRegistry] = None
+_agent_registry: AgentRegistry | None = None
 
 
 def get_agent_registry() -> AgentRegistry:
@@ -426,7 +424,7 @@ def get_agent_registry() -> AgentRegistry:
 
 
 # Convenience functions
-def get_agent_capability(role: AgentRole) -> Optional[AgentCapability]:
+def get_agent_capability(role: AgentRole) -> AgentCapability | None:
     """Get capability for a role.
 
     Args:
@@ -453,7 +451,7 @@ def create_functional_agent(role: AgentRole, hop_function: Callable, **kwargs) -
     return spec.create_hop()
 
 
-def map_legacy_node(legacy_reference: str) -> Optional[AgentRole]:
+def map_legacy_node(legacy_reference: str) -> AgentRole | None:
     """Map legacy node reference to functional role.
 
     Args:

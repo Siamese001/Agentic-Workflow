@@ -12,17 +12,14 @@ Uses CodeDeduplicationAgent and FilenameUniquenessGuardianAgent for analysis.
 import asyncio
 import sys
 from pathlib import Path
-from typing import Dict, List, Tuple
-import hashlib
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 
-async def analyze_functional_differences(duplicate_sets: Dict[str, List[Path]]) -> List[Dict]:
+async def analyze_functional_differences(duplicate_sets: dict[str, list[Path]]) -> list[dict]:
     """
     Analyze duplicate sets to determine if files with same name have different functions.
 
@@ -52,7 +49,7 @@ async def analyze_functional_differences(duplicate_sets: Dict[str, List[Path]]) 
             contents = []
             for fpath in file_paths:
                 try:
-                    with open(fpath, 'r', encoding='utf-8') as f:
+                    with open(fpath, encoding='utf-8') as f:
                         content = f.read()
                         contents.append(content)
                 except Exception as e:
@@ -128,7 +125,7 @@ async def main():
     review_count = sum(1 for r in same_filename_results if r['action'] == 'REVIEW_RENAME')
     delete_count = sum(1 for r in same_filename_results if r['action'] == 'DELETE_DUPLICATES')
 
-    print(f"SUMMARY:")
+    print("SUMMARY:")
     print(f"  - Files requiring REVIEW/RENAME: {review_count}")
     print(f"  - Files safe to DELETE: {delete_count}")
     print()
@@ -146,7 +143,7 @@ async def main():
         print(f"    Identical: {'YES' if result['identical'] else 'NO - DIFFERENT CONTENT'}")
         print(f"    Hash: {result['hash']}")
         print()
-        print(f"    Locations:")
+        print("    Locations:")
         for path in result['paths']:
             # Determine if canonical or stale
             if 'config/blueprint_sovereign' in path or 'config/validators' in path:
@@ -163,18 +160,18 @@ async def main():
         print()
 
         if not result['identical']:
-            print(f"    RECOMMENDATION:")
-            print(f"      These files have DIFFERENT content despite same filename.")
-            print(f"      Options:")
-            print(f"        1. Use FilenameUniquenessGuardianAgent to rename non-canonical copies")
-            print(f"        2. Use CodeDeduplicationAgent to review functional differences")
-            print(f"        3. Manually review and decide which to keep")
+            print("    RECOMMENDATION:")
+            print("      These files have DIFFERENT content despite same filename.")
+            print("      Options:")
+            print("        1. Use FilenameUniquenessGuardianAgent to rename non-canonical copies")
+            print("        2. Use CodeDeduplicationAgent to review functional differences")
+            print("        3. Manually review and decide which to keep")
             print()
         else:
-            print(f"    RECOMMENDATION:")
-            print(f"      Files are IDENTICAL - safe to delete non-canonical copies.")
-            print(f"      Keep: Canonical location (L5_safety/validators or L2_execution)")
-            print(f"      Delete: Blueprint/stale locations")
+            print("    RECOMMENDATION:")
+            print("      Files are IDENTICAL - safe to delete non-canonical copies.")
+            print("      Keep: Canonical location (L5_safety/validators or L2_execution)")
+            print("      Delete: Blueprint/stale locations")
             print()
 
         print("-" * 100)

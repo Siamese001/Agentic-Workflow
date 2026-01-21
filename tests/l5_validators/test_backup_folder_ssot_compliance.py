@@ -20,19 +20,18 @@ Test Cases:
 6. Root Folder SSOT Enforcement - Verify no unauthorized root folders
 """
 
-import sys
 import os
+import sys
 from pathlib import Path
-from typing import Set
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
     SCOPE_SUMMARY_EXCLUSIONS,
-    get_validated_project_root
+    SOVEREIGN_REGISTRY,
+    get_validated_project_root,
 )
 
 
@@ -121,7 +120,7 @@ class BackupFolderSSOTTester:
             import inspect
             source = inspect.getsource(agent._initialize_backup_dir)
 
-            print(f"   Checking _initialize_backup_dir method...")
+            print("   Checking _initialize_backup_dir method...")
 
             # Check if method uses SSOT-approved location
             uses_ssot_location = (
@@ -134,7 +133,7 @@ class BackupFolderSSOTTester:
                 return True
             else:
                 print("   ❌ TEST 3 FAILED: LocationAgent uses non-SSOT location")
-                print(f"      Method creates: .sovereign_healing_backup/location/{{timestamp}}")
+                print("      Method creates: .sovereign_healing_backup/location/{timestamp}")
                 return False
 
         except Exception as e:
@@ -188,7 +187,9 @@ class BackupFolderSSOTTester:
         print("="*70)
 
         try:
-            from agentic_core.L4_state.ledger.healing_transaction_manager import HealingTransactionManager
+            from agentic_core.L4_state.ledger.healing_transaction_manager import (
+                HealingTransactionManager,
+            )
 
             manager = HealingTransactionManager()
             backup_dir_str = str(manager.backup_dir)

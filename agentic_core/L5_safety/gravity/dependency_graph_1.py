@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Dependency Graph Analyzer (DGA) — Phase 2 Tool
 
@@ -11,15 +12,12 @@ Unified graph for import/call dependencies enabling:
 Part of the Tool Registry Enhancement Roadmap.
 """
 import ast
-import os
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any
 
 from pydantic import BaseModel, Field
-from agentic_core.utils.sovereign_index import SovereignIndex
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 
 class GraphOperation(str, Enum):
@@ -39,11 +37,11 @@ class DependencyGraphArgs(BaseModel):
     target_path: str = Field(
         description="File or directory path to analyze"
     )
-    symbol: Optional[str] = Field(
+    symbol: str | None = Field(
         default=None,
         description="Symbol name for impact analysis (function, class, or module)"
     )
-    max_depth: Optional[int] = Field(
+    max_depth: int | None = Field(
         default=10,
         description="Maximum depth for recursive analysis"
     )
@@ -57,14 +55,14 @@ class DependencyGraphArgs(BaseModel):
 class DependencyNode:
     """A node in the dependency graph."""
     name: str
-    path: Optional[str] = None
+    path: str | None = None
     node_type: str = "module"  # module, function, class
-    imports: List[str] = field(default_factory=list)
-    imported_by: List[str] = field(default_factory=list)
-    calls: List[str] = field(default_factory=list)
-    called_by: List[str] = field(default_factory=list)
+    imports: list[str] = field(default_factory=list)
+    imported_by: list[str] = field(default_factory=list)
+    calls: list[str] = field(default_factory=list)
+    called_by: list[str] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "name": self.name,
             "path": self.path,
@@ -79,8 +77,8 @@ class DependencyNode:
 @dataclass
 class DependencyGraph:
     """Complete dependency graph structure."""
-    nodes: Dict[str, DependencyNode] = field(default_factory=dict)
-    edges: List[Tuple[str, str, str]] = field(default_factory=list)  # (from, to, type)
+    nodes: dict[str, DependencyNode] = field(default_factory=dict)
+    edges: list[tuple[str, str, str]] = field(default_factory=list)  # (from, to, type)
 
     def add_node(self, name: str, **kwargs) -> DependencyNode:
         """Add or update a node in the graph."""
@@ -109,7 +107,7 @@ class DependencyGraph:
                 if from_node not in self.nodes[to_node].called_by:
                     self.nodes[to_node].called_by.append(from_node)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "nodes": {k: v.to_dict() for k, v in self.nodes.items()},
             "edges": [{"from": e[0], "to": e[1], "type": e[2]} for e in self.edges],
@@ -123,11 +121,11 @@ class GraphResult:
     """Result of a dependency graph operation."""
     success: bool
     operation: str
-    data: Dict[str, Any] = field(default_factory=dict)
-    warnings: List[str] = field(default_factory=list)
-    error: Optional[str] = None
+    data: dict[str, Any] = field(default_factory=dict)
+    warnings: list[str] = field(default_factory=list)
+    error: str | None = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "success": self.success,
             "operation": self.operation,
@@ -177,7 +175,7 @@ class ImportExtractor(ast.NodeVisitor):
     """Extract imports from Python AST."""
 
     def __init__(self, include_stdlib: bool = False):
-        self.imports: List[Dict[str, Any]] = []
+        self.imports: list[dict[str, Any]] = []
         self.include_stdlib = include_stdlib
 
     def _is_stdlib(self, module: str) -> bool:
@@ -218,8 +216,8 @@ class CallExtractor(ast.NodeVisitor):
     """Extract function/method calls from Python AST."""
 
     def __init__(self):
-        self.calls: List[Dict[str, Any]] = []
-        self._current_scope: List[str] = []
+        self.calls: list[dict[str, Any]] = []
+        self._current_scope: list[str] = []
 
     def visit_FunctionDef(self, node: ast.FunctionDef):
         """Track function scope."""
@@ -250,7 +248,7 @@ class CallExtractor(ast.NodeVisitor):
             })
         self.generic_visit(node)
 
-    def _get_call_name(self, node: ast.expr) -> Optional[str]:
+    def _get_call_name(self, node: ast.expr) -> str | None:
         """Extract the name of a called function."""
         if isinstance(node, ast.Name):
             return node.id
@@ -266,8 +264,8 @@ class DefinitionExtractor(ast.NodeVisitor):
     """Extract function and class definitions from Python AST."""
 
     def __init__(self):
-        self.definitions: List[Dict[str, Any]] = []
-        self._current_scope: List[str] = []
+        self.definitions: list[dict[str, Any]] = []
+        self._current_scope: list[str] = []
 
     def visit_FunctionDef(self, node: ast.FunctionDef):
         """Extract function definition."""
@@ -335,10 +333,10 @@ class DefinitionExtractor(ast.NodeVisitor):
 # CORE FUNCTIONS
 # =============================================================================
 
-def parse_file(file_path: str, include_stdlib: bool = False) -> Dict[str, Any]:
+def parse_file(file_path: str, include_stdlib: bool = False) -> dict[str, Any]:
     """Parse a Python file and extract dependency information."""
     try:
-        with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
+        with open(file_path, encoding='utf-8', errors='replace') as f:
             code = f.read()
 
         tree = ast.parse(code)
@@ -432,7 +430,7 @@ def build_graph(
 
         # Create module node
         module_name = _path_to_module(file_path, target if target.is_dir() else target.parent)
-        node = graph.add_node(
+        graph.add_node(
             module_name,
             path=str(file_path),
             node_type="module"
@@ -463,7 +461,7 @@ def build_graph(
     )
 
 
-def detect_cycles(graph_data: Dict[str, Any]) -> GraphResult:
+def detect_cycles(graph_data: dict[str, Any]) -> GraphResult:
     """
     Detect circular dependencies in a dependency graph.
 
@@ -477,14 +475,14 @@ def detect_cycles(graph_data: Dict[str, Any]) -> GraphResult:
     cycles = []
 
     # Build adjacency list
-    adj: Dict[str, List[str]] = {}
+    adj: dict[str, list[str]] = {}
     for name, node in nodes.items():
         adj[name] = node.get("imports", [])
 
     # DFS-based cycle detection
-    visited: Set[str] = set()
-    rec_stack: Set[str] = set()
-    path: List[str] = []
+    visited: set[str] = set()
+    rec_stack: set[str] = set()
+    path: list[str] = []
 
     def dfs(node: str) -> bool:
         visited.add(node)
@@ -521,7 +519,7 @@ def detect_cycles(graph_data: Dict[str, Any]) -> GraphResult:
 
 
 def ImpactAnalysis(
-    graph_data: Dict[str, Any],
+    graph_data: dict[str, Any],
     symbol: str
 ) -> GraphResult:
     """
@@ -548,8 +546,8 @@ def ImpactAnalysis(
         symbol = matches[0]
 
     # BFS to find all dependents
-    direct_dependents: Set[str] = set()
-    transitive_dependents: Set[str] = set()
+    direct_dependents: set[str] = set()
+    transitive_dependents: set[str] = set()
 
     # Find direct dependents (who imports this)
     for name, node in nodes.items():
@@ -615,7 +613,7 @@ def find_unused_imports(target_path: str) -> GraphResult:
         definitions = result["definitions"]
 
         # Get all used names
-        used_names: Set[str] = set()
+        used_names: set[str] = set()
         for call in calls:
             # Add the root name of the call
             root_name = call["name"].split(".")[0]
@@ -673,7 +671,7 @@ def get_module_dependencies(target_path: str, include_stdlib: bool = False) -> G
         )
 
     # Group imports by module
-    modules: Dict[str, List[str]] = {}
+    modules: dict[str, list[str]] = {}
     for imp in result["imports"]:
         module = imp["module"]
         if module not in modules:
@@ -747,7 +745,7 @@ def _calculate_risk_level(impact_count: int) -> str:
 # MAIN ENTRY POINT
 # =============================================================================
 
-def DependencyGraph(args: DependencyGraphArgs) -> Dict[str, Any]:
+def DependencyGraph(args: DependencyGraphArgs) -> dict[str, Any]:
     """
     Main entry point for dependency graph operations.
 
@@ -818,7 +816,7 @@ def DependencyGraph(args: DependencyGraphArgs) -> Dict[str, Any]:
 # CONVENIENCE FUNCTIONS
 # =============================================================================
 
-def quick_cycles(target_path: str) -> List[List[str]]:
+def quick_cycles(target_path: str) -> list[list[str]]:
     """Quick check for circular dependencies."""
     args = DependencyGraphArgs(
         operation=GraphOperation.DETECT_CYCLES,
@@ -828,7 +826,7 @@ def quick_cycles(target_path: str) -> List[List[str]]:
     return result.get("data", {}).get("cycles", [])
 
 
-def quick_impact(target_path: str, symbol: str) -> Dict[str, Any]:
+def quick_impact(target_path: str, symbol: str) -> dict[str, Any]:
     """Quick impact analysis for a symbol."""
     args = DependencyGraphArgs(
         operation=GraphOperation.IMPACT_ANALYSIS,
@@ -839,7 +837,7 @@ def quick_impact(target_path: str, symbol: str) -> Dict[str, Any]:
     return result.get("data", {})
 
 
-def quick_unused(target_path: str) -> List[Dict[str, Any]]:
+def quick_unused(target_path: str) -> list[dict[str, Any]]:
     """Quick check for unused imports."""
     args = DependencyGraphArgs(
         operation=GraphOperation.UNUSED_IMPORTS,

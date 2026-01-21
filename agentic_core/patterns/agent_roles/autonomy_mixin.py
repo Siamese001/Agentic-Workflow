@@ -1,18 +1,19 @@
 from __future__ import annotations
+
 """
 AutonomyMixin – Sovereign Agent Role Mixin (Phase 28 – Dec 30, 2025)
 Enables proactive, unprompted execution with constitutional safeguards.
 """
 
 import importlib
-import time
 import logging
-from typing import Dict, Any, Optional
+import time
+from typing import Any
 
 # GRAVITY FIXED (Upward Leak): from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 try:
     _mod = importlib.import_module('agentic_core.L2_execution.mcp.mcp_hardened_mixin_1')
-    MCPHardenedMixin = getattr(_mod, 'MCPHardenedMixin')
+    MCPHardenedMixin = _mod.MCPHardenedMixin
 except (ImportError, AttributeError):
     class MCPHardenedMixin:
         """Fallback stub for MCPHardenedMixin."""
@@ -60,10 +61,10 @@ class AutonomyMixin(MCPHardenedMixin):
     async def _system_healthy_for_proactivity(self) -> bool:
         return True
 
-    async def _detect_action_opportunity(self) -> Optional[Dict[str, Any]]:
+    async def _detect_action_opportunity(self) -> dict[str, Any] | None:
         raise NotImplementedError(f"{self.__class__.__name__} must implement _detect_action_opportunity")
 
-    async def proactive_execute(self) -> Dict[str, Any]:
+    async def proactive_execute(self) -> dict[str, Any]:
         if not await self.should_act_proactively():
             return {"proactive": False, "skipped": True}
 

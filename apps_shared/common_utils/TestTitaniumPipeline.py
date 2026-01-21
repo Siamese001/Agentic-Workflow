@@ -8,14 +8,9 @@ Run with: python -m asyncio runtime.shared.test_titanium_pipeline.py
 
 import asyncio
 import time
-from typing import List, Dict, Any, Tuple
 
 # Import the complete pipeline
-from runtime.shared import (
-    TitaniumRAGPipeline,
-    create_titanium_pipeline,
-    HybridScoreResult
-)
+from runtime.shared import TitaniumRAGPipeline, create_titanium_pipeline
 
 
 class TitaniumPipelineIntegrationTest:
@@ -123,7 +118,7 @@ class TitaniumPipelineIntegrationTest:
         query: str,
         max_docs: int = 10,
         **kwargs
-    ) -> Tuple[List[Dict], List[Dict]]:
+    ) -> tuple[list[dict], list[dict]]:
         """Mock retrieval function that simulates vector and BM25 search.
 
         Args:
@@ -290,9 +285,9 @@ class TitaniumPipelineIntegrationTest:
             # Verify expected behavior
             if scenario['expected_phase'] == 'gate_block':
                 if not result1['metadata']['gate_decision']['should_retrieve']:
-                    print(f"   ✅ Correctly blocked by gate")
+                    print("   ✅ Correctly blocked by gate")
                 else:
-                    print(f"   ❌ Should have been blocked by gate")
+                    print("   ❌ Should have been blocked by gate")
 
     async def test_pipeline_statistics(self):
         """Test pipeline statistics and monitoring."""
@@ -317,7 +312,7 @@ class TitaniumPipelineIntegrationTest:
 
         # Get statistics
         stats = self.pipeline.get_stats()
-        print(f"\nPipeline Statistics:")
+        print("\nPipeline Statistics:")
         print(f"   Total queries: {stats['total_queries']}")
         print(f"   Gate blocks: {stats['gate_blocks']} ({stats['gate_block_rate']:.1%})")
         print(f"   Cache hits: {stats['cache_hits']} ({stats['cache_hit_rate']:.1%})")
@@ -327,9 +322,9 @@ class TitaniumPipelineIntegrationTest:
 
         # Get component info
         component_info = self.pipeline.get_component_info()
-        print(f"\nComponent Status:")
-        print(f"   Phase 1 (Precision): Available")
-        print(f"   Phase 2 (Reasoning): Available")
+        print("\nComponent Status:")
+        print("   Phase 1 (Precision): Available")
+        print("   Phase 2 (Reasoning): Available")
         print(f"   Phase 3 (SOTA): Reranker={component_info['phase_3_sota']['reranker_available']}, "
               f"Cache={component_info['phase_3_sota']['cache_available']}")
 
@@ -404,9 +399,9 @@ class TitaniumPipelineIntegrationTest:
         print("\nChecking component availability...")
         component_info = self.pipeline.get_component_info()
 
-        print(f"  Phase 1 (Precision): ✅ Available")
-        print(f"  Phase 2 (Reasoning): ✅ Available")
-        print(f"  Phase 3 (SOTA):")
+        print("  Phase 1 (Precision): ✅ Available")
+        print("  Phase 2 (Reasoning): ✅ Available")
+        print("  Phase 3 (SOTA):")
         print(f"    - Reranker: {'✅' if component_info['phase_3_sota']['reranker_available'] else '⚠️  Fallback'}")
         print(f"    - Cache: {'✅' if component_info['phase_3_sota']['cache_available'] else '⚠️  Fallback'}")
 

@@ -17,10 +17,7 @@ This script:
 3. Updates all references in code and docs
 4. Regenerates agent discovery
 """
-import os
-import re
 from pathlib import Path
-from typing import Dict, List, Tuple
 
 PROJECT_ROOT = Path(__file__).parent.parent
 
@@ -47,10 +44,10 @@ SKIP_DIRS = {'.git', '__pycache__', 'node_modules', '.pytest_cache', 'coverage_h
              'archive', 'archives', '.venv', 'venv'}
 
 
-def find_files_to_update(root: Path) -> List[Path]:
+def find_files_to_update(root: Path) -> list[Path]:
     """Find all files that may need updating."""
     # Phase 6.7: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_python_files, get_data_files
+    from agentic_core.utils.ssot_discovery import get_data_files, get_python_files
     files = list(get_python_files(root)) + list(get_data_files(root, extensions=['.json', '.md', '.yaml', '.yml']))
 
     # Filter by CODE_EXTENSIONS and skip directories
@@ -62,7 +59,7 @@ def find_files_to_update(root: Path) -> List[Path]:
     return filtered_files
 
 
-def update_file_content(file_path: Path, rename_map: Dict[str, str], dry_run: bool = True) -> Tuple[bool, int]:
+def update_file_content(file_path: Path, rename_map: dict[str, str], dry_run: bool = True) -> tuple[bool, int]:
     """Update file content with new names. Returns (changed, count)."""
     try:
         content = file_path.read_text(encoding='utf-8')
@@ -87,7 +84,7 @@ def update_file_content(file_path: Path, rename_map: Dict[str, str], dry_run: bo
     return False, 0
 
 
-def rename_files(file_renames: Dict[str, str], dry_run: bool = True) -> List[str]:
+def rename_files(file_renames: dict[str, str], dry_run: bool = True) -> list[str]:
     """Rename files. Returns list of renamed files."""
     renamed = []
     for old_path, new_path in file_renames.items():

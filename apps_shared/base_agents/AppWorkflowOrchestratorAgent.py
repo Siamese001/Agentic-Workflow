@@ -19,13 +19,14 @@ from __future__ import annotations
 
 import logging
 import warnings
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
-from typing import Any, Callable, Dict, List, Optional, Set, Type
+from typing import Any
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
@@ -72,9 +73,9 @@ class PhaseConfig:
     phase: WorkflowPhase
     name: str
     description: str
-    required_inputs: List[str] = field(default_factory=list)
-    produces_outputs: List[str] = field(default_factory=list)
-    dependencies: List[WorkflowPhase] = field(default_factory=list)
+    required_inputs: list[str] = field(default_factory=list)
+    produces_outputs: list[str] = field(default_factory=list)
+    dependencies: list[WorkflowPhase] = field(default_factory=list)
     timeout_seconds: int = 300
     can_skip: bool = False
     retry_on_failure: bool = True
@@ -86,8 +87,8 @@ class PhaseResult:
     """Result of a phase execution."""
     phase: WorkflowPhase
     success: bool
-    data: Dict[str, Any] = field(default_factory=dict)
-    error: Optional[str] = None
+    data: dict[str, Any] = field(default_factory=dict)
+    error: str | None = None
     execution_time: float = 0.0
     skipped: bool = False
     retries_used: int = 0
@@ -99,12 +100,12 @@ class WorkflowState:
     workflow_id: str
     workflow_type: WorkflowType
     current_phase: WorkflowPhase
-    completed_phases: Set[WorkflowPhase] = field(default_factory=set)
-    phase_results: Dict[WorkflowPhase, PhaseResult] = field(default_factory=dict)
-    context: Dict[str, Any] = field(default_factory=dict)
+    completed_phases: set[WorkflowPhase] = field(default_factory=set)
+    phase_results: dict[WorkflowPhase, PhaseResult] = field(default_factory=dict)
+    context: dict[str, Any] = field(default_factory=dict)
     started_at: datetime = field(default_factory=datetime.now)
-    completed_at: Optional[datetime] = None
-    error: Optional[str] = None
+    completed_at: datetime | None = None
+    error: str | None = None
 
     @property
     def is_complete(self) -> bool:
@@ -118,7 +119,7 @@ class WorkflowState:
 
 
 # Default phase configurations
-LIC_PHASE_CONFIGS: List[PhaseConfig] = [
+LIC_PHASE_CONFIGS: list[PhaseConfig] = [
     PhaseConfig(
         phase=WorkflowPhase.LIC_PHASE_1_PROFILE,
         name="Profile Analysis",
@@ -185,7 +186,7 @@ LIC_PHASE_CONFIGS: List[PhaseConfig] = [
     ),
 ]
 
-RG_PHASE_CONFIGS: List[PhaseConfig] = [
+RG_PHASE_CONFIGS: list[PhaseConfig] = [
     PhaseConfig(
         phase=WorkflowPhase.RG_PHASE_1_INTAKE,
         name="Intake",
@@ -265,8 +266,8 @@ class AppWorkflowOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHarden
     """
 
     workflow_type: WorkflowType = WorkflowType.LIC
-    custom_phase_configs: Optional[List[PhaseConfig]] = None
-    phase_handlers: Dict[WorkflowPhase, Callable] = field(default_factory=dict)
+    custom_phase_configs: list[PhaseConfig] | None = None
+    phase_handlers: dict[WorkflowPhase, Callable] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         """Initialize the workflow orchestrator."""
@@ -282,7 +283,7 @@ class AppWorkflowOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHarden
         self._phase_order = self._build_phase_order()
         Logger.info(f"AppWorkflowOrchestratorAgent initialized for {self.workflow_type.value}")
 
-    def _build_phase_order(self) -> List[WorkflowPhase]:
+    def _build_phase_order(self) -> list[WorkflowPhase]:
         """Build execution order based on dependencies."""
         # Simple topological sort
         order = []
@@ -322,7 +323,7 @@ class AppWorkflowOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHarden
         self,
         phase: WorkflowPhase,
         state: WorkflowState,
-    ) -> tuple[bool, Optional[str]]:
+    ) -> tuple[bool, str | None]:
         """
         Validate that all dependencies for a phase are satisfied.
 
@@ -405,8 +406,8 @@ class AppWorkflowOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHarden
 
     async def execute_workflow(
         self,
-        initial_context: Dict[str, Any],
-        workflow_id: Optional[str] = None,
+        initial_context: dict[str, Any],
+        workflow_id: str | None = None,
     ) -> WorkflowState:
         """
         Execute the complete workflow.
@@ -480,11 +481,11 @@ class AppWorkflowOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHarden
 
         return state
 
-    def get_phase_config(self, phase: WorkflowPhase) -> Optional[PhaseConfig]:
+    def get_phase_config(self, phase: WorkflowPhase) -> PhaseConfig | None:
         """Get configuration for a phase."""
         return self._phase_configs.get(phase)
 
-    def get_workflow_phases(self) -> List[WorkflowPhase]:
+    def get_workflow_phases(self) -> list[WorkflowPhase]:
         """Get ordered list of phases for this workflow."""
         return self._phase_order.copy()
 
@@ -495,8 +496,8 @@ class AppWorkflowOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHarden
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[set] = None,
-    ) -> Dict[str, int]:
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """Apps orchestration agent - operational healing."""
         if _call_path is None:
             _call_path = set()

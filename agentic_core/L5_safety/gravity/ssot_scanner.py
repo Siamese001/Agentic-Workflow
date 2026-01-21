@@ -9,10 +9,8 @@ Performance: <1 second for full scan (vs 15-18s for registry rebuild)
 """
 
 import ast
-import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Optional, Set
 
 
 @dataclass
@@ -23,8 +21,8 @@ class AgentMetadata:
     class_name: str
     layer: str
     assigned_layer: str
-    base_classes: List[str]
-    signals: Set[str]
+    base_classes: list[str]
+    signals: set[str]
 
     @property
     def has_gravity_violation(self) -> bool:
@@ -55,7 +53,7 @@ class SSOTScanner:
     """
 
     # Layer assignment rules from structure_blueprint.py
-    LAYER_ASSIGNMENTS: Dict[str, str] = {
+    LAYER_ASSIGNMENTS: dict[str, str] = {
         'L0_maintenance': 'L0',
         'L1_cognition': 'L1',
         'L2_execution': 'L2',
@@ -73,7 +71,7 @@ class SSOTScanner:
     }
 
     # Canonical signals for Phase 4 compliance
-    CANON_SIGNALS: Set[str] = {
+    CANON_SIGNALS: set[str] = {
         'healing', 'testing', 'validation', 'execution', 'orchestration',
         'state', 'safety', 'cognition', 'intent', 'learning', 'planning'
     }
@@ -86,9 +84,9 @@ class SSOTScanner:
             project_root: Root directory of the project
         """
         self.project_root = project_root.resolve()
-        self._cache: Dict[str, AgentMetadata] = {}
+        self._cache: dict[str, AgentMetadata] = {}
 
-    def scan_agents(self, use_cache: bool = False) -> List[AgentMetadata]:
+    def scan_agents(self, use_cache: bool = False) -> list[AgentMetadata]:
         """
         Scan filesystem for all agent files.
 
@@ -118,7 +116,7 @@ class SSOTScanner:
                 if metadata:
                     agents.append(metadata)
                     self._cache[str(agent_file)] = metadata
-            except Exception as e:
+            except Exception:
                 # Skip files that can't be parsed
                 continue
 
@@ -174,7 +172,7 @@ class SSOTScanner:
 
         return 'UNKNOWN'
 
-    def find_gravity_violations(self) -> List[AgentMetadata]:
+    def find_gravity_violations(self) -> list[AgentMetadata]:
         """
         Find all agents with gravity violations (wrong layer).
 
@@ -186,7 +184,7 @@ class SSOTScanner:
         agents = self.scan_agents()
         return [agent for agent in agents if agent.has_gravity_violation]
 
-    def get_compliance_stats(self) -> Dict[str, any]:
+    def get_compliance_stats(self) -> dict[str, any]:
         """
         Get compliance statistics.
 
@@ -213,7 +211,7 @@ class SSOTScanner:
         path_str = str(file_path)
         return any(pattern in path_str for pattern in exclude_patterns)
 
-    def _parse_agent_file(self, file_path: Path) -> Optional[AgentMetadata]:
+    def _parse_agent_file(self, file_path: Path) -> AgentMetadata | None:
         """
         Parse agent file to extract metadata.
 
@@ -267,7 +265,7 @@ class SSOTScanner:
             signals=signals
         )
 
-    def _extract_signals(self, content: str) -> Set[str]:
+    def _extract_signals(self, content: str) -> set[str]:
         """
         Extract canonical signals from agent code.
 

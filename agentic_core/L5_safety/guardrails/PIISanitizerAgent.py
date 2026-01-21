@@ -17,12 +17,13 @@ from __future__ import annotations
 
 import json
 import re
-from typing import Any, Dict, Optional, Pattern, Set
+from re import Pattern
+from typing import Any
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from .L5SafetyBaseAgent import L5SafetyBaseAgent
 from agentic_core.L5_safety.validators.decorators import standard_heal
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
+
+from .L5SafetyBaseAgent import L5SafetyBaseAgent
 
 
 def track_metrics(name: str):
@@ -52,14 +53,14 @@ class PIISanitizerAgent(L5SafetyBaseAgent):
         L5SafetyBaseAgent: Provides logging, healing, and MCP hardening.
     """
 
-    PII_PATTERNS: Dict[str, Pattern[str]] = {
+    PII_PATTERNS: dict[str, Pattern[str]] = {
         "EMAIL": re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"),
         "PHONE": re.compile(r"\b(?:\+?1[ -]?)?\(?\d{3}\)?[ -]?\d{3}[ -]?\d{4}\b"),
         "NAME": re.compile(r"\b[A-Z][a-z]+ [A-Z][a-z]+\b"),
     }
 
     @track_metrics("run_pii_sanitizer")
-    def run(self, resume: Dict[str, Any]) -> Dict[str, Any]:
+    def run(self, resume: dict[str, Any]) -> dict[str, Any]:
         """Run PII sanitizer on the resume data.
 
         Args:
@@ -69,7 +70,7 @@ class PIISanitizerAgent(L5SafetyBaseAgent):
             Sanitized copy of the resume with PII redacted.
         """
         self.log_info("Sanitizing PII (local regex processing)...")
-        sanitized_resume: Dict[str, Any] = json.loads(json.dumps(resume))
+        sanitized_resume: dict[str, Any] = json.loads(json.dumps(resume))
 
         def sanitize_node(node: Any) -> Any:
             if isinstance(node, dict):
@@ -80,7 +81,7 @@ class PIISanitizerAgent(L5SafetyBaseAgent):
                 return self._sanitize_text(node)
             return node
 
-        sanitized: Dict[str, Any] = sanitize_node(sanitized_resume)
+        sanitized: dict[str, Any] = sanitize_node(sanitized_resume)
         self.log_info("PII sanitization complete.")
         return sanitized
 
@@ -105,8 +106,8 @@ class PIISanitizerAgent(L5SafetyBaseAgent):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[Set[str]] = None
-    ) -> Dict[str, int]:
+        _call_path: set[str] | None = None
+    ) -> dict[str, int]:
         """Execute L5 safety healing operations.
 
         This is an operational guardrail agent - no repository healing required.
@@ -125,7 +126,7 @@ class PIISanitizerAgent(L5SafetyBaseAgent):
         print(f"[{self.__class__.__name__}] Operational guardrail - no healing required")
         return {"skipped": 1}
 
-    def _run_self_tests(self) -> Dict[str, Any]:
+    def _run_self_tests(self) -> dict[str, Any]:
         """Run internal self-tests for agent validation.
 
         Returns:
@@ -134,7 +135,7 @@ class PIISanitizerAgent(L5SafetyBaseAgent):
                 - failed: Count of failed tests
                 - tests: List of individual test results
         """
-        results: Dict[str, Any] = {"passed": 0, "failed": 0, "tests": []}
+        results: dict[str, Any] = {"passed": 0, "failed": 0, "tests": []}
         try:
             assert self is not None
             results["passed"] += 1

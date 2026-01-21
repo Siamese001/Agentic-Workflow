@@ -14,17 +14,16 @@ Usage:
 """
 from __future__ import annotations
 
-import re
 import argparse
+import re
 from pathlib import Path
-from typing import Dict, List, Tuple
 
 from agentic_core.utils.file_utils import safe_read_file, safe_write_file
-from agentic_core.utils.ssot_discovery import get_python_files
 from agentic_core.utils.project_root import get_project_root
+from agentic_core.utils.ssot_discovery import get_python_files
 
 # Migration patterns: (regex_pattern, replacement)
-MIGRATION_MAP: Dict[str, str] = {
+MIGRATION_MAP: dict[str, str] = {
     # Structure blueprint -> config
     r"from agentic_core\.L5_safety\.validators\.structure_blueprint import":
         "from agentic_core.config import",
@@ -58,7 +57,7 @@ SKIP_FILES = {
 }
 
 
-def migrate_file(file_path: Path, dry_run: bool = True) -> Tuple[bool, List[str]]:
+def migrate_file(file_path: Path, dry_run: bool = True) -> tuple[bool, list[str]]:
     """
     Migrate imports in a single file.
 
@@ -89,7 +88,7 @@ def migrate_file(file_path: Path, dry_run: bool = True) -> Tuple[bool, List[str]
     return False, []
 
 
-def migrate_repo(dry_run: bool = True) -> Dict[str, List[str]]:
+def migrate_repo(dry_run: bool = True) -> dict[str, list[str]]:
     """
     Migrate all Python files in the repository.
 

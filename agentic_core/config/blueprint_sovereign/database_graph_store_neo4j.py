@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 try:
     """Brief description of functionality and purpose."""
     from neo4j import GraphDatabase
@@ -6,9 +7,8 @@ try:
 except ImportError:
     # Neo4j driver not installed - provide fallback
     GraphDatabase = None
-import logging
 import os
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
 
 
 # NAMING FIXED: Neo4jGraphStore → Neo4jGraphStore
@@ -32,13 +32,13 @@ class Neo4jGraphStore:
         self._driver.close()
 
 
-    def run(self, cypher: str, params: Dict[str, object] | None = None) -> List[Any]:
+    def run(self, cypher: str, params: dict[str, object] | None = None) -> list[Any]:
         """TODO: Add docstring."""
         with self._driver.session() as session:
             return list(session.run(cypher, params or {}))
 
     def upsert_entity(self, entity_id: str, etype: str, name: str,
-                        metadata: Dict[str, object] | None = None) -> None:
+                        metadata: dict[str, object] | None = None) -> None:
         """
         MERGE an Entity node with basic fields + arbitrary metadata.
         """
@@ -87,7 +87,7 @@ class Neo4jGraphStore:
         object_id: str,
         valid_at: str | None,
         invalid_at: str | None,
-        attrs: Dict[str, object] | None = None,
+        attrs: dict[str, object] | None = None,
     ) -> None:
         """
         MERGE a RELATION edge between two Entity nodes with temporal validity.
@@ -98,7 +98,7 @@ class Neo4jGraphStore:
         MERGE (s)-[r:RELATION {id: $rel_id}]->(o)
         SET r.predicate = $predicate
         """
-        params: Dict[str, object] = {
+        params: dict[str, object] = {
             "rel_id": rel_id,
             "subject_id": subject_id,
             "object_id": object_id,
@@ -139,7 +139,7 @@ class Neo4jGraphStore:
         CYPHER = """
         MATCH ()-[r:RELATION {id: $rel_id}]->()
         """
-        params: Dict[str, object] = {"rel_id": rel_id}
+        params: dict[str, object] = {"rel_id": rel_id}
 
         if invalid_at is not None:
             CYPHER += "\nSET r.invalid_at = datetime($invalid_at)"
@@ -156,7 +156,7 @@ class Neo4jGraphStore:
         predicate: str,
         start: str,
         end: str,
-    ) -> List[Any]:
+    ) -> list[Any]:
         """
         Query temporal facts: subject -[RELATION]-> object filtered on time interval.
         """

@@ -5,9 +5,7 @@ Ported from: archives/legacy_lic/Agentic LIC/memory_LIC.py
 """
 
 import hashlib
-from dataclasses import dataclass, field
-from datetime import datetime
-from typing import Dict, List, Optional
+from dataclasses import dataclass
 
 
 @dataclass
@@ -16,16 +14,16 @@ class VectorDocument:
 
     id: str
     text: str
-    metadata: Dict[str, object]
-    embedding: Optional[List[float]] = None
-    distance: Optional[float] = None
+    metadata: dict[str, object]
+    embedding: list[float] | None = None
+    distance: float | None = None
 
 
 @dataclass
 class QueryResult:
     """Result from a vector memory query."""
 
-    documents: List[VectorDocument]
+    documents: list[VectorDocument]
     total_count: int
     query_text: str
     query_time_ms: float = 0.0
@@ -101,7 +99,7 @@ class LICVectorMemory:
             # ChromaDB not installed - use mock mode
             self._initialized = False
             return False
-        except (ValueError, TypeError, RuntimeError, OSError) as e:
+        except (ValueError, TypeError, RuntimeError, OSError):
             self._initialized = False
             return False
 
@@ -112,9 +110,9 @@ class LICVectorMemory:
     def add_document(
         self,
         text: str,
-        metadata: Dict[str, object],
-        embedding: Optional[List[float]] = None,
-        document_id: Optional[str] = None,
+        metadata: dict[str, object],
+        embedding: list[float] | None = None,
+        document_id: str | None = None,
     ) -> str:
         """Module implementation."""
         if document_id is None:
@@ -145,7 +143,7 @@ class LICVectorMemory:
         self,
         query_text: str,
         n_results: int = 20,
-        filter_metadata: Optional[Dict[str, object]] = None,
+        filter_metadata: dict[str, object] | None = None,
     ) -> QueryResult:
         """
         Query the vector store for relevant documents.
@@ -161,7 +159,7 @@ class LICVectorMemory:
         import time
 
         start_time = time.time()
-        documents: List[VectorDocument] = []
+        documents: list[VectorDocument] = []
 
         if self._initialized and self._collection is not None:
             results = self._collection.query(
@@ -252,7 +250,7 @@ class LICVectorMemory:
             try:
                 self._collection.delete(ids=[document_id])
                 return True
-            except (ValueError, TypeError, RuntimeError, KeyError) as e:
+            except (ValueError, TypeError, RuntimeError, KeyError):
                 return False
         return False
 
@@ -268,7 +266,7 @@ class LICVectorMemory:
                     },
                 )
                 return True
-            except (ValueError, TypeError, RuntimeError, KeyError) as e:
+            except (ValueError, TypeError, RuntimeError, KeyError):
                 return False
         return False
 
@@ -283,7 +281,7 @@ class MockVectorMemory(LICVectorMemory):
     ) -> None:
         """Initialize mock vector memory."""
         super().__init__(collection_name, persist_directory)
-        self._documents: Dict[str, VectorDocument] = {}
+        self._documents: dict[str, VectorDocument] = {}
         self._initialized = True
 
     def initialize(self) -> bool:
@@ -294,9 +292,9 @@ class MockVectorMemory(LICVectorMemory):
     def add_document(
         self,
         text: str,
-        metadata: Dict[str, object],
-        embedding: Optional[List[float]] = None,
-        document_id: Optional[str] = None,
+        metadata: dict[str, object],
+        embedding: list[float] | None = None,
+        document_id: str | None = None,
     ) -> str:
         """Add document to mock store."""
         if document_id is None:
@@ -318,13 +316,13 @@ class MockVectorMemory(LICVectorMemory):
         self,
         query_text: str,
         n_results: int = 20,
-        filter_metadata: Optional[Dict[str, object]] = None,
+        filter_metadata: dict[str, object] | None = None,
     ) -> QueryResult:
         """Query mock store with simple text matching."""
         import time
 
         start_time = time.time()
-        results: List[VectorDocument] = []
+        results: list[VectorDocument] = []
 
         query_lower = query_text.lower()
         for doc in self._documents.values():

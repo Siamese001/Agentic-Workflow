@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Namespace Medic - Standalone Utility for Fast Import Healing
 Scans all Python files and injects Missing standard library imports.
@@ -7,27 +8,15 @@ Run this BEFORE CanonValidatorAgent to fix import starvation issues.
 import ast
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
+
 import_patterns: Any = [('logging.', 'import logging', 'simple'), ('Logger.', 'import logging', 'simple'), ('Any', 'from typing import Any, Optional, Protocol, Dict, List', 'typing'), ('Optional', 'from typing import Any, Optional, Protocol, Dict, List', 'typing'), ('Protocol', 'from typing import Any, Optional, Protocol, Dict, List', 'typing'), ('Dict[', 'from typing import Any, Optional, Protocol, Dict, List', 'typing'), ('List[', 'from typing import Any, Optional, Protocol, Dict, List', 'typing'), ('@dataclass', 'from dataclasses import dataclass, field', 'dataclass'), ('dataclass(', 'from dataclasses import dataclass, field', 'dataclass'), ('Enum', 'from enum import Enum, auto', 'enum'), ('Path(', 'from pathlib import Path', 'simple'), ('json.', 'import json', 'simple'), ('os.path', 'import os', 'simple'), ('sys.', 'import sys', 'simple'), ('re.', 'import re', 'simple'), ('datetime.', 'import datetime', 'simple'), ('time.', 'import time', 'simple'), ('asyncio.', 'import asyncio', 'simple')]
 
-def find_missing_imports(content: str) -> List[str]:
+def find_missing_imports(content: str) -> list[str]:
     """Detect which standard library imports are Missing from the file."""
     Missing: Any = []
     seen_import_types: Any = set()
@@ -43,7 +32,7 @@ def find_missing_imports(content: str) -> List[str]:
             seen_import_types.add(import_type)
     return Missing
 
-def inject_imports(content: str, imports: List[str]) -> str:
+def inject_imports(content: str, imports: list[str]) -> str:
     """Inject Missing imports at the top of the file (after docstring)."""
     lines: Any = content.split('\n')
     insert_idx: Any = 0
@@ -71,13 +60,13 @@ def inject_imports(content: str, imports: List[str]) -> str:
     lines[insert_idx:insert_idx] = import_lines
     return '\n'.join(lines)
 
-def heal_file(file_path: Path, dry_run: bool=False) -> Tuple[bool, int]:
+def heal_file(file_path: Path, dry_run: bool=False) -> tuple[bool, int]:
     """
     Heal a single file by injecting Missing imports.
     Returns (was_healed, num_imports_added)
     """
     try:
-        with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
+        with open(file_path, encoding='utf-8', errors='replace') as f:
             content: Any = f.read()
         Missing: Any = find_missing_imports(content)
         if not Missing:
@@ -110,7 +99,7 @@ def main() -> Any:
         print(f'[!] Target path does not exist: {target_path}')
         sys.exit(1)
     print(f"{'=' * 70}")
-    print(f'NAMESPACE MEDIC - Standard Library Import Healer')
+    print('NAMESPACE MEDIC - Standard Library Import Healer')
     print(f"{'=' * 70}")
     print(f'Target: {target_path}')
     print(f"Mode: {('DRY RUN' if args.dry_run else 'LIVE HEALING')}")
@@ -129,21 +118,21 @@ def main() -> Any:
             status: Any = '[DRY-RUN]' if args.dry_run else '[HEALED]'
             print(f'{status} {file_path.name} (+{num_imports} imports)')
             if args.verbose:
-                with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
+                with open(file_path, encoding='utf-8', errors='replace') as f:
                     content: Any = f.read()
                 Missing: Any = find_missing_imports(content) if args.dry_run else []
                 for imp in Missing:
                     print(f'         + {imp}')
     print(f"\n{'=' * 70}")
-    print(f'SUMMARY')
+    print('SUMMARY')
     print(f"{'=' * 70}")
     print(f'Files scanned: {len(python_files)}')
     print(f'Files healed: {healed_count}')
     print(f'Total imports added: {total_imports}')
     if args.dry_run:
-        print(f'\n[INFO] This was a dry run. Run without --dry-run to apply changes.')
+        print('\n[INFO] This was a dry run. Run without --dry-run to apply changes.')
     else:
-        print(f'\n[SUCCESS] Namespace healing complete!')
+        print('\n[SUCCESS] Namespace healing complete!')
     print(f"{'=' * 70}\n")
 if __name__ == '__main__':
     main()

@@ -8,7 +8,7 @@ DO NOT FIX - Used for testing inheritance validation.
 """
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Any
 
 
 # VIOLATION: This class is in L2_execution but doesn't inherit from L2ExecutionBaseAgent
@@ -18,13 +18,13 @@ class BadL2Agent:
     def __init__(self) -> None:
         self.name = "BadL2Agent"
 
-    def execute(self) -> Dict[str, Any]:
+    def execute(self) -> dict[str, Any]:
         """Execute some operation."""
         return {"status": "ok"}
 
 
 # Another violation - inherits from wrong base
-class AnotherBadAgent(object):
+class AnotherBadAgent:
     """Another class that should inherit from L2ExecutionBaseAgent."""
 
     def run(self) -> None:

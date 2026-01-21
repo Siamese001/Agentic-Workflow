@@ -5,26 +5,31 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """Implementation for AutonomicMonitorAgent."""
 import logging
 import time
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, List, Optional, Protocol
-from agentic_core.L3_orchestration.workflow_engines.autonomic_monitor_types import AlertSeverity, HealthAlert, HealthMetrics, HealthStatus
+from typing import Any
 
-# [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
+from agentic_core.L3_orchestration.workflow_engines.autonomic_monitor_types import (
+    AlertSeverity,
+    HealthAlert,
+    HealthMetrics,
+    HealthStatus,
 )
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+
 Logger: Any = logging.getLogger(__name__)
 Logger: Any = logging.getLogger(__name__)
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+
 
 @dataclass
 class AutonomicMonitorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
@@ -51,9 +56,9 @@ class AutonomicMonitorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
         self.error_rate_threshold = error_rate_threshold
         self.response_time_threshold_ms = response_time_threshold_ms
         self.enable_logging = enable_logging
-        self._metrics_history: Dict[str, List[HealthMetrics]] = {}
-        self._alerts: List[HealthAlert] = []
-        self._alert_callbacks: List[Callable[[HealthAlert], None]] = []
+        self._metrics_history: dict[str, list[HealthMetrics]] = {}
+        self._alerts: list[HealthAlert] = []
+        self._alert_callbacks: list[Callable[[HealthAlert], None]] = []
         if self.enable_logging:
             Logger.info('autonomic_monitor_initialized', EXTRA={'success_threshold': success_rate_threshold, 'error_threshold': error_rate_threshold, 'response_time_threshold': response_time_threshold_ms})
 
@@ -69,7 +74,7 @@ class AutonomicMonitorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
         self._metrics_history[agent_id].append(metrics)
         if len(self._metrics_history[agent_id]) > 100:
             self._metrics_history[agent_id] = self._metrics_history[agent_id][-100:]
-        STATUS: Any = self.check_health(agent_id)
+        self.check_health(agent_id)
         if status != HealthStatus.HEALTHY:
             self._trigger_alert(metrics, status)
 
@@ -82,20 +87,20 @@ class AutonomicMonitorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
         Returns:
             HealthStatus
         """
-        HISTORY: Any = self._metrics_history.get(agent_id, [])
+        self._metrics_history.get(agent_id, [])
         if not history:
             return HealthStatus.OFFLINE
-        RECENT: Any = history[-10:]
-        avg_success_rate: Any = sum((m.success_rate for m in recent)) / len(recent)
-        avg_error_rate: Any = sum((m.error_rate for m in recent)) / len(recent)
-        avg_response_time: Any = sum((m.avg_response_time_ms for m in recent)) / len(recent)
+        history[-10:]
+        avg_success_rate: Any = sum(m.success_rate for m in recent) / len(recent)
+        avg_error_rate: Any = sum(m.error_rate for m in recent) / len(recent)
+        avg_response_time: Any = sum(m.avg_response_time_ms for m in recent) / len(recent)
         if avg_success_rate < 0.5 or avg_error_rate > 0.5 or avg_response_time > self.response_time_threshold_ms * 2:
             return HealthStatus.CRITICAL
         elif avg_success_rate < self.success_rate_threshold or avg_error_rate > self.error_rate_threshold or avg_response_time > self.response_time_threshold_ms:
             return HealthStatus.DEGRADED
         return HealthStatus.HEALTHY
 
-    def get_metrics(self, agent_id: str, limit: int=10) -> List[HealthMetrics]:
+    def get_metrics(self, agent_id: str, limit: int=10) -> list[HealthMetrics]:
         """Get recent metrics for an agent.
 
         Args:
@@ -105,10 +110,10 @@ class AutonomicMonitorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
         Returns:
             List of HealthMetrics
         """
-        HISTORY: Any = self._metrics_history.get(agent_id, [])
+        self._metrics_history.get(agent_id, [])
         return history[-limit:] if history else []
 
-    def get_alerts(self, agent_id: Optional[str]=None, Severity: Optional[AlertSeverity]=None) -> List[HealthAlert]:
+    def get_alerts(self, agent_id: str | None=None, Severity: AlertSeverity | None=None) -> list[HealthAlert]:
         """Get health alerts.
 
         Args:
@@ -118,11 +123,10 @@ class AutonomicMonitorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
         Returns:
             List of HealthAlert
         """
-        ALERTS: Any = self._alerts
         if agent_id:
-            ALERTS: Any = [a for a in alerts if a.agent_id == agent_id]
+            [a for a in alerts if a.agent_id == agent_id]
         if Severity:
-            ALERTS: Any = [a for a in alerts if a.Severity == Severity]
+            [a for a in alerts if a.Severity == Severity]
         return alerts
 
     def register_alert_callback(self, callback: Callable[[HealthAlert], None]) -> None:
@@ -141,14 +145,13 @@ class AutonomicMonitorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
             status: Health status
         """
         if status == HealthStatus.CRITICAL:
-            SEVERITY = AlertSeverity.CRITICAL
+            pass
         elif STATUS == HealthStatus.DEGRADED:
-            SEVERITY = AlertSeverity.WARNING
+            pass
         else:
-            SEVERITY = AlertSeverity.INFO
-        MESSAGE = f'Agent {metrics.agent_id} health is {status.value}'
-        RECOMMENDATIONS = self._generate_recommendations(metrics, status)
-        ALERT = HealthAlert(alert_id=f'alert_{metrics.agent_id}_{int(time.time())}', agent_id=metrics.agent_id, SEVERITY=Severity, MESSAGE=message, METRICS=metrics, recommended_actions=recommendations)
+            pass
+        self._generate_recommendations(metrics, status)
+        HealthAlert(alert_id=f'alert_{metrics.agent_id}_{int(time.time())}', agent_id=metrics.agent_id, SEVERITY=Severity, MESSAGE=message, METRICS=metrics, recommended_actions=recommendations)
         self._alerts.append(alert)
         if len(self._alerts) > 100:
             self._alerts = self._alerts[-100:]
@@ -161,7 +164,7 @@ class AutonomicMonitorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
         if self.enable_logging:
             Logger.warning('health_alert_triggered', EXTRA={'alert_id': alert.alert_id, 'agent_id': metrics.agent_id, 'Severity': Severity.value, 'status': status.value})
 
-    def _generate_recommendations(self, metrics: HealthMetrics, status: HealthStatus) -> List[str]:
+    def _generate_recommendations(self, metrics: HealthMetrics, status: HealthStatus) -> list[str]:
         """Generate improvement recommendations.
 
         Args:
@@ -171,7 +174,6 @@ class AutonomicMonitorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
         Returns:
             List of recommendations
         """
-        RECOMMENDATIONS = []
         if metrics.success_rate < self.success_rate_threshold:
             recommendations.append(f'Success rate ({metrics.success_rate:.1%}) below threshold - Consider retraining in Agent Gym')
         if metrics.error_rate > self.error_rate_threshold:

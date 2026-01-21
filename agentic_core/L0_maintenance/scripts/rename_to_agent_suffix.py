@@ -6,13 +6,9 @@ Uses AST to safely rename class definitions and updates references.
 
 Run with --dry-run first to preview changes.
 """
-import ast
 import re
-import json
 import sys
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
-from agentic_core.utils.sovereign_index import SovereignIndex
 
 # Classes to rename: old_name -> new_name
 RENAMES = {
@@ -111,7 +107,7 @@ RENAMES = {
 }
 
 
-def rename_in_file(file_path: Path, renames: Dict[str, str], dry_run: bool = True) -> List[Tuple[str, str]]:
+def rename_in_file(file_path: Path, renames: dict[str, str], dry_run: bool = True) -> list[tuple[str, str]]:
     """
     Rename class definitions and references in a file.
 

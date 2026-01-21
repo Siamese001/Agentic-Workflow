@@ -3,11 +3,12 @@
 waterfall_reconciliation.py - Three-way comparison of agent snapshots
 Compares 272 agents (Jan 13) -> 209 agents (Jan 4) -> 120 agents (current)
 """
-import subprocess
 import json
+import subprocess
 import sys
-from pathlib import Path
 from collections import defaultdict
+from pathlib import Path
+
 
 def get_agents_at_commit(commit_hash):
     """Get agent dict from agent_discovery_full.json at a specific commit."""
@@ -101,7 +102,7 @@ def main():
     print(f"  Net:     +{len(added_jan4_to_jan13) - len(removed_jan4_to_jan13)}")
 
     if added_jan4_to_jan13:
-        print(f"\n  Agents ADDED (Jan 4 → Jan 13):")
+        print("\n  Agents ADDED (Jan 4 → Jan 13):")
         for agent in sorted(added_jan4_to_jan13)[:20]:
             layer = agents_272.get(agent, {}).get('layer', '?')
             print(f"    + {agent} ({layer})")
@@ -109,7 +110,7 @@ def main():
             print(f"    ... and {len(added_jan4_to_jan13) - 20} more")
 
     if removed_jan4_to_jan13:
-        print(f"\n  Agents REMOVED (Jan 4 → Jan 13):")
+        print("\n  Agents REMOVED (Jan 4 → Jan 13):")
         for agent in sorted(removed_jan4_to_jan13)[:20]:
             print(f"    - {agent}")
         if len(removed_jan4_to_jan13) > 20:
@@ -134,7 +135,7 @@ def main():
         else:
             not_in_archives.append(agent)
 
-    print(f"\n  Agents REMOVED (Jan 13 → Current) by category:")
+    print("\n  Agents REMOVED (Jan 13 → Current) by category:")
     for category in sorted(archive_categories.keys(), key=lambda x: -len(archive_categories[x])):
         agents = archive_categories[category]
         print(f"\n    {category}/ ({len(agents)} agents)")
@@ -151,7 +152,7 @@ def main():
         if len(not_in_archives) > 10:
             print(f"      ... and {len(not_in_archives) - 10} more")
 
-    print(f"\n  Agents ADDED (Jan 13 → Current):")
+    print("\n  Agents ADDED (Jan 13 → Current):")
     for agent in sorted(added_since_272)[:15]:
         layer = agents_120.get(agent, {}).get('layer', '?')
         print(f"    + {agent} ({layer})")
@@ -163,15 +164,15 @@ def main():
     print("WATERFALL SUMMARY")
     print(f"{'=' * 90}")
 
-    print("""
+    print(f"""
     ┌─────────────────────────────────────────────────────────────────────┐
     │  Jan 4, 2026                                                        │
     │  Commit: 3277e45c6                                                  │
     │  Count: 209 agents                                                  │
     └─────────────────────────────────────────────────────────────────────┘
                                     │
-                                    │ +{} agents added
-                                    │ -{} agents removed
+                                    │ +{len(added_jan4_to_jan13)} agents added
+                                    │ -{len(removed_jan4_to_jan13)} agents removed
                                     ▼
     ┌─────────────────────────────────────────────────────────────────────┐
     │  Jan 13, 2026                                                       │
@@ -179,19 +180,14 @@ def main():
     │  Count: 272 agents (PEAK)                                           │
     └─────────────────────────────────────────────────────────────────────┘
                                     │
-                                    │ -{} agents removed
-                                    │ +{} agents added
+                                    │ -{len(removed_since_272)} agents removed
+                                    │ +{len(added_since_272)} agents added
                                     ▼
     ┌─────────────────────────────────────────────────────────────────────┐
     │  Jan 19, 2026 (Current)                                             │
     │  Count: 120 agents                                                  │
     └─────────────────────────────────────────────────────────────────────┘
-    """.format(
-        len(added_jan4_to_jan13),
-        len(removed_jan4_to_jan13),
-        len(removed_since_272),
-        len(added_since_272)
-    ))
+    """)
 
     print(f"\n{'=' * 90}")
     print("RATIONALIZATION")

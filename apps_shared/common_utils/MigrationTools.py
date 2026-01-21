@@ -4,13 +4,13 @@ This module provides tools to help migrate existing code and configurations
 from the legacy K-node system to the new functional role architecture.
 """
 
-import re
 import json
 import logging
-from typing import Dict, List, Any, Optional, Tuple
+import re
 from pathlib import Path
+from typing import Any
 
-from .agent_capabilities import AgentRole, LEGACY_MAPPING, LegacyCodeError
+from .agent_capabilities import LEGACY_MAPPING
 
 logger = logging.getLogger(__name__)
 
@@ -34,9 +34,9 @@ class KNodeScanner:
             root_path: Root directory to scan
         """
         self.root_path = root_path
-        self.findings: List[Dict[str, Any]] = []
+        self.findings: list[dict[str, Any]] = []
 
-    def scan_directory(self, extensions: List[str] = None) -> Dict[str, Any]:
+    def scan_directory(self, extensions: list[str] = None) -> dict[str, Any]:
         """Scan directory for K-node references.
 
         Args:
@@ -71,7 +71,7 @@ class KNodeScanner:
 
         return results
 
-    def scan_file(self, file_path: Path) -> Dict[str, Any]:
+    def scan_file(self, file_path: Path) -> dict[str, Any]:
         """Scan a single file for K-node references.
 
         Args:
@@ -81,7 +81,7 @@ class KNodeScanner:
             Scan results for the file
         """
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 content = f.read()
         except Exception as e:
             logger.error(f"Failed to read {file_path}: {e}")
@@ -142,7 +142,7 @@ class KNodeMigrator:
         """Initialize migrator."""
         self.replacements = self._build_replacement_map()
 
-    def _build_replacement_map(self) -> Dict[str, str]:
+    def _build_replacement_map(self) -> dict[str, str]:
         """Build replacement map for migration.
 
         Returns:
@@ -185,7 +185,7 @@ class KNodeMigrator:
         """
         try:
             # Read file
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 content = f.read()
 
             # Create backup
@@ -229,14 +229,14 @@ class KNodeMigrator:
             True if migration successful
         """
         try:
-            with open(config_path, 'r') as f:
+            with open(config_path) as f:
                 config = json.load(f)
 
             # Track changes
             changes_made = False
 
             # Recursively migrate
-            def migrate_dict(d: Dict, path: str = "") -> None:
+            def migrate_dict(d: dict, path: str = "") -> None:
                 nonlocal changes_made
 
                 for key, value in d.items():
@@ -281,7 +281,7 @@ class MigrationValidator:
         """Initialize validator."""
         self.scanner = KNodeScanner(Path("."))
 
-    def validate_migration(self, root_path: Path) -> Dict[str, Any]:
+    def validate_migration(self, root_path: Path) -> dict[str, Any]:
         """Validate that all K-node references have been migrated.
 
         Args:
@@ -348,7 +348,7 @@ class MigrationValidator:
         return False
 
 
-def run_full_migration(root_path: Path, dry_run: bool = False) -> Dict[str, Any]:
+def run_full_migration(root_path: Path, dry_run: bool = False) -> dict[str, Any]:
     """Run the complete migration process.
 
     Args:

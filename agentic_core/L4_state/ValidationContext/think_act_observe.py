@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Think-Act-Observe Cycle Implementation.
 
 Phase 2 - Pillar 4: Workflow (DAGs)
@@ -6,7 +7,8 @@ Implements the 5-step Mission-Scene-Think-Act-Observe loop with ReAct integratio
 """
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 
 @dataclass
@@ -18,7 +20,7 @@ class CycleConfig:
     enable_state_persistence: bool = True
     react_max_steps: int = 5
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {'max_iterations': self.max_iterations, 'enable_react': self.enable_react, 'enable_dag': self.enable_dag, 'enable_state_persistence': self.enable_state_persistence, 'react_max_steps': self.react_max_steps}
 
@@ -26,15 +28,15 @@ class CycleConfig:
 class CycleState:
     """State of the Think-Act-Observe cycle."""
     mission: str
-    scene: Dict[str, Any]
+    scene: dict[str, Any]
     iteration: int = 0
     current_phase: str = 'mission'
-    observations: List[Dict[str, Any]] = field(default_factory=list)
-    actions_taken: List[Dict[str, Any]] = field(default_factory=list)
-    reasoning_traces: List[Dict[str, Any]] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    observations: list[dict[str, Any]] = field(default_factory=list)
+    actions_taken: list[dict[str, Any]] = field(default_factory=list)
+    reasoning_traces: list[dict[str, Any]] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {'mission': self.mission, 'scene': self.scene, 'iteration': self.iteration, 'current_phase': self.current_phase, 'observations': self.observations, 'actions_taken': self.actions_taken, 'reasoning_traces': self.reasoning_traces, 'metadata': self.metadata}
 
@@ -54,7 +56,7 @@ class ThinkActObserveEngine:
     5. OBSERVE - Interpret results and update state
     """
 
-    def __init__(self, config: Optional[CycleConfig]=None, enable_logging: bool=True):
+    def __init__(self, config: CycleConfig | None=None, enable_logging: bool=True):
         """Initialize Think-Act-Observe engine.
 
         Args:
@@ -71,11 +73,11 @@ class ThinkActObserveEngine:
             self.dag_engine = DAGEngine(enable_logging=enable_logging)
         else:
             self.dag_engine = None
-        self.state: Optional[CycleState] = None
+        self.state: CycleState | None = None
         if self.enable_logging:
             LOGGER.info('think_act_observe_engine_initialized', extra={'config': self.config.to_dict()})
 
-    async def execute_cycle(self, mission: str, scene: Dict[str, Any], think_fn: Any, act_fn: Any) -> Dict[str, Any]:
+    async def execute_cycle(self, mission: str, scene: dict[str, Any], think_fn: Any, act_fn: Any) -> dict[str, Any]:
         """Execute the full Think-Act-Observe cycle.
 
         Args:
@@ -110,7 +112,7 @@ class ThinkActObserveEngine:
             LOGGER.info('cycle_completed', extra={'iterations': self.state.iteration, 'observations_count': len(self.state.observations)})
         return final_result
 
-    async def _think_phase(self, think_fn: Any) -> Dict[str, Any]:
+    async def _think_phase(self, think_fn: Any) -> dict[str, Any]:
         """Execute THINK phase using ReAct engine.
 
         Args:
@@ -124,7 +126,7 @@ class ThinkActObserveEngine:
             LOGGER.debug('think_phase_started')
         if self.react_engine:
             try:
-                context = {'mission': self.state.mission, 'scene': self.state.scene, 'iteration': self.state.iteration, 'previous_observations': self.state.observations[-3:] if self.state.observations else []}
+                {'mission': self.state.mission, 'scene': self.state.scene, 'iteration': self.state.iteration, 'previous_observations': self.state.observations[-3:] if self.state.observations else []}
                 trace = await self.react_engine.run(Task=self.state.mission, think_fn=think_fn, act_fn=lambda action: {'type': 'plan', 'action': action})
                 reasoning_trace = trace.to_reasoning_trace()
                 self.state.reasoning_traces.append(reasoning_trace.to_dict())
@@ -144,7 +146,7 @@ class ThinkActObserveEngine:
             except Exception as e:
                 return {'success': False, 'error': str(e), 'actions': []}
 
-    async def _act_phase(self, actions: List[Dict[str, Any]], act_fn: Any) -> Dict[str, Any]:
+    async def _act_phase(self, actions: list[dict[str, Any]], act_fn: Any) -> dict[str, Any]:
         """Execute ACT phase using DAG engine.
 
         Args:
@@ -186,7 +188,7 @@ class ThinkActObserveEngine:
                     results.append({'success': False, 'error': str(e)})
             return {'success': True, 'results': results}
 
-    async def _observe_phase(self, think_result: Dict[str, Any], act_result: Dict[str, Any]) -> Dict[str, Any]:
+    async def _observe_phase(self, think_result: dict[str, Any], act_result: dict[str, Any]) -> dict[str, Any]:
         """Execute OBSERVE phase.
 
         Args:
@@ -209,7 +211,7 @@ class ThinkActObserveEngine:
                 mission_complete = last_result.get('mission_complete', False)
         return {'observation': observation, 'mission_complete': mission_complete}
 
-    def get_state(self) -> Optional[Dict[str, Any]]:
+    def get_state(self) -> dict[str, Any] | None:
         """Get current cycle state.
 
         Returns:
@@ -237,7 +239,7 @@ class ThinkActObserveEngine:
         Args:
             path: Path to load state from
         """
-        with open(path, 'r') as f:
+        with open(path) as f:
             state_dict: Any = json.load(f)
         self.state = CycleState(mission=state_dict['mission'], scene=state_dict['scene'], iteration=state_dict.get('iteration', 0), current_phase=state_dict.get('current_phase', 'mission'), observations=state_dict.get('observations', []), actions_taken=state_dict.get('actions_taken', []), reasoning_traces=state_dict.get('reasoning_traces', []), metadata=state_dict.get('metadata', {}))
         if self.enable_logging:

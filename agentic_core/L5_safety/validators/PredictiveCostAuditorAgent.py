@@ -5,6 +5,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """
 ⚛️ Predictive Cost Auditor - The Efficiency Guard
 
@@ -19,22 +20,17 @@ Flags: Files consuming excessive tokens without reaching PASS state
 Suggests: Where manual Atomic Fission would be more cost-effective
 """
 import logging
-import re
-import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -71,10 +67,10 @@ class CostReport:
     total_tokens: int
     successful_files: int
     failed_files: int
-    healing_sinks: List[FileAudit]
+    healing_sinks: list[FileAudit]
     efficiency_score: float
     estimated_cost_usd: float
-    recommendations: List[str]
+    recommendations: list[str]
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
 class PredictiveCostAuditorAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent):
@@ -108,8 +104,8 @@ class PredictiveCostAuditorAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAto
         self.CRITICAL_SINK_COST = 5.0
         self.FISSION_CANDIDATE_COST = 10.0
         self.TOKEN_COST_PER_1K = 0.001
-        self.healing_history: Dict[str, List[HealingMetrics]] = {}
-        self.file_audits: Dict[str, FileAudit] = {}
+        self.healing_history: dict[str, list[HealingMetrics]] = {}
+        self.file_audits: dict[str, FileAudit] = {}
 
     async def execute(self) -> Any:
         """
@@ -144,11 +140,11 @@ class PredictiveCostAuditorAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAto
             audit = self._audit_single_file(file_path, metrics_list)
             self.file_audits[file_path] = audit
 
-    def _audit_single_file(self, file_path: str, metrics_list: List[HealingMetrics]) -> FileAudit:
+    def _audit_single_file(self, file_path: str, metrics_list: list[HealingMetrics]) -> FileAudit:
         """Audit a single file."""
         total_attempts = len(metrics_list)
-        total_tokens = sum((m.tokens_used for m in metrics_list))
-        successful_attempts = sum((1 for m in metrics_list if m.success))
+        total_tokens = sum(m.tokens_used for m in metrics_list)
+        successful_attempts = sum(1 for m in metrics_list if m.success)
         failed_attempts = total_attempts - successful_attempts
         success_rate = successful_attempts / total_attempts * 100 if total_attempts > 0 else 0
         avg_tokens = total_tokens / total_attempts if total_attempts > 0 else 0
@@ -176,21 +172,21 @@ class PredictiveCostAuditorAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAto
         elif Severity == 'medium':
             return f'MEDIUM: Monitor closely - {attempts} failed attempts'
         elif Severity == 'low':
-            return f'LOW: Continue automated healing'
+            return 'LOW: Continue automated healing'
         else:
             return 'GOOD: Efficient healing'
 
     def _generate_cost_report(self) -> CostReport:
         """Generate comprehensive cost report."""
         total_files = len(self.file_audits)
-        total_attempts = sum((audit.total_attempts for audit in self.file_audits.values()))
-        total_tokens = sum((audit.total_tokens for audit in self.file_audits.values()))
-        successful_files = sum((1 for audit in self.file_audits.values() if audit.success_rate == 100))
-        failed_files = sum((1 for audit in self.file_audits.values() if audit.success_rate == 0))
+        total_attempts = sum(audit.total_attempts for audit in self.file_audits.values())
+        total_tokens = sum(audit.total_tokens for audit in self.file_audits.values())
+        successful_files = sum(1 for audit in self.file_audits.values() if audit.success_rate == 100)
+        failed_files = sum(1 for audit in self.file_audits.values() if audit.success_rate == 0)
         healing_sinks = [audit for audit in self.file_audits.values() if audit.is_healing_sink]
         healing_sinks.sort(key=lambda x: x.total_tokens, reverse=True)
         if total_attempts > 0:
-            success_count = sum((audit.successful_attempts for audit in self.file_audits.values()))
+            success_count = sum(audit.successful_attempts for audit in self.file_audits.values())
             efficiency_score = success_count / total_attempts * 100
         else:
             efficiency_score = 0
@@ -198,7 +194,7 @@ class PredictiveCostAuditorAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAto
         recommendations = self._generate_global_recommendations(healing_sinks, efficiency_score, estimated_cost_usd)
         return CostReport(total_files=total_files, total_attempts=total_attempts, total_tokens=total_tokens, successful_files=successful_files, failed_files=failed_files, healing_sinks=healing_sinks, efficiency_score=efficiency_score, estimated_cost_usd=estimated_cost_usd, recommendations=recommendations)
 
-    def _generate_global_recommendations(self, healing_sinks: List[FileAudit], efficiency_score: float, cost_usd: float) -> List[str]:
+    def _generate_global_recommendations(self, healing_sinks: list[FileAudit], efficiency_score: float, cost_usd: float) -> list[str]:
         """Generate global recommendations."""
         recommendations = []
         if efficiency_score < 50:
@@ -224,15 +220,15 @@ class PredictiveCostAuditorAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAto
         Logger.info(f'Total Healing Attempts: {report.total_attempts}')
         Logger.info(f'Total Tokens Used: {report.total_tokens:,}')
         Logger.info(f'Estimated Cost: ${report.estimated_cost_usd:.2f}')
-        Logger.info(f'')
-        Logger.info(f'Success Metrics:')
+        Logger.info('')
+        Logger.info('Success Metrics:')
         Logger.info(f'  Successful Files: {report.successful_files}')
         Logger.info(f'  Failed Files: {report.failed_files}')
         Logger.info(f'  Efficiency Score: {report.efficiency_score:.1f}%')
-        Logger.info(f'')
+        Logger.info('')
         Logger.info(f'Healing Sinks: {len(report.healing_sinks)}')
         if report.healing_sinks:
-            Logger.warning(f'\n[!]  TOP HEALING SINKS (by token usage):')
+            Logger.warning('\n[!]  TOP HEALING SINKS (by token usage):')
             for i, sink in enumerate(report.healing_sinks[:10], 1):
                 cost = sink.total_tokens / 1000 * self.TOKEN_COST_PER_1K
                 Logger.warning(f'  {i}. {sink.file_path}')
@@ -241,12 +237,12 @@ class PredictiveCostAuditorAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAto
             if len(report.healing_sinks) > 10:
                 Logger.warning(f'  ... and {len(report.healing_sinks) - 10} more sinks')
         if report.recommendations:
-            Logger.info(f'\n[PLAN] RECOMMENDATIONS:')
+            Logger.info('\n[PLAN] RECOMMENDATIONS:')
             for rec in report.recommendations:
                 Logger.info(f'  {rec}')
         Logger.info(f"{'=' * 80}\n")
 
-    def get_thermal_map(self) -> Dict[str, str]:
+    def get_thermal_map(self) -> dict[str, str]:
         """
         Generate thermal map of repository.
 
@@ -266,7 +262,7 @@ class PredictiveCostAuditorAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAto
                 thermal_map[file_path] = '🟢 COLD'
         return thermal_map
 
-    def get_fission_candidates(self) -> List[str]:
+    def get_fission_candidates(self) -> list[str]:
         """Get list of files that should undergo Atomic Fission."""
         candidates: Any = []
         for file_path, audit in self.file_audits.items():
@@ -282,7 +278,7 @@ class PredictiveCostAuditorAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAto
         report: Any = self._generate_cost_report()
         thermal_map: Any = self.get_thermal_map()
         fission_candidates: Any = self.get_fission_candidates()
-        lines: Any = ['💰 DAILY MISSION REPORT', '=' * 80, f"Date: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}", '', '[STATS] HEALING SUMMARY', f'  Files Processed: {report.total_files}', f'  Healing Attempts: {report.total_attempts}', f'  Success Rate: {report.efficiency_score:.1f}%', f'  Total Cost: ${report.estimated_cost_usd:.2f}', '', '🌡️  THERMAL STATUS', f"  🔴 Critical: {sum((1 for v in thermal_map.values() if 'CRITICAL' in v))} files", f"  🟠 Hot: {sum((1 for v in thermal_map.values() if 'HOT' in v))} files", f"  🟡 Warm: {sum((1 for v in thermal_map.values() if 'WARM' in v))} files", f"  🟢 Cold: {sum((1 for v in thermal_map.values() if 'COLD' in v))} files", '', '⚛️  FISSION CANDIDATES', f'  {len(fission_candidates)} files recommended for Atomic Fission']
+        lines: Any = ['💰 DAILY MISSION REPORT', '=' * 80, f"Date: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}", '', '[STATS] HEALING SUMMARY', f'  Files Processed: {report.total_files}', f'  Healing Attempts: {report.total_attempts}', f'  Success Rate: {report.efficiency_score:.1f}%', f'  Total Cost: ${report.estimated_cost_usd:.2f}', '', '🌡️  THERMAL STATUS', f"  🔴 Critical: {sum(1 for v in thermal_map.values() if 'CRITICAL' in v)} files", f"  🟠 Hot: {sum(1 for v in thermal_map.values() if 'HOT' in v)} files", f"  🟡 Warm: {sum(1 for v in thermal_map.values() if 'WARM' in v)} files", f"  🟢 Cold: {sum(1 for v in thermal_map.values() if 'COLD' in v)} files", '', '⚛️  FISSION CANDIDATES', f'  {len(fission_candidates)} files recommended for Atomic Fission']
         if fission_candidates:
             lines.append('')
             lines.append('  Top Candidates:')
@@ -304,8 +300,8 @@ class PredictiveCostAuditorAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAto
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[set] = None
-    ) -> Dict[str, int]:
+        _call_path: set | None = None
+    ) -> dict[str, int]:
         """
         Cost Audit Healing - Generates thermal maps and efficiency reports.
         """

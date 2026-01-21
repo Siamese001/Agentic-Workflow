@@ -6,8 +6,9 @@ description: Scans the live codebase to ensure no active agents are importing
 
 import os
 import re
-import pytest
 from pathlib import Path
+
+import pytest
 
 # --- Configuration ---
 LIVE_CORE_PATH = Path("agentic_core")

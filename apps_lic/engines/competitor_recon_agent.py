@@ -7,10 +7,10 @@ to competitive threats.
 
 import logging
 from abc import ABC, abstractmethod
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Tuple, Any, Union
-from pydantic import BaseModel, Field, validator
+from datetime import datetime
+from typing import Any
 
+from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +20,7 @@ class CompetitorMove(BaseModel):
 
     competitor_name: str = Field(..., description="Name of competitor")
     recent_launch: str = Field(..., description="Recent feature or product launch")
-    source_url: Optional[str] = Field(None, description="Source URL for verification")
+    source_url: str | None = Field(None, description="Source URL for verification")
     date: str = Field(..., description="Date of the move")
 
     @validator('date')
@@ -57,7 +57,7 @@ class IntelProvider(ABC):
     """Abstract base class for competitive intelligence providers."""
 
     @abstractmethod
-    def get_competitors(self, target_company: str, industry: str) -> List[str]:
+    def get_competitors(self, target_company: str, industry: str) -> list[str]:
         """Get list of competitors for target company.
 
         Args:
@@ -70,7 +70,7 @@ class IntelProvider(ABC):
         pass
 
     @abstractmethod
-    def get_recent_moves(self, competitor: str, months: int = 6) -> List[CompetitorMove]:
+    def get_recent_moves(self, competitor: str, months: int = 6) -> list[CompetitorMove]:
         """Get recent AI/ML moves by competitor.
 
         Args:
@@ -144,12 +144,12 @@ class MockIntelProvider(IntelProvider):
             ]
         }
 
-    def get_competitors(self, target_company: str, industry: str) -> List[str]:
+    def get_competitors(self, target_company: str, industry: str) -> list[str]:
         """Get mock competitors for target company."""
         industry_lower = industry.lower()
         return self.mock_competitors.get(industry_lower, ["Market Leader A", "Market Leader B", "Market Leader C"])[:3]
 
-    def get_recent_moves(self, competitor: str, months: int = 6) -> List[CompetitorMove]:
+    def get_recent_moves(self, competitor: str, months: int = 6) -> list[CompetitorMove]:
         """Get mock recent moves for competitor."""
         return self.mock_moves.get(competitor, [])
 
@@ -157,7 +157,7 @@ class MockIntelProvider(IntelProvider):
 class CompetitorReconAgent:
     """Analyzes competitors and generates strategic hooks."""
 
-    def __init__(self, intel_provider: Optional[IntelProvider] = None):
+    def __init__(self, intel_provider: IntelProvider | None = None):
         """Initialize the competitor recon agent.
 
         Args:
@@ -183,8 +183,8 @@ class CompetitorReconAgent:
         self,
         target_company: str,
         industry: str,
-        candidate_skills: List[str]
-    ) -> Optional[StrategicHook]:
+        candidate_skills: list[str]
+    ) -> StrategicHook | None:
         """Generate FOMO hook based on competitive intelligence.
 
         Args:
@@ -232,8 +232,8 @@ class CompetitorReconAgent:
         self,
         target_company: str,
         industry: str,
-        candidate_skills: List[str]
-    ) -> Optional[str]:
+        candidate_skills: list[str]
+    ) -> str | None:
         """Get strategic P.S. line for emails.
 
         Args:
@@ -256,7 +256,7 @@ class CompetitorReconAgent:
             logger.error(f"Error getting strategic P.S.: {str(e)}")
             return None
 
-    def _identify_competitors(self, target_company: str, industry: str) -> List[str]:
+    def _identify_competitors(self, target_company: str, industry: str) -> list[str]:
         """Identify competitors for target company.
 
         Args:
@@ -280,7 +280,7 @@ class CompetitorReconAgent:
             logger.error(f"Error identifying competitors: {str(e)}")
             return []
 
-    def _gather_intel(self, competitor: str) -> List[CompetitorMove]:
+    def _gather_intel(self, competitor: str) -> list[CompetitorMove]:
         """Gather intelligence on competitor's recent moves.
 
         Args:
@@ -307,9 +307,9 @@ class CompetitorReconAgent:
 
     def _find_skill_matches(
         self,
-        moves: List[CompetitorMove],
-        skills: List[str]
-    ) -> List[Dict[str, Any]]:
+        moves: list[CompetitorMove],
+        skills: list[str]
+    ) -> list[dict[str, Any]]:
         """Find matches between candidate skills and competitor moves.
 
         Args:
@@ -361,7 +361,7 @@ class CompetitorReconAgent:
 
     def _create_targeted_hook(
         self,
-        match: Dict[str, Any],
+        match: dict[str, Any],
         target_company: str
     ) -> StrategicHook:
         """Create targeted hook based on skill-feature match.
@@ -400,7 +400,7 @@ class CompetitorReconAgent:
         self,
         move: CompetitorMove,
         target_company: str,
-        skills: List[str]
+        skills: list[str]
     ) -> StrategicHook:
         """Create speed-focused hook when no direct feature match.
 
@@ -435,7 +435,7 @@ class CompetitorReconAgent:
 
 # Factory function for easy instantiation
 def create_competitor_recon_agent(
-    intel_provider: Optional[IntelProvider] = None
+    intel_provider: IntelProvider | None = None
 ) -> CompetitorReconAgent:
     """Create a CompetitorReconAgent instance.
 
@@ -452,8 +452,8 @@ def create_competitor_recon_agent(
 def generate_competitive_hook(
     target_company: str,
     industry: str,
-    candidate_skills: List[str]
-) -> Optional[str]:
+    candidate_skills: list[str]
+) -> str | None:
     """Quickly generate a competitive hook.
 
     Args:

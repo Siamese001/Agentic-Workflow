@@ -5,9 +5,8 @@ Defines the structure for routing tiers and provider fallback chains.
 Phase 2 - Resilient Routing Layer
 """
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
-from typing import List, Optional
 
 from runtime.shared.multi_provider_clients import Provider
 
@@ -38,9 +37,9 @@ class RouteConfig:
 
     tier_name: str
     primary_provider: Provider
-    fallback_providers: List[Provider]
+    fallback_providers: list[Provider]
     timeout_ms: int = 60000
-    model_overrides: Optional[dict] = None
+    model_overrides: dict | None = None
 
     def __post_init__(self):
         """Validate configuration."""
@@ -58,11 +57,11 @@ class RouteConfig:
         if self.timeout_ms <= 0:
             raise ValueError("timeout_ms must be positive")
 
-    def get_all_providers(self) -> List[Provider]:
+    def get_all_providers(self) -> list[Provider]:
         """Get all providers in order (primary + fallbacks)."""
         return [self.primary_provider] + self.fallback_providers
 
-    def get_model_for_provider(self, provider: Provider) -> Optional[str]:
+    def get_model_for_provider(self, provider: Provider) -> str | None:
         """Get model override for a specific provider."""
         if self.model_overrides:
             return self.model_overrides.get(provider.value)

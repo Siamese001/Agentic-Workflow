@@ -5,53 +5,43 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """
 ToolsmithAgent - L2 Tool Creation Agent
 
 """
-import asyncio
-import logging
-import os
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol
-
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
-
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from dataclasses import dataclass, field
 from datetime import datetime
+from pathlib import Path
+from typing import Any
+
 
 @dataclass
 class ToolSpec:
     """Specification for a tool."""
     name: str
     description: str
-    parameters: Dict[str, Dict]
+    parameters: dict[str, dict]
     function: Any
     category: str = 'general'
     version: str = '1.0.0'
     created_at: datetime = field(default_factory=datetime.utcnow)
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         """Convert to dictionary."""
         return {'name': self.name, 'description': self.description, 'parameters': self.parameters, 'category': self.category, 'version': self.version, 'created_at': self.created_at.isoformat()}
 
 @dataclass
 class GeneratedTool:
     """A dynamically generated tool."""
-    spec: "ToolSpec"
+    spec: ToolSpec
     code: str
-    imports: List[str]
-    dependencies: List[str]
-    test_code: Optional[str] = None
+    imports: list[str]
+    dependencies: list[str]
+    test_code: str | None = None
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         """Convert to dictionary."""
         return {'spec': self.spec.to_dict(), 'code': self.code, 'imports': self.imports, 'dependencies': self.dependencies, 'has_tests': bool(self.test_code)}
 
@@ -62,7 +52,7 @@ class tool_template:
 
 from agentic_core.bases import L2Agent
 from agentic_core.L5_safety.validators.decorators import standard_heal
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+
 
 class ToolsmithAgent(L2Agent):
     """
@@ -76,8 +66,8 @@ class ToolsmithAgent(L2Agent):
 
     def __init__(self) -> None:
         """Initialize the ToolsmithAgent."""
-        self.tools: Dict[str, "GeneratedTool"] = {}
-        self.templates: Dict[str, str] = {}
+        self.tools: dict[str, GeneratedTool] = {}
+        self.templates: dict[str, str] = {}
         self.categories = {'file': 'File manipulation tools', 'network': 'Network and API tools', 'data': 'Data processing tools', 'validation': 'Validation and checking tools', 'utility': 'General utility tools'}
         self._load_templates()
         Logger.info('ToolsmithAgent initialized')
@@ -86,7 +76,7 @@ class ToolsmithAgent(L2Agent):
         """Load tool generation templates."""
         self.templates.update({'file_reader': tool_template.FUNCTION_TEMPLATE.format(name='read_file', params="file_path: str, encoding: str = 'utf-8'", return_type='str', description='Read contents of a file', param_docs='        file_path: Path to the file\n        encoding: File encoding', return_description='File contents as string', implementation="    with open(file_path, 'r', encoding=encoding) as f:\n        return f.read()"), 'file_writer': tool_template.FUNCTION_TEMPLATE.format(name='write_file', params="file_path: str, content: str, encoding: str = 'utf-8'", return_type='bool', description='Write content to a file', param_docs='        file_path: Path to the file\n        content: Content to write\n        encoding: File encoding', return_description='True if successful', implementation='    try:\n        with open(file_path, \'w\', encoding=encoding) as f:\n            f.write(content)\n        return True\n    except Exception as e:\n        Logger.error(f"Failed to write file: {e}")\n        return False'), 'json_validator': tool_template.FUNCTION_TEMPLATE.format(name='validate_json', params='data: Any, schema: Dict', return_type='Dict[str, Any]', description='Validate data against JSON schema', param_docs='        data: Data to validate\n        schema: JSON schema', return_description='Validation result', implementation='    try:\n        import jsonschema\n        jsonschema.validate(data, schema)\n        return {"valid": True, "errors": []}\n    except Exception as e:\n        return {"valid": False, "errors": [str(e)]}')})
 
-    def create_tool_from_spec(self, spec: "ToolSpec") -> "GeneratedTool":
+    def create_tool_from_spec(self, spec: ToolSpec) -> GeneratedTool:
         """
         Create a tool from a specification.
 
@@ -108,11 +98,11 @@ class ToolsmithAgent(L2Agent):
         Logger.info(f'Created tool: {spec.name}')
         return tool
 
-    def _is_simple_function(self, spec: "ToolSpec") -> bool:
+    def _is_simple_function(self, spec: ToolSpec) -> bool:
         """Check if tool should be a simple function."""
         return len(spec.parameters) <= 5 and spec.category != 'complex'
 
-    def _generate_function_code(self, spec: "ToolSpec") -> str:
+    def _generate_function_code(self, spec: ToolSpec) -> str:
         """Generate function code for a tool."""
         params = []
         param_docs = []
@@ -129,7 +119,7 @@ class ToolsmithAgent(L2Agent):
         implementation = self._get_implementation(spec)
         return tool_template.FUNCTION_TEMPLATE.format(name=spec.name, params=param_str, return_type=spec.parameters.get('return', {}).get('type', 'Any'), description=spec.description, param_docs=param_doc_str, return_description=spec.parameters.get('return', {}).get('description', 'Result'), implementation=implementation)
 
-    def _generate_class_code(self, spec: "ToolSpec") -> str:
+    def _generate_class_code(self, spec: ToolSpec) -> str:
         """Generate class code for a complex tool."""
         init_params = []
         init_body = []
@@ -143,7 +133,7 @@ class ToolsmithAgent(L2Agent):
         method_param_docs = ''
         return tool_template.CLASS_TEMPLATE.format(name=spec.name, description=spec.description, init_params=init_param_str, init_body=init_body_str, method_params=method_params, method_param_docs=method_param_docs, return_type=spec.parameters.get('return', {}).get('type', 'Any'), return_description=spec.parameters.get('return', {}).get('description', 'Result'), method_implementation='pass  # TODO: Implement')
 
-    def _get_implementation(self, spec: "ToolSpec") -> str:
+    def _get_implementation(self, spec: ToolSpec) -> str:
         """Get implementation code based on tool category and name."""
         template_key = f'{spec.category}_{spec.name}'
         if template_key in self.templates:
@@ -157,7 +147,7 @@ class ToolsmithAgent(L2Agent):
         else:
             return '    # TODO: Implement tool logic\n    raise NotImplementedError("Tool implementation pending")'
 
-    def _extract_imports(self, code: str) -> List[str]:
+    def _extract_imports(self, code: str) -> list[str]:
         """Extract import statements from code."""
         imports = []
         lines = code.split('\n')
@@ -167,7 +157,7 @@ class ToolsmithAgent(L2Agent):
                 imports.append(line)
         return imports
 
-    def _identify_dependencies(self, code: str) -> List[str]:
+    def _identify_dependencies(self, code: str) -> list[str]:
         """Identify external dependencies from code."""
         dependencies = []
         patterns = ['import jsonschema', 'import requests', 'import pandas', 'import numpy', 'from fastapi', 'from pydantic']
@@ -178,12 +168,12 @@ class ToolsmithAgent(L2Agent):
                     dependencies.append(lib)
         return dependencies
 
-    def _generate_test_code(self, spec: "ToolSpec") -> str:
+    def _generate_test_code(self, spec: ToolSpec) -> str:
         """Generate test code for the tool."""
         test_name = f'test_{spec.name}'
         return f'\nasync def {test_name}():\n    """Test the {spec.name} tool."""\n    # TODO: Implement test\n    pass\n'
 
-    def create_file_tool(self, name: str, operation: str) -> "GeneratedTool":
+    def create_file_tool(self, name: str, operation: str) -> GeneratedTool:
         """
         Create a file manipulation tool.
 
@@ -197,7 +187,7 @@ class ToolsmithAgent(L2Agent):
         spec: Any = ToolSpec(name=f'{operation}_{name}', description=f'{operation.capitalize()} {name} file', parameters={'file_path': {'type': 'str', 'description': 'Path to the file', 'required': True}}, function=lambda x: x, category='file')
         return self.create_tool_from_spec(spec)
 
-    def create_api_tool(self, name: str, endpoint: str, method: str='GET') -> "GeneratedTool":
+    def create_api_tool(self, name: str, endpoint: str, method: str='GET') -> GeneratedTool:
         """
         Create an API interaction tool.
 
@@ -212,11 +202,11 @@ class ToolsmithAgent(L2Agent):
         spec: Any = ToolSpec(name=f'{method.lower()}_{name}', description=f'Make {method} request to {endpoint}', parameters={'url': {'type': 'str', 'description': 'Request URL', 'required': True}, 'headers': {'type': 'Dict[str, str]', 'description': 'Request headers', 'required': False}, 'data': {'type': 'Any', 'description': 'Request data', 'required': False}}, function=lambda x: x, category='network')
         return self.create_tool_from_spec(spec)
 
-    def get_tool(self, name: str) -> Optional["GeneratedTool"]:
+    def get_tool(self, name: str) -> GeneratedTool | None:
         """Get a registered tool by name."""
         return self.tools.get(name)
 
-    def list_tools(self, category: str=None) -> List[Dict]:
+    def list_tools(self, category: str=None) -> list[dict]:
         """
         List all tools.
 
@@ -261,7 +251,7 @@ class ToolsmithAgent(L2Agent):
         Logger.info(f'Saved tool {name} to {directory}')
         return True
 
-    def get_statistics(self) -> Dict:
+    def get_statistics(self) -> dict:
         """Get tool creation statistics."""
         stats: Any = {'total_tools': len(self.tools), 'by_category': {}, 'with_tests': 0, 'categories': list(self.categories.keys())}
         for tool in self.tools.values():
@@ -279,8 +269,8 @@ class ToolsmithAgent(L2Agent):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[set] = None
-    ) -> Dict[str, int]:
+        _call_path: set | None = None
+    ) -> dict[str, int]:
         """
         Wired Toolsmith Healing - Validates tool specifications and repairs broken tool files.
 
@@ -331,7 +321,7 @@ class ToolsmithAgent(L2Agent):
         return metrics
 
     # SUPPLEMENTED FROM OrganicTerritorySeederAgent — enhances territory seeding capability — merged 2025-12-30
-    TERRITORY_SEED_CONTENT: Dict[str, Dict[str, str]] = {
+    TERRITORY_SEED_CONTENT: dict[str, dict[str, str]] = {
         'agentic_core/prompt_governance/meta_prompts': {
             'convergence_planning.jinja': '{# Meta-Prompt: Convergence Planning #}\nYou are the Sovereign Planner. Analyze current violations and output a JSON plan for next missions.\n'
         },
@@ -343,7 +333,7 @@ class ToolsmithAgent(L2Agent):
         },
     }
 
-    async def seed_territory(self, project_root: Path, dry_run: bool = False) -> Dict[str, Any]:
+    async def seed_territory(self, project_root: Path, dry_run: bool = False) -> dict[str, Any]:
         """
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository()
@@ -388,16 +378,16 @@ class ToolsmithAgent(L2Agent):
                         file_path.write_text(content, encoding='utf-8')
                         results['seeded'].append(str(file_path.relative_to(project_root)))
                         Logger.info(f"Seeded: {file_path.relative_to(project_root)}")
-                    except IOError as e:
+                    except OSError as e:
                         results['errors'].append(f"{filename}: {e}")
 
         return results
 
-_toolsmith_agent: Optional["ToolsmithAgent"] = None
+_toolsmith_agent: ToolsmithAgent | None = None
 
 # Aliases for discovery
 
-def get_toolsmith_agent() -> "ToolsmithAgent":
+def get_toolsmith_agent() -> ToolsmithAgent:
     """Get or create the global ToolsmithAgent instance."""
     global _toolsmith_agent
     if _toolsmith_agent is None:
@@ -409,12 +399,12 @@ def initialize_toolsmith_agent() -> Any:
     get_toolsmith_agent()
     Logger.info('ToolsmithAgent system initialized')
 
-def create_file_tool(name: str, operation: str) -> "GeneratedTool":
+def create_file_tool(name: str, operation: str) -> GeneratedTool:
     """Create a file manipulation tool."""
     agent: Any = get_toolsmith_agent()
     return agent.create_file_tool(name, operation)
 
-def create_api_tool(name: str, endpoint: str, method: str='GET') -> "GeneratedTool":
+def create_api_tool(name: str, endpoint: str, method: str='GET') -> GeneratedTool:
     """Create an API interaction tool."""
     agent: Any = get_toolsmith_agent()
     return agent.create_api_tool(name, endpoint, method)

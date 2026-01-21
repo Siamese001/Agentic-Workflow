@@ -8,7 +8,7 @@ to:
 """
 
 from pathlib import Path
-import re
+
 
 def fix_healer_mixin_imports(project_root: Path):
     """Fix all healer_mixin imports in the codebase."""

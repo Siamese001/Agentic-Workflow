@@ -5,7 +5,9 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 #!/usr/bin/env python3
 """
 AdvancedDeadCodeAuditorAgent - Sovereign Code Auditor V2.0
@@ -14,14 +16,12 @@ VERSION 2.0 - Hardened with parent-node tracking and class-aware method analysis
 """
 
 import ast
-import os
 import sys
-from collections import defaultdict
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Tuple, Any
+from typing import Any
 
 
-def add_parents(node: ast.AST, parent: Optional[ast.AST] = None) -> None:
+def add_parents(node: ast.AST, parent: ast.AST | None = None) -> None:
     """
     Add parent reference to all AST nodes for upward traversal.
 
@@ -47,17 +47,17 @@ class ASTDeadCodeVisitor(ast.NodeVisitor):
             file_path: Path to file being analyzed
         """
         self.file_path: Path = file_path
-        self.imported_names: Set[str] = set()
-        self.defined_names: Set[str] = set()
-        self.defined_classes: Set[str] = set()
-        self.class_methods: Dict[str, Set[str]] = {}
-        self.used_methods: Dict[str, Set[str]] = {}
-        self.used_names: Set[str] = set()
-        self.used_classes: Set[str] = set()
-        self.defined_functions: Set[str] = set()
-        self.used_functions: Set[str] = set()
-        self.import_line_numbers: Dict[str, int] = {}
-        self.definition_line_numbers: Dict[str, int] = {}
+        self.imported_names: set[str] = set()
+        self.defined_names: set[str] = set()
+        self.defined_classes: set[str] = set()
+        self.class_methods: dict[str, set[str]] = {}
+        self.used_methods: dict[str, set[str]] = {}
+        self.used_names: set[str] = set()
+        self.used_classes: set[str] = set()
+        self.defined_functions: set[str] = set()
+        self.used_functions: set[str] = set()
+        self.import_line_numbers: dict[str, int] = {}
+        self.definition_line_numbers: dict[str, int] = {}
 
     def visit_Import(self, node: ast.Import) -> None:
         """
@@ -174,11 +174,12 @@ class ASTDeadCodeVisitor(ast.NodeVisitor):
                     break
         self.generic_visit(node)
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+
 from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.sovereign_index import SovereignIndex
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+
 
 @dataclass
 class DeadCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
@@ -198,7 +199,7 @@ class DeadCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
             "dead_files": []
         }
 
-    def _find_unused_imports(self, visitor, findings: Dict) -> None:
+    def _find_unused_imports(self, visitor, findings: dict) -> None:
         """Extract unused imports from visitor."""
         for import_name in visitor.imported_names:
             if import_name not in visitor.used_names:
@@ -207,7 +208,7 @@ class DeadCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
                     "line": visitor.import_line_numbers.get(import_name, "unknown")
                 })
 
-    def _find_unused_functions(self, visitor, findings: Dict) -> None:
+    def _find_unused_functions(self, visitor, findings: dict) -> None:
         """Extract unused functions from visitor."""
         for func_name in visitor.defined_functions:
             if func_name.startswith("_"):
@@ -218,7 +219,7 @@ class DeadCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
                     "line": visitor.definition_line_numbers.get(func_name, "unknown")
                 })
 
-    def _find_unused_classes(self, visitor, findings: Dict) -> None:
+    def _find_unused_classes(self, visitor, findings: dict) -> None:
         """Extract unused classes from visitor."""
         for class_name in visitor.defined_classes:
             if class_name.startswith("_"):
@@ -229,7 +230,7 @@ class DeadCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
                     "line": visitor.definition_line_numbers.get(class_name, "unknown")
                 })
 
-    def _find_unused_methods(self, visitor, findings: Dict) -> None:
+    def _find_unused_methods(self, visitor, findings: dict) -> None:
         """Extract unused methods from visitor."""
         for class_name, methods in visitor.class_methods.items():
             used_methods = visitor.used_methods.get(class_name, set())
@@ -243,7 +244,7 @@ class DeadCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
                         "line": visitor.definition_line_numbers.get(f"{class_name}.{method_name}", "unknown")
                     })
 
-    def analyze_file(self, file_path: Path) -> Dict:
+    def analyze_file(self, file_path: Path) -> dict:
         """Analyze a single Python file for dead code."""
         try:
             content = file_path.read_text(encoding='utf-8')
@@ -276,7 +277,7 @@ class DeadCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
 
         return findings
 
-    def scan_directory(self, directory: Path, recursive: bool = True) -> Dict:
+    def scan_directory(self, directory: Path, recursive: bool = True) -> dict:
         """
         Scan an entire directory for dead code.
         """
@@ -317,7 +318,7 @@ class DeadCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
 
         return results
 
-    def generate_report(self, results: Dict) -> str:
+    def generate_report(self, results: dict) -> str:
         """
         Generate a human-readable report of dead code findings.
         """
@@ -371,7 +372,7 @@ class DeadCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """Utils/core extensions - operational only."""
         if _call_path is None:
             _call_path = set()

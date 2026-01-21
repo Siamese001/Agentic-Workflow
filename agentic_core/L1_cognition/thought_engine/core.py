@@ -1,7 +1,9 @@
 from __future__ import annotations
+
 """Core Agentic module."""
-from typing import Dict, Any, Optional
 from enum import Enum
+from typing import Any
+
 
 class MissionStatus(Enum):
     """Mission status enum."""
@@ -29,14 +31,14 @@ class MissionPlan:
 class MissionResult:
     """Mission result model."""
 
-    def __init__(self, mission_id: str, success: bool, result: Any=None, output: Any=None, error: Optional[str]=None):
+    def __init__(self, mission_id: str, success: bool, result: Any=None, output: Any=None, error: str | None=None):
         self.mission_id = mission_id
         self.success = success
         self.result = result
         self.output = output or result
         self.error = error
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {'mission_id': self.mission_id, 'success': self.success, 'result': self.result, 'output': self.output, 'error': self.error}
 
@@ -50,19 +52,19 @@ class agentic_core:
         self.sovereign = True
         self.is_initialized = True
 
-    def run(self, mission: Dict[str, Any]) -> Dict[str, Any]:
+    def run(self, mission: dict[str, Any]) -> dict[str, Any]:
         """Run a mission."""
         return {'success': True, 'status': 'success', 'result': 'completed'}
 
-    def reflect(self, observation: str, context: Optional[Dict[str, Any]]=None) -> Any:
+    def reflect(self, observation: str, context: dict[str, Any] | None=None) -> Any:
         """Reflect on observation."""
         self.history.append({'observation': observation, 'context': context})
 
-    def heal(self, issue: Optional[Dict[str, Any]]=None) -> Dict[str, Any]:
+    def heal(self, issue: dict[str, Any] | None=None) -> dict[str, Any]:
         """Heal an issue."""
         return {'healed': True, 'recovery': 'successful', 'error': None, 'issue': issue}
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get current status."""
         return {'status': self.status, 'history_length': len(self.history), 'sovereign': self.sovereign}
 

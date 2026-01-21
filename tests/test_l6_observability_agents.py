@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Comprehensive Test Suite for L6 Observability Agents
 =====================================================
@@ -10,17 +9,16 @@ Tests the skeptical analyst framework with strict validation:
 3. L6ObservabilityBaseAgent: Skeptical grading accuracy
 """
 import asyncio
-import time
 import json
 import tempfile
+import time
 from pathlib import Path
-from datetime import datetime
-from typing import Dict, Any
+from typing import Any
 
 import pytest
 
-from agentic_core.L6_observability.agents.RuntimeTelemetryAgent import RuntimeTelemetryAgent
 from agentic_core.L6_observability.agents.PerformanceAnalystAgent import PerformanceAnalystAgent
+from agentic_core.L6_observability.agents.RuntimeTelemetryAgent import RuntimeTelemetryAgent
 from agentic_core.L6_observability.L6ObservabilityBaseAgent import L6ObservabilityBaseAgent
 
 
@@ -62,7 +60,7 @@ class TestRuntimeTelemetryAgent:
         assert result['status'] == "☢️ CRITICAL OVERHEAD", f"Expected critical status, got: {result['status']}"
         assert result['ratio'] >= 2.0, f"Ratio {result['ratio']} should exceed 2.0x Gospel limit"
 
-        print(f"✅ Test 1 PASSED: Gospel violation correctly detected")
+        print("✅ Test 1 PASSED: Gospel violation correctly detected")
         print(f"   Ratio: {result['ratio']}x (exceeds 2.0x limit)")
         print(f"   Status: {result['status']}")
         print(f"   Breach: {result['breach']}")
@@ -78,7 +76,7 @@ class TestRuntimeTelemetryAgent:
         assert result['status'] == "✅ OPTIMAL"
         assert result['ratio'] == 1.5
 
-        print(f"✅ Gospel compliance test PASSED: 1.5x overhead accepted")
+        print("✅ Gospel compliance test PASSED: 1.5x overhead accepted")
 
     def test_benchmark_exception_handling(self):
         """Verify benchmark handles agent init failures gracefully."""
@@ -95,7 +93,7 @@ class TestRuntimeTelemetryAgent:
         # Timing should still be captured in finally block
         assert "FailingAgent" in telemetry.metrics or "UnknownAgent" in telemetry.metrics
 
-        print(f"✅ Exception handling test PASSED")
+        print("✅ Exception handling test PASSED")
 
 
 class TestPerformanceAnalystAgent:
@@ -161,7 +159,7 @@ class TestPerformanceAnalystAgent:
             # Verify critiques were generated
             assert len(analyst.critique_history) == 1000
 
-            print(f"✅ Test 2 PASSED: Async event loop integrity verified")
+            print("✅ Test 2 PASSED: Async event loop integrity verified")
             print(f"   Metrics collected: {result['metrics_collected']}")
             print(f"   Duration: {duration:.3f}s (non-blocking)")
             print(f"   Critiques generated: {len(analyst.critique_history)}")
@@ -217,7 +215,7 @@ class TestL6ObservabilityBaseAgent:
         """
         # Create a concrete test implementation
         class TestAnalyst(L6ObservabilityBaseAgent):
-            async def analyze(self) -> Dict[str, Any]:
+            async def analyze(self) -> dict[str, Any]:
                 return {'status': 'test'}
 
         analyst = TestAnalyst()
@@ -258,18 +256,18 @@ class TestL6ObservabilityBaseAgent:
                "complete rework" in critique.skeptical_commentary.lower(), \
                "Commentary should be harsh for failing agent"
 
-        print(f"✅ Test 3 PASSED: Skeptical grading correctly assigned F for critically failing agent")
+        print("✅ Test 3 PASSED: Skeptical grading correctly assigned F for critically failing agent")
         print(f"   Grade: {critique.overall_grade}")
         print(f"   Overall Score: {critique.data_points['overall_score']}")
         print(f"   Critical Issues: {len(critique.critical_issues)}")
-        print(f"   Failures: No MCP, low coverage (40%), high complexity (25), no healing")
+        print("   Failures: No MCP, low coverage (40%), high complexity (25), no healing")
         print(f"   Commentary: {critique.skeptical_commentary[:100]}...")
 
     @pytest.mark.asyncio
     async def test_grading_scale_accuracy(self):
         """Verify grading scale works monotonically (worse metrics = worse grade)."""
         class TestAnalyst(L6ObservabilityBaseAgent):
-            async def analyze(self) -> Dict[str, Any]:
+            async def analyze(self) -> dict[str, Any]:
                 return {'status': 'test'}
 
         analyst = TestAnalyst()
@@ -322,7 +320,7 @@ class TestL6ObservabilityBaseAgent:
         for grade in grades:
             assert grade in valid_grades, f"Invalid grade: {grade}"
 
-        print(f"✅ Grading scale test PASSED: Monotonic grading verified")
+        print("✅ Grading scale test PASSED: Monotonic grading verified")
         print(f"   Grades (best to worst): {' → '.join(grades)}")
         print(f"   Scores: {[f'{s:.1f}%' for s in scores]}")
 
@@ -330,7 +328,7 @@ class TestL6ObservabilityBaseAgent:
     async def test_no_bias_in_grading(self):
         """Verify grading is unbiased regardless of agent layer or name."""
         class TestAnalyst(L6ObservabilityBaseAgent):
-            async def analyze(self) -> Dict[str, Any]:
+            async def analyze(self) -> dict[str, Any]:
                 return {'status': 'test'}
 
         analyst = TestAnalyst()
@@ -359,7 +357,7 @@ class TestL6ObservabilityBaseAgent:
         assert len(set(grades)) == 1, f"Grades vary by layer: {dict(zip(layers, grades))}"
 
         # All scores should be identical
-        assert len(set(scores)) == 1, f"Scores vary by layer"
+        assert len(set(scores)) == 1, "Scores vary by layer"
 
         print(f"✅ No-bias test PASSED: Same metrics = same grade ({grades[0]}) across all layers")
 

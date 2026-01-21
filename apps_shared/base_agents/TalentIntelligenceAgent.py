@@ -17,10 +17,9 @@ Date: 2025-12-09
 import asyncio
 import json
 import logging
-from dataclasses import asdict, dataclass
-from datetime import datetime, timedelta
+from dataclasses import dataclass
+from datetime import datetime
 from enum import Enum
-from typing import Dict, List, Optional, Union
 
 # Import our production SDKs
 # Assuming these are defined elsewhere or are placeholders
@@ -35,7 +34,7 @@ class Provider(Enum):
 
 @dataclass
 class RouterConfig:
-    providers: List[Provider]
+    providers: list[Provider]
     primary_provider: Provider
     fallback_enabled: bool
     circuit_breaker_enabled: bool
@@ -116,12 +115,12 @@ class WorkflowContext:
     session_id: str
     objective: str
     stage: WorkflowStage
-    data: Dict[str, object]
-    insights: List[str]
-    actions_taken: List[str]
-    errors: List[str]
+    data: dict[str, object]
+    insights: list[str]
+    actions_taken: list[str]
+    errors: list[str]
     start_time: datetime
-    metadata: Dict[str, object]
+    metadata: dict[str, object]
 
 class TalentIntelligenceAgent:
     """Production agent for talent intelligence operations"""
@@ -327,7 +326,7 @@ class TalentIntelligenceAgent:
                 context.errors.append(f"Action error: {str(e)}")
                 raise
 
-    async def _search_resumes(self, information_needed: List[str]) -> List[Dict]:
+    async def _search_resumes(self, information_needed: list[str]) -> list[dict]:
         """Search resume database for relevant candidates"""
         # Simulate resume search
         return [
@@ -349,7 +348,7 @@ class TalentIntelligenceAgent:
             }
         ]
 
-    async def _search_job_postings(self, information_needed: List[str]) -> List[Dict]:
+    async def _search_job_postings(self, information_needed: list[str]) -> list[dict]:
         """Search job postings for market analysis"""
         return [
             {
@@ -370,7 +369,7 @@ class TalentIntelligenceAgent:
             }
         ]
 
-    async def _get_market_data(self, information_needed: List[str]) -> Dict:
+    async def _get_market_data(self, information_needed: list[str]) -> dict:
         """Get market intelligence data"""
         return {
             "market_trends": {
@@ -382,7 +381,7 @@ class TalentIntelligenceAgent:
             "time_to_fill_average": "45 days"
         }
 
-    async def _execute_action(self, action: Dict) -> Dict:
+    async def _execute_action(self, action: dict) -> dict:
         """Execute a specific action based on analysis"""
         action_type = action.get("action_type")
 

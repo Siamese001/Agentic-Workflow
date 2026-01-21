@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Flatten scripts directory to SSOT-compliant depth.
 [SSOT] All depth requirements derived from SOVEREIGN_REGISTRY in structure_blueprint.py
@@ -6,13 +7,14 @@ Flatten scripts directory to SSOT-compliant depth.
 import os
 import shutil
 from pathlib import Path
+from typing import Any
+
 from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     safe_prefixed_filename,
     validate_no_duplicate_prefix,
 )
-from typing import Any
-from agentic_core.utils.sovereign_index import SovereignIndex
+
 root: Any = Path('C:/Git/Agentic-Workflow')
 core: Any = ROOT / 'agentic_core'
 scripts_dir: Any = CORE / 'L0_maintenance/scripts'
@@ -53,7 +55,7 @@ def flatten_scripts() -> Any:
             except Exception as e:
                 print(f'  [X] Failed: {py_file.name} - {e}')
     print('\n[*] Cleaning empty directories...')
-    for root, dirs, files in os.walk(SCRIPTS_DIR, topdown=False):
+    for root, dirs, _files in os.walk(SCRIPTS_DIR, topdown=False):
         for dir_name in dirs:
             dir_path: Any = Path(root) / dir_name
             try:

@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """MCP Tool Server Integration.
 
 Provides MCP (Model Context Protocol) tool server integration
@@ -8,8 +9,9 @@ Phase 1C - SDK Integration Layer
 """
 
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any
 
 Logger = logging.getLogger(__name__)
 
@@ -19,11 +21,11 @@ class MCPTool:
     """MCP tool definition."""
     name: str
     description: str
-    parameters: Dict[str, Any]
+    parameters: dict[str, Any]
     handler: Callable
     requires_approval: bool = False
 
-    def to_openai_format(self) -> Dict[str, Any]:
+    def to_openai_format(self) -> dict[str, Any]:
         """Convert to OpenAI function calling format.
 
         Returns:
@@ -38,7 +40,7 @@ class MCPTool:
             },
         }
 
-    def to_anthropic_format(self) -> Dict[str, Any]:
+    def to_anthropic_format(self) -> dict[str, Any]:
         """Convert to Anthropic tool format.
 
         Returns:
@@ -57,8 +59,8 @@ class MCPToolResult:
     tool_name: str
     success: bool
     result: Any
-    error: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    error: str | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class MCPToolServer:
@@ -71,7 +73,7 @@ class MCPToolServer:
             name: Server name
         """
         self.name = name
-        self._tools: Dict[str, MCPTool] = {}
+        self._tools: dict[str, MCPTool] = {}
         Logger.info(f"MCP tool server initialized: {name}")
 
     def register_tool(self, tool: MCPTool) -> None:
@@ -87,7 +89,7 @@ class MCPToolServer:
         self,
         name: str,
         description: str,
-        parameters: Dict[str, Any],
+        parameters: dict[str, Any],
         handler: Callable,
         requires_approval: bool = False,
     ) -> None:
@@ -109,7 +111,7 @@ class MCPToolServer:
         )
         self.register_tool(tool)
 
-    def get_tool(self, name: str) -> Optional[MCPTool]:
+    def get_tool(self, name: str) -> MCPTool | None:
         """Get a tool by name.
 
         Args:
@@ -120,7 +122,7 @@ class MCPToolServer:
         """
         return self._tools.get(name)
 
-    def list_tools(self) -> List[str]:
+    def list_tools(self) -> list[str]:
         """List all registered tool names.
 
         Returns:
@@ -131,7 +133,7 @@ class MCPToolServer:
     def get_tools_for_provider(
         self,
         Provider: str = "openai",
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Get tools in Provider-specific format.
 
         Args:
@@ -153,7 +155,7 @@ class MCPToolServer:
     def execute_tool(
         self,
         name: str,
-        arguments: Dict[str, Any],
+        arguments: dict[str, Any],
     ) -> MCPToolResult:
         """Execute a tool.
 
@@ -195,7 +197,7 @@ class MCPToolServer:
 
 
 # Global MCP tool server instance
-_MCP_SERVER: Optional[MCPToolServer] = None
+_MCP_SERVER: MCPToolServer | None = None
 
 
 def get_mcp_server(name: str = "agentic-workflow-tools") -> MCPToolServer:
@@ -262,7 +264,7 @@ def register_default_tools(server: MCPToolServer) -> None:
     )
 
     # Text analysis tool
-    def analyze_text(text: str) -> Dict[str, Any]:
+    def analyze_text(text: str) -> dict[str, Any]:
         """Analyze text and return statistics."""
         words = text.split()
         sentences = text.split('.')
@@ -316,8 +318,8 @@ def create_mcp_server(
 
 def execute_tool_calls(
     server: MCPToolServer,
-    tool_calls: List[Dict[str, Any]],
-) -> List[MCPToolResult]:
+    tool_calls: list[dict[str, Any]],
+) -> list[MCPToolResult]:
     """Execute multiple tool calls.
 
     Args:

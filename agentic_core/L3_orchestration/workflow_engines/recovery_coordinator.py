@@ -8,8 +8,8 @@ Provides graceful degradation and error recovery.
 """
 from __future__ import annotations
 
-from typing import Any, Dict
 import logging
+from typing import Any
 
 from .base_coordinator import WorkflowCoordinator
 
@@ -26,7 +26,7 @@ class RecoveryCoordinator(WorkflowCoordinator):
     - Error logging and reporting
     """
 
-    async def coordinate(self, task: Dict[str, Any]) -> Dict[str, Any]:
+    async def coordinate(self, task: dict[str, Any]) -> dict[str, Any]:
         """Execute recovery workflow."""
         self._lazy_init()
 

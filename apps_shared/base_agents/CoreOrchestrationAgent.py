@@ -27,10 +27,10 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Protocol, Type, TypeVar
+from typing import Any, TypeVar
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
@@ -62,7 +62,7 @@ class Task:
     """Represents an orchestration task."""
     task_id: str
     task_type: TaskType
-    payload: Dict[str, Any]
+    payload: dict[str, Any]
     priority: int = 0
     max_retries: int = 3
     timeout_seconds: int = 300
@@ -82,18 +82,18 @@ class Result:
     task_id: str
     success: bool
     data: Any = None
-    error: Optional[str] = None
+    error: str | None = None
     execution_time: float = 0.0
     retries_used: int = 0
     from_cache: bool = False
-    recovery_applied: Optional[RecoveryStrategy] = None
+    recovery_applied: RecoveryStrategy | None = None
 
 
 class OrchestrationStrategy(ABC):
     """Abstract base for task-specific orchestration strategies."""
 
     @abstractmethod
-    async def execute(self, task: Task, context: Dict[str, Any]) -> Result:
+    async def execute(self, task: Task, context: dict[str, Any]) -> Result:
         """Execute the task using this strategy."""
         pass
 
@@ -106,7 +106,7 @@ class OrchestrationStrategy(ABC):
 class ValidationStrategy(OrchestrationStrategy):
     """Strategy for validation tasks."""
 
-    async def execute(self, task: Task, context: Dict[str, Any]) -> Result:
+    async def execute(self, task: Task, context: dict[str, Any]) -> Result:
         Logger.info(f"Executing validation task: {task.task_id}")
         # Validation logic would go here
         return Result(
@@ -122,7 +122,7 @@ class ValidationStrategy(OrchestrationStrategy):
 class HealingStrategy(OrchestrationStrategy):
     """Strategy for healing tasks."""
 
-    async def execute(self, task: Task, context: Dict[str, Any]) -> Result:
+    async def execute(self, task: Task, context: dict[str, Any]) -> Result:
         Logger.info(f"Executing healing task: {task.task_id}")
         # Healing logic would go here
         return Result(
@@ -138,7 +138,7 @@ class HealingStrategy(OrchestrationStrategy):
 class GenericStrategy(OrchestrationStrategy):
     """Fallback strategy for generic tasks."""
 
-    async def execute(self, task: Task, context: Dict[str, Any]) -> Result:
+    async def execute(self, task: Task, context: dict[str, Any]) -> Result:
         Logger.info(f"Executing generic task: {task.task_id}")
         return Result(
             task_id=task.task_id,
@@ -174,15 +174,15 @@ class CoreOrchestrationAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixi
 
     def __post_init__(self) -> None:
         """Initialize the orchestration agent."""
-        self._cache: Dict[str, Result] = {}
-        self._cache_timestamps: Dict[str, datetime] = {}
-        self._strategies: List[OrchestrationStrategy] = [
+        self._cache: dict[str, Result] = {}
+        self._cache_timestamps: dict[str, datetime] = {}
+        self._strategies: list[OrchestrationStrategy] = [
             ValidationStrategy(),
             HealingStrategy(),
             GenericStrategy(),  # Fallback
         ]
-        self._execution_history: List[Dict[str, Any]] = []
-        self._failure_patterns: Dict[str, int] = {}
+        self._execution_history: list[dict[str, Any]] = []
+        self._failure_patterns: dict[str, int] = {}
         Logger.info("CoreOrchestrationAgent initialized")
 
     def register_strategy(self, strategy: OrchestrationStrategy) -> None:
@@ -200,7 +200,7 @@ class CoreOrchestrationAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixi
         # Should never reach here due to GenericStrategy fallback
         return self._strategies[-1]
 
-    def _get_cached_result(self, task: Task) -> Optional[Result]:
+    def _get_cached_result(self, task: Task) -> Result | None:
         """Check cache for existing result."""
         if not self.cache_enabled:
             return None
@@ -243,10 +243,10 @@ class CoreOrchestrationAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixi
         self,
         task: Task,
         strategy: OrchestrationStrategy,
-        context: Dict[str, Any],
+        context: dict[str, Any],
     ) -> Result:
         """Execute task with retry logic and exponential backoff."""
-        last_error: Optional[Exception] = None
+        last_error: Exception | None = None
         retries_used = 0
 
         for attempt in range(task.max_retries):
@@ -334,7 +334,7 @@ class CoreOrchestrationAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixi
         strategy = self._select_strategy(task)
 
         # Build context
-        context: Dict[str, Any] = {
+        context: dict[str, Any] = {
             "agent": self,
             "timestamp": datetime.now(),
             "failure_history": self._failure_patterns.get(task.task_id, 0),
@@ -372,7 +372,7 @@ class CoreOrchestrationAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixi
         Logger.info(f"Cleared {count} cached entries")
         return count
 
-    def get_execution_stats(self) -> Dict[str, Any]:
+    def get_execution_stats(self) -> dict[str, Any]:
         """Get execution statistics."""
         if not self._execution_history:
             return {"total": 0}
@@ -398,8 +398,8 @@ class CoreOrchestrationAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixi
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[set] = None,
-    ) -> Dict[str, int]:
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L3 orchestration agent - operational healing."""
         if _call_path is None:
             _call_path = set()
@@ -423,7 +423,7 @@ class CoreOrchestrationAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixi
 # =============================================================================
 
 def create_legacy_cached_orchestrator(
-    project_root: Optional[Path] = None,
+    project_root: Path | None = None,
     mission_id: str = "default",
     **kwargs: Any,
 ) -> CoreOrchestrationAgent:
@@ -459,7 +459,7 @@ def create_legacy_self_recovering_orchestrator(**kwargs: Any) -> CoreOrchestrati
 
 
 def create_legacy_intelligent_orchestrator(
-    target: Optional[str] = None,
+    target: str | None = None,
     **kwargs: Any,
 ) -> CoreOrchestrationAgent:
     """

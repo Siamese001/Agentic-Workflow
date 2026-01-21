@@ -14,9 +14,11 @@ Usage:
             return {"success": True}
 """
 from __future__ import annotations
+
 import functools
 import logging
-from typing import Callable, Any
+from collections.abc import Callable
+from typing import Any
 
 log = logging.getLogger(__name__)
 

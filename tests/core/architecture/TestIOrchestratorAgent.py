@@ -20,10 +20,10 @@ USAGE:
 
 from __future__ import annotations
 
-import pytest
 from pathlib import Path
-from typing import Any, Dict, List, Optional
 from unittest.mock import MagicMock, patch
+
+import pytest
 
 
 class TestCaseA_EndToEnd:
@@ -98,7 +98,7 @@ class TestCaseA_EndToEnd:
         try:
             from agentic_core.L3_orchestration.healing_strategy import HealingStrategy
         except ImportError:
-            from archives.void_violations.healing_strategy import HealingStrategy
+            pass
 
         # Create with mock strategy that returns one agent
         mock_strategy = MagicMock()
@@ -169,9 +169,13 @@ class TestCaseB_LegacyWrapper:
     def test_get_consolidated_orchestrator_returns_unified(self):
         """Verify factory returns UnifiedOrchestratorAgent."""
         try:
-            from agentic_core.L3_orchestration.CoreOrchestrationAgent import get_consolidated_orchestrator
+            from agentic_core.L3_orchestration.CoreOrchestrationAgent import (
+                get_consolidated_orchestrator,
+            )
         except ImportError:
-            from archives.location_violations.CoreOrchestrationAgent import get_consolidated_orchestrator
+            from archives.location_violations.CoreOrchestrationAgent import (
+                get_consolidated_orchestrator,
+            )
         try:
             from agentic_core.L3_orchestration.unified_orchestrator import UnifiedOrchestratorAgent
         except ImportError:
@@ -185,9 +189,13 @@ class TestCaseB_LegacyWrapper:
     def test_get_consolidated_orchestrator_has_healing_strategy(self):
         """Verify factory configures HealingStrategy."""
         try:
-            from agentic_core.L3_orchestration.CoreOrchestrationAgent import get_consolidated_orchestrator
+            from agentic_core.L3_orchestration.CoreOrchestrationAgent import (
+                get_consolidated_orchestrator,
+            )
         except ImportError:
-            from archives.location_violations.CoreOrchestrationAgent import get_consolidated_orchestrator
+            from archives.location_violations.CoreOrchestrationAgent import (
+                get_consolidated_orchestrator,
+            )
         try:
             from agentic_core.L3_orchestration.healing_strategy import HealingStrategy
         except ImportError:
@@ -202,7 +210,10 @@ class TestCaseB_LegacyWrapper:
     def test_legacy_wrapper_run_mission(self):
         """Verify legacy CoreOrchestrationAgent.run_mission works."""
         import warnings
-        from agentic_core.L3_orchestration.unified.CoreOrchestrationAgent import CoreOrchestrationAgent
+
+        from agentic_core.L3_orchestration.unified.CoreOrchestrationAgent import (
+            CoreOrchestrationAgent,
+        )
 
         # Suppress deprecation warning for test
         with warnings.catch_warnings():
@@ -235,7 +246,10 @@ class TestCaseB_LegacyWrapper:
     def test_legacy_wrapper_emits_deprecation_warning(self):
         """Verify CoreOrchestrationAgent emits deprecation warning."""
         import warnings
-        from agentic_core.L3_orchestration.unified.CoreOrchestrationAgent import CoreOrchestrationAgent
+
+        from agentic_core.L3_orchestration.unified.CoreOrchestrationAgent import (
+            CoreOrchestrationAgent,
+        )
 
         with warnings.catch_warnings(record=True) as w:
             warnings.simplefilter("always")
@@ -267,7 +281,6 @@ class TestCaseC_BaseAgentHygiene:
     def test_l2_execution_base_has_infrastructure(self):
         """Verify L2ExecutionBaseAgent has InfrastructureMixin in MRO."""
         from agentic_core.L2_execution.ToolRegistry.L2ExecutionBaseAgent import L2ExecutionBaseAgent
-        from agentic_core.utils.core_extensions.infrastructure_mixin import InfrastructureMixin
 
         # Check MRO includes InfrastructureMixin (via SovereignBaseAgent)
         mro_names = [cls.__name__ for cls in L2ExecutionBaseAgent.__mro__]

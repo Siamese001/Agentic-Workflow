@@ -11,10 +11,8 @@ Strategies:
 """
 import ast
 import json
-import re
 from pathlib import Path
-from typing import List, Dict, Any, Tuple
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from typing import Any
 
 PROJECT_ROOT = Path(__file__).parent.parent
 DISCOVERY_FILE = PROJECT_ROOT / "agent_discovery_full.json"
@@ -36,7 +34,7 @@ class ComplexityReducer(ast.NodeTransformer):
         return node
 
 
-def analyze_complexity_patterns(file_path: Path) -> Dict[str, Any]:
+def analyze_complexity_patterns(file_path: Path) -> dict[str, Any]:
     """Analyze a file for complexity patterns that can be refactored."""
     try:
         content = file_path.read_text(encoding='utf-8')
@@ -53,7 +51,7 @@ def analyze_complexity_patterns(file_path: Path) -> Dict[str, Any]:
     }
 
     for node in ast.walk(tree):
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+        if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
             patterns["total_methods"] += 1
             # Count lines in method
             if hasattr(node, 'end_lineno') and hasattr(node, 'lineno'):
@@ -86,7 +84,7 @@ def analyze_complexity_patterns(file_path: Path) -> Dict[str, Any]:
     return patterns
 
 
-def refactor_if_chains_to_dispatch(content: str) -> Tuple[str, int]:
+def refactor_if_chains_to_dispatch(content: str) -> tuple[str, int]:
     """
     Refactor if/elif chains to dispatch tables.
     This is a text-based transformation for safety.
@@ -102,7 +100,7 @@ def refactor_if_chains_to_dispatch(content: str) -> Tuple[str, int]:
     return content, changes
 
 
-def simplify_early_returns(content: str) -> Tuple[str, int]:
+def simplify_early_returns(content: str) -> tuple[str, int]:
     """
     Add early returns to reduce nesting.
     Pattern: if condition: <long block> else: return
@@ -120,7 +118,7 @@ def main():
     print("=" * 70)
 
     # Load agent discovery
-    with open(DISCOVERY_FILE, 'r', encoding='utf-8') as f:
+    with open(DISCOVERY_FILE, encoding='utf-8') as f:
         agents = json.load(f)
 
     # Find high-complexity agents
@@ -149,7 +147,7 @@ def main():
 
         if path.exists():
             patterns = analyze_complexity_patterns(path)
-            print(f"   Patterns found:")
+            print("   Patterns found:")
             print(f"     - If/elif chains (>=3): {patterns.get('if_chains', 0)}")
             print(f"     - Nested loops: {patterns.get('nested_loops', 0)}")
             print(f"     - Complex conditions: {patterns.get('complex_conditions', 0)}")

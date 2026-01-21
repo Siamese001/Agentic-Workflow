@@ -2,15 +2,15 @@
 
 import asyncio
 import json
+import sys
+import types
+from collections.abc import Callable
 from functools import partial
 from pathlib import Path
-import sys
-import textwrap
-import types
-from typing import Any, Callable, Dict, List
+from typing import Any
 
 import pytest
-
+from agent_tools_v10_7 import resolve_mcp_client
 from core_v10_7 import (
     BaseTool,
     CacheManager,
@@ -20,25 +20,24 @@ from core_v10_7 import (
     ContextBudgetManager,
     CostTracker,
     FeedbackLogReader,
+    MCPClientInitializationError,
+    MCPClientSpec,
     MCPClientStub,
     MetricsCollector,
     ModelAPIError,
-    MCPClientInitializationError,
     PlannerAssessment,
-    ProposedRulesLoader,
     PromptTemplateManager,
+    ProposedRulesLoader,
     ResponseValidator,
     ScenarioSimulationResult,
     SemanticValidator,
     StrategyPlan,
     WorkflowContext,
-    exponential_backoff_retry,
     _instantiate_mcp_client,
     _parse_mcp_client_specs,
-    MCPClientSpec,
+    exponential_backoff_retry,
     wrap_mcp,
 )
-from agent_tools_v10_7 import resolve_mcp_client
 from strategy_ensemble_v10_7 import (
     DomainPlannerAgent,
     FeasibilityAnalystAgent,
@@ -87,7 +86,7 @@ class InMemoryRedis:
     """Minimal Redis substitute supporting the subset used by CacheManager."""
 
     def __init__(self) -> None:
-        self.store: Dict[str, str] = {}
+        self.store: dict[str, str] = {}
 
     def setex(self, name: str, ttl: int, value: str) -> None:
         self.store[name] = value
@@ -98,15 +97,15 @@ class InMemoryRedis:
 
 class FakeCollection:
     def __init__(self) -> None:
-        self.records: Dict[str, Dict[str, Any]] = {}
+        self.records: dict[str, dict[str, Any]] = {}
 
     def add(
         self,
         *,
-        embeddings: List[List[float]],
-        documents: List[str],
-        metadatas: List[Dict[str, Any]],
-        ids: List[str],
+        embeddings: list[list[float]],
+        documents: list[str],
+        metadatas: list[dict[str, Any]],
+        ids: list[str],
     ) -> None:
         for doc, metadata, record_id in zip(documents, metadatas, ids):
             self.records[record_id] = {"document": doc, "metadata": metadata}
@@ -114,10 +113,10 @@ class FakeCollection:
     def query(
         self,
         *,
-        query_embeddings: List[List[float]],
+        query_embeddings: list[list[float]],
         n_results: int,
-        where: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        where: dict[str, Any],
+    ) -> dict[str, Any]:
         for record in self.records.values():
             metadata = record["metadata"]
             if all(metadata.get(key) == value for key, value in where.items()):
@@ -137,7 +136,7 @@ class FakeChromaClient:
 
 
 class DummyEmbeddingFunction:
-    def __call__(self, prompts: List[str]) -> List[List[float]]:
+    def __call__(self, prompts: list[str]) -> list[list[float]]:
         return [[float(len(prompt))] for prompt in prompts]
 
 
@@ -206,7 +205,7 @@ def _assert_file_pattern(file_path: str, substring: str, *, should_exist: bool) 
         assert substring not in content, f"Forbidden pattern '{substring}' found in {file_path}"
 
 
-def _write_jsonl(path: Path, rows: List[Dict[str, Any]]) -> None:
+def _write_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8") as handle:
         for row in rows:
@@ -427,7 +426,7 @@ def _functional_case_base_tool_uses_cache(
     class EchoTool(BaseTool):
         tool_name = "echo_tool"
 
-        async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+        async def _run_async_internal(self, tool_input: dict[str, Any], workflow_id: str) -> dict[str, Any]:
             return {"echo": tool_input["value"], "workflow": workflow_id}
 
     tool = EchoTool(workflow_context)
@@ -457,7 +456,7 @@ def _functional_case_dynamic_tool_loader_handles_missing_dir(
     assert tools == {}
 
 
-FUNCTIONAL_BEHAVIOR_CASES: List[Callable[[WorkflowContext, ConfigV10_7, CacheManager, Path], None]] = [
+FUNCTIONAL_BEHAVIOR_CASES: list[Callable[[WorkflowContext, ConfigV10_7, CacheManager, Path], None]] = [
     _functional_case_response_validator_parses_object,
     _functional_case_response_validator_handles_list,
     _functional_case_response_validator_reports_error,
@@ -500,8 +499,8 @@ def test_functional_behavior_matrix(
 
 def _make_strategy_plan(
     *,
-    focus_areas: List[str],
-    achievements: List[str],
+    focus_areas: list[str],
+    achievements: list[str],
     tone: str = "executive",
 ) -> StrategyPlan:
     return StrategyPlan(
@@ -667,7 +666,7 @@ def _mock_case_no_mock_comments_strategy_ensemble() -> None:
     _assert_file_pattern("strategy_ensemble_v10_7.py", "MOCK", should_exist=False)
 
 
-MOCK_DETECTION_CASES: List[Callable[..., None]] = [
+MOCK_DETECTION_CASES: list[Callable[..., None]] = [
     _mock_case_domain_planner_matches_context,
     _mock_case_domain_planner_flags_gap,
     _mock_case_risk_assessor_detects_duplicates,
@@ -1132,7 +1131,7 @@ def test_circuit_breaker_resets_on_success() -> None:
 
 
 def test_exponential_backoff_retry_eventually_succeeds() -> None:
-    attempts: Dict[str, int] = {"count": 0}
+    attempts: dict[str, int] = {"count": 0}
 
     @exponential_backoff_retry(max_retries=3, initial_delay=0)
     async def flaky_call() -> str:
@@ -1252,7 +1251,7 @@ def test_wrap_mcp_decorator_initialises_clients(workflow_context: WorkflowContex
     workflow_context.reset_mcp_clients()
 
     @wrap_mcp
-    async def noop(state: Dict[str, Any], workflow_context: WorkflowContext) -> Dict[str, Any]:
+    async def noop(state: dict[str, Any], workflow_context: WorkflowContext) -> dict[str, Any]:
         return state
 
     asyncio.run(noop({}, workflow_context))
@@ -1268,8 +1267,8 @@ def test_resolve_mcp_client_optional_returns_stub(workflow_context: WorkflowCont
         tool_name = "dummy"
 
         async def _run_async_internal(
-            self, tool_input: Dict[str, Any], workflow_id: str
-        ) -> Dict[str, Any]:
+            self, tool_input: dict[str, Any], workflow_id: str
+        ) -> dict[str, Any]:
             return {}
 
     tool = DummyTool(workflow_context)
@@ -1288,8 +1287,8 @@ def test_resolve_mcp_client_required_raises_without_fallback(workflow_context: W
         tool_name = "dummy-required"
 
         async def _run_async_internal(
-            self, tool_input: Dict[str, Any], workflow_id: str
-        ) -> Dict[str, Any]:
+            self, tool_input: dict[str, Any], workflow_id: str
+        ) -> dict[str, Any]:
             return {}
 
     tool = DummyTool(workflow_context)
@@ -1422,14 +1421,14 @@ def test_wrap_mcp_sync_force_initialises_clients(
     workflow_context.wrap_mcp_nodes = False
     calls = {"count": 0}
 
-    def fake_ensure() -> Dict[str, Any]:
+    def fake_ensure() -> dict[str, Any]:
         calls["count"] += 1
         return {}
 
     monkeypatch.setattr(workflow_context, "ensure_mcp_clients", fake_ensure)
 
     @wrap_mcp(force=True)
-    def handler(state: Dict[str, Any], workflow_context: WorkflowContext) -> Dict[str, Any]:
+    def handler(state: dict[str, Any], workflow_context: WorkflowContext) -> dict[str, Any]:
         return state
 
     result = handler({}, workflow_context)
@@ -1444,14 +1443,14 @@ def test_wrap_mcp_sync_skips_when_disabled(
     workflow_context.wrap_mcp_nodes = False
     calls = {"count": 0}
 
-    def fake_ensure() -> Dict[str, Any]:
+    def fake_ensure() -> dict[str, Any]:
         calls["count"] += 1
         return {}
 
     monkeypatch.setattr(workflow_context, "ensure_mcp_clients", fake_ensure)
 
     @wrap_mcp
-    def handler(state: Dict[str, Any], workflow_context: WorkflowContext) -> Dict[str, Any]:
+    def handler(state: dict[str, Any], workflow_context: WorkflowContext) -> dict[str, Any]:
         return state
 
     result = handler({}, workflow_context)

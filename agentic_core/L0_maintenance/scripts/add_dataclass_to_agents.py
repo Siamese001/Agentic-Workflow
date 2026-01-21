@@ -9,10 +9,8 @@ This script:
 """
 import ast
 import json
-import re
 import sys
 from pathlib import Path
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 PROJECT_ROOT = Path(__file__).parent.parent
 
@@ -127,7 +125,7 @@ def main():
 
     # Load agent discovery
     discovery_path = PROJECT_ROOT / 'agent_discovery_full.json'
-    with open(discovery_path, 'r', encoding='utf-8') as f:
+    with open(discovery_path, encoding='utf-8') as f:
         agents = json.load(f)
 
     # Find agents needing @dataclass
@@ -137,7 +135,6 @@ def main():
 
     fixed_count = 0
     skipped_count = 0
-    error_count = 0
 
     for agent in agents_to_fix:
         path = agent['path']
@@ -164,7 +161,7 @@ def main():
         else:
             skipped_count += 1
 
-    print(f"\n" + "=" * 70)
+    print("\n" + "=" * 70)
     print(f"✅ Added @dataclass to {fixed_count} agent files")
     print(f"   Skipped: {skipped_count} (already have @dataclass or couldn't process)")
     print("=" * 70)

@@ -11,30 +11,13 @@ import ast
 import hashlib
 import json
 import os
-import sys
 from dataclasses import dataclass, field
-from pathlib import Path
-from typing import Dict, List, Any, Optional, Set, Tuple
 from datetime import datetime
+from pathlib import Path
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
-from agentic_core.utils.sovereign_index import SovereignIndex
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # Project root
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -53,10 +36,10 @@ EXCLUDE_EXTENSIONS = {".pyc", ".pyo", ".so", ".dll", ".exe"}
 class ClassInfo:
     """Information about a Python class."""
     name: str
-    bases: List[str]
-    methods: List[str]
+    bases: list[str]
+    methods: list[str]
     line_number: int
-    docstring: Optional[str] = None
+    docstring: str | None = None
 
 
 @dataclass
@@ -69,11 +52,11 @@ class FileAnalysis:
     extension: str
     sha256_hash: str
     snippet: str
-    docstring: Optional[str] = None
+    docstring: str | None = None
     # Python-specific
-    classes: List[ClassInfo] = field(default_factory=list)
-    imports: List[str] = field(default_factory=list)
-    functions: List[str] = field(default_factory=list)
+    classes: list[ClassInfo] = field(default_factory=list)
+    imports: list[str] = field(default_factory=list)
+    functions: list[str] = field(default_factory=list)
     # Compliance flags
     has_snake_case_class: bool = False
     has_hardcoded_creds: bool = False
@@ -82,9 +65,9 @@ class FileAnalysis:
     llm_calls: bool = False
     # Classification
     classification: str = "UNKNOWN"
-    modern_equivalent: Optional[str] = None
+    modern_equivalent: str | None = None
     recommended_action: str = "REVIEW"
-    target_path: Optional[str] = None
+    target_path: str | None = None
     justification: str = ""
     risk_level: str = "LOW"
 
@@ -104,7 +87,7 @@ def compute_file_hash(file_path: Path) -> str:
 def count_lines(file_path: Path) -> int:
     """Count lines in a text file."""
     try:
-        with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+        with open(file_path, encoding='utf-8', errors='ignore') as f:
             return sum(1 for _ in f)
     except Exception:
         return 0
@@ -113,14 +96,14 @@ def count_lines(file_path: Path) -> int:
 def get_snippet(file_path: Path, chars: int = 200) -> str:
     """Get first N characters of a file."""
     try:
-        with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+        with open(file_path, encoding='utf-8', errors='ignore') as f:
             content = f.read(chars)
             return content.replace('\n', ' ').strip()
     except Exception:
         return "[BINARY OR UNREADABLE]"
 
 
-def parse_python_file(file_path: Path) -> Tuple[List[ClassInfo], List[str], List[str], Optional[str]]:
+def parse_python_file(file_path: Path) -> tuple[list[ClassInfo], list[str], list[str], str | None]:
     """Parse a Python file using AST.
 
     Returns:
@@ -132,7 +115,7 @@ def parse_python_file(file_path: Path) -> Tuple[List[ClassInfo], List[str], List
     module_docstring = None
 
     try:
-        with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+        with open(file_path, encoding='utf-8', errors='ignore') as f:
             content = f.read()
 
         tree = ast.parse(content)
@@ -189,7 +172,7 @@ def parse_python_file(file_path: Path) -> Tuple[List[ClassInfo], List[str], List
         return [], [f"PARSE_ERROR: {e}"], [], None
 
 
-def check_sovereignty_compliance(file_path: Path, content: str, classes: List[ClassInfo]) -> Dict[str, bool]:
+def check_sovereignty_compliance(file_path: Path, content: str, classes: list[ClassInfo]) -> dict[str, bool]:
     """Check for sovereignty compliance issues."""
     issues = {
         "has_snake_case_class": False,
@@ -235,7 +218,7 @@ def check_sovereignty_compliance(file_path: Path, content: str, classes: List[Cl
     return issues
 
 
-def find_modern_equivalent(file_path: Path, file_name: str) -> Tuple[Optional[str], str]:
+def find_modern_equivalent(file_path: Path, file_name: str) -> tuple[str | None, str]:
     """Find a modern equivalent in agentic_core."""
 
     # Known mappings
@@ -274,14 +257,13 @@ def find_modern_equivalent(file_path: Path, file_name: str) -> Tuple[Optional[st
     return (None, "REVIEW_NEEDED")
 
 
-def classify_file(analysis: FileAnalysis) -> Tuple[str, str, str, str]:
+def classify_file(analysis: FileAnalysis) -> tuple[str, str, str, str]:
     """Classify file and determine action.
 
     Returns:
         (classification, recommended_action, justification, risk_level)
     """
     file_name = analysis.path.name
-    rel_path = analysis.relative_path
 
     # Check for known duplicates first
     equiv, status = find_modern_equivalent(analysis.path, file_name)
@@ -416,7 +398,7 @@ def analyze_file(file_path: Path, archive_base: Path) -> FileAnalysis:
     # Python-specific analysis
     if extension == ".py":
         try:
-            with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+            with open(file_path, encoding='utf-8', errors='ignore') as f:
                 content = f.read()
 
             classes, imports, functions, docstring = parse_python_file(file_path)
@@ -449,7 +431,7 @@ def analyze_file(file_path: Path, archive_base: Path) -> FileAnalysis:
     return analysis
 
 
-def scan_archive_folder(archive_folder: str) -> List[FileAnalysis]:
+def scan_archive_folder(archive_folder: str) -> list[FileAnalysis]:
     """Recursively scan an archive folder."""
     analyses = []
     archive_path = ARCHIVES_DIR / archive_folder
@@ -478,14 +460,14 @@ def scan_archive_folder(archive_folder: str) -> List[FileAnalysis]:
     return analyses
 
 
-def generate_markdown_report(all_analyses: List[FileAnalysis]) -> str:
+def generate_markdown_report(all_analyses: list[FileAnalysis]) -> str:
     """Generate comprehensive markdown report."""
 
     report = []
     report.append("# Zero-Loss Archive Migration Analysis Report")
     report.append(f"\n**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    report.append(f"**Project:** Agentic-Workflow")
-    report.append(f"**Archives Analyzed:** runtime/, schemas/, shared/\n")
+    report.append("**Project:** Agentic-Workflow")
+    report.append("**Archives Analyzed:** runtime/, schemas/, shared/\n")
 
     # Summary statistics
     total_files = len(all_analyses)
@@ -494,8 +476,8 @@ def generate_markdown_report(all_analyses: List[FileAnalysis]) -> str:
     total_classes = sum(len(a.classes) for a in all_analyses)
 
     report.append("## Executive Summary\n")
-    report.append(f"| Metric | Value |")
-    report.append(f"|--------|-------|")
+    report.append("| Metric | Value |")
+    report.append("|--------|-------|")
     report.append(f"| Total Files | {total_files} |")
     report.append(f"| Total LOC | {total_loc:,} |")
     report.append(f"| Python Files | {len(py_files)} |")
@@ -506,9 +488,9 @@ def generate_markdown_report(all_analyses: List[FileAnalysis]) -> str:
     for a in all_analyses:
         actions[a.recommended_action] = actions.get(a.recommended_action, 0) + 1
 
-    report.append(f"\n### Recommended Actions\n")
-    report.append(f"| Action | Count |")
-    report.append(f"|--------|-------|")
+    report.append("\n### Recommended Actions\n")
+    report.append("| Action | Count |")
+    report.append("|--------|-------|")
     for action, count in sorted(actions.items(), key=lambda x: -x[1]):
         report.append(f"| {action} | {count} |")
 
@@ -517,9 +499,9 @@ def generate_markdown_report(all_analyses: List[FileAnalysis]) -> str:
     for a in all_analyses:
         risks[a.risk_level] = risks.get(a.risk_level, 0) + 1
 
-    report.append(f"\n### Risk Distribution\n")
-    report.append(f"| Risk Level | Count |")
-    report.append(f"|------------|-------|")
+    report.append("\n### Risk Distribution\n")
+    report.append("| Risk Level | Count |")
+    report.append("|------------|-------|")
     for risk in ["CRITICAL", "HIGH", "MEDIUM", "LOW"]:
         if risk in risks:
             report.append(f"| {risk} | {risks[risk]} |")
@@ -529,9 +511,9 @@ def generate_markdown_report(all_analyses: List[FileAnalysis]) -> str:
     hardcoded = [a for a in all_analyses if a.has_hardcoded_creds]
     raw_prompts = [a for a in all_analyses if a.has_raw_prompts]
 
-    report.append(f"\n### Compliance Issues\n")
-    report.append(f"| Issue | Count | Files |")
-    report.append(f"|-------|-------|-------|")
+    report.append("\n### Compliance Issues\n")
+    report.append("| Issue | Count | Files |")
+    report.append("|-------|-------|-------|")
     report.append(f"| Snake_case Classes | {len(snake_case)} | {', '.join(a.path.name for a in snake_case[:3])}{'...' if len(snake_case) > 3 else ''} |")
     report.append(f"| Hardcoded Credentials | {len(hardcoded)} | {'SECURITY RISK' if hardcoded else 'None'} |")
     report.append(f"| Raw Prompt Strings | {len(raw_prompts)} | {', '.join(a.path.name for a in raw_prompts[:3])}{'...' if len(raw_prompts) > 3 else ''} |")
@@ -545,8 +527,8 @@ def generate_markdown_report(all_analyses: List[FileAnalysis]) -> str:
         report.append(f"\n## archives/{archive}/ Analysis\n")
         report.append(f"**Files:** {len(archive_files)} | **LOC:** {sum(a.line_count for a in archive_files):,}\n")
 
-        report.append(f"| Path | Size | LOC | Classes | Action | Target | Risk |")
-        report.append(f"|------|------|-----|---------|--------|--------|------|")
+        report.append("| Path | Size | LOC | Classes | Action | Target | Risk |")
+        report.append("|------|------|-----|---------|--------|--------|------|")
 
         for a in sorted(archive_files, key=lambda x: x.relative_path):
             class_names = ", ".join(c.name for c in a.classes[:3])
@@ -558,9 +540,9 @@ def generate_markdown_report(all_analyses: List[FileAnalysis]) -> str:
     # High-value migration candidates
     migrate_files = [a for a in all_analyses if a.recommended_action == "MIGRATE" and a.line_count > 100]
 
-    report.append(f"\n## High-Value Migration Candidates (>100 LOC)\n")
-    report.append(f"| File | LOC | Classes | Justification |")
-    report.append(f"|------|-----|---------|---------------|")
+    report.append("\n## High-Value Migration Candidates (>100 LOC)\n")
+    report.append("| File | LOC | Classes | Justification |")
+    report.append("|------|-----|---------|---------------|")
     for a in sorted(migrate_files, key=lambda x: -x.line_count):
         class_count = len(a.classes)
         report.append(f"| `{a.path.name}` | {a.line_count} | {class_count} | {a.justification} |")
@@ -568,25 +550,25 @@ def generate_markdown_report(all_analyses: List[FileAnalysis]) -> str:
     # Merge candidates (archive richer than modern)
     merge_files = [a for a in all_analyses if a.recommended_action == "MERGE"]
     if merge_files:
-        report.append(f"\n## Merge Candidates (Archive Richer Than Modern)\n")
-        report.append(f"| Archive File | LOC | Modern Equivalent | Action |")
-        report.append(f"|--------------|-----|-------------------|--------|")
+        report.append("\n## Merge Candidates (Archive Richer Than Modern)\n")
+        report.append("| Archive File | LOC | Modern Equivalent | Action |")
+        report.append("|--------------|-----|-------------------|--------|")
         for a in merge_files:
             report.append(f"| `{a.relative_path}` | {a.line_count} | `{a.modern_equivalent}` | Merge unique features |")
 
     # Delete candidates
     delete_files = [a for a in all_analyses if a.recommended_action in ["DELETE", "DELETE_IMMEDIATELY"]]
     if delete_files:
-        report.append(f"\n## Delete Candidates\n")
-        report.append(f"| File | Reason |")
-        report.append(f"|------|--------|")
+        report.append("\n## Delete Candidates\n")
+        report.append("| File | Reason |")
+        report.append("|------|--------|")
         for a in delete_files:
             report.append(f"| `{a.relative_path}` | {a.justification} |")
 
     # Class inventory
-    report.append(f"\n## Python Class Inventory\n")
-    report.append(f"| Class | File | Bases | Methods | Migrate To |")
-    report.append(f"|-------|------|-------|---------|------------|")
+    report.append("\n## Python Class Inventory\n")
+    report.append("| Class | File | Bases | Methods | Migrate To |")
+    report.append("|-------|------|-------|---------|------------|")
 
     for a in py_files:
         for cls in a.classes:
@@ -595,26 +577,26 @@ def generate_markdown_report(all_analyses: List[FileAnalysis]) -> str:
             report.append(f"| `{cls.name}` | `{a.path.name}` | {bases} | {methods} | `{a.target_path}` |")
 
     # Implementation plan
-    report.append(f"\n## Implementation Plan\n")
-    report.append(f"```bash")
-    report.append(f"# 1. Create migration branch")
-    report.append(f"git checkout -b refactor/migrate-runtime-schemas-shared-2026")
-    report.append(f"")
-    report.append(f"# 2. High-priority migrations (unique valuable code)")
+    report.append("\n## Implementation Plan\n")
+    report.append("```bash")
+    report.append("# 1. Create migration branch")
+    report.append("git checkout -b refactor/migrate-runtime-schemas-shared-2026")
+    report.append("")
+    report.append("# 2. High-priority migrations (unique valuable code)")
     for a in migrate_files[:5]:
         if a.target_path:
             target = a.target_path.rstrip('/') + '/' + a.path.name
             report.append(f"git mv archives/{a.relative_path} {target}")
-    report.append(f"")
-    report.append(f"# 3. Update imports (global replace)")
-    report.append(f"# sed -i 's/from archives.runtime/from agentic_core.runtime/g' **/*.py")
-    report.append(f"# sed -i 's/from archives.schemas/from agentic_core.schemas/g' **/*.py")
-    report.append(f"# sed -i 's/from archives.shared/from agentic_core.utils/g' **/*.py")
-    report.append(f"")
-    report.append(f"# 4. Run validation")
-    report.append(f"python -m pytest tests/ -v")
-    report.append(f"python -m mypy agentic_core/")
-    report.append(f"```")
+    report.append("")
+    report.append("# 3. Update imports (global replace)")
+    report.append("# sed -i 's/from archives.runtime/from agentic_core.runtime/g' **/*.py")
+    report.append("# sed -i 's/from archives.schemas/from agentic_core.schemas/g' **/*.py")
+    report.append("# sed -i 's/from archives.shared/from agentic_core.utils/g' **/*.py")
+    report.append("")
+    report.append("# 4. Run validation")
+    report.append("python -m pytest tests/ -v")
+    report.append("python -m mypy agentic_core/")
+    report.append("```")
 
     return "\n".join(report)
 

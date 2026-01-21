@@ -12,11 +12,12 @@ Features:
 """
 
 from __future__ import annotations
-from typing import Dict, List, Any, Optional, Tuple
-from dataclasses import dataclass, field
+
 import hashlib
-import time
 import os
+import time
+from dataclasses import dataclass, field
+from typing import Any
 
 
 @dataclass
@@ -24,10 +25,10 @@ class SemanticEntry:
     """Entry in semantic memory."""
     entry_id: str
     entry_type: str  # "thought", "episode", "pattern"
-    content: Dict[str, Any]
-    embedding: Optional[List[float]] = None
+    content: dict[str, Any]
+    embedding: list[float] | None = None
     timestamp: float = field(default_factory=time.time)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class EmbeddingProvider:
@@ -37,9 +38,9 @@ class EmbeddingProvider:
         """Initialize embedding provider."""
         self.model = model
         self.dimension = 1536  # Default for ada-002
-        self._cache: Dict[str, List[float]] = {}
+        self._cache: dict[str, list[float]] = {}
 
-    def get_embedding(self, text: str) -> List[float]:
+    def get_embedding(self, text: str) -> list[float]:
         """
         Get embedding for text.
 
@@ -62,9 +63,8 @@ class EmbeddingProvider:
 
         return embedding
 
-    def _generate_mock_embedding(self, text: str) -> List[float]:
+    def _generate_mock_embedding(self, text: str) -> list[float]:
         """Generate mock embedding based on text hash (for testing)."""
-        import struct
 
         # Create deterministic embedding from text
         hash_bytes = hashlib.sha256(text.encode()).digest()
@@ -97,7 +97,7 @@ class VectorIndex:
         """
         self.index_name = index_name
         self.use_pinecone = use_pinecone
-        self._vectors: Dict[str, Tuple[List[float], Dict]] = {}  # In-memory fallback
+        self._vectors: dict[str, tuple[list[float], dict]] = {}  # In-memory fallback
 
         if use_pinecone:
             self._init_pinecone()
@@ -116,7 +116,7 @@ class VectorIndex:
         except ImportError:
             self.use_pinecone = False
 
-    def upsert(self, entry_id: str, embedding: List[float], metadata: Dict[str, Any]) -> None:
+    def upsert(self, entry_id: str, embedding: list[float], metadata: dict[str, Any]) -> None:
         """
         Upsert vector into index.
 
@@ -134,7 +134,7 @@ class VectorIndex:
         else:
             self._vectors[entry_id] = (embedding, metadata)
 
-    def query(self, embedding: List[float], top_k: int = 10) -> List[Dict[str, Any]]:
+    def query(self, embedding: list[float], top_k: int = 10) -> list[dict[str, Any]]:
         """
         Query similar vectors.
 
@@ -158,7 +158,7 @@ class VectorIndex:
         # In-memory similarity search
         return self._in_memory_query(embedding, top_k)
 
-    def _in_memory_query(self, query_embedding: List[float], top_k: int) -> List[Dict[str, Any]]:
+    def _in_memory_query(self, query_embedding: list[float], top_k: int) -> list[dict[str, Any]]:
         """In-memory similarity search using cosine similarity."""
         scores = []
 
@@ -171,12 +171,12 @@ class VectorIndex:
 
         return scores[:top_k]
 
-    def _cosine_similarity(self, a: List[float], b: List[float]) -> float:
+    def _cosine_similarity(self, a: list[float], b: list[float]) -> float:
         """Calculate cosine similarity between two vectors."""
         if len(a) != len(b):
             return 0.0
 
-        dot_product = sum(x * y for x, y in zip(a, b))
+        dot_product = sum(x * y for x, y in zip(a, b, strict=False))
         norm_a = sum(x * x for x in a) ** 0.5
         norm_b = sum(x * x for x in b) ** 0.5
 
@@ -229,12 +229,12 @@ class SemanticMemory:
         """
         self.index = VectorIndex(index_name, use_pinecone)
         self.embedding_provider = EmbeddingProvider()
-        self.entries: Dict[str, SemanticEntry] = {}
+        self.entries: dict[str, SemanticEntry] = {}
         self.thoughts_stored = 0
         self.episodes_stored = 0
         self.queries_executed = 0
 
-    def add_thought(self, thought: Dict[str, Any]) -> str:
+    def add_thought(self, thought: dict[str, Any]) -> str:
         """
         Add thought to semantic memory.
 
@@ -273,7 +273,7 @@ class SemanticMemory:
         self.thoughts_stored += 1
         return entry_id
 
-    def add_episode(self, episode: Dict[str, Any]) -> str:
+    def add_episode(self, episode: dict[str, Any]) -> str:
         """
         Add episode to semantic memory.
 
@@ -312,7 +312,7 @@ class SemanticMemory:
         self.episodes_stored += 1
         return entry_id
 
-    def query(self, query: str, top_k: int = 10, entry_type: Optional[str] = None) -> List[Dict[str, Any]]:
+    def query(self, query: str, top_k: int = 10, entry_type: str | None = None) -> list[dict[str, Any]]:
         """
         Query semantic memory for similar entries.
 
@@ -353,15 +353,15 @@ class SemanticMemory:
 
         return enriched
 
-    def query_thoughts(self, query: str, top_k: int = 10) -> List[Dict[str, Any]]:
+    def query_thoughts(self, query: str, top_k: int = 10) -> list[dict[str, Any]]:
         """Query only thoughts."""
         return self.query(query, top_k, entry_type="thought")
 
-    def query_episodes(self, query: str, top_k: int = 10) -> List[Dict[str, Any]]:
+    def query_episodes(self, query: str, top_k: int = 10) -> list[dict[str, Any]]:
         """Query only episodes."""
         return self.query(query, top_k, entry_type="episode")
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get memory statistics."""
         return {
             "thoughts_stored": self.thoughts_stored,

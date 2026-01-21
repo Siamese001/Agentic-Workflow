@@ -1,12 +1,14 @@
 from __future__ import annotations
+
 """File system utilities for apps_shared."""
-from typing import Any, Optional, Protocol, Dict, List
 import ast
 import hashlib
 import os
 import re
-from typing import List
+from typing import Any
+
 from apps_shared.domain.constants import EXCLUDED_DIRS, EXCLUDED_FILES
+
 
 def calculate_file_hash(file_path: str) -> str:
     """Calculate SHA-256 hash of a file."""
@@ -19,13 +21,13 @@ def calculate_file_hash(file_path: str) -> str:
 def is_excluded(path: str) -> bool:
     """Check if path should be excluded from validation."""
     parts: Any = path.split(os.sep)
-    if any((p in EXCLUDED_DIRS for p in parts)):
+    if any(p in EXCLUDED_DIRS for p in parts):
         return True
-    if any((p.startswith('.') and len(p) > 1 and (p not in ['.github']) for p in parts)):
+    if any(p.startswith('.') and len(p) > 1 and (p not in ['.github']) for p in parts):
         return True
     return False
 
-def get_python_files(root: str='.') -> List[str]:
+def get_python_files(root: str='.') -> list[str]:
     """Get all Python files excluding specified directories and files."""
     python_files: Any = []
     for root_dir, dirs, files in os.walk(root):

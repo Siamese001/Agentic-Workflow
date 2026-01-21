@@ -8,7 +8,7 @@ Updated: 2025-12-12 - Integrated Titanium RAG Pipeline
 
 import logging
 import time
-from typing import Dict, Optional
+
 from shared.result_types import ExecutionResult
 
 Logger = logging.getLogger(__name__)
@@ -16,9 +16,9 @@ Logger = logging.getLogger(__name__)
 # Import Titanium search tool
 try:
     from runtime.shared.titanium_search_tool import (
+        get_pipeline_stats,
         get_titanium_search_tool,
         get_titanium_search_with_sources,
-        get_pipeline_stats
     )
     TITANIUM_AVAILABLE = True
     Logger.info("Titanium RAG Pipeline imported successfully")
@@ -30,7 +30,7 @@ except ImportError as e:
 class DispatchResumeTools:
     """Executor for resume domain with Titanium RAG integration."""
 
-    def __init__(self, config: Optional[Dict[str, object]] = None):
+    def __init__(self, config: dict[str, object] | None = None):
         self.config = config or {}
         self.timeout = self.config.get("timeout", 30.0)
 
@@ -43,7 +43,7 @@ class DispatchResumeTools:
 
         Logger.info(f"Initialized {self.__class__.__name__}")
 
-    def execute(self, action: str, params: Dict[str, object]) -> ExecutionResult:
+    def execute(self, action: str, params: dict[str, object]) -> ExecutionResult:
         """Execute action."""
         start = time.time()
         try:
@@ -60,7 +60,7 @@ class DispatchResumeTools:
                 duration_ms=(time.time() - start) * 1000
             )
 
-    def _perform_action(self, action: str, params: Dict[str, object]) -> object:
+    def _perform_action(self, action: str, params: dict[str, object]) -> object:
         """Perform the action."""
         Logger.info(f"Executing {action} with {params}")
 
@@ -75,7 +75,7 @@ class DispatchResumeTools:
             # Default legacy behavior
             return {"action": action, "params": params, "status": "completed"}
 
-    def _handle_search(self, params: Dict[str, object]) -> Dict[str, object]:
+    def _handle_search(self, params: dict[str, object]) -> dict[str, object]:
         """Handle search using Titanium RAG Pipeline."""
         if not self.titanium_enabled:
             return {"error": "Titanium search not enabled", "results": []}
@@ -98,7 +98,7 @@ class DispatchResumeTools:
             }
         }
 
-    def _handle_search_with_sources(self, params: Dict[str, object]) -> Dict[str, object]:
+    def _handle_search_with_sources(self, params: dict[str, object]) -> dict[str, object]:
         """Handle search with full source information."""
         if not self.titanium_enabled:
             return {"error": "Titanium search not enabled", "sources": []}
@@ -118,7 +118,7 @@ class DispatchResumeTools:
             "pipeline": "titanium"
         }
 
-    def _handle_get_stats(self) -> Dict[str, object]:
+    def _handle_get_stats(self) -> dict[str, object]:
         """Get Titanium pipeline statistics."""
         if not self.titanium_enabled:
             return {"error": "Titanium search not enabled"}
@@ -129,6 +129,6 @@ class DispatchResumeTools:
             return {"error": str(e)}
 
 
-def execute(action: str, params: Dict[str, object], config: Optional[Dict] = None) -> ExecutionResult:
+def execute(action: str, params: dict[str, object], config: dict | None = None) -> ExecutionResult:
     """Execute action."""
     return DispatchResumeTools(config).execute(action, params)

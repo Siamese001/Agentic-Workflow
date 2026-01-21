@@ -5,7 +5,9 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 """
 MetricsAgent: Sovereign Observability Metrics Collector
 
@@ -29,16 +31,16 @@ Depth: agentic_core/observability/metrics/metrics_agent.py
 In-memory only (no persistence) — suitable for runtime missions.
 Future: extend with Prometheus exposition or file export.
 """
-from pathlib import Path
-from typing import Dict, Any, Optional, List, Tuple
-from agentic_core.utils.core_extensions.timeout_decorator import timeout, List, Tuple
-from threading import Lock
-from datetime import datetime
 import logging
+from datetime import datetime
+from pathlib import Path
+from threading import Lock
+from typing import Any, List, Tuple
 
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.timeout_decorator import List, Tuple, timeout
 
 Logger = logging.getLogger(__name__)
 
@@ -50,7 +52,7 @@ class MetricsAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     Thread-safe, in-memory Metric store with alerting rule generation.
     """
 
-    def __init__(self, project_root: Optional[Path] = None) -> None:
+    def __init__(self, project_root: Path | None = None) -> None:
         """
         Initialize Metric store and alerting configuration.
         project_root optional — for future context-aware metrics.
@@ -59,10 +61,10 @@ class MetricsAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         self._lock = Lock()
 
         # Storage
-        self._counters: Dict[str, int] = {}
-        self._gauges: Dict[str, float] = {}
-        self._labeled_counters: Dict[str, Dict[str, int]] = {}  # name → labels → count
-        self._metadata: Dict[str, Any] = {}
+        self._counters: dict[str, int] = {}
+        self._gauges: dict[str, float] = {}
+        self._labeled_counters: dict[str, dict[str, int]] = {}  # name → labels → count
+        self._metadata: dict[str, Any] = {}
 
         # Initialize compliance metrics
         self._initialize_compliance_metrics()
@@ -126,7 +128,6 @@ class MetricsAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         Enforces Key 17 state sync compliance.
         """
         try:
-            import redis
             from agentic_core.config.blueprint_sovereign.SovereignEnv import get_redis_connection
 
             # Reuse established connection logic from SSOT
@@ -168,7 +169,7 @@ class MetricsAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             labels = self._labeled_counters.setdefault(name, {})
             labels[label] = labels.get(label, 0) + value
 
-    def get_labeled_counter(self, name: str) -> Dict[str, int]:
+    def get_labeled_counter(self, name: str) -> dict[str, int]:
         """Get all labels and values for a labeled counter."""
         with self._lock:
             return self._labeled_counters.get(name, {}).copy()
@@ -215,7 +216,7 @@ class MetricsAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             yaml_lines.append(f"      - alert: {name}")
             yaml_lines.append(f"        expr: {cfg['expr']}")
             yaml_lines.append(f"        for: {cfg['for']}")
-            yaml_lines.append(f"        labels:")
+            yaml_lines.append("        labels:")
             for k, v in cfg['labels'].items():
                 yaml_lines.append(f"          {k}: {v}")
             yaml_lines.append("        annotations:")
@@ -291,7 +292,7 @@ class MetricsAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
         Logger.info(f"[MetricsAgent] Recorded compliance scan: {total} violations")
 
-    def get_all_metrics(self) -> Dict[str, Any]:
+    def get_all_metrics(self) -> dict[str, Any]:
         """Export full Metric snapshot (for debugging or export)."""
         with self._lock:
             return {
@@ -302,7 +303,7 @@ class MetricsAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             }
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """Observability agent - invoke shared healing chain."""
         if _call_path is None:
             _call_path = set()

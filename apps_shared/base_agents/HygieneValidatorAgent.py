@@ -21,6 +21,7 @@ Identifies code quality issues:
 2. Duplication: Files with identical content.
 """
 import warnings
+
 warnings.warn(
     "HygieneValidatorAgent (gravity) is deprecated. Use UnifiedHygieneValidatorAgent instead.",
     DeprecationWarning,
@@ -45,25 +46,14 @@ import hashlib
 import os
 from collections import defaultdict
 from pathlib import Path
-from typing import Any, Dict, List, Set, Tuple
+from typing import Any
 
 from agentic_core.bases import L0MaintenanceBaseAgent
+
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
     SCRIPTS_DIR,
     TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
 
 
@@ -95,10 +85,10 @@ class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
             root_path: Path to project root directory for scanning.
         """
         self.root_path = Path(root_path)
-        self.all_py_files: List[str] = []
-        self.import_graph: Dict[str, Set[str]] = defaultdict(set)
-        self.file_hashes: Dict[str, List[str]] = defaultdict(list)
-        self.entry_points: Set[str] = {
+        self.all_py_files: list[str] = []
+        self.import_graph: dict[str, set[str]] = defaultdict(set)
+        self.file_hashes: dict[str, list[str]] = defaultdict(list)
+        self.entry_points: set[str] = {
             "main.py",
             "setup.py",
             "manage.py",
@@ -116,7 +106,9 @@ class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
         Logs warning if tests soft-fail but does not halt boot.
         """
         try:
-            from agentic_core.L0_maintenance.bases.l0_delegation_testing_mixin import L0DelegationTestingMixin
+            from agentic_core.L0_maintenance.bases.l0_delegation_testing_mixin import (
+                L0DelegationTestingMixin,
+            )
             mixin = L0DelegationTestingMixin()
             if not mixin._delegate_tests_safe():
                 print(f"WARNING: {self.__class__.__name__} delegated tests soft-failed")
@@ -167,7 +159,7 @@ class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
             rel_path: Relative path from project root.
         """
         try:
-            with open(full_path, "r", encoding="utf-8") as f:
+            with open(full_path, encoding="utf-8") as f:
                 tree = ast.parse(f.read())
 
             base_dir = os.path.dirname(rel_path)
@@ -180,7 +172,7 @@ class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
         except Exception:
             pass  # Skip unparseable files
 
-    def _resolve_import_target(self, node: ast.AST, base_dir: str) -> List[str]:
+    def _resolve_import_target(self, node: ast.AST, base_dir: str) -> list[str]:
         """
         Resolve import statement to potential file paths.
 
@@ -214,7 +206,7 @@ class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
 
         return targets
 
-    def get_duplicates(self) -> List[str]:
+    def get_duplicates(self) -> list[str]:
         """
         Get list of duplicate file violations.
 
@@ -249,7 +241,7 @@ class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
             return True
         return False
 
-    def _is_file_imported(self, file: str, imported_targets: Set[str]) -> bool:
+    def _is_file_imported(self, file: str, imported_targets: set[str]) -> bool:
         """Check if file is imported by any other file.
 
         Args:
@@ -264,7 +256,7 @@ class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
                 return True
         return False
 
-    def _find_orphan_files(self) -> List[str]:
+    def _find_orphan_files(self) -> list[str]:
         """Find all orphan files (never imported).
 
         Returns:
@@ -279,7 +271,7 @@ class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
                 orphans.append(file)
         return orphans
 
-    def get_orphans(self) -> List[str]:
+    def get_orphans(self) -> list[str]:
         """Get files that are never imported.
 
         Returns:
@@ -289,7 +281,7 @@ class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
         orphan_files = self._find_orphan_files()
         return [f"DEAD CODE: {f} is never imported (potential orphan)" for f in orphan_files]
 
-    def get_orphans_raw(self) -> List[str]:
+    def get_orphans_raw(self) -> list[str]:
         """Get raw list of orphan file paths.
 
         For use by pruner scripts. Returns paths without violation messages.
@@ -299,7 +291,7 @@ class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
         """
         return self._find_orphan_files()
 
-    def _run_self_tests(self) -> Dict[str, Any]:
+    def _run_self_tests(self) -> dict[str, Any]:
         """
         Run internal self-tests.
 
@@ -316,7 +308,7 @@ class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
             results[TESTS_DIR].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
         return results
 
-    def heal_repository(self) -> Dict[str, int]:
+    def heal_repository(self) -> dict[str, int]:
         """
         Execute healing chain via parent class.
 

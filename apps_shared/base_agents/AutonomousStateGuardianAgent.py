@@ -13,6 +13,7 @@ Migration:
     )
 """
 import warnings
+
 warnings.warn(
     "AutonomousStateGuardianAgent is deprecated. Use UnifiedStateManagementAgent instead.",
     DeprecationWarning,
@@ -31,7 +32,9 @@ warnings.warn(
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 """
 L4 State: Autonomous State Guardian
 Monitors and self-repairs state corruption with mirrored redundancy and state locking.
@@ -42,17 +45,13 @@ import json
 import logging
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any
+
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
-
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 
 Logger = logging.getLogger(__name__)
 
@@ -75,7 +74,9 @@ class AutonomousStateGuardianAgent(MCPHardenedMixin, HealerMixin):
         """Initialize the instance."""
         # GRAVITY FIXED: Dynamic import for Checkpoint manager
         try:
-            from agentic_core.L4_state.validation_context.autonomous_checkpoint_manager import create_autonomous_checkpoint_manager
+            from agentic_core.L4_state.validation_context.autonomous_checkpoint_manager import (
+                create_autonomous_checkpoint_manager,
+            )
             self.CheckpointManager = create_autonomous_checkpoint_manager()
         except ImportError:
             self.CheckpointManager = None
@@ -161,7 +162,7 @@ class AutonomousStateGuardianAgent(MCPHardenedMixin, HealerMixin):
             Logger.error(f"Checkpoint verification failed for {checkpoint_id}: {e}")
             return False
 
-    async def detect_state_corruption(self) -> List[str]:
+    async def detect_state_corruption(self) -> list[str]:
         """Detect corrupted checkpoints"""
         corrupt_ids = []
 
@@ -178,7 +179,7 @@ class AutonomousStateGuardianAgent(MCPHardenedMixin, HealerMixin):
 
         return corrupt_ids
 
-    async def initiate_self_repair(self, corrupt_ids: List[str]) -> Any:
+    async def initiate_self_repair(self, corrupt_ids: list[str]) -> Any:
         """L4: Sovereign recovery with State Lock"""
         self.is_recovering = True
         Logger.info(f"L4 SELF-REPAIR: Recovering {len(corrupt_ids)} states...")
@@ -215,7 +216,7 @@ class AutonomousStateGuardianAgent(MCPHardenedMixin, HealerMixin):
             self.is_recovering = False
             Logger.info("L4: State lock released")
 
-    def _log_corruption_event(self, corrupt_ids: List[str]) -> Any:
+    def _log_corruption_event(self, corrupt_ids: list[str]) -> Any:
         """Log corruption events for pattern analysis"""
         try:
             events = []
@@ -239,7 +240,7 @@ class AutonomousStateGuardianAgent(MCPHardenedMixin, HealerMixin):
             Logger.error(f"Failed to log corruption event: {e}")
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L4 state agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -288,7 +289,7 @@ class AutonomousStateGuardianAgent(MCPHardenedMixin, HealerMixin):
                 Logger.error(f"L4 Guardianship error: {e}")
                 await asyncio.sleep(60)  # Wait before retry
 
-    def get_guardian_status(self) -> Dict[str, Any]:
+    def get_guardian_status(self) -> dict[str, Any]:
         """Get guardian status"""
         return {
             "is_recovering": self.is_recovering,

@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+
 """
 Planning and reflection agents for strategic decision-making.
 
@@ -15,19 +16,11 @@ Contains:
 - RgReflectionAgent: Consolidates successful mutations into long-term memory and performs self-critique
 """
 import json
-import re
 import sys
 from pathlib import Path
 
-from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
-
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 from agentic_core.L5_safety.validators.decorators import standard_heal
-
 
 # DUPLICATE ACCEPTED: App-specific customization valid
 # (different contexts: L2 core planning vs L1 strategic vs apps_rg implementations)

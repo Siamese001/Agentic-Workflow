@@ -37,22 +37,20 @@ DOMAIN-SPECIFIC INTEGRATIONS (State Management):
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
-import importlib
+
 import json
-import logging
 import subprocess
-import sys
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
-from agentic_core.utils.security import safe_execute
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from typing import Any
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
+from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.utils.security import safe_execute
 
 
 class L4SovereignSeverity(Enum):
@@ -68,9 +66,9 @@ class StateViolation:
     """Structured violation for state healing."""
     is_valid: bool
     message: str
-    state_key: Optional[str] = None
-    file_path: Optional[Path] = None
-    suggested_action: Optional[str] = None
+    state_key: str | None = None
+    file_path: Path | None = None
+    suggested_action: str | None = None
     severity: int = 5
 
 
@@ -117,7 +115,7 @@ class L4SubatomicTestingMixin(MCPHardenedMixin):
                             f"{class_name}: Checkpoint corruption - recovered state != original"
                 except NotImplementedError:
                     pass  # Method exists but not implemented - OK for base class
-                except Exception as e:
+                except Exception:
                     # Log but don't fail - checkpoint may require external resources
                     pass
 
@@ -155,7 +153,7 @@ class L4SubatomicTestingMixin(MCPHardenedMixin):
 
         return True
 
-    async def run_l4_subatomic_critique(self, Artifact: Dict, artifact_type: str, context: Dict) -> Dict:
+    async def run_l4_subatomic_critique(self, Artifact: dict, artifact_type: str, context: dict) -> dict:
         """L4 CRITIQUE hop: Basic state testing + delegation on failure.
 
         Args:
@@ -195,7 +193,7 @@ class L4SubatomicTestingMixin(MCPHardenedMixin):
 
         return advanced_result
 
-    def _generate_state_tests(self, Artifact: Dict, artifact_type: str, context: Dict) -> str:
+    def _generate_state_tests(self, Artifact: dict, artifact_type: str, context: dict) -> str:
         """Generate basic tests for L4 state Artifact."""
         if artifact_type == "state_update":
             return self._generate_state_update_tests(Artifact, context)
@@ -206,7 +204,7 @@ class L4SubatomicTestingMixin(MCPHardenedMixin):
         else:
             return self._generate_generic_state_tests(Artifact, context)
 
-    def _generate_state_update_tests(self, update: Dict, context: Dict) -> str:
+    def _generate_state_update_tests(self, update: dict, context: dict) -> str:
         """L4 Example 1: Unit tests for state update consistency/idempotency."""
         update_json = json.dumps(update) if isinstance(update, dict) else str(update)
         # Escape for embedding in f-string
@@ -254,7 +252,7 @@ def test_no_conflicting_keys():
     assert True
 '''
 
-    def _generate_retrieval_tests(self, retrieval: Dict, context: Dict) -> str:
+    def _generate_retrieval_tests(self, retrieval: dict, context: dict) -> str:
         """L4 Example 2: Test memory retrieval accuracy/relevance."""
         retrieval_json = json.dumps(retrieval) if isinstance(retrieval, dict) else str(retrieval)
         # Escape for embedding in f-string
@@ -304,7 +302,7 @@ def test_relevance_scores_valid():
     assert True
 '''
 
-    def _generate_reflection_tests(self, summary: Dict, context: Dict) -> str:
+    def _generate_reflection_tests(self, summary: dict, context: dict) -> str:
         """L4 Example 3: Test reflection summary quality/consistency."""
         summary_json = json.dumps(summary) if isinstance(summary, dict) else str(summary)
         # Escape for embedding in f-string
@@ -351,7 +349,7 @@ def test_balanced_sentiment():
     assert len(summary_json) > 0
 '''
 
-    def _generate_generic_state_tests(self, Artifact: Dict, context: Dict) -> str:
+    def _generate_generic_state_tests(self, Artifact: dict, context: dict) -> str:
         """Fallback tests for unknown state types."""
         artifact_str = json.dumps(Artifact)[:500] if isinstance(Artifact, dict) else str(Artifact)[:500]
         # Escape for embedding in f-string
@@ -386,7 +384,7 @@ def test_artifact_exists():
     assert len(str(Artifact)) > 0
 '''
 
-    def _run_state_sandbox_tests(self, tests: str, Artifact: Dict) -> Dict:
+    def _run_state_sandbox_tests(self, tests: str, Artifact: dict) -> dict:
         """Run state tests in sandboxed subprocess."""
         try:
             temp_test = Path.cwd() / "temp_l4_test.py"
@@ -415,7 +413,7 @@ def test_artifact_exists():
         except Exception as e:
             return {"passed": False, "error": str(e), TESTS_DIR: []}
 
-    async def _delegate_to_l5_specialist(self, Artifact: Dict, artifact_type: str, context: Dict) -> Dict:
+    async def _delegate_to_l5_specialist(self, Artifact: dict, artifact_type: str, context: dict) -> dict:
         """Delegate to TestSovereigntyAgent for advanced state testing."""
         try:
 
@@ -432,7 +430,7 @@ def test_artifact_exists():
         except Exception as e:
             return {"passed": False, "error": str(e), TESTS_DIR: []}
 
-    def _emit_l4_event(self, Severity: L4SovereignSeverity, event_type: str, payload: Optional[Dict] = None) -> None:
+    def _emit_l4_event(self, Severity: L4SovereignSeverity, event_type: str, payload: dict | None = None) -> None:
         """Emit L4 subatomic testing event for observability."""
         print(f"[SUBATOMIC L4] {Severity.value} | {event_type}")
         if payload:
@@ -466,7 +464,7 @@ class L4StateBaseAgent(L4SubatomicTestingMixin, RedisCacheMixin, PineconeVectorM
     _namespace: str = "l4_context"
 
     # Short-term memory buffer for recent interactions
-    short_term_buffer: List[Dict[str, Any]] = field(default_factory=list)
+    short_term_buffer: list[dict[str, Any]] = field(default_factory=list)
 
     # Configuration
     short_term_max_size: int = 50
@@ -476,7 +474,7 @@ class L4StateBaseAgent(L4SubatomicTestingMixin, RedisCacheMixin, PineconeVectorM
     # L4-SPECIFIC LAYER METHODS: State/Memory Management
     # =========================================================================
 
-    def recall(self, query: str, k: int = None) -> List[Dict[str, Any]]:
+    def recall(self, query: str, k: int = None) -> list[dict[str, Any]]:
         """L4-specific: Hybrid retrieval combining short-term and semantic memory.
 
         Args:
@@ -510,7 +508,7 @@ class L4StateBaseAgent(L4SubatomicTestingMixin, RedisCacheMixin, PineconeVectorM
         self.log_info(f"Recalled {len(reranked)} items for query: {query[:50]}...")
         return reranked
 
-    def persist(self, interaction: Dict[str, Any]) -> bool:
+    def persist(self, interaction: dict[str, Any]) -> bool:
         """L4-specific: Persist interaction to both short-term and long-term memory.
 
         Args:
@@ -543,7 +541,7 @@ class L4StateBaseAgent(L4SubatomicTestingMixin, RedisCacheMixin, PineconeVectorM
             super().heal_repository()
             return False
 
-    def create_checkpoint(self, state: Dict[str, Any]) -> Optional[str]:
+    def create_checkpoint(self, state: dict[str, Any]) -> str | None:
         """L4-specific: Create a recoverable checkpoint of current state.
 
         Args:
@@ -579,7 +577,7 @@ class L4StateBaseAgent(L4SubatomicTestingMixin, RedisCacheMixin, PineconeVectorM
             self.log_error(f"Checkpoint creation failed: {e}")
             return None
 
-    def recover_from_checkpoint(self, checkpoint_id: str) -> Optional[Dict[str, Any]]:
+    def recover_from_checkpoint(self, checkpoint_id: str) -> dict[str, Any] | None:
         """L4-specific: Recover state from a checkpoint.
 
         Args:
@@ -604,17 +602,17 @@ class L4StateBaseAgent(L4SubatomicTestingMixin, RedisCacheMixin, PineconeVectorM
             super().heal_repository()
             return None
 
-    def _semantic_search(self, query: str, k: int = 5) -> List[Dict[str, Any]]:
+    def _semantic_search(self, query: str, k: int = 5) -> list[dict[str, Any]]:
         """Search semantic memory (vector store). Override in subclasses with actual implementation."""
         # Placeholder - subclasses integrate with Pinecone/other vector stores
         return []
 
-    def _persist_to_vector_store(self, interaction: Dict[str, Any]) -> bool:
+    def _persist_to_vector_store(self, interaction: dict[str, Any]) -> bool:
         """Persist to vector store. Override in subclasses with actual implementation."""
         # Placeholder - subclasses integrate with Pinecone/other vector stores
         return True
 
-    def _rerank_results(self, query: str, results: List[Dict], top_n: int = 5) -> List[Dict]:
+    def _rerank_results(self, query: str, results: list[dict], top_n: int = 5) -> list[dict]:
         """Rerank combined results by relevance to query."""
         if not results:
             return []
@@ -659,14 +657,14 @@ class L4StateBaseAgent(L4SubatomicTestingMixin, RedisCacheMixin, PineconeVectorM
 
     def _get_timestamp(self) -> str:
         """Get current ISO timestamp."""
-        from datetime import datetime, timezone
+        from datetime import timezone
         return datetime.now(timezone.utc).isoformat()
 
-    async def update_state(self, Task: Dict) -> Dict:
+    async def update_state(self, Task: dict) -> dict:
         """Execute state update logic. Override in subclasses."""
         raise NotImplementedError(f"{self.name} must implement update_state()")
 
-    async def execute_with_critique(self, Task: Dict) -> Dict:
+    async def execute_with_critique(self, Task: dict) -> dict:
         """Execute with L4 subatomic CRITIQUE hop.
 
         Subclasses should call this instead of raw execute
@@ -693,7 +691,7 @@ class L4StateBaseAgent(L4SubatomicTestingMixin, RedisCacheMixin, PineconeVectorM
 
         return result
 
-    def post_heal_validation(self, state_update: Dict, dry_run: bool = True) -> Dict[str, Any]:
+    def post_heal_validation(self, state_update: dict, dry_run: bool = True) -> dict[str, Any]:
         """
         GOLD STANDARD: Post-heal validation confirming state consistency.
         Verifies state was successfully updated and is consistent.
@@ -733,10 +731,10 @@ class L4StateBaseAgent(L4SubatomicTestingMixin, RedisCacheMixin, PineconeVectorM
 
     def cleanup_violations(
         self,
-        violations: List[StateViolation],
+        violations: list[StateViolation],
         dry_run: bool = True,
         max_actions: int = 50
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         GOLD STANDARD: Cleanup state violations with state recovery.
 
@@ -786,7 +784,7 @@ class L4StateBaseAgent(L4SubatomicTestingMixin, RedisCacheMixin, PineconeVectorM
 
         return actions
 
-    def run_with_cleanup(self, dry_run: bool = True) -> Dict[str, Any]:
+    def run_with_cleanup(self, dry_run: bool = True) -> dict[str, Any]:
         """
         GOLD STANDARD: Full state management with autonomous cleanup.
         Validates state consistency and recovers from violations.
@@ -797,7 +795,7 @@ class L4StateBaseAgent(L4SubatomicTestingMixin, RedisCacheMixin, PineconeVectorM
         Returns:
             Dict with comprehensive execution and cleanup summaries
         """
-        all_violations: List[StateViolation] = []
+        all_violations: list[StateViolation] = []
 
         # Check state consistency
         try:
@@ -826,7 +824,7 @@ class L4StateBaseAgent(L4SubatomicTestingMixin, RedisCacheMixin, PineconeVectorM
         }
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L4 state agent - operational only."""
         if _call_path is None:
             # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)

@@ -5,12 +5,13 @@ with standardized tool interfaces and protocol compliance.
 Follows the functional component pattern with proper logging.
 """
 
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any, Union, Tuple, Callable
 import logging
+import time
+from collections.abc import Callable
+from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-import time
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -40,9 +41,9 @@ class ToolDefinition:
     name: str
     version: str
     description: str
-    parameters: Dict[str, Dict[str, Any]]
-    capabilities: List[str] = field(default_factory=list)
-    dependencies: List[str] = field(default_factory=list)
+    parameters: dict[str, dict[str, Any]]
+    capabilities: list[str] = field(default_factory=list)
+    dependencies: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -51,10 +52,10 @@ class ToolExecutionContext:
     execution_id: str
     tool_id: str
     mode: ExecutionMode
-    caller_id: Optional[str] = None
-    session_id: Optional[str] = None
-    trace_context: Optional[Dict[str, Any]] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    caller_id: str | None = None
+    session_id: str | None = None
+    trace_context: dict[str, Any] | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -73,23 +74,23 @@ class ToolExecutionResult:
     execution_id: str
     tool_id: str
     success: bool
-    output: Optional[Any] = None
-    metrics: Dict[str, float] = field(default_factory=dict)
-    artifacts: List[str] = field(default_factory=list)
-    error: Optional[str] = None
-    warnings: List[str] = field(default_factory=list)
+    output: Any | None = None
+    metrics: dict[str, float] = field(default_factory=dict)
+    artifacts: list[str] = field(default_factory=list)
+    error: str | None = None
+    warnings: list[str] = field(default_factory=list)
     execution_time: float = 0.0
 
 
 class ObservabilityToolExecutor:
     """Main executor for observability tools."""
 
-    def __init__(self, config: Optional[ToolExecutionConfig] = None):
+    def __init__(self, config: ToolExecutionConfig | None = None):
         self.config = config or ToolExecutionConfig()
         self.logger = logging.getLogger(self.__class__.__name__)
-        self._registered_tools: Dict[str, ToolDefinition] = {}
-        self._tool_handlers: Dict[str, Callable] = {}
-        self._active_executions: Dict[str, Dict[str, Any]] = {}
+        self._registered_tools: dict[str, ToolDefinition] = {}
+        self._tool_handlers: dict[str, Callable] = {}
+        self._active_executions: dict[str, dict[str, Any]] = {}
         self._initialize_built_in_tools()
 
     def register_tool(self, tool_def: ToolDefinition, handler: Callable) -> None:
@@ -104,7 +105,7 @@ class ObservabilityToolExecutor:
         self.logger.info(f"Registered tool: {tool_def.tool_id}")
 
     def execute_tool(self, context: ToolExecutionContext,
-                    parameters: Dict[str, Any]) -> ToolExecutionResult:
+                    parameters: dict[str, Any]) -> ToolExecutionResult:
         """Execute an observability tool.
 
         Args:
@@ -164,7 +165,7 @@ class ObservabilityToolExecutor:
             )
 
     def execute_tool_stream(self, context: ToolExecutionContext,
-                           parameters: Dict[str, str]) -> Dict[str, object]:
+                           parameters: dict[str, str]) -> dict[str, object]:
         """Execute tool in streaming mode.
 
         Args:
@@ -186,7 +187,7 @@ class ObservabilityToolExecutor:
         for chunk in handler(parameters, stream=True):
             yield chunk
 
-    def list_tools(self, tool_type: Optional[ToolType] = None) -> List[ToolDefinition]:
+    def list_tools(self, tool_type: ToolType | None = None) -> list[ToolDefinition]:
         """List registered tools.
 
         Args:
@@ -202,7 +203,7 @@ class ObservabilityToolExecutor:
 
         return tools
 
-    def get_tool_info(self, tool_id: str) -> Optional[ToolDefinition]:
+    def get_tool_info(self, tool_id: str) -> ToolDefinition | None:
         """Get tool information.
 
         Args:
@@ -229,7 +230,7 @@ class ObservabilityToolExecutor:
             return True
         return False
 
-    def get_execution_status(self, execution_id: str) -> Optional[Dict[str, str]]:
+    def get_execution_status(self, execution_id: str) -> dict[str, str] | None:
         """Get status of execution.
 
         Args:
@@ -242,7 +243,7 @@ class ObservabilityToolExecutor:
 
     def _execute_with_context(self, handler: Callable,
                              context: ToolExecutionContext,
-                             parameters: Dict[str, str]) -> ToolExecutionResult:
+                             parameters: dict[str, str]) -> ToolExecutionResult:
         """Execute tool with context."""
         # Prepare execution environment
         exec_env = {
@@ -279,7 +280,7 @@ class ObservabilityToolExecutor:
             warnings=warnings
         )
 
-    def _execute_batch(self, handler: Callable, exec_env: Dict[str, str]) -> Dict[str, str]:
+    def _execute_batch(self, handler: Callable, exec_env: dict[str, str]) -> dict[str, str]:
         """Execute tool in batch mode."""
         parameters = exec_env["parameters"]
         batch_items = parameters.get("batch_items", [])
@@ -323,7 +324,7 @@ class ObservabilityToolExecutor:
             "warnings": all_warnings
         }
 
-    def _validate_parameter_type(self, param_name: str, value: object, expected_type: str) -> Optional[str]:
+    def _validate_parameter_type(self, param_name: str, value: object, expected_type: str) -> str | None:
         """Validate a single parameter type and return error message if invalid."""
         type_validators = {
             "string": lambda v: isinstance(v, str),
@@ -347,8 +348,8 @@ class ObservabilityToolExecutor:
             return f"Parameter {param_name} must be {type_names.get(expected_type, 'valid type')}"
         return None
 
-    def _validate_parameters(self, parameters: Dict[str, Any],
-                            tool_def: ToolDefinition) -> List[str]:
+    def _validate_parameters(self, parameters: dict[str, Any],
+                            tool_def: ToolDefinition) -> list[str]:
         """Validate tool parameters."""
         errors = []
 
@@ -415,7 +416,7 @@ class ObservabilityToolExecutor:
             capabilities=["collect", "analyze", "export"]
         )
 
-        def _trace_handler(exec_env: Dict[str, Any]) -> Dict[str, Any]:
+        def _trace_handler(exec_env: dict[str, Any]) -> dict[str, Any]:
             params = exec_env["parameters"]
             return {
                 "output": {
@@ -442,7 +443,7 @@ class ObservabilityToolExecutor:
             capabilities=["collect", "aggregate", "query"]
         )
 
-        def _metric_handler(exec_env: Dict[str, Any]) -> Dict[str, Any]:
+        def _metric_handler(exec_env: dict[str, Any]) -> dict[str, Any]:
             params = exec_env["parameters"]
             return {
                 "output": {
@@ -469,7 +470,7 @@ class ObservabilityToolExecutor:
             capabilities=["filter", "parse", "analyze"]
         )
 
-        def _log_handler(exec_env: Dict[str, Any]) -> Dict[str, Any]:
+        def _log_handler(exec_env: dict[str, Any]) -> dict[str, Any]:
             params = exec_env["parameters"]
             return {
                 "output": {
@@ -509,10 +510,10 @@ def create_observability_tool_executor(
 def tool_execute_observability_execution(
     tool_id: str,
     execution_id: str,
-    parameters: Dict[str, Any],
+    parameters: dict[str, Any],
     mode: str = "synchronous",
-    caller_id: Optional[str] = None
-) -> Dict[str, Any]:
+    caller_id: str | None = None
+) -> dict[str, Any]:
     """Execute observability tool.
 
     Args:

@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 SwarmScheduler - L3 Task Scheduling System
 
@@ -7,11 +8,12 @@ Optimizes resource utilization and ensures fair Task distribution.
 """
 import asyncio
 import logging
-import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum, auto
-from typing import Any, Callable, Dict, List, Optional, Protocol, Set
+from enum import Enum
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 
 class TaskPriority(Enum):
@@ -39,18 +41,18 @@ class Task:
     args: tuple = field(default_factory=tuple)
     kwargs: dict = field(default_factory=dict)
     priority: TaskPriority = TaskPriority.MEDIUM
-    dependencies: Set[str] = field(default_factory=set)
+    dependencies: set[str] = field(default_factory=set)
     timeout: float = 300.0
     retry_count: int = 0
     max_retries: int = 3
     status: TaskStatus = TaskStatus.PENDING
     created_at: datetime = field(default_factory=datetime.utcnow)
-    started_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
+    started_at: datetime | None = None
+    completed_at: datetime | None = None
     result: Any = None
-    error: Optional[str] = None
+    error: str | None = None
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         """Convert to dictionary."""
         return {'id': self.id, 'name': self.name, 'priority': self.priority.value, 'status': self.status.value, 'dependencies': list(self.dependencies), 'retry_count': self.retry_count, 'created_at': self.created_at.isoformat(), 'started_at': self.started_at.isoformat() if self.started_at else None, 'completed_at': self.completed_at.isoformat() if self.completed_at else None, 'error': self.error}
 
@@ -58,8 +60,8 @@ class TaskQueue:
     """Priority queue for tasks."""
 
     def __init__(self):
-        self._tasks: List[Task] = []
-        self._task_map: Dict[str, Task] = {}
+        self._tasks: list[Task] = []
+        self._task_map: dict[str, Task] = {}
 
     def add(self, Task: Task) -> Any:
         """Add a Task to the queue."""
@@ -71,7 +73,7 @@ class TaskQueue:
         """Sort tasks by priority and creation time."""
         self._tasks.sort(key=lambda t: (-t.priority.value, t.created_at))
 
-    def get_next(self) -> Optional[Task]:
+    def get_next(self) -> Task | None:
         """Get the next Task to execute."""
         for Task in self._tasks:
             if Task.status == TaskStatus.PENDING:
@@ -88,7 +90,7 @@ class TaskQueue:
                     return False
         return True
 
-    def get_task(self, task_id: str) -> Optional[Task]:
+    def get_task(self, task_id: str) -> Task | None:
         """Get a Task by ID."""
         return self._task_map.get(task_id)
 
@@ -100,9 +102,9 @@ class TaskQueue:
 
     def get_pending_count(self) -> int:
         """Get count of pending tasks."""
-        return sum((1 for t in self._tasks if t.status == TaskStatus.PENDING))
+        return sum(1 for t in self._tasks if t.status == TaskStatus.PENDING)
 
-    def get_all_tasks(self) -> List[Task]:
+    def get_all_tasks(self) -> list[Task]:
         """Get all tasks."""
         return self._tasks.copy()
 
@@ -127,11 +129,11 @@ class SwarmScheduler:
         """
         self.max_workers = max_workers
         self.queue = TaskQueue()
-        self.running_tasks: Dict[str, asyncio.Task] = {}
-        self.completed_tasks: Dict[str, Task] = {}
+        self.running_tasks: dict[str, asyncio.Task] = {}
+        self.completed_tasks: dict[str, Task] = {}
         self.stats = {'total_tasks': 0, 'completed': 0, 'failed': 0, 'cancelled': 0, 'avg_execution_time': 0.0}
         self.running = False
-        self.scheduler_task: Optional[asyncio.Task] = None
+        self.scheduler_task: asyncio.Task | None = None
         LOGGER.info(f'SwarmScheduler initialized with {max_workers} workers')
 
     async def start(self) -> Any:
@@ -158,7 +160,7 @@ class SwarmScheduler:
                 queued_task.status = TaskStatus.CANCELLED
         LOGGER.info('SwarmScheduler stopped')
 
-    def submit_task(self, task_id: str, name: str, func: Callable, args: tuple=(), kwargs: dict=None, priority: TaskPriority=TaskPriority.MEDIUM, dependencies: Set[str]=None, timeout: float=300.0) -> str:
+    def submit_task(self, task_id: str, name: str, func: Callable, args: tuple=(), kwargs: dict=None, priority: TaskPriority=TaskPriority.MEDIUM, dependencies: set[str]=None, timeout: float=300.0) -> str:
         """
         Submit a Task for execution.
 
@@ -253,7 +255,7 @@ class SwarmScheduler:
         else:
             self.stats['avg_execution_time'] = (self.stats['avg_execution_time'] * (completed - 1) + duration) / completed
 
-    def get_task_status(self, task_id: str) -> Optional[Dict]:
+    def get_task_status(self, task_id: str) -> dict | None:
         """Get status of a specific Task."""
         Task: Any = self.queue.get_task(task_id)
         if not Task:
@@ -287,15 +289,15 @@ class SwarmScheduler:
             return True
         return False
 
-    def get_queue_status(self) -> Dict:
+    def get_queue_status(self) -> dict:
         """Get current queue status."""
         return {'running': self.running, 'workers_active': len(self.running_tasks), 'workers_available': self.max_workers - len(self.running_tasks), 'pending_tasks': self.queue.get_pending_count(), 'total_queued': len(self.queue.get_all_tasks()), 'statistics': self.stats.copy()}
 
-    def get_pending_tasks(self) -> List[Dict]:
+    def get_pending_tasks(self) -> list[dict]:
         """Get all pending tasks."""
         return [t.to_dict() for t in self.queue.get_all_tasks() if t.status == TaskStatus.PENDING]
 
-    def get_running_tasks(self) -> List[Dict]:
+    def get_running_tasks(self) -> list[dict]:
         """Get all running tasks."""
         running: Any = []
         for task_id in self.running_tasks:
@@ -303,7 +305,7 @@ class SwarmScheduler:
             if Task:
                 running.append(Task.to_dict())
         return running
-_swarm_scheduler: Optional[SwarmScheduler] = None
+_swarm_scheduler: SwarmScheduler | None = None
 
 def get_swarm_scheduler() -> SwarmScheduler:
     """Get or create the global SwarmScheduler instance."""

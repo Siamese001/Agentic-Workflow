@@ -11,9 +11,8 @@ from __future__ import annotations
 
 import ast
 import re
-from pathlib import Path
-from typing import Dict, List, Set, Tuple, Any
 from dataclasses import dataclass, field
+from pathlib import Path
 
 
 @dataclass
@@ -21,11 +20,11 @@ class SleepingGiant:
     """Represents a potentially dangerous agent."""
     file_path: Path
     agent_name: str
-    dangerous_imports: List[str] = field(default_factory=list)
-    mutation_methods: List[str] = field(default_factory=list)
+    dangerous_imports: list[str] = field(default_factory=list)
+    mutation_methods: list[str] = field(default_factory=list)
     heal_repo_lines: int = 0
     heal_repo_is_trivial: bool = False
-    orphaned_methods: List[str] = field(default_factory=list)
+    orphaned_methods: list[str] = field(default_factory=list)
     has_main_block: bool = False
     uses_print_for_errors: bool = False
     uses_argparse: bool = False
@@ -58,13 +57,13 @@ class AgentAnalyzer(ast.NodeVisitor):
     """AST visitor to analyze agent structure."""
 
     def __init__(self):
-        self.imports: Set[str] = set()
-        self.dangerous_imports: List[str] = []
-        self.classes: Dict[str, Dict] = {}
+        self.imports: set[str] = set()
+        self.dangerous_imports: list[str] = []
+        self.classes: dict[str, dict] = {}
         self.current_class: str = None
         self.has_main_block: bool = False
         self.uses_argparse: bool = False
-        self.hardcoded_paths: List[str] = []
+        self.hardcoded_paths: list[str] = []
 
     def visit_Import(self, node: ast.Import):
         for alias in node.names:
@@ -136,7 +135,7 @@ class AgentAnalyzer(ast.NodeVisitor):
             return base.attr
         return str(base)
 
-    def _get_method_calls(self, node: ast.FunctionDef) -> Set[str]:
+    def _get_method_calls(self, node: ast.FunctionDef) -> set[str]:
         """Get all method calls within a function."""
         calls = set()
         for child in ast.walk(node):
@@ -279,7 +278,7 @@ def main():
     print("=" * 80)
     print()
 
-    giants: List[SleepingGiant] = []
+    giants: list[SleepingGiant] = []
 
     for file_path in root.rglob("*.py"):
         if any(excluded in file_path.parts for excluded in EXCLUDED_DIRS):
@@ -326,13 +325,13 @@ def main():
         if giant.orphaned_methods:
             print(f"   Orphaned Methods: {', '.join(giant.orphaned_methods[:10])}")
         if giant.has_main_block:
-            print(f"   ⚠️  Has __main__ block (CLI Giant)")
+            print("   ⚠️  Has __main__ block (CLI Giant)")
         if giant.uses_argparse:
-            print(f"   ⚠️  Uses argparse (CLI Giant)")
+            print("   ⚠️  Uses argparse (CLI Giant)")
         if giant.has_hardcoded_paths:
-            print(f"   ⚠️  Has hardcoded paths")
+            print("   ⚠️  Has hardcoded paths")
         if giant.is_zombie_healer:
-            print(f"   ⚠️  Zombie Healer (delegates to super only)")
+            print("   ⚠️  Zombie Healer (delegates to super only)")
 
     print()
     print("=" * 80)

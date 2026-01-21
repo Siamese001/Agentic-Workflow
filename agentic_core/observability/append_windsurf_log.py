@@ -16,8 +16,6 @@ import argparse
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # Path to log file (project root)
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -28,7 +26,7 @@ def load_log() -> list:
     """Load existing log entries."""
     if LOG_PATH.exists():
         try:
-            with open(LOG_PATH, 'r') as f:
+            with open(LOG_PATH) as f:
                 return json.load(f)
         except Exception as e:
             print(f"Error loading log: {e}")
@@ -48,7 +46,7 @@ def append_batch(
     healed: int,
     total_core: int,
     commits: int,
-    batch_name: Optional[str] = None,
+    batch_name: str | None = None,
     mcp_hardened: int = 0,
     regressions: int = 0
 ) -> dict:
@@ -88,7 +86,7 @@ def append_batch(
     log.append(new_entry)
     save_log(log)
 
-    print(f"\n[NEW ENTRY]")
+    print("\n[NEW ENTRY]")
     print(f"  Batch: {batch_name}")
     print(f"  Healing: {healing_pct}% ({healed}/{total_core})")
     print(f"  MCP Hardened: {mcp_hardened}")

@@ -10,9 +10,9 @@ import logging
 import re
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Dict, List, Optional, Tuple, Any, Union
-from pydantic import BaseModel, Field, validator
+from typing import Any
 
+from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +37,7 @@ class DepthScore(BaseModel):
     """Score indicating personalization depth."""
     level: int = Field(..., ge=0, le=3, description="0=Generic, 3=Deep")
     score: float = Field(..., ge=0.0, le=1.0, description="Depth score")
-    rationale: List[str] = Field(default_factory=list, description="Reasoning for score")
+    rationale: list[str] = Field(default_factory=list, description="Reasoning for score")
 
     @property
     def is_deep(self) -> bool:
@@ -61,7 +61,7 @@ class SentimentProfile(BaseModel):
     """Profile of recipient's sentiment."""
     mood: SentimentMood = Field(..., description="Detected mood")
     risk_level: RiskLevel = Field(..., description="Associated risk level")
-    keywords_detected: List[str] = Field(default_factory=list, description="Keywords that determined mood")
+    keywords_detected: list[str] = Field(default_factory=list, description="Keywords that determined mood")
 
     @property
     def is_safe_to_contact(self) -> bool:
@@ -79,7 +79,7 @@ class WarmthSetting(BaseModel):
 class DepthScorer:
     """Calculates personalization depth based on profile information."""
 
-    def __init__(self, target_keywords: Optional[List[str]] = None):
+    def __init__(self, target_keywords: list[str] | None = None):
         """Initialize the depth scorer.
 
         Args:
@@ -91,7 +91,7 @@ class DepthScorer:
         ]
         logger.info(f"Initialized DepthScorer with {len(self.target_keywords)} keywords")
 
-    def calculate_depth(self, profile: Dict[str, Any]) -> DepthScore:
+    def calculate_depth(self, profile: dict[str, Any]) -> DepthScore:
         """Calculate personalization depth from profile.
 
         Args:
@@ -182,7 +182,7 @@ class DepthScorer:
 class MicroHookGenerator:
     """Generates unique bridge phrases to kill template fatigue."""
 
-    def __init__(self, my_education: Optional[Dict[str, str]] = None):
+    def __init__(self, my_education: dict[str, str] | None = None):
         """Initialize the hook generator.
 
         Args:
@@ -191,7 +191,7 @@ class MicroHookGenerator:
         self.my_education = my_education or {}
         logger.info("Initialized MicroHookGenerator")
 
-    def generate_hooks(self, profile: Dict[str, Any]) -> List[MicroHook]:
+    def generate_hooks(self, profile: dict[str, Any]) -> list[MicroHook]:
         """Generate micro-hooks based on profile triggers.
 
         Args:
@@ -310,7 +310,7 @@ class SentimentAnalyzer:
 
         logger.info("Initialized SentimentAnalyzer with word dictionaries")
 
-    def assess_sentiment(self, text_samples: List[str]) -> SentimentProfile:
+    def assess_sentiment(self, text_samples: list[str]) -> SentimentProfile:
         """Assess sentiment from text samples.
 
         Args:
@@ -473,8 +473,8 @@ class TemperatureEngine:
 
     def __init__(
         self,
-        target_keywords: Optional[List[str]] = None,
-        my_education: Optional[Dict[str, str]] = None
+        target_keywords: list[str] | None = None,
+        my_education: dict[str, str] | None = None
     ):
         """Initialize the temperature engine.
 
@@ -491,9 +491,9 @@ class TemperatureEngine:
 
     def analyze_temperature(
         self,
-        profile: Dict[str, Any],
-        context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        profile: dict[str, Any],
+        context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Analyze all temperature aspects for a recipient.
 
         Args:
@@ -562,7 +562,7 @@ class TemperatureEngine:
         depth: DepthScore,
         sentiment: SentimentProfile,
         warmth: WarmthSetting
-    ) -> List[str]:
+    ) -> list[str]:
         """Generate recommendations based on analysis.
 
         Args:
@@ -600,17 +600,17 @@ class TemperatureEngine:
 
 # Factory functions for easy instantiation
 def create_temperature_engine(
-    target_keywords: Optional[List[str]] = None,
-    my_education: Optional[Dict[str, str]] = None
+    target_keywords: list[str] | None = None,
+    my_education: dict[str, str] | None = None
 ) -> TemperatureEngine:
     """Create a TemperatureEngine instance."""
     return TemperatureEngine(target_keywords, my_education)
 
 
 def analyze_temperature(
-    profile: Dict[str, Any],
-    context: Dict[str, Any]
-) -> Dict[str, Any]:
+    profile: dict[str, Any],
+    context: dict[str, Any]
+) -> dict[str, Any]:
     """Quickly analyze temperature for a profile."""
     engine = create_temperature_engine()
     return engine.analyze_temperature(profile, context)

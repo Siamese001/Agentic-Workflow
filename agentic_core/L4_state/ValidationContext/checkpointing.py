@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Verifiable Checkpoint Manager
 
@@ -8,8 +9,8 @@ Prevents corrupted or tampered checkpoints from being loaded into agent memory.
 import hashlib
 import json
 import logging
-import re
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol
+from typing import TYPE_CHECKING, Any
+
 if TYPE_CHECKING:
     from agentic_core.storage import BlobStorageProvider
 Logger: Any = logging.getLogger(__name__)
@@ -32,7 +33,7 @@ class VerifiableCheckpointManager:
         self.storage = storage_provider
         LOGGER.info('Verifiable Checkpoint manager initialized')
 
-    async def save_checkpoint(self, session_id: str, node_id: str, state: Dict[str, Any]) -> str:
+    async def save_checkpoint(self, session_id: str, node_id: str, state: dict[str, Any]) -> str:
         """
         Saves a Checkpoint with cryptographic verification.
 
@@ -52,7 +53,7 @@ class VerifiableCheckpointManager:
         LOGGER.info(f'Saved Checkpoint: {session_id}/{node_id} (checksum={checksum[:8]}...)')
         return storage_etag
 
-    async def load_checkpoint(self, session_id: str, node_id: str, verify: bool=True) -> Optional[Dict[str, Any]]:
+    async def load_checkpoint(self, session_id: str, node_id: str, verify: bool=True) -> dict[str, Any] | None:
         """
         Loads and verifies a Checkpoint.
 
@@ -124,7 +125,7 @@ class VerifiableCheckpointManager:
             return result
         return False
 
-    async def list_checkpoints(self, session_id: Optional[str]=None) -> list:
+    async def list_checkpoints(self, session_id: str | None=None) -> list:
         """
         List all checkpoints, optionally filtered by session.
 
@@ -139,7 +140,7 @@ class VerifiableCheckpointManager:
             return await self.storage.list_blobs(prefix=prefix)
         return []
 
-    async def save_snapshot(self, session_id: str, snapshot_name: str, state: Dict[str, Any]) -> str:
+    async def save_snapshot(self, session_id: str, snapshot_name: str, state: dict[str, Any]) -> str:
         """
         Save a named snapshot (for rollback/replay).
 
@@ -159,7 +160,7 @@ class VerifiableCheckpointManager:
         LOGGER.info(f'Saved snapshot: {session_id}/{snapshot_name}')
         return storage_etag
 
-    async def load_snapshot(self, session_id: str, snapshot_name: str) -> Optional[Dict[str, Any]]:
+    async def load_snapshot(self, session_id: str, snapshot_name: str) -> dict[str, Any] | None:
         """
         Load a named snapshot.
 

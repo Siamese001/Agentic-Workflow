@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 L3 Orchestration: Autonomous Sovereign Core
 Cross-layer orchestrator that coordinates autonomous responses across L1-L5.
@@ -7,16 +8,11 @@ Cross-layer orchestrator that coordinates autonomous responses across L1-L5.
 import asyncio
 from datetime import datetime
 from pathlib import Path
-from typing import Any
 
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 
 
@@ -60,15 +56,21 @@ class AutonomousSovereignCore:
         )
         # GRAVITY FIXED: Dynamic imports for autonomous components
         try:
-            from agentic_core.L4_state.validation_context.autonomous_checkpoint_manager import create_autonomous_checkpoint_manager
+            from agentic_core.L4_state.validation_context.autonomous_checkpoint_manager import (
+                create_autonomous_checkpoint_manager,
+            )
         except ImportError:
             create_autonomous_checkpoint_manager = lambda: None
         try:
-            from agentic_core.L4_state.validation_context.autonomous_state_guardian import create_autonomous_state_guardian
+            from agentic_core.L4_state.validation_context.autonomous_state_guardian import (
+                create_autonomous_state_guardian,
+            )
         except ImportError:
             create_autonomous_state_guardian = lambda: None
         try:
-            from agentic_core.L5_safety.guardrails.self_updating_safety_engine import create_self_updating_safety_engine
+            from agentic_core.L5_safety.guardrails.self_updating_safety_engine import (
+                create_self_updating_safety_engine,
+            )
         except ImportError:
             create_self_updating_safety_engine = lambda: None
 
@@ -82,13 +84,13 @@ class AutonomousSovereignCore:
         self.l5_safety = create_self_updating_safety_engine()
 
         print(f"\n[ETERNAL SOVEREIGN CORE AWAKENED] {datetime.now()}")
-        print(f"   L1 Adaptive Learning: Online")
-        print(f"   L2 Resource Manager: Online")
-        print(f"   L3 Self-Recovery: Online")
-        print(f"   L3 Execution Engine: Online")
-        print(f"   L4 Checkpoint Manager: Online")
-        print(f"   L4 State Guardian: Online")
-        print(f"   L5 Safety Engine: Online")
+        print("   L1 Adaptive Learning: Online")
+        print("   L2 Resource Manager: Online")
+        print("   L3 Self-Recovery: Online")
+        print("   L3 Execution Engine: Online")
+        print("   L4 Checkpoint Manager: Online")
+        print("   L4 State Guardian: Online")
+        print("   L5 Safety Engine: Online")
 
         # Awaken autonomous loops with dependency injection
         self.l1_learning.awaken()

@@ -11,6 +11,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from dataclasses import dataclass
+
 """
 AutonomousPromptEvolutionAgent: Optimizes prompt templates based on MetaLearning rewards.
 Created: 2026-01-13 | Version: 2.0.0
@@ -21,16 +22,17 @@ evolutionary mutations to improve LLM efficiency and output quality.
 from __future__ import annotations
 
 import hashlib
-import json
 import logging
 import random
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.common.healing.healer_mixin import HealerMixin
-from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import (
+    SubatomicTestingMixin,
+)
 
 log = logging.getLogger(__name__)
 
@@ -47,12 +49,12 @@ class AutonomousPromptEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, He
     - Validates evolved prompts before deployment
     """
 
-    def __init__(self, prompts_dir: Optional[Path] = None) -> None:
+    def __init__(self, prompts_dir: Path | None = None) -> None:
         """Initialize the instance."""
         super().__init__()
         self.prompts_dir = prompts_dir or Path("agentic_core/prompt_governance/templates")
-        self._meta_learning: Optional[Any] = None
-        self._evolution_history: List[Dict[str, Any]] = []
+        self._meta_learning: Any | None = None
+        self._evolution_history: list[dict[str, Any]] = []
         self._mutation_strategies = [
             self._mutate_word_choice,
             self._mutate_structure,
@@ -71,7 +73,7 @@ class AutonomousPromptEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, He
                 log.warning(f"MetaLearningAgent unavailable: {e}")
         return self._meta_learning
 
-    def get_prompt_performance(self, template_id: str) -> Dict[str, Any]:
+    def get_prompt_performance(self, template_id: str) -> dict[str, Any]:
         """Retrieve performance metrics for a prompt template from MetaLearning."""
         if not self.meta_learning:
             return {"avg_reward": 0.0, "usage_count": 0, "success_rate": 0.0}
@@ -96,7 +98,7 @@ class AutonomousPromptEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, He
             log.warning(f"Failed to get prompt performance: {e}")
             return {"avg_reward": 0.0, "usage_count": 0, "success_rate": 0.0}
 
-    def evolve_prompt(self, template_id: str, feedback: Dict[str, Any]) -> Dict[str, Any]:
+    def evolve_prompt(self, template_id: str, feedback: dict[str, Any]) -> dict[str, Any]:
         """
         Apply evolutionary changes to a prompt based on success metrics.
 
@@ -138,7 +140,7 @@ class AutonomousPromptEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, He
 
         # Validate evolved template
         if not self._validate_template(evolved_template):
-            log.warning(f"[L0 EVOLUTION] Evolved template failed validation")
+            log.warning("[L0 EVOLUTION] Evolved template failed validation")
             return {"evolved": False, "error": "Validation failed"}
 
         # Record evolution
@@ -161,7 +163,7 @@ class AutonomousPromptEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, He
             "record": evolution_record,
         }
 
-    def _mutate_word_choice(self, template: str, feedback: Dict[str, Any]) -> tuple[str, List[str]]:
+    def _mutate_word_choice(self, template: str, feedback: dict[str, Any]) -> tuple[str, list[str]]:
         """Substitute words with synonyms or more precise alternatives."""
         changes = []
         evolved = template
@@ -183,7 +185,7 @@ class AutonomousPromptEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, He
 
         return evolved, changes
 
-    def _mutate_structure(self, template: str, feedback: Dict[str, Any]) -> tuple[str, List[str]]:
+    def _mutate_structure(self, template: str, feedback: dict[str, Any]) -> tuple[str, list[str]]:
         """Restructure prompt for clarity or emphasis."""
         changes = []
         evolved = template
@@ -206,7 +208,7 @@ class AutonomousPromptEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, He
 
         return evolved, changes
 
-    def _mutate_emphasis(self, template: str, feedback: Dict[str, Any]) -> tuple[str, List[str]]:
+    def _mutate_emphasis(self, template: str, feedback: dict[str, Any]) -> tuple[str, list[str]]:
         """Add or modify emphasis markers."""
         changes = []
         evolved = template
@@ -234,7 +236,7 @@ class AutonomousPromptEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, He
             return False
         return True
 
-    def get_evolution_history(self, template_id: Optional[str] = None) -> List[Dict[str, Any]]:
+    def get_evolution_history(self, template_id: str | None = None) -> list[dict[str, Any]]:
         """Retrieve evolution history, optionally filtered by template."""
         if template_id:
             return [e for e in self._evolution_history if e["template_id"] == template_id]
@@ -252,7 +254,7 @@ class AutonomousPromptEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, He
         log.info(f"[L0 EVOLUTION] Rolled back evolution for {template_id}")
         return True
 
-    def heal_repository(self, dry_run: bool = True, **kwargs) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, **kwargs) -> dict[str, int]:
         """Invoke healing chain via super()."""
         return super().heal_repository(dry_run=dry_run, **kwargs)
 

@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from typing import Any, Awaitable, Callable, Dict, Optional
+from collections.abc import Awaitable, Callable
+from typing import Any
 
 from .backoff import calculate_backoff_ms
-from .circuit_breaker import get_breaker, CircuitBreakerOpenError
+from .circuit_breaker import CircuitBreakerOpenError, get_breaker
 
 Logger = logging.getLogger(__name__)
 
@@ -30,13 +31,13 @@ class ErrorRecoveryManager:
         self,
         *,
         fn: Callable[[], Awaitable[Any]],
-        breaker_name: Optional[str] = None,
-        context: Optional[Dict[str, Any]] = None,
+        breaker_name: str | None = None,
+        context: dict[str, Any] | None = None,
     ) -> Any:
         context = context or {}
         breaker = get_breaker(breaker_name) if (breaker_name and self.enable_circuit_breaker) else None
 
-        last_exc: Optional[BaseException] = None
+        last_exc: BaseException | None = None
         for attempt in range(1, self.max_retries + 1):
             if breaker and not breaker.can_execute():
                 raise CircuitBreakerOpenError("Circuit breaker open", breaker.name)

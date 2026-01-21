@@ -3,8 +3,8 @@ Base classes for L2 Execution ToolRegistry.
 
 Provides foundational classes for tool registration and execution.
 """
-from typing import Any, Dict, List, Optional, Callable
 import logging
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +38,7 @@ class ToolRegistry:
     """Registry for managing tools."""
 
     def __init__(self):
-        self._tools: Dict[str, BaseTool] = {}
+        self._tools: dict[str, BaseTool] = {}
 
     def register(self, tool: BaseTool) -> None:
         """Register a tool."""
@@ -51,11 +51,11 @@ class ToolRegistry:
             del self._tools[name]
             logger.debug(f"Unregistered tool: {name}")
 
-    def get(self, name: str) -> Optional[BaseTool]:
+    def get(self, name: str) -> BaseTool | None:
         """Get a tool by name."""
         return self._tools.get(name)
 
-    def list_tools(self) -> List[str]:
+    def list_tools(self) -> list[str]:
         """List all registered tool names."""
         return list(self._tools.keys())
 

@@ -10,52 +10,34 @@ Enhanced with adversarial defense as the outermost security layer.
 
 import logging
 import time
-from typing import Dict, List, Optional, Any, Callable, Tuple
-from dataclasses import dataclass
+from typing import Any
 
-from .precision_layer import (
-    ContextualCompressor,
-    SignalQualityPipeline,
-    CompressionResult,
-    create_compressor,
-    create_signal_pipeline,
-)
-from .reasoning_layer import (
-    QueryDecomposer,
-    DecomposedQuery,
-    HybridScorer,
-    ScoringResult,
-    create_query_decomposer,
-    create_hybrid_scorer,
-)
-from .sota_layer import (
-    ContrastiveSemanticCache,
-    LateInteractionReranker,
-    CacheEntry,
-    RerankResult,
-    create_cache,
-    create_reranker,
+from .graphrag_fusion import (
+    GraphRAGFusion,
+    get_graphrag_fusion,
 )
 from .input_guardrail import (
-    InputGuardrail,
     GuardAction,
-    GuardResult,
+    InputGuardrail,
     get_input_guardrail,
 )
+from .precision_layer import (
+    ContextualCompressor,
+)
+from .reasoning_layer import (
+    HybridScorer,
+    QueryDecomposer,
+)
 from .retrieval_grader import (
-    RetrievalGrader,
-    RetrievalGrade,
     GradeStatus,
+    RetrievalGrader,
     WebSearchFallback,
     get_retrieval_grader,
     get_web_search_fallback,
 )
-from .graphrag_fusion import (
-    GraphRAGFusion,
-    FusionResult,
-    QueryType,
-    get_graphrag_fusion,
-    graphrag_query,
+from .sota_layer import (
+    ContrastiveSemanticCache,
+    LateInteractionReranker,
 )
 
 logger = logging.getLogger(__name__)
@@ -72,26 +54,26 @@ class TitaniumRAGPipeline:
     def __init__(
         self,
         # Phase 1 components
-        gate: Optional[AdaptiveRetrievalGate] = None,
-        compressor: Optional[ContextualCompressor] = None,
+        gate: AdaptiveRetrievalGate | None = None,
+        compressor: ContextualCompressor | None = None,
 
         # Phase 2 components
-        decomposer: Optional[QueryDecomposer] = None,
-        scorer: Optional[HybridScorer] = None,
+        decomposer: QueryDecomposer | None = None,
+        scorer: HybridScorer | None = None,
 
         # Phase 3 components
-        reranker: Optional[LateInteractionReranker] = None,
-        cache: Optional[ContrastiveSemanticCache] = None,
+        reranker: LateInteractionReranker | None = None,
+        cache: ContrastiveSemanticCache | None = None,
 
         # Security layer
-        input_guardrail: Optional[InputGuardrail] = None,
+        input_guardrail: InputGuardrail | None = None,
 
         # CRAG layer
-        retrieval_grader: Optional[RetrievalGrader] = None,
-        web_search_fallback: Optional[WebSearchFallback] = None,
+        retrieval_grader: RetrievalGrader | None = None,
+        web_search_fallback: WebSearchFallback | None = None,
 
         # GraphRAG layer
-        graphrag_fusion: Optional[GraphRAGFusion] = None,
+        graphrag_fusion: GraphRAGFusion | None = None,
 
         # Configuration
         enable_compression: bool = True,
@@ -183,7 +165,7 @@ class TitaniumRAGPipeline:
         query: str,
         retrieval_function: callable,
         **kwargs
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Execute a complete RAG pipeline query.
 
         Args:
@@ -225,7 +207,7 @@ class TitaniumRAGPipeline:
                 # Continue but mark as suspicious
             elif guard_result.action == GuardAction.REDACT:
                 self.stats["pii_redactions"] += 1
-                logger.info(f"PII redacted from query")
+                logger.info("PII redacted from query")
                 query = guard_result.sanitized_input or query
 
         # Phase 1: Precision Layer
@@ -386,7 +368,7 @@ class TitaniumRAGPipeline:
         if self.enable_graphrag and self.graphrag_fusion:
             try:
                 # Create vector retriever function for GraphRAG
-                async def vector_retriever_func(q: str, k: int) -> List[Dict[str, Any]]:
+                async def vector_retriever_func(q: str, k: int) -> list[dict[str, Any]]:
                     # Use already retrieved documents
                     results = []
                     for doc in retrieved_docs[:k]:
@@ -563,8 +545,8 @@ class TitaniumRAGPipeline:
     def _generate_response(
         self,
         query: str,
-        documents: List[Any],
-        compressed_context: Optional[str] = None
+        documents: list[Any],
+        compressed_context: str | None = None
     ) -> str:
         """Generate response from retrieved documents.
 
@@ -584,7 +566,7 @@ class TitaniumRAGPipeline:
 
         return response
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get pipeline statistics.
 
         Returns:
@@ -611,7 +593,7 @@ class TitaniumRAGPipeline:
 
         return stats
 
-    def get_component_info(self) -> Dict[str, Any]:
+    def get_component_info(self) -> dict[str, Any]:
         """Get information about all components.
 
         Returns:

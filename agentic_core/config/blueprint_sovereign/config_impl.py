@@ -1,13 +1,14 @@
 from __future__ import annotations
+
 """Implementation for config."""
 import json
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 
-def _load_json_config(filename: str, description: str, required: bool=True) -> Dict[str, object]:
+def _load_json_config(filename: str, description: str, required: bool=True) -> dict[str, object]:
     """
     Loads a JSON config file.
     It now checks the provided path first, then checks relative to DATA_DIR.
@@ -17,8 +18,8 @@ def _load_json_config(filename: str, description: str, required: bool=True) -> D
         path_to_check = DATA_DIR / filename
     if path_to_check.exists():
         try:
-            with open(path_to_check, 'r', encoding='utf-8') as f:
-                DATA = json.load(f)
+            with open(path_to_check, encoding='utf-8') as f:
+                json.load(f)
                 logging.info(f"Successfully loaded {description} from '{path_to_check}'.")
                 return data
         except json.JSONDecodeError as e:

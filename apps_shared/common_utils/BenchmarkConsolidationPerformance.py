@@ -19,13 +19,12 @@ import sys
 import time
 import tracemalloc
 from pathlib import Path
-from typing import Dict, List, Tuple
 
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 
-def measure_import_time(module_path: str) -> Tuple[float, bool]:
+def measure_import_time(module_path: str) -> tuple[float, bool]:
     """Measure time to import a module."""
     start = time.perf_counter()
     try:
@@ -37,25 +36,12 @@ def measure_import_time(module_path: str) -> Tuple[float, bool]:
     return elapsed, success
 
 
-def measure_memory_footprint() -> Dict[str, int]:
+def measure_memory_footprint() -> dict[str, int]:
     """Measure memory footprint of unified agents."""
     gc.collect()
     tracemalloc.start()
 
     # Import unified agents
-    from agentic_core.L3_orchestration.unified.CoreOrchestrationAgent import CoreOrchestrationAgent
-    from agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent import UnifiedCodeValidatorAgent
-    from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import UnifiedStructureValidatorAgent
-    from agentic_core.L5_safety.unified.UnifiedResourceManagerAgent import UnifiedResourceManagerAgent
-    from agentic_core.L5_safety.unified.UnifiedSecurityManagerAgent import UnifiedSecurityManagerAgent
-    from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import UnifiedCodeEnforcerAgent
-    from agentic_core.L5_safety.unified.UnifiedStructureEnforcerAgent import UnifiedStructureEnforcerAgent
-    from agentic_core.L5_safety.unified.UnifiedCodeDetectorAgent import UnifiedCodeDetectorAgent
-    from agentic_core.L5_safety.unified.UnifiedSafetyDetectorAgent import UnifiedSafetyDetectorAgent
-    from agentic_core.L5_safety.unified.UnifiedCodeHealerAgent import UnifiedCodeHealerAgent
-    from agentic_core.L5_safety.unified.UnifiedStructureHealerAgent import UnifiedStructureHealerAgent
-    from agentic_core.L2_execution.unified.UnifiedModelRouterAgent import UnifiedModelRouterAgent
-    from agentic_core.L5_safety.unified.UnifiedSafetyExecutorAgent import UnifiedSafetyExecutorAgent
 
     current, peak = tracemalloc.get_traced_memory()
     tracemalloc.stop()
@@ -68,7 +54,7 @@ def measure_memory_footprint() -> Dict[str, int]:
     }
 
 
-def measure_registry_init() -> Tuple[float, int]:
+def measure_registry_init() -> tuple[float, int]:
     """Measure registry initialization time."""
     start = time.perf_counter()
 
@@ -83,7 +69,7 @@ def measure_registry_init() -> Tuple[float, int]:
     return elapsed, total_mappings
 
 
-def count_unified_agents() -> Dict[str, int]:
+def count_unified_agents() -> dict[str, int]:
     """Count unified agents by category."""
     unified_dir = PROJECT_ROOT / "agentic_core"
 
@@ -160,7 +146,7 @@ def main():
     unified_counts = count_unified_agents()
     archived_count = count_archived_agents()
 
-    print(f"   Unified Agents:")
+    print("   Unified Agents:")
     print(f"     - L3 Orchestration: {unified_counts['L3_orchestration_unified']}")
     print(f"     - L5 Safety: {unified_counts['L5_safety_unified']}")
     print(f"     - L2 Execution: {unified_counts['L2_execution_unified']}")

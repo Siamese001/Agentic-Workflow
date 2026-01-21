@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Fix tunnel violations by flattening to SSOT-compliant depth.
 [SSOT] All depth requirements derived from SOVEREIGN_REGISTRY in structure_blueprint.py
@@ -6,9 +7,9 @@ Fix tunnel violations by flattening to SSOT-compliant depth.
 import os
 import shutil
 from pathlib import Path
-from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
 from typing import Any
-from agentic_core.utils.sovereign_index import SovereignIndex
+
+from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
 from agentic_core.utils.ssot_discovery import get_python_files
 
 ROOT: Any = Path(__file__).parent.parent.parent.parent
@@ -43,7 +44,7 @@ def fix_tunnel_violations() -> Any:
     print(f'\n[OK] TUNNEL FIX COMPLETE. {fixed} files moved to proper depth.')
     print('\n[*] CLEANING UP EMPTY DIRECTORIES...')
     cleaned: Any = 0
-    for root, dirs, files in os.walk(CORE, topdown=False):
+    for root, dirs, _files in os.walk(CORE, topdown=False):
         for name in dirs:
             dir_path: Any = Path(root) / name
             try:

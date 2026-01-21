@@ -9,13 +9,10 @@ Tests the 5 detailed test cases for:
 4. Layer Sorting Verification
 5. Runtime Capability Check
 """
-import sys
-import json
 import logging
-import tempfile
-import shutil
+import sys
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -23,11 +20,8 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from agentic_core.L0_maintenance.scripts.discovery_roster_builder import (
     filter_healer_agents,
-    sort_by_layer,
     instantiate_agent,
-    build_healing_roster,
-    SKIP_AGENTS,
-    LAYER_PRIORITY,
+    sort_by_layer,
 )
 
 # Enable logging to see warnings
@@ -82,13 +76,13 @@ def test_1_strict_healer_filtering():
     assert "PassiveMonitorAgent" not in result_names, \
         f"PassiveMonitorAgent should be excluded, but found in {result_names}"
     assert "ActiveHealerAgent" in result_names, \
-        f"ActiveHealerAgent should be included"
+        "ActiveHealerAgent should be included"
     assert "LegacyHealerAgent" in result_names, \
-        f"LegacyHealerAgent (SovereignHealer inheritance) should be included"
+        "LegacyHealerAgent (SovereignHealer inheritance) should be included"
 
-    print(f"✅ PASSED: Strict healer filtering working")
+    print("✅ PASSED: Strict healer filtering working")
     print(f"   Filtered agents: {result_names}")
-    print(f"   PassiveMonitorAgent correctly excluded (no HealerMixin, no heal_repository)")
+    print("   PassiveMonitorAgent correctly excluded (no HealerMixin, no heal_repository)")
     return True
 
 
@@ -139,19 +133,19 @@ def test_2_abstract_class_exclusion():
 
     # Verify abstract bases are excluded
     assert "SovereignBaseAgent" not in result_names, \
-        f"SovereignBaseAgent should be excluded (in SKIP_AGENTS)"
+        "SovereignBaseAgent should be excluded (in SKIP_AGENTS)"
     assert "L0MaintenanceBaseAgent" not in result_names, \
-        f"L0MaintenanceBaseAgent should be excluded (in SKIP_AGENTS)"
+        "L0MaintenanceBaseAgent should be excluded (in SKIP_AGENTS)"
     assert "AbstractValidator" not in result_names, \
-        f"AbstractValidator should be excluded (starts with 'Abstract')"
+        "AbstractValidator should be excluded (starts with 'Abstract')"
 
     # Verify concrete agent is included
     assert "ConcreteHealerAgent" in result_names, \
-        f"ConcreteHealerAgent should be included"
+        "ConcreteHealerAgent should be included"
 
-    print(f"✅ PASSED: Abstract class exclusion working")
+    print("✅ PASSED: Abstract class exclusion working")
     print(f"   Filtered agents: {result_names}")
-    print(f"   SovereignBaseAgent, L0MaintenanceBaseAgent, AbstractValidator excluded")
+    print("   SovereignBaseAgent, L0MaintenanceBaseAgent, AbstractValidator excluded")
     return True
 
 
@@ -204,8 +198,8 @@ def test_3_robust_instantiation():
     assert any("BrokenAgent" in msg for msg in warnings_logged), \
         f"Warning should mention BrokenAgent: {warnings_logged}"
 
-    print(f"✅ PASSED: Robust instantiation working")
-    print(f"   BrokenAgent instantiation returned None (graceful failure)")
+    print("✅ PASSED: Robust instantiation working")
+    print("   BrokenAgent instantiation returned None (graceful failure)")
     print(f"   Warning logged: {warnings_logged[0] if warnings_logged else 'N/A'}")
     return True
 
@@ -257,7 +251,7 @@ def test_4_layer_sorting_verification():
     l5_idx = sorted_names.index("L5SafetyAgent")
     assert l0_idx < l5_idx, f"L0 agent (idx={l0_idx}) should appear before L5 agent (idx={l5_idx})"
 
-    print(f"✅ PASSED: Layer sorting verification working")
+    print("✅ PASSED: Layer sorting verification working")
     print(f"   Sorted order: {sorted_names}")
     print(f"   Layer order: {sorted_layers}")
     print(f"   L0BootstrapAgent (idx={l0_idx}) before L5SafetyAgent (idx={l5_idx})")
@@ -303,9 +297,9 @@ def test_5_runtime_capability_check():
     # Verify instantiation returned None (runtime check failed)
     assert result is None, f"Expected None for fake healer (missing heal_repository), got {result}"
 
-    print(f"✅ PASSED: Runtime capability check working")
-    print(f"   FakeHealerAgent instantiation returned None")
-    print(f"   Runtime verification caught missing heal_repository() method")
+    print("✅ PASSED: Runtime capability check working")
+    print("   FakeHealerAgent instantiation returned None")
+    print("   Runtime verification caught missing heal_repository() method")
     return True
 
 
@@ -343,12 +337,12 @@ def test_has_healing_flag():
     result_names = [a["class_name"] for a in result]
 
     assert "FlagOnlyHealerAgent" in result_names, \
-        f"FlagOnlyHealerAgent should be included via has_healing flag"
+        "FlagOnlyHealerAgent should be included via has_healing flag"
     assert "NoFlagAgent" not in result_names, \
-        f"NoFlagAgent should be excluded"
+        "NoFlagAgent should be excluded"
 
-    print(f"✅ PASSED: has_healing flag support working")
-    print(f"   FlagOnlyHealerAgent included via has_healing=True")
+    print("✅ PASSED: has_healing flag support working")
+    print("   FlagOnlyHealerAgent included via has_healing=True")
     return True
 
 

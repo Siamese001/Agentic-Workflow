@@ -4,22 +4,17 @@ This module provides a unified feedback system that allows both resume and outre
 engines to share insights, learn from each other, and maintain consistent quality.
 """
 
-import json
 import logging
-from collections import defaultdict
-from datetime import datetime, timedelta
-from dataclasses import dataclass, field
-from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Tuple, Union
 import threading
+from collections import defaultdict
+from dataclasses import dataclass, field
+from datetime import datetime, timedelta
+from enum import Enum
+from typing import Any
 
+from ..core.quality.feedback_loop import FeedbackLoop, FeedbackType, QualityFeedback
+from .quality_standards import QualityDimension
 from .signal_infrastructure import EngineType
-from .quality_standards import StandardType, QualityDimension
-from ..core.quality.feedback_loop import (
-    FeedbackLoop,
-    QualityFeedback,
-    FeedbackType
-)
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +36,7 @@ class CrossEngineFeedback:
 
     feedback_id: str
     source_engine: EngineType
-    target_engine: Optional[EngineType]  # None if for all engines
+    target_engine: EngineType | None  # None if for all engines
     category: FeedbackCategory
     timestamp: datetime
 
@@ -49,23 +44,23 @@ class CrossEngineFeedback:
     content_hash: str  # Hash of content this feedback applies to
     feedback_type: FeedbackType
     rating: int  # 1-5 rating
-    comments: Optional[str] = None
+    comments: str | None = None
 
     # Quality dimensions affected
-    affected_dimensions: List[QualityDimension] = field(default_factory=list)
+    affected_dimensions: list[QualityDimension] = field(default_factory=list)
 
     # Actionability
     actionable: bool = True
-    suggested_actions: List[str] = field(default_factory=list)
+    suggested_actions: list[str] = field(default_factory=list)
 
     # Cross-engine relevance
     transferable: bool = True  # Can this apply to other engines?
     transfer_score: float = 1.0  # How transferable is this feedback (0-1)
 
     # Context
-    context: Dict[str, Any] = field(default_factory=dict)
+    context: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for storage."""
         return {
             "feedback_id": self.feedback_id,
@@ -91,10 +86,10 @@ class FeedbackAggregator:
 
     def __init__(self):
         """Initialize the aggregator."""
-        self._feedback: List[CrossEngineFeedback] = []
-        self._category_counts: Dict[str, int] = defaultdict(int)
-        self._dimension_impact: Dict[str, List[int]] = defaultdict(list)
-        self._engine_feedback: Dict[str, List[CrossEngineFeedback]] = defaultdict(list)
+        self._feedback: list[CrossEngineFeedback] = []
+        self._category_counts: dict[str, int] = defaultdict(int)
+        self._dimension_impact: dict[str, list[int]] = defaultdict(list)
+        self._engine_feedback: dict[str, list[CrossEngineFeedback]] = defaultdict(list)
 
         # Lock for thread safety
         self._lock = threading.Lock()
@@ -116,7 +111,7 @@ class FeedbackAggregator:
             for dimension in feedback.affected_dimensions:
                 self._dimension_impact[dimension.value].append(feedback.rating)
 
-    def get_insights(self, days: int = 30) -> Dict[str, Any]:
+    def get_insights(self, days: int = 30) -> dict[str, Any]:
         """Get aggregated insights.
 
         Args:
@@ -144,7 +139,7 @@ class FeedbackAggregator:
 
             return insights
 
-    def _analyze_categories(self, feedback: List[CrossEngineFeedback]) -> Dict[str, Any]:
+    def _analyze_categories(self, feedback: list[CrossEngineFeedback]) -> dict[str, Any]:
         """Analyze feedback by category.
 
         Args:
@@ -172,7 +167,7 @@ class FeedbackAggregator:
 
         return result
 
-    def _analyze_dimensions(self, feedback: List[CrossEngineFeedback]) -> Dict[str, Any]:
+    def _analyze_dimensions(self, feedback: list[CrossEngineFeedback]) -> dict[str, Any]:
         """Analyze feedback by quality dimensions.
 
         Args:
@@ -197,7 +192,7 @@ class FeedbackAggregator:
 
         return result
 
-    def _compare_engines(self, feedback: List[CrossEngineFeedback]) -> Dict[str, Any]:
+    def _compare_engines(self, feedback: list[CrossEngineFeedback]) -> dict[str, Any]:
         """Compare feedback between engines.
 
         Args:
@@ -227,7 +222,7 @@ class FeedbackAggregator:
 
         return result
 
-    def _find_transferable_insights(self, feedback: List[CrossEngineFeedback]) -> List[Dict[str, Any]]:
+    def _find_transferable_insights(self, feedback: list[CrossEngineFeedback]) -> list[dict[str, Any]]:
         """Find insights that can be transferred between engines.
 
         Args:
@@ -255,7 +250,7 @@ class FeedbackAggregator:
 
         return sorted(insights, key=lambda x: x["transfer_score"], reverse=True)
 
-    def _generate_recommendations(self, feedback: List[CrossEngineFeedback]) -> List[str]:
+    def _generate_recommendations(self, feedback: list[CrossEngineFeedback]) -> list[str]:
         """Generate recommendations based on feedback.
 
         Args:
@@ -305,8 +300,8 @@ class UnifiedFeedbackSystem:
     def __init__(self):
         """Initialize the unified feedback system."""
         self.aggregator = FeedbackAggregator()
-        self.engine_loops: Dict[EngineType, FeedbackLoop] = {}
-        self._cross_feedback: List[CrossEngineFeedback] = []
+        self.engine_loops: dict[EngineType, FeedbackLoop] = {}
+        self._cross_feedback: list[CrossEngineFeedback] = []
 
         # Thread safety
         self._lock = threading.Lock()
@@ -383,7 +378,7 @@ class UnifiedFeedbackSystem:
 
                 loop.add_feedback(adapted_feedback)
 
-    def get_cross_engine_insights(self, days: int = 30) -> Dict[str, Any]:
+    def get_cross_engine_insights(self, days: int = 30) -> dict[str, Any]:
         """Get insights across all engines.
 
         Args:
@@ -406,7 +401,7 @@ class UnifiedFeedbackSystem:
 
         return base_insights
 
-    def _analyze_correlations(self) -> Dict[str, float]:
+    def _analyze_correlations(self) -> dict[str, float]:
         """Analyze correlations between engines.
 
         Returns:
@@ -420,7 +415,7 @@ class UnifiedFeedbackSystem:
             "improvement_transfer_rate": 0.81
         }
 
-    def export_feedback_data(self, engine_type: Optional[EngineType] = None) -> Dict[str, Any]:
+    def export_feedback_data(self, engine_type: EngineType | None = None) -> dict[str, Any]:
         """Export feedback data for analysis.
 
         Args:
@@ -440,7 +435,7 @@ class UnifiedFeedbackSystem:
 
         return data
 
-    def create_improvement_plan(self, engine_type: EngineType) -> Dict[str, Any]:
+    def create_improvement_plan(self, engine_type: EngineType) -> dict[str, Any]:
         """Create improvement plan for an engine based on feedback.
 
         Args:
@@ -507,7 +502,7 @@ class UnifiedFeedbackSystem:
 
 
 # Global unified feedback system
-_unified_system: Optional[UnifiedFeedbackSystem] = None
+_unified_system: UnifiedFeedbackSystem | None = None
 _system_lock = threading.Lock()
 
 
@@ -530,10 +525,10 @@ def submit_cross_engine_feedback(
     category: FeedbackCategory,
     content_hash: str,
     rating: int,
-    comments: Optional[str] = None,
-    target_engine: Optional[EngineType] = None,
+    comments: str | None = None,
+    target_engine: EngineType | None = None,
     transferable: bool = True,
-    context: Optional[Dict[str, Any]] = None
+    context: dict[str, Any] | None = None
 ) -> str:
     """Submit cross-engine feedback.
 
@@ -570,7 +565,7 @@ def submit_cross_engine_feedback(
     return system.submit_feedback(feedback)
 
 
-def get_improvement_plan(engine_type: EngineType) -> Dict[str, Any]:
+def get_improvement_plan(engine_type: EngineType) -> dict[str, Any]:
     """Get improvement plan for an engine.
 
     Args:

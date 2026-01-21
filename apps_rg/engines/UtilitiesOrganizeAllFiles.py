@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Comprehensive file organization script for sovereign silos
 Moves ALL file types from root to appropriate directories
@@ -10,21 +11,11 @@ import shutil
 from typing import Any
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
     SCRIPTS_DIR,
     TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
+
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 Logger: Any = logging.getLogger(__name__)
 
@@ -86,7 +77,7 @@ def organize_all_files() -> Any:
                 Logger.warning(f'⚠️  File already exists: {dst_path}')
         except Exception as e:
             Logger.error(f'❌ Failed to move {filename}: {e}')
-    Logger.info(f'\n✨ Organization complete!')
+    Logger.info('\n✨ Organization complete!')
     Logger.info(f'📁 Moved {moved_count} files')
     Logger.info(f'📂 Created {len(created_dirs)} new directories')
     return moved_count

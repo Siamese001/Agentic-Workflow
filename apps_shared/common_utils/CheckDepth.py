@@ -1,12 +1,15 @@
 from __future__ import annotations
+
 """
 Check depth violations using SSOT.
 [SSOT] All depth requirements derived from SOVEREIGN_REGISTRY in structure_blueprint.py
 """
 from pathlib import Path
-from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
 from typing import Any
+
+from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
 from agentic_core.utils.ssot_discovery import get_python_files
+
 
 def check_depth(root_dir: Path) -> None:
     """Check depth of all Python files."""

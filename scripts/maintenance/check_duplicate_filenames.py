@@ -1,6 +1,7 @@
 import sys
-from pathlib import Path
 from collections import defaultdict
+from pathlib import Path
+
 
 def check_for_duplicates():
     """Scans for identical filenames across different directories."""

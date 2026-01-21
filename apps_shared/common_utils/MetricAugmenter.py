@@ -8,9 +8,9 @@ metrics (Revenue, OpEx, Retention).
 import logging
 import re
 from enum import Enum
-from typing import Dict, List, Optional, Tuple, Any, Union
-from pydantic import BaseModel, Field, validator
+from typing import Any
 
+from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 
@@ -44,8 +44,8 @@ class AugmentedBullet(BaseModel):
     """Resume bullet with business impact augmentation."""
 
     original_text: str = Field(..., description="Original bullet text")
-    technical_metric: Optional[str] = Field(None, description="Detected technical metric")
-    business_impact: Optional[BusinessImpact] = Field(None, description="Business impact")
+    technical_metric: str | None = Field(None, description="Detected technical metric")
+    business_impact: BusinessImpact | None = Field(None, description="Business impact")
     final_text: str = Field(..., description="Final augmented text")
 
     @property
@@ -187,7 +187,7 @@ class MetricAugmenter:
                 final_text=bullet_text
             )
 
-    def _select_highest_impact_metric(self, metrics: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def _select_highest_impact_metric(self, metrics: list[dict[str, Any]]) -> dict[str, Any]:
         """Select the metric with highest business impact.
 
         Args:
@@ -220,7 +220,7 @@ class MetricAugmenter:
 
         return sorted_metrics[0] if sorted_metrics else metrics[0]
 
-    def augment_batch(self, bullets: List[str]) -> List[AugmentedBullet]:
+    def augment_batch(self, bullets: list[str]) -> list[AugmentedBullet]:
         """Augment multiple bullets at once.
 
         Args:
@@ -254,7 +254,7 @@ class MetricAugmenter:
                 final_text=b
             ) for b in bullets if isinstance(b, str)]
 
-    def _detect_metrics(self, text: str) -> List[Dict[str, Any]]:
+    def _detect_metrics(self, text: str) -> list[dict[str, Any]]:
         """Detect ALL technical metrics in text.
 
         Args:
@@ -350,7 +350,7 @@ class MetricAugmenter:
         metric_type: str,
         metric_value: str,
         context: str
-    ) -> Optional[BusinessImpact]:
+    ) -> BusinessImpact | None:
         """Estimate business impact for a metric.
 
         Args:
@@ -438,7 +438,7 @@ class MetricAugmenter:
             logger.error(f"Error estimating impact: {str(e)}")
             return None
 
-    def _extract_number(self, value_str: str) -> Optional[float]:
+    def _extract_number(self, value_str: str) -> float | None:
         """Extract numeric value from string.
 
         Args:
@@ -504,9 +504,9 @@ def create_metric_augmenter(
 
 # Convenience function for quick augmentation
 def augment_metrics(
-    bullets: List[str],
+    bullets: list[str],
     industry: str = "technology"
-) -> List[str]:
+) -> list[str]:
     """Quickly augment a list of bullets.
 
     Args:

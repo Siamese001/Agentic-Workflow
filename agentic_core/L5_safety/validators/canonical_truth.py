@@ -25,8 +25,6 @@ USAGE:
 
 import re
 from pathlib import Path
-from typing import Dict, Union, Optional
-
 
 # ============================================================================
 # HEALTH SCORE CALCULATION (SSOT for Violation 4)
@@ -34,7 +32,7 @@ from typing import Dict, Union, Optional
 
 # Weighted formula for health score calculation
 # Total must sum to 1.0 (100%)
-HEALTH_WEIGHTS: Dict[str, float] = {
+HEALTH_WEIGHTS: dict[str, float] = {
     "heal_capability": 0.30,   # 30% - Ability to self-heal
     "invocation": 0.10,        # 10% - Invocation status
     "test_coverage": 0.25,     # 25% - Test coverage
@@ -108,7 +106,7 @@ def calculate_health_score(
 # ============================================================================
 
 # Layer markers in paths (priority order)
-LAYER_MARKERS: Dict[str, str] = {
+LAYER_MARKERS: dict[str, str] = {
     "L0_maintenance": "L0",
     "L1_cognition": "L1",
     "L2_execution": "L2",
@@ -124,7 +122,7 @@ LAYER_MARKERS: Dict[str, str] = {
 }
 
 
-def get_canonical_layer(file_path: Union[str, Path]) -> str:
+def get_canonical_layer(file_path: str | Path) -> str:
     """
     Sovereign SSOT for layer inference from file paths.
 
@@ -202,7 +200,7 @@ def validate_health_components(
     return all(0.0 <= c <= 100.0 for c in components)
 
 
-def get_health_weights() -> Dict[str, float]:
+def get_health_weights() -> dict[str, float]:
     """
     Get the canonical health weights dictionary.
 
@@ -218,7 +216,7 @@ def get_health_weights() -> Dict[str, float]:
 
 # Category patterns for agent classification
 # Priority order matters - first match wins
-AGENT_CATEGORY_PATTERNS: Dict[str, list] = {
+AGENT_CATEGORY_PATTERNS: dict[str, list] = {
     "Validator": [r"Validator", r"Validation", r"Enforcer", r"Compliance", r"Check", r"Verify", r"Audit"],
     "Healer": [r"Healer", r"Healing", r"Recovery", r"Repair", r"Fix", r"Reconcile", r"Restore"],
     "Guardian": [r"Guardian", r"Guard", r"Safety", r"Security", r"Protect", r"Defense", r"Sentinel"],
@@ -234,8 +232,8 @@ AGENT_CATEGORY_PATTERNS: Dict[str, list] = {
 
 def categorize_agent(
     class_name: str,
-    base_classes: Optional[list] = None,
-    docstring: Optional[str] = None
+    base_classes: list | None = None,
+    docstring: str | None = None
 ) -> str:
     """
     Sovereign SSOT for agent categorization.

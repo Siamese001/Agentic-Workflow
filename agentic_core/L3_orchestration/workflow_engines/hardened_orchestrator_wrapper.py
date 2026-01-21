@@ -5,6 +5,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """
 Hardened Orchestrator - Thin Wrapper
 Delegates to consolidated core orchestrator in agentic_core/core/orchestrator_main.py
@@ -14,20 +15,16 @@ by routing all orchestration through the consolidated AtomicBlackboard-integrate
 """
 import asyncio
 import logging
-import re
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 from agentic_core.core.orchestrator_main import OrchestratorConfig, create_orchestrator
 from agentic_core.L1_cognition.P2_domain.context import ValidationContext
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 Logger: Any = logging.getLogger(__name__)
 
-async def run_hardened_orchestrator(workflow_id: str, WorkflowType: str='resume_generation', storage_path: Optional[str]=None, run_base_dir: str='./pipeline_runs') -> Any:
+async def run_hardened_orchestrator(workflow_id: str, WorkflowType: str='resume_generation', storage_path: str | None=None, run_base_dir: str='./pipeline_runs') -> Any:
     """
     Run hardened workflow orchestrator with atomic state management.
 
@@ -42,7 +39,7 @@ async def run_hardened_orchestrator(workflow_id: str, WorkflowType: str='resume_
     Returns:
         Workflow execution results
     """
-    Logger.info(f'🚀 Hardened Orchestrator (Wrapper)')
+    Logger.info('🚀 Hardened Orchestrator (Wrapper)')
     Logger.info(f'   Workflow: {workflow_id}')
     Logger.info(f'   Type: {WorkflowType}')
     config: Any = OrchestratorConfig(max_cycles=5, enable_checkpointing=True, checkpoint_dir=storage_path or './checkpoints')

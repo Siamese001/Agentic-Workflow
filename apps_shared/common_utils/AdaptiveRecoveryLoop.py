@@ -21,7 +21,8 @@ from __future__ import annotations
 import time
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
+
 
 class FailureType(Enum):
     CREATIVE = "CREATIVE"
@@ -41,7 +42,7 @@ class FailureEvent:
     gate_id: str
     message: str
     timestamp: float = field(default_factory=time.time)
-    details: Optional[Dict[str, Any]] = None
+    details: dict[str, Any] | None = None
 
 @dataclass
 class TemperatureAdjustment:
@@ -57,7 +58,7 @@ class RecoveryResult:
     new_temperature: float
     message: str
     should_retry: bool
-    details: Dict[str, Any]
+    details: dict[str, Any]
 
 class AdaptiveRecoveryLoop:
     """
@@ -89,14 +90,14 @@ class AdaptiveRecoveryLoop:
         self.initial_temperature = initial_temperature
         self.current_temperature = initial_temperature
         self.attempt_count = 0
-        self.failure_history: List[FailureEvent] = []
-        self.temperature_history: List[TemperatureAdjustment] = []
+        self.failure_history: list[FailureEvent] = []
+        self.temperature_history: list[TemperatureAdjustment] = []
 
     def record_failure(
         self,
         gate_id: str,
         message: str,
-        details: Optional[Dict[str, Any]] = None
+        details: dict[str, Any] | None = None
     ) -> RecoveryResult:
         """
         Record a validation failure and determine recovery action.
@@ -156,7 +157,7 @@ class AdaptiveRecoveryLoop:
             }
         )
 
-    def record_success(self) -> Dict[str, Any]:
+    def record_success(self) -> dict[str, Any]:
         """Record successful generation after recovery"""
         return {
             'success': True,
@@ -174,7 +175,7 @@ class AdaptiveRecoveryLoop:
             ]
         }
 
-    def reset(self, initial_temperature: Optional[float] = None) -> None:
+    def reset(self, initial_temperature: float | None = None) -> None:
         """Reset recovery loop for new generation task"""
         if initial_temperature is not None:
             self.initial_temperature = initial_temperature
@@ -184,7 +185,7 @@ class AdaptiveRecoveryLoop:
         self.failure_history.clear()
         self.temperature_history.clear()
 
-    def get_temperature_log(self) -> List[Dict[str, Any]]:
+    def get_temperature_log(self) -> list[dict[str, Any]]:
         """Get complete temperature adjustment log for audit"""
         return [
             {
@@ -201,7 +202,7 @@ class AdaptiveRecoveryLoop:
     def _classify_failure(
         self,
         message: str,
-        details: Optional[Dict[str, Any]]
+        details: dict[str, Any] | None
     ) -> FailureType:
         """
         Classify failure as CREATIVE or MECHANICAL based on message content.

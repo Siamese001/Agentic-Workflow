@@ -3,7 +3,6 @@
 Update dashboard HTML to reflect 100% test coverage.
 Updates both dashboardData and realAgentData sections.
 """
-import json
 import re
 from pathlib import Path
 
@@ -40,5 +39,5 @@ html_updated = re.sub(test_array_pattern, replace_test_array, html_updated)
 # Save updated HTML
 dashboard_path.write_text(html_updated, encoding='utf-8')
 
-print(f"✅ Dashboard updated with 100% test coverage")
+print("✅ Dashboard updated with 100% test coverage")
 print(f"Saved to: {dashboard_path}")

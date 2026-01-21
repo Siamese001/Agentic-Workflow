@@ -1,7 +1,5 @@
 """Verify all dashboard territory counts are correct."""
 import json
-from pathlib import Path
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # Read file line-by-line to extract dashboardData
 lines = []
@@ -70,7 +68,7 @@ print()
 # Check L6 specifically
 l6_territories = [row for row in data if 'L6' in row['Territory']]
 l6_total = sum(row['Total'] for row in l6_territories)
-print(f"🔍 L6_Observability Breakdown:")
+print("🔍 L6_Observability Breakdown:")
 for row in l6_territories:
     status = "✅" if row['Total'] > 0 else "⚠️ "
     print(f"   {status} {row['Territory']:45} {row['Total']:>3} agents")

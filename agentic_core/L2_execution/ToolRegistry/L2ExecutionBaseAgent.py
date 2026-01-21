@@ -29,31 +29,23 @@
 
 from __future__ import annotations
 
-import ast
 import asyncio
-import json
 import os
 import re
-import subprocess
 from abc import abstractmethod
 from dataclasses import dataclass, field
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
+
 from dotenv import load_dotenv
 
-# Core imports
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 # MCPHardenedMixin is now in SovereignBaseAgent - DO NOT import here
-
 # Root inheritance (includes MCPHardenedMixin)
 from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
 from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
+from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
+
+# Core imports
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 # Gemini optional import
 try:
@@ -107,9 +99,9 @@ class L2ExecutionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
 
     name: str = field(init=False)
     role: str = field(init=False)
-    _client: Optional[Any] = field(default=None, init=False)
-    _subatomic_engine: Optional[Any] = field(default=None, init=False)
-    BANNED_IMPORTS: List[str] = field(default_factory=lambda: ['base', 'context', 'L3_orchestration', 'ConversationalRepair'], init=False)
+    _client: Any | None = field(default=None, init=False)
+    _subatomic_engine: Any | None = field(default=None, init=False)
+    BANNED_IMPORTS: list[str] = field(default_factory=lambda: ['base', 'context', 'L3_orchestration', 'ConversationalRepair'], init=False)
 
     def __post_init__(self) -> None:
         """Shared initialization logic with cooperative MRO."""
@@ -150,16 +142,16 @@ class L2ExecutionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
         """Mandatory async execution - all L2 agents must implement."""
         raise NotImplementedError(f'{self.name} must implement async execute()')
 
-    def get_validation_keys(self) -> List[int]:
+    def get_validation_keys(self) -> list[int]:
         """Optional for Canon-style agents - defaults to empty."""
         return []
 
     # --- Heavy features gated behind enable_gemini ---
-    def check_negative_constraints(self, code: str) -> Tuple[bool, List[str]]:
+    def check_negative_constraints(self, code: str) -> tuple[bool, list[str]]:
         """From CanonBaseAgent - only active if enable_gemini."""
         if not self.enable_gemini:
             return True, []
-        violations: List[str] = []
+        violations: list[str] = []
         for banned in self.BANNED_IMPORTS:
             pattern = f'(?:import\\s+{re.escape(banned)}|from\\s+{re.escape(banned)}\\s+import|from\\s+{re.escape(banned)}\\.)'
             if re.search(pattern, code):
@@ -173,7 +165,7 @@ class L2ExecutionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
     # L2-SPECIFIC LAYER METHODS: Tool Execution
     # =========================================================================
 
-    def act(self, plan: List[str]) -> Dict[str, Any]:
+    def act(self, plan: list[str]) -> dict[str, Any]:
         """L2-specific: Execute tools from plan with parallel support and error handling.
 
         Args:
@@ -207,7 +199,7 @@ class L2ExecutionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
             "error_count": len(errors)
         }
 
-    async def act_async(self, plan: List[str]) -> Dict[str, Any]:
+    async def act_async(self, plan: list[str]) -> dict[str, Any]:
         """L2-specific: Async parallel tool execution with rate-limit healing.
 
         Args:
@@ -218,7 +210,7 @@ class L2ExecutionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
         """
         tools = self._extract_tools_from_plan(plan)
 
-        async def execute_one(tool: str) -> Dict[str, Any]:
+        async def execute_one(tool: str) -> dict[str, Any]:
             try:
                 result = await self._execute_tool_async(tool)
                 return {"tool": tool, "result": result, "success": True}
@@ -251,7 +243,7 @@ class L2ExecutionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
             "error_count": len(errors)
         }
 
-    def cluster_errors(self, errors: List[Dict[str, Any]]) -> Dict[str, List[str]]:
+    def cluster_errors(self, errors: list[dict[str, Any]]) -> dict[str, list[str]]:
         """L2-specific: Group errors by type for efficient targeted healing.
 
         Args:
@@ -261,7 +253,7 @@ class L2ExecutionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
             Dict mapping error types to list of error messages
         """
         from collections import defaultdict
-        groups: Dict[str, List[str]] = defaultdict(list)
+        groups: dict[str, list[str]] = defaultdict(list)
 
         for e in errors:
             error_type = e.get("type", "Unknown")
@@ -270,7 +262,7 @@ class L2ExecutionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
 
         return dict(groups)
 
-    def _extract_tools_from_plan(self, plan: List[str]) -> List[str]:
+    def _extract_tools_from_plan(self, plan: list[str]) -> list[str]:
         """Extract tool names/actions from plan steps."""
         tools = []
         for step in plan:
@@ -292,7 +284,7 @@ class L2ExecutionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
         return {"executed": tool, "status": "placeholder", "async": True}
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """Shared healing stub - operational for L2."""
         if _call_path is None:
             _call_path = set()

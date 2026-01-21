@@ -5,7 +5,9 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 import importlib  # AUTO-INJECTED BY GRAVITY HEALER
+
 """
 LLM Engine Abstraction - Provider Diversification Layer
 
@@ -21,7 +23,6 @@ Placed in L1_cognition per SSOT semantic registry:
 import logging
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import List, Optional, Dict, Any
 
 Logger = logging.getLogger(__name__)
 
@@ -61,7 +62,7 @@ class LLMEngine(ABC):
         pass
 
     @abstractmethod
-    async def embed(self, text: str) -> List[float]:
+    async def embed(self, text: str) -> list[float]:
         """
         Generate embedding vector for text.
 
@@ -100,7 +101,7 @@ class GeminiEngine(LLMEngine):
         try:
             # GRAVITY FIXED (Upward Leak): from agentic_core.L3_orchestration.fission_logic.subatomic_engine import SubAtomicEngineImpl
             _mod = importlib.import_module('agentic_core.L5_safety.guardrails.subatomic_engine')
-            SubAtomicEngineImpl = getattr(_mod, 'SubAtomicEngineImpl')
+            SubAtomicEngineImpl = _mod.SubAtomicEngineImpl
             self._engine = SubAtomicEngineImpl(project_root)
             Logger.info("[GeminiEngine] Initialized successfully")
         except Exception as e:
@@ -139,7 +140,7 @@ class GeminiEngine(LLMEngine):
             fission_active=fission_active
         )
 
-    async def embed(self, text: str) -> List[float]:
+    async def embed(self, text: str) -> list[float]:
         """
         Generate embedding using Gemini.
 
@@ -178,7 +179,7 @@ class MultiProviderEngine:
         self,
         project_root: Path,
         primary: str = "gemini",
-        secondary: Optional[str] = None,
+        secondary: str | None = None,
         consistency_threshold: float = 0.95
     ):
         """
@@ -312,14 +313,14 @@ class MultiProviderEngine:
             return False
 
         # Count matching lines
-        matches = sum(1 for la, lb in zip(lines_a, lines_b) if la == lb)
+        matches = sum(1 for la, lb in zip(lines_a, lines_b, strict=False) if la == lb)
         similarity = matches / len(lines_a) if lines_a else 1.0
 
         Logger.debug(f"[CONSISTENCY] Similarity: {similarity:.2%}")
 
         return similarity >= self.consistency_threshold
 
-    async def embed(self, text: str) -> List[float]:
+    async def embed(self, text: str) -> list[float]:
         """
         Generate embedding using primary Provider.
 

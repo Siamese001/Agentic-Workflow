@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Safety Guardrail - L5 Safety Layer
 
@@ -12,9 +13,9 @@ Strategy:
 - Ensures zero-loss transitions during fission
 """
 import logging
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Protocol, Tuple
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from dataclasses import dataclass
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 
 @dataclass
@@ -50,7 +51,7 @@ class SafetyGuardrail:
         self.deletion_limit = deletion_limit
         self.facade_size_threshold = facade_size_threshold
 
-    def verify_change(self, original_lines: List[str], new_lines: List[str], mode: str='HEAL') -> Tuple[bool, str]:
+    def verify_change(self, original_lines: list[str], new_lines: list[str], mode: str='HEAL') -> tuple[bool, str]:
         """
         L5 Safety: Decides if a code change is constructive or destructive.
 
@@ -67,7 +68,7 @@ class SafetyGuardrail:
             if len(new_lines) < self.facade_size_threshold:
                 Logger.info(f'[OK] Fission Whitelist: Monolith converted to Facade ({len(new_lines)} lines)')
                 return (True, f'Fission Whitelist: Monolith converted to Facade ({len(new_lines)} lines).')
-            Logger.info(f'[OK] Fission Whitelist: Multi-file distribution active')
+            Logger.info('[OK] Fission Whitelist: Multi-file distribution active')
             return (True, 'Fission Whitelist: Multi-file distribution active.')
         if delta > self.deletion_limit:
             Logger.error(f'[X] Safety Violation: Mass deletion detected ({delta} lines > {self.deletion_limit} limit)')
@@ -75,7 +76,7 @@ class SafetyGuardrail:
         Logger.info(f'[OK] Safety Pass: {delta} lines changed (within {self.deletion_limit} limit)')
         return (True, 'Safety Pass.')
 
-    def verify_change_detailed(self, original_lines: List[str], new_lines: List[str], mode: str='HEAL') -> SafetyResult:
+    def verify_change_detailed(self, original_lines: list[str], new_lines: list[str], mode: str='HEAL') -> SafetyResult:
         """
         Detailed safety verification with full result object.
 
@@ -96,7 +97,7 @@ class SafetyGuardrail:
             return SafetyResult(is_safe=False, message=f'Safety Violation: Mass deletion detected ({delta} lines)', delta=delta, mode=mode)
         return SafetyResult(is_safe=True, message='Safety Pass', delta=delta, mode=mode)
 
-    def verify_fission_output(self, original_file: str, new_files: dict) -> Tuple[bool, str]:
+    def verify_fission_output(self, original_file: str, new_files: dict) -> tuple[bool, str]:
         """
         Verify fission output maintains total line count.
 
@@ -108,9 +109,9 @@ class SafetyGuardrail:
             Tuple of (is_safe, message)
         """
         try:
-            with open(original_file, 'r', encoding='utf-8') as f:
+            with open(original_file, encoding='utf-8') as f:
                 original_line_count: Any = len(f.readlines())
-            new_total_lines: Any = sum((len(content.splitlines()) for content in new_files.values()))
+            new_total_lines: Any = sum(len(content.splitlines()) for content in new_files.values())
             variance: Any = abs(original_line_count - new_total_lines) / original_line_count
             if variance > 0.05:
                 Logger.warning(f'[!]  Line count variance: {variance:.1%} (original: {original_line_count}, new: {new_total_lines})')

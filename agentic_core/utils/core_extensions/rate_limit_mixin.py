@@ -1,10 +1,10 @@
-import time
 import asyncio
-import logging
-import json
 import hashlib
-from typing import Dict, Optional, Any, Tuple
+import json
+import logging
+import time
 from functools import wraps
+
 
 class RateLimitExceeded(Exception):
     """Raised when an operation exceeds its defined rate limit."""
@@ -31,13 +31,13 @@ class RateLimitMixin:
 
         # Internal state for token buckets
         # Structure: { "key": { "tokens": float, "last_updated": float } }
-        self._bucket_state: Dict[str, Dict[str, float]] = {}
+        self._bucket_state: dict[str, dict[str, float]] = {}
 
         # Default limits if not defined in child class
         if not hasattr(self, "_rate_limits"):
-            self._rate_limits: Dict[str, Dict[str, float]] = {}
+            self._rate_limits: dict[str, dict[str, float]] = {}
 
-        self._violation_count: Dict[str, int] = {}
+        self._violation_count: dict[str, int] = {}
         self._redis = None
         try:
             from agentic_core.L2_execution.mcp.caching_redis_mcp_client import get_redis_client
@@ -50,7 +50,7 @@ class RateLimitMixin:
     def _sanitize_key(self, key: str) -> str:
         return hashlib.sha256(key.encode()).hexdigest()[:32]
 
-    def configure_rate_limit(self, key: str, rate: int, per: int = 60, burst: Optional[int] = None):
+    def configure_rate_limit(self, key: str, rate: int, per: int = 60, burst: int | None = None):
         """
         Dynamically configure a rate limit for a specific operation key.
 

@@ -6,21 +6,22 @@ Tests verify that:
 - Atomic write and safe read work correctly
 - Directory creation works
 """
-import pytest
-from pathlib import Path
 import sys
+from pathlib import Path
+
+import pytest
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.utils.project_root import get_project_root, clear_project_root_cache
 from agentic_core.utils.file_utils import (
+    ensure_directory,
+    safe_copy_file,
+    safe_delete_file,
     safe_read_file,
     safe_write_file,
-    ensure_directory,
-    safe_delete_file,
-    safe_copy_file,
 )
+from agentic_core.utils.project_root import clear_project_root_cache, get_project_root
 
 
 def test_project_root_detection(tmp_path):

@@ -4,11 +4,10 @@ Resume Generator - LLM-powered resume tailoring.
 Rewrites and optimizes resume content based on job analysis results.
 """
 
-import json
 import logging
-from typing import Dict, List, Optional, Any
+from typing import Any
 
-from runtime.shared.multi_provider_clients import get_client, Provider
+from runtime.shared.multi_provider_clients import Provider, get_client
 
 Logger = logging.getLogger(__name__)
 
@@ -16,7 +15,7 @@ Logger = logging.getLogger(__name__)
 class ResumeGenerator:
     """Generates tailored resumes using LLM based on job analysis."""
 
-    def __init__(self, llm_client: Optional[Any] = None, Provider: Optional[Provider] = None, creative_brief: Optional[Any] = None, validation_rules: Optional[Dict[str, Any]] = None):
+    def __init__(self, llm_client: Any | None = None, Provider: Provider | None = None, creative_brief: Any | None = None, validation_rules: dict[str, Any] | None = None):
         """
         Initialize ResumeGenerator.
 
@@ -32,7 +31,7 @@ class ResumeGenerator:
         if self.llm_client is None:
             raise ValueError(f"Failed to initialize LLM client for Provider {self.Provider}")
 
-    def generate(self, resume_data: Dict[str, Any], analysis_results: Dict[str, Any]) -> Dict[str, Any]:
+    def generate(self, resume_data: dict[str, Any], analysis_results: dict[str, Any]) -> dict[str, Any]:
         """
         Generate a tailored resume based on job analysis.
 
@@ -82,7 +81,7 @@ class ResumeGenerator:
             resume_data["_tailoring_error"] = str(e)
             return resume_data
 
-    def _tailor_summary(self, original_summary: str, analysis: Dict[str, Any]) -> str:
+    def _tailor_summary(self, original_summary: str, analysis: dict[str, Any]) -> str:
         """Tailor the professional summary to match job requirements."""
         # Use creative brief word count constraints if available
         word_count_range = "120-140"
@@ -115,7 +114,7 @@ Return ONLY the rewritten summary, no additional text."""
             Logger.error(f"Error tailoring summary: {e}")
             return original_summary
 
-    def _tailor_experience(self, experience_list: List[Dict[str, Any]], analysis: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def _tailor_experience(self, experience_list: list[dict[str, Any]], analysis: dict[str, Any]) -> list[dict[str, Any]]:
         """Tailor experience section to highlight relevant achievements."""
         tailored_experience = []
 
@@ -149,7 +148,7 @@ Return ONLY the rewritten summary, no additional text."""
 
         return tailored_experience
 
-    def _tailor_skills(self, original_skills: List[str], analysis: Dict[str, Any]) -> List[str]:
+    def _tailor_skills(self, original_skills: list[str], analysis: dict[str, Any]) -> list[str]:
         """Reorder and emphasize skills based on job requirements."""
         target_hard_skills = analysis.get("hard_skills", [])
         target_soft_skills = analysis.get("soft_skills", [])
@@ -187,7 +186,7 @@ Return ONLY the rewritten summary, no additional text."""
 
         return final_skills[:15]  # Limit to 15 skills
 
-    def _tailor_bullets(self, bullets: List[str], target_skills: List[str], job_responsibilities: List[str]) -> List[str]:
+    def _tailor_bullets(self, bullets: list[str], target_skills: list[str], job_responsibilities: list[str]) -> list[str]:
         """Tailor bullet points to emphasize target skills."""
         tailored_bullets = []
 
@@ -224,7 +223,7 @@ Return ONLY the rewritten bullet, no additional text."""
 
         return tailored_bullets
 
-    def _tailor_description(self, description: str, target_skills: List[str]) -> str:
+    def _tailor_description(self, description: str, target_skills: list[str]) -> str:
         """Tailor job description to highlight relevant skills."""
         prompt = f"""Rewrite the following job description to emphasize the target skills.
 
@@ -273,7 +272,7 @@ Return ONLY the rewritten description, no additional text."""
             response = self.llm_client.complete(prompt, temperature=temperature)
             return response.text if hasattr(response, 'text') else str(response)
 
-    def optimize_for_ats(self, resume_data: Dict[str, Any], analysis: Dict[str, Any]) -> Dict[str, Any]:
+    def optimize_for_ats(self, resume_data: dict[str, Any], analysis: dict[str, Any]) -> dict[str, Any]:
         """
         Optimize resume for Applicant Tracking Systems (ATS).
 

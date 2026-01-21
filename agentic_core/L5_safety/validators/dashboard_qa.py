@@ -10,27 +10,15 @@ Exit codes:
     0 = All checks passed
     1 = One or more checks failed
 """
-import sys
-import re
 import json
+import re
+import sys
 from pathlib import Path
-from typing import List, Tuple
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
     AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
 
 
@@ -42,8 +30,8 @@ class DashboardQA:
         # Consolidated dashboard location: agentic_core/observability/dashboard/
         self.template_path = self.root / AGENTIC_CORE_DIR / 'observability' / 'dashboard' / 'dashboard_template.html'
         self.dashboard_path = self.root / REPORTS_DIR / 'autonomy_dashboard.html'
-        self.errors: List[str] = []
-        self.warnings: List[str] = []
+        self.errors: list[str] = []
+        self.warnings: list[str] = []
 
     def validate_template_syntax(self) -> bool:
         """Validate HTML template syntax."""
@@ -380,7 +368,7 @@ class DashboardQA:
         print('Dashboard QA Validation')
         print('='*60 + '\n')
 
-        checks = [
+        [
             self.validate_template_syntax(),
             self.validate_timer_configuration(),
             self.validate_generated_dashboard(),

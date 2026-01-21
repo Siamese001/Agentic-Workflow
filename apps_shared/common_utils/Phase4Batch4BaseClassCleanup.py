@@ -20,7 +20,6 @@ import argparse
 import ast
 import re
 from pathlib import Path
-from typing import List, Tuple, Optional, Set
 
 # Files to EXCLUDE from refactoring
 EXCLUDED_FILES = {
@@ -47,7 +46,7 @@ EXCLUDED_DIRS = {
 REDUNDANT_MIXINS = {"HealerMixin", "MCPHardenedMixin", "SubatomicTestingMixin"}
 
 
-def find_python_files(root: Path) -> List[Path]:
+def find_python_files(root: Path) -> list[Path]:
     """Find all Python files, excluding specified directories."""
     files = []
     for path in root.rglob("*.py"):
@@ -64,7 +63,7 @@ class BaseClassVisitor(ast.NodeVisitor):
 
     def __init__(self):
         self.last_import_line = 0
-        self.classes_with_redundant_mixins: List[Tuple[int, str, List[str]]] = []  # (line, class_name, redundant_bases)
+        self.classes_with_redundant_mixins: list[tuple[int, str, list[str]]] = []  # (line, class_name, redundant_bases)
         self.mixin_imports: dict = {}  # mixin_name -> (line, module)
 
     def visit_ImportFrom(self, node: ast.ImportFrom):

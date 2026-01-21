@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Dashboard Data Generator - L6 Modular Engine
 HARDENED: Phase 4 Verified AST Signal Integration.
@@ -7,35 +8,22 @@ Generates unified row data for both Markdown and HTML reports.
 import json
 import logging
 from pathlib import Path
-from typing import List, Dict, Any, Tuple
+from typing import Any
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
 
 log = logging.getLogger(__name__)
 
 class DashboardDataGenerator:
-    def __init__(self, project_root: Path, territories: Dict[str, Any]) -> None:
+    def __init__(self, project_root: Path, territories: dict[str, Any]) -> None:
         self.project_root = project_root
         self.territories = territories
         self.registry_path = self.project_root / AGENT_DISCOVERY_JSON
         self.registry_by_path = {}
 
-    def load_registry(self) -> List[Dict[str, Any]]:
+    def load_registry(self) -> list[dict[str, Any]]:
         """Load and index the authoritative agent registry."""
         if not self.registry_path.exists():
             return []
@@ -47,7 +35,7 @@ class DashboardDataGenerator:
             log.error(f"Failed to load registry: {e}")
             return []
 
-    def compute_territory_metrics(self, agents: List[Path], used_stems: set, registry: Dict[str, Any]) -> Dict[str, Any]:
+    def compute_territory_metrics(self, agents: list[Path], used_stems: set, registry: dict[str, Any]) -> dict[str, Any]:
         """Compute aggregate metrics for a specific agent group."""
         m = {
             "total": len(agents), "compliant": 0, "heal_cap": 0, "heal_inv": 0,
@@ -73,7 +61,7 @@ class DashboardDataGenerator:
 
         return m
 
-    def build_territory_row(self, territory_name: str, metrics: Dict[str, Any], priority: int, is_infrastructure: bool) -> Dict[str, Any]:
+    def build_territory_row(self, territory_name: str, metrics: dict[str, Any], priority: int, is_infrastructure: bool) -> dict[str, Any]:
         """Format raw metrics into a standardized dashboard row."""
         t = metrics["total"]
         if t == 0: return {}
@@ -97,7 +85,7 @@ class DashboardDataGenerator:
             "Proper Base %": round(metrics["proper_base"] / t, 1)
         }
 
-    def build_total_row(self, rows: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def build_total_row(self, rows: list[dict[str, Any]]) -> dict[str, Any]:
         """Aggregate all territory rows into a system-wide total row."""
         if not rows: return {}
         total_agents = sum(r["Total"] for r in rows)
@@ -119,7 +107,7 @@ class DashboardDataGenerator:
             "Proper Base %": weighted_avg("Proper Base %")
         }
 
-    def generate_full_report_data(self) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
+    def generate_full_report_data(self) -> tuple[list[dict[str, Any]], dict[str, Any]]:
         """High-level orchestrator for the modular generation process."""
         self.load_registry()
         # Note: In production, this would involve full path scanning.

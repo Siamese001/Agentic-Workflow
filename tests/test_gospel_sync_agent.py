@@ -4,8 +4,8 @@ Robust Tests for GospelSyncAgent
 """
 
 import sys
-import os
 from pathlib import Path
+
 
 # Setup mock for MCPHardenedMixin
 class MockMixin: pass
@@ -33,6 +33,7 @@ sys.modules['agentic_core.config.blueprint_sovereign.structure_blueprint'] = moc
 
 # Direct import
 import importlib.util
+
 spec = importlib.util.spec_from_file_location(
     'GospelSyncAgent',
     Path('agentic_core/L5_safety/validators/GospelSyncAgent.py')
@@ -72,7 +73,7 @@ def test_actual_files_scan():
     actual = agent._get_actual_files()
 
     print(f"Actual .py files found: {len(actual)}")
-    print(f"Sample files (first 10):")
+    print("Sample files (first 10):")
     for f in sorted(actual)[:10]:
         print(f"  - {f}")
 

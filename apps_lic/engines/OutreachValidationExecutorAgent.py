@@ -1,22 +1,19 @@
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 """Outreach Validation Executor - LIC-Specific Validation Gates.
 
 This module extends ValidationGateExecutor with outreach-specific validation
 rules including Metric source binding, redundancy guards, and forbidden content.
 """
-from typing import Any, Optional, Protocol, Dict, List
-
-
 import logging
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from validation_gate_executor import (  # Assuming this import is correct
     RuleFailure,
     ValidationGateExecutor,
-    ValidationResult,
-    ValidationStatus,
 )
 
 LOGGER = logging.getLogger(__name__)
@@ -36,11 +33,11 @@ class OutreachValidationExecutorAgent(HealerMixin, MCPHardenedMixin, SubatomicTe
 
     def __init__(
         self,
-        validation_gates: List[Any],
-        WordCountConstraints: Dict[str, Any],
-        similarity_thresholds: Dict[str, float],
-        forbidden_verbs: List[str],
-        forbidden_filler_phrases: List[str],
+        validation_gates: list[Any],
+        WordCountConstraints: dict[str, Any],
+        similarity_thresholds: dict[str, float],
+        forbidden_verbs: list[str],
+        forbidden_filler_phrases: list[str],
     ) -> None:
         """Initialize outreach validation executor.
 
@@ -57,8 +54,8 @@ class OutreachValidationExecutorAgent(HealerMixin, MCPHardenedMixin, SubatomicTe
             similarity_thresholds=similarity_thresholds,
         )
 
-        self.forbidden_verbs: List[str] = [v.lower() for v in forbidden_verbs]
-        self.forbidden_filler_phrases: List[str] = [p.lower() for p in forbidden_filler_phrases]
+        self.forbidden_verbs: list[str] = [v.lower() for v in forbidden_verbs]
+        self.forbidden_filler_phrases: list[str] = [p.lower() for p in forbidden_filler_phrases]
 
         LOGGER.info(
             f"OutreachValidationExecutorAgent initialized: "
@@ -71,8 +68,8 @@ class OutreachValidationExecutorAgent(HealerMixin, MCPHardenedMixin, SubatomicTe
         check: str,
         content: str,
         k_node_id: str,
-        context: Dict[str, Any],
-    ) -> Optional[RuleFailure]:
+        context: dict[str, Any],
+    ) -> RuleFailure | None:
         """Execute outreach-specific validation check.
 
         Args:
@@ -119,7 +116,7 @@ class OutreachValidationExecutorAgent(HealerMixin, MCPHardenedMixin, SubatomicTe
         # Fall back to base class
         return super()._execute_check(check, content, k_node_id, context)
 
-    def _check_placeholders_lic(self, content: str) -> Optional[RuleFailure]:
+    def _check_placeholders_lic(self, content: str) -> RuleFailure | None:
         """Check for placeholders (LIC-QA-001 - CRITICAL).
 
         Args:
@@ -153,7 +150,7 @@ class OutreachValidationExecutorAgent(HealerMixin, MCPHardenedMixin, SubatomicTe
 
         return None
 
-    def _check_forbidden_verbs(self, content: str) -> Optional[RuleFailure]:
+    def _check_forbidden_verbs(self, content: str) -> RuleFailure | None:
         """Check for forbidden corporate verbs (LIC-QA-008 - MEDIUM).
 
         Args:
@@ -181,7 +178,7 @@ class OutreachValidationExecutorAgent(HealerMixin, MCPHardenedMixin, SubatomicTe
 
         return None
 
-    def _check_filler_phrases(self, content: str) -> Optional[RuleFailure]:
+    def _check_filler_phrases(self, content: str) -> RuleFailure | None:
         """Check for weak filler phrases (LIC-QA-009 - MEDIUM).
 
         Args:
@@ -212,8 +209,8 @@ class OutreachValidationExecutorAgent(HealerMixin, MCPHardenedMixin, SubatomicTe
     def _check_metric_source_binding(
         self,
         content: str,
-        context: Dict[str, Any],
-    ) -> Optional[RuleFailure]:
+        context: dict[str, Any],
+    ) -> RuleFailure | None:
         """Check Metric source binding (LIC-QA-041 - HIGH).
 
         Every Metric must map to metric_source_map entry.
@@ -264,8 +261,8 @@ class OutreachValidationExecutorAgent(HealerMixin, MCPHardenedMixin, SubatomicTe
     def _check_metric_context(
         self,
         content: str,
-        context: Dict[str, Any],
-    ) -> Optional[RuleFailure]:
+        context: dict[str, Any],
+    ) -> RuleFailure | None:
         """Check Metric context validation (LIC-QA-043 - HIGH).
 
         Metrics must have keyword context from RAG.
@@ -319,8 +316,8 @@ class OutreachValidationExecutorAgent(HealerMixin, MCPHardenedMixin, SubatomicTe
     def _check_existing_redundancy(
         self,
         content: str,
-        context: Dict[str, Any],
-    ) -> Optional[RuleFailure]:
+        context: dict[str, Any],
+    ) -> RuleFailure | None:
         """Check redundancy guard for EXISTING contacts.
 
         Jaccard similarity must be ≤0.40 with previous message.
@@ -355,8 +352,8 @@ class OutreachValidationExecutorAgent(HealerMixin, MCPHardenedMixin, SubatomicTe
     def _check_transition_phrase(
         self,
         content: str,
-        context: Dict[str, Any],
-    ) -> Optional[RuleFailure]:
+        context: dict[str, Any],
+    ) -> RuleFailure | None:
         """Check transition phrase presence.
 
         Args:
@@ -385,8 +382,8 @@ class OutreachValidationExecutorAgent(HealerMixin, MCPHardenedMixin, SubatomicTe
     def _check_signature_immutability(
         self,
         content: str,
-        context: Dict[str, Any],
-    ) -> Optional[RuleFailure]:
+        context: dict[str, Any],
+    ) -> RuleFailure | None:
         """Check signature immutability.
 
         Signature must be exact 4-line block:

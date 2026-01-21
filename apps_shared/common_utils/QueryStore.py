@@ -9,7 +9,6 @@ to ensure consistent resume improvement and job alignment.
 """
 
 
-from typing import Dict, List, Optional
 
 
 
@@ -22,10 +21,10 @@ class StoredPrompt:
     """
     id: str
     content: str
-    template: Optional[str] = None
-    context_schema: Optional[Dict[str, object]] = None
+    template: str | None = None
+    context_schema: dict[str, object] | None = None
     version: str = "1.0"
-    created_at: Optional[str] = None
+    created_at: str | None = None
 
 
 class PromptStore:
@@ -37,18 +36,18 @@ class PromptStore:
     """
 
     def __init__(self):
-        self._prompts: Dict[str, StoredPrompt] = {}
+        self._prompts: dict[str, StoredPrompt] = {}
 
     def store(self, prompt: StoredPrompt) -> str:
         """Stores resume generation prompt and returns its ID."""
         self._prompts[prompt.id] = prompt
         return prompt.id
 
-    def retrieve(self, prompt_id: str) -> Optional[StoredPrompt]:
+    def retrieve(self, prompt_id: str) -> StoredPrompt | None:
         """Retrieves stored resume generation prompt by ID."""
         return self._prompts.get(prompt_id)
 
-    def list_prompts(self) -> List[str]:
+    def list_prompts(self) -> list[str]:
         """Lists all stored resume generation prompt IDs."""
         return list(self._prompts.keys())
 
@@ -68,18 +67,18 @@ def get_store() -> PromptStore:
     return default_store
 
 
-def store_prompt(prompt_id: str, content: str, **kwargs: Dict[str, object]) -> str:
+def store_prompt(prompt_id: str, content: str, **kwargs: dict[str, object]) -> str:
     """Convenience function to store resume generation prompt."""
     prompt = StoredPrompt(id=prompt_id, content=content, **kwargs)
     return default_store.store(prompt)
 
 
-def retrieve_prompt(prompt_id: str) -> Optional[StoredPrompt]:
+def retrieve_prompt(prompt_id: str) -> StoredPrompt | None:
     """Convenience function to retrieve resume generation prompt."""
     return default_store.retrieve(prompt_id)
 
 
-def get_prompt_version(prompt_id: str) -> Optional[str]:
+def get_prompt_version(prompt_id: str) -> str | None:
     """Gets the version of a stored resume generation prompt."""
     prompt = default_store.retrieve(prompt_id)
     return prompt.version if prompt else None

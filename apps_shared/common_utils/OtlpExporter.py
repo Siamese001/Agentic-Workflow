@@ -5,11 +5,10 @@ Domain: tracing
 Generated: 2025-12-07T12:07:59.860156
 """
 
-import logging
 import json
-from typing import Dict, List, Optional
-from dataclasses import dataclass
+import logging
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +19,7 @@ class ExportResult:
     success: bool
     items_exported: int
     destination: str
-    errors: List[str] = None
+    errors: list[str] = None
 
 
 class BaseExporter(ABC):
@@ -35,7 +34,7 @@ class BaseExporter(ABC):
 class OtlpExporter(BaseExporter):
     """Exporter for tracing domain."""
 
-    def __init__(self, config: Optional[Dict[str, object]] = None):
+    def __init__(self, config: dict[str, object] | None = None):
         self.config = config or {}
         self.destination = self.config.get("destination", "stdout")
         logger.info(f"Initialized {self.__class__.__name__}")
@@ -68,6 +67,6 @@ class OtlpExporter(BaseExporter):
             )
 
 
-def export_data(data: object, config: Optional[Dict] = None) -> ExportResult:
+def export_data(data: object, config: dict | None = None) -> ExportResult:
     """Convenience function for export."""
     return OtlpExporter(config).export(data)

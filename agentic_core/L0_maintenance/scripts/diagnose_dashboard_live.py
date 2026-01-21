@@ -3,8 +3,10 @@
 Live diagnosis of user's dashboard issue.
 Checks what's actually happening when browser loads the dashboard.
 """
-from playwright.sync_api import sync_playwright
 import time
+
+from playwright.sync_api import sync_playwright
+
 
 def diagnose():
     with sync_playwright() as p:
@@ -53,7 +55,7 @@ def diagnose():
         for msg in console_messages[-10:]:
             print(f"   {msg}")
 
-        print(f"\n3. Network Requests (last 10):")
+        print("\n3. Network Requests (last 10):")
         for req in requests[-10:]:
             print(f"   {req}")
 

@@ -5,13 +5,13 @@ with standardized interfaces, error handling, and result processing.
 Follows the functional component pattern with proper logging.
 """
 
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any, Union, Tuple, Callable
 import logging
-from datetime import datetime
-from enum import Enum
 import time
 import uuid
+from collections.abc import Callable
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -40,11 +40,11 @@ class ToolOperationDefinition:
     tool_name: str
     operation_type: str
     description: str
-    input_schema: Dict[str, Any]
-    output_schema: Dict[str, Any]
+    input_schema: dict[str, Any]
+    output_schema: dict[str, Any]
     scope: OperationScope
     timeout: float = 30.0
-    retry_policy: Dict[str, Any] = field(default_factory=dict)
+    retry_policy: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -53,9 +53,9 @@ class OperationExecutionContext:
     execution_id: str
     operation_id: str
     mode: OperationMode
-    caller_context: Optional[Dict[str, Any]] = None
-    trace_context: Optional[Dict[str, Any]] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    caller_context: dict[str, Any] | None = None
+    trace_context: dict[str, Any] | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -74,24 +74,24 @@ class OperationExecutionResult:
     execution_id: str
     operation_id: str
     success: bool
-    output: Optional[Any] = None
-    metrics: Dict[str, float] = field(default_factory=dict)
-    traces: List[Dict[str, Any]] = field(default_factory=list)
-    artifacts: List[str] = field(default_factory=list)
-    error: Optional[str] = None
-    warnings: List[str] = field(default_factory=list)
+    output: Any | None = None
+    metrics: dict[str, float] = field(default_factory=dict)
+    traces: list[dict[str, Any]] = field(default_factory=list)
+    artifacts: list[str] = field(default_factory=list)
+    error: str | None = None
+    warnings: list[str] = field(default_factory=list)
     execution_time: float = 0.0
 
 
 class ObservabilityOperationPerformer:
     """Main performer for observability operations."""
 
-    def __init__(self, config: Optional[OperationExecutionConfig] = None):
+    def __init__(self, config: OperationExecutionConfig | None = None):
         self.config = config or OperationExecutionConfig()
         self.logger = logging.getLogger(self.__class__.__name__)
-        self._registered_operations: Dict[str, ToolOperationDefinition] = {}
-        self._operation_handlers: Dict[str, Callable] = {}
-        self._active_executions: Dict[str, Dict[str, Any]] = {}
+        self._registered_operations: dict[str, ToolOperationDefinition] = {}
+        self._operation_handlers: dict[str, Callable] = {}
+        self._active_executions: dict[str, dict[str, Any]] = {}
         self._initialize_operations()
 
     def register_operation(self, operation_def: ToolOperationDefinition,
@@ -107,7 +107,7 @@ class ObservabilityOperationPerformer:
         self.logger.info(f"Registered operation: {operation_def.operation_id}")
 
     def perform_operation(self, context: OperationExecutionContext,
-                         inputs: Dict[str, Any]) -> OperationExecutionResult:
+                         inputs: dict[str, Any]) -> OperationExecutionResult:
         """Perform an observability operation.
 
         Args:
@@ -178,7 +178,7 @@ class ObservabilityOperationPerformer:
             )
 
     def perform_operation_stream(self, context: OperationExecutionContext,
-                                inputs: Dict[str, Any]) -> object:
+                                inputs: dict[str, Any]) -> object:
         """Perform operation with streaming output.
 
         Args:
@@ -200,8 +200,8 @@ class ObservabilityOperationPerformer:
             yield chunk
 
     def perform_operations_batch(self,
-                                contexts: List[OperationExecutionContext],
-                                inputs_list: List[Dict[str, Any]]) -> List[OperationExecutionResult]:
+                                contexts: list[OperationExecutionContext],
+                                inputs_list: list[dict[str, Any]]) -> list[OperationExecutionResult]:
         """Perform multiple operations.
 
         Args:
@@ -222,7 +222,7 @@ class ObservabilityOperationPerformer:
 
         return results
 
-    def list_operations(self, scope: Optional[OperationScope] = None) -> List[ToolOperationDefinition]:
+    def list_operations(self, scope: OperationScope | None = None) -> list[ToolOperationDefinition]:
         """List registered operations.
 
         Args:
@@ -238,7 +238,7 @@ class ObservabilityOperationPerformer:
 
         return operations
 
-    def get_operation_definition(self, operation_id: str) -> Optional[ToolOperationDefinition]:
+    def get_operation_definition(self, operation_id: str) -> ToolOperationDefinition | None:
         """Get operation definition.
 
         Args:
@@ -265,7 +265,7 @@ class ObservabilityOperationPerformer:
             return True
         return False
 
-    def get_execution_status(self, execution_id: str) -> Optional[Dict[str, Any]]:
+    def get_execution_status(self, execution_id: str) -> dict[str, Any] | None:
         """Get execution status.
 
         Args:
@@ -277,7 +277,7 @@ class ObservabilityOperationPerformer:
         return self._active_executions.get(execution_id)
 
     def _execute_synchronous(self, context: OperationExecutionContext,
-                            inputs: Dict[str, Any]) -> OperationExecutionResult:
+                            inputs: dict[str, Any]) -> OperationExecutionResult:
         """Execute operation synchronously."""
         handler = self._operation_handlers[context.operation_id]
 
@@ -300,7 +300,7 @@ class ObservabilityOperationPerformer:
         )
 
     def _execute_asynchronous(self, context: OperationExecutionContext,
-                             inputs: Dict[str, Any]) -> OperationExecutionResult:
+                             inputs: dict[str, Any]) -> OperationExecutionResult:
         """Execute operation asynchronously."""
         # Simulate async execution
         handler = self._operation_handlers[context.operation_id]
@@ -317,7 +317,7 @@ class ObservabilityOperationPerformer:
         )
 
     def _execute_streaming(self, context: OperationExecutionContext,
-                          inputs: Dict[str, Any]) -> OperationExecutionResult:
+                          inputs: dict[str, Any]) -> OperationExecutionResult:
         """Execute operation in streaming mode."""
         # For streaming mode, we return a result indicating streaming is active
         return OperationExecutionResult(
@@ -329,7 +329,7 @@ class ObservabilityOperationPerformer:
         )
 
     def _execute_batch(self, context: OperationExecutionContext,
-                      inputs: Dict[str, Any]) -> OperationExecutionResult:
+                      inputs: dict[str, Any]) -> OperationExecutionResult:
         """Execute operation in batch mode."""
         batch_items = inputs.get("batch_items", [])
         results = []
@@ -399,8 +399,8 @@ class ObservabilityOperationPerformer:
             return f"Field {field_name} must be {type_names.get(expected_type, 'valid type')}"
         return None
 
-    def _validate_inputs(self, inputs: Dict[str, Any],
-                        operation_def: ToolOperationDefinition) -> List[str]:
+    def _validate_inputs(self, inputs: dict[str, Any],
+                        operation_def: ToolOperationDefinition) -> list[str]:
         """Validate operation inputs."""
         errors = []
 
@@ -468,7 +468,7 @@ class ObservabilityOperationPerformer:
             scope=OperationScope.SERVICE
         )
 
-        def _trace_analysis_handler(inputs: Dict[str, Any], **kwargs: object) -> Dict[str, Any]:
+        def _trace_analysis_handler(inputs: dict[str, Any], **kwargs: object) -> dict[str, Any]:
             return {
                 "insights": [
                     {"type": "slow_span", "description": "Database query took 500ms"},
@@ -499,7 +499,7 @@ class ObservabilityOperationPerformer:
             scope=OperationScope.SYSTEM
         )
 
-        def _metric_aggregation_handler(inputs: Dict[str, Any], **kwargs: object) -> Dict[str, Any]:
+        def _metric_aggregation_handler(inputs: dict[str, Any], **kwargs: object) -> dict[str, Any]:
             metrics = inputs.get("metrics", [])
             return {
                 "aggregated_metrics": {
@@ -530,7 +530,7 @@ class ObservabilityOperationPerformer:
             scope=OperationScope.REQUEST
         )
 
-        def _log_correlation_handler(inputs: Dict[str, Any], **kwargs: object) -> Dict[str, Any]:
+        def _log_correlation_handler(inputs: dict[str, Any], **kwargs: object) -> dict[str, Any]:
             log_entries = inputs.get("log_entries", [])
             return {
                 "correlated_logs": [
@@ -578,11 +578,11 @@ def create_observability_operation_performer(
 # Convenience function for direct usage
 def tool_perform_observability_operation(
     operation_id: str,
-    inputs: Dict[str, Any],
-    execution_id: Optional[str] = None,
+    inputs: dict[str, Any],
+    execution_id: str | None = None,
     mode: str = "synchronous",
-    caller_context: Optional[Dict[str, Any]] = None
-) -> Dict[str, Any]:
+    caller_context: dict[str, Any] | None = None
+) -> dict[str, Any]:
     """Perform observability operation.
 
     Args:

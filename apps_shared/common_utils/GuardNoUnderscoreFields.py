@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Sovereign Guard: Block underscore-prefixed fields in SSOT models.
 Location: agentic_core/L0_maintenance/scripts/
@@ -8,10 +9,6 @@ import sys
 from pathlib import Path
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 
 # Relative path from repo root or absolute check

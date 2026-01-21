@@ -12,9 +12,10 @@ Implements single entrypoint with specialized coordinators for different mission
 
 
 from __future__ import annotations
+
 from abc import ABC, abstractmethod
-from typing import Dict, List, Any, Optional
 from enum import Enum
+from typing import Any
 
 
 class MissionFocus(Enum):
@@ -40,7 +41,7 @@ class Coordinator(ABC):
         self.missions_failed = 0
 
     @abstractmethod
-    def execute(self, mission: Dict[str, Any]) -> Dict[str, Any]:
+    def execute(self, mission: dict[str, Any]) -> dict[str, Any]:
         """
         Execute mission using specialized coordination strategy.
 
@@ -70,7 +71,7 @@ class ReasoningCoordinator(Coordinator):
         """Initialize reasoning coordinator."""
         super().__init__("ReasoningCoordinator")
 
-    def execute(self, mission: Dict[str, Any]) -> Dict[str, Any]:
+    def execute(self, mission: dict[str, Any]) -> dict[str, Any]:
         """Execute reasoning mission."""
         try:
             # Consolidated reasoning orchestration logic
@@ -109,7 +110,7 @@ class ExecutionCoordinator(Coordinator):
         """Initialize execution coordinator."""
         super().__init__("ExecutionCoordinator")
 
-    def execute(self, mission: Dict[str, Any]) -> Dict[str, Any]:
+    def execute(self, mission: dict[str, Any]) -> dict[str, Any]:
         """Execute execution mission."""
         try:
             # Consolidated execution orchestration logic
@@ -146,7 +147,7 @@ class SafetyCoordinator(Coordinator):
         """Initialize safety coordinator."""
         super().__init__("SafetyCoordinator")
 
-    def execute(self, mission: Dict[str, Any]) -> Dict[str, Any]:
+    def execute(self, mission: dict[str, Any]) -> dict[str, Any]:
         """Execute safety mission."""
         try:
             # Consolidated safety orchestration logic
@@ -183,7 +184,7 @@ class ValidationCoordinator(Coordinator):
         """Initialize validation coordinator."""
         super().__init__("ValidationCoordinator")
 
-    def execute(self, mission: Dict[str, Any]) -> Dict[str, Any]:
+    def execute(self, mission: dict[str, Any]) -> dict[str, Any]:
         """Execute validation mission."""
         try:
             # Consolidated validation orchestration logic
@@ -220,7 +221,7 @@ class HealingCoordinator(Coordinator):
         """Initialize healing coordinator."""
         super().__init__("HealingCoordinator")
 
-    def execute(self, mission: Dict[str, Any]) -> Dict[str, Any]:
+    def execute(self, mission: dict[str, Any]) -> dict[str, Any]:
         """Execute healing mission."""
         try:
             # Consolidated healing orchestration logic
@@ -257,7 +258,7 @@ class ObservabilityCoordinator(Coordinator):
         """Initialize observability coordinator."""
         super().__init__("ObservabilityCoordinator")
 
-    def execute(self, mission: Dict[str, Any]) -> Dict[str, Any]:
+    def execute(self, mission: dict[str, Any]) -> dict[str, Any]:
         """Execute observability mission."""
         try:
             # Consolidated observability orchestration logic
@@ -294,7 +295,7 @@ class OptimizationCoordinator(Coordinator):
         """Initialize optimization coordinator."""
         super().__init__("OptimizationCoordinator")
 
-    def execute(self, mission: Dict[str, Any]) -> Dict[str, Any]:
+    def execute(self, mission: dict[str, Any]) -> dict[str, Any]:
         """Execute optimization mission."""
         try:
             # Consolidated optimization orchestration logic
@@ -331,7 +332,7 @@ class DefaultCoordinator(Coordinator):
         """Initialize default coordinator."""
         super().__init__("DefaultCoordinator")
 
-    def execute(self, mission: Dict[str, Any]) -> Dict[str, Any]:
+    def execute(self, mission: dict[str, Any]) -> dict[str, Any]:
         """Execute default mission."""
         try:
             result = {
@@ -363,7 +364,7 @@ class UnifiedWorkflowEngine:
 
     def __init__(self):
         """Initialize unified workflow engine with all coordinators."""
-        self.coordinators: Dict[MissionFocus, Coordinator] = {
+        self.coordinators: dict[MissionFocus, Coordinator] = {
             MissionFocus.REASONING: ReasoningCoordinator(),
             MissionFocus.EXECUTION: ExecutionCoordinator(),
             MissionFocus.SAFETY: SafetyCoordinator(),
@@ -377,7 +378,7 @@ class UnifiedWorkflowEngine:
         self.total_successes = 0
         self.total_failures = 0
 
-    def orchestrate(self, mission: Dict[str, Any]) -> Dict[str, Any]:
+    def orchestrate(self, mission: dict[str, Any]) -> dict[str, Any]:
         """
         Orchestrate mission using appropriate coordinator.
 
@@ -410,7 +411,7 @@ class UnifiedWorkflowEngine:
 
         return result
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get orchestration statistics."""
         return {
             "total_missions": self.total_missions,

@@ -15,33 +15,18 @@ Finds all Python classes in agentic_core that:
 # This boosts alignment detection — review and integrate appropriately
 
 import warnings
+
 warnings.warn(
     "find_non_conforming_agents.py is DEPRECATED. Use full_agent_discovery.py instead.",
     DeprecationWarning,
     stacklevel=2
 )
 import ast
-import re
 from pathlib import Path
-from typing import List, Dict
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
-from agentic_core.utils.sovereign_index import SovereignIndex
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 AGENTIC_CORE = PROJECT_ROOT / AGENTIC_CORE_DIR
@@ -65,11 +50,11 @@ AGENT_LIKE_METHODS = {
 
 
 class NonConformingAgentFinder(ast.NodeVisitor):
-    def __init__(self, file_path: Path, source_lines: List[str]):
+    def __init__(self, file_path: Path, source_lines: list[str]):
         self.file_path = file_path
         self.source_lines = source_lines
-        self.suspect_classes: List[Dict] = []
-        self.excluded_classes: List[Dict] = []
+        self.suspect_classes: list[dict] = []
+        self.excluded_classes: list[dict] = []
 
     def visit_ClassDef(self, node: ast.ClassDef):
         class_name = node.name

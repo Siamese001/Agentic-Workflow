@@ -5,6 +5,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """
 BenchmarkingAgent - L3 System Health Specialist
 
@@ -15,11 +16,11 @@ import json
 import logging
 import statistics
 import time
+from collections.abc import Callable
 from datetime import datetime
 from functools import wraps
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Protocol
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from typing import Any
 
 # NAMING FIXED: Logger → Logger
 Logger = logging.getLogger(__name__)
@@ -41,13 +42,13 @@ BenchmarkSuite = type("BenchmarkSuite", (), {"name": "", "add_result": lambda s,
 class BenchmarkResultActual:
     """Result of a single benchmark measurement."""
 
-    def __init__(self, name: str, duration_ms: float, metadata: Dict = None):
+    def __init__(self, name: str, duration_ms: float, metadata: dict = None):
         self.name = name
         self.duration_ms = duration_ms
         self.metadata = metadata or {}
         self.timestamp = datetime.utcnow()
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         """Convert to dictionary."""
         return {
             "name": self.name,
@@ -63,7 +64,7 @@ class BenchmarkSuite:
 
     def __init__(self, name: str):
         self.name = name
-        self.results: List[BenchmarkResult] = []
+        self.results: list[BenchmarkResult] = []
         self.stats = {
             "count": 0,
             "avg_ms": 0.0,
@@ -117,7 +118,7 @@ class BenchmarkSuite:
         degradation = (recent_avg - historical_avg) / historical_avg
         return degradation > threshold
 
-    def get_summary(self) -> Dict:
+    def get_summary(self) -> dict:
         """Get benchmark summary."""
         return {
             "name": self.name,
@@ -127,8 +128,9 @@ class BenchmarkSuite:
         }
 
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+
 
 # NAMING FIXED: BenchmarkingAgent → BenchmarkingAgent
 class BenchmarkingAgent(HealerMixin):
@@ -144,7 +146,7 @@ class BenchmarkingAgent(HealerMixin):
 
 
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -161,13 +163,13 @@ class BenchmarkingAgent(HealerMixin):
 
     def __init__(self):
         """Initialize the BenchmarkingAgent."""
-        self.suites: Dict[str, BenchmarkSuite] = {}
-        self.active_benchmarks: Dict[str, float] = {}
+        self.suites: dict[str, BenchmarkSuite] = {}
+        self.active_benchmarks: dict[str, float] = {}
         self.enabled = True
 
         Logger.info("BenchmarkingAgent initialized")
 
-    def benchmark(self, name: str, metadata: Dict = None) -> Any:
+    def benchmark(self, name: str, metadata: dict = None) -> Any:
         """
         Decorator to benchmark a function.
 
@@ -187,7 +189,7 @@ class BenchmarkingAgent(HealerMixin):
             return wrapper
         return decorator
 
-    def benchmark_async(self, name: str, metadata: Dict = None) -> Any:
+    def benchmark_async(self, name: str, metadata: dict = None) -> Any:
         """
         Decorator to benchmark an async function.
 
@@ -220,7 +222,7 @@ class BenchmarkingAgent(HealerMixin):
         self.active_benchmarks[name] = time.perf_counter()
         Logger.debug(f"Started benchmark: {name}")
 
-    def end_timer(self, name: str, metadata: Dict = None) -> float:
+    def end_timer(self, name: str, metadata: dict = None) -> float:
         """
         End a manual timer and record result.
 
@@ -241,7 +243,7 @@ class BenchmarkingAgent(HealerMixin):
 
         return duration_ms
 
-    def time_function(self, name: str, func: Callable, metadata: Dict = None, *args, **kwargs) -> Any:
+    def time_function(self, name: str, func: Callable, metadata: dict = None, *args, **kwargs) -> Any:
         """
         Time a function execution.
 
@@ -266,7 +268,7 @@ class BenchmarkingAgent(HealerMixin):
 
         return result
 
-    async def time_function_async(self, name: str, func: Callable, metadata: Dict = None, *args, **kwargs) -> Any:
+    async def time_function_async(self, name: str, func: Callable, metadata: dict = None, *args, **kwargs) -> Any:
         """
         Time an async function execution.
 
@@ -291,7 +293,7 @@ class BenchmarkingAgent(HealerMixin):
 
         return result
 
-    def record_result(self, name: str, duration_ms: float, metadata: Dict = None) -> Any:
+    def record_result(self, name: str, duration_ms: float, metadata: dict = None) -> Any:
         """
         Record a benchmark result.
 
@@ -342,7 +344,7 @@ class BenchmarkingAgent(HealerMixin):
 
         try:
             if alert_file.exists():
-                with open(alert_file, 'r') as f:
+                with open(alert_file) as f:
                     alerts = json.load(f)
             else:
                 alerts = []
@@ -358,18 +360,18 @@ class BenchmarkingAgent(HealerMixin):
         except Exception as e:
             Logger.error(f"Failed to save performance alert: {e}")
 
-    def get_benchmark_summary(self, name: str) -> Optional[Dict]:
+    def get_benchmark_summary(self, name: str) -> dict | None:
         """Get summary for a specific benchmark."""
         if name not in self.suites:
             return None
 
         return self.suites[name].get_summary()
 
-    def get_all_summaries(self) -> Dict[str, Dict]:
+    def get_all_summaries(self) -> dict[str, dict]:
         """Get summaries for all benchmarks."""
         return {name: suite.get_summary() for name, suite in self.suites.items()}
 
-    def compare_benchmarks(self, name1: str, name2: str) -> Dict:
+    def compare_benchmarks(self, name1: str, name2: str) -> dict:
         """Compare two benchmarks."""
         if name1 not in self.suites or name2 not in self.suites:
             return {"error": "One or both benchmarks not found"}
@@ -411,7 +413,7 @@ class BenchmarkingAgent(HealerMixin):
 class BenchmarkContext:
     """Context manager for benchmarking."""
 
-    def __init__(self, agent: "BenchmarkingAgent", name: str, metadata: Dict = None):
+    def __init__(self, agent: BenchmarkingAgent, name: str, metadata: dict = None):
         self.agent = agent
         self.name = name
         self.metadata = metadata
@@ -427,10 +429,10 @@ class BenchmarkContext:
 
 
 # Global instance
-_benchmarking_agent: Optional["BenchmarkingAgent"] = None
+_benchmarking_agent: BenchmarkingAgent | None = None
 
 
-def get_benchmarking_agent() -> "BenchmarkingAgent":
+def get_benchmarking_agent() -> BenchmarkingAgent:
     """Get or create the global BenchmarkingAgent instance."""
     global _benchmarking_agent
     if _benchmarking_agent is None:
@@ -447,19 +449,19 @@ def initialize_benchmarking() -> Any:
 
 
 # Convenience functions
-def benchmark(name: str, metadata: Dict = None) -> Any:
+def benchmark(name: str, metadata: dict = None) -> Any:
     """Decorator to benchmark a function."""
     agent = get_benchmarking_agent()
     return agent.benchmark(name, metadata)
 
 
-def benchmark_async(name: str, metadata: Dict = None) -> Any:
+def benchmark_async(name: str, metadata: dict = None) -> Any:
     """Decorator to benchmark an async function."""
     agent = get_benchmarking_agent()
     return agent.benchmark_async(name, metadata)
 
 
-def BenchmarkContext(name: str, metadata: Dict = None) -> "benchmark_context_manager":
+def BenchmarkContext(name: str, metadata: dict = None) -> benchmark_context_manager:
     """Create a benchmark context manager."""
     agent = get_benchmarking_agent()
     return BenchmarkContext(agent, name, metadata)

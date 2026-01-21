@@ -9,8 +9,8 @@ causing "unexpected keyword argument 'content'" error.
 
 import re
 from pathlib import Path
-import pytest
 
+import pytest
 
 # Files that use embed_content API
 EMBEDDING_FILES = [
@@ -70,7 +70,7 @@ class TestGeminiEmbedderAPICompliance:
                     })
 
         assert not violations, (
-            f"Found incorrect embed_content parameter usage:\n"
+            "Found incorrect embed_content parameter usage:\n"
             + "\n".join(f"  - {v['file']}: {v['issue']}" for v in violations)
         )
 
@@ -93,7 +93,7 @@ class TestGeminiEmbedderAPICompliance:
                 })
 
         assert not violations, (
-            f"Found incorrect embed_content result access:\n"
+            "Found incorrect embed_content result access:\n"
             + "\n".join(f"  - {v['file']}: {v['issue']}" for v in violations)
         )
 

@@ -1,15 +1,14 @@
 """Prompt engineering stack."""
 
-import json
-from typing import Any, Dict
+from typing import Any
 
 from core_v10_7 import (
     BaseAgent,
     GeneratedPrompts,
     StrategyPlan,
     ValidationError,
-    track_metrics,
     _format_prompt_with_defaults,
+    track_metrics,
 )
 
 
@@ -22,7 +21,7 @@ class PromptEngineerAgent(BaseAgent):
         strategy: StrategyPlan,
         complexity: str,
         workflow_id: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         self.log_info(f"Engineering prompts (Complexity: {complexity})...")
 
         client = self.get_model_client("prompt_engineer_model")

@@ -17,26 +17,21 @@ Table Decision (L0 Maintenance):
 
 from __future__ import annotations
 
-import json
-from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
 
 # PHASE 2.1: L0 Structural Standardization
 from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
 from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
+from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 try:
     from agentic_core.L5_safety.validators.structure_blueprint import (
         AGENT_DISCOVERY_JSON,
         AGENT_DISCOVERY_MANIFEST_JSON,
         AGENTIC_CORE_DIR,
-        SCRIPTS_DIR,
-        TESTS_DIR,
         DASHBOARD_DIR,
         L0_MAINTENANCE_DIR,
         L1_COGNITION_DIR,
@@ -45,6 +40,8 @@ try:
         L4_STATE_DIR,
         L5_SAFETY_DIR,
         L6_OBSERVABILITY_DIR,
+        SCRIPTS_DIR,
+        TESTS_DIR,
         get_validated_project_root,
     )
 except ImportError:
@@ -87,7 +84,7 @@ class L0DelegationMixin(MCPHardenedMixin):
     On failure, delegate to TestSovereigntyAgent for validation.
     """
 
-    async def delegate_on_failure(self, operation: str, error: str, context: Dict) -> Dict:
+    async def delegate_on_failure(self, operation: str, error: str, context: dict) -> dict:
         """L0 CRITIQUE: Delegate to TestSovereigntyAgent on operation failure.
 
         Args:
@@ -119,7 +116,7 @@ class L0DelegationMixin(MCPHardenedMixin):
 
         return ValidationResult
 
-    async def validate_healing_result(self, healed_code: str, original_code: str, context: Dict) -> Dict:
+    async def validate_healing_result(self, healed_code: str, original_code: str, context: dict) -> dict:
         """Validate healing result by delegating to TestSovereigntyAgent.
 
         L0 healing agents should call this after producing healed code
@@ -152,7 +149,7 @@ class L0DelegationMixin(MCPHardenedMixin):
 
         return result
 
-    async def _delegate_to_specialist(self, operation: str, error: str, context: Dict) -> Dict:
+    async def _delegate_to_specialist(self, operation: str, error: str, context: dict) -> dict:
         """Delegate failure analysis to TestSovereigntyAgent."""
         try:
             # from agentic_core.L5_safety.validators.TestSovereigntyAgent import TestSovereigntyAgent  # Refactored to dynamic import (Sprint 1)
@@ -175,7 +172,7 @@ class L0DelegationMixin(MCPHardenedMixin):
         except Exception as e:
             return {"passed": False, "error": str(e), TESTS_DIR: []}
 
-    async def _delegate_healing_to_specialist(self, healed_code: str, context: Dict) -> Dict:
+    async def _delegate_healing_to_specialist(self, healed_code: str, context: dict) -> dict:
         """Delegate healed code validation to TestSovereigntyAgent."""
         try:
 #             from agentic_core.L5_safety.validators.TestSovereigntyAgent import TestSovereigntyAgent  # Refactored to dynamic import (Sprint 1)
@@ -192,7 +189,7 @@ class L0DelegationMixin(MCPHardenedMixin):
         except Exception as e:
             return {"passed": False, "error": str(e), TESTS_DIR: []}
 
-    def _emit_l0_event(self, Severity: L0SovereignSeverity, event_type: str, payload: Optional[Dict] = None) -> None:
+    def _emit_l0_event(self, Severity: L0SovereignSeverity, event_type: str, payload: dict | None = None) -> None:
         """Emit L0 delegation event for observability."""
         self.log_info(f"SUBATOMIC L0 {Severity.value} | {event_type}")
         if payload:
@@ -229,11 +226,11 @@ class MaintenanceBaseAgent(L0MaintenanceBaseAgent, L0DelegationMixin, RedisCache
     _cache_prefix: str = "l0_maintenance"
     _namespace: str = "l0_patterns"
 
-    async def maintain(self, Task: Dict) -> Dict:
+    async def maintain(self, Task: dict) -> dict:
         """Execute maintenance logic. Override in subclasses."""
         raise NotImplementedError(f"{self.name} must implement maintain()")
 
-    async def execute_with_delegation(self, Task: Dict) -> Dict:
+    async def execute_with_delegation(self, Task: dict) -> dict:
         """Execute with L0 delegation on failure.
 
         Subclasses should call this to get automatic delegation
@@ -270,7 +267,7 @@ class MaintenanceBaseAgent(L0MaintenanceBaseAgent, L0DelegationMixin, RedisCache
             }
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L0 maintenance base agent - invoke shared healing chain."""
         if _call_path is None:
             _call_path = set()

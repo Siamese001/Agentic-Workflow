@@ -13,25 +13,21 @@ Single entry point for all workflow orchestration, replacing 8 core engines:
 """
 
 from __future__ import annotations
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass, field
-import asyncio
+
 import time
 import uuid
+from dataclasses import dataclass
+from typing import Any
 
+from .base_coordinator import WorkflowCoordinator, coordinator_registry
 from .execution_strategy import (
+    STRATEGY_REGISTRY,
+    ExecutionStatus,
     ExecutionStrategy,
     WorkflowContext,
     WorkflowResult,
     WorkflowStep,
-    ExecutionStatus,
     get_strategy,
-    STRATEGY_REGISTRY
-)
-from .base_coordinator import (
-    WorkflowCoordinator,
-    CoordinatorRegistry,
-    coordinator_registry
 )
 
 
@@ -124,14 +120,14 @@ class UnifiedWorkflowEngine:
         self.coordinator_registry = coordinator_registry
         self.error_handler = ErrorHandler()
         self.metrics = WorkflowMetrics()
-        self.active_workflows: Dict[str, WorkflowContext] = {}
+        self.active_workflows: dict[str, WorkflowContext] = {}
 
     async def execute(
         self,
         workflow_type: str,
-        input_data: Dict[str, Any],
-        steps: Optional[List[WorkflowStep]] = None,
-        metadata: Optional[Dict[str, Any]] = None
+        input_data: dict[str, Any],
+        steps: list[WorkflowStep] | None = None,
+        metadata: dict[str, Any] | None = None
     ) -> WorkflowResult:
         """
         Execute workflow using appropriate strategy.
@@ -200,8 +196,8 @@ class UnifiedWorkflowEngine:
     async def execute_with_coordinator(
         self,
         coordinator_name: str,
-        input_data: Dict[str, Any],
-        metadata: Optional[Dict[str, Any]] = None
+        input_data: dict[str, Any],
+        metadata: dict[str, Any] | None = None
     ) -> WorkflowResult:
         """
         Execute workflow using specific coordinator.
@@ -239,7 +235,7 @@ class UnifiedWorkflowEngine:
         """Register execution strategy."""
         self.strategies[name] = strategy
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get engine statistics."""
         return {
             "metrics": {
@@ -255,7 +251,7 @@ class UnifiedWorkflowEngine:
             "coordinators": self.coordinator_registry.get_statistics()
         }
 
-    def get_active_workflows(self) -> List[str]:
+    def get_active_workflows(self) -> list[str]:
         """Get list of active workflow IDs."""
         return list(self.active_workflows.keys())
 

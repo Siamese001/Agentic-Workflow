@@ -6,7 +6,7 @@ Converts token budget inspector into active enforcement mechanism.
 
 import logging
 from dataclasses import dataclass
-from typing import Optional, Dict, Any
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +47,7 @@ class TokenBudget:
 
     def __init__(
         self,
-        config: Optional[TokenBudgetConfig] = None,
+        config: TokenBudgetConfig | None = None,
         enable_logging: bool = True,
     ):
         """Initialize token budget.
@@ -180,7 +180,7 @@ class TokenBudget:
                     budget_type="total",
                 )
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get budget statistics.
 
         Returns:
@@ -209,7 +209,7 @@ class TokenBudget:
         if self.enable_logging:
             logger.info("token_budget_reset")
 
-    def get_remaining(self) -> Dict[str, int]:
+    def get_remaining(self) -> dict[str, int]:
         """Get remaining token budget.
 
         Returns:

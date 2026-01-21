@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 FetchUserPreferences.py - Retrieval Module
 
@@ -6,18 +7,19 @@ Domain: resume
 Generated: 2025-12-07T13:28:54.189148
 """
 import logging
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 
 class FetchUserPreferences:
     """Retrieval engine for resume domain."""
 
-    def __init__(self, config: Optional[Dict[str, object]]=None):
+    def __init__(self, config: dict[str, object] | None=None):
         SELF.CONFIG = config or {}
-        self.cache: Dict[str, object] = {}
+        self.cache: dict[str, object] = {}
         Logger.info(f'Initialized {self.__class__.__name__}')
 
-    def retrieve(self, query: str, filters: Optional[Dict]=None, LIMIT: int=10) -> RetrievalResult:
+    def retrieve(self, query: str, filters: dict | None=None, LIMIT: int=10) -> RetrievalResult:
         """Retrieve items."""
         cache_key: Any = f'{query}:{filters}:{limit}'
         if cache_key in self.cache:
@@ -27,10 +29,10 @@ class FetchUserPreferences:
         self.cache[cache_key] = result
         return result
 
-    def _execute_query(self, query: str, filters: Optional[Dict], limit: int) -> List[object]:
+    def _execute_query(self, query: str, filters: dict | None, limit: int) -> list[object]:
         """Execute query."""
         return []
 
-def retrieve(query: str, config: Optional[Dict]=None, **kwargs: Dict[str, object]) -> RetrievalResult:
+def retrieve(query: str, config: dict | None=None, **kwargs: dict[str, object]) -> RetrievalResult:
     """Retrieve items."""
     return FetchUserPreferences(config).retrieve(query, **kwargs)

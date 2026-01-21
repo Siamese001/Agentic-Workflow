@@ -5,11 +5,10 @@ This reflects that test files exist for all agents in tests/unit/.
 """
 import json
 from pathlib import Path
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # Load agent discovery data
 discovery_path = Path('agent_discovery_full.json')
-with open(discovery_path, 'r') as f:
+with open(discovery_path) as f:
     agents = json.load(f)
 
 print(f"Total agents: {len(agents)}")
@@ -28,4 +27,4 @@ with open(discovery_path, 'w') as f:
 
 print(f"\n✅ Updated all {len(agents)} agents to has_tests=true")
 print(f"Saved to: {discovery_path}")
-print(f"\nNext step: Regenerate dashboard with 100% test coverage")
+print("\nNext step: Regenerate dashboard with 100% test coverage")

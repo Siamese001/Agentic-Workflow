@@ -13,8 +13,6 @@ import json
 import re
 import sys
 from pathlib import Path
-from typing import List, Dict, Tuple, Optional, Any
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 PROJECT_ROOT = Path(__file__).parent.parent
 
@@ -22,7 +20,7 @@ PROJECT_ROOT = Path(__file__).parent.parent
 class TypeDocFixer(ast.NodeTransformer):
     """AST transformer to add type hints and docstrings."""
 
-    def __init__(self, source_lines: List[str]):
+    def __init__(self, source_lines: list[str]):
         self.source_lines = source_lines
         self.changes = []
         self.functions_fixed = 0
@@ -75,7 +73,7 @@ def add_docstring_to_function(source: str, func_name: str, indent: str = "    ")
     return re.sub(pattern, add_docstring, source)
 
 
-def fix_agent_file(file_path: Path) -> Tuple[int, int]:
+def fix_agent_file(file_path: Path) -> tuple[int, int]:
     """Fix type hints and docstrings in an agent file.
 
     Returns:
@@ -101,14 +99,14 @@ def fix_agent_file(file_path: Path) -> Tuple[int, int]:
             # Fix class docstrings
             if isinstance(node, ast.ClassDef):
                 if not (node.body and isinstance(node.body[0], ast.Expr) and
-                        isinstance(node.body[0].value, (ast.Str, ast.Constant))):
+                        isinstance(node.body[0].value, ast.Str | ast.Constant)):
                     new_source = add_docstring_to_class(source, node.name)
                     if new_source != source:
                         source = new_source
                         docstrings_added += 1
 
             # Fix function type hints and docstrings
-            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
                 # Check for missing return type annotation
                 if node.returns is None and not node.name.startswith('_'):
                     new_source = add_type_hints_to_function(source, node.name)
@@ -118,7 +116,7 @@ def fix_agent_file(file_path: Path) -> Tuple[int, int]:
 
                 # Check for missing docstring
                 if not (node.body and isinstance(node.body[0], ast.Expr) and
-                        isinstance(node.body[0].value, (ast.Str, ast.Constant))):
+                        isinstance(node.body[0].value, ast.Str | ast.Constant)):
                     if not node.name.startswith('_'):
                         new_source = add_docstring_to_function(source, node.name)
                         if new_source != source:
@@ -164,7 +162,7 @@ def main():
 
     # Load agent discovery
     discovery_path = PROJECT_ROOT / 'agent_discovery_full.json'
-    with open(discovery_path, 'r', encoding='utf-8') as f:
+    with open(discovery_path, encoding='utf-8') as f:
         agents = json.load(f)
 
     # Find agents needing fixes
@@ -201,7 +199,7 @@ def main():
             total_docs += docs_added
             fixed_count += 1
 
-    print(f"\n" + "=" * 70)
+    print("\n" + "=" * 70)
     print(f"✅ Fixed {fixed_count} agent files")
     print(f"   Added {total_types} type hints")
     print(f"   Added {total_docs} docstrings")

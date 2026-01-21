@@ -11,6 +11,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """
 GravityValidatorAgent - Unified Gravity Law Detection
 Territory: agentic_core/L5_safety/validators/
@@ -31,22 +32,18 @@ VIOLATION TYPES:
 2. Upstream→Downstream: agentic_core→apps_* (forbidden by GRAVITY_CONFIG)
 3. Upward leaks: Any→L4/L5 (forbidden by layer authority)
 """
-import re
 import logging
-from collections import defaultdict
-from pathlib import Path
-from typing import List, Dict, Any, Optional
+import re
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
 
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.validators.structure_blueprint import (
     CORE_SUBFOLDER_MAP,
-    SOVEREIGN_REGISTRY,
-    LAYER_FORBIDDEN_IMPORTS,
 )
 from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.sovereign_index import SovereignIndex
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger = logging.getLogger(__name__)
 
@@ -61,7 +58,7 @@ class GravityViolation:
     target_layer: str
     severity: int
     suggested_action: str
-    line_number: Optional[int] = None
+    line_number: int | None = None
 
 
 class GravityValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin):
@@ -78,7 +75,7 @@ class GravityValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin):
 
 
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -125,7 +122,7 @@ class GravityValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin):
                 return i
         return -1
 
-    async def detect_violations(self, file_path: Path) -> List[GravityViolation]:
+    async def detect_violations(self, file_path: Path) -> list[GravityViolation]:
         """
         Unified detection for all gravity violation types.
 
@@ -219,7 +216,7 @@ class GravityValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin):
 
         return list(deduped.values())
 
-    async def validate_file(self, file_path: Path) -> Dict[str, Any]:
+    async def validate_file(self, file_path: Path) -> dict[str, Any]:
         """
         Validate a single file for gravity violations.
 
@@ -243,7 +240,7 @@ class GravityValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin):
             ]
         }
 
-    async def validate_repository(self) -> Dict[str, Any]:
+    async def validate_repository(self) -> dict[str, Any]:
         """
         Scan entire repository for gravity violations.
 

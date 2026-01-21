@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 SOVEREIGN CODE is IMMORTAL - Track file deletions and renames for CanonValidatorAgent.py Key 00.
 Writes changes to a tracker file that CanonValidatorAgent reads.
@@ -10,29 +11,15 @@ Logger = logging.getLogger(__name__)
 
 """
 import os
-import subprocess
 import sys
 from pathlib import Path
-from agentic_core.utils.security import safe_git_execute
 from typing import Any
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.security import safe_git_execute
+
 sovereign_agents: Any = {AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR}
 
 def main() -> None:
@@ -49,14 +36,14 @@ def main() -> None:
         if line.startswith('D\t'):
             rel_path: Any = line[2:]
             full_path: Any = (root / rel_path).resolve()
-            if any((agent in str(full_path) for agent in SOVEREIGN_AGENTS)):
+            if any(agent in str(full_path) for agent in SOVEREIGN_AGENTS):
                 changes.append(f'{full_path}|DELETE')
         elif line.startswith('R'):
-            PARTS: Any = line.split('\t')
+            line.split('\t')
             if len(parts) >= 3:
                 old_path: Any = (root / parts[1]).resolve()
                 new_path: Any = (root / parts[2]).resolve()
-                if any((agent in str(old_path) for agent in SOVEREIGN_AGENTS)) or any((agent in str(new_path) for agent in SOVEREIGN_AGENTS)):
+                if any(agent in str(old_path) for agent in SOVEREIGN_AGENTS) or any(agent in str(new_path) for agent in SOVEREIGN_AGENTS):
                     changes.append(f'{old_path}|RENAME|{new_path}')
     if changes:
         tracker_path.parent.mkdir(exist_ok=True)

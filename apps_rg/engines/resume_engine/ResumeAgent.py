@@ -1,23 +1,23 @@
 from __future__ import annotations
+
 """
 ResumeAgent - Base class for all autonomous resume generation agents.
 
 All specialized agents inherit from this base class and implement
 the execute() method for their specific functionality.
 """
-from typing import Any, Optional, Protocol, Dict, List
-
-
 import asyncio
 from abc import ABC, abstractmethod
-from typing import Any, Optional
+from typing import Any
+
+from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
+from agentic_core.schemas.models.anomaly_report import AnomalyReport
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 from .context import ResumeEngineContext
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.schemas.models.anomaly_report import AnomalyReport, AnomalySeverity
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
 class ResumeAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin, ABC):
@@ -104,7 +104,7 @@ class ResumeAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin, ABC):
         self.ctx.record_result(self.name, passed=False, details=details, data=data)
         self.log(f"❌ {details}")
 
-    async def call_llm(self, prompt: str, max_tokens: int = 2000) -> Optional[str]:
+    async def call_llm(self, prompt: str, max_tokens: int = 2000) -> str | None:
         """
         Call the LLM with budget checking.
 
@@ -143,7 +143,7 @@ class ResumeAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin, ABC):
             return None
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """Apps_rg/resume_engine base agent - fully chained healing."""
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository()

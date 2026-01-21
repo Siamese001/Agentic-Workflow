@@ -1,10 +1,13 @@
 from __future__ import annotations
+
 import logging
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
 import re
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 
 class InputMembrane:
     """
@@ -12,7 +15,7 @@ class InputMembrane:
     Scrubs inputs and outputs to prevent data contamination or prompt injection.
     """
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: dict[str, Any]):
         self.config = config
         self.sensitive_patterns = ['sk-[a-zA-Z0-9]{32,48}', 'AIzaSy[a-zA-Z0-9_-]{33}', 'BEGIN PRIVATE KEY']
 

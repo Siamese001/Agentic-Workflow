@@ -1,8 +1,8 @@
 """Validator agent for outreach drafts."""
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import Dict, Mapping
 
 from ..qa import MetricsTracker, QAResult, QAValidator
 
@@ -29,7 +29,7 @@ class ValidatorAgent:
         self.metrics = metrics or MetricsTracker()
         self.max_retries = max(0, int(max_retries))
 
-    def check(self, draft: str, route_decision, pii_map: Dict[str, str], *, artifacts: ArtifactMap | None = None) -> ValidationResult:
+    def check(self, draft: str, route_decision, pii_map: dict[str, str], *, artifacts: ArtifactMap | None = None) -> ValidationResult:
         artifacts = artifacts or {}
         current_draft = draft
         attempts = 1

@@ -10,11 +10,10 @@ Tests the complete hygiene agent execution flow including:
 
 from __future__ import annotations
 
-import pytest
 from pathlib import Path
-from typing import Any, Dict
 
-from agentic_core.L5_safety.validators.healing_strategy import HealingStrategy
+import pytest
+
 from agentic_core.config.core_hygiene_agents import (
     CORE_HYGIENE_AGENTS,
     MANDATORY_PREFLIGHT,
@@ -22,6 +21,7 @@ from agentic_core.config.core_hygiene_agents import (
     get_tier_agents,
     is_mandatory_agent,
 )
+from agentic_core.L5_safety.validators.healing_strategy import HealingStrategy
 
 
 class TestCoreHygieneAgentRegistry:
@@ -215,7 +215,7 @@ class TestAgentLoadingAndExecution:
             assert hasattr(agent, 'heal_repository')
 
             # Method should be callable
-            assert callable(getattr(agent, 'heal_repository'))
+            assert callable(agent.heal_repository)
 
 
 class TestPreflightGate:

@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+
 """
 PlaceholderDetectorAgent - Extracted for one-class-per-file pattern.
 
@@ -8,10 +9,12 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 
 from __future__ import annotations
-from typing import Dict, Any, List, Tuple
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+
 from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+
 
 @dataclass
 class PlaceholderDetectorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
@@ -36,7 +39,7 @@ class PlaceholderDetectorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMi
         r'\[unserializable\]',
     ]
 
-    def detect_placeholders(self, text: str) -> List[str]:
+    def detect_placeholders(self, text: str) -> list[str]:
         """Detect ALL placeholder patterns"""
         found = []
 
@@ -47,7 +50,7 @@ class PlaceholderDetectorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMi
 
         return found
 
-    def validate(self, message: str) -> Tuple[bool, str]:
+    def validate(self, message: str) -> tuple[bool, str]:
         """CRITICAL: Zero tolerance for placeholders"""
         placeholders = self.detect_placeholders(message)
 

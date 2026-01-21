@@ -9,12 +9,11 @@ Identifies duplicate agent files across the repository and provides remediation 
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt, state, workflow
 # This boosts alignment detection — review and integrate appropriately
 
+import ast
 import hashlib
 import json
 from collections import defaultdict
 from pathlib import Path
-from typing import Dict, List, Tuple, Set
-import ast
 
 
 def compute_file_hash(file_path: Path) -> str:
@@ -91,7 +90,7 @@ def get_file_location_priority(file_path: Path, project_root: Path) -> int:
         return 20  # Other locations
 
 
-def analyze_duplicate_quality(file_path: Path) -> Dict[str, any]:
+def analyze_duplicate_quality(file_path: Path) -> dict[str, any]:
     """Analyze file quality to determine which duplicate to keep."""
     try:
         content = file_path.read_text(encoding='utf-8')
@@ -171,7 +170,7 @@ def analyze_duplicate_quality(file_path: Path) -> Dict[str, any]:
         }
 
 
-def find_duplicate_agents(project_root: Path) -> Dict[str, List[Path]]:
+def find_duplicate_agents(project_root: Path) -> dict[str, list[Path]]:
     """Find all duplicate agent files in the repository."""
     print(f"[SCAN] Searching for agent files in {project_root}...")
 
@@ -213,7 +212,7 @@ def find_duplicate_agents(project_root: Path) -> Dict[str, List[Path]]:
     return exact_dups, semantic_dups
 
 
-def generate_recommendations(duplicate_groups: Dict[str, List[Path]], project_root: Path, duplicate_type: str = "exact") -> List[Dict]:
+def generate_recommendations(duplicate_groups: dict[str, list[Path]], project_root: Path, duplicate_type: str = "exact") -> list[dict]:
     """Generate remediation recommendations for each duplicate group."""
     recommendations = []
 
@@ -264,7 +263,7 @@ def generate_recommendations(duplicate_groups: Dict[str, List[Path]], project_ro
     return recommendations
 
 
-def generate_rationale(canonical: Path, duplicates: List[Path], canonical_quality: Dict, duplicate_info: List[Tuple]) -> str:
+def generate_rationale(canonical: Path, duplicates: list[Path], canonical_quality: dict, duplicate_info: list[tuple]) -> str:
     """Generate human-readable rationale for the recommendation."""
     rationale_parts = []
 
@@ -300,7 +299,7 @@ def generate_rationale(canonical: Path, duplicates: List[Path], canonical_qualit
     return " | ".join(rationale_parts) if rationale_parts else "Review manually - similar quality"
 
 
-def print_recommendations(recommendations: List[Dict], output_format: str = "text"):
+def print_recommendations(recommendations: list[dict], output_format: str = "text"):
     """Print recommendations in specified format."""
     if output_format == "json":
         print(json.dumps(recommendations, indent=2))
@@ -315,7 +314,7 @@ def print_recommendations(recommendations: List[Dict], output_format: str = "tex
         print(f"[{i}] {rec['agent_class']} ({rec['duplicate_type']} duplicates)")
         print(f"{'─'*80}")
 
-        print(f"\n✅ CANONICAL (KEEP):")
+        print("\n✅ CANONICAL (KEEP):")
         print(f"   📁 {rec['canonical_file']}")
         print(f"   Quality: {rec['canonical_quality']['quality_score']}/4")
         if rec['canonical_quality']['syntax_errors']:
@@ -328,19 +327,19 @@ def print_recommendations(recommendations: List[Dict], output_format: str = "tex
             if dup['quality']['syntax_errors']:
                 print(f"      ⚠️  Issues: {', '.join(dup['quality']['syntax_errors'])}")
 
-        print(f"\n💡 RATIONALE:")
+        print("\n💡 RATIONALE:")
         print(f"   {rec['rationale']}")
 
-        print(f"\n🔧 RECOMMENDED ACTION:")
+        print("\n🔧 RECOMMENDED ACTION:")
         if rec['action'] == "DELETE":
-            print(f"   1. Verify canonical file works correctly")
-            print(f"   2. Delete duplicate files:")
+            print("   1. Verify canonical file works correctly")
+            print("   2. Delete duplicate files:")
             for dup in rec['duplicates']:
                 print(f"      rm \"{dup['path']}\"")
-            print(f"   3. Update any imports referencing deleted files")
-            print(f"   4. Run discovery: python scripts/full_agent_discovery.py --incremental")
+            print("   3. Update any imports referencing deleted files")
+            print("   4. Run discovery: python scripts/full_agent_discovery.py --incremental")
         else:
-            print(f"   ⚠️  MANUAL REVIEW REQUIRED - Similar quality, check differences carefully")
+            print("   ⚠️  MANUAL REVIEW REQUIRED - Similar quality, check differences carefully")
 
 
 def main():
@@ -382,7 +381,7 @@ def main():
 
     # Summary
     print(f"\n{'='*80}")
-    print(f"SUMMARY")
+    print("SUMMARY")
     print(f"{'='*80}")
     print(f"Total duplicate groups found: {len(all_recommendations)}")
     print(f"Files to delete: {sum(len(r['duplicates']) for r in all_recommendations)}")

@@ -5,20 +5,19 @@ Extracts classes, functions, dependencies, and semantic purpose to understand
 how archived code fits into the current codebase.
 """
 import ast
-import re
-from pathlib import Path
-from typing import Dict, List, Set, Optional, Any
-from collections import defaultdict
 from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any
+
 
 @dataclass
 class FileAnalysis:
     """Analysis results for a single file."""
     path: str
-    classes: List[Dict[str, Any]] = field(default_factory=list)
-    functions: List[Dict[str, Any]] = field(default_factory=list)
-    imports: List[str] = field(default_factory=list)
-    from_imports: List[str] = field(default_factory=list)
+    classes: list[dict[str, Any]] = field(default_factory=list)
+    functions: list[dict[str, Any]] = field(default_factory=list)
+    imports: list[str] = field(default_factory=list)
+    from_imports: list[str] = field(default_factory=list)
     docstring: str = ""
     purpose: str = ""
     domain: str = ""  # 'resume', 'outreach', 'shared', 'infrastructure'
@@ -27,8 +26,8 @@ class FileAnalysis:
     has_agents: bool = False
     has_models: bool = False
     has_utilities: bool = False
-    external_deps: List[str] = field(default_factory=list)
-    internal_deps: List[str] = field(default_factory=list)
+    external_deps: list[str] = field(default_factory=list)
+    internal_deps: list[str] = field(default_factory=list)
 
 def extract_docstring(node) -> str:
     """Extract docstring from AST node."""
@@ -37,7 +36,7 @@ def extract_docstring(node) -> str:
     except:
         return ""
 
-def analyze_class(node: ast.ClassDef) -> Dict[str, Any]:
+def analyze_class(node: ast.ClassDef) -> dict[str, Any]:
     """Deep analysis of a class definition."""
     bases = []
     for base in node.bases:
@@ -48,7 +47,7 @@ def analyze_class(node: ast.ClassDef) -> Dict[str, Any]:
 
     methods = []
     for item in node.body:
-        if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+        if isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef):
             params = [arg.arg for arg in item.args.args if arg.arg != 'self']
             methods.append({
                 'name': item.name,
@@ -73,7 +72,7 @@ def analyze_class(node: ast.ClassDef) -> Dict[str, Any]:
         'method_count': len(methods)
     }
 
-def analyze_function(node: ast.FunctionDef) -> Dict[str, Any]:
+def analyze_function(node: ast.FunctionDef) -> dict[str, Any]:
     """Analyze a top-level function."""
     params = [arg.arg for arg in node.args.args]
     return {
@@ -84,7 +83,7 @@ def analyze_function(node: ast.FunctionDef) -> Dict[str, Any]:
         'has_return': any(isinstance(n, ast.Return) and n.value for n in ast.walk(node))
     }
 
-def infer_domain(content: str, classes: List[Dict], functions: List[Dict]) -> str:
+def infer_domain(content: str, classes: list[dict], functions: list[dict]) -> str:
     """Infer the domain (resume/outreach/shared/infra) from content analysis."""
     content_lower = content.lower()
 
@@ -116,7 +115,7 @@ def infer_domain(content: str, classes: List[Dict], functions: List[Dict]) -> st
     else:
         return 'shared'
 
-def infer_purpose(classes: List[Dict], functions: List[Dict], docstring: str) -> str:
+def infer_purpose(classes: list[dict], functions: list[dict], docstring: str) -> str:
     """Infer the purpose of the file from its contents."""
     purposes = []
 
@@ -141,7 +140,7 @@ def infer_purpose(classes: List[Dict], functions: List[Dict], docstring: str) ->
 
     return ' | '.join(purposes[:3]) if purposes else "Unknown"
 
-def analyze_file(file_path: Path) -> Optional[FileAnalysis]:
+def analyze_file(file_path: Path) -> FileAnalysis | None:
     """Perform deep AST analysis on a file."""
     try:
         content = file_path.read_text(encoding='utf-8', errors='replace')
@@ -181,7 +180,7 @@ def analyze_file(file_path: Path) -> Optional[FileAnalysis]:
                 analysis.has_agents = True
             if cls_info['is_model']:
                 analysis.has_models = True
-        elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+        elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
             func_info = analyze_function(node)
             analysis.functions.append(func_info)
             analysis.has_utilities = True
@@ -195,7 +194,7 @@ def analyze_file(file_path: Path) -> Optional[FileAnalysis]:
 
     return analysis
 
-def find_similar_in_codebase(analysis: FileAnalysis, current_dirs: List[str]) -> List[Dict]:
+def find_similar_in_codebase(analysis: FileAnalysis, current_dirs: list[str]) -> list[dict]:
     """Find similar functionality in current codebase using AST comparison."""
     similar = []
 
@@ -226,9 +225,9 @@ def find_similar_in_codebase(analysis: FileAnalysis, current_dirs: List[str]) ->
                 if isinstance(node, ast.ClassDef):
                     current_classes.add(node.name.lower())
                     for item in node.body:
-                        if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                        if isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef):
                             current_methods.add(item.name.lower())
-                elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
                     current_functions.add(node.name.lower())
 
             # Calculate similarity
@@ -315,15 +314,15 @@ def main():
         # Find similar in current codebase
         similar = find_similar_in_codebase(analysis, current_dirs)
         if similar:
-            print(f"\n  SIMILAR IN CURRENT CODEBASE:")
+            print("\n  SIMILAR IN CURRENT CODEBASE:")
             for s in similar[:3]:
                 print(f"    - {s['file']}")
                 print(f"      Score: {s['similarity_score']}, Classes: {s['class_overlap']}, Funcs: {s['func_overlap'][:3]}")
         else:
-            print(f"\n  NO SIMILAR FILES FOUND - UNIQUE FUNCTIONALITY")
+            print("\n  NO SIMILAR FILES FOUND - UNIQUE FUNCTIONALITY")
 
         # Recommendation
-        print(f"\n  RECOMMENDATION:")
+        print("\n  RECOMMENDATION:")
         if not similar:
             if analysis.has_agents:
                 target = f"apps_{analysis.domain}/engines/" if analysis.domain in ('resume', 'outreach') else "apps_shared/base_agents/"
@@ -332,13 +331,13 @@ def main():
             else:
                 target = f"apps_{analysis.domain}/engines/utils/" if analysis.domain in ('resume', 'outreach') else "apps_shared/common_utils/"
             print(f"    RESTORE -> {target}")
-            print(f"    Reason: Unique functionality not present in current codebase")
+            print("    Reason: Unique functionality not present in current codebase")
         elif similar[0]['similarity_score'] > 20:
             print(f"    SKIP - Functionality exists in: {similar[0]['file']}")
             print(f"    Reason: High similarity score ({similar[0]['similarity_score']})")
         else:
             print(f"    REVIEW - Partial overlap with: {similar[0]['file']}")
-            print(f"    Reason: May contain unique methods/logic worth merging")
+            print("    Reason: May contain unique methods/logic worth merging")
 
         results.append({
             'path': archive_path,

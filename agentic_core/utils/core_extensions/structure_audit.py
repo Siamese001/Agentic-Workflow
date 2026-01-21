@@ -1,35 +1,24 @@
 from __future__ import annotations
+
 import ast
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
-import os
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
+from typing import Any
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
     SCRIPTS_DIR,
     TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
-from agentic_core.utils.sovereign_index import SovereignIndex
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+
 root: Any = Path('C:/Git/Agentic-Workflow')
 hierarchy: Any = {'LEVEL_0_SOVEREIGN_CORE': {'folders': [AGENTIC_CORE_DIR], 'description': 'The Sovereign Core - L1-L5 layers', 'can_import_from': []}, 'LEVEL_1_ARCHITECTURAL': {'folders': ['prompt_governance', 'schemas', 'config', SCRIPTS_DIR], 'description': 'Architectural Supports - Blueprints & Rules', 'can_import_from': [AGENTIC_CORE_DIR, 'prompt_governance', 'schemas', 'config', SCRIPTS_DIR]}, 'LEVEL_2_OBSERVABILITY': {'folders': ['observability'], 'description': 'The Mirror - Logs all activity', 'can_import_from': [AGENTIC_CORE_DIR, 'prompt_governance', 'schemas', 'config', SCRIPTS_DIR]}, 'LEVEL_3_SHARED': {'folders': [APPS_SHARED_DIR], 'description': 'Transit Zone - Shared utilities', 'can_import_from': [AGENTIC_CORE_DIR, 'prompt_governance', 'schemas', 'config', SCRIPTS_DIR, 'observability']}, 'LEVEL_4_DOWNSTREAM': {'folders': [APPS_RG_DIR, APPS_LIC_DIR], 'description': 'The Territory - Domain-specific apps', 'can_import_from': [AGENTIC_CORE_DIR, 'prompt_governance', 'schemas', 'config', SCRIPTS_DIR, 'observability', APPS_SHARED_DIR]}}
 exempt_folders: Any = {'.git', '.venv', 'venv', '__pycache__', 'node_modules', 'data', ARCHIVES_DIR, TESTS_DIR, 'knowledge', 'infra', 'memory'}
 
-def get_folder_level(folder_name: str) -> Tuple[int, str]:
+def get_folder_level(folder_name: str) -> tuple[int, str]:
     """Returns (level_number, level_name) for a folder, or (-1, 'UNKNOWN') if not in hierarchy."""
     for level_name, level_info in HIERARCHY.items():
         if folder_name in level_info['folders']:
@@ -37,7 +26,7 @@ def get_folder_level(folder_name: str) -> Tuple[int, str]:
             return (level_num, level_name)
     return (-1, 'UNKNOWN')
 
-def check_import_violations(file_path: Path) -> List[str]:
+def check_import_violations(file_path: Path) -> list[str]:
     """Check if a file imports from folders it shouldn't according to hierarchy."""
     violations: Any = []
     try:
@@ -51,7 +40,7 @@ def check_import_violations(file_path: Path) -> List[str]:
         if own_level == -1:
             return violations
         allowed_imports: Any = HIERARCHY[own_level_name]['can_import_from']
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, encoding='utf-8') as f:
             tree: Any = ast.parse(f.read())
         for node in ast.walk(tree):
             imported_module: Any = None
@@ -65,7 +54,7 @@ def check_import_violations(file_path: Path) -> List[str]:
                 if imported_level != -1:
                     if imported_module not in allowed_imports and imported_module != own_folder:
                         violations.append(f"GRAVITY VIOLATION: {rel_path} imports from '{imported_module}' (Level {imported_level}), but '{own_folder}' (Level {own_level}) can only import from: {allowed_imports}")
-    except Exception as e:
+    except Exception:
         pass
     return violations
 

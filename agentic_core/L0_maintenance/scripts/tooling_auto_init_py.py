@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Auto-initialize __init__.py files for Python packages.
 
@@ -24,10 +25,10 @@ Logger = logging.getLogger(__name__)
 """
 import pathlib
 import sys
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
 
-def create_init_files(paths: List[str]) -> int:
+
+def create_init_files(paths: list[str]) -> int:
     """
     Create __init__.py files for the given paths.
 
@@ -56,7 +57,7 @@ def main() -> None:
     if len(sys.argv) < 2:
         Logger.info('Usage: python auto_init_py.py <path1> <path2> ...')
         sys.exit(1)
-    CREATED: Any = create_init_files(sys.argv[1:])
+    create_init_files(sys.argv[1:])
     Logger.info(f'\nCreated {created} __init__.py files')
 if __name__ == '__main__':
     main()

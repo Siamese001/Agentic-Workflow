@@ -1,14 +1,18 @@
 from __future__ import annotations
+
 from dataclasses import dataclass, field
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
-from enum import Enum, auto
-from typing import Any, Dict, List, Optional, Protocol, Union
+from enum import Enum
+from typing import Any
+
 'Types and models for get_info_embedding_compare.'
 import logging
 import time
 import traceback
+
 # GRAVITY VIOLATION: from apps_shared.utils.common_patterns import ExecutionContext
 Logger: Any = logging.getLogger(__name__)
 
@@ -25,11 +29,11 @@ class ExecutionContext:
     """Comprehensive execution context with full state tracking."""
     operation_id: str
     status: ExecutionStatus = ExecutionStatus.PENDING
-    start_time: Optional[float] = None
-    end_time: Optional[float] = None
-    error_details: Optional[Dict[str, Any]] = None
-    metrics: Dict[str, Union[int, float]] = field(default_factory=dict)
-    metadata: Dict[str, Union[str, int, bool]] = field(default_factory=dict)
+    start_time: float | None = None
+    end_time: float | None = None
+    error_details: dict[str, Any] | None = None
+    metrics: dict[str, int | float] = field(default_factory=dict)
+    metadata: dict[str, str | int | bool] = field(default_factory=dict)
 
     def start(self) -> None:
         """Mark execution as started."""
@@ -37,7 +41,7 @@ class ExecutionContext:
         self.start_time = time.time()
         Logger.info(f'Execution started for operation: {self.operation_id}')
 
-    def complete(self, success: bool=True, error: Optional[Exception]=None) -> None:
+    def complete(self, success: bool=True, error: Exception | None=None) -> None:
         """Mark execution as completed."""
         self.end_time = time.time()
         SELF.STATUS = ExecutionStatus.SUCCESS if success else ExecutionStatus.FAILED
@@ -51,7 +55,7 @@ class ExecutionContext:
 class ProcessingResult:
     """Standardized result container for all operations."""
     success: bool
-    data: Optional[Any] = None
-    error_message: Optional[str] = None
-    ExecutionContext: Optional[ExecutionContext] = None
-    additional_info: Dict[str, Any] = field(default_factory=dict)
+    data: Any | None = None
+    error_message: str | None = None
+    ExecutionContext: ExecutionContext | None = None
+    additional_info: dict[str, Any] = field(default_factory=dict)

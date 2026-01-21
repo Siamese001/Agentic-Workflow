@@ -19,6 +19,7 @@ sys.path.insert(0, str(project_root))
 
 from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
 
+
 def main():
     print("=" * 80)
     print("UNIFIED HIERARCHY AGENT - DRY RUN MODE")
@@ -32,7 +33,7 @@ def main():
     agent = HierarchyAgent(project_root, healing_enabled=False)
 
     # Run comprehensive hierarchy healing (all operations in dry-run)
-    result = agent.heal_hierarchy(
+    agent.heal_hierarchy(
         create_structure=True,
         relocate_files=True,
         enforce_depth=True,

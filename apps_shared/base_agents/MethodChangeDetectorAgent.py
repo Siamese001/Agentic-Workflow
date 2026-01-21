@@ -11,7 +11,9 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 import ast
+
 '''
 RegressionOracleAgent - Autonomous Test Generation and Regression Prevention
 
@@ -33,25 +35,20 @@ DOMAIN-SPECIFIC INTEGRATIONS (Test Coordination):
 - GeminiAgent: Generate intelligent edge-case tests
 '''
 import logging
-import re
 import subprocess
-import time
-from dataclasses import dataclass, field
+from collections.abc import Callable
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Protocol, Tuple
+from typing import Any
+
 try:
     from pinecone import Pinecone
     PINECONE_AVAILABLE: Any = True
 except ImportError:
     PINECONE_AVAILABLE: Any = False
-from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 try:
     from google import genai
@@ -68,9 +65,9 @@ class RegressionViolation:
     """Structured violation for regression test healing."""
     is_valid: bool
     message: str
-    file_path: Optional[str] = None
-    method_name: Optional[str] = None
-    suggested_action: Optional[str] = None
+    file_path: str | None = None
+    method_name: str | None = None
+    suggested_action: str | None = None
     severity: int = 5
 
 @dataclass
@@ -91,16 +88,18 @@ class GeneratedTest:
     test_name: str
     test_code: str
     target_method: str
-    edge_cases: List[str]
+    edge_cases: list[str]
     passed: bool
-    error_message: Optional[str]
+    error_message: str | None
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin, HealResult
+from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import (
+    SubatomicTestingMixin,
+)
+
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.L5_safety.validators.decorators import standard_heal
-from archives.location_violations.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin, HealResult
+
 
 class MethodChangeDetectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """Detects method changes between two versions of a file."""
@@ -109,7 +108,7 @@ class MethodChangeDetectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
         """Initialize the instance."""
         self.ctx = ctx
 
-    def detect_method_changes(self, file_path: str) -> List[MethodChange]:
+    def detect_method_changes(self, file_path: str) -> list[MethodChange]:
         """Detect which methods changed in a file."""
         changes: Any = []
         if not hasattr(self.ctx, 'healing_history'):
@@ -140,7 +139,7 @@ class MethodChangeDetectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
                     changes.append(MethodChange(file_path=file_path, method_name=method_name, before_code=before_method_code, after_code=after_method_code, is_new=False, is_modified=True, is_deleted=False))
         return changes
 
-    def _extract_methods(self, tree: ast.AST, source: str) -> Dict[str, str]:
+    def _extract_methods(self, tree: ast.AST, source: str) -> dict[str, str]:
         """Extract method source code from AST."""
         methods = {}
         lines = source.split('\n')
@@ -169,7 +168,7 @@ class RegressionTestGenerator:
         self.genai_available = genai_available
         self.genai_client = genai_client
 
-    async def generate_test_code_and_file(self, change: MethodChange) -> Tuple[Optional[str], Optional[Path], List[str]]:
+    async def generate_test_code_and_file(self, change: MethodChange) -> tuple[str | None, Path | None, list[str]]:
         """
         Generates test code, creates a test file, and returns the code, file path, and edge cases.
         Returns (None, None, []) if the method is deleted.
@@ -181,7 +180,7 @@ class RegressionTestGenerator:
         test_file: Any = self._create_test_file(change, test_code)
         return (test_code, test_file, edge_cases)
 
-    async def _query_edge_cases(self, change: MethodChange) -> List[str]:
+    async def _query_edge_cases(self, change: MethodChange) -> list[str]:
         """Query Pinecone for historical edge cases."""
         if not self.pinecone_available:
             return self._generate_default_edge_cases(change)
@@ -191,12 +190,12 @@ class RegressionTestGenerator:
             Logger.warning(f'Could not query Pinecone: {e}')
             return self._generate_default_edge_cases(change)
 
-    def _generate_default_edge_cases(self, change: MethodChange) -> List[str]:
+    def _generate_default_edge_cases(self, change: MethodChange) -> list[str]:
         """Generate default edge cases based on method signature."""
         edge_cases = ['None input', 'Empty input', 'Large input (1000+ items)', 'Invalid type', 'Boundary values']
         return edge_cases
 
-    async def _synthesize_test_code(self, change: MethodChange, edge_cases: List[str]) -> str:
+    async def _synthesize_test_code(self, change: MethodChange, edge_cases: list[str]) -> str:
         """Synthesize pytest code for method using Gemini 2.5."""
         if self.genai_available and self.genai_client:
             try:
@@ -205,7 +204,7 @@ class RegressionTestGenerator:
                 Logger.warning(f'Gemini synthesis failed: {e}, falling back to template')
         return self._synthesize_with_template(change, edge_cases)
 
-    async def _synthesize_with_gemini(self, change: MethodChange, edge_cases: List[str]) -> str:
+    async def _synthesize_with_gemini(self, change: MethodChange, edge_cases: list[str]) -> str:
         """Use Gemini 2.5 to synthesize intelligent test code."""
         module_path = change.file_path.replace('\\', '/').replace('.py', '').replace('/', '.')
         prompt = f"Write a comprehensive pytest test case for this Python method.\n\nFILE: {change.file_path}\nMETHOD: {change.method_name}\n\nBEFORE CODE (preserve this behavior):\n{change.before_code}\n```\n\nAFTER CODE (test this):\n{change.after_code}\n```\n\nREQUIREMENTS:\n1. Import from: {module_path}\n2. Use unittest.mock for all external dependencies\n3. Assert that the specific logic from BEFORE is preserved\n4. Test these edge cases: {', '.join(edge_cases)}\n5. Use descriptive test names and docstrings\n6. Include both positive and negative test cases\n7. Mock any file I/O, network calls, or external services\n\nOUTPUT FORMAT:\nReturn ONLY the complete Python test file code, starting with imports.\nUse pytest fixtures where appropriate.\nInclude clear assertions that verify behavior hasn't regressed.\n"
@@ -217,10 +216,10 @@ class RegressionTestGenerator:
             test_code = test_code.split('```')[1].split('```')[0].strip()
         return test_code
 
-    def _synthesize_with_template(self, change: MethodChange, edge_cases: List[str]) -> str:
+    def _synthesize_with_template(self, change: MethodChange, edge_cases: list[str]) -> str:
         """Fallback template-based test generation."""
         module_path = change.file_path.replace('\\', '/').replace('.py', '').replace('/', '.')
-        test_code = f'''"""\nAuto-generated regression test for {change.method_name}\nGenerated by Regression Oracle on {datetime.now(timezone.utc).isoformat()}\n\nEdge cases tested:\n{chr(10).join((f'- {case}' for case in edge_cases))}\n"""\n\nimport pytest\nfrom unittest.mock import Mock, patch\nfrom {module_path} import {change.method_name}\n\n\n# NAMING FIXED: Test → test\nclass test{change.method_name.title().replace('_', '')}:\n    """Regression tests for {change.method_name}."""\n\n    def test_{change.method_name}_basic(self):\n        """Test basic functionality."""\n        # TODO: Add basic test case\n        # This is a placeholder - Oracle needs Gemini to generate actual test\n        pass\n\n    def test_{change.method_name}_none_input(self):\n        """Test None input handling."""\n        # Edge case: None input\n        pass\n\n    def test_{change.method_name}_empty_input(self):\n        """Test empty input handling."""\n        # Edge case: Empty input\n        pass\n\n    def test_{change.method_name}_large_input(self):\n        """Test large input handling."""\n        # Edge case: Large input (1000+ items)\n        pass\n\n    def test_{change.method_name}_invalid_type(self):\n        """Test invalid type handling."""\n        # Edge case: Invalid type\n        with pytest.raises((TypeError, ValueError)):\n            # TODO: Add invalid type test\n            pass\n\n    def test_{change.method_name}_boundary_values(self):\n        """Test boundary value handling."""\n        # Edge case: Boundary values\n        pass\n'''
+        test_code = f'''"""\nAuto-generated regression test for {change.method_name}\nGenerated by Regression Oracle on {datetime.now(timezone.utc).isoformat()}\n\nEdge cases tested:\n{chr(10).join(f'- {case}' for case in edge_cases)}\n"""\n\nimport pytest\nfrom unittest.mock import Mock, patch\nfrom {module_path} import {change.method_name}\n\n\n# NAMING FIXED: Test → test\nclass test{change.method_name.title().replace('_', '')}:\n    """Regression tests for {change.method_name}."""\n\n    def test_{change.method_name}_basic(self):\n        """Test basic functionality."""\n        # TODO: Add basic test case\n        # This is a placeholder - Oracle needs Gemini to generate actual test\n        pass\n\n    def test_{change.method_name}_none_input(self):\n        """Test None input handling."""\n        # Edge case: None input\n        pass\n\n    def test_{change.method_name}_empty_input(self):\n        """Test empty input handling."""\n        # Edge case: Empty input\n        pass\n\n    def test_{change.method_name}_large_input(self):\n        """Test large input handling."""\n        # Edge case: Large input (1000+ items)\n        pass\n\n    def test_{change.method_name}_invalid_type(self):\n        """Test invalid type handling."""\n        # Edge case: Invalid type\n        with pytest.raises((TypeError, ValueError)):\n            # TODO: Add invalid type test\n            pass\n\n    def test_{change.method_name}_boundary_values(self):\n        """Test boundary value handling."""\n        # Edge case: Boundary values\n        pass\n'''
         return test_code
 
     def _create_test_file(self, change: MethodChange, test_code: str) -> Path:
@@ -243,7 +242,7 @@ class RegressionTestRunner:
         self.genai_client = genai_client
         self.emit_signal_callback = emit_signal_callback
 
-    async def run_and_correct_test(self, change: MethodChange, test_file: Path, test_code: str) -> Tuple[bool, Optional[str]]:
+    async def run_and_correct_test(self, change: MethodChange, test_file: Path, test_code: str) -> tuple[bool, str | None]:
         """Run a test and attempt self-correction if it fails."""
         passed, error_msg = await self._run_test(test_file)
         if not passed:
@@ -252,7 +251,7 @@ class RegressionTestRunner:
             self.emit_signal_callback(change.file_path, change.method_name)
         return (passed, error_msg)
 
-    async def _run_test(self, test_file: Path) -> Tuple[bool, Optional[str]]:
+    async def _run_test(self, test_file: Path) -> tuple[bool, str | None]:
         """Run pytest on generated test."""
         try:
             result = subprocess.run(['pytest', str(test_file), '-v'], capture_output=True, text=True, timeout=30)
@@ -263,7 +262,7 @@ class RegressionTestRunner:
             Logger.error(f'Error running test: {e}')
             return (False, str(e))
 
-    async def _self_correct(self, change: MethodChange, test_code: str, error_msg: str) -> Tuple[bool, Optional[str]]:
+    async def _self_correct(self, change: MethodChange, test_code: str, error_msg: str) -> tuple[bool, str | None]:
         """
         Self-correction: Decide if test is bad or code is broken.
         Uses Gemini to analyze failure and determine root cause.
@@ -283,13 +282,13 @@ class RegressionTestRunner:
                     self.ctx.signals.add(f'REGRESSION_DETECTED:{change.file_path}:{change.method_name}')
                 return (False, f'REGRESSION DETECTED: {analysis}')
             elif 'test_error' in analysis.lower():
-                Logger.warning(f'   Test error detected, attempting auto-fix...')
+                Logger.warning('   Test error detected, attempting auto-fix...')
                 fixed_test = await self._auto_fix_test(change, test_code, error_msg, analysis)
                 if fixed_test:
                     test_file = self._create_test_file_for_correction(change, fixed_test)
                     passed, new_error = await self._run_test(test_file)
                     if passed:
-                        Logger.info(f'   [OK] Test auto-fixed and now passes')
+                        Logger.info('   [OK] Test auto-fixed and now passes')
                         return (True, None)
                     else:
                         Logger.warning(f'   Fixed test still fails: {new_error}')
@@ -297,13 +296,13 @@ class RegressionTestRunner:
                 else:
                     return (False, f'Could not auto-fix test: {analysis}')
             else:
-                Logger.warning(f'   Unclear root cause, flagging for human review')
+                Logger.warning('   Unclear root cause, flagging for human review')
                 return (False, f'Unclear failure: {analysis}')
         except Exception as e:
             Logger.error(f'Self-correction failed: {e}')
             return (False, f'Self-correction error: {e}')
 
-    async def _auto_fix_test(self, change: MethodChange, test_code: str, error_msg: str, analysis: str) -> Optional[str]:
+    async def _auto_fix_test(self, change: MethodChange, test_code: str, error_msg: str, analysis: str) -> str | None:
         """
         Attempt to automatically fix a broken test.
         Uses Gemini to generate a corrected version.
@@ -330,10 +329,10 @@ class RegressionTestRunner:
         Logger.info(f'   Re-generated test file for correction: {test_file}')
         return test_file
 
-    def report_results(self, generated_tests: List[GeneratedTest]) -> Any:
+    def report_results(self, generated_tests: list[GeneratedTest]) -> Any:
         """Report test generation results."""
         total_tests: Any = len(generated_tests)
-        passed_tests: Any = sum((1 for t in generated_tests if t.passed))
+        passed_tests: Any = sum(1 for t in generated_tests if t.passed)
         failed_tests: Any = total_tests - passed_tests
         Logger.info(f"\n{'=' * 80}")
         Logger.info('🔮 REGRESSION ORACLE REPORT')
@@ -342,12 +341,12 @@ class RegressionTestRunner:
         Logger.info(f'  Passed: {passed_tests}')
         Logger.info(f'  Failed: {failed_tests}')
         if failed_tests > 0:
-            Logger.warning(f'\n[!]  FAILED TESTS:')
+            Logger.warning('\n[!]  FAILED TESTS:')
             for test in generated_tests:
                 if not test.passed:
                     Logger.warning(f'  {test.test_name}: {test.error_message}')
         if passed_tests > 0:
-            Logger.info(f'\n[OK] PASSED TESTS:')
+            Logger.info('\n[OK] PASSED TESTS:')
             for test in generated_tests:
                 if test.passed:
                     Logger.info(f'  {test.test_name} → {test.test_file}')

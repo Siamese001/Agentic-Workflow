@@ -19,21 +19,20 @@ Phase 2 Enhancement (Jan 19, 2026):
 """
 from __future__ import annotations
 
-from enum import Enum
-from typing import Dict, Any, List, Optional, Set
 import logging
+from enum import Enum
+from typing import Any
 
-from agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent import L3OrchestrationBaseAgent
 from agentic_core.L3_orchestration.interfaces import (
-    IOrchestratorAgent,
-    IHealable,
+    AgentResult,
     ExecutionContext,
     ExecutionPhase,
-    AgentResult,
-    MissionResult
+    MissionResult,
 )
-from agentic_core.utils.ssot_discovery import get_python_files, get_agent_files
-from agentic_core.utils.core_extensions.healer_mixin import HealResult
+from agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent import (
+    L3OrchestrationBaseAgent,
+)
+from agentic_core.utils.ssot_discovery import get_agent_files
 
 Logger = logging.getLogger(__name__)
 
@@ -82,20 +81,20 @@ class UnifiedOrchestratorAgent(L3OrchestrationBaseAgent):
             self.mode = OrchestratorMode.UNIFIED
 
         # Initialize Strategies (lazy load to avoid circular imports)
-        self._strategies: Optional[Dict[str, Any]] = None
+        self._strategies: dict[str, Any] | None = None
 
         # Agent registry for mission execution
-        self._available_agents: Optional[List[str]] = None
+        self._available_agents: list[str] | None = None
 
         self.logger.info(f"UnifiedOrchestrator initialized with mode: {self.mode.value}")
 
     @property
-    def strategies(self) -> Dict[str, Any]:
+    def strategies(self) -> dict[str, Any]:
         """Lazy-load strategies to avoid circular imports."""
         if self._strategies is None:
             try:
-                from agentic_core.L3_orchestration.strategies.SafetyStrategy import SafetyStrategy
                 from agentic_core.L3_orchestration.strategies.RLStrategy import RLStrategy
+                from agentic_core.L3_orchestration.strategies.SafetyStrategy import SafetyStrategy
                 self._strategies = {
                     "safety": SafetyStrategy(),
                     "rl": RLStrategy(),
@@ -105,7 +104,7 @@ class UnifiedOrchestratorAgent(L3OrchestrationBaseAgent):
                 self._strategies = {}
         return self._strategies
 
-    def dispatch(self, domain: str, action: str, payload: Dict[str, Any]) -> Dict[str, Any]:
+    def dispatch(self, domain: str, action: str, payload: dict[str, Any]) -> dict[str, Any]:
         """
         Routes a request to the appropriate strategy.
 
@@ -142,10 +141,10 @@ class UnifiedOrchestratorAgent(L3OrchestrationBaseAgent):
 
     def run_mission(
         self,
-        agents: List[str],
+        agents: list[str],
         dry_run: bool = True,
         execute: bool = False,
-        context: Optional[ExecutionContext] = None
+        context: ExecutionContext | None = None
     ) -> MissionResult:
         """
         Execute a mission across multiple agents.
@@ -166,7 +165,7 @@ class UnifiedOrchestratorAgent(L3OrchestrationBaseAgent):
 
         self.logger.info(f"[MISSION] Starting mission with {len(agents)} agents (mode={self.mode.value})")
 
-        agent_results: List[AgentResult] = []
+        agent_results: list[AgentResult] = []
         total_violations_found = 0
         total_violations_fixed = 0
         total_errors = 0
@@ -201,7 +200,7 @@ class UnifiedOrchestratorAgent(L3OrchestrationBaseAgent):
         self,
         agent_name: str,
         dry_run: bool = True,
-        context: Optional[ExecutionContext] = None
+        context: ExecutionContext | None = None
     ) -> AgentResult:
         """
         Execute a single agent with standardized result.
@@ -249,7 +248,7 @@ class UnifiedOrchestratorAgent(L3OrchestrationBaseAgent):
         self,
         agent_name: str,
         dry_run: bool,
-        context: Optional[ExecutionContext]
+        context: ExecutionContext | None
     ) -> AgentResult:
         """
         Execute agent in COMPLIANCE mode.
@@ -262,7 +261,9 @@ class UnifiedOrchestratorAgent(L3OrchestrationBaseAgent):
 
         # Risk 4: Integrate CredentialScannerAgent
         try:
-            from agentic_core.L5_safety.validators.CredentialScannerAgent import CredentialScannerAgent
+            from agentic_core.L5_safety.validators.CredentialScannerAgent import (
+                CredentialScannerAgent,
+            )
             credential_scanner = CredentialScannerAgent()
             credential_results = credential_scanner.scan_for_credentials()
 
@@ -307,7 +308,7 @@ class UnifiedOrchestratorAgent(L3OrchestrationBaseAgent):
         self,
         agent_name: str,
         dry_run: bool,
-        context: Optional[ExecutionContext]
+        context: ExecutionContext | None
     ) -> AgentResult:
         """Execute agent in HEALING mode - focus on heal_repository."""
         self.logger.info(f"[HEALING] Running {agent_name}")
@@ -328,7 +329,7 @@ class UnifiedOrchestratorAgent(L3OrchestrationBaseAgent):
         self,
         agent_name: str,
         dry_run: bool,
-        context: Optional[ExecutionContext]
+        context: ExecutionContext | None
     ) -> AgentResult:
         """Execute agent in SSOT mode - enforce SSOT compliance."""
         self.logger.info(f"[SSOT] Running {agent_name}")
@@ -349,7 +350,7 @@ class UnifiedOrchestratorAgent(L3OrchestrationBaseAgent):
         self,
         agent_name: str,
         dry_run: bool,
-        context: Optional[ExecutionContext]
+        context: ExecutionContext | None
     ) -> AgentResult:
         """Execute agent in FULL/UNIFIED mode - all operations."""
         self.logger.info(f"[FULL] Running {agent_name}")
@@ -366,7 +367,7 @@ class UnifiedOrchestratorAgent(L3OrchestrationBaseAgent):
             metadata={"dry_run": dry_run, "mode": self.mode.value}
         )
 
-    def get_available_agents(self) -> List[str]:
+    def get_available_agents(self) -> list[str]:
         """
         Get list of agents this orchestrator can coordinate.
 
@@ -376,7 +377,9 @@ class UnifiedOrchestratorAgent(L3OrchestrationBaseAgent):
             List of agent class names
         """
         if self._available_agents is None:
-            from agentic_core.L5_safety.validators.structure_blueprint import get_validated_project_root
+            from agentic_core.L5_safety.validators.structure_blueprint import (
+                get_validated_project_root,
+            )
             project_root = get_validated_project_root()
 
             # Use ssot_discovery exclusively (no rglob)
@@ -389,8 +392,8 @@ class UnifiedOrchestratorAgent(L3OrchestrationBaseAgent):
 
     def validate_mission(
         self,
-        agents: List[str],
-        context: Optional[ExecutionContext] = None
+        agents: list[str],
+        context: ExecutionContext | None = None
     ) -> bool:
         """
         Pre-flight validation before mission execution.

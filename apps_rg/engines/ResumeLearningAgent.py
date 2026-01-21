@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Learning & Intelligence Module - Phase 3 Implementation
 
@@ -8,24 +9,23 @@ This module provides advanced learning and intelligence capabilities:
 - InstructionInjector: Dynamic instruction injection for real-time steering
 - MemoryPersistence: File hashing, skip logic, flapping detection
 """
-from typing import Any, Optional, Protocol, Dict, List
-from enum import Enum, auto
-
-
 import asyncio
 import hashlib
 import json
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple
+from typing import Any
+
+from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 from .context import ResumeEngineContext
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 class ConfidenceLevel(Enum):
@@ -54,7 +54,7 @@ class LearningExample:
     success: bool
     confidence: float
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -62,12 +62,12 @@ class ConfidenceResult:
     """Result of confidence scoring."""
     score: float
     level: ConfidenceLevel
-    logprobs: Optional[List[float]] = None
-    avg_logprob: Optional[float] = None
+    logprobs: list[float] | None = None
+    avg_logprob: float | None = None
     should_retry: bool = False
 
     @classmethod
-    def from_logprob(cls, avg_logprob: float, min_confidence: float = 0.7) -> "ConfidenceResult":
+    def from_logprob(cls, avg_logprob: float, min_confidence: float = 0.7) -> ConfidenceResult:
         """
         Create ConfidenceResult from average logprob.
 
@@ -103,18 +103,18 @@ class Instruction:
     source: str  # Agent or user that injected the instruction
     content: str
     priority: int = 0  # Higher = more important
-    target_agents: List[str] = field(default_factory=list)  # Empty = all agents
-    expires_at: Optional[str] = None
+    target_agents: list[str] = field(default_factory=list)  # Empty = all agents
+    expires_at: str | None = None
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
 
 
 @dataclass
 class MemoryState:
     """Persistent memory state for resume validation."""
-    file_hashes: Dict[str, str] = field(default_factory=dict)
-    skip_files: Set[str] = field(default_factory=set)
-    flapping_files: Set[str] = field(default_factory=set)
-    validation_history: Dict[str, List[bool]] = field(default_factory=dict)
+    file_hashes: dict[str, str] = field(default_factory=dict)
+    skip_files: set[str] = field(default_factory=set)
+    flapping_files: set[str] = field(default_factory=set)
+    validation_history: dict[str, list[bool]] = field(default_factory=dict)
     last_updated: str = field(default_factory=lambda: datetime.now().isoformat())
 
 
@@ -137,7 +137,7 @@ class LearningLoop:
         self.local_fallback = local_fallback
 
         # Local storage for fallback
-        self._local_examples: List[LearningExample] = []
+        self._local_examples: list[LearningExample] = []
         self._local_file = Path(".memory/resume_learning.json")
 
         # Vector store connection (lazy init)
@@ -150,7 +150,7 @@ class LearningLoop:
         """Load examples from local storage."""
         if self._local_file.exists():
             try:
-                with open(self._local_file, "r") as f:
+                with open(self._local_file) as f:
                     data = json.load(f)
                     self._local_examples = [
                         LearningExample(**ex) for ex in data.get("examples", [])
@@ -175,9 +175,9 @@ class LearningLoop:
     async def recall_similar(
         self,
         query: str,
-        TaskType: Optional[str] = None,
+        TaskType: str | None = None,
         top_k: int = 3,
-    ) -> List[LearningExample]:
+    ) -> list[LearningExample]:
         """
         Recall similar past examples for few-shot learning.
 
@@ -204,9 +204,9 @@ class LearningLoop:
     async def _search_pinecone(
         self,
         query: str,
-        TaskType: Optional[str],
+        TaskType: str | None,
         top_k: int,
-    ) -> List[LearningExample]:
+    ) -> list[LearningExample]:
         """Search Pinecone for similar examples."""
         # This would use the actual Pinecone client
         # For now, return empty to use local fallback
@@ -215,9 +215,9 @@ class LearningLoop:
     def _search_local(
         self,
         query: str,
-        TaskType: Optional[str],
+        TaskType: str | None,
         top_k: int,
-    ) -> List[LearningExample]:
+    ) -> list[LearningExample]:
         """Search local examples using simple text matching."""
         query_lower = query.lower()
         query_words = set(query_lower.split())
@@ -247,7 +247,7 @@ class LearningLoop:
         input_context: str,
         output_result: str,
         confidence: float = 1.0,
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ) -> Any:
         """
         Record a successful fix for future learning.
@@ -280,7 +280,7 @@ class LearningLoop:
         """Upsert example to Pinecone."""
         # Would use actual Pinecone client
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get learning statistics."""
         successful = [ex for ex in self._local_examples if ex.success]
         task_types = {}
@@ -414,7 +414,7 @@ class ConfidenceScorer:
         call_fn: Callable,
         *args,
         **kwargs,
-    ) -> Tuple[Any, ConfidenceResult]:
+    ) -> tuple[Any, ConfidenceResult]:
         """
         Retry a function call until confidence threshold is met.
 
@@ -460,7 +460,7 @@ class ConfidenceScorer:
 
         return best_result, best_confidence
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get scoring statistics."""
         return {
             "total_scores": self.total_scores,
@@ -481,15 +481,15 @@ class InstructionInjector:
 
     def __init__(self, ctx: ResumeEngineContext) -> None:
         self.ctx = ctx
-        self._instructions: List[Instruction] = []
+        self._instructions: list[Instruction] = []
 
     def inject(
         self,
         source: str,
         content: str,
         priority: int = 0,
-        target_agents: Optional[List[str]] = None,
-        ttl_seconds: Optional[int] = None,
+        target_agents: list[str] | None = None,
+        ttl_seconds: int | None = None,
     ) -> str:
         """
         Inject a new instruction.
@@ -528,9 +528,9 @@ class InstructionInjector:
 
     def get_instructions(
         self,
-        agent_name: Optional[str] = None,
+        agent_name: str | None = None,
         include_expired: bool = False,
-    ) -> List[Instruction]:
+    ) -> list[Instruction]:
         """
         Get active instructions, optionally filtered by agent.
 
@@ -567,7 +567,7 @@ class InstructionInjector:
 
     def get_instruction_text(
         self,
-        agent_name: Optional[str] = None,
+        agent_name: str | None = None,
     ) -> str:
         """
         Get formatted instruction text for an agent.
@@ -597,7 +597,7 @@ class InstructionInjector:
                 return True
         return False
 
-    def clear(self, source: Optional[str] = None) -> Any:
+    def clear(self, source: str | None = None) -> Any:
         """Clear instructions, optionally filtered by source."""
         if source:
             self._instructions = [
@@ -607,7 +607,7 @@ class InstructionInjector:
         else:
             self._instructions.clear()
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get instruction statistics."""
         by_source = {}
         for inst in self._instructions:
@@ -629,7 +629,7 @@ class MemoryPersistence:
 
     def __init__(
         self,
-        memory_file: Optional[Path] = None,
+        memory_file: Path | None = None,
         flapping_threshold: int = 3,
     ):
         self.memory_file = memory_file or Path(".memory/resume_memory.json")
@@ -642,7 +642,7 @@ class MemoryPersistence:
         """Load memory state from disk."""
         if self.memory_file.exists():
             try:
-                with open(self.memory_file, "r") as f:
+                with open(self.memory_file) as f:
                     data = json.load(f)
                     self.state = MemoryState(
                         file_hashes=data.get("file_hashes", {}),
@@ -759,7 +759,7 @@ class MemoryPersistence:
         self.state.flapping_files.discard(file_id)
         self._save()
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get memory statistics."""
         return {
             "total_tracked": len(self.state.file_hashes),
@@ -841,7 +841,7 @@ class ResumeLearningAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         self,
         content: str,
         priority: int = 0,
-        target_agents: Optional[List[str]] = None,
+        target_agents: list[str] | None = None,
     ) -> str:
         """Inject a dynamic instruction."""
         return self.instruction_injector.inject(
@@ -868,7 +868,7 @@ class ResumeLearningAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         """Record section validation result."""
         self.memory.record_validation(section_id, content, passed)
 
-    def get_comprehensive_stats(self) -> Dict[str, Any]:
+    def get_comprehensive_stats(self) -> dict[str, Any]:
         """Get comprehensive statistics from all components."""
         return {
             "learning": self.learning_loop.get_stats(),

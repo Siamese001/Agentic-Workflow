@@ -10,8 +10,9 @@ Renamed from CognitiveContractValidatorAgent to avoid naming collision with L1 c
 # Suggested keywords to add in docstring/code: engine, guardrail, healer, memory, orchestrator, prompt, state, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from typing import Any, Dict, List, Optional
 import logging
+from typing import Any
+
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 
 logger = logging.getLogger(__name__)
@@ -27,7 +28,7 @@ class ContractStage:
 
 class CognitiveContract:
     """A cognitive contract definition."""
-    def __init__(self, name: str, required: Optional[List[str]] = None, **kwargs):
+    def __init__(self, name: str, required: list[str] | None = None, **kwargs):
         self.name = name
         self.required = required or []
         self.properties = kwargs
@@ -35,10 +36,10 @@ class CognitiveContract:
 
 class CognitiveContractEnforcer:
     """Enforcer for cognitive contracts."""
-    def __init__(self, contracts: Optional[List[CognitiveContract]] = None):
+    def __init__(self, contracts: list[CognitiveContract] | None = None):
         self.contracts = contracts or []
 
-    def enforce(self, data: Dict[str, Any]) -> bool:
+    def enforce(self, data: dict[str, Any]) -> bool:
         return True
 
     def add_contract(self, contract: CognitiveContract) -> None:
@@ -54,7 +55,7 @@ class Constraint:
 
 class Plan:
     """A plan in a cognitive contract."""
-    def __init__(self, name: str, steps: Optional[List[str]] = None):
+    def __init__(self, name: str, steps: list[str] | None = None):
         self.name = name
         self.steps = steps or []
 
@@ -79,7 +80,7 @@ class CognitiveContractValidatorSchema(MCPHardenedMixin):
     """
 
     def __init__(self):
-        self.contracts: List[CognitiveContract] = []
+        self.contracts: list[CognitiveContract] = []
         self.enforcer = CognitiveContractEnforcer()
 
     def add_contract(self, contract: CognitiveContract) -> None:
@@ -87,7 +88,7 @@ class CognitiveContractValidatorSchema(MCPHardenedMixin):
         self.contracts.append(contract)
         self.enforcer.add_contract(contract)
 
-    def validate_contract(self, contract_name: str, data: Dict[str, Any]) -> bool:
+    def validate_contract(self, contract_name: str, data: dict[str, Any]) -> bool:
         """Validate data against a named contract schema."""
         contract = next((c for c in self.contracts if c.name == contract_name), None)
         if not contract:
@@ -102,6 +103,6 @@ class CognitiveContractValidatorSchema(MCPHardenedMixin):
 
         return self.enforcer.enforce(data)
 
-    def list_contracts(self) -> List[str]:
+    def list_contracts(self) -> list[str]:
         """List all registered contract schemas."""
         return [c.name for c in self.contracts]

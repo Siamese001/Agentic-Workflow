@@ -16,7 +16,6 @@ Test Categories:
 """
 import sys
 from pathlib import Path
-from unittest.mock import patch
 
 # Setup path
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
@@ -136,7 +135,6 @@ def test_hierarchy_heal_deep_violation_flatten():
     print("Test 4: HierarchyAgent - Deep Violation Flattening")
     print("=" * 70)
 
-    import tempfile
     import ast
 
     # Verify the method exists in source code (static analysis)

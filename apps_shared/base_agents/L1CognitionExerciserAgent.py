@@ -6,14 +6,15 @@
 
 from __future__ import annotations
 
-from typing import List, Any
 import uuid
-import time
-
-from agentic_core.L5_safety.validators.structure_blueprint import get_validated_project_root
-from agentic_core.L6_observability.metrics.layer_decorator import layer_entry
-from agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent import L1CognitionBaseAgent
 from dataclasses import dataclass
+from typing import Any
+
+from agentic_core.L6_observability.metrics.layer_decorator import layer_entry
+
+from agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent import L1CognitionBaseAgent
+from agentic_core.L5_safety.validators.structure_blueprint import get_validated_project_root
+
 
 # Lazy imports — gravity-safe (same L1 territory)
 def _get_thought_node() -> Any:
@@ -100,7 +101,7 @@ class L1CognitionExerciserAgent(L1CognitionBaseAgent):
     @layer_entry("L1_cognition", subterritory="thought_engine")
     def act(self) -> str:
         """Primary entrypoint — called by orchestrator on synthetic task."""
-        report: List[str] = [f"{self.name}: Starting cognition exercise cycle"]
+        report: list[str] = [f"{self.name}: Starting cognition exercise cycle"]
 
         for strategy_name, strategy_func in self.exercise_strategies.items():
             try:

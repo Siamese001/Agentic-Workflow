@@ -13,10 +13,9 @@ Author: Cascade
 Date: January 19, 2026
 Phase: 6.1 - Discovery Expansion (Batch 1)
 """
-import sys
 import os
+import sys
 from pathlib import Path
-from typing import List, Set
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
@@ -35,10 +34,9 @@ def test_tc25_data_discovery_accuracy():
     print("="*60)
 
     from agentic_core.utils.ssot_discovery import (
-        get_data_files,
+        DEFAULT_EXCLUDE_DIRS,
         get_json_files,
         get_markdown_files,
-        DEFAULT_EXCLUDE_DIRS
     )
 
     # Test JSON file discovery
@@ -59,7 +57,7 @@ def test_tc25_data_discovery_accuracy():
     only_in_ssot = ssot_json_files - manual_json_files
     only_in_manual = manual_json_files - ssot_json_files
 
-    print(f"   JSON Files:")
+    print("   JSON Files:")
     print(f"      SSOT Discovery: {len(ssot_json_files)} files")
     print(f"      Manual os.walk: {len(manual_json_files)} files")
     print(f"      Only in SSOT: {len(only_in_ssot)}")
@@ -67,7 +65,7 @@ def test_tc25_data_discovery_accuracy():
 
     # Allow small delta due to timing differences
     if len(only_in_ssot) > 5 or len(only_in_manual) > 5:
-        print(f"❌ FAIL: Significant difference between SSOT and manual discovery")
+        print("❌ FAIL: Significant difference between SSOT and manual discovery")
         if only_in_ssot:
             print(f"   Sample SSOT-only: {list(only_in_ssot)[:3]}")
         if only_in_manual:
@@ -86,7 +84,7 @@ def test_tc25_data_discovery_accuracy():
                 file_path = Path(root) / file
                 manual_md_files.add(str(file_path))
 
-    print(f"   Markdown Files:")
+    print("   Markdown Files:")
     print(f"      SSOT Discovery: {len(ssot_md_files)} files")
     print(f"      Manual os.walk: {len(manual_md_files)} files")
 
@@ -110,9 +108,9 @@ def test_tc26_memory_integrity():
     print("TC-26: Memory Integrity")
     print("="*60)
 
-    from agentic_core.L4_state.ValidationContext.MemoryManagerAgent import MemoryManagerAgent
     import tempfile
-    import json
+
+    from agentic_core.L4_state.ValidationContext.MemoryManagerAgent import MemoryManagerAgent
 
     # Create a temporary memory directory
     with tempfile.TemporaryDirectory() as temp_dir:
@@ -134,7 +132,7 @@ def test_tc26_memory_integrity():
         json_files = list(test_category_dir.glob("*.json"))
 
         if not json_files:
-            print(f"❌ FAIL: No JSON files created in test category")
+            print("❌ FAIL: No JSON files created in test category")
             return False
 
         print(f"   Created {len(json_files)} test memory file(s)")
@@ -143,12 +141,12 @@ def test_tc26_memory_integrity():
         loaded_data = agent.load_memory("test_memory", category="test")
 
         if loaded_data != test_data:
-            print(f"❌ FAIL: Loaded data doesn't match saved data")
+            print("❌ FAIL: Loaded data doesn't match saved data")
             print(f"   Expected: {test_data}")
             print(f"   Got: {loaded_data}")
             return False
 
-        print(f"   Memory save/load cycle successful ✓")
+        print("   Memory save/load cycle successful ✓")
 
         # Test get_memory_stats with new discovery method
         stats = agent.get_memory_stats()
@@ -235,7 +233,7 @@ def test_tc27_key_check():
 
     # MemoryManagerAgent should have violations_found (we just updated it)
     if "MemoryManagerAgent.py" not in files_with_violations_found:
-        print(f"❌ FAIL: MemoryManagerAgent.py should use violations_found")
+        print("❌ FAIL: MemoryManagerAgent.py should use violations_found")
         return False
 
     print("✅ PASS: Batch 1 files use standardized keys")
@@ -269,7 +267,7 @@ def test_rglob_reduction():
     if reduction < 0:
         print(f"⚠️  WARNING: rglob count increased by {abs(reduction)}")
     elif reduction >= 15:
-        print(f"   Target reduction (15+) achieved! ✓")
+        print("   Target reduction (15+) achieved! ✓")
     else:
         print(f"   Reduction is {reduction}, target is 15+")
 
@@ -283,11 +281,11 @@ def test_rglob_reduction():
             refactored.append(f"{file_name}: {offender['count']} calls")
 
     if refactored:
-        print(f"   Batch 1 files still with rglob:")
+        print("   Batch 1 files still with rglob:")
         for r in refactored:
             print(f"      - {r}")
     else:
-        print(f"   All Batch 1 files successfully refactored ✓")
+        print("   All Batch 1 files successfully refactored ✓")
 
     print("✅ PASS: rglob reduction tracked")
     return True

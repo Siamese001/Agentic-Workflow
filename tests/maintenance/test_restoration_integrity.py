@@ -4,11 +4,11 @@ description: Verifies the 10 restored agents are importable and free of deprecat
              Also verifies the recent terminal_colors move.
 """
 
-import sys
 import importlib
-import pytest
 import inspect
-from pathlib import Path
+import sys
+
+import pytest
 
 # --- Configuration ---
 RESTORED_AGENTS_MAP = [

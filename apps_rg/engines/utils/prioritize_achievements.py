@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 PrioritizeAchievements.py - Resume Operations Module
 
@@ -6,17 +7,18 @@ Domain: resume
 Generated: 2025-12-07T13:28:54.206349
 """
 import logging
-from typing import Any, Dict, List, Optional, Protocol, Union
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 
 class PrioritizeAchievements:
     """Operations executor for resume domain."""
 
-def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
+def __init__(self: Any, config: dict[str, object] | None) -> None:
     SELF.CONFIG = config or {}
     Logger.info(f'Initialized {self.__class__.__name__}')
 
-def process(self: Any, data: Union[str, Dict], context: Optional[Dict]) -> OperationResult:
+def process(self: Any, data: str | dict, context: dict | None) -> OperationResult:
     """Process input data through the transformation pipeline."""
     try:
         self._execute(data, context)
@@ -25,10 +27,10 @@ def process(self: Any, data: Union[str, Dict], context: Optional[Dict]) -> Opera
         Logger.error(f'Processing failed: {e}')
         return OperationResult(success=False, metadata={'error': str(e)})
 
-def _execute(self: Any, data: Union[str, Dict], context: Optional[Dict]) -> object:
+def _execute(self: Any, data: str | dict, context: dict | None) -> object:
     """Execute processing."""
     return data
 
-def process(data: Union[str, Dict], config: Optional[Dict]=None) -> OperationResult:
+def process(data: str | dict, config: dict | None=None) -> OperationResult:
     """Process input data through the transformation pipeline."""
     return PrioritizeAchievements(config).process(data)

@@ -5,30 +5,29 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 import asyncio
 from dataclasses import dataclass
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
 import logging
-import re
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 from agentic_core.L1_cognition.P1_interfaces import ICognitivePlane, PlanningRequest, PlanningResult
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 try:
     from agentic_core.L5_safety.validators.structure_blueprint import (
-        SOVEREIGN_REGISTRY,
         CORE_SUBFOLDER_MAP,
+        SOVEREIGN_REGISTRY,
     )
 except ImportError:
-    from agentic_core.config.blueprint_sovereign.registry import (
-        SOVEREIGN_REGISTRY,
-        CORE_SUBFOLDER_MAP,
-    )
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+    pass
 from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -36,7 +35,7 @@ class AgentInfo(HealerMixin):
     """Simple agent information container."""
 
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -51,7 +50,7 @@ class AgentInfo(HealerMixin):
 
         return {"violations": 0, "fixed": 0, "errors": 0}
 
-    def __init__(self, name: str, phase: str, capabilities: List[str]) -> None:
+    def __init__(self, name: str, phase: str, capabilities: list[str]) -> None:
         self.name = name
         self.phase = phase
         self.capabilities = capabilities
@@ -74,7 +73,7 @@ def _run_self_tests() -> dict:
 class SovereignCognitivePlaneAgent(SubatomicTestingMixin, ICognitivePlane, MCPHardenedMixin):
     """Sovereign cognitive plane with in-memory agent registry and L5 streaming."""
 
-    def __init__(self, enable_streaming: bool=True, streamer_factory: Optional[callable]=None) -> None:
+    def __init__(self, enable_streaming: bool=True, streamer_factory: callable | None=None) -> None:
         """
         Initialize with sovereign agents.
 
@@ -85,7 +84,7 @@ class SovereignCognitivePlaneAgent(SubatomicTestingMixin, ICognitivePlane, MCPHa
                               to obtain the streamer. This breaks the direct dependency
                               on L5_safety.streamer, allowing for dependency injection.
         """
-        self._agents: Dict[str, AgentInfo] = {}
+        self._agents: dict[str, AgentInfo] = {}
         self._initialize_agents()
         self.enable_streaming = enable_streaming
         self._streamer = None
@@ -115,7 +114,7 @@ class SovereignCognitivePlaneAgent(SubatomicTestingMixin, ICognitivePlane, MCPHa
             self._agents[agent.name] = agent
             LOGGER.info(f'Registered sovereign agent: {agent.name}')
 
-    def get_capabilities(self) -> List[Any]:
+    def get_capabilities(self) -> list[Any]:
         """Get available cognitive capabilities."""
         capabilities: Any = set()
         for agent in self._agents.values():
@@ -130,7 +129,7 @@ class SovereignCognitivePlaneAgent(SubatomicTestingMixin, ICognitivePlane, MCPHa
         await asyncio.sleep(0)
         return PlanningResult(plan_id=f'sovereign_{request.task_id}', steps=['analyze_context', 'select_agents', 'generate_strategy'])
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
         """Autonomous healing implementation as per Canon Key 51."""
         super().heal_repository(dry_run=dry_run, execute=execute, **kwargs)
         return {"violations": 0, "fixed": 0, "errors": 0}

@@ -11,7 +11,6 @@ This catches failures that Python tests miss:
 """
 import asyncio
 import sys
-from pathlib import Path
 
 try:
     from playwright.async_api import async_playwright
@@ -118,11 +117,11 @@ async def test_dashboard_browser():
             print("\n" + "=" * 70)
             print("✅ ALL BROWSER TESTS PASSED")
             print("=" * 70)
-            print(f"Dashboard renders correctly:")
-            print(f"  - HTTP 200 OK")
-            print(f"  - No console errors")
+            print("Dashboard renders correctly:")
+            print("  - HTTP 200 OK")
+            print("  - No console errors")
             print(f"  - {row_count} territory rows rendered")
-            print(f"  - TOTAL row present")
+            print("  - TOTAL row present")
             print("=" * 70)
 
             return True

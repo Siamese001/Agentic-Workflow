@@ -13,11 +13,12 @@ Composable Rules:
 """
 
 from __future__ import annotations
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass, field
-from enum import Enum
+
 import time
 import traceback
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any
 
 
 class ErrorCategory(Enum):
@@ -53,7 +54,7 @@ class ErrorContext:
     category: ErrorCategory
     severity: str  # "low", "medium", "high", "critical"
     recoverable: bool
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -63,7 +64,7 @@ class RecoveryResult:
     strategy_used: RecoveryStrategy
     attempts: int
     recovered_value: Any = None
-    error_message: Optional[str] = None
+    error_message: str | None = None
     duration_ms: float = 0.0
 
 
@@ -80,7 +81,7 @@ class ErrorRecoveryGuardrail:
 
     def __init__(self):
         """Initialize error recovery guardrail."""
-        self.enabled_rules: List[str] = [
+        self.enabled_rules: list[str] = [
             "error_classification",
             "recovery_strategy",
             "self_healing",
@@ -113,12 +114,12 @@ class ErrorRecoveryGuardrail:
         self.errors_handled = 0
         self.recoveries_successful = 0
         self.recoveries_failed = 0
-        self.error_log: List[ErrorContext] = []
+        self.error_log: list[ErrorContext] = []
 
     async def handle_error(
         self,
         error: Exception,
-        context: Optional[Dict[str, Any]] = None,
+        context: dict[str, Any] | None = None,
         max_retries: int = 3
     ) -> RecoveryResult:
         """
@@ -154,7 +155,7 @@ class ErrorRecoveryGuardrail:
 
         return result
 
-    def _classify_error(self, error: Exception, context: Dict[str, Any]) -> ErrorContext:
+    def _classify_error(self, error: Exception, context: dict[str, Any]) -> ErrorContext:
         """Classify error by category and severity."""
         error_str = str(error).lower()
         error_type = type(error).__name__
@@ -261,7 +262,7 @@ class ErrorRecoveryGuardrail:
             recovered_value={"recovered": True, "method": "heal"}
         )
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get error handling statistics."""
         return {
             "errors_handled": self.errors_handled,
@@ -271,7 +272,7 @@ class ErrorRecoveryGuardrail:
             "error_log_size": len(self.error_log)
         }
 
-    def get_error_log(self, limit: int = 100) -> List[Dict[str, Any]]:
+    def get_error_log(self, limit: int = 100) -> list[dict[str, Any]]:
         """Get recent error log."""
         return [
             {

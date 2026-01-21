@@ -20,13 +20,13 @@ import json
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.L5_safety.validators.decorators import standard_heal
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.security import safe_execute
 
 
@@ -60,7 +60,7 @@ class DependencyPruningAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixi
         self.dry_run: bool = True  # Safety: Default to non-destructive
         self.requirements_path: Path = self.project_root / "requirements.txt"
 
-    def _find_unused_deptry(self) -> List[str]:
+    def _find_unused_deptry(self) -> list[str]:
         """Use deptry to find unused dependencies via AST analysis.
 
         Returns:
@@ -76,7 +76,7 @@ class DependencyPruningAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixi
                 timeout=60
             )
             if result.returncode == 0:
-                data: Dict[str, Any] = json.loads(result.stdout)
+                data: dict[str, Any] = json.loads(result.stdout)
                 return data.get("unused", [])
         except FileNotFoundError:
             pass  # deptry not installed
@@ -84,7 +84,7 @@ class DependencyPruningAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixi
             pass  # JSON parsing or other error
         return []
 
-    def _remove_from_requirements_txt(self, unused: List[str]) -> Dict[str, Any]:
+    def _remove_from_requirements_txt(self, unused: list[str]) -> dict[str, Any]:
         """Remove unused packages from requirements.txt.
 
         Args:
@@ -99,8 +99,8 @@ class DependencyPruningAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixi
             return {"removed": 0}
 
         content: str = self.requirements_path.read_text(encoding="utf-8")
-        lines: List[str] = content.splitlines()
-        new_lines: List[str] = []
+        lines: list[str] = content.splitlines()
+        new_lines: list[str] = []
         removed: int = 0
 
         for line in lines:
@@ -134,8 +134,8 @@ class DependencyPruningAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixi
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[Set[str]] = None
-    ) -> Dict[str, int]:
+        _call_path: set[str] | None = None
+    ) -> dict[str, int]:
         """Execute L5 safety healing operations.
 
         This is an operational agent - no repository healing required.
@@ -166,7 +166,7 @@ class DependencyPruningAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixi
         finally:
             _call_path.discard(agent_name)
 
-    async def execute(self) -> Dict[str, Any]:
+    async def execute(self) -> dict[str, Any]:
         """Scan for and optionally remove unused dependencies.
 
         Returns:
@@ -176,7 +176,7 @@ class DependencyPruningAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixi
                 - dry_run: Whether this was a dry run
         """
         print("   [PRUNE] Scanning for unused dependencies...")
-        unused: List[str] = self._find_unused_deptry()
+        unused: list[str] = self._find_unused_deptry()
 
         if not unused:
             print("   [✓] No unused dependencies detected")
@@ -188,7 +188,7 @@ class DependencyPruningAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixi
         if len(unused) > 5:
             print(f"       ... and {len(unused) - 5} more")
 
-        result: Dict[str, Any] = self._remove_from_requirements_txt(unused)
+        result: dict[str, Any] = self._remove_from_requirements_txt(unused)
 
         return {
             "unused_found": len(unused),

@@ -11,6 +11,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """
 ⚛️ Adversarial Red-Teamer - The Skeptic
 
@@ -27,21 +28,16 @@ Integration: Runs in pre-deployment phase to probe boundaries of:
 """
 import ast
 import logging
-import re
 import textwrap
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from dataclasses import dataclass
+from typing import Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
+from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
 from agentic_core.L5_safety.validators.decorators import standard_heal
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -62,7 +58,7 @@ class RedTeamResult:
     passed: bool
     vulnerability_found: bool
     details: str
-    Severity: Optional[str]
+    Severity: str | None
     Recommendation: str
 
 # NAMING CANON COMPLIANCE — renamed to AdversarialRedTeamerAgent for discovery and sovereignty — 2025-12-30
@@ -90,7 +86,7 @@ class AdversarialRedTeamerAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHarden
         """
         super().__init__(ctx)
         self.test_suite = self._build_test_suite()
-        self.results: List[RedTeamResult] = []
+        self.results: list[RedTeamResult] = []
 
     async def execute(self) -> Any:
         """
@@ -105,7 +101,7 @@ class AdversarialRedTeamerAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHarden
         await self._test_edge_cases()
         self._generate_report()
 
-    def _build_test_suite(self) -> List[VulnerabilityTest]:
+    def _build_test_suite(self) -> list[VulnerabilityTest]:
         """Build comprehensive test suite."""
         tests = []
         tests.extend(self._build_preservation_tests())
@@ -114,19 +110,19 @@ class AdversarialRedTeamerAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHarden
         tests.extend(self._build_edge_case_tests())
         return tests
 
-    def _build_preservation_tests(self) -> List[VulnerabilityTest]:
+    def _build_preservation_tests(self) -> list[VulnerabilityTest]:
         """Build tests for preservation attacks."""
         return [VulnerabilityTest(test_id='PRES-001', test_type='preservation', target_file='test_target.py', attack_vector='Mass deletion of code blocks', expected_behavior='Should fail preservation check', Severity='critical'), VulnerabilityTest(test_id='PRES-002', test_type='preservation', target_file='test_target.py', attack_vector='Silent truncation of methods', expected_behavior='Should detect line count drop', Severity='high'), VulnerabilityTest(test_id='PRES-003', test_type='preservation', target_file='test_target.py', attack_vector='Comment-only preservation (no code)', expected_behavior='Should fail functional preservation', Severity='high')]
 
-    def _build_sandbox_tests(self) -> List[VulnerabilityTest]:
+    def _build_sandbox_tests(self) -> list[VulnerabilityTest]:
         """Build tests for sandbox escapes."""
         return [VulnerabilityTest(test_id='SAND-001', test_type='sandbox', target_file='test_target.py', attack_vector='Attempt file system access outside sandbox', expected_behavior='Should be blocked by sandbox', Severity='critical'), VulnerabilityTest(test_id='SAND-002', test_type='sandbox', target_file='test_target.py', attack_vector='Attempt network access', expected_behavior='Should be blocked by sandbox', Severity='critical'), VulnerabilityTest(test_id='SAND-003', test_type='sandbox', target_file='test_target.py', attack_vector='Attempt subprocess execution', expected_behavior='Should be blocked by sandbox', Severity='critical')]
 
-    def _build_connectivity_tests(self) -> List[VulnerabilityTest]:
+    def _build_connectivity_tests(self) -> list[VulnerabilityTest]:
         """Build tests for connectivity breaks."""
         return [VulnerabilityTest(test_id='CONN-001', test_type='connectivity', target_file='pipeline_stage.py', attack_vector='Change output schema without updating downstream', expected_behavior='Should detect schema drift', Severity='high'), VulnerabilityTest(test_id='CONN-002', test_type='connectivity', target_file='pipeline_stage.py', attack_vector='Remove required field from data contract', expected_behavior='Should fail forward propagation check', Severity='high'), VulnerabilityTest(test_id='CONN-003', test_type='connectivity', target_file='pipeline_stage.py', attack_vector='Introduce circular dependency', expected_behavior='Should detect cycle in dependency graph', Severity='medium')]
 
-    def _build_edge_case_tests(self) -> List[VulnerabilityTest]:
+    def _build_edge_case_tests(self) -> list[VulnerabilityTest]:
         """Build tests for edge cases."""
         return [VulnerabilityTest(test_id='EDGE-001', test_type='edge_case', target_file='test_target.py', attack_vector='Empty file healing attempt', expected_behavior='Should handle gracefully', Severity='low'), VulnerabilityTest(test_id='EDGE-002', test_type='edge_case', target_file='test_target.py', attack_vector='File with only comments', expected_behavior='Should skip healing', Severity='low'), VulnerabilityTest(test_id='EDGE-003', test_type='edge_case', target_file='test_target.py', attack_vector='Extremely nested code (10+ levels)', expected_behavior='Should trigger atomic fission', Severity='medium')]
 
@@ -167,8 +163,8 @@ class AdversarialRedTeamerAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHarden
         try:
             original_tree = ast.parse(original_code)
             modified_tree = ast.parse(modified_code)
-            original_stmts = sum((1 for _ in ast.walk(original_tree) if isinstance(_, ast.stmt)))
-            modified_stmts = sum((1 for _ in ast.walk(modified_tree) if isinstance(_, ast.stmt)))
+            original_stmts = sum(1 for _ in ast.walk(original_tree) if isinstance(_, ast.stmt))
+            modified_stmts = sum(1 for _ in ast.walk(modified_tree) if isinstance(_, ast.stmt))
             functional_preservation = modified_stmts / original_stmts * 100 if original_stmts > 0 else 0
             vulnerability_found = functional_preservation >= 90.0
             return RedTeamResult(test_id=test_id, passed=not vulnerability_found, vulnerability_found=vulnerability_found, details=f'Functional preservation: {functional_preservation:.1f}%', Severity='high' if vulnerability_found else None, Recommendation='Functional check working' if not vulnerability_found else 'WARNING: Comment-only preservation possible')
@@ -263,8 +259,8 @@ class AdversarialRedTeamerAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHarden
     def _generate_report(self) -> Any:
         """Generate red team report."""
         total_tests = len(self.results)
-        passed_tests = sum((1 for r in self.results if r.passed))
-        vulnerabilities = sum((1 for r in self.results if r.vulnerability_found))
+        passed_tests = sum(1 for r in self.results if r.passed)
+        vulnerabilities = sum(1 for r in self.results if r.vulnerability_found)
         critical_vulns = [r for r in self.results if r.Severity == 'critical' and r.vulnerability_found]
         high_vulns = [r for r in self.results if r.Severity == 'high' and r.vulnerability_found]
         Logger.info(f"\n{'=' * 80}")
@@ -292,7 +288,7 @@ class AdversarialRedTeamerAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHarden
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L5 safety agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -309,7 +305,7 @@ class AdversarialRedTeamerAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHarden
         finally:
             _call_path.discard(agent_name)
 
-_red_teamer: Optional[AdversarialRedTeamer] = None
+_red_teamer: AdversarialRedTeamer | None = None
 
 def get_adversarial_red_teamer(ctx: Any) -> AdversarialRedTeamer:
     """Get or create global Red Teamer instance."""

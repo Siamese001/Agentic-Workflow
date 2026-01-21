@@ -9,14 +9,15 @@ Orchestrates PerceptionNode, ReasoningNode, and ActionNode with:
 """
 
 from __future__ import annotations
-from typing import Dict, List, Any, Optional
+
 import asyncio
-import functools
-import time
 import hashlib
+import time
+from typing import Any
+
+from .ActionNode import ActionNode
 from .PerceptionNode import PerceptionNode
 from .ReasoningNode import ReasoningNode
-from .ActionNode import ActionNode
 
 
 class CognitiveNodeRefactored:
@@ -41,7 +42,7 @@ class CognitiveNodeRefactored:
         self.reasoning = ReasoningNode()
         self.action = ActionNode()
 
-        self.cache: Dict[str, Dict[str, Any]] = {}
+        self.cache: dict[str, dict[str, Any]] = {}
         self.node_metrics = {
             "perception": {"calls": 0, "total_time": 0.0},
             "reasoning": {"calls": 0, "total_time": 0.0},
@@ -50,7 +51,7 @@ class CognitiveNodeRefactored:
         self.total_processes = 0
         self.lazy_evaluations = 0
 
-    def process(self, raw_input: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any]:
+    def process(self, raw_input: dict[str, Any], context: dict[str, Any]) -> dict[str, Any]:
         """
         Sequential cognitive processing (baseline).
 
@@ -94,7 +95,7 @@ class CognitiveNodeRefactored:
 
         return output
 
-    async def process_async(self, raw_input: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any]:
+    async def process_async(self, raw_input: dict[str, Any], context: dict[str, Any]) -> dict[str, Any]:
         """
         Parallel cognitive processing with async/await.
 
@@ -155,7 +156,7 @@ class CognitiveNodeRefactored:
 
         return output
 
-    def _make_cache_key(self, raw_input: Dict[str, Any], context: Dict[str, Any]) -> str:
+    def _make_cache_key(self, raw_input: dict[str, Any], context: dict[str, Any]) -> str:
         """
         Create stable cache key from input and context.
 
@@ -171,7 +172,7 @@ class CognitiveNodeRefactored:
         key_input = f"{input_str}|{context_str}"
         return hashlib.sha256(key_input.encode()).hexdigest()
 
-    def _is_simple_intent(self, perceived: Dict[str, Any]) -> bool:
+    def _is_simple_intent(self, perceived: dict[str, Any]) -> bool:
         """
         Determine if intent is simple (lazy evaluation).
 
@@ -192,7 +193,7 @@ class CognitiveNodeRefactored:
             intent in ["action", "memory"]
         )
 
-    async def _lazy_memory_prefetch(self, context: Dict[str, Any]) -> List[Dict[str, Any]]:
+    async def _lazy_memory_prefetch(self, context: dict[str, Any]) -> list[dict[str, Any]]:
         """
         Lazy memory prefetch (background task).
 
@@ -218,7 +219,7 @@ class CognitiveNodeRefactored:
             self.node_metrics[node_name]["calls"] += 1
             self.node_metrics[node_name]["total_time"] += duration
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get cognitive node statistics."""
         stats = {
             "total_processes": self.total_processes,

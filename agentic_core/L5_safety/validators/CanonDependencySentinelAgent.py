@@ -5,16 +5,17 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 import importlib  # AUTO-INJECTED BY GRAVITY HEALER
+
 """
 Canon Validator Syntax Agents
 CodeJanitor, DependencySentinelAgent - Code hygiene and import management.
 """
 import ast
 import os
-import re
 import sys
-from typing import Any, Dict, List, Optional, Protocol, Tuple
+
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.security import safe_execute
 
@@ -24,16 +25,14 @@ from agentic_core.utils.security import safe_execute
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 try:
     from agentic_core.L5_safety.validators.structure_blueprint import (
-        SOVEREIGN_REGISTRY,
         CORE_SUBFOLDER_MAP,
+        SOVEREIGN_REGISTRY,
     )
 except ImportError:
-    from agentic_core.config.blueprint_sovereign.registry import (
-        SOVEREIGN_REGISTRY,
-        CORE_SUBFOLDER_MAP,
-    )
+    pass
 
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
 
 # NOT_AN_AGENT — legacy L1 class, true agent is CodeJanitorAgent in L2 — excluded from discovery
 class CodeJanitor:
@@ -84,7 +83,7 @@ class CodeJanitor:
                     with open(file_path, "a", encoding="utf-8") as f:
                         f.write("\n")
                     print(f"      [OK] Added newline to {file_path}")
-                except IOError as e:
+                except OSError as e:
                     print(f"      [X] Failed to fix newline in {file_path}: {e}")
             # Re-check after fix
             passed, details = self.check_no_missing_newline()
@@ -101,7 +100,7 @@ class CodeJanitor:
         if not passed and self.agent.ctx.intelligence_enabled:
             print("      Converting tabs to spaces using smart_fix...")
             # Smart fix is applied per file, so we need unique file paths
-            files_with_tabs = set(d.split(":")[0] for d in details)
+            files_with_tabs = {d.split(":")[0] for d in details}
             for file_path in list(files_with_tabs)[:3]:  # Limit to first 3 files for smart_fix
                 await self.smart_fix(file_path, 13)
             # Re-check after fix
@@ -126,7 +125,7 @@ class CodeJanitor:
             if not passed and self.agent.ctx.intelligence_enabled:
                 print(f"      Attempting smart fix for Key {key}...")
                 # Extract unique file paths from details, ensuring they contain a colon for line info
-                files_with_violations = set(d.split(":")[0].strip() for d in details if ":" in d)
+                files_with_violations = {d.split(":")[0].strip() for d in details if ":" in d}
                 for fp in list(files_with_violations)[:3]:  # Limit to first 3 files for smart_fix
                     await self.smart_fix(fp, key)
                 # Re-check after fix
@@ -139,7 +138,7 @@ class CodeJanitor:
 
         self.agent.ctx.signal_ast_valid()
         print(f"[<<<] {self.agent.name} FINISHED.")
-    def check_no_trailing_whitespace(self) -> Tuple[bool, List[str]]:
+    def check_no_trailing_whitespace(self) -> tuple[bool, list[str]]:
         """
         Checks for trailing whitespace on lines (excluding the final newline character).
         Reports file paths and line numbers.
@@ -147,19 +146,19 @@ class CodeJanitor:
         violations = []
         for file_path in self.agent.ctx.python_files:
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(file_path, encoding="utf-8") as f:
                     lines = f.readlines()
                     for i, line in enumerate(lines, 1):
                         # Check if the line, excluding its final newline, has trailing whitespace
                         # Changed rstrip('\n\r') to rstrip('\n') for consistency with Key 10
                         if line.rstrip('\n') != line.rstrip('\n').rstrip():
                             violations.append(f"{file_path}:{i}")
-            except (IOError, OSError, UnicodeDecodeError) as e:
+            except (OSError, UnicodeDecodeError) as e:
                 print(f"      [!]  Could not read {file_path} for Key 11 check: {e}")
                 continue
         return (len(violations) == 0, violations)
 
-    def check_no_missing_newline(self) -> Tuple[bool, List[str]]:
+    def check_no_missing_newline(self) -> tuple[bool, list[str]]:
         """
         Checks if files are Missing a final newline character (PEP 8).
         Reports file paths.
@@ -167,16 +166,16 @@ class CodeJanitor:
         violations = []
         for file_path in self.agent.ctx.python_files:
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(file_path, encoding="utf-8") as f:
                     content = f.read()
                     if content and not content.endswith("\n"):
                         violations.append(file_path)
-            except (IOError, OSError, UnicodeDecodeError) as e:
+            except (OSError, UnicodeDecodeError) as e:
                 print(f"      [!]  Could not read {file_path} for Key 12 check: {e}")
                 continue
         return (len(violations) == 0, violations)
 
-    def check_no_tabs(self) -> Tuple[bool, List[str]]:
+    def check_no_tabs(self) -> tuple[bool, list[str]]:
         """
         Checks for the presence of tab characters for indentation.
         Reports file paths and line numbers.
@@ -184,16 +183,16 @@ class CodeJanitor:
         violations = []
         for file_path in self.agent.ctx.python_files:
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(file_path, encoding="utf-8") as f:
                     for i, line in enumerate(f, 1):
                         if "\t" in line:
                             violations.append(f"{file_path}:{i}")
-            except (IOError, OSError, UnicodeDecodeError) as e:
+            except (OSError, UnicodeDecodeError) as e:
                 print(f"      [!]  Could not read {file_path} for Key 13 check: {e}")
                 continue
         return (len(violations) == 0, violations)
 
-    def check_no_long_lines(self) -> Tuple[bool, List[str]]:
+    def check_no_long_lines(self) -> tuple[bool, list[str]]:
         """
         Checks for lines exceeding the maximum allowed length.
         The maximum line length is configurable via the 'MAX_LINE_LENGTH' environment variable (default: 100).
@@ -203,17 +202,17 @@ class CodeJanitor:
         max_line_length = int(os.getenv('MAX_LINE_LENGTH', '100'))
         for file_path in self.agent.ctx.python_files:
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(file_path, encoding="utf-8") as f:
                     for i, line in enumerate(f, 1):
                         # Check length excluding the newline character
                         if len(line.rstrip('\n')) > max_line_length:
                             violations.append(f"{file_path}:{i}")
-            except (IOError, OSError, UnicodeDecodeError) as e:
+            except (OSError, UnicodeDecodeError) as e:
                 print(f"      [!]  Could not read {file_path} for Key 10 check: {e}")
                 continue
         return (len(violations) == 0, violations)
 
-    def check_no_magic_numbers(self) -> Tuple[bool, List[str]]:
+    def check_no_magic_numbers(self) -> tuple[bool, list[str]]:
         """
         Checks for 'magic numbers' (numeric literals without meaningful names).
         Excludes common small integers (0, 1, -1, 2).
@@ -223,7 +222,7 @@ class CodeJanitor:
         ALLOWED_MAGIC_NUMBERS = {0, 1, -1, 2}  # Constants that are generally acceptable
         for fp in self.agent.ctx.python_files:
             try:
-                with open(fp, "r", encoding="utf-8") as f:
+                with open(fp, encoding="utf-8") as f:
                     tree = ast.parse(f.read(), filename=fp)
                 for node in ast.walk(tree):
                     # Skip if it's part of an assignment to an uppercase variable (assumed constant)
@@ -232,11 +231,11 @@ class CodeJanitor:
                             continue  # This assignment defines a constant, so its value is not 'magic'
 
                     # Check for numeric constants
-                    if isinstance(node, ast.Constant) and isinstance(node.value, (int, float)):
+                    if isinstance(node, ast.Constant) and isinstance(node.value, int | float):
                         # Check if the constant is not in the allowed list
                         if node.value not in ALLOWED_MAGIC_NUMBERS:
                             violations.append(f"{fp}:{node.lineno}")
-            except (IOError, OSError, UnicodeDecodeError) as e:
+            except (OSError, UnicodeDecodeError) as e:
                 print(f"      [!]  Could not read {fp} for Key 15 check: {e}")
                 continue
             except SyntaxError as e:
@@ -244,7 +243,7 @@ class CodeJanitor:
                 continue
         return len(violations) == 0, violations
 
-    def check_no_deep_nesting(self) -> Tuple[bool, List[str]]:
+    def check_no_deep_nesting(self) -> tuple[bool, list[str]]:
         """
         Checks for deeply nested code blocks (e.g., if, for, while, try, with, function, class statements).
         The maximum nesting depth is configurable via 'MAX_NESTING_DEPTH' environment variable (default: 4).
@@ -264,8 +263,7 @@ class CodeJanitor:
             def visit(self, node):
 
                 # Nodes that increase nesting depth
-                is_nesting_node = isinstance(node, (ast.If, ast.For, ast.While, ast.Try, ast.With,
-                                                    ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
+                is_nesting_node = isinstance(node, ast.If | ast.For | ast.While | ast.Try | ast.With | ast.FunctionDef | ast.AsyncFunctionDef | ast.ClassDef)
                 if is_nesting_node:
                     self.depth += 1
                     if self.depth > self.max_depth:
@@ -276,12 +274,12 @@ class CodeJanitor:
 
         for fp in self.agent.ctx.python_files:
             try:
-                with open(fp, "r", encoding="utf-8") as f:
+                with open(fp, encoding="utf-8") as f:
                     tree = ast.parse(f.read(), filename=fp)
                 visitor = NestingVisitor(fp, max_depth)
                 visitor.visit(tree)
                 violations.extend(visitor.violations)
-            except (IOError, OSError, UnicodeDecodeError) as e:
+            except (OSError, UnicodeDecodeError) as e:
                 print(f"      [!]  Could not read {fp} for Key 16 check: {e}")
                 continue
             except SyntaxError as e:
@@ -312,7 +310,7 @@ class CodeJanitor:
             print(f"      [X] An unexpected error occurred while fixing trailing whitespace: {e}")
 # GRAVITY FIXED (Upward Leak): from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 _mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_mixin')
-MCPHardenedMixin = getattr(_mod, 'MCPHardenedMixin')
+MCPHardenedMixin = _mod.MCPHardenedMixin
 
 # NOT_AN_AGENT — legacy L1 class, true agent is DependencySentinelAgent in L2 — excluded from discovery
 class DependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
@@ -409,7 +407,7 @@ class DependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMix
         self.agent.ctx.signal_deps_valid()
         print(f"[<<<] {self.agent.name} FINISHED.")
 
-    def _parse_file_for_check(self, fp: str, key: int) -> Optional[ast.AST]:
+    def _parse_file_for_check(self, fp: str, key: int) -> ast.AST | None:
         """Parse file and return AST, handling errors gracefully.
 
         Args:
@@ -420,9 +418,9 @@ class DependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMix
             Parsed AST tree or None on error.
         """
         try:
-            with open(fp, "r", encoding="utf-8") as f:
+            with open(fp, encoding="utf-8") as f:
                 return ast.parse(f.read(), filename=fp)
-        except (IOError, OSError, UnicodeDecodeError) as e:
+        except (OSError, UnicodeDecodeError) as e:
             print(f"      [!]  Could not read {fp} for Key {key} check: {e}")
             return None
         except SyntaxError as e:
@@ -431,7 +429,7 @@ class DependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMix
 
     def _check_import_pattern(
         self, key: int, predicate: callable
-    ) -> Tuple[bool, List[str]]:
+    ) -> tuple[bool, list[str]]:
         """Generic import pattern checker.
 
         Args:
@@ -451,17 +449,17 @@ class DependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMix
                     violations.append(f"{fp}:{node.lineno}")
         return len(violations) == 0, violations
 
-    def check_no_star_imports(self) -> Tuple[bool, List[str]]:
+    def check_no_star_imports(self) -> tuple[bool, list[str]]:
         """Checks for 'from module import *' (star imports)."""
         return self._check_import_pattern(
             7, lambda node: any(alias.name == "*" for alias in node.names)
         )
 
-    def check_no_relative_imports(self) -> Tuple[bool, List[str]]:
+    def check_no_relative_imports(self) -> tuple[bool, list[str]]:
         """Checks for relative imports (level > 0)."""
         return self._check_import_pattern(8, lambda node: node.level > 0)
 
-    def check_no_unused_imports(self) -> Tuple[bool, List[str]]:
+    def check_no_unused_imports(self) -> tuple[bool, list[str]]:
         """
         Checks for unused imports.
         Note: This AST-based check is a basic heuristic and may not be as robust
@@ -472,7 +470,7 @@ class DependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMix
         violations = []
         for fp in self.agent.ctx.python_files:
             try:
-                with open(fp, "r", encoding="utf-8") as f:
+                with open(fp, encoding="utf-8") as f:
                     content = f.read()
                 tree = ast.parse(content, filename=fp)
 
@@ -487,7 +485,6 @@ class DependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMix
                         # Skip star imports as their "imported names" are ambiguous
                         if any(alias.name == "*" for alias in node.names):
                             continue
-                        module_name = node.module if node.module else "" # Handle 'from agentic_core. import x' where module is None
                         for alias in node.names:
                             name = alias.asname if alias.asname else alias.name
                             imported_names_with_lines[name] = node.lineno
@@ -495,7 +492,7 @@ class DependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMix
                 # Collect all names used in the code
                 used_names = set()
                 for node in ast.walk(tree):
-                    if isinstance(node, ast.Name) and isinstance(node.ctx, (ast.Load, ast.Store, ast.Del)):
+                    if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load | ast.Store | ast.Del):
                         used_names.add(node.id)
                     # Also consider attribute access for imported modules (e.g., 'os.path')
                     # This is still a heuristic; a full symbol table is needed for accuracy.
@@ -505,10 +502,10 @@ class DependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMix
                 # Find imported names that were not used
                 unused_imports = set(imported_names_with_lines.keys()) - used_names
                 if unused_imports:
-                    for unused_name in sorted(list(unused_imports)):
+                    for unused_name in sorted(unused_imports):
                         lineno = imported_names_with_lines.get(unused_name, "unknown_line")
                         violations.append(f"{fp}:{lineno}: {unused_name}")
-            except (IOError, OSError, UnicodeDecodeError) as e:
+            except (OSError, UnicodeDecodeError) as e:
                 print(f"      [!]  Could not read {fp} for Key 9 check: {e}")
                 continue
             except SyntaxError as e:
@@ -516,7 +513,7 @@ class DependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMix
                 continue
         return len(violations) == 0, violations
 
-    def check_no_duplicate_imports(self) -> Tuple[bool, List[str]]:
+    def check_no_duplicate_imports(self) -> tuple[bool, list[str]]:
         """
         Checks for duplicate import statements within a single file.
         This check identifies if the exact same module or name is imported more than once.
@@ -525,7 +522,7 @@ class DependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMix
         violations = []
         for fp in self.agent.ctx.python_files:
             try:
-                with open(fp, "r", encoding="utf-8") as f:
+                with open(fp, encoding="utf-8") as f:
                     tree = ast.parse(f.read(), filename=fp)
 
                 # Store (module_name, imported_name) tuples to detect duplicates
@@ -556,7 +553,7 @@ class DependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMix
                                 current_file_violations.append(f"{fp}:{node.lineno}: from {module_name} import {imported_name}")
                             seen_imports.add(import_tuple)
                 violations.extend(current_file_violations)
-            except (IOError, OSError, UnicodeDecodeError) as e:
+            except (OSError, UnicodeDecodeError) as e:
                 print(f"      [!]  Could not read {fp} for Key 14 check: {e}")
                 continue
             except SyntaxError as e:
@@ -564,7 +561,7 @@ class DependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMix
                 continue
         return len(violations) == 0, violations
 
-    def check_no_circular_imports(self) -> Tuple[bool, List[str]]:
+    def check_no_circular_imports(self) -> tuple[bool, list[str]]:
         """
         Checks for circular import dependencies between modules.
         Note: This is a complex check requiring graph analysis of the entire codebase.
@@ -577,7 +574,7 @@ class DependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMix
         return True, ["Key 44 (Circular Imports) check is not implemented."]
 
 @timeout(300)
-def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
     """L1 cognition - operational only."""
     # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
     super().heal_repository()

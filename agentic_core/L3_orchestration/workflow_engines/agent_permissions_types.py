@@ -5,21 +5,19 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """Types and models for agent_permissions."""
 import logging
 from dataclasses import dataclass, field
-from enum import Enum, auto
-from typing import Any, Dict, List, Optional, Protocol
+from enum import Enum
+from typing import Any
+
 try:
     from agentic_core.L1_cognition.identity.spiffe_manager_types import AgentIdentity
 except ImportError:
     AgentIdentity = type('AgentIdentity', (), {})
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -42,12 +40,12 @@ class PermissionAction(Enum):
 @dataclass
 class Permission:
     """Individual Permission."""
-    scope: "PermissionScope"
-    action: "PermissionAction"
+    scope: PermissionScope
+    action: PermissionAction
     resource: str
-    conditions: Dict[str, Any] = field(default_factory=dict)
+    conditions: dict[str, Any] = field(default_factory=dict)
 
-    def matches(self, scope: "PermissionScope", action: "PermissionAction", resource: str) -> bool:
+    def matches(self, scope: PermissionScope, action: PermissionAction, resource: str) -> bool:
         """Check if Permission matches request.
 
         Args:
@@ -63,7 +61,7 @@ class Permission:
         resource_match: Any = self.resource == resource or self.resource == '*'
         return scope_match and action_match and resource_match
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {'scope': self.scope.value, 'action': self.action.value, 'resource': self.resource, 'conditions': self.conditions}
 
@@ -72,10 +70,10 @@ class PermissionCheck:
     """Result of Permission check."""
     allowed: bool
     identity: AgentIdentity
-    Permission: Optional["Permission"] = None
+    Permission: Permission | None = None
     reason: str = ''
-    safety_decision: Optional[Any] = None
+    safety_decision: Any | None = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {'allowed': self.allowed, 'identity': self.identity.to_dict(), 'Permission': self.Permission.to_dict() if self.Permission else None, 'reason': self.reason, 'safety_decision': self.safety_decision.to_dict() if self.safety_decision else None}

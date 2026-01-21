@@ -5,40 +5,45 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 """
 Canon Validator Intelligent Orchestrator
 
 Orchestrates all validation agents in dependency order.
 """
 import asyncio
-import re
-from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.canon_agents_core import GenerativeGuard, HealerAgent, SystemArchitect
-from agentic_core.L1_cognition.thought_engine.PatternEnforcerAgent import PatternEnforcerAgent
-from agentic_core.canon_agents_pattern import SemanticMapperAgent, UIValidationAgent
-from archives.void_violations.DocumentationAgent import DocumentationAgent
-from agentic_core.canon_agents_quality import NamingAgent, SafetyInspectorAgent
-from archives.void_violations.BudgetAgent import BudgetAgent
-from agentic_core.L1_cognition.thought_engine.TypeMechanicAgent import TypeMechanicAgent
-from agentic_core.canon_agents_syntax import CodeJanitor, DependencySentinelAgent
 
 # GRAVITY FIXED (Intra-Core): Dynamic import for L2 dependency
 import importlib
-_struct_mod = importlib.import_module('agentic_core.L2_execution.ToolRegistry.StructuralEngineerAgent')
-StructuralEngineerAgent = getattr(_struct_mod, 'StructuralEngineerAgent')
-from agentic_core.runtime.shared.canon_validation_context import ValidationContext
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from typing import Any
+
+from agentic_core.canon_agents_core import GenerativeGuard, HealerAgent, SystemArchitect
+from agentic_core.canon_agents_pattern import SemanticMapperAgent, UIValidationAgent
+from agentic_core.canon_agents_quality import NamingAgent, SafetyInspectorAgent
+from agentic_core.canon_agents_syntax import CodeJanitor, DependencySentinelAgent
+from agentic_core.L1_cognition.thought_engine.PatternEnforcerAgent import PatternEnforcerAgent
+from agentic_core.L1_cognition.thought_engine.TypeMechanicAgent import TypeMechanicAgent
+
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from archives.void_violations.BudgetAgent import BudgetAgent
+from archives.void_violations.DocumentationAgent import DocumentationAgent
+
+_struct_mod = importlib.import_module('agentic_core.L2_execution.ToolRegistry.StructuralEngineerAgent')
+StructuralEngineerAgent = _struct_mod.StructuralEngineerAgent
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.runtime.shared.canon_validation_context import ValidationContext
+
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+
 
 @dataclass
 class IntelligentOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Orchestrates all validation agents in dependency order."""
 
-    def __init__(self, target: Optional[str]=None) -> None:
+    def __init__(self, target: str | None=None) -> None:
         """
         Initializes the IntelligentOrchestratorAgent with a validation context and a swarm of agents.
 
@@ -72,7 +77,7 @@ class IntelligentOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
 
     def _print_execution_summary(self, executed: int, passed: int, failed: int) -> None:
         """Print agent execution summary."""
-        print(f'\n[MISSION] Agent Execution Summary:')
+        print('\n[MISSION] Agent Execution Summary:')
         print(f'   • Total Agents: {len(self.swarm)}')
         print(f'   • Executed: {executed}')
         print(f'   • Passed: {passed} ✅')
@@ -114,7 +119,7 @@ class IntelligentOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
         print('🏁 MISSION REPORT')
         print('=' * 60)
         total_checks: Any = len(self.ctx.results)
-        passed_checks: Any = sum((1 for r in self.ctx.results.values() if r['passed']))
+        passed_checks: Any = sum(1 for r in self.ctx.results.values() if r['passed'])
         failed_checks: Any = total_checks - passed_checks
         print(f'Total Checks: {total_checks}')
         print(f'Passed:       {passed_checks}')
@@ -138,7 +143,7 @@ class IntelligentOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
             print('   Run again with healing enabled for further convergence.')
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L1 cognition agent - operational only."""
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository()

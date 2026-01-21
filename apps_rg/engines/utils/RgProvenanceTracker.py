@@ -8,7 +8,6 @@ import hashlib
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Dict, List, Optional
 
 
 class ProvenanceType(Enum):
@@ -38,7 +37,7 @@ class ProvenanceSource:
     source_id: str
     source_text: str
     confidence: float = 1.0
-    timestamp: Optional[datetime] = None
+    timestamp: datetime | None = None
 
 
 @dataclass
@@ -48,8 +47,8 @@ class BulletProvenance:
     bullet_id: str
     bullet_text: str
     category: BulletCategory
-    sources: List[ProvenanceSource] = field(default_factory=list)
-    transformation_log: List[str] = field(default_factory=list)
+    sources: list[ProvenanceSource] = field(default_factory=list)
+    transformation_log: list[str] = field(default_factory=list)
     confidence_score: float = 1.0
     created_at: datetime = field(default_factory=datetime.now)
 
@@ -66,7 +65,7 @@ class ProvenanceMap:
     achievement_count: int = 0
 
 
-def parse_provenance_pattern(pattern: str) -> Dict[str, int]:
+def parse_provenance_pattern(pattern: str) -> dict[str, int]:
     """
     Parse a provenance pattern string.
 
@@ -90,7 +89,7 @@ def parse_provenance_pattern(pattern: str) -> Dict[str, int]:
 
 
 # Default provenance maps by company
-DEFAULT_PROVENANCE_MAPS: Dict[str, str] = {
+DEFAULT_PROVENANCE_MAPS: dict[str, str] = {
     "Unify Consulting": "4V-3T-0S",
     "IBM": "4V-2T-0S",
     "default": "10V-0A-0S",
@@ -102,15 +101,15 @@ class ProvenanceTracker:
 
     def __init__(self) -> None:
         """Initialize the provenance tracker."""
-        self._bullets: Dict[str, BulletProvenance] = {}
+        self._bullets: dict[str, BulletProvenance] = {}
         self._provenance_maps = DEFAULT_PROVENANCE_MAPS.copy()
 
     def register_bullet(
         self,
         bullet_text: str,
         category: BulletCategory,
-        sources: Optional[List[ProvenanceSource]] = None,
-        bullet_id: Optional[str] = None,
+        sources: list[ProvenanceSource] | None = None,
+        bullet_id: str | None = None,
     ) -> str:
         """
         Register a bullet point with provenance.
@@ -176,17 +175,17 @@ class ProvenanceTracker:
         )
         return True
 
-    def get_bullet(self, bullet_id: str) -> Optional[BulletProvenance]:
+    def get_bullet(self, bullet_id: str) -> BulletProvenance | None:
         """Get provenance for a bullet."""
         return self._bullets.get(bullet_id)
 
-    def get_all_bullets(self) -> List[BulletProvenance]:
+    def get_all_bullets(self) -> list[BulletProvenance]:
         """Get all tracked bullets."""
         return list(self._bullets.values())
 
     def get_bullets_by_category(
         self, category: BulletCategory
-    ) -> List[BulletProvenance]:
+    ) -> list[BulletProvenance]:
         """Get bullets by category."""
         return [b for b in self._bullets.values() if b.category == category]
 
@@ -203,7 +202,7 @@ class ProvenanceTracker:
     def validate_provenance_requirements(
         self,
         company: str,
-    ) -> Dict[str, object]:
+    ) -> dict[str, object]:
         """
         Validate that bullets meet provenance requirements.
 
@@ -242,17 +241,17 @@ class ProvenanceTracker:
 
     def get_low_confidence_bullets(
         self, threshold: float = 0.7
-    ) -> List[BulletProvenance]:
+    ) -> list[BulletProvenance]:
         """Get bullets with confidence below threshold."""
         return [
             b for b in self._bullets.values() if b.confidence_score < threshold
         ]
 
-    def get_ungrounded_bullets(self) -> List[BulletProvenance]:
+    def get_ungrounded_bullets(self) -> list[BulletProvenance]:
         """Get bullets without any provenance sources."""
         return [b for b in self._bullets.values() if not b.sources]
 
-    def export_provenance_report(self) -> Dict[str, object]:
+    def export_provenance_report(self) -> dict[str, object]:
         """Export a complete provenance report."""
         return {
             "total_bullets": len(self._bullets),
@@ -294,7 +293,7 @@ class BulletSelector:
     def score_bullet(
         self,
         bullet: BulletProvenance,
-        jd_keywords: List[str],
+        jd_keywords: list[str],
     ) -> float:
         """
         Score a bullet based on JD fit.
@@ -308,7 +307,6 @@ class BulletSelector:
         jd_score = overlap * 0.5
 
         # Metric impact (check for numbers/percentages)
-        import scripts.validation.check_canonical_structure
         metrics = re.findall(r"\d+%|\$\d+|\d+x|\d+\+", bullet.bullet_text)
         metric_score = min(len(metrics) * 0.1, 0.3)
 
@@ -320,8 +318,8 @@ class BulletSelector:
     def select_bullets(
         self,
         company: str,
-        jd_keywords: List[str],
-    ) -> List[BulletProvenance]:
+        jd_keywords: list[str],
+    ) -> list[BulletProvenance]:
         """
         Select bullets for a company based on requirements and JD fit.
 
@@ -336,7 +334,7 @@ class BulletSelector:
         requirements = parse_provenance_pattern(pattern)
 
         # Score all bullets
-        scored_bullets: List[tuple[BulletProvenance, float]] = []
+        scored_bullets: list[tuple[BulletProvenance, float]] = []
         for bullet in self.tracker.get_all_bullets():
             score = self.score_bullet(bullet, jd_keywords)
             scored_bullets.append((bullet, score))
@@ -345,7 +343,7 @@ class BulletSelector:
         scored_bullets.sort(key=lambda x: x[1], reverse=True)
 
         # Select bullets to meet requirements
-        selected: List[BulletProvenance] = []
+        selected: list[BulletProvenance] = []
         category_counts = {"V": 0, "T": 0, "S": 0, "A": 0}
 
         for bullet, score in scored_bullets:
@@ -363,7 +361,7 @@ def create_provenance_tracker() -> ProvenanceTracker:
 
 
 def create_bullet_selector(
-    tracker: Optional[ProvenanceTracker] = None,
+    tracker: ProvenanceTracker | None = None,
 ) -> BulletSelector:
     """Create a bullet selector instance."""
     if tracker is None:
@@ -374,7 +372,7 @@ def create_bullet_selector(
 def create_provenance_source(
     SourceType: ProvenanceType,
     source_text: str,
-    source_id: Optional[str] = None,
+    source_id: str | None = None,
     confidence: float = 1.0,
 ) -> ProvenanceSource:
     """Create a provenance source instance."""

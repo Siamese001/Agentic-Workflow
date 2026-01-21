@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Consolidated Security Utilities for Agentic Workflow
 Implements P3 (Prompt Firewall) and P4 (Fact Checker) on L1
@@ -11,11 +12,11 @@ across the system, providing unified access to:
 import json
 import logging
 import re
-from dataclasses import dataclass, field
-from enum import Enum, auto
+from dataclasses import dataclass
+from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol, Set
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 
 class SecurityStatus(Enum):
@@ -30,7 +31,7 @@ class SecurityResult:
     """Result from a security check."""
     status: SecurityStatus
     reason: str
-    details: Dict[str, Any] = None
+    details: dict[str, Any] = None
     confidence: float = 0.0
 
 class PromptFirewall:
@@ -58,7 +59,7 @@ class PromptFirewall:
                 Logger.warning(f'P3_INJECTION_DETECTED: {pattern.pattern}')
                 return SecurityResult(status=SecurityStatus.FAIL, reason=f'Injection pattern detected: {pattern.pattern}', details={'pattern': pattern.pattern, 'confidence': 0.95})
         words: Any = input_text.lower().split()
-        suspicious_count: Any = sum((1 for word in words if word in self.SUSPICIOUS_KEYWORDS))
+        suspicious_count: Any = sum(1 for word in words if word in self.SUSPICIOUS_KEYWORDS)
         suspicious_ratio: Any = suspicious_count / len(words) if words else 0
         if suspicious_ratio > 0.1:
             Logger.warning(f'P3_SUSPICIOUS_KEYWORDS: {suspicious_ratio:.2%}')
@@ -85,7 +86,7 @@ class PromptFirewall:
 class FactChecker:
     """P4: Fact Checker for truth anchor validation."""
 
-    def __init__(self, golden_record_path: Optional[str]=None):
+    def __init__(self, golden_record_path: str | None=None):
         """
         Initialize Fact Checker with golden record data.
 
@@ -95,12 +96,12 @@ class FactChecker:
         self.golden_record_path = golden_record_path or 'config/golden_record.json'
         self.truth_anchors = self._load_golden_record()
 
-    def _load_golden_record(self) -> Dict[str, Any]:
+    def _load_golden_record(self) -> dict[str, Any]:
         """Load truth anchors from golden record file."""
         try:
             path = Path(self.golden_record_path)
             if path.exists():
-                with open(path, 'r', encoding='utf-8') as f:
+                with open(path, encoding='utf-8') as f:
                     return json.load(f)
             else:
                 Logger.warning(f'Golden record not found at {self.golden_record_path}')
@@ -109,7 +110,7 @@ class FactChecker:
             Logger.error(f'Failed to load golden record: {e}')
             return self._create_default_record()
 
-    def _create_default_record(self) -> Dict[str, Any]:
+    def _create_default_record(self) -> dict[str, Any]:
         """Create default truth anchors if file doesn't exist."""
         return {'skills': {'python': {'level': 'expert', 'verified': True}, 'javascript': {'level': 'advanced', 'verified': True}, 'react': {'level': 'intermediate', 'verified': True}, 'docker': {'level': 'intermediate', 'verified': True}, 'aws': {'level': 'beginner', 'verified': True}}, 'experience': {'years_total': 5, 'companies': ['TechCorp', 'StartupXYZ'], 'positions': ['Senior Developer', 'Lead Engineer']}, 'education': {'degree': 'Bachelor of Science', 'field': 'Computer Science', 'university': 'State University'}}
 
@@ -140,7 +141,7 @@ class FactChecker:
         Logger.info('P4_VALIDATION_PASS: All skills verified')
         return SecurityResult(status=SecurityStatus.PASS, reason='All skills validated against truth anchors', details={'verified_skills': mentioned_skills})
 
-    def _extract_skills(self, text: str) -> Set[str]:
+    def _extract_skills(self, text: str) -> set[str]:
         """Extract skill keywords from text."""
         skill_keywords = {'python', 'java', 'javascript', 'typescript', 'react', 'angular', 'vue', 'node', 'django', 'flask', 'docker', 'kubernetes', 'aws', 'azure', 'gcp', 'sql', 'nosql', 'mongodb', 'postgresql', 'git', 'ci/cd', 'devops', 'microservices', 'rest', 'graphql', 'machine learning', 'ai', 'data science', 'analytics'}
         text_lower = text.lower()
@@ -163,7 +164,7 @@ class FactChecker:
         years_pattern: Any = '(\\d+)\\s*(?:years?|yrs?)'
         matches: Any = re.findall(years_pattern, draft.lower())
         if matches:
-            max_years: Any = max((int(year) for year in matches))
+            max_years: Any = max(int(year) for year in matches)
             anchor_years: Any = self.truth_anchors.get('experience', {}).get('years_total', 0)
             if max_years > anchor_years + 2:
                 return SecurityResult(status=SecurityStatus.WARNING, reason=f'Experience Claim ({max_years} years) exceeds anchor ({anchor_years} years)')
@@ -178,7 +179,7 @@ def get_prompt_firewall() -> PromptFirewall:
         _prompt_firewall = PromptFirewall()
     return _prompt_firewall
 
-def get_fact_checker(golden_record_path: Optional[str]=None) -> FactChecker:
+def get_fact_checker(golden_record_path: str | None=None) -> FactChecker:
     """Get singleton instance of FactChecker."""
     global _fact_checker
     if _fact_checker is None or golden_record_path:

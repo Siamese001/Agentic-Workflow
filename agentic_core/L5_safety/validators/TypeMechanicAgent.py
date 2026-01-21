@@ -5,15 +5,17 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from dataclasses import dataclass
+
 """
 TypeMechanicAgent - Extracted from SubAtomicAgent.py
 Part of the SubAtomic agent family for code quality enforcement.
 """
-from typing import Any, Dict, List, Set, Tuple
 import ast
+from typing import Any
+
 from agentic_core.L3_orchestration.fission_logic.SubAtomicAgent import SubAtomicAgent
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+
 
 # Sovereign Agent for type enforcement and precision engineering
 @dataclass
@@ -30,7 +32,7 @@ class TypeMechanicAgent(SubatomicTestingMixin, SubAtomicAgent):
     """
 
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
         """
         Autonomous healing method.
 
@@ -65,19 +67,19 @@ class TypeMechanicAgent(SubatomicTestingMixin, SubAtomicAgent):
         passed, details = self.check_no_unused_variables()
         self.ctx.report(self.name, 24, passed, details)
 
-    def _read_and_parse_file(self, fp: str) -> Tuple[ast.AST | None, str | None]:
+    def _read_and_parse_file(self, fp: str) -> tuple[ast.AST | None, str | None]:
         """
         Reads a file and parses it into an AST, handling errors.
         Returns (tree, error_message).
         """
         try: # Depth 1
-            with open(fp, "r", encoding="utf-8") as f: # Depth 2
+            with open(fp, encoding="utf-8") as f: # Depth 2
                 tree = ast.parse(f.read(), filename=fp)
                 return tree, None
-        except (IOError, SyntaxError) as e: # Depth 2 (ExceptHandler)
+        except (OSError, SyntaxError) as e: # Depth 2 (ExceptHandler)
             return None, f"Error parsing {fp}: {e}"
 
-    def _get_missing_type_hint_violations_for_tree(self, fp: str, tree: ast.AST) -> List[str]:
+    def _get_missing_type_hint_violations_for_tree(self, fp: str, tree: ast.AST) -> list[str]:
         """
         Collects formatted Violation strings for Missing type hints in a given AST tree.
         """
@@ -91,7 +93,7 @@ class TypeMechanicAgent(SubatomicTestingMixin, SubAtomicAgent):
                 )
         return file_violations
 
-    def check_no_missing_type_hints(self) -> Tuple[bool, List[str]]:
+    def check_no_missing_type_hints(self) -> tuple[bool, list[str]]:
         """
         Checks for functions with Missing type hints (return types).
         Excludes __init__, __str__, __repr__ methods.
@@ -108,7 +110,7 @@ class TypeMechanicAgent(SubatomicTestingMixin, SubAtomicAgent):
                 violations.extend(self._get_missing_type_hint_violations_for_tree(fp, tree)) # Depth 4
         return len(violations) == 0, violations
 
-    def _check_function_for_unreachable_code(self, fp: str, func_node: ast.FunctionDef) -> List[str]:
+    def _check_function_for_unreachable_code(self, fp: str, func_node: ast.FunctionDef) -> list[str]:
         """
         Checks a single function node for unreachable code after a return statement.
         """
@@ -122,7 +124,7 @@ class TypeMechanicAgent(SubatomicTestingMixin, SubAtomicAgent):
                 break  # Only report once per function # Depth 4
         return func_violations
 
-    def _get_unreachable_code_violations_for_tree(self, fp: str, tree: ast.AST) -> List[str]:
+    def _get_unreachable_code_violations_for_tree(self, fp: str, tree: ast.AST) -> list[str]:
         """
         Processes an AST tree to find unreachable code violations within functions.
         """
@@ -132,7 +134,7 @@ class TypeMechanicAgent(SubatomicTestingMixin, SubAtomicAgent):
                 file_violations.extend(self._check_function_for_unreachable_code(fp, node)) # Depth 4
         return file_violations
 
-    def check_no_unreachable_code(self) -> Tuple[bool, List[str]]:
+    def check_no_unreachable_code(self) -> tuple[bool, list[str]]:
         """
         Checks for unreachable code, specifically statements after a 'return' statement
         within a function body.
@@ -148,12 +150,12 @@ class TypeMechanicAgent(SubatomicTestingMixin, SubAtomicAgent):
                 violations.extend(self._get_unreachable_code_violations_for_tree(fp, tree)) # Depth 4
         return len(violations) == 0, violations
 
-    def _collect_variables(self, func_node: ast.FunctionDef) -> Tuple[Set[str], Set[str]]:
+    def _collect_variables(self, func_node: ast.FunctionDef) -> tuple[set[str], set[str]]:
         """
         Collects assigned and used variable names within a given function AST node.
         """
-        assigned: Set[str] = set()
-        used: Set[str] = set()
+        assigned: set[str] = set()
+        used: set[str] = set()
 
         for child in ast.walk(func_node):
             if isinstance(child, ast.Assign):
@@ -167,7 +169,7 @@ class TypeMechanicAgent(SubatomicTestingMixin, SubAtomicAgent):
                 used.add(child.id)
         return assigned, used
 
-    def _get_function_violations_for_file(self, fp: str, tree: ast.AST) -> List[str]:
+    def _get_function_violations_for_file(self, fp: str, tree: ast.AST) -> list[str]:
         """
         Processes an AST tree to find unused variables within functions.
         """
@@ -185,20 +187,20 @@ class TypeMechanicAgent(SubatomicTestingMixin, SubAtomicAgent):
                     )
         return file_violations
 
-    def _process_file_for_unused_variables(self, fp: str) -> List[str]:
+    def _process_file_for_unused_variables(self, fp: str) -> list[str]:
         """
         Opens and parses a single file, then delegates to find unused variables.
         Handles file I/O and parsing errors.
         """
         try:
-            with open(fp, "r", encoding="utf-8") as f:
+            with open(fp, encoding="utf-8") as f:
                 tree = ast.parse(f.read(), filename=fp)
             return self._get_function_violations_for_file(fp, tree)
-        except (IOError, SyntaxError) as e:
+        except (OSError, SyntaxError) as e:
             self.ctx.log_error(f"Error parsing {fp} for unused variables: {e}")
             return []
 
-    def check_no_unused_variables(self) -> Tuple[bool, List[str]]:
+    def check_no_unused_variables(self) -> tuple[bool, list[str]]:
         """
         Checks for variables that are assigned but never used within a function.
         Refactored to reduce nesting depth.

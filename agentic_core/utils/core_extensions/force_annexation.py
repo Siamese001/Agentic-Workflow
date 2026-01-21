@@ -1,19 +1,16 @@
 from __future__ import annotations
+
 import logging
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
-import os
 import shutil
 from datetime import datetime
 from pathlib import Path
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from typing import Any
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 root: Any = Path('C:/Git/Agentic-Workflow')
 core: Any = ROOT / 'agentic_core'

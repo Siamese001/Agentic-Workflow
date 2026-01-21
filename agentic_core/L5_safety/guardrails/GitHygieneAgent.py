@@ -17,18 +17,18 @@ Typical usage:
 
 from __future__ import annotations
 
-import subprocess
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.L5_safety.validators.decorators import standard_heal
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.security import safe_git_execute
+
 
 @dataclass
 class GitHygieneAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
@@ -62,7 +62,7 @@ class GitHygieneAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         self.stale_days: int = 90
         self.large_file_mb: int = 10
 
-    def _run_git(self, cmd: List[str], **kwargs: Any) -> str:
+    def _run_git(self, cmd: list[str], **kwargs: Any) -> str:
         """Run a git command and return stdout.
 
         Args:
@@ -84,7 +84,7 @@ class GitHygieneAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                 self.ctx.report("GitHygieneAgent", 0, False, "git not installed")
             return ""
 
-    def _get_stale_branches(self) -> List[Dict[str, Any]]:
+    def _get_stale_branches(self) -> list[dict[str, Any]]:
         """Find branches with no commits in the last N days.
 
         Returns:
@@ -121,7 +121,7 @@ class GitHygieneAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
         return stale
 
-    def _get_large_files(self) -> List[Dict]:
+    def _get_large_files(self) -> list[dict]:
         """Find large files in Git history (>10MB)."""
         # Note: This is a simplified implementation
         # Full implementation would use git rev-list and git cat-file
@@ -130,7 +130,7 @@ class GitHygieneAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         # This requires more complex shell commands or git library
         return large
 
-    def _get_repo_status(self) -> Dict:
+    def _get_repo_status(self) -> dict:
         """Check for uncommitted and unpushed changes."""
         status = {"uncommitted": False, "unpushed": False}
 
@@ -144,7 +144,7 @@ class GitHygieneAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
         return status
 
-    async def execute(self) -> Dict:
+    async def execute(self) -> dict:
         """Audit repository health and optionally clean up."""
         print("   [GIT HYGIENE] Auditing repository health...")
 
@@ -198,8 +198,8 @@ class GitHygieneAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[Set[str]] = None
-    ) -> Dict[str, int]:
+        _call_path: set[str] | None = None
+    ) -> dict[str, int]:
         """Execute L5 safety healing operations.
 
         This is an operational agent - no repository healing required.

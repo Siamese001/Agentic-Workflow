@@ -5,6 +5,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 """
 Adaptive Learning Engine - L1 Cognition Enhancement
 
@@ -17,8 +18,9 @@ import logging
 import os
 from collections import defaultdict
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Tuple
+from datetime import datetime
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 
 @dataclass
@@ -30,9 +32,9 @@ class HealingPattern:
     success_count: int = 0
     failure_count: int = 0
     avg_rounds_to_fix: float = 0.0
-    last_used: Optional[datetime] = None
+    last_used: datetime | None = None
     confidence_score: float = 0.0
-    file_patterns: List[str] = field(default_factory=list)
+    file_patterns: list[str] = field(default_factory=list)
 
     @property
     def success_rate(self) -> float:
@@ -56,7 +58,7 @@ class ViolationPrediction:
     file_path: str
     violation_key: int
     confidence: float
-    recommended_pattern: Optional[HealingPattern]
+    recommended_pattern: HealingPattern | None
     reasoning: str
 
 class AdaptiveLearningEngine:
@@ -70,7 +72,7 @@ class AdaptiveLearningEngine:
     - Continuous learning from new healing attempts
     """
 
-    def __init__(self, pattern_storage_path: Optional[str]=None, autonomous_mode: bool=True):
+    def __init__(self, pattern_storage_path: str | None=None, autonomous_mode: bool=True):
         """Initialize the adaptive learning engine."""
         from pathlib import Path
         self.pattern_storage_path = pattern_storage_path or os.path.join(os.getcwd(), '.canon_memory', 'healing_patterns.json')
@@ -79,9 +81,9 @@ class AdaptiveLearningEngine:
         self.backup_dir.mkdir(parents=True, exist_ok=True)
         self.autonomous_mode = autonomous_mode
         self._improvement_task = None
-        self.patterns: Dict[int, List[HealingPattern]] = defaultdict(list)
-        self.violation_history: Dict[str, List[Tuple[int, bool, datetime]]] = defaultdict(list)
-        self.prediction_cache: Dict[str, List[ViolationPrediction]] = {}
+        self.patterns: dict[int, list[HealingPattern]] = defaultdict(list)
+        self.violation_history: dict[str, list[tuple[int, bool, datetime]]] = defaultdict(list)
+        self.prediction_cache: dict[str, list[ViolationPrediction]] = {}
         self._load_patterns()
         Logger.info('Adaptive Learning Engine initialized')
 
@@ -110,14 +112,14 @@ class AdaptiveLearningEngine:
             Logger.info('No existing patterns found, starting fresh')
             return
         try:
-            with open(self.pattern_storage_path, 'r', encoding='utf-8') as f:
+            with open(self.pattern_storage_path, encoding='utf-8') as f:
                 data = json.load(f)
             for key_str, patterns_data in data.get('patterns', {}).items():
                 key = int(key_str)
                 for p_data in patterns_data:
                     pattern = HealingPattern(violation_key=p_data['violation_key'], violation_signature=p_data['violation_signature'], fix_strategy=p_data['fix_strategy'], success_count=p_data['success_count'], failure_count=p_data['failure_count'], avg_rounds_to_fix=p_data['avg_rounds_to_fix'], last_used=datetime.fromisoformat(p_data['last_used']) if p_data.get('last_used') else None, confidence_score=p_data['confidence_score'], file_patterns=p_data.get('file_patterns', []))
                     self.patterns[key].append(pattern)
-            Logger.info(f'Loaded {sum((len(p) for p in self.patterns.values()))} healing patterns')
+            Logger.info(f'Loaded {sum(len(p) for p in self.patterns.values())} healing patterns')
         except Exception as e:
             Logger.error(f'Failed to load patterns: {e}')
 
@@ -183,7 +185,7 @@ class AdaptiveLearningEngine:
         keywords = self._extract_keywords(violation_details)
         return f"{file_type}:{':'.join(sorted(keywords[:5]))}"
 
-    def _extract_keywords(self, text: str) -> List[str]:
+    def _extract_keywords(self, text: str) -> list[str]:
         """Extract key terms from Violation details."""
         stopwords = {'the', 'a', 'an', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'is', 'are'}
         words = text.lower().split()
@@ -196,14 +198,14 @@ class AdaptiveLearningEngine:
             return f'{parts[-2]}/*.py'
         return '*.py'
 
-    def _find_matching_pattern(self, violation_key: int, signature: str) -> Optional[HealingPattern]:
+    def _find_matching_pattern(self, violation_key: int, signature: str) -> HealingPattern | None:
         """Find existing pattern matching the signature."""
         for pattern in self.patterns.get(violation_key, []):
             if pattern.violation_signature == signature:
                 return pattern
         return None
 
-    async def predict_violations(self, file_path: str, code: str) -> List[ViolationPrediction]:
+    async def predict_violations(self, file_path: str, code: str) -> list[ViolationPrediction]:
         """
         Predict potential violations in a file before they occur.
 
@@ -239,7 +241,7 @@ class AdaptiveLearningEngine:
         self.prediction_cache[cache_key] = predictions[:5]
         return predictions[:5]
 
-    def get_recommended_fix(self, violation_key: int, violation_details: str, file_path: str) -> Optional[str]:
+    def get_recommended_fix(self, violation_key: int, violation_details: str, file_path: str) -> str | None:
         """
         Get recommended fix based on learned patterns.
 
@@ -262,15 +264,15 @@ class AdaptiveLearningEngine:
                 return best.fix_strategy
         return None
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get learning statistics."""
-        total_patterns: Any = sum((len(p) for p in self.patterns.values()))
-        high_confidence: Any = sum((1 for patterns in self.patterns.values() for p in patterns if p.confidence_score > 0.8))
+        total_patterns: Any = sum(len(p) for p in self.patterns.values())
+        high_confidence: Any = sum(1 for patterns in self.patterns.values() for p in patterns if p.confidence_score > 0.8)
         avg_success_rate: Any = 0.0
         if total_patterns > 0:
-            avg_success_rate: Any = sum((p.success_rate for patterns in self.patterns.values() for p in patterns)) / total_patterns
-        return {'total_patterns': total_patterns, 'high_confidence_patterns': high_confidence, 'average_success_rate': avg_success_rate, 'keys_with_patterns': len(self.patterns), 'total_healing_attempts': sum((p.success_count + p.failure_count for patterns in self.patterns.values() for p in patterns))}
+            avg_success_rate: Any = sum(p.success_rate for patterns in self.patterns.values() for p in patterns) / total_patterns
+        return {'total_patterns': total_patterns, 'high_confidence_patterns': high_confidence, 'average_success_rate': avg_success_rate, 'keys_with_patterns': len(self.patterns), 'total_healing_attempts': sum(p.success_count + p.failure_count for patterns in self.patterns.values() for p in patterns)}
 
-def create_adaptive_learning_engine(storage_path: Optional[str]=None, autonomous_mode: bool=True) -> AdaptiveLearningEngine:
+def create_adaptive_learning_engine(storage_path: str | None=None, autonomous_mode: bool=True) -> AdaptiveLearningEngine:
     """Factory function to create adaptive learning engine."""
     return AdaptiveLearningEngine(pattern_storage_path=storage_path, autonomous_mode=autonomous_mode)

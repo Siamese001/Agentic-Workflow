@@ -11,10 +11,13 @@ This test opens the dashboard and verifies:
 """
 import json
 import re
-from pathlib import Path
 
 # Import SSOT for dashboard directory - NO HARDCODING
-from agentic_core.L5_safety.validators.structure_blueprint import DASHBOARD_DIR, get_validated_project_root
+from agentic_core.L5_safety.validators.structure_blueprint import (
+    DASHBOARD_DIR,
+    get_validated_project_root,
+)
+
 
 def test_dashboard_visual():
     """Test dashboard data population and structure."""
@@ -40,14 +43,14 @@ def test_dashboard_visual():
             # Verify TOTAL row
             total_row = next((r for r in data if r.get('Territory') == 'TOTAL'), None)
             if total_row:
-                print(f"   ✅ TOTAL row found:")
+                print("   ✅ TOTAL row found:")
                 print(f"      - Total Agents: {total_row['Total']}")
                 print(f"      - Heal Cap %: {total_row['Heal Cap %']}%")
                 print(f"      - Health: {total_row['Health']}%")
                 print(f"      - Test %: {total_row['Test %']}%")
 
                 if total_row['Heal Cap %'] == 100.0:
-                    print(f"   ✅ Heal Cap is 100% (CORRECT)")
+                    print("   ✅ Heal Cap is 100% (CORRECT)")
                     passed += 1
                 else:
                     print(f"   ❌ Heal Cap is {total_row['Heal Cap %']}% (expected 100%)")
@@ -94,7 +97,7 @@ def test_dashboard_visual():
                         print(f"   ⚠️  {at_zero} agents at 0% heal cap in '{sample}'")
                         passed += 1
                 else:
-                    print(f"   ❌ Sample territory missing agents or healCap")
+                    print("   ❌ Sample territory missing agents or healCap")
                     failed += 1
             else:
                 print("   ❌ No territories in realAgentData")

@@ -1,5 +1,7 @@
 from __future__ import annotations
+
 import shutil
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
@@ -7,22 +9,9 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
-from agentic_core.utils.sovereign_index import SovereignIndex
+
 root: Any = Path('C:/Git/Agentic-Workflow')
 core: Any = ROOT / AGENTIC_CORE_DIR
 obs_runtime: Any = CORE / 'observability/P1_core/runtime'
@@ -54,7 +43,7 @@ def move_runtime_files_up() -> Any:
     try:
         if OBS_RUNTIME.exists() and (not any(OBS_RUNTIME.iterdir())):
             OBS_RUNTIME.rmdir()
-            print(f'\n[✓] Removed empty directory: runtime/')
+            print('\n[✓] Removed empty directory: runtime/')
     except:
         pass
     print(f'\n[OK] MOVE COMPLETE. {moved} files moved to depth-4.')

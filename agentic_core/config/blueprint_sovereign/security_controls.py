@@ -1,18 +1,20 @@
 from __future__ import annotations
+
 """
 Security Controls package initialization.
 
 Provides core functionality and exports for the Security Controls module.
 """
 import logging
-from typing import Any, Dict, List, Optional, Protocol, Union
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 __version__: str = '1.0.0'
 __author__: str = 'Agentic Workflow'
 __description__: str = 'Core Security Controls functionality'
-__all__: List[str] = ['__version__', '__author__', '__description__', 'get_module_info', 'validate_config', 'create_instance']
+__all__: list[str] = ['__version__', '__author__', '__description__', 'get_module_info', 'validate_config', 'create_instance']
 
-def get_module_info() -> Dict[str, Union[str, List[str]]]:
+def get_module_info() -> dict[str, str | list[str]]:
     """
     Get comprehensive module information.
 
@@ -21,7 +23,7 @@ def get_module_info() -> Dict[str, Union[str, List[str]]]:
     """
     return {'name': 'Security Controls', 'version': __version__, 'author': __author__, 'description': __description__, 'exports': __all__}
 
-def validate_config(config: Dict[str, Union[str, int, bool]]) -> bool:
+def validate_config(config: dict[str, str | int | bool]) -> bool:
     """
     Validate module configuration.
 
@@ -32,9 +34,9 @@ def validate_config(config: Dict[str, Union[str, int, bool]]) -> bool:
         True if configuration is valid, False otherwise
     """
     required_keys: Any = ['enabled', 'mode']
-    return all((key in config for key in required_keys))
+    return all(key in config for key in required_keys)
 
-def create_instance(config: Optional[Dict[str, Union[str, int, bool]]]=None) -> Dict[str, Union[str, int, bool]]:
+def create_instance(config: dict[str, str | int | bool] | None=None) -> dict[str, str | int | bool]:
     """
     Create a configured module instance.
 

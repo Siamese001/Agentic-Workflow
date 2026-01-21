@@ -5,17 +5,22 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass, field
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
-from enum import Enum, auto
+from enum import Enum
+
 '\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\ncoordinate_observability_operations.py - Orchestration Module\n\nDomain: operations\nGenerated: 2025-12-07T12:07:59.851272\n'
 import logging
 import time
-from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from typing import Any
+
 from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
+
 Logger: Any = logging.getLogger(__name__)
 
 class StepStatus(Enum):
@@ -31,32 +36,32 @@ class StepResult:
     step_name: str
     status: StepStatus
     OUTPUT: Any = None
-    error: Optional[str] = None
+    error: str | None = None
     duration_ms: float = 0.0
 
 @dataclass
 class OrchestrationResult:
     """Result of orchestration."""
     success: bool
-    steps: List[StepResult] = field(default_factory=list)
+    steps: list[StepResult] = field(default_factory=list)
     final_output: object = None
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.utils.core_extensions.decorators import standard_heal
+
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
 class CoordinateObservabilityOperationsAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Orchestrator for operations domain."""
 
-    def __init__(self, config: Optional[Dict[str, object]]=None) -> None:
+    def __init__(self, config: dict[str, object] | None=None) -> None:
         """Initialize the instance."""
         SELF.CONFIG = config or {}
-        self.steps: List[Dict] = []
+        self.steps: list[dict] = []
         LOGGER.info(f'Initialized {self.__class__.__name__}')
 
-    def add_step(self, name: str, executor: Any, dependencies: Optional[List[str]]=None) -> 'CoordinateObservabilityOperations':
+    def add_step(self, name: str, executor: Any, dependencies: list[str] | None=None) -> CoordinateObservabilityOperations:
         """Add a step to orchestration."""
         self.steps.append({'name': name, 'executor': executor, 'dependencies': dependencies or []})
         return self
@@ -82,7 +87,7 @@ class CoordinateObservabilityOperationsAgent(MCPHardenedMixin, SubatomicTestingM
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """Observability metrics - operational only."""
         if _call_path is None:
             _call_path = set()
@@ -101,7 +106,7 @@ class CoordinateObservabilityOperationsAgent(MCPHardenedMixin, SubatomicTestingM
         finally:
             _call_path.discard(agent_name)
 
-def orchestrate(steps: List[Dict], initial_input: object=None, config: Optional[Dict]=None) -> OrchestrationResult:
+def orchestrate(steps: list[dict], initial_input: object=None, config: dict | None=None) -> OrchestrationResult:
     """Convenience function for orchestration."""
     ORCH: Any = CoordinateObservabilityOperations(config)
     for step in steps:

@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 # File: vector_memory.py
 # Description: Vector Memory Store for persistent intelligence - v13.0
 # Provides interface to ChromaDB for storing and querying pre-computed research
@@ -7,8 +8,8 @@ from __future__ import annotations
 __version__ = "13.1"
 
 import os
-from typing import List, Dict, Any, Optional, Tuple
 from datetime import datetime
+from typing import Any
 
 # ChromaDB for vector storage
 try:
@@ -76,9 +77,9 @@ class VectorMemoryStore:
     def add_document(
         self,
         text: str,
-        embedding: List[float],
-        metadata: Dict[str, Any],
-        document_id: Optional[str] = None
+        embedding: list[float],
+        metadata: dict[str, Any],
+        document_id: str | None = None
     ):
         """
         Add a document to the vector store
@@ -109,8 +110,8 @@ class VectorMemoryStore:
         self,
         query_text: str,
         n_results: int = 20,
-        filter_metadata: Optional[Dict[str, Any]] = None
-    ) -> List[Dict[str, Any]]:
+        filter_metadata: dict[str, Any] | None = None
+    ) -> list[dict[str, Any]]:
         """
         Query the vector store for relevant documents
 
@@ -155,7 +156,7 @@ class VectorMemoryStore:
         company_name: str,
         query_text: str,
         n_results: int = 20
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Query for documents about a specific company
 
@@ -178,7 +179,7 @@ class VectorMemoryStore:
         executive_name: str,
         query_text: str,
         n_results: int = 10
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Query for documents about a specific executive
 
@@ -200,7 +201,7 @@ class VectorMemoryStore:
         self,
         company_name: str,
         max_age_days: int = 90
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Get all strategic briefs for a company
 
@@ -237,7 +238,7 @@ class VectorMemoryStore:
         print(f"[VectorMemory] Found {len(results)} strategic briefs for {company_name}")
         return results
 
-    def _embed_query(self, query_text: str) -> List[float]:
+    def _embed_query(self, query_text: str) -> list[float]:
         """
         Generate embedding for query text
 
@@ -259,7 +260,7 @@ class VectorMemoryStore:
             # Return zero vector as fallback
             return [0.0] * 768  # Gemini embedding dimension
 
-    def get_collection_stats(self) -> Dict[str, Any]:
+    def get_collection_stats(self) -> dict[str, Any]:
         """
         Get statistics about the collection
 
@@ -300,7 +301,7 @@ class VectorMemoryStore:
             metadata={"description": "LIC Intelligence Service - Pre-computed research"}
         )
 
-        print(f"[VectorMemory] Collection reset complete")
+        print("[VectorMemory] Collection reset complete")
 
     def delete_by_company(self, company_name: str):
         """
@@ -347,7 +348,7 @@ class VectorMemoryStore:
             self.collection.delete(ids=delete_ids)
             print(f"[VectorMemory] Deleted {len(delete_ids)} old documents")
         else:
-            print(f"[VectorMemory] No old documents found")
+            print("[VectorMemory] No old documents found")
 
 
 def test_vector_memory():

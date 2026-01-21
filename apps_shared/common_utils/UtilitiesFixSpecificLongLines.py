@@ -1,17 +1,14 @@
 from __future__ import annotations
+
 """Fix the specific 46 long lines identified by canon validator."""
 import logging
 import os
 import re
-from services.configuration import ConfigurationService
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from typing import Any
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+
+from services.configuration import ConfigurationService
 
 logging.basicConfig(level=logging.INFO)
 Logger: Any = logging.getLogger(__name__)

@@ -1,11 +1,15 @@
 from __future__ import annotations
+
 import asyncio
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
 import logging
-from agentic_core.runtime.P1_core.RuntimeBootstrapper import RuntimeBootstrapper
 from typing import Any
+
+from agentic_core.runtime.P1_core.RuntimeBootstrapper import RuntimeBootstrapper
+
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 
 async def main() -> Any:

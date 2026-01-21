@@ -5,12 +5,15 @@ Originally from: LeadQualityAgent.py
 Extracted: 2026-01-06 (Surgical Extraction)
 """
 from __future__ import annotations
-from dataclasses import dataclass
-from typing import Dict, List, Any
+
 import re
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from dataclasses import dataclass
+
 from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+
 
 @dataclass
 class ContactValidatorAgent(HealerMixin, SubatomicTestingMixin, OutreachAgent, MCPHardenedMixin):
@@ -61,7 +64,7 @@ class ContactValidatorAgent(HealerMixin, SubatomicTestingMixin, OutreachAgent, M
             self.record_result(True, "All contacts validated")
             print(f"   [{self.name}] ✅ Contacts validated")
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, int]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 

@@ -5,21 +5,19 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 import asyncio
 from dataclasses import dataclass
+
 '''Brief description of functionality and purpose.'''
 
 import os
 import re
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
 
 from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 
 # NAMING FIXED: INTELLIGENCE_THRESHOLD → intelligence_threshold
@@ -33,11 +31,12 @@ except ImportError:
 
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.schemas.models.anomaly_report import AnomalyReport
+from agentic_core.utils.core_extensions.decorators import standard_heal
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.schemas.models.anomaly_report import AnomalyReport, AnomalySeverity
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.decorators import standard_heal
+
 
 @dataclass
 class SherlockAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin, HealerMixin):
@@ -89,7 +88,7 @@ class SherlockAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin, Hea
         await asyncio.sleep(0)
 
         if not self.last_failure:
-            print(f"   [!]  No failure context available")
+            print("   [!]  No failure context available")
             return
 
         await self._analyze_failure(self.last_failure)
@@ -136,9 +135,9 @@ Return ONLY the python code for {primary}.
             if self.ctx.write_compliant_file(primary, fix):
                 if hasattr(self.ctx, 'modified_files'):
                     self.ctx.modified_files.add(primary)
-                print(f"   [OK] Fix Applied")
+                print("   [OK] Fix Applied")
 
-    def _extract_error_file(self, traceback: str) -> Optional[str]:
+    def _extract_error_file(self, traceback: str) -> str | None:
         """Extract error file."""
         if not traceback:
             return None

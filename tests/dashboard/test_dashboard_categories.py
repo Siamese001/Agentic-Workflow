@@ -5,7 +5,8 @@ Validates non-overlapping categories and multi-row display for >10 agents.
 
 import unittest
 from pathlib import Path
-from agent_categorizer import AgentCategorizer, categorize_agents_for_dashboard
+
+from agent_categorizer import categorize_agents_for_dashboard
 
 
 class TestAgentCategorization(unittest.TestCase):

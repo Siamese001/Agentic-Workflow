@@ -1,12 +1,15 @@
 from __future__ import annotations
+
 import logging
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
 import time
 from dataclasses import dataclass, field
-from enum import Enum, auto
-from typing import Any, Dict, List, Optional, Protocol
+from enum import Enum
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 
 class IdentityType(Enum):
@@ -36,8 +39,8 @@ class AgentIdentity:
     private_key: str
     issued_at: float
     expires_at: float
-    capabilities: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    capabilities: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def is_expired(self) -> bool:
         """Check if identity has expired.
@@ -55,7 +58,7 @@ class AgentIdentity:
         """
         return not self.is_expired() and self.spiffe_id and self.public_key and self.private_key
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary (excludes private key).
 
         Returns:
@@ -89,11 +92,11 @@ class AgentIdentity:
 class IdentityVerificationResult:
     """Result of identity verification."""
     valid: bool
-    identity: Optional[AgentIdentity] = None
+    identity: AgentIdentity | None = None
     reason: str = ''
     verified_at: float = field(default_factory=time.time)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary.
 
         Returns:

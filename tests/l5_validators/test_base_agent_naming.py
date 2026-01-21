@@ -77,15 +77,15 @@ def validate_base_agent_naming():
             print(f"   {f}")
         return False
     else:
-        print(f"\n✅ PASSED: All Base Agent names correct")
-        print(f"   - Sovereign Base Agent ✅")
-        print(f"   - L6_Observability/Base Agent ✅")
-        print(f"   - L5 Safety/Base Agent ✅")
-        print(f"   - L4 State/Base Agent ✅")
-        print(f"   - L3 Orchestration/Base Agent ✅")
-        print(f"   - L2 Execution/Base Agent ✅")
-        print(f"   - L1 Cognition/Base Agent ✅")
-        print(f"   - L0 Maintenance/Base Agent ✅")
+        print("\n✅ PASSED: All Base Agent names correct")
+        print("   - Sovereign Base Agent ✅")
+        print("   - L6_Observability/Base Agent ✅")
+        print("   - L5 Safety/Base Agent ✅")
+        print("   - L4 State/Base Agent ✅")
+        print("   - L3 Orchestration/Base Agent ✅")
+        print("   - L2 Execution/Base Agent ✅")
+        print("   - L1 Cognition/Base Agent ✅")
+        print("   - L0 Maintenance/Base Agent ✅")
         return True
 
 def validate_base_agent_order():
@@ -156,9 +156,9 @@ def validate_base_agent_order():
             print(f"   {f}")
         return False
     else:
-        print(f"\n✅ PASSED: All Base Agents in correct positions")
-        print(f"   - Sovereign Base Agent at position 1 (after TOTAL) ✅")
-        print(f"   - Each layer's Base Agent comes FIRST ✅")
+        print("\n✅ PASSED: All Base Agents in correct positions")
+        print("   - Sovereign Base Agent at position 1 (after TOTAL) ✅")
+        print("   - Each layer's Base Agent comes FIRST ✅")
         return True
 
 if __name__ == "__main__":

@@ -13,15 +13,14 @@ and strategic attack patterns designed to expose vulnerabilities.
 from __future__ import annotations
 
 import logging
-from typing import Any, Dict, List, Optional
 from dataclasses import dataclass
+from typing import Any
 
-from agentic_core.L4_state.ValidationContext import ValidationContext
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.runtime.shared_runtime import log_event
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
+from agentic_core.L4_state.ValidationContext import ValidationContext
 from agentic_core.L5_safety.validators.decorators import standard_heal
-
+from agentic_core.runtime.shared_runtime import log_event
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 logger = logging.getLogger(__name__)
 
@@ -58,7 +57,7 @@ class AdversarialProbeAgent(HealerMixin, MCPHardenedMixin):
         self.probes_executed = 0
         self.vulnerabilities_exposed = 0
 
-    async def act(self) -> Dict[str, Any]:
+    async def act(self) -> dict[str, Any]:
         """Execute adversarial probing."""
         logger.info(f"[{self.name}] Starting adversarial attack simulation")
 
@@ -117,7 +116,7 @@ class AdversarialProbeAgent(HealerMixin, MCPHardenedMixin):
                 "probes_executed": results["probes_executed"],
             }
 
-    async def _execute_attack_pattern(self, pattern: str) -> Dict[str, Any]:
+    async def _execute_attack_pattern(self, pattern: str) -> dict[str, Any]:
         """Execute a specific adversarial attack pattern."""
         if pattern == "adversarial_examples":
             return self._test_adversarial_examples()
@@ -135,7 +134,7 @@ class AdversarialProbeAgent(HealerMixin, MCPHardenedMixin):
             return self._test_model_extraction()
         return {"vulnerability_exposed": False}
 
-    def _test_adversarial_examples(self) -> Dict[str, Any]:
+    def _test_adversarial_examples(self) -> dict[str, Any]:
         """Test system with adversarial examples."""
         return {
             "vulnerability_exposed": False,
@@ -144,7 +143,7 @@ class AdversarialProbeAgent(HealerMixin, MCPHardenedMixin):
             "description": "Adversarial input designed to confuse model",
         }
 
-    def _test_semantic_attacks(self) -> Dict[str, Any]:
+    def _test_semantic_attacks(self) -> dict[str, Any]:
         """Test system with semantic attacks."""
         return {
             "vulnerability_exposed": False,
@@ -153,7 +152,7 @@ class AdversarialProbeAgent(HealerMixin, MCPHardenedMixin):
             "description": "Meaning-preserving but harmful semantic transformation",
         }
 
-    def _test_contradiction_injection(self) -> Dict[str, Any]:
+    def _test_contradiction_injection(self) -> dict[str, Any]:
         """Test system with contradiction injection."""
         return {
             "vulnerability_exposed": False,
@@ -162,7 +161,7 @@ class AdversarialProbeAgent(HealerMixin, MCPHardenedMixin):
             "description": "Inject contradictory statements to confuse reasoning",
         }
 
-    def _test_false_premise(self) -> Dict[str, Any]:
+    def _test_false_premise(self) -> dict[str, Any]:
         """Test system with false premise attacks."""
         return {
             "vulnerability_exposed": False,
@@ -171,7 +170,7 @@ class AdversarialProbeAgent(HealerMixin, MCPHardenedMixin):
             "description": "Build argument on false premises",
         }
 
-    def _test_confidence_manipulation(self) -> Dict[str, Any]:
+    def _test_confidence_manipulation(self) -> dict[str, Any]:
         """Test system confidence manipulation."""
         return {
             "vulnerability_exposed": False,
@@ -180,7 +179,7 @@ class AdversarialProbeAgent(HealerMixin, MCPHardenedMixin):
             "description": "Manipulate system confidence in responses",
         }
 
-    def _test_output_poisoning(self) -> Dict[str, Any]:
+    def _test_output_poisoning(self) -> dict[str, Any]:
         """Test system output poisoning."""
         return {
             "vulnerability_exposed": False,
@@ -189,7 +188,7 @@ class AdversarialProbeAgent(HealerMixin, MCPHardenedMixin):
             "description": "Poison system outputs to spread misinformation",
         }
 
-    def _test_model_extraction(self) -> Dict[str, Any]:
+    def _test_model_extraction(self) -> dict[str, Any]:
         """Test system model extraction attacks."""
         return {
             "vulnerability_exposed": False,
@@ -206,7 +205,7 @@ class AdversarialProbeAgent(HealerMixin, MCPHardenedMixin):
         return True
 
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, **kwargs) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, **kwargs) -> dict[str, Any]:
         """Repository healing with parent chain invocation."""
         result = super().heal_repository(dry_run=dry_run, **kwargs)
         return {"violations_fixed": 0, "skipped": 0, "parent": result}

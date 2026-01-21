@@ -12,8 +12,8 @@ CANON COMPLIANCE: Sub-atomic split for line limit enforcement
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from enum import Enum, auto
-from typing import ClassVar, Optional, Dict, Any, List
+from enum import Enum
+from typing import ClassVar
 
 
 class ModelProvider(str, Enum):
@@ -68,7 +68,7 @@ class GovernorConfig:
     bias_detection_enabled: bool = True
     audit_logging_enabled: bool = True
     max_requests_per_minute: int = 100
-    allowed_models: List[str] = field(default_factory=lambda: ["gpt-4o", "gpt-4o-mini", "claude-3-5-sonnet"])
+    allowed_models: list[str] = field(default_factory=lambda: ["gpt-4o", "gpt-4o-mini", "claude-3-5-sonnet"])
 
 
 @dataclass
@@ -83,19 +83,19 @@ class ReasoningConfig:
     max_reflexion_loops: int = 2
 
     # Section-specific configurations (ClassVars set after class definition)
-    K0_HEADLINE_CONFIG: ClassVar[Optional[ReasoningConfig]] = None
-    K1_EXECUTIVE_SUMMARY_CONFIG: ClassVar[Optional[ReasoningConfig]] = None
-    K5_UNIFY_BULLETS_CONFIG: ClassVar[Optional[ReasoningConfig]] = None
-    K5_UNIFY_OVERVIEW_CONFIG: ClassVar[Optional[ReasoningConfig]] = None
-    K6_IBM_BULLETS_CONFIG: ClassVar[Optional[ReasoningConfig]] = None
-    K6_IBM_OVERVIEW_CONFIG: ClassVar[Optional[ReasoningConfig]] = None
-    K8_EY_BULLETS_CONFIG: ClassVar[Optional[ReasoningConfig]] = None
-    K8_EY_OVERVIEW_CONFIG: ClassVar[Optional[ReasoningConfig]] = None
-    K9_EARLY_CAREER_BULLETS_CONFIG: ClassVar[Optional[ReasoningConfig]] = None
-    K9_EARLY_CAREER_OVERVIEW_CONFIG: ClassVar[Optional[ReasoningConfig]] = None
-    K2_SKILLS_CONFIG: ClassVar[Optional[ReasoningConfig]] = None
-    K10_COMPETENCIES_CONFIG: ClassVar[Optional[ReasoningConfig]] = None
-    DEFAULT: ClassVar[Optional[ReasoningConfig]] = None
+    K0_HEADLINE_CONFIG: ClassVar[ReasoningConfig | None] = None
+    K1_EXECUTIVE_SUMMARY_CONFIG: ClassVar[ReasoningConfig | None] = None
+    K5_UNIFY_BULLETS_CONFIG: ClassVar[ReasoningConfig | None] = None
+    K5_UNIFY_OVERVIEW_CONFIG: ClassVar[ReasoningConfig | None] = None
+    K6_IBM_BULLETS_CONFIG: ClassVar[ReasoningConfig | None] = None
+    K6_IBM_OVERVIEW_CONFIG: ClassVar[ReasoningConfig | None] = None
+    K8_EY_BULLETS_CONFIG: ClassVar[ReasoningConfig | None] = None
+    K8_EY_OVERVIEW_CONFIG: ClassVar[ReasoningConfig | None] = None
+    K9_EARLY_CAREER_BULLETS_CONFIG: ClassVar[ReasoningConfig | None] = None
+    K9_EARLY_CAREER_OVERVIEW_CONFIG: ClassVar[ReasoningConfig | None] = None
+    K2_SKILLS_CONFIG: ClassVar[ReasoningConfig | None] = None
+    K10_COMPETENCIES_CONFIG: ClassVar[ReasoningConfig | None] = None
+    DEFAULT: ClassVar[ReasoningConfig | None] = None
 
 
 # Initialize default config

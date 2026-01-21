@@ -20,32 +20,17 @@ from __future__ import annotations
 
 import logging
 import random
-from typing import Any, Dict, List, Optional
 from dataclasses import dataclass
-
-from agentic_core.L4_state.ValidationContext import ValidationContext
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.runtime.shared_runtime import log_event
+from typing import Any
 
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
-)
+from agentic_core.L4_state.ValidationContext import ValidationContext
 from agentic_core.L5_safety.validators.decorators import standard_heal
-
+from agentic_core.L5_safety.validators.structure_blueprint import (
+    TESTS_DIR,
+)
+from agentic_core.runtime.shared_runtime import log_event
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 logger = logging.getLogger(__name__)
 
@@ -80,7 +65,7 @@ class ChaosEngineeringAgent(HealerMixin, MCPHardenedMixin):
         self.tests_executed = 0
         self.failures_detected = 0
 
-    async def act(self) -> Dict[str, Any]:
+    async def act(self) -> dict[str, Any]:
         """Execute chaos engineering tests."""
         logger.info(f"[{self.name}] Starting chaos engineering resilience tests")
 
@@ -136,7 +121,7 @@ class ChaosEngineeringAgent(HealerMixin, MCPHardenedMixin):
                 "tests_executed": results["tests_executed"],
             }
 
-    async def _execute_chaos_scenario(self, scenario: str) -> Dict[str, Any]:
+    async def _execute_chaos_scenario(self, scenario: str) -> dict[str, Any]:
         """Execute a specific chaos scenario."""
         if scenario == "network_failure":
             return self._test_network_failure()
@@ -154,7 +139,7 @@ class ChaosEngineeringAgent(HealerMixin, MCPHardenedMixin):
             return self._test_recovery()
         return {"failure_detected": False}
 
-    def _test_network_failure(self) -> Dict[str, Any]:
+    def _test_network_failure(self) -> dict[str, Any]:
         """Test system behavior under network failure."""
         return {
             "failure_detected": False,
@@ -163,7 +148,7 @@ class ChaosEngineeringAgent(HealerMixin, MCPHardenedMixin):
             "description": "Network failure simulation",
         }
 
-    def _test_high_latency(self) -> Dict[str, Any]:
+    def _test_high_latency(self) -> dict[str, Any]:
         """Test system behavior under high latency."""
         return {
             "failure_detected": False,
@@ -172,7 +157,7 @@ class ChaosEngineeringAgent(HealerMixin, MCPHardenedMixin):
             "description": "High latency injection (>5s)",
         }
 
-    def _test_resource_exhaustion(self) -> Dict[str, Any]:
+    def _test_resource_exhaustion(self) -> dict[str, Any]:
         """Test system behavior under resource exhaustion."""
         return {
             "failure_detected": False,
@@ -181,7 +166,7 @@ class ChaosEngineeringAgent(HealerMixin, MCPHardenedMixin):
             "description": "Memory/CPU exhaustion simulation",
         }
 
-    def _test_cascading_failure(self) -> Dict[str, Any]:
+    def _test_cascading_failure(self) -> dict[str, Any]:
         """Test system behavior under cascading failures."""
         return {
             "failure_detected": False,
@@ -190,7 +175,7 @@ class ChaosEngineeringAgent(HealerMixin, MCPHardenedMixin):
             "description": "Cascading failure across components",
         }
 
-    def _test_timeout(self) -> Dict[str, Any]:
+    def _test_timeout(self) -> dict[str, Any]:
         """Test system behavior under timeout conditions."""
         return {
             "failure_detected": False,
@@ -199,7 +184,7 @@ class ChaosEngineeringAgent(HealerMixin, MCPHardenedMixin):
             "description": "Operation timeout simulation",
         }
 
-    def _test_partial_failure(self) -> Dict[str, Any]:
+    def _test_partial_failure(self) -> dict[str, Any]:
         """Test system behavior under partial failures."""
         return {
             "failure_detected": False,
@@ -208,7 +193,7 @@ class ChaosEngineeringAgent(HealerMixin, MCPHardenedMixin):
             "description": "Partial component failure",
         }
 
-    def _test_recovery(self) -> Dict[str, Any]:
+    def _test_recovery(self) -> dict[str, Any]:
         """Test system recovery and self-healing."""
         return {
             "failure_detected": False,
@@ -225,7 +210,7 @@ class ChaosEngineeringAgent(HealerMixin, MCPHardenedMixin):
         return True
 
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, **kwargs) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, **kwargs) -> dict[str, Any]:
         """Repository healing with parent chain invocation."""
         result = super().heal_repository(dry_run=dry_run, **kwargs)
         return {"violations_fixed": 0, "skipped": 0, "parent": result}

@@ -4,8 +4,9 @@ description: Verifies that no files from tests/ or archives/ exist in the discov
 """
 import json
 import sys
-import pytest
 from pathlib import Path
+
+import pytest
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 MANIFEST_PATH = PROJECT_ROOT / "agent_discovery_full.json"
@@ -117,7 +118,7 @@ class TestManifestPurity:
 
 def clean_manifest():
     """Utility function to remove test artifacts from the manifest."""
-    with open(MANIFEST_PATH, 'r', encoding='utf-8') as f:
+    with open(MANIFEST_PATH, encoding='utf-8') as f:
         data = json.load(f)
 
     original_count = len(data)

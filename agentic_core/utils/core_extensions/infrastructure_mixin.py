@@ -25,10 +25,10 @@ HARDENING:
 from __future__ import annotations
 
 import logging
-from typing import Optional, Dict, Any
+from typing import Any
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger = logging.getLogger(__name__)
@@ -118,7 +118,7 @@ class InfrastructureMixin(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin):
         Logger.debug(f"[INFRA] {self.__class__.__name__} state verification passed")
         return True
 
-    def get_infrastructure_status(self) -> Dict[str, Any]:
+    def get_infrastructure_status(self) -> dict[str, Any]:
         """
         Get the current status of all infrastructure components.
 

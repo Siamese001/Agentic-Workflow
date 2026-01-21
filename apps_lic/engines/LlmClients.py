@@ -3,9 +3,11 @@
 
 __version__ = "12.0"
 
-import google.generativeai as genai
 import os
-from utils_LIC import CircuitBreaker, CircuitBreakerOpenError
+
+import google.generativeai as genai
+from utils_LIC import CircuitBreaker
+
 
 class GeminiLLMClient:
     """

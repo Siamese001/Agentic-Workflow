@@ -16,38 +16,33 @@ Additional Tests:
 """
 from __future__ import annotations
 
-import asyncio
-import warnings
-import pytest
-from datetime import datetime
-from typing import Any, Dict
-from unittest.mock import AsyncMock, MagicMock, patch
-
 import sys
+import warnings
 from pathlib import Path
+from typing import Any
+
+import pytest
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L3_orchestration.unified.CoreOrchestrationAgent import (
-    CoreOrchestrationAgent,
-    Task,
-    TaskType,
-    Result,
-    RecoveryStrategy,
-    OrchestrationStrategy,
-    create_legacy_cached_orchestrator,
-    create_legacy_self_recovering_orchestrator,
-    create_legacy_intelligent_orchestrator,
-)
 from agentic_core.L3_orchestration.unified.AppWorkflowOrchestratorAgent import (
     AppWorkflowOrchestratorAgent,
-    WorkflowPhase,
-    WorkflowType,
-    WorkflowState,
-    PhaseConfig,
     PhaseResult,
+    WorkflowPhase,
+    WorkflowState,
+    WorkflowType,
+)
+from agentic_core.L3_orchestration.unified.CoreOrchestrationAgent import (
+    CoreOrchestrationAgent,
+    OrchestrationStrategy,
+    Result,
+    Task,
+    TaskType,
+    create_legacy_cached_orchestrator,
+    create_legacy_intelligent_orchestrator,
+    create_legacy_self_recovering_orchestrator,
 )
 
 
@@ -139,7 +134,7 @@ class TestRecoveryExhaustion:
             def __init__(self):
                 self.attempt_count = 0
 
-            async def execute(self, task: Task, context: Dict[str, Any]) -> Result:
+            async def execute(self, task: Task, context: dict[str, Any]) -> Result:
                 self.attempt_count += 1
                 raise Exception(f"Intentional failure #{self.attempt_count}")
 
@@ -182,7 +177,7 @@ class TestRecoveryExhaustion:
             def __init__(self):
                 self.attempt_count = 0
 
-            async def execute(self, task: Task, context: Dict[str, Any]) -> Result:
+            async def execute(self, task: Task, context: dict[str, Any]) -> Result:
                 self.attempt_count += 1
                 if self.attempt_count < 3:
                     raise Exception(f"Failure #{self.attempt_count}")
@@ -485,7 +480,6 @@ class TestExecutionStats:
 
 def run_tests():
     """Run all tests and report results."""
-    import sys
 
     print("=" * 70)
     print("Phase 1 Orchestrator Consolidation Test Suite")

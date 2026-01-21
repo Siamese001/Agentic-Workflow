@@ -12,9 +12,7 @@ Usage:
     python scripts/test_phase7_documentation.py
 """
 import sys
-import re
 from pathlib import Path
-from typing import Dict, Any, List, Tuple
 
 # Add project root to path
 project_root = Path(__file__).parent.parent

@@ -1,12 +1,13 @@
 from __future__ import annotations
+
 """Cost Governor for tracking and limiting mission costs.
 
 Tracks token usage and halts execution if cost exceeds threshold.
 """
 import logging
-import re
 import time
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 
 class BudgetExceededError(Exception):
@@ -41,11 +42,11 @@ class CostGovernor:
         self.action_count = 0
         self.min_memory_gb = min_memory_gb
         self.rates = {'gpt-4': 0.03, 'gpt-4-turbo': 0.01, 'gpt-3.5-turbo': 0.002, 'claude-3-opus': 0.015, 'claude-3-sonnet': 0.003, 'claude-3-haiku': 0.00025, 'gemini-pro': 0.0005}
-        self.usage_by_model: Dict[str, Dict[str, int]] = {}
+        self.usage_by_model: dict[str, dict[str, int]] = {}
         LOGGER.info(f'CostGovernor initialized with budget limit: ${limit_usd:.2f}')
         LOGGER.info(f'Memory pressure check enabled - minimum: {min_memory_gb}GB')
 
-    def check_memory_pressure(self) -> Dict[str, float]:
+    def check_memory_pressure(self) -> dict[str, float]:
         """Check system memory pressure.
 
         Returns:
@@ -68,7 +69,7 @@ class CostGovernor:
             return {'available_gb': available_gb, 'total_gb': total_gb, 'used_percent': used_percent, 'pressure_ok': available_gb >= self.min_memory_gb}
         except ImportError:
             try:
-                with open('/proc/meminfo', 'r') as f:
+                with open('/proc/meminfo') as f:
                     meminfo: Any = f.read()
                 for line in meminfo.split('\n'):
                     if 'MemAvailable:' in line:
@@ -134,7 +135,7 @@ class CostGovernor:
             return False
         return True
 
-    def get_stats(self) -> Dict:
+    def get_stats(self) -> dict:
         """Get cost and usage statistics.
 
         Returns:

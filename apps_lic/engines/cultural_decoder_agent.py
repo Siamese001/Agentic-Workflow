@@ -5,12 +5,12 @@ to align with the target company's specific cultural DNA and dialect.
 """
 
 import logging
-from typing import Dict, List, Optional, Tuple, Any
 from enum import Enum
+from typing import Any
+
 from pydantic import BaseModel, Field, validator
 
 from .models import LLMResponse
-
 
 logger = logging.getLogger(__name__)
 
@@ -28,11 +28,11 @@ class CompanyDNA(BaseModel):
     """DNA profile of a company's culture."""
 
     company_name: str = Field(..., description="Company identifier")
-    core_values: List[str] = Field(default_factory=list, description="Core company values")
+    core_values: list[str] = Field(default_factory=list, description="Core company values")
     writing_style: WritingStyle = Field(default=WritingStyle.NARRATIVE, description="Preferred writing style")
-    buzzwords: List[str] = Field(default_factory=list, description="Company-specific terminology")
-    value_phrases: Dict[str, str] = Field(default_factory=dict, description="Value to phrase mapping")
-    forbidden_words: List[str] = Field(default_factory=list, description="Words to avoid")
+    buzzwords: list[str] = Field(default_factory=list, description="Company-specific terminology")
+    value_phrases: dict[str, str] = Field(default_factory=dict, description="Value to phrase mapping")
+    forbidden_words: list[str] = Field(default_factory=list, description="Words to avoid")
 
     @validator('core_values')
     def validate_values(cls, v):
@@ -47,7 +47,7 @@ class CulturallyAlignedContent(BaseModel):
     aligned_text: str = Field(..., description="Culturally aligned content")
     alignment_rationale: str = Field(..., description="Explanation of changes")
     alignment_score: float = Field(default=0.0, ge=0.0, le=1.0, description="Cultural alignment score")
-    key_changes: List[str] = Field(default_factory=list, description="Key changes made")
+    key_changes: list[str] = Field(default_factory=list, description="Key changes made")
 
 
 class SimpleAgentBase:
@@ -172,7 +172,7 @@ class CulturalDecoderAgent(SimpleAgentBase):
             forbidden_words=[]
         )
 
-    def _load_dna(self, company_name: str, about_text: Optional[str] = None) -> CompanyDNA:
+    def _load_dna(self, company_name: str, about_text: str | None = None) -> CompanyDNA:
         """Load company DNA, either from pre-loaded profiles or by inference.
 
         Args:
@@ -313,7 +313,7 @@ class CulturalDecoderAgent(SimpleAgentBase):
                 key_changes=[]
             )
 
-    def audit_fit(self, text: str, company_name: str) -> Dict[str, Any]:
+    def audit_fit(self, text: str, company_name: str) -> dict[str, Any]:
         """Audit text for cultural alignment with target company.
 
         Args:
@@ -441,7 +441,7 @@ class CulturalDecoderAgent(SimpleAgentBase):
         """
         try:
             # Import here to avoid circular imports
-            from .multi_provider_clients import get_client, Provider
+            from .multi_provider_clients import Provider, get_client
 
             # Get Anthropic client
             client = get_client(Provider.ANTHROPIC)

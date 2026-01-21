@@ -15,7 +15,7 @@ import logging
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -39,11 +39,11 @@ class PromptTemplate:
     content: str
     version: str
     description: str = ""
-    tags: List[str] = field(default_factory=list)
-    variables: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    tags: list[str] = field(default_factory=list)
+    variables: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "template_id": self.template_id,
@@ -58,7 +58,7 @@ class PromptTemplate:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "PromptTemplate":
+    def from_dict(cls, data: dict[str, Any]) -> "PromptTemplate":
         """Create from dictionary."""
         return cls(
             template_id=data["template_id"],
@@ -104,7 +104,7 @@ class PromptRegistry:
 
     def __init__(
         self,
-        registry_path: Optional[Path] = None,
+        registry_path: Path | None = None,
         enable_logging: bool = True,
     ):
         """Initialize prompt registry.
@@ -116,7 +116,7 @@ class PromptRegistry:
         self.registry_path = registry_path or Path("prompt_governance/registry/prompts.json")
         self.enable_logging = enable_logging
 
-        self._templates: Dict[str, PromptTemplate] = {}
+        self._templates: dict[str, PromptTemplate] = {}
         self._load_registry()
 
         if self.enable_logging:
@@ -147,7 +147,7 @@ class PromptRegistry:
                 }
             )
 
-    def get(self, template_id: str) -> Optional[PromptTemplate]:
+    def get(self, template_id: str) -> PromptTemplate | None:
         """Get a prompt template.
 
         Args:
@@ -161,7 +161,7 @@ class PromptRegistry:
     def find_by_category(
         self,
         category: PromptCategory,
-    ) -> List[PromptTemplate]:
+    ) -> list[PromptTemplate]:
         """Find templates by category.
 
         Args:
@@ -175,7 +175,7 @@ class PromptRegistry:
             if t.category == category
         ]
 
-    def find_by_tag(self, tag: str) -> List[PromptTemplate]:
+    def find_by_tag(self, tag: str) -> list[PromptTemplate]:
         """Find templates by tag.
 
         Args:
@@ -189,7 +189,7 @@ class PromptRegistry:
             if tag in t.tags
         ]
 
-    def search(self, query: str) -> List[PromptTemplate]:
+    def search(self, query: str) -> list[PromptTemplate]:
         """Search templates by name or description.
 
         Args:
@@ -205,7 +205,7 @@ class PromptRegistry:
             if query_lower in t.name.lower() or query_lower in t.description.lower()
         ]
 
-    def list_all(self) -> List[PromptTemplate]:
+    def list_all(self) -> list[PromptTemplate]:
         """List all templates.
 
         Returns:
@@ -243,7 +243,7 @@ class PromptRegistry:
             return
 
         try:
-            with open(self.registry_path, 'r') as f:
+            with open(self.registry_path) as f:
                 data = json.load(f)
 
             for template_data in data.get("templates", []):
@@ -324,7 +324,7 @@ class PromptRegistry:
 
 
 def create_prompt_registry(
-    registry_path: Optional[Path] = None,
+    registry_path: Path | None = None,
 ) -> PromptRegistry:
     """Factory function to create prompt registry.
 

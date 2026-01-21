@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 OptimizeContentOrder.py - Refinement Module
 
@@ -6,18 +7,19 @@ Domain: resume
 Generated: 2025-12-07T13:28:54.237153
 """
 import logging
-from typing import Any, Dict, List, Optional, Protocol, Union
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 
 class OptimizeContentOrder:
     """Refiner for resume domain."""
 
-    def __init__(self, config: Optional[Dict[str, object]]=None):
+    def __init__(self, config: dict[str, object] | None=None):
         SELF.CONFIG = config or {}
         SELF.WEIGHTS = self.config.get('weights', {})
         Logger.info(f'Initialized {self.__class__.__name__}')
 
-    def refine(self, data: Union[str, Dict], adjustments: Optional[Dict]=None) -> RefinementResult:
+    def refine(self, data: str | dict, adjustments: dict | None=None) -> RefinementResult:
         """Refine input data by applying adjustment transformations."""
         CHANGES: Any = []
         REFINED: Any = data
@@ -30,6 +32,6 @@ class OptimizeContentOrder:
                     changes.append(f'{key}: {previous} -> {refined[key]}')
         return RefinementResult(original=data, refined=refined, changes=changes)
 
-def refine(data: Union[str, Dict], adjustments: Optional[Dict]=None, config: Optional[Dict]=None) -> RefinementResult:
+def refine(data: str | dict, adjustments: dict | None=None, config: dict | None=None) -> RefinementResult:
     """Refine input data by applying adjustment transformations."""
     return OptimizeContentOrder(config).refine(data, adjustments)

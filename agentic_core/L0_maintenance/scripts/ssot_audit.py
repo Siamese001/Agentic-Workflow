@@ -1,36 +1,20 @@
 """
 SSOT Audit Script - Scans approved folders for SSOT violations
 """
-import sys
-from pathlib import Path
-import json
+import ast
 from collections import defaultdict
+from pathlib import Path
 
 # SSOT: Import canonical layer inference (Phase 3 Migration)
 # [FIX] Corrected import path (was canonical_truth_1, should be canonical_truth)
 from agentic_core.L5_safety.validators.canonical_truth import get_canonical_layer
-import ast
-import json
-
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
     APPS_RG_DIR,
     SCRIPTS_DIR,
     TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
-from agentic_core.utils.sovereign_index import SovereignIndex
 
 # Approved folders only
 APPROVED_FOLDERS = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, SCRIPTS_DIR, TESTS_DIR]
@@ -79,7 +63,7 @@ def find_gravity_violations():
                             'imports': node.module,
                             'import_layer': import_layer
                         })
-        except Exception as e:
+        except Exception:
             pass
 
     return violations

@@ -13,6 +13,7 @@ CANONICAL SSOT: scripts/regenerate_dashboard_full.py
 This file is kept for reference only. DO NOT USE.
 """
 import sys
+
 print("[DEPRECATED] This script is deprecated. Use regenerate_dashboard_full.py instead.")
 sys.exit(1)
 
@@ -24,9 +25,9 @@ Creates: dashboard_data.js, agent_data.js, recommendations.js, observations.js
 
 import json
 import sys
-from pathlib import Path
 from collections import defaultdict
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from pathlib import Path
+
 
 def load_discovery():
     discovery_path = Path("agent_discovery_full.json")
@@ -34,7 +35,7 @@ def load_discovery():
         print(f"❌ {discovery_path} not found")
         sys.exit(1)
 
-    with open(discovery_path, 'r') as f:
+    with open(discovery_path) as f:
         data = json.load(f)
 
     # Handle both list format and dict format

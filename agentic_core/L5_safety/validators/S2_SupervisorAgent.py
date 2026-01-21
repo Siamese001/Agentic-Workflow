@@ -13,8 +13,10 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 
 from __future__ import annotations
+
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
+
 
 class LicS2SupervisorAgent(MCPHardenedMixin):
     """
@@ -209,7 +211,7 @@ Return a numbered list of weaknesses (max 3). Format: "1. [weakness]"
 
             return findings[:3]
 
-        except Exception as e:
+        except Exception:
 
             return []
 

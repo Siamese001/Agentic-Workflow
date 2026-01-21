@@ -14,7 +14,7 @@ import ast
 import logging
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Tuple, Union
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -47,27 +47,27 @@ class CodeTransformArgs(BaseModel):
         ...,
         description="Target symbol name, line range, or expression to transform"
     )
-    new_name: Optional[str] = Field(
+    new_name: str | None = Field(
         None,
         description="New name for rename operations"
     )
-    destination: Optional[str] = Field(
+    destination: str | None = Field(
         None,
         description="Destination for move operations"
     )
-    decorator_name: Optional[str] = Field(
+    decorator_name: str | None = Field(
         None,
         description="Decorator name for add/remove decorator operations"
     )
-    extract_name: Optional[str] = Field(
+    extract_name: str | None = Field(
         None,
         description="Name for extracted function/variable"
     )
-    line_start: Optional[int] = Field(
+    line_start: int | None = Field(
         None,
         description="Start line for extraction (1-indexed)"
     )
-    line_end: Optional[int] = Field(
+    line_end: int | None = Field(
         None,
         description="End line for extraction (1-indexed)"
     )
@@ -79,11 +79,11 @@ class TransformResult:
     success: bool
     transformed_code: str
     operation: str
-    changes_made: List[str] = field(default_factory=list)
-    warnings: List[str] = field(default_factory=list)
-    error: Optional[str] = None
+    changes_made: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
+    error: str | None = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "success": self.success,
@@ -101,10 +101,10 @@ class SymbolRenamer(ast.NodeTransformer):
     def __init__(self, old_name: str, new_name: str):
         self.old_name = old_name
         self.new_name = new_name
-        self.changes: List[str] = []
-        self._scope_stack: List[Set[str]] = [set()]
+        self.changes: list[str] = []
+        self._scope_stack: list[set[str]] = [set()]
 
-    def _push_scope(self, names: Set[str] = None):
+    def _push_scope(self, names: set[str] = None):
         """Push a new scope onto the stack."""
         self._scope_stack.append(names or set())
 
@@ -185,7 +185,7 @@ class DecoratorModifier(ast.NodeTransformer):
         self.target_name = target_name
         self.decorator_name = decorator_name
         self.add = add
-        self.changes: List[str] = []
+        self.changes: list[str] = []
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> ast.FunctionDef:
         """Modify decorators on function definitions."""
@@ -228,7 +228,7 @@ class DecoratorModifier(ast.NodeTransformer):
         return node
 
 
-def _parse_code(code: str) -> Tuple[Optional[ast.AST], Optional[str]]:
+def _parse_code(code: str) -> tuple[ast.AST | None, str | None]:
     """Parse code into AST, returning tree and error if any."""
     try:
         tree = ast.parse(code)
@@ -346,8 +346,8 @@ def extract_function(
     tree, error = _parse_code(extracted_code)
 
     # Find variables that are used but not defined in the extracted code
-    used_names: Set[str] = set()
-    defined_names: Set[str] = set()
+    used_names: set[str] = set()
+    defined_names: set[str] = set()
 
     if tree:
         for node in ast.walk(tree):
@@ -504,7 +504,7 @@ def remove_decorator(code: str, target_name: str, decorator_name: str) -> Transf
         )
 
 
-def code_transform(args: CodeTransformArgs) -> Dict[str, Any]:
+def code_transform(args: CodeTransformArgs) -> dict[str, Any]:
     """
     Main entry point for code transformations.
 

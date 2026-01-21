@@ -26,11 +26,11 @@ Updated: January 20, 2026
 """
 from __future__ import annotations
 
-import warnings
-import logging
-from pathlib import Path
-from typing import Iterator, Optional
 import functools
+import logging
+import warnings
+from collections.abc import Iterator
+from pathlib import Path
 
 Logger = logging.getLogger(__name__)
 
@@ -45,7 +45,7 @@ DANGEROUS_DIRECTORIES = {
 }
 
 
-def guarded_rglob(path: Path, pattern: str, caller: Optional[str] = None) -> Iterator[Path]:
+def guarded_rglob(path: Path, pattern: str, caller: str | None = None) -> Iterator[Path]:
     """
     Audit utility to track and discourage expensive rglob calls.
 
@@ -96,7 +96,7 @@ def guarded_rglob(path: Path, pattern: str, caller: Optional[str] = None) -> Ite
     return path.rglob(pattern)
 
 
-def guarded_glob(path: Path, pattern: str, caller: Optional[str] = None) -> Iterator[Path]:
+def guarded_glob(path: Path, pattern: str, caller: str | None = None) -> Iterator[Path]:
     """
     Audit utility to track and discourage expensive glob calls.
 
@@ -165,7 +165,7 @@ def count_rglob_calls_in_file(file_path: Path) -> int:
 
     try:
         content = file_path.read_text(encoding='utf-8')
-    except (IOError, UnicodeDecodeError):
+    except (OSError, UnicodeDecodeError):
         return 0
 
     # Count .rglob( and .glob( calls

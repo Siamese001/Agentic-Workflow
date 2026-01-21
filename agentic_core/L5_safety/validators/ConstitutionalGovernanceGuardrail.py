@@ -13,10 +13,11 @@ Composable Rules:
 """
 
 from __future__ import annotations
-from typing import Dict, List, Any, Optional
+
+import time
 from dataclasses import dataclass, field
 from enum import Enum
-import time
+from typing import Any
 
 
 class ConstitutionalPrinciple(Enum):
@@ -36,15 +37,15 @@ class PrincipleViolation:
     principle: ConstitutionalPrinciple
     severity: str  # "minor", "moderate", "severe"
     description: str
-    suggested_revision: Optional[str] = None
+    suggested_revision: str | None = None
 
 
 @dataclass
 class GovernanceResult:
     """Result of governance check."""
     compliant: bool
-    violations: List[PrincipleViolation] = field(default_factory=list)
-    audit_id: Optional[str] = None
+    violations: list[PrincipleViolation] = field(default_factory=list)
+    audit_id: str | None = None
     review_notes: str = ""
 
 
@@ -60,7 +61,7 @@ class ConstitutionalGovernanceGuardrail:
 
     def __init__(self):
         """Initialize constitutional governance guardrail."""
-        self.enabled_rules: List[str] = [
+        self.enabled_rules: list[str] = [
             "constitutional_review",
             "governance",
             "oversight",
@@ -96,7 +97,7 @@ class ConstitutionalGovernanceGuardrail:
         }
 
         # Audit log
-        self.audit_log: List[Dict[str, Any]] = []
+        self.audit_log: list[dict[str, Any]] = []
         self.audit_counter = 0
 
         # Statistics
@@ -104,7 +105,7 @@ class ConstitutionalGovernanceGuardrail:
         self.violations_found = 0
         self.revisions_suggested = 0
 
-    async def review(self, content: str, context: Optional[Dict[str, Any]] = None) -> GovernanceResult:
+    async def review(self, content: str, context: dict[str, Any] | None = None) -> GovernanceResult:
         """
         Review content for constitutional compliance.
 
@@ -140,7 +141,7 @@ class ConstitutionalGovernanceGuardrail:
             review_notes=self._generate_notes(violations)
         )
 
-    def _check_principles(self, content: str) -> List[PrincipleViolation]:
+    def _check_principles(self, content: str) -> list[PrincipleViolation]:
         """Check content against constitutional principles."""
         violations = []
         content_lower = content.lower()
@@ -159,7 +160,7 @@ class ConstitutionalGovernanceGuardrail:
 
         return violations
 
-    def _check_governance(self, content: str, context: Optional[Dict[str, Any]]) -> List[PrincipleViolation]:
+    def _check_governance(self, content: str, context: dict[str, Any] | None) -> list[PrincipleViolation]:
         """Check governance rules."""
         violations = []
 
@@ -173,7 +174,7 @@ class ConstitutionalGovernanceGuardrail:
 
         return violations
 
-    def _create_audit(self, content: str, violations: List[PrincipleViolation]) -> str:
+    def _create_audit(self, content: str, violations: list[PrincipleViolation]) -> str:
         """Create audit trail entry."""
         self.audit_counter += 1
         audit_id = f"audit_{self.audit_counter}_{int(time.time())}"
@@ -195,7 +196,7 @@ class ConstitutionalGovernanceGuardrail:
 
         return audit_id
 
-    def _generate_notes(self, violations: List[PrincipleViolation]) -> str:
+    def _generate_notes(self, violations: list[PrincipleViolation]) -> str:
         """Generate review notes."""
         if not violations:
             return "Content is compliant with constitutional principles."
@@ -206,7 +207,7 @@ class ConstitutionalGovernanceGuardrail:
 
         return "\n".join(notes)
 
-    def revise_content(self, content: str, violations: List[PrincipleViolation]) -> str:
+    def revise_content(self, content: str, violations: list[PrincipleViolation]) -> str:
         """
         Suggest revised content based on violations.
 
@@ -222,11 +223,11 @@ class ConstitutionalGovernanceGuardrail:
             return f"[REVISED] {content}\n\n[Note: Content was flagged for potential issues with: {', '.join(v.principle.value for v in violations)}]"
         return content
 
-    def get_audit_log(self, limit: int = 100) -> List[Dict[str, Any]]:
+    def get_audit_log(self, limit: int = 100) -> list[dict[str, Any]]:
         """Get recent audit log entries."""
         return self.audit_log[-limit:]
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get governance statistics."""
         return {
             "reviews_performed": self.reviews_performed,

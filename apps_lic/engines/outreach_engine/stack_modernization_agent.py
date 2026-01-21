@@ -6,9 +6,9 @@ systems to modern AI architectures.
 """
 
 import logging
-from typing import Dict, List, Optional, Tuple, Any, Union
-from pydantic import BaseModel, Field, validator
+from typing import Any
 
+from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -16,8 +16,8 @@ logger = logging.getLogger(__name__)
 class LegacyDiagnostic(BaseModel):
     """Diagnostic of legacy technology stack."""
 
-    detected_legacy_tech: List[str] = Field(..., description="Legacy technologies detected")
-    implied_pain_points: List[str] = Field(..., description="Inferred pain points")
+    detected_legacy_tech: list[str] = Field(..., description="Legacy technologies detected")
+    implied_pain_points: list[str] = Field(..., description="Inferred pain points")
     modernization_score: float = Field(..., ge=0.0, le=1.0, description="Legacy severity score")
 
     @property
@@ -277,7 +277,7 @@ class StackModernizationAgent:
 
     def _create_thesis_from_playbook(
         self,
-        playbook: Dict[str, str],
+        playbook: dict[str, str],
         diagnostic: LegacyDiagnostic
     ) -> MigrationThesis:
         """Create thesis from transformation playbook.
@@ -324,7 +324,7 @@ def create_stack_modernization_agent() -> StackModernizationAgent:
 
 
 # Convenience function for quick analysis
-def analyze_modernization_opportunity(job_description: str) -> Dict[str, Any]:
+def analyze_modernization_opportunity(job_description: str) -> dict[str, Any]:
     """Quickly analyze modernization opportunity in JD.
 
     Args:

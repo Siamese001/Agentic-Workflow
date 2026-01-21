@@ -5,32 +5,17 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
-from typing import Dict, Any, List, Optional
+
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
+
 """Constitutional Reviewer Agent - Performs final constitutional review of the output."""
 
 import json
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from .L5SafetyBaseAgent import L5SafetyBaseAgent  # NEW: Import canonical L5 base class
 
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
-)
 from agentic_core.L5_safety.validators.decorators import standard_heal
+
+from .L5SafetyBaseAgent import L5SafetyBaseAgent  # NEW: Import canonical L5 base class
 
 # ------------------------------------------------------------------
 # REMOVED: Local stub BaseAgent definition (technical debt)
@@ -119,7 +104,7 @@ class ConstitutionalReviewerAgent(L5SafetyBaseAgent, MCPHardenedMixin):
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """Operational guardrail agent - no repository healing required."""
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository()

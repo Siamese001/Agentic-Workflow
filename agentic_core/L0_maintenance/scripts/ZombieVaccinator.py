@@ -9,13 +9,13 @@ Usage:
     python -m agentic_core.L0_maintenance.scripts.ZombieVaccinator --pilot AgentName
     python -m agentic_core.L0_maintenance.scripts.ZombieVaccinator --execute
 """
+import argparse
 import ast
 import json
 import logging
-import argparse
 import re
 from pathlib import Path
-from typing import List, Dict, Any, Optional, Set
+from typing import Any
 
 # Configure logging for the vaccination process
 logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s')
@@ -44,15 +44,15 @@ class ZombieVaccinator:
     def __init__(self, discovery_json: str = "agent_discovery_full.json"):
         self.root = Path(__file__).resolve().parents[3]
         self.discovery_path = self.root / discovery_json
-        self.vaccination_report: List[Dict[str, Any]] = []
+        self.vaccination_report: list[dict[str, Any]] = []
 
-    def run(self, dry_run: bool = True, pilot: Optional[str] = None):
+    def run(self, dry_run: bool = True, pilot: str | None = None):
         """Execute the vaccination campaign across the agent fleet."""
         if not self.discovery_path.exists():
             Logger.error(f"Discovery JSON not found at {self.discovery_path}")
             return
 
-        with open(self.discovery_path, 'r') as f:
+        with open(self.discovery_path) as f:
             agents = json.load(f)
 
         zombies = [a for a in agents if a.get('healing_implementation') == 'Super only']
@@ -86,7 +86,7 @@ class ZombieVaccinator:
 
         return self.vaccination_report
 
-    def vaccinate_agent(self, agent: Dict[str, Any], dry_run: bool) -> Optional[Dict[str, Any]]:
+    def vaccinate_agent(self, agent: dict[str, Any], dry_run: bool) -> dict[str, Any] | None:
         """Scan a single agent for orphaned logic and wire it."""
         agent_path = self.root / agent['path']
         if not agent_path.exists():
@@ -113,19 +113,19 @@ class ZombieVaccinator:
             success = self._apply_vaccine(agent_path, source, orphans, agent['class_name'])
             result['vaccinated'] = success
             if success:
-                Logger.info(f"    [✓] Vaccination applied successfully.")
+                Logger.info("    [✓] Vaccination applied successfully.")
             else:
-                Logger.error(f"    [✗] Vaccination failed.")
+                Logger.error("    [✗] Vaccination failed.")
 
         return result
 
-    def _find_orphans(self, source: str, class_name: str) -> List[str]:
+    def _find_orphans(self, source: str, class_name: str) -> list[str]:
         """Detect methods that exist but are never called in heal_repository."""
         try:
             tree = ast.parse(source)
-            candidate_methods: List[str] = []
-            heal_repo_node: Optional[ast.FunctionDef] = None
-            target_class: Optional[ast.ClassDef] = None
+            candidate_methods: list[str] = []
+            heal_repo_node: ast.FunctionDef | None = None
+            target_class: ast.ClassDef | None = None
 
             # Find the target class
             for node in ast.walk(tree):
@@ -138,7 +138,7 @@ class ZombieVaccinator:
 
             # Extract methods from the class
             for item in target_class.body:
-                if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                if isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef):
                     if item.name == 'heal_repository':
                         heal_repo_node = item
                     elif self._is_vaccine_candidate(item.name):
@@ -148,7 +148,7 @@ class ZombieVaccinator:
                 return []
 
             # Find all method calls inside heal_repository
-            called_methods: Set[str] = set()
+            called_methods: set[str] = set()
             for node in ast.walk(heal_repo_node):
                 if isinstance(node, ast.Call):
                     # self.method_name() pattern
@@ -174,7 +174,7 @@ class ZombieVaccinator:
             return False
         return any(method_name.startswith(p) for p in self.VACCINE_PREFIXES)
 
-    def _apply_vaccine(self, path: Path, source: str, orphans: List[str], class_name: str) -> bool:
+    def _apply_vaccine(self, path: Path, source: str, orphans: list[str], class_name: str) -> bool:
         """Surgically inject method calls into the heal_repository implementation."""
         try:
             # Find the heal_repository method and inject calls after super()
@@ -240,7 +240,7 @@ class ZombieVaccinator:
             Logger.error(f"    Vaccination error: {e}")
             return False
 
-    def _build_injection_block(self, orphans: List[str]) -> List[str]:
+    def _build_injection_block(self, orphans: list[str]) -> list[str]:
         """Build the code block to inject for wiring orphaned methods.
 
         Uses a single try/except wrapper for all orphan calls to avoid

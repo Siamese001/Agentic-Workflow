@@ -6,10 +6,9 @@ Constraint: Keep validation and healing logic within the same agent.
 import ast
 import json
 from pathlib import Path
-from typing import List, Tuple
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
-def analyze_method_complexity(file_path: Path) -> List[Tuple[str, int]]:
+
+def analyze_method_complexity(file_path: Path) -> list[tuple[str, int]]:
     """Analyze complexity of each method in a file."""
     try:
         content = file_path.read_text(encoding='utf-8')
@@ -19,7 +18,7 @@ def analyze_method_complexity(file_path: Path) -> List[Tuple[str, int]]:
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
                 for item in node.body:
-                    if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    if isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef):
                         cc = calculate_method_cc(item)
                         method_complexities.append((f"{node.name}.{item.name}", cc))
 
@@ -33,15 +32,15 @@ def calculate_method_cc(node: ast.FunctionDef) -> int:
     cc = 1  # Base complexity
 
     for child in ast.walk(node):
-        if isinstance(child, (ast.If, ast.While, ast.For, ast.AsyncFor)):
+        if isinstance(child, ast.If | ast.While | ast.For | ast.AsyncFor):
             cc += 1
         elif isinstance(child, ast.ExceptHandler):
             cc += 1
-        elif isinstance(child, (ast.And, ast.Or)):
+        elif isinstance(child, ast.And | ast.Or):
             cc += 1
         elif isinstance(child, ast.BoolOp):
             cc += len(child.values) - 1
-        elif isinstance(child, (ast.ListComp, ast.SetComp, ast.DictComp, ast.GeneratorExp)):
+        elif isinstance(child, ast.ListComp | ast.SetComp | ast.DictComp | ast.GeneratorExp):
             cc += 1
 
     return cc
@@ -75,7 +74,7 @@ def main():
             if file_path.exists():
                 method_ccs = analyze_method_complexity(file_path)
                 if method_ccs:
-                    print(f"\n   Top 10 most complex methods:")
+                    print("\n   Top 10 most complex methods:")
                     for method_name, method_cc in method_ccs[:10]:
                         print(f"      {method_name}: CC={method_cc}")
             else:

@@ -7,9 +7,11 @@ Extracted: 2026-01-06 (Surgical Extraction)
 Orchestrates the complete self-healing process for resume generation.
 """
 from __future__ import annotations
-from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+
 import time
+from dataclasses import dataclass
+from typing import Any
+
 
 @dataclass
 class RgHealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
@@ -28,7 +30,7 @@ class RgHealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTesti
 
     def __init__(
         self,
-        ctx: 'ResumeEngineContext',
+        ctx: ResumeEngineContext,
         max_cycles: int = 5,
         enable_reflection: bool = True,
     ) -> None:
@@ -45,9 +47,9 @@ class RgHealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTesti
         self._mcp_audit("init")
         self.max_cycles: int = max_cycles
         self.enable_reflection: bool = enable_reflection
-        self.cycle_results: List['CycleResult'] = []
+        self.cycle_results: list[CycleResult] = []
 
-    async def run(self) -> 'HealingResult':
+    async def run(self) -> HealingResult:
         """
         Run the complete healing process.
 
@@ -63,7 +65,7 @@ class RgHealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTesti
         print("🧬 SELF-HEALING ORCHESTRATOR STARTED")
         print("=" * 60)
 
-        convergence_cycle: Optional[int] = None
+        convergence_cycle: int | None = None
         budget_exhausted: bool = False
 
         for cycle_num in range(1, self.max_cycles + 1):
@@ -93,7 +95,7 @@ class RgHealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTesti
             # Log cycle result
             print(f"   ✅ Passed: {len(result.passed_agents)} | ❌ Failed: {len(result.failed_agents)}")
             if result.rollback_triggered:
-                print(f"   ⏪ Rollback triggered")
+                print("   ⏪ Rollback triggered")
 
             # Check convergence
             if result.converged:
@@ -139,7 +141,7 @@ class RgHealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTesti
             final_resume=self.ctx.current_resume.copy(),
         )
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs: Any) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs: Any) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 

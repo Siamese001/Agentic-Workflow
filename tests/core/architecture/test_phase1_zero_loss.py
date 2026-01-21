@@ -17,7 +17,6 @@ Phase: 1 - Foundation & Zero-Loss Protocols
 import inspect
 import sys
 from pathlib import Path
-from typing import Dict, Any, Set, get_type_hints
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
@@ -79,7 +78,7 @@ def test_tc2_data_mapping_integrity():
     print("TC-2: Data Mapping Integrity")
     print("="*60)
 
-    from agentic_core.utils.core_extensions.healer_mixin import HealerMixin, HealResult
+    from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
     # Create a test instance
     class TestAgent(HealerMixin):
@@ -186,8 +185,8 @@ def test_tc4_mro_stability():
     print("TC-4: MRO Stability")
     print("="*60)
 
-    from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
     from agentic_core.L3_orchestration.interfaces import IHealable
+    from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
     # Create a sample agent class hierarchy
     class BaseMixin:
@@ -238,8 +237,8 @@ def test_tc4_mro_stability():
 
     print("\n✅ PASS: MRO is stable and IHealable protocol works correctly")
     print(f"   MRO: {' -> '.join(mro_names[:5])}")
-    print(f"   isinstance(agent, IHealable): True")
-    print(f"   heal_repository returns HealResult: True")
+    print("   isinstance(agent, IHealable): True")
+    print("   heal_repository returns HealResult: True")
     return True
 
 

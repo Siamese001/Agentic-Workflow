@@ -6,9 +6,10 @@ Tests for dashboard UI layout and styling.
 
 Migrated from: agentic_core/L0_maintenance/scripts/test_phase5_ui_layout.py
 """
-import pytest
 import sys
 from pathlib import Path
+
+import pytest
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))

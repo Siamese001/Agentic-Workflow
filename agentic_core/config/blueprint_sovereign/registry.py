@@ -7,7 +7,6 @@ the sovereign territory structure of the codebase.
 SSOT Consolidation (Jan 20, 2026):
 Moved from agentic_core/L5_safety/validators/structure_blueprint.py
 """
-from typing import Any, Dict, FrozenSet, List, Set
 import os
 
 # ============================================================================

@@ -30,7 +30,6 @@ import logging
 import os
 import threading
 from pathlib import Path
-from typing import Dict, List, Optional, Set
 
 Logger = logging.getLogger(__name__)
 
@@ -44,11 +43,11 @@ class FileCache:
     Uses os.walk with directory pruning for performance.
     """
 
-    _instance: Optional['FileCache'] = None
+    _instance: FileCache | None = None
     _lock: threading.Lock = threading.Lock()
 
     # Directories to exclude from all scans (pruned during os.walk)
-    EXCLUDED_DIRS: Set[str] = {
+    EXCLUDED_DIRS: set[str] = {
         '.git',
         '__pycache__',
         '.sovereign_healing_backup',
@@ -66,7 +65,7 @@ class FileCache:
         '.vscode',
     }
 
-    def __init__(self, project_root: Optional[Path] = None):
+    def __init__(self, project_root: Path | None = None):
         """
         Initialize the cache. Should not be called directly - use get_instance().
 
@@ -74,13 +73,13 @@ class FileCache:
             project_root: Root directory for file discovery. Auto-detected if None.
         """
         self._project_root = project_root or self._detect_project_root()
-        self._files: Dict[str, List[Path]] = {}
+        self._files: dict[str, list[Path]] = {}
         self._scan_count: int = 0
         self._is_populated: bool = False
         self._cache_lock: threading.Lock = threading.Lock()
 
     @classmethod
-    def get_instance(cls, project_root: Optional[Path] = None) -> 'FileCache':
+    def get_instance(cls, project_root: Path | None = None) -> FileCache:
         """
         Get the singleton instance of FileCache.
 
@@ -132,7 +131,7 @@ class FileCache:
         Logger.debug(f"[FileCache] Scanning files from {self._project_root}")
         self._scan_count += 1
 
-        new_files: Dict[str, List[Path]] = {
+        new_files: dict[str, list[Path]] = {
             "all": [],
             "python": [],
             "markdown": [],
@@ -163,7 +162,7 @@ class FileCache:
         self._is_populated = True
         Logger.debug(f"[FileCache] Scan complete: {len(new_files['all'])} files found")
 
-    def get_all_files(self) -> List[Path]:
+    def get_all_files(self) -> list[Path]:
         """
         Get all files in the project (lazy-loaded).
 
@@ -175,7 +174,7 @@ class FileCache:
                 self._scan()
             return self._files.get("all", []).copy()
 
-    def get_files_by_extension(self, ext: str) -> List[Path]:
+    def get_files_by_extension(self, ext: str) -> list[Path]:
         """
         Get files filtered by extension (lazy-loaded).
 
@@ -203,7 +202,7 @@ class FileCache:
             # Filter from all files for other extensions
             return [f for f in self._files.get("all", []) if f.suffix.lower() == ext]
 
-    def get_python_files(self) -> List[Path]:
+    def get_python_files(self) -> list[Path]:
         """
         Get all Python files (.py, .pyi).
 
@@ -215,7 +214,7 @@ class FileCache:
                 self._scan()
             return self._files.get("python", []).copy()
 
-    def get_markdown_files(self) -> List[Path]:
+    def get_markdown_files(self) -> list[Path]:
         """
         Get all Markdown files (.md, .markdown).
 
@@ -260,7 +259,7 @@ class FileCache:
 
 
 # Convenience functions for common use cases
-def get_python_files(project_root: Optional[Path] = None) -> List[Path]:
+def get_python_files(project_root: Path | None = None) -> list[Path]:
     """
     Convenience function to get all Python files.
 
@@ -274,7 +273,7 @@ def get_python_files(project_root: Optional[Path] = None) -> List[Path]:
     return cache.get_python_files()
 
 
-def get_all_files(project_root: Optional[Path] = None) -> List[Path]:
+def get_all_files(project_root: Path | None = None) -> list[Path]:
     """
     Convenience function to get all files.
 

@@ -6,10 +6,9 @@ This ensures 100% test coverage by adding the testing mixin to each agent.
 import json
 import re
 from pathlib import Path
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 # Load agent discovery data
-with open('agent_discovery_full.json', 'r') as f:
+with open('agent_discovery_full.json') as f:
     agents = json.load(f)
 
 print(f"Total agents: {len(agents)}")
@@ -107,9 +106,9 @@ for agent in agents_without_tests:
         error_count += 1
 
 print(f"\n{'='*70}")
-print(f"SUMMARY")
+print("SUMMARY")
 print(f"{'='*70}")
 print(f"Modified: {modified_count}")
 print(f"Skipped (already has testing): {skipped_count}")
 print(f"Errors: {error_count}")
-print(f"\nNext step: Run full_agent_discovery.py to update test coverage stats")
+print("\nNext step: Run full_agent_discovery.py to update test coverage stats")

@@ -5,6 +5,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from dataclasses import dataclass
+
 """
 Unified Guardrail Agent - Canonical Membrane Pattern
 
@@ -14,27 +15,15 @@ mutation blocking, circuit breaking, PII protection, and specialized enforcement
 """
 
 from __future__ import annotations
-from abc import ABC, abstractmethod
-from typing import Dict, List, Any, Optional
-from enum import Enum
 
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
-)
+from abc import ABC, abstractmethod
+from enum import Enum
+from typing import Any
+
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.validators.structure_blueprint import (
+    TESTS_DIR,
+)
 from agentic_core.utils.core_extensions.decorators import standard_heal
 
 
@@ -56,7 +45,7 @@ class Guardrail(ABC):
         self.violations = 0
 
     @abstractmethod
-    def check(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    def check(self, input_data: dict[str, Any]) -> dict[str, Any]:
         """
         Check input against guardrail.
 
@@ -84,7 +73,7 @@ class RateLimitGuardrail(Guardrail):
         self.window_seconds = window_seconds
         self.call_count = 0
 
-    def check(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    def check(self, input_data: dict[str, Any]) -> dict[str, Any]:
         """Check rate limit."""
         if not self.enabled:
             return {"result": GuardrailResult.ALLOW, "reason": "disabled"}
@@ -104,12 +93,12 @@ class RateLimitGuardrail(Guardrail):
 class MutationGuardrail(Guardrail):
     """Mutation blocking guardrail - prevents unauthorized modifications."""
 
-    def __init__(self, protected_fields: Optional[List[str]] = None) -> None:
+    def __init__(self, protected_fields: list[str] | None = None) -> None:
         """Initialize mutation guardrail."""
         super().__init__("MutationBlock")
         self.protected_fields = protected_fields or ["id", "created_at", "owner"]
 
-    def check(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    def check(self, input_data: dict[str, Any]) -> dict[str, Any]:
         """Check for unauthorized mutations."""
         if not self.enabled:
             return {"result": GuardrailResult.ALLOW, "reason": "disabled"}
@@ -129,12 +118,12 @@ class MutationGuardrail(Guardrail):
 class ContentFilterGuardrail(Guardrail):
     """Content filtering guardrail - blocks malicious/inappropriate content."""
 
-    def __init__(self, blocked_patterns: Optional[List[str]] = None) -> None:
+    def __init__(self, blocked_patterns: list[str] | None = None) -> None:
         """Initialize content filter."""
         super().__init__("ContentFilter")
         self.blocked_patterns = blocked_patterns or ["<script>", "DROP TABLE", "exec("]
 
-    def check(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    def check(self, input_data: dict[str, Any]) -> dict[str, Any]:
         """Check content for blocked patterns."""
         if not self.enabled:
             return {"result": GuardrailResult.ALLOW, "reason": "disabled"}
@@ -163,7 +152,7 @@ class CircuitBreakerGuardrail(Guardrail):
         self.failure_count = 0
         self.is_open = False
 
-    def check(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    def check(self, input_data: dict[str, Any]) -> dict[str, Any]:
         """Check circuit breaker state."""
         if not self.enabled:
             return {"result": GuardrailResult.ALLOW, "reason": "disabled"}
@@ -188,12 +177,12 @@ class CircuitBreakerGuardrail(Guardrail):
 class PIIAirlockGuardrail(Guardrail):
     """PII airlock guardrail - detects and masks personally identifiable information."""
 
-    def __init__(self, pii_patterns: Optional[List[str]] = None) -> None:
+    def __init__(self, pii_patterns: list[str] | None = None) -> None:
         """Initialize PII airlock."""
         super().__init__("PIIAirlock")
         self.pii_patterns = pii_patterns or ["email", "phone", "ssn", "credit_card"]
 
-    def check(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    def check(self, input_data: dict[str, Any]) -> dict[str, Any]:
         """Check for PII in input."""
         if not self.enabled:
             return {"result": GuardrailResult.ALLOW, "reason": "disabled"}
@@ -219,7 +208,7 @@ class PIIAirlockGuardrail(Guardrail):
 class AuthenticationGuardrail(Guardrail):
     """Authentication guardrail - validates user identity."""
 
-    def check(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    def check(self, input_data: dict[str, Any]) -> dict[str, Any]:
         """Check authentication."""
         if not self.enabled:
             return {"result": GuardrailResult.ALLOW, "reason": "disabled"}
@@ -239,12 +228,12 @@ class AuthenticationGuardrail(Guardrail):
 class AuthorizationGuardrail(Guardrail):
     """Authorization guardrail - validates user permissions."""
 
-    def __init__(self, required_permissions: Optional[List[str]] = None) -> None:
+    def __init__(self, required_permissions: list[str] | None = None) -> None:
         """Initialize authorization guardrail."""
         super().__init__("Authorization")
         self.required_permissions = required_permissions or ["read", "write"]
 
-    def check(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    def check(self, input_data: dict[str, Any]) -> dict[str, Any]:
         """Check authorization."""
         if not self.enabled:
             return {"result": GuardrailResult.ALLOW, "reason": "disabled"}
@@ -274,7 +263,7 @@ class CompositeGuardrailAgent(MCPHardenedMixin):
 
     def __init__(self) -> None:
         """Initialize composite guardrail with all 21 canonical guardrails."""
-        self.guardrails: List[Guardrail] = [
+        self.guardrails: list[Guardrail] = [
             RateLimitGuardrail(max_calls=100, window_seconds=60),
             MutationGuardrail(),
             ContentFilterGuardrail(),
@@ -287,7 +276,7 @@ class CompositeGuardrailAgent(MCPHardenedMixin):
         self.total_checks = 0
         self.total_blocks = 0
 
-    def enforce(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    def enforce(self, input_data: dict[str, Any]) -> dict[str, Any]:
         """
         Enforce all guardrails in sequence.
 
@@ -333,7 +322,7 @@ class CompositeGuardrailAgent(MCPHardenedMixin):
             "metadata": {"guardrails_checked": len(self.guardrails)}
         }
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get guardrail statistics."""
         return {
             "total_checks": self.total_checks,
@@ -359,7 +348,7 @@ class CompositeGuardrailAgent(MCPHardenedMixin):
         return False
 
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, **kwargs) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, **kwargs) -> dict[str, Any]:
         """Repository healing with parent chain invocation."""
         try:
             result = super().heal_repository(dry_run=dry_run, **kwargs)

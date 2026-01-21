@@ -1,15 +1,16 @@
 from __future__ import annotations
+
 import ast
+
 '''Brief description of functionality and purpose.'''
 
 import asyncio
 import functools
 import json
 import os
-import re
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol, Set
+from typing import Any
 
 try:
     from google import genai
@@ -122,7 +123,7 @@ few_shot_style = """
 # SOVEREIGN UTILITIES
 # ==============================================================================
 
-def _get_python_files(base_path: str = ".") -> List[str]:
+def _get_python_files(base_path: str = ".") -> list[str]:
     """
     Recursively finds all Python files in the given base path.
     """
@@ -176,10 +177,10 @@ def _rate_limited_retry(max_attempts: int = 3, delay_seconds: float = 1.0):
 class DependencyGraph:
     """Builds a directed graph of imports and class hierarchies."""
     def __init__(self):
-        self.graph: Dict[str, Dict[str, List[Any]]] = {}
-        self.reverse_graph: Dict[str, List[str]] = {}
+        self.graph: dict[str, dict[str, list[Any]]] = {}
+        self.reverse_graph: dict[str, list[str]] = {}
 
-    async def build(self, files: List[str]):
+    async def build(self, files: list[str]):
         """Asynchronously builds the code graph from a list of files."""
         print("   🕸️ Building Holistic Code Graph...")
         for file_path in files:
@@ -187,7 +188,7 @@ class DependencyGraph:
             try:
                 # Synchronous file read is replaced in high-performance contexts,
                 # but standard open remains safe for local configuration analysis.
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(file_path, encoding="utf-8") as f:
                     tree = ast.parse(f.read())
                 for node in ast.walk(tree):
                     if isinstance(node, ast.Import):
@@ -206,7 +207,7 @@ class DependencyGraph:
                         self.reverse_graph[imp] = []
                     self.reverse_graph[imp].append(file)
 
-    def get_impact_radius(self, file_path: str) -> List[str]:
+    def get_impact_radius(self, file_path: str) -> list[str]:
         """Calculates which files depend on the given path."""
         module_name = file_path.replace("/", ".").replace("\\", ".").replace(".py", "")
         impacted = set()
@@ -218,7 +219,7 @@ class DependencyGraph:
 # NAMING FIXED: BudgetManager → BudgetManager
 class BudgetManager:
     """Tracks estimated token usage and financial safety limits."""
-    def __init__(self, limit_usd: Optional[float] = None):
+    def __init__(self, limit_usd: float | None = None):
         # SAFETY FIX: Prioritize environment variables for resource limits
         env_limit = os.getenv("AGENTIC_BUDGET_USD")
         self.limit = float(env_limit) if env_limit else (limit_usd or 2.0)
@@ -252,21 +253,21 @@ class BudgetManager:
 # NAMING FIXED: ValidationContext → ValidationContext
 class ValidationContext:
     """Shared memory and infrastructure state for all agents."""
-    results: Dict[int, Any] = field(default_factory=dict)
-    signals: Set[str] = field(default_factory=set)
-    instructions: List[str] = field(default_factory=list)
-    modified_files: Set[str] = field(default_factory=set)
-    python_files: List[str] = field(default_factory=list)
+    results: dict[int, Any] = field(default_factory=dict)
+    signals: set[str] = field(default_factory=set)
+    instructions: list[str] = field(default_factory=list)
+    modified_files: set[str] = field(default_factory=set)
+    python_files: list[str] = field(default_factory=list)
     graph: DependencyGraph = field(default_factory=DependencyGraph)
     code_graph: DependencyGraph = field(default_factory=DependencyGraph)
     budget: BudgetManager = field(default_factory=BudgetManager)
 
     # Memory
     memory_file: Path = field(default_factory=lambda: Path("canon_memory.json"))
-    file_hashes: Dict[str, str] = field(default_factory=dict)
-    skip_files: Set[str] = field(default_factory=set)
-    flapping_files: List[str] = field(default_factory=list) # Changed from set to list to match default_factory
-    successful_traces: List[str] = field(default_factory=list)
+    file_hashes: dict[str, str] = field(default_factory=dict)
+    skip_files: set[str] = field(default_factory=set)
+    flapping_files: list[str] = field(default_factory=list) # Changed from set to list to match default_factory
+    successful_traces: list[str] = field(default_factory=list)
 
     # Infrastructure
     model_id: str = field(default_factory=lambda: os.getenv("GEMINI_MODEL", "gemini-2.0-flash"))
@@ -274,17 +275,17 @@ class ValidationContext:
     intelligence_enabled: bool = field(default=False, init=False)
 
     # File backups for rollback
-    file_backups: Dict[str, str] = field(default_factory=dict)
+    file_backups: dict[str, str] = field(default_factory=dict)
 
     # WebSocket clients for L5 streaming
-    websocket_clients: Set[Any] = field(default_factory=set)
+    websocket_clients: set[Any] = field(default_factory=set)
 
     # Prompts
     FEW_SHOT_HYGIENE: str = FEW_SHOT_HYGIENE
     FEW_SHOT_STYLE: str = FEW_SHOT_STYLE
 
     def __post_init__(self):
-        print(f"   [CTX] 🧠 INITIALIZING TRI-BRAIN...")
+        print("   [CTX] 🧠 INITIALIZING TRI-BRAIN...")
         self.python_files = _get_python_files() # Refactored
         self._load_memory()
         self._init_intelligence()
@@ -295,14 +296,14 @@ class ValidationContext:
             try:
                 self._client = genai.Client(api_key=api_key)
                 self.intelligence_enabled = True
-                print(f"      [OK] Gemini Connected")
+                print("      [OK] Gemini Connected")
             except Exception:
                 pass
 
     def _load_memory(self):
         if self.memory_file.exists():
             try:
-                with open(self.memory_file, 'r') as f:
+                with open(self.memory_file) as f:
                     data = json.load(f)
                     self.file_hashes = data.get('hashes', {})
                     self.skip_files = set(data.get('skip', []))
@@ -326,7 +327,7 @@ class ValidationContext:
     def get_file_content(self, file_path: str) -> str:
 
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 return f.read()
         except Exception:
             return ""
@@ -422,7 +423,7 @@ class ValidationContext:
         for file_path in self.python_files:
             self.graph.graph[file_path] = {"imports": [], "classes": []}
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(file_path, encoding="utf-8") as f:
                     tree = ast.parse(f.read())
                 for node in ast.walk(tree):
                     if isinstance(node, ast.Import):

@@ -5,7 +5,9 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 """
 DeadlockDetectorAgent - L3 System Health Specialist
 
@@ -14,12 +16,9 @@ Alerts when tasks exceed MAX_PHASE_TIME without progress.
 """
 import asyncio
 import inspect
-import json
 import logging
 import time
-from datetime import datetime
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol, Set
+from typing import Any
 
 # NAMING FIXED: LOGGER → Logger
 Logger = logging.getLogger(__name__)
@@ -35,6 +34,7 @@ deadlock_threshold = 2  # Alert after 2 consecutive timeouts
 
 # NAMING FIXED: TaskMonitorAgent → TaskMonitorAgent
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+
 
 @dataclass
 class TaskMonitorAgent(HealerMixin):
@@ -85,14 +85,9 @@ class TaskMonitorAgent(HealerMixin):
 
 # NAMING FIXED: DeadlockDetectorAgent → DeadlockDetectorAgent
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import L3SubatomicTestingMixin
-from agentic_core.schemas.models.anomaly_report import AnomalyReport, AnomalySeverity
-from agentic_core.utils.core_extensions.decorators import standard_heal
-
 
 # Global instance
-_deadlock_detector: Optional[DeadlockDetectorAgent] = None
+_deadlock_detector: DeadlockDetectorAgent | None = None
 
 
 def get_deadlock_detector() -> DeadlockDetectorAgent:

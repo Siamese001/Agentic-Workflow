@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Backoff strategies for retry logic.
 
 Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
@@ -7,7 +8,6 @@ Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 import random
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Optional
 
 
 class BackoffStrategy(ABC):

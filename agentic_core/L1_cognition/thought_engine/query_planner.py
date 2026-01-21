@@ -1,18 +1,14 @@
 from __future__ import annotations
+
 """
 QueryPlanner - L1 Cognition Query Decomposition and Expansion
 """
-import asyncio
 import json
 import logging
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -21,7 +17,7 @@ class QueryPlanner:
     Sovereign L1 Query Planner – transforms queries for maximum recall/precision
     """
 
-    def __init__(self, engine: Optional[SubAtomicEngine]=None, cache: Optional[SemanticCache]=None):
+    def __init__(self, engine: SubAtomicEngine | None=None, cache: SemanticCache | None=None):
         self.engine = engine or SubAtomicEngine(gemini_client=None)
         self.cache = cache or SemanticCache()
         self.expansion_temperature = 0.7
@@ -35,7 +31,7 @@ class QueryPlanner:
         match = re.search('(\\[.*\\]|\\{.*\\})', cleaned, re.DOTALL)
         return match.group(1) if match else cleaned
 
-    async def multi_query_generation(self, original_query: str) -> List[str]:
+    async def multi_query_generation(self, original_query: str) -> list[str]:
         """
         L1: Generate diverse query variants to maximize vector recall.
         """
@@ -57,7 +53,7 @@ class QueryPlanner:
         await self.cache.set(cache_key, {'queries': queries})
         return queries
 
-    async def decompose_query(self, query: str) -> List[str]:
+    async def decompose_query(self, query: str) -> list[str]:
         """
         L1 Sovereign Query Decomposition - Thread-safe and JSON-hardened.
         """
@@ -80,11 +76,11 @@ class QueryPlanner:
         await self.cache.set(cache_key, {'sub_queries': sub_queries})
         return sub_queries
 
-    async def decompose_and_expand(self, query: str) -> List[str]:
+    async def decompose_and_expand(self, query: str) -> list[str]:
         """
         L1: Decompose query + generate expanded variants (legacy method)
         """
-        prompt: Any = f'\nYou are a semantic query expansion specialist. Given a user query, generate 5-8 expanded queries that capture:\n- Core intent\n- Specific technical terms\n- Broader context\n- Related concepts\n\nOutput format: {{"queries": ["query1", "query2", ...]}}\n'
+        prompt: Any = '\nYou are a semantic query expansion specialist. Given a user query, generate 5-8 expanded queries that capture:\n- Core intent\n- Specific technical terms\n- Broader context\n- Related concepts\n\nOutput format: {"queries": ["query1", "query2", ...]}\n'
         response: Any = await self.engine.resilient_mutation(prompt=prompt, temperature=self.expansion_temperature, response_format={'type': 'json_object'})
         try:
             result: Any = json.loads(self._clean_json_response(response))
@@ -94,7 +90,7 @@ class QueryPlanner:
             expanded: Any = [query]
         return expanded
 
-    async def generate_synthetic_passages(self, query: str) -> List[str]:
+    async def generate_synthetic_passages(self, query: str) -> list[str]:
         """
         Generate synthetic documentation passages for training
         """

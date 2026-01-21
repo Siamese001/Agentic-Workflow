@@ -16,7 +16,7 @@ import ast
 import logging
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
@@ -36,17 +36,14 @@ except ImportError:
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 try:
     from agentic_core.L5_safety.validators.structure_blueprint import (
-        SOVEREIGN_REGISTRY,
         CORE_SUBFOLDER_MAP,
+        SOVEREIGN_REGISTRY,
     )
 except ImportError:
-    from agentic_core.config.blueprint_sovereign.registry import (
-        SOVEREIGN_REGISTRY,
-        CORE_SUBFOLDER_MAP,
-    )
+    pass
 
 # DDD Bounded Contexts - derived from sovereign layer hierarchy
-BOUNDED_CONTEXTS: Dict[str, Dict[str, Any]] = {
+BOUNDED_CONTEXTS: dict[str, dict[str, Any]] = {
     "L0_Governance": {
         "path": "agentic_core/L0_maintenance",
         "rank": 0,
@@ -166,10 +163,10 @@ class DDDAlignmentAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         else:
             self.project_root = Path(self.project_root).resolve()
 
-        self.violations: List[DDDViolation] = []
+        self.violations: list[DDDViolation] = []
         self._skip_patterns = {'tests', 'archives', '__pycache__', '.git', 'venv', '.venv'}
 
-    def _get_file_context(self, filepath: Path) -> Optional[str]:
+    def _get_file_context(self, filepath: Path) -> str | None:
         """Determine which bounded context a file belongs to."""
         file_str = str(filepath).replace('\\', '/')
 
@@ -197,7 +194,7 @@ class DDDAlignmentAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
         return False
 
-    def _check_file_imports(self, filepath: Path) -> List[DDDViolation]:
+    def _check_file_imports(self, filepath: Path) -> list[DDDViolation]:
         """Check a single file for DDD violations."""
         violations = []
 
@@ -244,7 +241,7 @@ class DDDAlignmentAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         path_str = str(path)
         return any(skip in path_str for skip in self._skip_patterns)
 
-    def run(self, target_dir: Path = None) -> List[DDDViolation]:
+    def run(self, target_dir: Path = None) -> list[DDDViolation]:
         """
         Scan for DDD bounded context violations.
 
@@ -291,9 +288,9 @@ class DDDAlignmentAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         score = max(0.0, 100.0 - len(self.violations) * 2)
         return score
 
-    def get_violation_summary(self) -> Dict[str, Any]:
+    def get_violation_summary(self) -> dict[str, Any]:
         """Get summary of violations by context pair."""
-        summary: Dict[str, int] = {}
+        summary: dict[str, int] = {}
 
         for v in self.violations:
             key = f"{v.source_context} -> {v.target_context}"
@@ -312,8 +309,8 @@ class DDDAlignmentAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[Set[str]] = None,
-    ) -> Dict[str, Any]:
+        _call_path: set[str] | None = None,
+    ) -> dict[str, Any]:
         """
         Autonomous DDD alignment enforcement (Canon Key 51 compliance).
 
@@ -369,7 +366,7 @@ class DDDAlignmentAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                 print("   to decouple bounded contexts. Import from 'contracts' or 'interfaces'")
                 print("   modules instead of directly importing implementation classes.")
             else:
-                print(f"   [OK] DDD Alignment: 100% - No bounded context violations")
+                print("   [OK] DDD Alignment: 100% - No bounded context violations")
 
             return result
 
@@ -377,7 +374,7 @@ class DDDAlignmentAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             _call_path.discard(agent_name)
 
 
-def validate_ddd_alignment(target_dir: str) -> Tuple[float, List[str]]:
+def validate_ddd_alignment(target_dir: str) -> tuple[float, list[str]]:
     """
     Convenience function for DDD validation.
 

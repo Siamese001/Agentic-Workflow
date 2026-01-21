@@ -15,9 +15,9 @@ Test Cases:
 NOTE: Tests use actual project directory with proper cleanup to avoid
 LocationAgent's project root validation issues.
 """
-import sys
-import shutil
 import atexit
+import shutil
+import sys
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
@@ -283,7 +283,7 @@ def test_shallow_violation_nesting():
             if nested_files:
                 test_pass("NESTED_ALT", f"File found at: {nested_files[0].relative_to(test_root)}")
             else:
-                test_fail("NESTED", f"File not found at expected location")
+                test_fail("NESTED", "File not found at expected location")
 
         if not shallow_file.exists():
             test_pass("ORIGINAL_REMOVED", "Original shallow file removed")

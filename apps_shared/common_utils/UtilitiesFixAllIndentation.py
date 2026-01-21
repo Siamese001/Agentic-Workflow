@@ -1,16 +1,16 @@
 from __future__ import annotations
+
 #!/usr/bin/env python3
 """Fix all indentation errors in canon_validator_engine.py"""
 
 import re
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 
 def fix_all_indentation():
     '''Brief description of functionality and purpose.'''
 
     # Read the file with UTF-8 encoding
-    with open('canon_validator_engine.py', 'r', encoding='utf-8') as f:
+    with open('canon_validator_engine.py', encoding='utf-8') as f:
         content = f.read()
 
     # Pattern to match broken except blocks
@@ -26,7 +26,7 @@ def fix_all_indentation():
         if actual_code.startswith('return'):
             fixed_code = f'        {actual_code}'
         elif actual_code.startswith('if Logger:'):
-            fixed_code = f'        if Logger:'
+            fixed_code = '        if Logger:'
             # Add the Logger lines after
             lines = actual_code.split('\n')
             for line in lines[1:]:
@@ -53,7 +53,7 @@ def fix_all_indentation():
         elif actual_code.startswith('if'):
             fixed_code = f'        {actual_code}'
         else:
-            fixed_code = f'        pass'
+            fixed_code = '        pass'
 
         return except_line + fixed_code + '\n'
 

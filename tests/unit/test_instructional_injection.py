@@ -7,10 +7,9 @@ the 30 instructional injection patterns from v5.
 SOURCE: data/prompt_governance/prompt_injections/Instructional_Injection_Enhanced_v5.md
 """
 
-import pytest
 from pathlib import Path
-import ast
-import importlib.util
+
+import pytest
 
 
 def get_project_root() -> Path:
@@ -112,10 +111,10 @@ class TestInstructionalInjectionMixin:
 
     def test_subatomic_testing_mixin_inherits_injection(self):
         """Verify SubatomicTestingMixin inherits InstructionalInjectionMixin."""
-        from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
         from agentic_core.utils.core_extensions.instructional_injection_mixin import (
             InstructionalInjectionMixin,
         )
+        from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
         assert issubclass(SubatomicTestingMixin, InstructionalInjectionMixin)
 

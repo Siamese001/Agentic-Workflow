@@ -7,14 +7,14 @@ ambiguity and demonstrate proper adherence.
 
 import json
 import logging
-from typing import Dict, List, Any, Optional, Tuple
 from dataclasses import dataclass
-from pathlib import Path
 from enum import Enum
+from pathlib import Path
+from typing import Any
+
 from pydantic import BaseModel, Field
 
 from .prompt_injection_loader import InjectionPattern
-from .instructional_injections import get_instructional_injections
 
 logger = logging.getLogger(__name__)
 
@@ -37,13 +37,13 @@ class FewShotExample:
     bad_example: str
     good_example: str
     explanation: str
-    metrics: Optional[Dict[str, Any]] = None
+    metrics: dict[str, Any] | None = None
 
 
 class FewShotRegistry(BaseModel):
     """Registry for managing few-shot examples."""
-    examples: Dict[str, List[FewShotExample]] = Field(default_factory=dict)
-    context_mappings: Dict[str, ContextType] = Field(default_factory=dict)
+    examples: dict[str, list[FewShotExample]] = Field(default_factory=dict)
+    context_mappings: dict[str, ContextType] = Field(default_factory=dict)
 
     class Config:
         arbitrary_types_allowed = True
@@ -163,7 +163,7 @@ class FewShotRegistry(BaseModel):
 
         for file_path in directory.glob("*.json"):
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
+                with open(file_path, encoding='utf-8') as f:
                     data = json.load(f)
 
                 if isinstance(data, list):
@@ -213,7 +213,7 @@ class FewShotRegistry(BaseModel):
 
 
 # Global registry instance
-_few_shot_registry: Optional[FewShotRegistry] = None
+_few_shot_registry: FewShotRegistry | None = None
 
 
 def get_few_shot_registry() -> FewShotRegistry:
@@ -318,7 +318,7 @@ def get_examples_for_injection(
 
 def enhance_with_examples(
     base_prompt: str,
-    injections: List[InjectionPattern],
+    injections: list[InjectionPattern],
     context: str = "general"
 ) -> str:
     """Enhance a prompt with few-shot examples for each injection.
@@ -349,7 +349,7 @@ def create_custom_example(
     bad_example: str,
     good_example: str,
     explanation: str,
-    metrics: Optional[Dict[str, Any]] = None
+    metrics: dict[str, Any] | None = None
 ) -> None:
     """Create and add a custom example.
 

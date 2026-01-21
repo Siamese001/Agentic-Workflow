@@ -19,7 +19,6 @@ from __future__ import annotations
 import argparse
 import re
 from pathlib import Path
-from typing import List, Tuple
 
 # Files to EXCLUDE from refactoring
 EXCLUDED_FILES = {
@@ -58,7 +57,7 @@ SIMPLE_READ_PATTERN_ALT = re.compile(
 SAFE_IO_IMPORT = "from agentic_core.utils.file_utils import safe_read_file"
 
 
-def find_python_files(root: Path) -> List[Path]:
+def find_python_files(root: Path) -> list[Path]:
     """Find all Python files in agentic_core, excluding specified directories."""
     files = []
     for path in root.rglob("*.py"):
@@ -108,7 +107,7 @@ def find_import_insertion_point(content: str) -> int:
     return last_import_line
 
 
-def replace_simple_reads(content: str) -> Tuple[str, int]:
+def replace_simple_reads(content: str) -> tuple[str, int]:
     """Replace simple read patterns with safe_read_file().
 
     Returns:
@@ -232,7 +231,7 @@ def main():
             rel_path = file_path.relative_to(root.parent)
             print(f"  {'[WOULD MODIFY]' if dry_run else '[MODIFIED]'} {rel_path}")
             if result["import_added"]:
-                print(f"    + Added safe_read_file import")
+                print("    + Added safe_read_file import")
             if result["replacements"]:
                 print(f"    + Replaced {result['replacements']} read pattern(s)")
 

@@ -1,5 +1,7 @@
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 """
 Outreach Engine Agents - Specialized Agents for Campaign Automation
 
@@ -15,12 +17,8 @@ Provides domain-specific agents for outreach campaigns:
 - LicReflectionAgent: Reflects on execution
 """
 
-import re
 
 from .OutreachAgent import OutreachAgent
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass
@@ -90,6 +88,5 @@ class LeadQualityAgent(OutreachAgent):
 
 # DEPRECATED: Moved to OutreachTestPilotAgent.py (Jan 6, 2026)
 # Import for backward compatibility
-from .OutreachTestPilotAgent import OutreachTestPilotAgent as OutreachTestPilot
 
 # OutreachTestPilotDeprecatedAgent extracted to OutreachTestPilotDeprecatedAgent.py (Phase B Task 2)

@@ -5,23 +5,19 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 import asyncio
 from dataclasses import dataclass
+
 '''Brief description of functionality and purpose.'''
 
 import datetime
-import re
-import time
 
 from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
@@ -52,7 +48,7 @@ class CartographerAgent(HealerMixin, SubatomicTestingMixin, SubAtomicAgent, MCPH
         try:
             # Replace blocking file I/O with async alternative using to_thread
             def _read_sync():
-                with open(file_path, 'r', encoding='utf-8') as f:
+                with open(file_path, encoding='utf-8') as f:
                     return f.read()
 
             content = await asyncio.to_thread(_read_sync)
@@ -64,7 +60,7 @@ class CartographerAgent(HealerMixin, SubatomicTestingMixin, SubAtomicAgent, MCPH
                 metadata={"modified": datetime.datetime.now(datetime.timezone.utc).isoformat()}
             )
             print(f"      📍 Mapped: {file_path}")
-        except (IOError, UnicodeDecodeError):
+        except (OSError, UnicodeDecodeError):
             # Specific error handling for file access and encoding
             pass
 

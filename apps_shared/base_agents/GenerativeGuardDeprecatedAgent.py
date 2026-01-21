@@ -5,22 +5,25 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from dataclasses import dataclass
+
 """
 GenerativeGuardDeprecatedAgent - Extracted from CanonHealerAgent.py
 Deprecated guard logic preserved for backward compatibility.
 """
 from __future__ import annotations
+
 import importlib  # AUTO-INJECTED BY GRAVITY HEALER
 import logging
 import os
-from typing import Any, Dict, List
+from typing import Any
+
 # GRAVITY VIOLATION: from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 # GRAVITY FIXED (Upward Leak): from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 _mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_mixin')
-MCPHardenedMixin = getattr(_mod, 'MCPHardenedMixin')
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+MCPHardenedMixin = _mod.MCPHardenedMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 EXCLUDED_DIRS = {'__pycache__', '.git', 'node_modules', 'venv', '.venv'}
 
@@ -36,7 +39,7 @@ class GenerativeGuardDeprecatedAgent(HealerMixin, CanonBaseAgentInterface, MCPHa
     """
 
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -64,12 +67,12 @@ class GenerativeGuardDeprecatedAgent(HealerMixin, CanonBaseAgentInterface, MCPHa
             r"_temp\d*\.py$",
         ]
 
-    async def execute(self, goal: str = None, context: Dict[str, Any] = None) -> Dict[str, Any]:
+    async def execute(self, goal: str = None, context: dict[str, Any] = None) -> dict[str, Any]:
         """Execute guard checks - maintains backward compatibility."""
         await self._execute_guard()
         return {"status": "completed", "agent": self.name}
 
-    def get_capabilities(self) -> List[str]:
+    def get_capabilities(self) -> list[str]:
         """Execute get_capabilities operation."""
         return self.impl.get_capabilities()
 
@@ -103,7 +106,7 @@ class GenerativeGuardDeprecatedAgent(HealerMixin, CanonBaseAgentInterface, MCPHa
         except OSError as e:
             print(f"         [X] Failed to delete {file_path}: {e}", file=sys.stderr)
 
-    def _process_found_violations(self, violations: List[str]) -> Any:
+    def _process_found_violations(self, violations: list[str]) -> Any:
         """Helper to process and optionally purge detected runaway files."""
         print(f"   🛑 RUNAWAY GENERATION DETECTED ({len(violations)} files).")
         self.ctx.report(self.name, 45, False, violations)
@@ -125,7 +128,7 @@ class GenerativeGuardDeprecatedAgent(HealerMixin, CanonBaseAgentInterface, MCPHa
                 return True
         return False
 
-    def _find_runaway_violations_in_dir(self, root: str, files: List[str]) -> List[str]:
+    def _find_runaway_violations_in_dir(self, root: str, files: list[str]) -> list[str]:
         """Helper to find runaway violations within a specific directory."""
         violations_in_dir = []
         for file in files:

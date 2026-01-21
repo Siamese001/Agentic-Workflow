@@ -9,12 +9,14 @@ Comprehensive verification that all mock data has been eliminated:
 4. Validate outlier badges use real data
 5. Check semantic/runtime metrics are disabled
 """
-import json
 import re
-from pathlib import Path
 
 # Import SSOT for dashboard directory - NO HARDCODING
-from agentic_core.L5_safety.validators.structure_blueprint import DASHBOARD_DIR, get_validated_project_root
+from agentic_core.L5_safety.validators.structure_blueprint import (
+    DASHBOARD_DIR,
+    get_validated_project_root,
+)
+
 
 def verify_no_mock_data():
     """Verify all mock data has been eliminated from dashboard."""

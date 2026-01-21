@@ -7,27 +7,11 @@ This script matches the dashboard's detection logic:
 """
 import ast
 import json
-import re
 from pathlib import Path
-from typing import List, Tuple, Optional, Dict, Any
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 PROJECT_ROOT = Path(__file__).parent.parent
 
@@ -43,7 +27,7 @@ def has_super_heal_call(func_node: ast.FunctionDef) -> bool:
     return False
 
 
-def check_invocation_status_dashboard(source: str) -> Tuple[str, Optional[ast.FunctionDef]]:
+def check_invocation_status_dashboard(source: str) -> tuple[str, ast.FunctionDef | None]:
     """
     Check invocation status using EXACT dashboard logic.
     Returns: (status, first_heal_method_node or None)
@@ -74,7 +58,7 @@ def is_method_in_class(func_node: ast.FunctionDef, tree: ast.Module) -> bool:
     return first_arg.arg == 'self'
 
 
-def find_insertion_point(func_node: ast.FunctionDef, lines: List[str]) -> Tuple[int, str]:
+def find_insertion_point(func_node: ast.FunctionDef, lines: list[str]) -> tuple[int, str]:
     """Find correct insertion point after docstring, return (line_index, indent)."""
     if not func_node.body:
         return -1, ""
@@ -84,7 +68,7 @@ def find_insertion_point(func_node: ast.FunctionDef, lines: List[str]) -> Tuple[
     # Check if first statement is a docstring
     is_docstring = (
         isinstance(first_stmt, ast.Expr) and
-        isinstance(first_stmt.value, (ast.Constant, ast.Str)) and
+        isinstance(first_stmt.value, ast.Constant | ast.Str) and
         (isinstance(first_stmt.value, ast.Str) or isinstance(getattr(first_stmt.value, 'value', None), str))
     )
 
@@ -149,7 +133,7 @@ def add_super_call(source: str) -> str:
 
 def main():
     # Load agent registry
-    with open(PROJECT_ROOT / AGENT_DISCOVERY_JSON, 'r', encoding='utf-8') as f:
+    with open(PROJECT_ROOT / AGENT_DISCOVERY_JSON, encoding='utf-8') as f:
         agents = json.load(f)
 
     print(f"Loaded {len(agents)} agents from registry")
@@ -180,7 +164,7 @@ def main():
         except Exception as e:
             print(f"Error reading {path}: {e}")
 
-    print(f"\nInvocation status counts (dashboard logic):")
+    print("\nInvocation status counts (dashboard logic):")
     for status, count in status_counts.items():
         print(f"  {status}: {count}")
 

@@ -1,7 +1,9 @@
 import asyncio
 import logging
 import time
-from typing import Any, List, Dict, Callable, Coroutine, Optional
+from collections.abc import Coroutine
+from typing import Any
+
 
 class BatchOperationMixin:
     """
@@ -20,9 +22,9 @@ class BatchOperationMixin:
         self._bo_logger = logging.getLogger(self.__class__.__name__)
 
     async def batch_execute(self,
-                            tasks: List[Coroutine],
+                            tasks: list[Coroutine],
                             max_workers: int = 5,
-                            sequential: bool = False) -> List[Any]:
+                            sequential: bool = False) -> list[Any]:
         # Hardened: overall batch timeout + better failure classification
         """
         Executes a collection of tasks with controlled concurrency.

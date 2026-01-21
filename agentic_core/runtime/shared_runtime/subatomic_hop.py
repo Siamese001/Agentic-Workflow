@@ -1,11 +1,11 @@
 from __future__ import annotations
+
 import logging
 import time
 import uuid
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
 
-from agentic_core.config.blueprint_sovereign import ConfigurationService
-from agentic_core.runtime.core.telemetry import TelemetryRecorder, TraceEvent
+from agentic_core.runtime.core.telemetry import TraceEvent
 from agentic_core.schemas.models.core_contracts import AgentPlan
 
 LOGGER = logging.getLogger(__name__)
@@ -30,21 +30,21 @@ class SubatomicHop:
     def __init__(
         self,
         role: str,
-        config: Dict,
+        config: dict,
         # Injected Dependencies (The Sovereign Lego Pattern)
-        storage: Optional[Any] = None,
-        genealogy: Optional[Any] = None,
-        PiiVault: Optional[Any] = None,
-        CostGovernor: Optional[Any] = None,
-        overseer: Optional[Any] = None,
-        membrane: Optional[Any] = None,
-        airlock: Optional[Any] = None,
-        SupremeCourt: Optional[Any] = None,
-        mcp_manager: Optional[Any] = None,
-        sandbox: Optional[Any] = None,
-        StructuredEngine: Optional[Any] = None,
-        gatekeeper: Optional[Any] = None,
-        telemetry: Optional[Any] = None,
+        storage: Any | None = None,
+        genealogy: Any | None = None,
+        PiiVault: Any | None = None,
+        CostGovernor: Any | None = None,
+        overseer: Any | None = None,
+        membrane: Any | None = None,
+        airlock: Any | None = None,
+        SupremeCourt: Any | None = None,
+        mcp_manager: Any | None = None,
+        sandbox: Any | None = None,
+        StructuredEngine: Any | None = None,
+        gatekeeper: Any | None = None,
+        telemetry: Any | None = None,
     ) -> None:
         """Initialize SubatomicHop with injected dependencies.
 
@@ -107,12 +107,12 @@ class SubatomicHop:
             )
         return dep
 
-    async def run(self, context: Dict) -> Any:
+    async def run(self, context: dict) -> Any:
         """Execute the hop with zero-trust protections."""
         trace_id = context.get('trace_id', self.id)
         return await self._run_with_zero_trust(context, trace_id)
 
-    async def _run_with_zero_trust(self, context: Dict, trace_id: str) -> Any:
+    async def _run_with_zero_trust(self, context: dict, trace_id: str) -> Any:
         """Internal method with all L5.5 Zero Trust protections applied."""
         try:
             await self._preflight_checks(context, trace_id)
@@ -138,7 +138,7 @@ class SubatomicHop:
         finally:
             await self._cleanup(trace_id)
 
-    async def _preflight_checks(self, context: Dict, trace_id: str) -> None:
+    async def _preflight_checks(self, context: dict, trace_id: str) -> None:
         """Pre-flight validation and setup."""
         context_hash = str(hash(str(context)))
         self.genealogy.register_attempt(trace_id, str(context.get('Task', '')), context_hash)
@@ -158,7 +158,7 @@ class SubatomicHop:
             )
         )
 
-    async def _sanitize_input(self, context: Dict, trace_id: str) -> Dict:
+    async def _sanitize_input(self, context: dict, trace_id: str) -> dict:
         """Sanitize all inputs through the membrane."""
         sanitized = {}
         for key, value in context.items():
@@ -180,7 +180,7 @@ class SubatomicHop:
                 sanitized[key] = value
         return sanitized
 
-    async def _execute_think_stage(self, context: Dict, trace_id: str) -> tuple[AgentPlan, float]:
+    async def _execute_think_stage(self, context: dict, trace_id: str) -> tuple[AgentPlan, float]:
         """Execute the thinking stage with multi-model consensus."""
         risk_level = self._assess_task_risk(context.get('Task', ''))
         await self._check_past_failures(context.get('Task', ''))

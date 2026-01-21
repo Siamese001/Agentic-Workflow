@@ -10,12 +10,10 @@ Uses AST analysis to identify:
 """
 
 import ast
-import os
 import hashlib
-from pathlib import Path
-from typing import Dict, List, Set, Tuple, Optional, Any
 from collections import defaultdict
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+from pathlib import Path
 
 # ============================================================================
 # CONFIGURATION
@@ -33,8 +31,8 @@ class ClassInfo:
     """Information about a class."""
     name: str
     file_path: str
-    bases: List[str]
-    methods: List[str]
+    bases: list[str]
+    methods: list[str]
     method_count: int
     loc: int
     has_docstring: bool
@@ -47,7 +45,7 @@ class FunctionInfo:
     """Information about a function."""
     name: str
     file_path: str
-    params: List[str]
+    params: list[str]
     loc: int
     has_docstring: bool
     content_hash: str
@@ -56,8 +54,8 @@ class FunctionInfo:
 class FileInfo:
     """Information about a file."""
     path: str
-    classes: List[ClassInfo]
-    functions: List[FunctionInfo]
+    classes: list[ClassInfo]
+    functions: list[FunctionInfo]
     loc: int
     content_hash: str
     quality_score: float  # Based on docstrings, type hints, etc.
@@ -66,7 +64,7 @@ class FileInfo:
 # AST ANALYSIS
 # ============================================================================
 
-def get_node_source(node: ast.AST, source_lines: List[str]) -> str:
+def get_node_source(node: ast.AST, source_lines: list[str]) -> str:
     """Get source code for an AST node."""
     try:
         start = node.lineno - 1
@@ -75,7 +73,7 @@ def get_node_source(node: ast.AST, source_lines: List[str]) -> str:
     except:
         return ""
 
-def analyze_class(node: ast.ClassDef, file_path: str, source_lines: List[str]) -> ClassInfo:
+def analyze_class(node: ast.ClassDef, file_path: str, source_lines: list[str]) -> ClassInfo:
     """Analyze a class definition."""
     bases = []
     for base in node.bases:
@@ -86,7 +84,7 @@ def analyze_class(node: ast.ClassDef, file_path: str, source_lines: List[str]) -
 
     methods = []
     for item in node.body:
-        if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+        if isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef):
             methods.append(item.name)
 
     # Get docstring
@@ -109,7 +107,7 @@ def analyze_class(node: ast.ClassDef, file_path: str, source_lines: List[str]) -
         content_hash=content_hash
     )
 
-def analyze_function(node: ast.FunctionDef, file_path: str, source_lines: List[str]) -> FunctionInfo:
+def analyze_function(node: ast.FunctionDef, file_path: str, source_lines: list[str]) -> FunctionInfo:
     """Analyze a function definition."""
     params = [arg.arg for arg in node.args.args if arg.arg != 'self']
     docstring = ast.get_docstring(node) or ""
@@ -126,7 +124,7 @@ def analyze_function(node: ast.FunctionDef, file_path: str, source_lines: List[s
         content_hash=content_hash
     )
 
-def analyze_file(file_path: Path) -> Optional[FileInfo]:
+def analyze_file(file_path: Path) -> FileInfo | None:
     """Analyze a Python file."""
     try:
         content = file_path.read_text(encoding='utf-8', errors='replace')
@@ -141,7 +139,7 @@ def analyze_file(file_path: Path) -> Optional[FileInfo]:
     for node in ast.iter_child_nodes(tree):
         if isinstance(node, ast.ClassDef):
             classes.append(analyze_class(node, str(file_path), source_lines))
-        elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+        elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
             if not node.name.startswith('_'):
                 functions.append(analyze_function(node, str(file_path), source_lines))
 
@@ -166,7 +164,7 @@ def analyze_file(file_path: Path) -> Optional[FileInfo]:
 # DUPLICATE DETECTION
 # ============================================================================
 
-def find_duplicate_classes(all_files: List[FileInfo]) -> Dict[str, List[ClassInfo]]:
+def find_duplicate_classes(all_files: list[FileInfo]) -> dict[str, list[ClassInfo]]:
     """Find classes with the same name across files."""
     class_map = defaultdict(list)
 
@@ -177,7 +175,7 @@ def find_duplicate_classes(all_files: List[FileInfo]) -> Dict[str, List[ClassInf
     # Filter to only duplicates
     return {name: classes for name, classes in class_map.items() if len(classes) > 1}
 
-def find_duplicate_functions(all_files: List[FileInfo]) -> Dict[str, List[FunctionInfo]]:
+def find_duplicate_functions(all_files: list[FileInfo]) -> dict[str, list[FunctionInfo]]:
     """Find functions with the same name across files."""
     func_map = defaultdict(list)
 
@@ -190,7 +188,7 @@ def find_duplicate_functions(all_files: List[FileInfo]) -> Dict[str, List[Functi
     return {name: funcs for name, funcs in func_map.items()
             if len(funcs) > 1 and name not in common_names}
 
-def find_exact_duplicate_files(all_files: List[FileInfo]) -> Dict[str, List[FileInfo]]:
+def find_exact_duplicate_files(all_files: list[FileInfo]) -> dict[str, list[FileInfo]]:
     """Find files with identical content."""
     hash_map = defaultdict(list)
 
@@ -199,7 +197,7 @@ def find_exact_duplicate_files(all_files: List[FileInfo]) -> Dict[str, List[File
 
     return {h: files for h, files in hash_map.items() if len(files) > 1}
 
-def select_best_version(duplicates: List[ClassInfo]) -> Tuple[ClassInfo, List[ClassInfo]]:
+def select_best_version(duplicates: list[ClassInfo]) -> tuple[ClassInfo, list[ClassInfo]]:
     """Select the best version of a duplicate class."""
     # Score each version
     scored = []

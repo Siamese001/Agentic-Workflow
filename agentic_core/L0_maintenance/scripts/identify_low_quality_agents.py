@@ -5,13 +5,12 @@ Focuses on typed %, documented %, and schema strictness %.
 """
 import json
 from pathlib import Path
-from typing import List, Dict, Any
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from typing import Any
 
 PROJECT_ROOT = Path(__file__).parent.parent
 DISCOVERY_FILE = PROJECT_ROOT / "agent_discovery_full.json"
 
-def calculate_quality_score(agent: Dict[str, Any]) -> float:
+def calculate_quality_score(agent: dict[str, Any]) -> float:
     """Calculate combined quality score (lower is worse)."""
     typed = agent.get('typed_pct', 0)
     documented = agent.get('documented_pct', 0)
@@ -25,7 +24,7 @@ def main():
     print("=" * 70)
 
     # Load agent discovery
-    with open(DISCOVERY_FILE, 'r', encoding='utf-8') as f:
+    with open(DISCOVERY_FILE, encoding='utf-8') as f:
         agents = json.load(f)
 
     # Calculate quality scores
@@ -49,7 +48,7 @@ def main():
 
     print(f"\nTotal agents: {len(agents)}")
     print(f"Agents needing improvement: {len(needs_work)}")
-    print(f"\nCurrent averages:")
+    print("\nCurrent averages:")
     print(f"  Typed: {sum(a['typed_pct'] for a in agent_scores) / len(agent_scores):.1f}%")
     print(f"  Documented: {sum(a['documented_pct'] for a in agent_scores) / len(agent_scores):.1f}%")
     print(f"  Schema: {sum(a['schema_strictness'] for a in agent_scores) / len(agent_scores):.1f}%")

@@ -4,7 +4,8 @@ This module provides sanitized prompt templates that use functional personas
 instead of numbered nodes. All references to K.X have been eliminated.
 """
 
-from typing import Dict, Any, Optional
+from typing import Any
+
 from ..registry.agent_capabilities import AgentRole
 
 
@@ -180,7 +181,7 @@ Remember: Your resumes open doors to opportunities. Every word must serve the ca
     }
 
     @classmethod
-    def get_prompt(cls, role: AgentRole, context: Dict[str, Any], task: str) -> str:
+    def get_prompt(cls, role: AgentRole, context: dict[str, Any], task: str) -> str:
         """Get a formatted prompt for a specific role.
 
         Args:
@@ -211,7 +212,7 @@ Remember: Your resumes open doors to opportunities. Every word must serve the ca
         return prompt
 
     @classmethod
-    def _format_context(cls, context: Dict[str, Any], role: AgentRole) -> str:
+    def _format_context(cls, context: dict[str, Any], role: AgentRole) -> str:
         """Format context for the prompt.
 
         Args:
@@ -280,7 +281,7 @@ class PromptSanitizer:
     }
 
     @classmethod
-    def sanitize_prompt(cls, prompt: str, target_role: Optional[AgentRole] = None) -> str:
+    def sanitize_prompt(cls, prompt: str, target_role: AgentRole | None = None) -> str:
         """Remove legacy references from a prompt.
 
         Args:
@@ -341,7 +342,7 @@ def get_functional_prompt(role: AgentRole, task: str, **context) -> str:
     return PersonaTemplate.get_prompt(role, context, task)
 
 
-def sanitize_legacy_prompt(prompt: str, role: Optional[AgentRole] = None) -> str:
+def sanitize_legacy_prompt(prompt: str, role: AgentRole | None = None) -> str:
     """Sanitize a legacy prompt.
 
     Args:

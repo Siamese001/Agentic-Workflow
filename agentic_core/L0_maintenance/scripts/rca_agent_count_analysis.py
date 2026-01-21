@@ -4,15 +4,15 @@ Compares current discovery vs backup to identify missing agents
 """
 import json
 from pathlib import Path
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+
 
 def main():
     current_path = Path("agent_discovery_full.json")
     backup_path = Path("agent_discovery_full.json.backup_phase3")
 
-    with open(current_path, 'r', encoding='utf-8') as f:
+    with open(current_path, encoding='utf-8') as f:
         current = json.load(f)
-    with open(backup_path, 'r', encoding='utf-8') as f:
+    with open(backup_path, encoding='utf-8') as f:
         backup = json.load(f)
 
     # Handle both list format and dict format
@@ -23,8 +23,8 @@ def main():
     def get_name(a):
         return a.get('class_name') or a.get('name') or 'unknown'
 
-    current_names = set(get_name(a) for a in current_agents)
-    backup_names = set(get_name(a) for a in backup_agents)
+    current_names = {get_name(a) for a in current_agents}
+    backup_names = {get_name(a) for a in backup_agents}
 
     missing = backup_names - current_names
     new_agents = current_names - backup_names

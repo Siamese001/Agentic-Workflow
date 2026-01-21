@@ -5,36 +5,29 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 # Sovereign Mission Orchestrator
 # Territory: agentic_core/L3_orchestration
 # Canon Key 4 - Multi-agent mission coordination with RAG enrichment
-
 import asyncio
-import sys
 import os
-import ast
 import time
-import inspect
-import logging
-import re
-import shutil
-import json
 from pathlib import Path
-from typing import Any, Optional, List, Dict, Tuple
 
 # [SOVEREIGN IMPORTS]
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY, MISSION_CONFIG, HEALING_CONFIG,
-    AGENT_RESILIENCE_CONFIG,
-    SCOPE_SUMMARY_EXCLUSIONS, protected_folders, GRAVITY_SURGERY_ENABLED,
-    FORBIDDEN_ROOT_FOLDERS
-)
+from agentic_core.L5_safety.validators.structure_blueprint import protected_folders
+
 PROTECTED_FOLDERS = protected_folders  # Alias for backward compatibility
 
 # [L0 IMPORTS]
 from agentic_core.L0_maintenance.sovereign_enforcement import run_l6_preflight
+
 # [PHASE 20] DEPRECATION: void_compliance.py removed - using modular agents
-from agentic_core.L5_safety.validators.structure_blueprint import ROOT_WHITELIST, SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.L5_safety.validators.structure_blueprint import (
+    ROOT_WHITELIST,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 ALLOWED_ROOT_FOLDERS = set(ROOT_WHITELIST)
 
 def enforce_void_compliance(files, project_root):
@@ -59,7 +52,7 @@ def check_import_waterfall_violations(file_path, project_root):
 
 # [L2 KNOWLEDGE]
 from agentic_core.knowledge.rag_manager import get_rag_manager
-from agentic_core.utils.sovereign_index import SovereignIndex
+
 
 # [HELPERS]
 def dynamic_import(module_path, class_name):
@@ -67,7 +60,7 @@ def dynamic_import(module_path, class_name):
     try:
         module = __import__(module_path, fromlist=[class_name])
         return getattr(module, class_name, None)
-    except (ImportError, AttributeError) as e:
+    except (ImportError, AttributeError):
         return None
 
 
@@ -96,7 +89,7 @@ async def run_sovereign_mission(
     preflight_results = run_l6_preflight(project_root)
 
     if preflight_results["Span"] > 0 or preflight_results["hierarchy"] > 0:
-        print(f"\n[!] Structural violations detected:")
+        print("\n[!] Structural violations detected:")
         print(f"    - Span violations: {preflight_results['Span']}")
         print(f"    - Hierarchy violations: {preflight_results['hierarchy']}")
         if not RUN_HIERARCHY_HEALING:
@@ -165,7 +158,7 @@ async def run_sovereign_mission(
     print("   [OK] Cleaning crew armed")
 
     # === MAIN VALIDATION LOOP ===
-    print(f"\n[PHASE 3] Executing Validation Mission")
+    print("\n[PHASE 3] Executing Validation Mission")
     print(f"   Target: {len(ctx.python_files)} files")
     print(f"   Max Rounds: {MAX_HEALING_ROUNDS}")
 
@@ -189,9 +182,9 @@ async def run_sovereign_mission(
                 print(f"      [!] RAG Retrieval failed for {file_name}: {e}")
 
         # Validation Loop
-        for round_idx in range(1, MAX_HEALING_ROUNDS + 1):
+        for _round_idx in range(1, MAX_HEALING_ROUNDS + 1):
             changes = 0
-            for agent in ctx.cleaning_crew:
+            for _agent in ctx.cleaning_crew:
                 # Agent execution would go here
                 pass
 

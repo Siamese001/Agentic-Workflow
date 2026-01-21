@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Test Suite: Discovery Roster Builder - Layer-Based Tagging
 
@@ -12,16 +11,16 @@ Tests the discovery-based roster building system:
 
 Run: python scripts/test_discovery_roster_builder.py
 """
-import sys
 import os
+import sys
+
 if sys.platform.startswith("win"):
     os.system("chcp 65001 >nul 2>&1")
     sys.stdout.reconfigure(encoding='utf-8', errors='replace')
     sys.stderr.reconfigure(encoding='utf-8', errors='replace')
 
-import json
 from pathlib import Path
-from typing import Dict, Any, Tuple, List
+from typing import Any
 
 # Add project root to path
 project_root = Path(__file__).resolve().parent.parent
@@ -32,7 +31,7 @@ sys.path.insert(0, str(project_root))
 # TEST FUNCTIONS
 # ============================================================================
 
-def test_1_discovery_file_exists() -> Tuple[bool, str]:
+def test_1_discovery_file_exists() -> tuple[bool, str]:
     """Test 1: Verify agent_discovery_full.json exists."""
     discovery_file = project_root / "agent_discovery_full.json"
 
@@ -47,7 +46,7 @@ def test_1_discovery_file_exists() -> Tuple[bool, str]:
     return True, f"Discovery file exists ({size_kb:.1f} KB)"
 
 
-def test_2_discovery_data_loads() -> Tuple[bool, str]:
+def test_2_discovery_data_loads() -> tuple[bool, str]:
     """Test 2: Verify discovery data loads correctly."""
     from agentic_core.L3_orchestration.discovery_roster_builder import load_discovery_data
 
@@ -62,7 +61,7 @@ def test_2_discovery_data_loads() -> Tuple[bool, str]:
     return True, f"Loaded {len(data)} agents from discovery"
 
 
-def test_3_agents_have_required_fields() -> Tuple[bool, str]:
+def test_3_agents_have_required_fields() -> tuple[bool, str]:
     """Test 3: Verify agents have required fields for filtering/sorting."""
     from agentic_core.L3_orchestration.discovery_roster_builder import load_discovery_data
 
@@ -79,13 +78,14 @@ def test_3_agents_have_required_fields() -> Tuple[bool, str]:
     if missing_count > 5:
         return False, f"{missing_count} agents missing required fields"
 
-    return True, f"All checked agents have required fields"
+    return True, "All checked agents have required fields"
 
 
-def test_4_healer_filter_works() -> Tuple[bool, str]:
+def test_4_healer_filter_works() -> tuple[bool, str]:
     """Test 4: Verify HealerMixin filtering works correctly."""
     from agentic_core.L3_orchestration.discovery_roster_builder import (
-        load_discovery_data, filter_healer_agents
+        filter_healer_agents,
+        load_discovery_data,
     )
 
     data = load_discovery_data(project_root)
@@ -108,10 +108,13 @@ def test_4_healer_filter_works() -> Tuple[bool, str]:
     return True, f"Filtered to {len(healers)} healer agents"
 
 
-def test_5_layer_sorting_correct_order() -> Tuple[bool, str]:
+def test_5_layer_sorting_correct_order() -> tuple[bool, str]:
     """Test 5: Verify layer sorting produces correct order (L0 → L6)."""
     from agentic_core.L3_orchestration.discovery_roster_builder import (
-        load_discovery_data, filter_healer_agents, sort_by_layer, LAYER_PRIORITY
+        LAYER_PRIORITY,
+        filter_healer_agents,
+        load_discovery_data,
+        sort_by_layer,
     )
 
     data = load_discovery_data(project_root)
@@ -142,10 +145,12 @@ def test_5_layer_sorting_correct_order() -> Tuple[bool, str]:
     return True, f"Correct layer order: {' → '.join(layers_seen[:6])}"
 
 
-def test_6_l0_agents_first() -> Tuple[bool, str]:
+def test_6_l0_agents_first() -> tuple[bool, str]:
     """Test 6: Verify L0 (Maintenance) agents run first."""
     from agentic_core.L3_orchestration.discovery_roster_builder import (
-        load_discovery_data, filter_healer_agents, sort_by_layer
+        filter_healer_agents,
+        load_discovery_data,
+        sort_by_layer,
     )
 
     data = load_discovery_data(project_root)
@@ -169,10 +174,12 @@ def test_6_l0_agents_first() -> Tuple[bool, str]:
     return True, f"L0 agents are first ({l0_count} in top 5)"
 
 
-def test_7_l5_safety_before_apps() -> Tuple[bool, str]:
+def test_7_l5_safety_before_apps() -> tuple[bool, str]:
     """Test 7: Verify L5 (Safety) agents run before Apps."""
     from agentic_core.L3_orchestration.discovery_roster_builder import (
-        load_discovery_data, filter_healer_agents, sort_by_layer
+        filter_healer_agents,
+        load_discovery_data,
+        sort_by_layer,
     )
 
     data = load_discovery_data(project_root)
@@ -202,10 +209,12 @@ def test_7_l5_safety_before_apps() -> Tuple[bool, str]:
     return True, f"L5 (idx {first_l5_idx}) correctly before Apps (idx {first_apps_idx})"
 
 
-def test_8_base_agents_excluded() -> Tuple[bool, str]:
+def test_8_base_agents_excluded() -> tuple[bool, str]:
     """Test 8: Verify abstract base agents are excluded."""
     from agentic_core.L3_orchestration.discovery_roster_builder import (
-        load_discovery_data, filter_healer_agents, SKIP_AGENTS
+        SKIP_AGENTS,
+        filter_healer_agents,
+        load_discovery_data,
     )
 
     data = load_discovery_data(project_root)
@@ -224,10 +233,13 @@ def test_8_base_agents_excluded() -> Tuple[bool, str]:
     return True, "No base agents in filtered list"
 
 
-def test_9_instantiation_works() -> Tuple[bool, str]:
+def test_9_instantiation_works() -> tuple[bool, str]:
     """Test 9: Verify agent instantiation works."""
     from agentic_core.L3_orchestration.discovery_roster_builder import (
-        load_discovery_data, filter_healer_agents, sort_by_layer, instantiate_agent
+        filter_healer_agents,
+        instantiate_agent,
+        load_discovery_data,
+        sort_by_layer,
     )
 
     data = load_discovery_data(project_root)
@@ -254,7 +266,7 @@ def test_9_instantiation_works() -> Tuple[bool, str]:
     return True, f"Instantiated {success_count} agents (tried {attempted})"
 
 
-def test_10_instantiated_agents_have_heal_repository() -> Tuple[bool, str]:
+def test_10_instantiated_agents_have_heal_repository() -> tuple[bool, str]:
     """Test 10: Verify instantiated agents have heal_repository method."""
     from agentic_core.L3_orchestration.discovery_roster_builder import build_healing_roster
 
@@ -277,7 +289,7 @@ def test_10_instantiated_agents_have_heal_repository() -> Tuple[bool, str]:
     return True, f"All {len(roster)} agents have heal_repository"
 
 
-def test_11_full_roster_builds() -> Tuple[bool, str]:
+def test_11_full_roster_builds() -> tuple[bool, str]:
     """Test 11: Verify full roster builds successfully."""
     from agentic_core.L3_orchestration.discovery_roster_builder import build_healing_roster
 
@@ -292,10 +304,12 @@ def test_11_full_roster_builds() -> Tuple[bool, str]:
     return True, f"Full roster built: {len(roster)} agents"
 
 
-def test_12_roster_layer_distribution() -> Tuple[bool, str]:
+def test_12_roster_layer_distribution() -> tuple[bool, str]:
     """Test 12: Verify roster has agents from multiple layers."""
     from agentic_core.L3_orchestration.discovery_roster_builder import (
-        load_discovery_data, filter_healer_agents, sort_by_layer
+        filter_healer_agents,
+        load_discovery_data,
+        sort_by_layer,
     )
 
     data = load_discovery_data(project_root)
@@ -314,7 +328,7 @@ def test_12_roster_layer_distribution() -> Tuple[bool, str]:
     return True, f"Layer distribution: {layer_counts}"
 
 
-def test_13_roster_excludes_apps_when_requested() -> Tuple[bool, str]:
+def test_13_roster_excludes_apps_when_requested() -> tuple[bool, str]:
     """Test 13: Verify roster can exclude Apps layer."""
     from agentic_core.L3_orchestration.discovery_roster_builder import build_healing_roster
 
@@ -331,7 +345,7 @@ def test_13_roster_excludes_apps_when_requested() -> Tuple[bool, str]:
     return True, f"Excluded {diff} Apps agents when requested"
 
 
-def test_14_max_agents_limit_works() -> Tuple[bool, str]:
+def test_14_max_agents_limit_works() -> tuple[bool, str]:
     """Test 14: Verify max_agents limit is respected."""
     from agentic_core.L3_orchestration.discovery_roster_builder import build_healing_roster
 
@@ -344,7 +358,7 @@ def test_14_max_agents_limit_works() -> Tuple[bool, str]:
     return True, f"Roster respects limit: {len(roster)} <= {max_limit}"
 
 
-def test_15_path_to_module_conversion() -> Tuple[bool, str]:
+def test_15_path_to_module_conversion() -> tuple[bool, str]:
     """Test 15: Verify path to module conversion works."""
     from agentic_core.L3_orchestration.discovery_roster_builder import path_to_module
 
@@ -362,7 +376,7 @@ def test_15_path_to_module_conversion() -> Tuple[bool, str]:
     return True, "Path to module conversion works correctly"
 
 
-def test_16_layer_priority_complete() -> Tuple[bool, str]:
+def test_16_layer_priority_complete() -> tuple[bool, str]:
     """Test 16: Verify all expected layers have priorities."""
     from agentic_core.L3_orchestration.discovery_roster_builder import LAYER_PRIORITY
 
@@ -380,7 +394,7 @@ def test_16_layer_priority_complete() -> Tuple[bool, str]:
     return True, f"All {len(expected_layers)} layers have correct priorities"
 
 
-def test_17_roster_order_preserved_in_execution() -> Tuple[bool, str]:
+def test_17_roster_order_preserved_in_execution() -> tuple[bool, str]:
     """Test 17: Verify roster order is preserved for execution."""
     from agentic_core.L3_orchestration.discovery_roster_builder import build_healing_roster
 
@@ -401,10 +415,11 @@ def test_17_roster_order_preserved_in_execution() -> Tuple[bool, str]:
     return True, "Roster order is consistent and preserved"
 
 
-def test_18_healer_count_reasonable() -> Tuple[bool, str]:
+def test_18_healer_count_reasonable() -> tuple[bool, str]:
     """Test 18: Verify healer count is reasonable (50-200 expected)."""
     from agentic_core.L3_orchestration.discovery_roster_builder import (
-        load_discovery_data, filter_healer_agents
+        filter_healer_agents,
+        load_discovery_data,
     )
 
     data = load_discovery_data(project_root)
@@ -423,7 +438,7 @@ def test_18_healer_count_reasonable() -> Tuple[bool, str]:
 # TEST RUNNER
 # ============================================================================
 
-def run_all_tests() -> Dict[str, Any]:
+def run_all_tests() -> dict[str, Any]:
     """Run all tests and return results."""
     tests = [
         ("Test 1: Discovery file exists", test_1_discovery_file_exists),

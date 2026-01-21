@@ -3,8 +3,8 @@ Capability Extractor - AST-based capability analysis for agent classes.
 Extracted from agent_capability_supplement.py for single responsibility.
 """
 from __future__ import annotations
+
 import ast
-from typing import Dict, Set, List, Tuple
 
 
 class CapabilityExtractor:
@@ -34,7 +34,7 @@ class CapabilityExtractor:
         "redis_integration": ["redis"]
     }
 
-    def extract_capabilities(self, class_node: ast.ClassDef) -> Dict[str, any]:
+    def extract_capabilities(self, class_node: ast.ClassDef) -> dict[str, any]:
         """Extract rich capability metadata from an agent class.
 
         Args:
@@ -51,7 +51,7 @@ class CapabilityExtractor:
         }
 
         for item in class_node.body:
-            if not isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            if not isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef):
                 continue
 
             method_name = item.name
@@ -72,7 +72,7 @@ class CapabilityExtractor:
 
         return caps
 
-    def _tag_by_method_name(self, method_name: str, caps: Dict) -> None:
+    def _tag_by_method_name(self, method_name: str, caps: dict) -> None:
         """Tag capabilities based on method name patterns.
 
         Args:
@@ -90,7 +90,7 @@ class CapabilityExtractor:
         item: ast.FunctionDef,
         method_name: str,
         method_loc: int,
-        caps: Dict
+        caps: dict
     ) -> None:
         """Analyze method body for specialized patterns.
 
@@ -137,7 +137,7 @@ class CapabilityExtractor:
                 (method_name, method_loc, "Redis state access")
             )
 
-    def get_all_capabilities(self, caps: Dict) -> Set[str]:
+    def get_all_capabilities(self, caps: dict) -> set[str]:
         """Get all capabilities (semantic tags + patterns) as a unified set.
 
         Args:
@@ -148,7 +148,7 @@ class CapabilityExtractor:
         """
         return caps["semantic_tags"] | caps["patterns"]
 
-    def filter_unique_methods(self, method_names: Set[str]) -> Set[str]:
+    def filter_unique_methods(self, method_names: set[str]) -> set[str]:
         """Filter out common methods, returning only unique ones.
 
         Args:

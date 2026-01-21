@@ -4,21 +4,7 @@ from pathlib import Path
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 PROJECT_ROOT = Path(__file__).parent.parent
 
@@ -88,10 +74,10 @@ if total > 0:
 
 # Show sample registry paths
 print("\nSample registry paths:")
-for i, p in enumerate(list(registry_by_path.keys())[:5]):
+for _i, p in enumerate(list(registry_by_path.keys())[:5]):
     print(f"  {p}")
 
 # Show sample agent paths
 print("\nSample agent rel_paths:")
-for i, a in enumerate(all_agents[:5]):
+for _i, a in enumerate(all_agents[:5]):
     print(f"  {str(a.relative_to(PROJECT_ROOT)).replace(chr(92), '/')}")

@@ -2,17 +2,16 @@
 
 import asyncio
 import json
-from typing import Any, Dict, List
-
-from pydantic import BaseModel
+from typing import Any
 
 from core_v10_7 import (
     BaseAgent,
     StrategyPlan,
     ValidationError,
-    track_metrics,
     _format_prompt_with_defaults,
+    track_metrics,
 )
+from pydantic import BaseModel
 
 
 class QueryComplexityClassifier(BaseAgent):
@@ -71,10 +70,10 @@ class ToTStrategistAgent(BaseAgent):
 
     async def _generate_branches(
         self,
-        job_context: Dict[str, Any],
+        job_context: dict[str, Any],
         client: Any,
         branching_factor: int,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         prompt_template = self.prompt_manager.get_template("strategy_tot_branch")
 
         branch_tasks = []
@@ -103,7 +102,7 @@ class ToTStrategistAgent(BaseAgent):
 
         responses = await asyncio.gather(*branch_tasks, return_exceptions=True)
 
-        branches: List[Dict[str, Any]] = []
+        branches: list[dict[str, Any]] = []
         for i, res in enumerate(responses):
             if isinstance(res, Exception):
                 self.log_warning(f"ToT Branch {i + 1} failed API call: {res}")
@@ -116,7 +115,7 @@ class ToTStrategistAgent(BaseAgent):
         return branches
 
     @track_metrics("run_tot_strategy")
-    async def run_async(self, job_context: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, job_context: dict[str, Any], workflow_id: str) -> dict[str, Any]:
         self.log_info("Generating ToT strategy with voting (v10.7)...")
 
         branching_factor = self.config.agent_stacks.strategy_tot_branching_factor

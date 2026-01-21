@@ -14,7 +14,7 @@ OVERRIDE:
 
 USAGE:
     python scripts/maintenance/check_protected_files.py
-    
+
 EXIT CODES:
     0 - No protected files modified OR override present
     1 - Protected files modified without override
@@ -61,11 +61,11 @@ def get_commit_message() -> str:
 
 def main():
     staged_files = get_staged_files()
-    
+
     if not staged_files:
         # No files staged, nothing to check
         sys.exit(0)
-    
+
     # Check if any protected files are modified
     modified_protected = []
     for protected in PROTECTED_FILES:
@@ -76,20 +76,20 @@ def main():
             if staged_path == protected_path or staged_path.endswith(protected_path):
                 modified_protected.append(protected)
                 break
-    
+
     if not modified_protected:
         # No protected files modified
         sys.exit(0)
-    
+
     # Check for override flag in commit message
     commit_message = get_commit_message()
     if OVERRIDE_FLAG in commit_message:
         print(f"\n✅ Gatekeeper override detected: {OVERRIDE_FLAG}")
-        print(f"   Allowing modifications to protected files:")
+        print("   Allowing modifications to protected files:")
         for f in modified_protected:
             print(f"     - {f}")
         sys.exit(0)
-    
+
     # Protected files modified without override
     print(f"\n{'='*70}")
     print("🛡️  GATEKEEPER PROTECTION: PROTECTED FILE MODIFICATION BLOCKED")
@@ -97,7 +97,7 @@ def main():
     print("\nThe following protected files are being modified:")
     for f in modified_protected:
         print(f"  ❌ {f}")
-    
+
     print(f"\n{'='*70}")
     print("WHY THIS MATTERS:")
     print("  These files are critical infrastructure components:")
@@ -108,7 +108,7 @@ def main():
     print("\nEXAMPLE:")
     print(f"  git commit -m 'Fix gatekeeper bug {OVERRIDE_FLAG}'")
     print(f"{'='*70}\n")
-    
+
     sys.exit(1)
 
 

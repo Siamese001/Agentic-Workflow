@@ -6,27 +6,27 @@ Tests verify that:
 - Legacy backup directories can be identified and removed
 - SSOT backup locations are used correctly
 """
-import pytest
-from pathlib import Path
 import sys
+from pathlib import Path
+
+import pytest
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from agentic_core.utils.backup_manager import BackupManager
-from agentic_core.utils.ssot_discovery import get_python_files
 
 
 def test_backup_manager_has_decommission_method():
     """Verify BackupManager has the decommission_legacy_backups method."""
     assert hasattr(BackupManager, 'decommission_legacy_backups')
-    assert callable(getattr(BackupManager, 'decommission_legacy_backups'))
+    assert callable(BackupManager.decommission_legacy_backups)
 
 
 def test_backup_manager_has_get_legacy_dirs_method():
     """Verify BackupManager has the get_legacy_backup_dirs method."""
     assert hasattr(BackupManager, 'get_legacy_backup_dirs')
-    assert callable(getattr(BackupManager, 'get_legacy_backup_dirs'))
+    assert callable(BackupManager.get_legacy_backup_dirs)
 
 
 def test_legacy_backup_detection(tmp_path):

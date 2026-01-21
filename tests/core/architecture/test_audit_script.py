@@ -15,6 +15,7 @@ PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 import pytest
+
 pytest.skip("Script 'scripts.audit_malformed_agents' does not exist", allow_module_level=True)
 # from scripts.audit_malformed_agents import analyze_file, normalize_source
 

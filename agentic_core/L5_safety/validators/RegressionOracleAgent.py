@@ -5,6 +5,7 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from dataclasses import dataclass
+
 """
 RegressionOracleAgent - Extracted for one-class-per-file pattern.
 
@@ -14,11 +15,15 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 
 from __future__ import annotations
-from typing import Any, Dict, List, Optional
-import ast
+
+from typing import Any
+
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import (
+    SubatomicTestingMixin,
+)
 from agentic_core.L5_safety.validators.decorators import standard_heal
+
 
 @dataclass
 class RegressionOracleAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin):
@@ -75,7 +80,7 @@ class RegressionOracleAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMi
         self.change_detector = MethodChangeDetectorAgent(self.ctx)
         self.test_generator = RegressionTestGenerator(self.ctx, self.test_dir, pinecone_available, pinecone_index, genai_available, genai_client)
         self.test_runner = RegressionTestRunner(self.ctx, self.test_dir, genai_available, genai_client, self._emit_regression_check_pass)
-        self.generated_tests: List[GeneratedTest] = []
+        self.generated_tests: list[GeneratedTest] = []
 
     async def execute(self) -> Any:
         """
@@ -124,7 +129,7 @@ class RegressionOracleAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMi
 
     @timeout(300)
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L5 safety agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -141,7 +146,7 @@ class RegressionOracleAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMi
         finally:
             _call_path.discard(agent_name)
 
-    def post_heal_validation(self, generated_tests: List[GeneratedTest], dry_run: bool = True) -> Dict[str, Any]:
+    def post_heal_validation(self, generated_tests: list[GeneratedTest], dry_run: bool = True) -> dict[str, Any]:
         """
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository()
@@ -193,10 +198,10 @@ class RegressionOracleAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMi
 
     def cleanup_violations(
         self,
-        violations: List[RegressionViolation],
+        violations: list[RegressionViolation],
         dry_run: bool = True,
         max_actions: int = 50
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         GOLD STANDARD: Cleanup regression violations with test regeneration.
 
@@ -252,7 +257,7 @@ class RegressionOracleAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMi
 
         return actions
 
-    def run_with_cleanup(self, dry_run: bool = True) -> Dict[str, Any]:
+    def run_with_cleanup(self, dry_run: bool = True) -> dict[str, Any]:
         """
         GOLD STANDARD: Full regression oracle with autonomous cleanup.
         Detects method changes, generates tests, and validates coverage.
@@ -263,7 +268,7 @@ class RegressionOracleAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMi
         Returns:
             Dict with comprehensive execution and cleanup summaries
         """
-        all_violations: List[RegressionViolation] = []
+        all_violations: list[RegressionViolation] = []
 
         # Check generated tests for failures
         for test in self.generated_tests:

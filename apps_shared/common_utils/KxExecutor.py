@@ -8,7 +8,7 @@ Phase 1C - Knowledge Extraction Integration
 
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from .agent_executor import AgentExecutor, AgentMessage, AgentResponse
 from .kx_nodes import KNodeConfig, ReasoningStrategy, get_kx_registry
@@ -23,10 +23,10 @@ class KXExecutionContext:
     """Execution context for K.X node."""
     node_config: KNodeConfig
     agent_executor: AgentExecutor
-    vector_store: Optional[Any] = None
-    cache_client: Optional[Any] = None
-    source_data: Dict[str, Any] = field(default_factory=dict)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    vector_store: Any | None = None
+    cache_client: Any | None = None
+    source_data: dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -35,11 +35,11 @@ class KXExecutionResult:
     node_id: str
     element: str
     content: str
-    reasoning_trace: Optional[str] = None
-    rag_sources: List[Dict[str, Any]] = field(default_factory=list)
-    validation_results: List[Dict[str, Any]] = field(default_factory=list)
-    usage: Dict[str, int] = field(default_factory=dict)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    reasoning_trace: str | None = None
+    rag_sources: list[dict[str, Any]] = field(default_factory=list)
+    validation_results: list[dict[str, Any]] = field(default_factory=list)
+    usage: dict[str, int] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class KXNodeExecutor:
@@ -58,7 +58,7 @@ class KXNodeExecutor:
         self,
         node_key: str,
         context: KXExecutionContext,
-        system_prompt: Optional[str] = None,
+        system_prompt: str | None = None,
     ) -> KXExecutionResult:
         """Execute a K.X node.
 
@@ -116,7 +116,7 @@ class KXNodeExecutor:
         self,
         config: KNodeConfig,
         context: KXExecutionContext,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Execute RAG retrieval for K.X node.
 
         Args:
@@ -179,8 +179,8 @@ class KXNodeExecutor:
         self,
         config: KNodeConfig,
         context: KXExecutionContext,
-        rag_sources: List[Dict[str, Any]],
-    ) -> List[AgentMessage]:
+        rag_sources: list[dict[str, Any]],
+    ) -> list[AgentMessage]:
         """Build messages for agent execution.
 
         Args:
@@ -285,7 +285,7 @@ class KXNodeExecutor:
 
         return " ".join(prompts)
 
-    def _extract_reasoning_trace(self, response: AgentResponse) -> Optional[str]:
+    def _extract_reasoning_trace(self, response: AgentResponse) -> str | None:
         """Extract reasoning trace from response.
 
         Args:
@@ -302,7 +302,7 @@ class KXNodeExecutor:
         config: KNodeConfig,
         content: str,
         context: KXExecutionContext,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Validate generated output against rules.
 
         Args:
@@ -327,7 +327,7 @@ class KXNodeExecutor:
         content: str,
         config: KNodeConfig,
         context: KXExecutionContext,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Apply a single validation rule.
 
         Args:
@@ -380,9 +380,9 @@ class KXNodeExecutor:
 def execute_kx_node(
     node_key: str,
     agent_executor: AgentExecutor,
-    source_data: Dict[str, Any],
-    vector_store: Optional[Any] = None,
-    cache_client: Optional[Any] = None,
+    source_data: dict[str, Any],
+    vector_store: Any | None = None,
+    cache_client: Any | None = None,
     engine: str = "resume",
 ) -> KXExecutionResult:
     """Execute a K.X node by key.

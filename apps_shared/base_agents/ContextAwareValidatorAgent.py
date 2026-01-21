@@ -1,5 +1,7 @@
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 """
 ContextAwareValidatorAgent – Sovereign Agent Role Component (Phase 32 – Dec 30, 2025)
 
@@ -19,9 +21,10 @@ Constitutional Alignment:
 
 import logging
 from pathlib import Path
-from typing import Dict, Any, Optional
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from typing import Any
+
 from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
 @dataclass
@@ -35,7 +38,7 @@ class ContextAwareValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         """Initialize the instance."""
         self.Logger = logging.getLogger(f"{self.__class__.__name__}.Context")
 
-    async def validate_with_context(self, target: Path, rule: str) -> Dict[str, Any]:
+    async def validate_with_context(self, target: Path, rule: str) -> dict[str, Any]:
         """
         Main entry point: intelligent validation with context.
         Returns enriched result with justification and fix suggestions.
@@ -80,7 +83,7 @@ class ContextAwareValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
 
         return result
 
-    async def _basic_rule_check(self, target: Path, rule: str) -> Dict[str, Any]:
+    async def _basic_rule_check(self, target: Path, rule: str) -> dict[str, Any]:
         """
         REQUIRED OVERRIDE: Pure syntactic/semantic rule enforcement.
         Must return {"compliant": bool, "details": optional str}
@@ -89,7 +92,7 @@ class ContextAwareValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
             f"{self.__class__.__name__} must implement _basic_rule_check"
         )
 
-    async def _analyze_violation_context(self, target: Path, rule: str) -> Dict[str, Any]:
+    async def _analyze_violation_context(self, target: Path, rule: str) -> dict[str, Any]:
         """
         Analyze why Violation occurred — look for justification patterns.
         Default: no justification (conservative).
@@ -110,7 +113,7 @@ class ContextAwareValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
             },
         }
 
-    async def _generate_contextual_fix(self, target: Path, rule: str, context: Dict) -> Dict[str, Any]:
+    async def _generate_contextual_fix(self, target: Path, rule: str, context: dict) -> dict[str, Any]:
         """
         Generate intelligent, context-aware fix suggestion.
         Default: generic suggestion.
@@ -141,7 +144,7 @@ class ContextAwareValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         except:
             return False
 
-    async def health_check(self) -> Dict[str, bool]:
+    async def health_check(self) -> dict[str, bool]:
         """Standard interface for SelfDiagnosisMixin."""
         return {"healthy": True}
 

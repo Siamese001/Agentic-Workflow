@@ -11,10 +11,9 @@ Verifies the 5 detailed test cases from the log analysis:
 
 All 5 tests must pass 100%.
 """
-import sys
 import json
+import sys
 from pathlib import Path
-from unittest.mock import patch, MagicMock
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -39,12 +38,12 @@ def test_1_exclusion_verification():
 
     # Check that discovery JSON is used
     assert "agent_discovery_full.json" in content, "Should use discovery JSON"
-    print(f"   ✓ Uses agent_discovery_full.json")
+    print("   ✓ Uses agent_discovery_full.json")
 
     # Check that fallback only scans agentic_core, not project_root
     assert 'agentic_core_dir = self.project_root / "agentic_core"' in content, \
         "Fallback should only scan agentic_core"
-    print(f"   ✓ Fallback scans only agentic_core")
+    print("   ✓ Fallback scans only agentic_core")
 
     # Check that the old problematic rglob is replaced
     # The old pattern was: for py_file in self.project_root.rglob("*.py")
@@ -61,9 +60,9 @@ def test_1_exclusion_verification():
                 print(f"   ✗ Found problematic rglob at line {i+1}")
 
     assert not problematic_rglob, "Problematic project_root.rglob still exists"
-    print(f"   ✓ No problematic project_root.rglob patterns")
+    print("   ✓ No problematic project_root.rglob patterns")
 
-    print(f"✅ PASSED: AutonomyGuardian exclusion verification")
+    print("✅ PASSED: AutonomyGuardian exclusion verification")
     return True
 
 
@@ -109,7 +108,7 @@ def test_2_signature_compliance():
                     print(f"   ✓ {agent_name}: has **kwargs")
                     break
 
-    print(f"✅ PASSED: All agents have **kwargs in heal_repository")
+    print("✅ PASSED: All agents have **kwargs in heal_repository")
     return True
 
 
@@ -130,14 +129,14 @@ def test_3_ssot_count_stability():
 
     # Check discovery file exists
     if not discovery_path.exists():
-        print(f"   ⚠ Discovery file not found, running discovery...")
+        print("   ⚠ Discovery file not found, running discovery...")
         # Can't run discovery in test, just check file structure
-        print(f"   ⚠ Skipping count check (discovery file missing)")
-        print(f"✅ PASSED: (skipped - discovery file not present)")
+        print("   ⚠ Skipping count check (discovery file missing)")
+        print("✅ PASSED: (skipped - discovery file not present)")
         return True
 
     # Load discovery data
-    with open(discovery_path, 'r', encoding='utf-8') as f:
+    with open(discovery_path, encoding='utf-8') as f:
         discovery_data = json.load(f)
 
     # Count agents
@@ -152,7 +151,7 @@ def test_3_ssot_count_stability():
 
     # Check manifest if exists
     if manifest_path.exists():
-        with open(manifest_path, 'r', encoding='utf-8') as f:
+        with open(manifest_path, encoding='utf-8') as f:
             manifest = json.load(f)
         manifest_count = manifest.get("agent_count", 0)
         print(f"   Manifest count: {manifest_count}")
@@ -160,12 +159,12 @@ def test_3_ssot_count_stability():
         # Verify consistency
         assert agent_count == manifest_count, \
             f"Count mismatch: discovery={agent_count}, manifest={manifest_count}"
-        print(f"   ✓ Discovery and manifest counts match")
+        print("   ✓ Discovery and manifest counts match")
 
     # Check reasonable range (200-350)
     assert 100 <= agent_count <= 400, \
         f"Agent count {agent_count} outside expected range (100-400)"
-    print(f"   ✓ Agent count in expected range")
+    print("   ✓ Agent count in expected range")
 
     print(f"✅ PASSED: SSOT count stability verified ({agent_count} agents)")
     return True
@@ -188,20 +187,20 @@ def test_4_stability_gate_abort():
 
     # Check for Tier 0 definition
     assert "mandatory_preflight" in content, "Tier 0 (mandatory_preflight) not defined"
-    print(f"   ✓ Tier 0 (mandatory_preflight) defined")
+    print("   ✓ Tier 0 (mandatory_preflight) defined")
 
     # Check for SyntaxValidatorAgent in Tier 0
     assert "SyntaxValidatorAgent" in content, "SyntaxValidatorAgent not in Tier 0"
-    print(f"   ✓ SyntaxValidatorAgent in Tier 0")
+    print("   ✓ SyntaxValidatorAgent in Tier 0")
 
     # Check for abort logic
     assert 'not t0_results.get("is_stable"' in content, "Tier 0 abort logic missing"
-    print(f"   ✓ Tier 0 abort logic present")
+    print("   ✓ Tier 0 abort logic present")
 
     # Check for abort message
     assert "MISSION ABORTED" in content or "Aborting Mission" in content, \
         "Abort message missing"
-    print(f"   ✓ Abort message present")
+    print("   ✓ Abort message present")
 
     # Verify the abort prevents Tier 1 execution
     # Find the abort block and verify it returns before Tier 1 execution
@@ -220,7 +219,7 @@ def test_4_stability_gate_abort():
             f"Abort check (line {abort_line+1}) should be before Tier 1 execution (line {tier1_exec_line+1})"
         print(f"   ✓ Abort check (line {abort_line+1}) before Tier 1 execution (line {tier1_exec_line+1})")
 
-    print(f"✅ PASSED: Stability gate abort verified")
+    print("✅ PASSED: Stability gate abort verified")
     return True
 
 
@@ -242,12 +241,12 @@ def test_5_mixin_metrics_check():
     # Check for _healer_metrics initialization in __init__
     assert 'self._healer_metrics = {"count": 0' in content, \
         "_healer_metrics not initialized in __init__"
-    print(f"   ✓ _healer_metrics initialized in __init__")
+    print("   ✓ _healer_metrics initialized in __init__")
 
     # Check for defensive hasattr check in heal_repository
     assert "hasattr(self, '_healer_metrics')" in content, \
         "Defensive hasattr check missing"
-    print(f"   ✓ Defensive hasattr check present")
+    print("   ✓ Defensive hasattr check present")
 
     # Check that defensive initialization creates the dict
     assert "self._healer_metrics = {" in content, \
@@ -269,20 +268,20 @@ def test_5_mixin_metrics_check():
         assert hasattr(agent, '_healer_metrics'), "Agent missing _healer_metrics"
         assert isinstance(agent._healer_metrics, dict), "_healer_metrics not a dict"
         assert "count" in agent._healer_metrics, "_healer_metrics missing 'count' key"
-        print(f"   ✓ HealerMixin instantiation works correctly")
+        print("   ✓ HealerMixin instantiation works correctly")
 
         # Test heal_repository returns valid dict
         result = agent.heal_repository(dry_run=True)
         assert isinstance(result, dict), "heal_repository should return dict"
         assert "fixed" in result or "violations" in result, \
             "heal_repository result missing expected keys"
-        print(f"   ✓ heal_repository returns valid result dict")
+        print("   ✓ heal_repository returns valid result dict")
 
     except Exception as e:
         print(f"   ✗ Instantiation test failed: {e}")
         return False
 
-    print(f"✅ PASSED: Mixin metrics check verified")
+    print("✅ PASSED: Mixin metrics check verified")
     return True
 
 
@@ -316,7 +315,7 @@ def test_6_import_typo_fix():
             if "canonical_truth" in content:
                 print(f"   ✓ {file_path.name}: Import corrected")
 
-    print(f"✅ PASSED: Import typo fix verified")
+    print("✅ PASSED: Import typo fix verified")
     return True
 
 

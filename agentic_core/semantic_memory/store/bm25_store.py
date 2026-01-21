@@ -1,21 +1,22 @@
 from __future__ import annotations
+
 from rank_bm25 import BM25Okapi
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
-from typing import Any, List, Dict, Optional
-import json
-from pathlib import Path
+from typing import Any
+
 
 class Bm25Store:
     """In-memory BM25 index for fast keyword retrieval."""
 
     def __init__(self):
-        self.documents: List[Dict] = []
-        self.bm25: Optional[BM25Okapi] = None
+        self.documents: list[dict] = []
+        self.bm25: BM25Okapi | None = None
         self._build_index()
 
-    def add_documents(self, docs: List[Dict]) -> None:
+    def add_documents(self, docs: list[dict]) -> None:
         """Add or update documents."""
         self.documents.extend(docs)
         self._build_index()
@@ -27,7 +28,7 @@ class Bm25Store:
         tokenized = [doc['text'].lower().split() for doc in self.documents]
         self.bm25 = BM25Okapi(tokenized)
 
-    def query(self, query: str, top_k: int=5) -> List[Dict]:
+    def query(self, query: str, top_k: int=5) -> list[dict]:
         """BM25 keyword search."""
         if not self.bm25 or not self.documents:
             return []

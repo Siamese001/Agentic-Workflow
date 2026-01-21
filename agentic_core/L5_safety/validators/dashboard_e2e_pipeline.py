@@ -17,15 +17,14 @@ import re
 import subprocess
 import sys
 from pathlib import Path
-from typing import List, Dict, Tuple
 
 # Import SSOT paths
 from agentic_core.L5_safety.validators.structure_blueprint import (
+    DASHBOARD_DIR,
     get_validated_project_root,
-    DASHBOARD_DIR
 )
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 from agentic_core.utils.security import safe_execute
+
 
 class DashboardE2EPipeline:
     """Automated dashboard end-to-end pipeline."""
@@ -54,7 +53,7 @@ class DashboardE2EPipeline:
         """Print pipeline step."""
         print(f"📍 {step}")
 
-    def step1_analyze_heal_invocation(self) -> Tuple[int, List[Dict]]:
+    def step1_analyze_heal_invocation(self) -> tuple[int, list[dict]]:
         """Step 1: Analyze current heal invocation coverage."""
         self.print_step("STEP 1: Analyzing heal invocation coverage...")
 
@@ -76,7 +75,7 @@ class DashboardE2EPipeline:
 
         return len(needs_fix), needs_fix
 
-    def step2_fix_heal_invocation(self, agents_to_fix: List[Dict]) -> int:
+    def step2_fix_heal_invocation(self, agents_to_fix: list[dict]) -> int:
         """Step 2: Automatically fix heal invocation gaps."""
         self.print_step("STEP 2: Fixing heal invocation gaps...")
 
@@ -271,7 +270,7 @@ class DashboardE2EPipeline:
             print(result.stdout)
 
             if result.returncode != 0:
-                print(f"   ❌ Tests failed")
+                print("   ❌ Tests failed")
                 if result.stderr:
                     print(result.stderr)
                 return False
@@ -297,22 +296,22 @@ class DashboardE2EPipeline:
         after = self.stats['heal_invocation_after']
         improvement = after - before
 
-        print(f"┃  Heal Invocation Coverage:                                              ┃")
+        print("┃  Heal Invocation Coverage:                                              ┃")
         print(f"┃    Before: {before:5.1f}%  →  After: {after:5.1f}%  (Δ +{improvement:4.1f}%)                    ┃")
 
         if after >= 100.0:
-            print(f"┃    🎯 TARGET ACHIEVED: 100% heal invocation coverage!                   ┃")
+            print("┃    🎯 TARGET ACHIEVED: 100% heal invocation coverage!                   ┃")
         elif after >= 99.0:
             print(f"┃    ⚠️  Nearly complete: {100-after:.1f}% gap remaining                             ┃")
         else:
             print(f"┃    ⚠️  Gap: {100-after:.1f}% ({int((100-after)/100*self.stats['agents_discovered'])} agents)                                      ┃")
 
-        print(f"┃                                                                              ┃")
+        print("┃                                                                              ┃")
         print(f"┃  Agents Fixed: {self.stats['heal_fixes']:3d}                                                      ┃")
         print(f"┃  Agents Discovered: {self.stats['agents_discovered']:3d}                                                ┃")
         print(f"┃  Dashboard Rows: {self.stats['dashboard_rows']:2d}                                                   ┃")
-        print(f"┃                                                                              ┃")
-        print(f"┃  Dashboard Location:                                                         ┃")
+        print("┃                                                                              ┃")
+        print("┃  Dashboard Location:                                                         ┃")
         print(f"┃    {str(self.dashboard_path.relative_to(self.project_root)):<74}┃")
         print("┗" + "━" * 78 + "┛")
         print()

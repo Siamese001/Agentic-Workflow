@@ -11,7 +11,7 @@ Military-grade reliability for Google GenAI v1beta with:
 import logging
 import time
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 from tenacity import (
     retry,
@@ -20,7 +20,7 @@ from tenacity import (
     wait_exponential,
 )
 
-from .agent_executor import AgentExecutor, AgentMessage, AgentResponse
+from .agent_executor import AgentExecutor, AgentMessage
 from .multi_provider_clients import Provider
 
 logger = logging.getLogger(__name__)
@@ -54,7 +54,7 @@ class HardenedGeminiConfig:
         model: str = "gemini-3-pro-preview",
         temperature: float = 0.3,
         max_output_tokens: int = 8192,
-        safety_threshold_ratio: Optional[float] = None,
+        safety_threshold_ratio: float | None = None,
         max_retries: int = 5,
         retry_min_wait: float = 2.0,
         retry_max_wait: float = 30.0,
@@ -81,21 +81,21 @@ class HardenedGeminiConfig:
 @dataclass
 class InteractionTelemetry:
     """Telemetry data for interaction logging."""
-    interaction_id: Optional[str]
+    interaction_id: str | None
     model: str
     input_tokens: int
     output_tokens: int
     total_tokens: int
     latency_ms: float
     timestamp: str = field(default_factory=lambda: time.strftime("%Y-%m-%d %H:%M:%S"))
-    error: Optional[str] = None
+    error: str | None = None
 
 
 @dataclass
 class CircuitBreakerState:
     """State tracking for circuit breaker."""
     failure_count: int = 0
-    last_failure_time: Optional[float] = None
+    last_failure_time: float | None = None
     state: str = "CLOSED"  # CLOSED, OPEN, HALF_OPEN
 
     def __post_init__(self):
@@ -187,20 +187,20 @@ class CircuitBreaker:
 @dataclass
 class InteractionTelemetry:
     """Telemetry data for interaction logging."""
-    interaction_id: Optional[str]
+    interaction_id: str | None
     model: str
     input_tokens: int
     output_tokens: int
     total_tokens: int
     latency_ms: float
     timestamp: str = field(default_factory=lambda: time.strftime("%Y-%m-%d %H:%M:%S"))
-    error: Optional[str] = None
+    error: str | None = None
 
 
 class HardenedGeminiExecutor:
     """Military-grade executor for Google GenAI v1beta."""
 
-    def __init__(self, config: Optional[HardenedGeminiConfig] = None):
+    def __init__(self, config: HardenedGeminiConfig | None = None):
         """Initialize hardened executor.
 
         Args:
@@ -227,7 +227,7 @@ class HardenedGeminiExecutor:
             logger.error(f"Failed to initialize hardened Gemini client: {e}")
             raise
 
-    def build_safety_config(self) -> List[Dict[str, str]]:
+    def build_safety_config(self) -> list[dict[str, str]]:
         """Build safety settings for Risk/Insurance domain.
 
         Returns:
@@ -278,7 +278,7 @@ class HardenedGeminiExecutor:
 
     async def validate_context_budget(
         self,
-        input_payload: List[Dict[str, Any]]
+        input_payload: list[dict[str, Any]]
     ) -> int:
         """Pre-flight check to ensure payload doesn't exceed context limit.
 
@@ -316,7 +316,7 @@ class HardenedGeminiExecutor:
 
         return token_count
 
-    def _estimate_tokens(self, input_payload: List[Dict[str, Any]]) -> int:
+    def _estimate_tokens(self, input_payload: list[dict[str, Any]]) -> int:
         """Fallback token estimation using simple heuristic.
 
         Args:
@@ -331,9 +331,9 @@ class HardenedGeminiExecutor:
 
     def _build_payload(
         self,
-        messages: List[AgentMessage],
-        system_prompt: Optional[str] = None
-    ) -> List[Dict[str, Any]]:
+        messages: list[AgentMessage],
+        system_prompt: str | None = None
+    ) -> list[dict[str, Any]]:
         """Build payload for interactions.create.
 
         Args:
@@ -362,9 +362,9 @@ class HardenedGeminiExecutor:
     async def _execute_with_retry(
         self,
         model: str,
-        config: Dict[str, Any],
-        input_payload: List[Dict[str, Any]],
-        previous_interaction_id: Optional[str] = None
+        config: dict[str, Any],
+        input_payload: list[dict[str, Any]],
+        previous_interaction_id: str | None = None
     ) -> Any:
         """Execute with exponential backoff retry and circuit breaker.
 
@@ -424,7 +424,7 @@ class HardenedGeminiExecutor:
             result = await _execute()
             self._circuit_breaker.record_success()
             return result
-        except Exception as e:
+        except Exception:
             self._circuit_breaker.record_failure()
             raise
 
@@ -455,10 +455,10 @@ class HardenedGeminiExecutor:
 
     async def execute_k_node(
         self,
-        messages: List[AgentMessage],
-        system_prompt: Optional[str] = None,
-        response_schema: Optional[Dict[str, Any]] = None,
-        previous_interaction_id: Optional[str] = None,
+        messages: list[AgentMessage],
+        system_prompt: str | None = None,
+        response_schema: dict[str, Any] | None = None,
+        previous_interaction_id: str | None = None,
     ) -> str:
         """Execute K-Node with hardened reliability.
 
@@ -550,10 +550,10 @@ class HardenedGeminiExecutor:
 
     def execute_sync(
         self,
-        messages: List[AgentMessage],
-        system_prompt: Optional[str] = None,
-        response_schema: Optional[Dict[str, Any]] = None,
-        previous_interaction_id: Optional[str] = None,
+        messages: list[AgentMessage],
+        system_prompt: str | None = None,
+        response_schema: dict[str, Any] | None = None,
+        previous_interaction_id: str | None = None,
     ) -> str:
         """Synchronous version of execute_k_node.
 
@@ -609,11 +609,11 @@ def create_hardened_gemini_executor(
 # Integration with existing AgentExecutor
 def create_agent_executor(
     provider: Provider = Provider.OPENAI,
-    model: Optional[str] = None,
+    model: str | None = None,
     temperature: float = 0.7,
     hardened: bool = False,
     **kwargs,
-) -> Union[AgentExecutor, HardenedGeminiExecutor]:
+) -> AgentExecutor | HardenedGeminiExecutor:
     """Factory function to create agent executor with optional hardening.
 
     Args:

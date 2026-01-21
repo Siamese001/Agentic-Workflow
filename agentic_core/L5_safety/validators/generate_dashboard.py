@@ -3,29 +3,18 @@ file: agentic_core/scripts/L6_observability/generate_dashboard.py
 description: Regenerated with L6 Observability moved above L5 Safety in the territory order while maintaining Base Agent nomenclature.
 """
 
+import io
 import json
 import re
-import sys
-import io
 import shutil
-from pathlib import Path
-from typing import Dict, List, Any, Tuple
+import sys
 from collections import defaultdict
+from pathlib import Path
+from typing import Any
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
     APPS_LIC_DIR,
     APPS_RG_DIR,
     APPS_SHARED_DIR,
@@ -106,7 +95,7 @@ class DashboardGenerator:
             return False
 
         try:
-            with open(self.discovery_path, 'r', encoding='utf-8') as f:
+            with open(self.discovery_path, encoding='utf-8') as f:
                 self.agents = json.load(f)
 
             if not isinstance(self.agents, list):
@@ -114,7 +103,7 @@ class DashboardGenerator:
                 return False
 
             if len(self.agents) == 0:
-                print(f"⚠️  WARNING: Agent discovery list is empty")
+                print("⚠️  WARNING: Agent discovery list is empty")
                 return False
 
             print(f"✅ Loaded {len(self.agents)} agents from discovery")
@@ -127,7 +116,7 @@ class DashboardGenerator:
             print(f"❌ ERROR loading agent discovery: {e}")
             return False
 
-    def group_agents_by_territory(self) -> Dict[str, List[Dict]]:
+    def group_agents_by_territory(self) -> dict[str, list[dict]]:
         """Group agents by FIXED detailed territory structure with subcategories."""
         territories = defaultdict(list)
         unknown_agents = []
@@ -239,7 +228,7 @@ class DashboardGenerator:
 
         return territories
 
-    def compute_territory_metrics(self, agents_list: List[Dict]) -> Dict[str, Any]:
+    def compute_territory_metrics(self, agents_list: list[dict]) -> dict[str, Any]:
         """Compute metrics for a territory with FIXED field schema."""
         total = len(agents_list)
         if total == 0:
@@ -367,7 +356,7 @@ class DashboardGenerator:
                 return score
         return 50  # Default for unknown territories
 
-    def build_territory_row(self, territory_name: str, metrics: Dict[str, Any], priority: int, is_infrastructure: bool = False) -> Dict[str, Any]:
+    def build_territory_row(self, territory_name: str, metrics: dict[str, Any], priority: int, is_infrastructure: bool = False) -> dict[str, Any]:
         """Build a territory row with FIXED field schema."""
         return {
             "Territory": territory_name,
@@ -398,7 +387,7 @@ class DashboardGenerator:
             "IsInfrastructure": is_infrastructure
         }
 
-    def build_total_row(self, rows: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def build_total_row(self, rows: list[dict[str, Any]]) -> dict[str, Any]:
         """Build TOTAL row by aggregating territory rows."""
         if not rows:
             return {}
@@ -467,7 +456,7 @@ class DashboardGenerator:
             "IsInfrastructure": False
         }
 
-    def build_per_agent_data(self, territories: Dict[str, List[Dict]]) -> Dict[str, Dict]:
+    def build_per_agent_data(self, territories: dict[str, list[dict]]) -> dict[str, dict]:
         """Build per-agent data structure for each territory to replace mock data."""
         per_agent_data = {}
 
@@ -610,7 +599,7 @@ class DashboardGenerator:
 
         return per_agent_data
 
-    def generate_dashboard_data(self) -> List[Dict[str, Any]]:
+    def generate_dashboard_data(self) -> list[dict[str, Any]]:
         """Generate dashboard data with only territories that have actual agents."""
         territories = self.group_agents_by_territory()
 
@@ -639,7 +628,7 @@ class DashboardGenerator:
 
         return all_rows
 
-    def validate_dashboard_data(self, data: List[Dict[str, Any]]) -> bool:
+    def validate_dashboard_data(self, data: list[dict[str, Any]]) -> bool:
         """Validate dashboard data - only real territories with agents."""
         if not data:
             print("❌ VALIDATION FAILED: No data generated")
@@ -689,7 +678,7 @@ class DashboardGenerator:
         print(f"✅ VALIDATION PASSED: {len(data)} rows with all required fields")
         return True
 
-    def validate_html_before_write(self, html: str) -> Tuple[bool, List[str]]:
+    def validate_html_before_write(self, html: str) -> tuple[bool, list[str]]:
         """Validate HTML content before writing to disk."""
         errors = []
 
@@ -727,7 +716,7 @@ class DashboardGenerator:
 
         return (len(errors) == 0, errors)
 
-    def update_dashboard_html(self, data: List[Dict[str, Any]], per_agent_data: Dict[str, Dict]) -> bool:
+    def update_dashboard_html(self, data: list[dict[str, Any]], per_agent_data: dict[str, dict]) -> bool:
         """Update dashboard HTML with new data and real per-agent data."""
         if not self.dashboard_path.exists():
             print(f"❌ ERROR: Dashboard HTML not found at {self.dashboard_path}")

@@ -10,13 +10,16 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from typing import Dict, List, Any
-from agentic_core.L1_cognition.learning.MetaLearningAgent import MetaLearningAgent, Experience
+from typing import Any
+
+from agentic_core.L1_cognition.learning.MetaLearningAgent import MetaLearningAgent
+
 from agentic_core.L3_orchestration.interfaces import (
-    IOrchestratorAgent,
+    ExecutionContext,
     ExecutionPhase,
-    ExecutionContext
+    IOrchestratorAgent,
 )
+
 
 def test_meta_learning_agent_1_1():
     """
@@ -132,7 +135,7 @@ def test_orchestrator_interface_2_2():
     # Create a concrete implementation for testing
     class MockOrchestrator(IOrchestratorAgent):
 
-        def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
+        def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
             """
             Autonomous healing method (Canon Key 51 compliance).
 
@@ -145,22 +148,22 @@ def test_orchestrator_interface_2_2():
             """
             return {"violations": 0, "fixed": 0, "errors": 0}
 
-        def execute(self, context: ExecutionContext) -> Dict[str, Any]:
+        def execute(self, context: ExecutionContext) -> dict[str, Any]:
             return {"status": "executed"}
 
-        def think(self, context: ExecutionContext) -> Dict[str, Any]:
+        def think(self, context: ExecutionContext) -> dict[str, Any]:
             return {"thoughts": ["plan_step_1"]}
 
-        def act(self, actions: List[Dict[str, Any]], context: ExecutionContext) -> List[Dict[str, Any]]:
+        def act(self, actions: list[dict[str, Any]], context: ExecutionContext) -> list[dict[str, Any]]:
             return [{"action": "completed"}]
 
-        def observe(self, action_results: List[Dict[str, Any]], context: ExecutionContext) -> Dict[str, Any]:
+        def observe(self, action_results: list[dict[str, Any]], context: ExecutionContext) -> dict[str, Any]:
             return {"observations": ["result_1"]}
 
         def should_continue(self, context: ExecutionContext) -> bool:
             return False
 
-        def get_state(self) -> Dict[str, Any]:
+        def get_state(self) -> dict[str, Any]:
             return {"state": "idle"}
 
     # Instantiate mock orchestrator

@@ -1,10 +1,12 @@
 from __future__ import annotations
+
 """
 L5 Safety: SafetyGuardrail
 Enforces Zero-Loss principles during code mutation.
 """
 import ast
-from typing import Any, Tuple
+from typing import Any
+
 
 class SafetyGuardrail:
     """Enforces Zero-Loss principles during mutation."""
@@ -18,7 +20,7 @@ class SafetyGuardrail:
         """
         self.deletion_limit = deletion_limit
 
-    def verify_change(self, original_code: str, new_code: str, fission_active: bool=False) -> Tuple[bool, str]:
+    def verify_change(self, original_code: str, new_code: str, fission_active: bool=False) -> tuple[bool, str]:
         """
         Verify that code changes are safe and don't violate zero-loss principles.
 

@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 MissionHistorian - L4 State Framework Agent
 Tracks mission execution history and audit trails.
@@ -7,8 +8,8 @@ import csv
 import logging
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
 
 class MissionHistorian:
@@ -50,7 +51,7 @@ class MissionHistorian:
         except Exception as e:
             Logger.error(f'[MissionHistorian] Failed to record action: {e}')
 
-    def get_history(self, file_name: Optional[str]=None) -> list:
+    def get_history(self, file_name: str | None=None) -> list:
         """
         Retrieve mission history.
 
@@ -64,7 +65,7 @@ class MissionHistorian:
             return []
         history: Any = []
         try:
-            with open(self.log_path, 'r', newline='', encoding='utf-8') as f:
+            with open(self.log_path, newline='', encoding='utf-8') as f:
                 reader: Any = csv.DictReader(f)
                 for row in reader:
                     if file_name is None or row.get('file') == file_name:
@@ -73,7 +74,7 @@ class MissionHistorian:
             Logger.error(f'[MissionHistorian] Failed to read history: {e}')
         return history
 
-    def get_summary(self) -> Dict[str, Any]:
+    def get_summary(self) -> dict[str, Any]:
         """
         Get summary statistics of mission history.
 

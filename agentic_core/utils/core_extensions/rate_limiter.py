@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Rate limiting implementations for API throttling.
 
 Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
@@ -6,7 +7,6 @@ Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 
 import time
 from dataclasses import dataclass, field
-from typing import Dict, Optional
 
 
 class RateLimitExceeded(Exception):
@@ -145,7 +145,7 @@ class RateLimiter:
     """
 
     def __init__(self):
-        self._limiters: Dict[str, TokenBucket | FixedWindow] = {}
+        self._limiters: dict[str, TokenBucket | FixedWindow] = {}
 
     def add_token_bucket(
         self,

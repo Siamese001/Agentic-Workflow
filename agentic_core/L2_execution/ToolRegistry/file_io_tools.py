@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 File I/O Tools - Atomic Module
 Extracted from action_registry.py via Atomic Fission Protocol
@@ -6,7 +7,8 @@ Tool ID Prefix: ACT-002
 """
 import logging
 import os
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
 try:
     import PyPDF2
 except ImportError:
@@ -72,7 +74,7 @@ class FileIo:
             str: The content of the text file.
         """
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 return f.read()
         except FileNotFoundError:
             return f"Read Error: File not found at '{file_path}'."
@@ -118,7 +120,7 @@ class FileIo:
             with open(file_path, 'w', encoding='utf-8') as f:
                 f.write(content)
             return f'[OK] File saved successfully: {file_path}'
-        except IOError as e:
+        except OSError as e:
             return f"Save Error (IO): Could not save file '{file_path}'. {e}"
         except Exception as e:
             return f'Save Error (Unexpected): {e}'

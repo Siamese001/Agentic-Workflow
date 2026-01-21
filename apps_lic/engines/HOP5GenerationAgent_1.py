@@ -1,5 +1,7 @@
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 """HOP-5: Generation Agent - N-candidate generation only."""
 
 __version__ = "13.1"
@@ -8,14 +10,14 @@ import asyncio
 import json
 import logging
 import os
-from typing import Dict, List, Any
+from typing import Any
 
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
-
-from apps_shared.utils.state_manager import StateManager
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from apps_lic.engines.outreach_engine.tools.code_interpreter import CodeInterpreterTool
+from apps_shared.utils.state_manager import StateManager
+
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 Logger = logging.getLogger(__name__)
 
@@ -31,7 +33,7 @@ class HOP5GenerationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     Output: state/5_generated_drafts.json
     """
 
-    def __init__(self, config: Dict[str, Any], llm_client: Any = None, tool: CodeInterpreterTool = None) -> None:
+    def __init__(self, config: dict[str, Any], llm_client: Any = None, tool: CodeInterpreterTool = None) -> None:
         """
         Initialize HOP-5 generation agent.
 
@@ -48,7 +50,7 @@ class HOP5GenerationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         self.llm_client = llm_client
         self.tool = tool
 
-        with open("config/prompts_LIC.json", 'r') as f:
+        with open("config/prompts_LIC.json") as f:
             self.prompts = json.load(f)
 
     async def execute(self, state_mgr: StateManager, temperature: float = None) -> str:
@@ -121,13 +123,13 @@ class HOP5GenerationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
         output_path = state_mgr.write_state("HOP-5", output_state)
 
-        print(f"\n✓ Generation Complete")
+        print("\n✓ Generation Complete")
         print(f"  Selected draft: {selected_candidate['word_count']} words")
         print(f"  Temperature: {temperature:.2f}\n")
 
         return output_path
 
-    async def _generate_single_draft(self, research: Dict[str, Any], grounding: Dict[str, Any], scaffold: Dict[str, Any], temperature: float) -> str:
+    async def _generate_single_draft(self, research: dict[str, Any], grounding: dict[str, Any], scaffold: dict[str, Any], temperature: float) -> str:
         """Generate a single message draft"""
         template = self.prompts["strategic_alignment_prompt_template"]["template"]
         strategic_brief = research.get("strategic_brief", "")
@@ -152,7 +154,7 @@ class HOP5GenerationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         draft_text = await loop.run_in_executor(None, self.llm_client.generate, prompt)
         return draft_text.strip()
 
-    def _score_candidates_with_tool(self, candidates: List[Dict[str, Any]], research: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def _score_candidates_with_tool(self, candidates: list[dict[str, Any]], research: dict[str, Any]) -> list[dict[str, Any]]:
         """Score candidates using CodeInterpreterTool (Fast Loop)"""
         strategic_brief = research.get("strategic_brief", "")
         scored = self.tool.execute(
@@ -168,7 +170,7 @@ class HOP5GenerationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
         return scored
 
-    def _extract_sender_summary(self, grounding: Dict[str, Any]) -> str:
+    def _extract_sender_summary(self, grounding: dict[str, Any]) -> str:
         """Extract top 5 sender capabilities"""
         sender_grounding = grounding.get("sender_grounding", {})
         achievements = sender_grounding.get("quantifiable_achievements", [])
@@ -182,7 +184,7 @@ class HOP5GenerationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
         return "\n".join(summary_lines) if summary_lines else "- Professional with relevant experience"
 
-    def _extract_recipient_summary(self, research: Dict[str, Any], strategic_brief: str) -> str:
+    def _extract_recipient_summary(self, research: dict[str, Any], strategic_brief: str) -> str:
         """Extract top 5 recipient priorities"""
         summary_lines = []
 
@@ -196,10 +198,10 @@ class HOP5GenerationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
         return "\n".join(summary_lines) if summary_lines else "- Professional at target company"
 
-    def _load_voice_profile(self) -> Dict[str, Any]:
+    def _load_voice_profile(self) -> dict[str, Any]:
         """Load sender voice profile"""
         if os.path.exists("sender_voice_profile.json"):
-            with open("sender_voice_profile.json", 'r') as f:
+            with open("sender_voice_profile.json") as f:
                 return json.load(f)
         return {}
 
@@ -240,7 +242,7 @@ class HOP5GenerationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             if not isinstance(self.prompts, dict):
                 Logger.warning("Prompts config corrupted — reloading from file")
                 if os.path.exists("config/prompts_LIC.json"):
-                    with open("config/prompts_LIC.json", 'r') as f:
+                    with open("config/prompts_LIC.json") as f:
                         self.prompts = json.load(f)
                 else:
                     Logger.error("Prompts file missing — using empty config")

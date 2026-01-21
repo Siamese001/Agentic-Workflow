@@ -5,12 +5,13 @@ structured configuration models with validation and type safety.
 Follows the functional component pattern with proper logging.
 """
 
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any, Union, Tuple, Type
+import json
 import logging
+from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-import json
+from typing import Any
+
 import yaml
 
 logger = logging.getLogger(__name__)
@@ -39,8 +40,8 @@ class ConfigField:
     required: bool = False
     default_value: object = None
     description: str = ""
-    env_var: Optional[str] = None
-    validator: Optional[str] = None
+    env_var: str | None = None
+    validator: str | None = None
 
 
 @dataclass
@@ -48,8 +49,8 @@ class ConfigModel:
     """Configuration model definition."""
     name: str
     version: str
-    fields: Dict[str, ConfigField]
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    fields: dict[str, ConfigField]
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -65,21 +66,21 @@ class ConversionConfig:
 class ConversionResult:
     """Result of configuration conversion."""
     config_model: ConfigModel
-    converted_data: Dict[str, Any]
-    errors: List[str] = field(default_factory=list)
-    warnings: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    converted_data: dict[str, Any]
+    errors: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class ConfigModelConverter:
     """Main class for converting data to configuration models."""
 
-    def __init__(self, config: Optional[ConversionConfig] = None):
+    def __init__(self, config: ConversionConfig | None = None):
         self.config = config or ConversionConfig()
         self.logger = logging.getLogger(self.__class__.__name__)
         self._type_converters = self._initialize_type_converters()
 
-    def convert_to_model(self, data: Union[str, Dict[str, Any]],
+    def convert_to_model(self, data: str | dict[str, Any],
                         source_format: ConfigFormat,
                         model: ConfigModel) -> ConversionResult:
         """Convert data to configuration model.
@@ -139,7 +140,7 @@ class ConfigModelConverter:
                 metadata={"error": str(e)}
             )
 
-    def convert_from_dict(self, data: Dict[str, Any], model: ConfigModel) -> ConversionResult:
+    def convert_from_dict(self, data: dict[str, Any], model: ConfigModel) -> ConversionResult:
         """Convert dictionary to configuration model.
 
         Args:
@@ -175,7 +176,7 @@ class ConfigModelConverter:
         """
         return self.convert_to_model(yaml_str, ConfigFormat.YAML, model)
 
-    def convert_from_env(self, env_data: Union[str, Dict[str, str]], model: ConfigModel) -> ConversionResult:
+    def convert_from_env(self, env_data: str | dict[str, str], model: ConfigModel) -> ConversionResult:
         """Convert environment variables to configuration model.
 
         Args:
@@ -187,7 +188,7 @@ class ConfigModelConverter:
         """
         return self.convert_to_model(env_data, ConfigFormat.ENV, model)
 
-    def export_to_dict(self, model: ConfigModel, include_defaults: bool = True) -> Dict[str, Any]:
+    def export_to_dict(self, model: ConfigModel, include_defaults: bool = True) -> dict[str, Any]:
         """Export configuration model to dictionary.
 
         Args:
@@ -233,7 +234,7 @@ class ConfigModelConverter:
         data = self.export_to_dict(model, include_defaults)
         return yaml.dump(data, default_flow_style=False, allow_unicode=True)
 
-    def _parse_json(self, data: Union[str, Dict[str, Any]]) -> Dict[str, Any]:
+    def _parse_json(self, data: str | dict[str, Any]) -> dict[str, Any]:
         """Parse JSON data."""
         if isinstance(data, str):
             return json.loads(data)
@@ -242,7 +243,7 @@ class ConfigModelConverter:
         else:
             raise ValueError("Invalid JSON data type")
 
-    def _parse_yaml(self, data: Union[str, Dict[str, Any]]) -> Dict[str, Any]:
+    def _parse_yaml(self, data: str | dict[str, Any]) -> dict[str, Any]:
         """Parse YAML data."""
         if isinstance(data, str):
             return yaml.safe_load(data) or {}
@@ -251,7 +252,7 @@ class ConfigModelConverter:
         else:
             raise ValueError("Invalid YAML data type")
 
-    def _parse_env(self, data: Union[str, Dict[str, str]]) -> Dict[str, Any]:
+    def _parse_env(self, data: str | dict[str, str]) -> dict[str, Any]:
         """Parse environment variables."""
         if isinstance(data, str):
             # Parse .env format string
@@ -266,7 +267,7 @@ class ConfigModelConverter:
         else:
             raise ValueError("Invalid environment data type")
 
-    def _get_field_value(self, field_name: str, field_def: Any, data: Dict[str, Any]) -> Any:
+    def _get_field_value(self, field_name: str, field_def: Any, data: dict[str, Any]) -> Any:
         """Get field value from data or environment."""
         if field_name in data:
             return data[field_name]
@@ -274,7 +275,7 @@ class ConfigModelConverter:
             return data[field_def.env_var]
         return None
 
-    def _handle_missing_value(self, field_name: str, field_def: ConfigField, errors: List[str], warnings: List[str]) -> Any:
+    def _handle_missing_value(self, field_name: str, field_def: ConfigField, errors: list[str], warnings: list[str]) -> Any:
         """Handle missing field value."""
         if field_def.required:
             if self.config.mode == ConversionMode.STRICT:
@@ -290,7 +291,7 @@ class ConfigModelConverter:
             return field_def.default_value
         return None
 
-    def _convert_field_type(self, value: Any, field_name: str, field_def: ConfigField, errors: List[str], warnings: List[str]) -> Any:
+    def _convert_field_type(self, value: Any, field_name: str, field_def: ConfigField, errors: list[str], warnings: list[str]) -> Any:
         """Convert field type with error handling."""
         if not self.config.convert_types:
             return value
@@ -304,7 +305,7 @@ class ConfigModelConverter:
                 warnings.append(f"Type conversion failed for {field_name}: {str(e)}")
             return field_def.default_value
 
-    def _validate_field_value(self, value: Any, field_name: str, field_def: ConfigField, errors: List[str], warnings: List[str]) -> None:
+    def _validate_field_value(self, value: Any, field_name: str, field_def: ConfigField, errors: list[str], warnings: list[str]) -> None:
         """Validate field value."""
         if value is None or not field_def.validator:
             return
@@ -315,8 +316,8 @@ class ConfigModelConverter:
             else:
                 warnings.append(f"Validation failed for field: {field_name}")
 
-    def _convert_to_model(self, data: Dict[str, Any],
-                         model: ConfigModel) -> Tuple[Dict[str, Any], List[str], List[str]]:
+    def _convert_to_model(self, data: dict[str, Any],
+                         model: ConfigModel) -> tuple[dict[str, Any], list[str], list[str]]:
         """Convert data to match configuration model."""
         converted = {}
         errors = []
@@ -372,7 +373,7 @@ class ConfigModelConverter:
             # Could support custom validators here
             return True
 
-    def _validate_model(self, data: Dict[str, Any], model: ConfigModel) -> List[str]:
+    def _validate_model(self, data: dict[str, Any], model: ConfigModel) -> list[str]:
         """Validate converted data against model."""
         errors = []
 
@@ -383,7 +384,7 @@ class ConfigModelConverter:
 
         return errors
 
-    def _initialize_type_converters(self) -> Dict[str, Callable]:
+    def _initialize_type_converters(self) -> dict[str, Callable]:
         """Initialize type conversion functions."""
         return {
             "string": str,
@@ -414,11 +415,11 @@ def create_config_model_converter(
 
 # Convenience function for direct usage
 def convert_to_config_model(
-    data: Union[str, Dict[str, Any]],
-    model_definition: Dict[str, Any],
+    data: str | dict[str, Any],
+    model_definition: dict[str, Any],
     source_format: str = "dict",
     mode: str = "lenient"
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Convert data to configuration model.
 
     Args:

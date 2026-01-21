@@ -1,7 +1,8 @@
 from __future__ import annotations
+
 """Enum types for models."""
 import logging
-from enum import Enum, auto
+from enum import Enum
 
 _logger = logging.getLogger(__name__)
 

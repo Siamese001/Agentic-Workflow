@@ -1,13 +1,16 @@
+import asyncio
+import inspect
+import json
 import logging
 import time
 import uuid
-import json
-import asyncio
-import inspect
-from typing import Any, Dict, Optional
 from datetime import datetime
+from typing import Any
+
 from pydantic import BaseModel, Field
-from .context_propagation_mixin import trace_id_var, span_id_var
+
+from .context_propagation_mixin import span_id_var, trace_id_var
+
 
 class SovereignEvent(BaseModel):
     """Standardized schema for all agentic events (Report 4.3)."""
@@ -16,8 +19,8 @@ class SovereignEvent(BaseModel):
     event_type: str
     source_agent: str
     severity: str = "INFO"  # DEBUG, INFO, WARNING, ERROR, CRITICAL
-    payload: Dict[str, Any] = {}
-    trace_id: Optional[str] = None
+    payload: dict[str, Any] = {}
+    trace_id: str | None = None
 
 class EventEmissionMixin:
     """
@@ -39,9 +42,9 @@ class EventEmissionMixin:
 
     def emit_event(self,
                    event_type: str,
-                   payload: Optional[Dict[str, Any]] = None,
+                   payload: dict[str, Any] | None = None,
                    severity: str = "INFO",
-                   trace_id: Optional[str] = None) -> SovereignEvent:
+                   trace_id: str | None = None) -> SovereignEvent:
         """
         Broadmosts a structured event for L6 monitoring.
 

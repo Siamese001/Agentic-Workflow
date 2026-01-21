@@ -1,20 +1,18 @@
 from __future__ import annotations
+
 import os
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
 from pathlib import Path
-from typing import Dict, Any, Optional, List
-from jinja2 import Environment, FileSystemLoader, select_autoescape, StrictUndefined
+from typing import Any
+
+from jinja2 import Environment, FileSystemLoader, StrictUndefined, select_autoescape
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 # Import for semantic deduplication awareness
-from agentic_core.prompt_governance.version_registry.PromptRegistry import get_prompt_registry, DuplicatePromptError
 
 # [PHASE 20] DEPRECATION: void_compliance.py removed - using LocationAgent
 def validate_file_location(file_path, project_root):
@@ -39,7 +37,7 @@ class SovereignPromptRenderer:
             os.makedirs(self.TEMPLATE_ROOT, exist_ok=True)
         self.env = Environment(loader=FileSystemLoader(str(self.TEMPLATE_ROOT)), autoescape=select_autoescape(['html', 'xml']), trim_blocks=True, lstrip_blocks=True, keep_trailing_newline=True, undefined=StrictUndefined)
 
-    def render(self, template_name: str, context: Optional[Dict[str, Any]]=None, metadata: Optional[Dict[str, Any]]=None) -> str:
+    def render(self, template_name: str, context: dict[str, Any] | None=None, metadata: dict[str, Any] | None=None) -> str:
         """
         Render a standard sovereign instructional prompt.
         """
@@ -53,7 +51,7 @@ class SovereignPromptRenderer:
         except Exception as e:
             raise RuntimeError(f"[PROMPT RENDERING FAILURE] Template '{template_name}': {e}")
 
-    def render_tagentic(self, base_template: str, fragments: List[str], context: Optional[Dict[str, Any]]=None) -> str:
+    def render_tagentic(self, base_template: str, fragments: list[str], context: dict[str, Any] | None=None) -> str:
         """
         Tag-based agentic composition: combine meta-prompt + instructional fragments.
         Provides clear architectural cues for high-precision CoT.
@@ -75,7 +73,6 @@ class SovereignPromptRenderer:
     @staticmethod
     def list_available_templates() -> list[str]:
         """Utility for introspection and MCP routing."""
-        root: Any = SovereignPromptRenderer.TEMPLATE_ROOT
         # Final True 20: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_data_files
     jinja_files = get_data_files(root, extensions=['.jinja'])

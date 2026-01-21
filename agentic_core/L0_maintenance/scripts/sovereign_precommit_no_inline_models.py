@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Sovereign Guard: Block Inline Pydantic Models
 Enforces that all Pydantic models must live in core_contracts.py
@@ -9,7 +10,7 @@ import ast
 import sys
 from pathlib import Path
 from typing import Any
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+
 exempt: Any = {'agentic_core/schemas/models/core_contracts.py'}
 
 class SovereignModelVisitor(ast.NodeVisitor):
@@ -34,10 +35,10 @@ class SovereignModelVisitor(ast.NodeVisitor):
 def check_file(filepath: Any) -> Any:
     """Check a single file for inline Pydantic models."""
     normalized_path: Any = str(Path(filepath)).replace('\\', '/')
-    if any((exempt in normalized_path for exempt in EXEMPT)):
+    if any(exempt in normalized_path for exempt in EXEMPT):
         return True
     try:
-        with open(filepath, 'r', encoding='utf-8') as f:
+        with open(filepath, encoding='utf-8') as f:
             tree: Any = ast.parse(f.read(), filename=filepath)
         visitor: Any = SovereignModelVisitor(filepath)
         visitor.visit(tree)

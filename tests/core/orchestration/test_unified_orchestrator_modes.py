@@ -4,12 +4,13 @@ Test Suite for UnifiedOrchestratorAgent Modes
 Verifies mode-based execution (HEALING, COMPLIANCE, SSOT, FULL)
 as implemented in Opportunity #1.
 """
+from unittest.mock import patch
+
 import pytest
-from unittest.mock import MagicMock, patch
 
 from agentic_core.L3_orchestration.UnifiedOrchestratorAgent import (
+    OrchestratorMode,
     UnifiedOrchestratorAgent,
-    OrchestratorMode
 )
 
 

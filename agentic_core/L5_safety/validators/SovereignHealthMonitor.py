@@ -7,24 +7,7 @@ and trend tracking across autonomous healing cycles.
 """
 import json
 from datetime import datetime
-from typing import Dict, Any, Optional
-
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
-)
+from typing import Any
 
 
 class SovereignHealthMonitor:
@@ -86,7 +69,7 @@ class SovereignHealthMonitor:
             # Graceful degradation - health monitoring is optional
             print(f"[WARNING] Failed to persist health snapshot: {e}")
 
-    def get_domain_health(self, domain: str) -> Optional[Dict[str, Any]]:
+    def get_domain_health(self, domain: str) -> dict[str, Any] | None:
         """
         Retrieve current health metrics for a specific domain.
 

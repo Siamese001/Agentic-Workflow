@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Script to fix common syntax errors in Python files.
 Targets the most frequent issues found by the canon validator.
@@ -6,10 +7,10 @@ Targets the most frequent issues found by the canon validator.
 import ast
 import logging
 import os
-from services.configuration import ConfigurationService
 from typing import Any
-from agentic_core.utils.sovereign_index import SovereignIndex
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+
+from services.configuration import ConfigurationService
+
 Logger: Any = logging.getLogger(__name__)
 
 def fix_multiline_strings(content: Any) -> Any:
@@ -67,7 +68,7 @@ def check_syntax(content: Any) -> Any:
 def fix_file(filepath: Any) -> Any:
     """Fix syntax errors in a single file."""
     try:
-        with open(filepath, 'r', encoding='utf-8') as f:
+        with open(filepath, encoding='utf-8') as f:
             original_content: Any = f.read()
         is_valid, error = check_syntax(original_content)
         if is_valid:

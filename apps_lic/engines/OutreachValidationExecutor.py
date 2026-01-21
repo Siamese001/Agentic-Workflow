@@ -6,14 +6,12 @@ rules including metric source binding, redundancy guards, and forbidden content.
 
 import logging
 import re
-from typing import Any, Dict, List, Optional
-from runtime.shared.validation_executor import (
-    ValidationGateExecutor,
-    ValidationStatus,
-    ValidationResult,
-    RuleFailure,
-)
+from typing import Any
 
+from runtime.shared.validation_executor import (
+    RuleFailure,
+    ValidationGateExecutor,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -32,11 +30,11 @@ class OutreachValidationExecutor(ValidationGateExecutor):
 
     def __init__(
         self,
-        validation_gates: List[Any],
-        word_count_constraints: Dict[str, Any],
-        similarity_thresholds: Dict[str, float],
-        forbidden_verbs: List[str],
-        forbidden_filler_phrases: List[str],
+        validation_gates: list[Any],
+        word_count_constraints: dict[str, Any],
+        similarity_thresholds: dict[str, float],
+        forbidden_verbs: list[str],
+        forbidden_filler_phrases: list[str],
     ):
         """Initialize outreach validation executor.
 
@@ -67,8 +65,8 @@ class OutreachValidationExecutor(ValidationGateExecutor):
         check: str,
         content: str,
         k_node_id: str,
-        context: Dict[str, Any],
-    ) -> Optional[RuleFailure]:
+        context: dict[str, Any],
+    ) -> RuleFailure | None:
         """Execute outreach-specific validation check.
 
         Args:
@@ -115,7 +113,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
         # Fall back to base class
         return super()._execute_check(check, content, k_node_id, context)
 
-    def _check_placeholders_lic(self, content: str) -> Optional[RuleFailure]:
+    def _check_placeholders_lic(self, content: str) -> RuleFailure | None:
         """Check for placeholders (LIC-QA-001 - CRITICAL).
 
         Args:
@@ -149,7 +147,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
 
         return None
 
-    def _check_forbidden_verbs(self, content: str) -> Optional[RuleFailure]:
+    def _check_forbidden_verbs(self, content: str) -> RuleFailure | None:
         """Check for forbidden corporate verbs (LIC-QA-008 - MEDIUM).
 
         Args:
@@ -177,7 +175,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
 
         return None
 
-    def _check_filler_phrases(self, content: str) -> Optional[RuleFailure]:
+    def _check_filler_phrases(self, content: str) -> RuleFailure | None:
         """Check for weak filler phrases (LIC-QA-009 - MEDIUM).
 
         Args:
@@ -208,8 +206,8 @@ class OutreachValidationExecutor(ValidationGateExecutor):
     def _check_metric_source_binding(
         self,
         content: str,
-        context: Dict[str, Any],
-    ) -> Optional[RuleFailure]:
+        context: dict[str, Any],
+    ) -> RuleFailure | None:
         """Check metric source binding (LIC-QA-041 - HIGH).
 
         Every metric must map to metric_source_map entry.
@@ -260,8 +258,8 @@ class OutreachValidationExecutor(ValidationGateExecutor):
     def _check_metric_context(
         self,
         content: str,
-        context: Dict[str, Any],
-    ) -> Optional[RuleFailure]:
+        context: dict[str, Any],
+    ) -> RuleFailure | None:
         """Check metric context validation (LIC-QA-043 - HIGH).
 
         Metrics must have keyword context from RAG.
@@ -315,8 +313,8 @@ class OutreachValidationExecutor(ValidationGateExecutor):
     def _check_existing_redundancy(
         self,
         content: str,
-        context: Dict[str, Any],
-    ) -> Optional[RuleFailure]:
+        context: dict[str, Any],
+    ) -> RuleFailure | None:
         """Check redundancy guard for EXISTING contacts.
 
         Jaccard similarity must be ≤0.40 with previous message.
@@ -351,8 +349,8 @@ class OutreachValidationExecutor(ValidationGateExecutor):
     def _check_transition_phrase(
         self,
         content: str,
-        context: Dict[str, Any],
-    ) -> Optional[RuleFailure]:
+        context: dict[str, Any],
+    ) -> RuleFailure | None:
         """Check transition phrase presence.
 
         Args:
@@ -381,8 +379,8 @@ class OutreachValidationExecutor(ValidationGateExecutor):
     def _check_signature_immutability(
         self,
         content: str,
-        context: Dict[str, Any],
-    ) -> Optional[RuleFailure]:
+        context: dict[str, Any],
+    ) -> RuleFailure | None:
         """Check signature immutability.
 
         Signature must be exact 4-line block:

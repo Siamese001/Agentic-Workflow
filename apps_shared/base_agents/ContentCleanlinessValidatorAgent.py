@@ -1,10 +1,14 @@
 from __future__ import annotations
-from typing import Dict, Any, List, Tuple
-from dataclasses import dataclass
+
 import re
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from dataclasses import dataclass
+from typing import Any
+
 from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+
 
 @dataclass
 class ContentCleanlinessValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
@@ -31,7 +35,7 @@ class ContentCleanlinessValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, 
         r"(?i)\bjust (wanted|reaching|following)",
     ]
 
-    def detect_forbidden_verbs(self, text: str) -> List[str]:
+    def detect_forbidden_verbs(self, text: str) -> list[str]:
         """Find forbidden verbs in message text"""
         text_lower = text.lower()
         found = []
@@ -42,7 +46,7 @@ class ContentCleanlinessValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, 
 
         return found
 
-    def detect_fillers(self, text: str) -> List[Tuple[str, str]]:
+    def detect_fillers(self, text: str) -> list[tuple[str, str]]:
         """Find filler phrases in message"""
         found = []
 
@@ -55,7 +59,7 @@ class ContentCleanlinessValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, 
 
         return found
 
-    def validate_verbs(self, message: str) -> Tuple[bool, str]:
+    def validate_verbs(self, message: str) -> tuple[bool, str]:
         """Validate no excessive forbidden verbs"""
         forbidden = self.detect_forbidden_verbs(message)
 
@@ -64,7 +68,7 @@ class ContentCleanlinessValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, 
 
         return True, ""
 
-    def validate_fillers(self, message: str) -> Tuple[bool, str]:
+    def validate_fillers(self, message: str) -> tuple[bool, str]:
         """Validate message is direct and confident"""
         fillers = self.detect_fillers(message)
 
@@ -73,7 +77,7 @@ class ContentCleanlinessValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, 
             return False, f"Found filler phrases: {', '.join(filler_texts[:3])}"
         return True, ""
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
         """Autonomous healing with proper invocation chain."""
         super().heal_repository(dry_run=dry_run, execute=execute, **kwargs)
         return {"violations": 0, "fixed": 0, "errors": 0}
@@ -84,14 +88,7 @@ class ContentCleanlinessValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, 
 __version__ = "11.10"
 
 # import scripts.validation.check_canonical_structure  # TODO: Replace with sovereign equivalent
-from typing import Dict, List, Any, Tuple
-from apps_lic.core.data_models import (
-    OutreachMission, GeneratedMessage, ValidationResult,
-    ValidationSeverity, Route, Archetype, ResearchContext
-)
-import numpy as np
 # from scripts.utilities.FormatScriptsContext import TfidfVectorizer  # TODO: Replace with sovereign equivalent
-from sklearn.metrics.pairwise import cosine_similarity
 from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 # ============================================================================
@@ -170,7 +167,7 @@ class ErrorCodeRegistry:
     }
 
     @classmethod
-    def get_error(cls, code: str) -> Dict[str, str]:
+    def get_error(cls, code: str) -> dict[str, str]:
         return cls.CODES.get(code, {"Severity": "UNKNOWN", "description": "Unknown error", "remediation": "Contact support"})
 
 # ============================================================================
@@ -185,10 +182,10 @@ class ConstraintFeasibilityChecker:
 
     def check_feasibility(
         self,
-        Route: 'models.Route',
-        Archetype: 'models.Archetype',
-        required_elements: List[str]
-    ) -> Tuple[bool, str]:
+        Route: models.Route,
+        Archetype: models.Archetype,
+        required_elements: list[str]
+    ) -> tuple[bool, str]:
         """
         Pre-flight check: can we satisfy these constraints?
         (Simplified version - full implementation would use LLM)
@@ -241,7 +238,7 @@ class ContentCleanlinessValidatorAgent:
         r"(?i)\bjust (wanted|reaching|following)",
     ]
 
-    def detect_forbidden_verbs(self, text: str) -> List[str]:
+    def detect_forbidden_verbs(self, text: str) -> list[str]:
         """Find forbidden verbs in message text"""
         text_lower = text.lower()
         found = []
@@ -252,7 +249,7 @@ class ContentCleanlinessValidatorAgent:
 
         return found
 
-    def detect_fillers(self, text: str) -> List[Tuple[str, str]]:
+    def detect_fillers(self, text: str) -> list[tuple[str, str]]:
         """Find filler phrases in message"""
         found = []
 
@@ -265,7 +262,7 @@ class ContentCleanlinessValidatorAgent:
 
         return found
 
-    def validate_verbs(self, message: str) -> Tuple[bool, str]:
+    def validate_verbs(self, message: str) -> tuple[bool, str]:
         """Validate no excessive forbidden verbs"""
         forbidden = self.detect_forbidden_verbs(message)
 
@@ -274,7 +271,7 @@ class ContentCleanlinessValidatorAgent:
 
         return True, ""
 
-    def validate_fillers(self, message: str) -> Tuple[bool, str]:
+    def validate_fillers(self, message: str) -> tuple[bool, str]:
         """Validate message is direct and confident"""
         fillers = self.detect_fillers(message)
 

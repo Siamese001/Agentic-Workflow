@@ -9,12 +9,10 @@ Tests the 5 detailed test cases for:
 4. Two-Phase Deduplication Ordering
 5. Full Green Path
 """
-import sys
 import logging
+import sys
 from pathlib import Path
-from unittest.mock import patch, MagicMock
-from dataclasses import dataclass
-from typing import Optional, Dict, Any
+from unittest.mock import patch
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -24,9 +22,8 @@ sys.path.insert(0, str(PROJECT_ROOT))
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 
 from agentic_core.L3_orchestration.workflow_engines.SSOTOrchestratorAgent import (
-    SSOTOrchestratorAgent,
     AgentResult,
-    OrchestrationReport,
+    SSOTOrchestratorAgent,
 )
 
 
@@ -107,9 +104,9 @@ def test_1_gate_1_syntax_critical_failure():
         assert agent not in agents_called, \
             f"{agent} should NOT have been called after syntax failure"
 
-    print(f"✅ PASSED: Gate 1 (Syntax Critical Failure) working")
+    print("✅ PASSED: Gate 1 (Syntax Critical Failure) working")
     print(f"   Agents called: {agents_called}")
-    print(f"   Tier 2/3 agents correctly skipped after syntax failure")
+    print("   Tier 2/3 agents correctly skipped after syntax failure")
     return True
 
 
@@ -158,9 +155,9 @@ def test_2_gate_2_structural_stability_execute_mode():
         assert agent not in agents_called, \
             f"{agent} should NOT have been called after Tier 2 failure in execute mode"
 
-    print(f"✅ PASSED: Gate 2 (Structural Stability - Execute Mode) working")
+    print("✅ PASSED: Gate 2 (Structural Stability - Execute Mode) working")
     print(f"   Agents called: {agents_called}")
-    print(f"   Tier 3 agents correctly skipped after Tier 2 failure in execute mode")
+    print("   Tier 3 agents correctly skipped after Tier 2 failure in execute mode")
     return True
 
 
@@ -209,9 +206,9 @@ def test_3_gate_2_dry_run_continuation():
         assert agent in agents_called, \
             f"{agent} SHOULD have been called in dry-run mode despite Tier 2 failure"
 
-    print(f"✅ PASSED: Gate 2 (Dry-Run Continuation) working")
+    print("✅ PASSED: Gate 2 (Dry-Run Continuation) working")
     print(f"   Agents called: {agents_called}")
-    print(f"   Tier 3 agents correctly ran in dry-run mode despite Tier 2 failure")
+    print("   Tier 3 agents correctly ran in dry-run mode despite Tier 2 failure")
     return True
 
 
@@ -258,11 +255,11 @@ def test_4_two_phase_deduplication_ordering():
     assert gravity_idx < phase_b_idx, \
         f"GravityEnforcerAgent (idx={gravity_idx}) should come before PhaseB (idx={phase_b_idx})"
 
-    print(f"✅ PASSED: Two-Phase Deduplication Ordering correct")
+    print("✅ PASSED: Two-Phase Deduplication Ordering correct")
     print(f"   Tier 2: {tier2_agents}")
     print(f"   Tier 3: {tier3_agents}")
-    print(f"   PhaseA in Tier 2 before NamingAgent: ✓")
-    print(f"   PhaseB in Tier 3 after GravityEnforcerAgent: ✓")
+    print("   PhaseA in Tier 2 before NamingAgent: ✓")
+    print("   PhaseB in Tier 3 after GravityEnforcerAgent: ✓")
     return True
 
 
@@ -317,7 +314,7 @@ def test_5_full_green_path():
     assert report.total_violations == 0, \
         f"Expected 0 violations, got {report.total_violations}"
 
-    print(f"✅ PASSED: Full Green Path working")
+    print("✅ PASSED: Full Green Path working")
     print(f"   Agents called (in order): {agents_called}")
     print(f"   Success rate: {report.success_rate}%")
     print(f"   Overall status: {report.overall_status}")

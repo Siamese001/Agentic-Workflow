@@ -17,12 +17,11 @@
 ╚══════════════════════════════════════════════════════════════════════════════╝
 """
 
-import sys
-import json
 import hashlib
+import json
+import sys
 import time
 from pathlib import Path
-from typing import List, Dict, Set, Tuple
 
 # Add scripts directory to path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -61,22 +60,22 @@ def run_tests():
     # Import the discovery module
     try:
         from full_agent_discovery import (
-            PROJECT_ROOT,
-            MINIMUM_AGENT_COUNT,
-            MAX_AGENT_DROP_PERCENT,
-            EXPECTED_AGENT_COUNT,
+            CLASS_INHERITANCE_MAP,
             EXCLUDED_DIRS,
             EXCLUDED_FILENAME_PATTERNS,
             EXCLUDED_PATH_PATTERNS,
-            should_exclude_path,
-            should_exclude_file,
-            is_agent_class,
-            extract_bases,
-            discover_all_agents,
-            validate_agent_count,
-            CLASS_INHERITANCE_MAP,
+            EXPECTED_AGENT_COUNT,
+            MAX_AGENT_DROP_PERCENT,
+            MINIMUM_AGENT_COUNT,
+            PROJECT_ROOT,
             build_inheritance_map,
+            discover_all_agents,
+            extract_bases,
+            is_agent_class,
             safe_parse,
+            should_exclude_file,
+            should_exclude_path,
+            validate_agent_count,
         )
     except ImportError as e:
         print(f"❌ CRITICAL: Failed to import full_agent_discovery: {e}")

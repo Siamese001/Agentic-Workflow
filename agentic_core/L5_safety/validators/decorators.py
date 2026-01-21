@@ -25,7 +25,8 @@ import functools
 import logging
 import time
 import traceback
-from typing import Any, Callable, Dict, Optional, TypeVar, cast
+from collections.abc import Callable
+from typing import Any, TypeVar, cast
 
 Logger = logging.getLogger(__name__)
 
@@ -73,7 +74,7 @@ LEGACY_KEY_MAPPINGS = {
 }
 
 
-def _warn_non_canonical_keys(result: Dict[str, Any], agent_name: str) -> None:
+def _warn_non_canonical_keys(result: dict[str, Any], agent_name: str) -> None:
     """
     Emit warnings for non-canonical keys in heal_repository return values.
 
@@ -91,7 +92,7 @@ def _warn_non_canonical_keys(result: Dict[str, Any], agent_name: str) -> None:
             )
 
 
-def _normalize_heal_result(result: Any, execution_time_ms: float, agent_name: str = "") -> Dict[str, Any]:
+def _normalize_heal_result(result: Any, execution_time_ms: float, agent_name: str = "") -> dict[str, Any]:
     """
     Normalize a heal result to the canonical HealResult schema.
 
@@ -119,7 +120,7 @@ def _normalize_heal_result(result: Any, execution_time_ms: float, agent_name: st
         _warn_non_canonical_keys(result, agent_name)
 
     # Start with default schema
-    normalized: Dict[str, Any] = {
+    normalized: dict[str, Any] = {
         **HEAL_RESULT_SCHEMA,
         "execution_time_ms": execution_time_ms,
     }
@@ -147,7 +148,7 @@ def _normalize_heal_result(result: Any, execution_time_ms: float, agent_name: st
         for legacy_key, canonical_key in LEGACY_KEY_MAPPINGS.items():
             if legacy_key in result and canonical_key not in result:
                 value = result[legacy_key]
-                if isinstance(value, (int, float)):
+                if isinstance(value, int | float):
                     normalized[canonical_key] = int(value)
 
         # Then, copy canonical keys directly
@@ -189,8 +190,8 @@ def _normalize_heal_result(result: Any, execution_time_ms: float, agent_name: st
 
 
 def _normalize_heal_inputs(
-    kwargs: Dict[str, Any]
-) -> tuple[bool, bool, Dict[str, Any]]:
+    kwargs: dict[str, Any]
+) -> tuple[bool, bool, dict[str, Any]]:
     """
     Normalize heal_repository inputs.
 
@@ -240,7 +241,7 @@ def standard_heal(func: F) -> F:
         Decorated function with standardized behavior
     """
     @functools.wraps(func)
-    def wrapper(self: Any, *args: Any, **kwargs: Any) -> Dict[str, Any]:
+    def wrapper(self: Any, *args: Any, **kwargs: Any) -> dict[str, Any]:
         start_time = time.time()
         agent_name = self.__class__.__name__
 
@@ -305,7 +306,7 @@ def standard_heal_async(func: F) -> F:
                 return {"renamed": 5}
     """
     @functools.wraps(func)
-    async def wrapper(self: Any, *args: Any, **kwargs: Any) -> Dict[str, Any]:
+    async def wrapper(self: Any, *args: Any, **kwargs: Any) -> dict[str, Any]:
         start_time = time.time()
         agent_name = self.__class__.__name__
 

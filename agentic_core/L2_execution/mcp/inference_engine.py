@@ -5,14 +5,16 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 import logging
+
 '''Brief description of functionality and purpose.'''
 
 import os
 import time
-from dataclasses import dataclass, field
-from enum import Enum, auto
-from typing import Any, Dict, List, Optional, Protocol
+from dataclasses import dataclass
+from enum import Enum
+from typing import Any, Protocol
 
 import anthropic
 import openai
@@ -22,7 +24,11 @@ from groq import Groq
 from mistralai.async_client import MistralAsyncClient
 from together import Together
 
-from agentic_core.runtime.shared_runtime.SemanticCache import SemanticCache, create_semantic_cache, SemanticCacheHit, CacheMiss
+from agentic_core.runtime.shared_runtime.SemanticCache import (
+    SemanticCache,
+    SemanticCacheHit,
+    create_semantic_cache,
+)
 
 
 # NAMING FIXED: HardStateProtocol → HardStateProtocol
@@ -30,15 +36,15 @@ class HardStateProtocol(Protocol):
     """Protocol for the HardState attribute of SignalContext."""
     execution_id: str
     node_id: str
-    def add_trace(self, EVENT: str, DATA: Dict[str, Any]) -> 'HardStateProtocol': ...
+    def add_trace(self, EVENT: str, DATA: dict[str, Any]) -> HardStateProtocol: ...
 
 
 # NAMING FIXED: SignalContextProtocol → SignalContextProtocol
 class SignalContextProtocol(Protocol):
     """Protocol for SignalContext to allow dependency injection."""
-    def get_thermal_params(self) -> Dict[str, float]: ...
+    def get_thermal_params(self) -> dict[str, float]: ...
 
-    def get_anchored_context(self) -> Optional[str]: ...
+    def get_anchored_context(self) -> str | None: ...
 
     def update_timestamp(self) -> None: ...
 
@@ -97,7 +103,7 @@ class AnthropicClientWrapper:
 
         return self
 
-    async def create(self, messages: List[Dict[str, Any]], model: str, temperature: float, top_p: float, frequency_penalty: float, presence_penalty: float, stream: bool, max_tokens: Optional[int] = None, **kwargs) -> Any:
+    async def create(self, messages: list[dict[str, Any]], model: str, temperature: float, top_p: float, frequency_penalty: float, presence_penalty: float, stream: bool, max_tokens: int | None = None, **kwargs) -> Any:
 
         anthropic_messages = []
         for msg in messages:
@@ -166,7 +172,7 @@ class GoogleClientWrapper:
     def completions(self):
         return self
 
-    async def create(self, messages: List[Dict[str, Any]], model: str, temperature: float, top_p: float, frequency_penalty: float, presence_penalty: float, stream: bool, max_tokens: Optional[int] = None, **kwargs) -> Any:
+    async def create(self, messages: list[dict[str, Any]], model: str, temperature: float, top_p: float, frequency_penalty: float, presence_penalty: float, stream: bool, max_tokens: int | None = None, **kwargs) -> Any:
         # Build contents for new API
         contents = []
         for msg in messages:
@@ -228,7 +234,7 @@ class GenericOpenAiCompatibleClientWrapper:
         return self._client.chat # Assume client has a .chat attribute with .completions.create
 
 # --- Local Client Factory ---
-_local_client_cache: Dict[Provider, Any] = {}
+_local_client_cache: dict[Provider, Any] = {}
 
 def _get_llm_client_instance(Provider: Provider) -> Any:
     """
@@ -278,21 +284,21 @@ class InferenceRequest:
     context: SignalContextProtocol  # Changed to use Protocol for dependency injection
     mode: InferenceMode = InferenceMode.ANALYTICAL
     Provider: Provider = Provider.OPENAI
-    model: Optional[str] = None
-    max_tokens: Optional[int] = None
+    model: str | None = None
+    max_tokens: int | None = None
     STREAM: bool = False
 
     # Override thermal settings if needed
-    temperature_override: Optional[float] = None
-    top_p_override: Optional[float] = None
+    temperature_override: float | None = None
+    top_p_override: float | None = None
 
 @dataclass
 # NAMING FIXED: InferenceResult → InferenceResult
 class InferenceResult:
     """Result structure for inference engine."""
     content: str
-    usage: Dict[str, Any]
-    thermal_params_used: Dict[str, float]
+    usage: dict[str, Any]
+    thermal_params_used: dict[str, float]
     execution_time_ms: float
     Provider: Provider
     model: str
@@ -315,9 +321,9 @@ class ThermostatMiddleware:
             enable_logging: Enable thermal parameter logging
         """
         self.enable_logging = enable_logging
-        self._thermal_history: List[Dict[str, Any]] = []
+        self._thermal_history: list[dict[str, Any]] = []
 
-    def get_thermal_params(self, request: InferenceRequest) -> Dict[str, float]:
+    def get_thermal_params(self, request: InferenceRequest) -> dict[str, float]:
         """Get thermal parameters for the inference request.
 
         Args:
@@ -360,7 +366,7 @@ class ThermostatMiddleware:
 
         return params
 
-    def _log_thermal_usage(self, request: InferenceRequest, params: Dict[str, float]) -> None:
+    def _log_thermal_usage(self, request: InferenceRequest, params: dict[str, float]) -> None:
         """Log thermal parameter usage for analysis.
 
         Args:
@@ -392,7 +398,7 @@ class ThermostatMiddleware:
             }
         )
 
-    def get_thermal_history(self, execution_id: Optional[str] = None) -> List[Dict[str, Any]]:
+    def get_thermal_history(self, execution_id: str | None = None) -> list[dict[str, Any]]:
         """Get thermal parameter history.
 
         Args:
@@ -416,7 +422,7 @@ class InferenceEngine:
 
     def __init__(
         self,
-        thermostat: Optional[ThermostatMiddleware] = None,
+        thermostat: ThermostatMiddleware | None = None,
         default_provider: Provider = Provider.OPENAI,
         enable_logging: bool = True
     ):
@@ -430,7 +436,7 @@ class InferenceEngine:
         self.thermostat = thermostat or ThermostatMiddleware(enable_logging)
         self.default_provider = default_provider
         self.enable_logging = enable_logging
-        self._client_cache: Dict[Provider, Any] = {}
+        self._client_cache: dict[Provider, Any] = {}
 
         # Initialize semantic cache for response caching
         self.cache: SemanticCache = create_semantic_cache(
@@ -633,7 +639,7 @@ class InferenceEngine:
         }
         return defaults.get(Provider.value, "gpt-4") # Fix: Use Provider.value consistently
 
-    def get_thermal_history(self, execution_id: Optional[str] = None) -> List[Dict[str, Any]]:
+    def get_thermal_history(self, execution_id: str | None = None) -> list[dict[str, Any]]:
         """Get thermal parameter usage history.
 
         Args:

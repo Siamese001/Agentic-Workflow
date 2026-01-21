@@ -7,7 +7,7 @@ Original: archives/unmapped_drift/20260107/agentic_core/knowledge/document_loade
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 try:
     import pandas as pd
@@ -21,7 +21,7 @@ class CsvDocumentLoader:
     """Sovereign CSV loader using pandas for structured data."""
 
     @staticmethod
-    def load(file_path: Path, **kwargs) -> List[Dict[str, Any]]:
+    def load(file_path: Path, **kwargs) -> list[dict[str, Any]]:
         """
         Load CSV as list of dictionaries (records).
 
@@ -42,7 +42,7 @@ class CsvDocumentLoader:
 
         try:
             df: Any = pd.read_csv(file_path, **kwargs)
-            records: List[Dict[str, Any]] = df.to_dict(orient='records')
+            records: list[dict[str, Any]] = df.to_dict(orient='records')
             return records
         except Exception as e:
             raise ValueError(f'CSV loading failed for {file_path}: {e}')
@@ -59,7 +59,7 @@ class CsvDocumentLoader:
             raise ValueError(f'CSV DataFrame load failed: {e}')
 
     @staticmethod
-    def load_sample(file_path: Path, rows: int = 10, **kwargs) -> List[Dict[str, Any]]:
+    def load_sample(file_path: Path, rows: int = 10, **kwargs) -> list[dict[str, Any]]:
         """Load only first N rows for preview/sampling."""
         if not HAS_PANDAS:
             raise ImportError("pandas is required for CsvDocumentLoader")

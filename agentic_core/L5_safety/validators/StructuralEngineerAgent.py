@@ -5,7 +5,9 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 """
 Structural Engineer Agent - Code Structure Validation
 CANONICAL: True - Consolidated 2026-01-06 (merged from engineering.py)
@@ -22,19 +24,14 @@ Responsible for:
 """
 import ast
 import os
-import re
-from typing import Any, Dict, List, Optional, Protocol, Tuple
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from typing import Any
+
 from agentic_core.L2_execution.ToolRegistry.CanonBaseAgent import CanonBaseAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
-
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
@@ -50,7 +47,7 @@ class StructuralEngineerAgent(MCPHardenedMixin, SubatomicTestingMixin, CanonBase
     - Modularity, cohesion, coupling
     """
 
-    def get_validation_keys(self) -> List[int]:
+    def get_validation_keys(self) -> list[int]:
         """Return canon keys validated by this agent."""
         return list(range(20, 31))
 
@@ -72,7 +69,7 @@ class StructuralEngineerAgent(MCPHardenedMixin, SubatomicTestingMixin, CanonBase
         else:
             print(f'   [{self.name}] ✅ Large Functions: PASS - All functions within limits')
 
-    def check_no_large_classes(self) -> Tuple[bool, List[str]]:
+    def check_no_large_classes(self) -> tuple[bool, list[str]]:
         """
         Check for classes with >20 methods or >500 lines.
 
@@ -86,13 +83,13 @@ class StructuralEngineerAgent(MCPHardenedMixin, SubatomicTestingMixin, CanonBase
         for file_path in self.ctx.python_files:
             try:
                 resolved_path: Any = Path(file_path).resolve()
-                with open(resolved_path, 'r', encoding='utf-8') as f:
+                with open(resolved_path, encoding='utf-8') as f:
                     content: Any = f.read()
                     tree: Any = ast.parse(content)
                     content.splitlines()
                 for node in ast.walk(tree):
                     if isinstance(node, ast.ClassDef):
-                        method_count: Any = sum((1 for n in node.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))))
+                        method_count: Any = sum(1 for n in node.body if isinstance(n, ast.FunctionDef | ast.AsyncFunctionDef))
                         if hasattr(node, 'lineno') and hasattr(node, 'end_lineno'):
                             class_lines: Any = node.end_lineno - node.lineno + 1
                         else:
@@ -105,7 +102,7 @@ class StructuralEngineerAgent(MCPHardenedMixin, SubatomicTestingMixin, CanonBase
                 continue
         return (len(violations) == 0, violations)
 
-    def check_no_large_functions(self) -> Tuple[bool, List[str]]:
+    def check_no_large_functions(self) -> tuple[bool, list[str]]:
         """
         Check for functions exceeding 50 lines.
 
@@ -118,11 +115,11 @@ class StructuralEngineerAgent(MCPHardenedMixin, SubatomicTestingMixin, CanonBase
         for file_path in self.ctx.python_files:
             try:
                 resolved_path: Any = Path(file_path).resolve()
-                with open(resolved_path, 'r', encoding='utf-8') as f:
+                with open(resolved_path, encoding='utf-8') as f:
                     content: Any = f.read()
                     tree: Any = ast.parse(content)
                 for node in ast.walk(tree):
-                    if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
                         if hasattr(node, 'lineno') and hasattr(node, 'end_lineno'):
                             func_lines: Any = node.end_lineno - node.lineno + 1
                             if func_lines > max_lines:
@@ -131,7 +128,7 @@ class StructuralEngineerAgent(MCPHardenedMixin, SubatomicTestingMixin, CanonBase
                 continue
         return (len(violations) == 0, violations)
 
-    def check_cyclomatic_complexity(self) -> Tuple[bool, List[str]]:
+    def check_cyclomatic_complexity(self) -> tuple[bool, list[str]]:
         """
         Check for high cyclomatic complexity (>10).
 
@@ -143,10 +140,10 @@ class StructuralEngineerAgent(MCPHardenedMixin, SubatomicTestingMixin, CanonBase
         for file_path in self.ctx.python_files:
             try:
                 resolved_path: Any = Path(file_path).resolve()
-                with open(resolved_path, 'r', encoding='utf-8') as f:
+                with open(resolved_path, encoding='utf-8') as f:
                     tree: Any = ast.parse(f.read())
                 for node in ast.walk(tree):
-                    if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
                         complexity: Any = self._calculate_complexity(node)
                         if complexity > max_complexity:
                             violations.append(f"{file_path}:{node.lineno}: Function '{node.name}' has complexity {complexity} (max {max_complexity})")
@@ -162,13 +159,13 @@ class StructuralEngineerAgent(MCPHardenedMixin, SubatomicTestingMixin, CanonBase
         """
         complexity = 1
         for child in ast.walk(node):
-            if isinstance(child, (ast.If, ast.For, ast.While, ast.ExceptHandler)):
+            if isinstance(child, ast.If | ast.For | ast.While | ast.ExceptHandler):
                 complexity += 1
             elif isinstance(child, ast.BoolOp):
                 complexity += len(child.values) - 1
         return complexity
 
-    async def _heal_violations(self, key: int, violations: List[str]):
+    async def _heal_violations(self, key: int, violations: list[str]):
         """
         Heal violations for a specific key.
 
@@ -189,7 +186,7 @@ class StructuralEngineerAgent(MCPHardenedMixin, SubatomicTestingMixin, CanonBase
         for file_path, file_viols in file_violations.items():
             await self._smart_fix(file_path, key, file_viols)
 
-    async def _smart_fix(self, file_path: str, violation_key: int, violations: List[str]):
+    async def _smart_fix(self, file_path: str, violation_key: int, violations: list[str]):
         """
         Apply smart fix to a file using Gemini 2.5 Flash.
 
@@ -201,7 +198,7 @@ class StructuralEngineerAgent(MCPHardenedMixin, SubatomicTestingMixin, CanonBase
         from pathlib import Path
         try:
             resolved_path = Path(file_path).resolve()
-            with open(resolved_path, 'r', encoding='utf-8') as f:
+            with open(resolved_path, encoding='utf-8') as f:
                 original_code = f.read()
         except Exception as e:
             print(f'      [!] Cannot read {file_path}: {e}')
@@ -231,7 +228,7 @@ class StructuralEngineerAgent(MCPHardenedMixin, SubatomicTestingMixin, CanonBase
         print(f'      [X] Failed to fix {os.path.basename(file_path)} after {max_rounds} rounds')
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L2 execution agent - invoke shared healing chain."""
         if _call_path is None:
             _call_path = set()

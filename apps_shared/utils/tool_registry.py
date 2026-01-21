@@ -5,11 +5,15 @@ Ensures tools reside in Sovereign Territory before registration.
 Integrates with SovereignIndex for safety validation.
 """
 import logging
-from typing import Dict, Any, Optional, List, Callable
+from collections.abc import Callable
 from pathlib import Path
+from typing import Any, Optional
 
+from agentic_core.L5_safety.validators.structure_blueprint import (
+    GLOBAL_EXCLUDED_DIRS,
+    is_path_allowed,
+)
 from agentic_core.utils.sovereign_index import SovereignIndex
-from agentic_core.L5_safety.validators.structure_blueprint import is_path_allowed, GLOBAL_EXCLUDED_DIRS
 
 Logger = logging.getLogger(__name__)
 
@@ -25,7 +29,7 @@ class ToolRegistry:
     - Logging of registration attempts
     """
     _instance: Optional['ToolRegistry'] = None
-    _tools: Dict[str, Dict[str, Any]] = {}
+    _tools: dict[str, dict[str, Any]] = {}
 
     def __new__(cls) -> 'ToolRegistry':
         if cls._instance is None:
@@ -128,7 +132,7 @@ class ToolRegistry:
             return True
         return False
 
-    def get_tool(self, tool_name: str) -> Optional[Dict[str, Any]]:
+    def get_tool(self, tool_name: str) -> dict[str, Any] | None:
         """
         Retrieves a registered tool by name.
 
@@ -140,7 +144,7 @@ class ToolRegistry:
         """
         return self._tools.get(tool_name)
 
-    def get_tool_func(self, tool_name: str) -> Optional[Callable[..., Any]]:
+    def get_tool_func(self, tool_name: str) -> Callable[..., Any] | None:
         """
         Retrieves just the callable function for a tool.
 
@@ -153,15 +157,15 @@ class ToolRegistry:
         tool = self._tools.get(tool_name)
         return tool["func"] if tool else None
 
-    def list_tools(self) -> List[str]:
+    def list_tools(self) -> list[str]:
         """Returns list of all registered tool names."""
         return list(self._tools.keys())
 
-    def get_all_tools(self) -> Dict[str, Dict[str, Any]]:
+    def get_all_tools(self) -> dict[str, dict[str, Any]]:
         """Returns the complete tool registry."""
         return self._tools.copy()
 
-    def discover_tools(self, pattern: str = "*_tool.py", project_root: Optional[Path] = None) -> List[Path]:
+    def discover_tools(self, pattern: str = "*_tool.py", project_root: Path | None = None) -> list[Path]:
         """
         Uses SovereignIndex to discover tool files matching a pattern.
 
@@ -180,7 +184,7 @@ class ToolRegistry:
     def auto_register_from_pattern(
         self,
         pattern: str = "*_tool.py",
-        tool_loader: Optional[Callable[[Path], tuple]] = None
+        tool_loader: Callable[[Path], tuple] | None = None
     ) -> int:
         """
         Auto-discovers and registers tools matching a pattern.

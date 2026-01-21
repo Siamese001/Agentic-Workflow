@@ -1,18 +1,15 @@
 from __future__ import annotations
+
 """L5 Safety Layer Integration.
 
 Coordinates PII Vault, Constitutional Overseer, and Cost Governor.
 """
 import logging
-import re
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol
+from typing import TYPE_CHECKING, Any
+
 from agentic_core.L1_cognition.P1_interfaces import ActionRequest
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
 
 if TYPE_CHECKING:
     from agentic_core.governor import create_cost_governor
@@ -58,7 +55,7 @@ class L5SafetyLayer:
                 self.blocked_count += 1
                 LOGGER.error('L5: Action BLOCKED - Cost limit would be exceeded')
                 return False
-            LOGGER.info(f'L5: Action Validated - [SAFE]')
+            LOGGER.info('L5: Action Validated - [SAFE]')
             return True
         except Exception as e:
             self.blocked_count += 1
@@ -73,7 +70,7 @@ class L5SafetyLayer:
         """
         for key, value in request.parameters.items():
             if isinstance(value, str) and len(value) > 10:
-                if any((keyword in value.lower() for keyword in ['email', 'phone', 'ssn', 'address'])):
+                if any(keyword in value.lower() for keyword in ['email', 'phone', 'ssn', 'address']):
                     redacted = self.PiiVault.redact(self.session_id, value)
                     if redacted != value:
                         LOGGER.warning(f"L5: PII detected and redacted in parameter '{key}'")
@@ -107,7 +104,7 @@ class L5SafetyLayer:
         """
         return self.CostGovernor.track(model, input_tokens, output_tokens)
 
-    def get_safety_stats(self) -> Dict[str, Any]:
+    def get_safety_stats(self) -> dict[str, Any]:
         """Get safety layer statistics.
 
         Returns:

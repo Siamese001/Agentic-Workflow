@@ -5,18 +5,22 @@
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 #!/usr/bin/env python3
 """
 HierarchyEnforcerAgent - Ensures L4 structure compliance
 """
 
 from pathlib import Path
-from typing import Any, Dict, List, Optional
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from typing import Any
+
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
 @dataclass
@@ -44,7 +48,7 @@ class HierarchyEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
         self.archive_root = project_root / DEPRECATION_ARCHIVE / "depth_violations"
         self.archive_root.mkdir(parents=True, exist_ok=True)
 
-    def enforce_hierarchy(self) -> Dict[str, Any]:
+    def enforce_hierarchy(self) -> dict[str, Any]:
         """
         Enforce L4 structure across all required directories.
         Returns dict of actions taken.
@@ -83,7 +87,7 @@ class HierarchyEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
         }
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """Observability metrics agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
@@ -100,7 +104,7 @@ class HierarchyEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
         finally:
             _call_path.discard(agent_name)
 
-    def enforce_depth_precision(self) -> List[str]:
+    def enforce_depth_precision(self) -> list[str]:
         """
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository()
@@ -141,7 +145,7 @@ class HierarchyEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
 
         return actions
 
-    def enforce_tests_depth(self) -> List[str]:
+    def enforce_tests_depth(self) -> list[str]:
         """
         Tests depth enforcement. If it's not depth 3, it gets archived.
         """
@@ -178,7 +182,7 @@ class HierarchyEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
 
         return actions
 
-    def enforce_universal_depth(self) -> List[str]:
+    def enforce_universal_depth(self) -> list[str]:
         """
         Universal depth enforcement for all file types under agentic_core.
         Archives non-Python files that violate depth 4 rule.
@@ -221,7 +225,7 @@ class HierarchyEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
 
         return actions
 
-    def validate_hierarchy(self) -> Dict[str, Any]:
+    def validate_hierarchy(self) -> dict[str, Any]:
         """
         Validate L4 structure compliance.
         Returns validation report.

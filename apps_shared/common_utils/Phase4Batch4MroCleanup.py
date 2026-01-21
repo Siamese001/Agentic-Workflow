@@ -21,7 +21,6 @@ from __future__ import annotations
 import argparse
 import re
 from pathlib import Path
-from typing import List, Tuple, Set
 
 # Files to EXCLUDE from refactoring
 EXCLUDED_FILES = {
@@ -52,7 +51,7 @@ REDUNDANT_MIXINS = {
 }
 
 
-def find_python_files(root: Path) -> List[Path]:
+def find_python_files(root: Path) -> list[Path]:
     """Find all Python files in agentic_core, excluding specified directories."""
     files = []
     for path in root.rglob("*.py"):
@@ -76,7 +75,7 @@ def has_redundant_inheritance(content: str) -> bool:
     return False
 
 
-def clean_class_inheritance(content: str) -> Tuple[str, int]:
+def clean_class_inheritance(content: str) -> tuple[str, int]:
     """Remove redundant mixins from class definitions.
 
     Returns:
@@ -122,7 +121,7 @@ def clean_class_inheritance(content: str) -> Tuple[str, int]:
     return '\n'.join(modified_lines), cleanups
 
 
-def remove_unused_imports(content: str, removed_mixins: Set[str]) -> Tuple[str, int]:
+def remove_unused_imports(content: str, removed_mixins: set[str]) -> tuple[str, int]:
     """Remove imports for mixins that are no longer used.
 
     Returns:
@@ -137,7 +136,7 @@ def remove_unused_imports(content: str, removed_mixins: Set[str]) -> Tuple[str, 
 
         for mixin in removed_mixins:
             # Check if this line imports the mixin and mixin is not used elsewhere
-            if f'import {mixin}' in line or f'from' in line and mixin in line:
+            if f'import {mixin}' in line or 'from' in line and mixin in line:
                 # Check if mixin is still used in the content (excluding import lines)
                 content_without_imports = '\n'.join([l for l in lines if 'import' not in l])
                 if mixin not in content_without_imports:

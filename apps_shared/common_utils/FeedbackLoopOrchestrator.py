@@ -12,12 +12,11 @@ Primary Responsibilities:
 """
 
 import logging
-from dataclasses import dataclass, field
+from collections.abc import Callable
+from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Tuple
-import json
-
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -38,10 +37,10 @@ class RegenerationCheckpoint:
     content: str
     validation_result: Any  # ValidationResult
     temperature: float
-    failure_type: Optional[ConstraintFailureType] = None
+    failure_type: ConstraintFailureType | None = None
     score: float = 0.0
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for logging."""
         return {
             "attempt": self.attempt,
@@ -59,12 +58,12 @@ class RegenerationResult:
     success: bool
     final_content: str
     attempts: int
-    checkpoints: List[RegenerationCheckpoint]
+    checkpoints: list[RegenerationCheckpoint]
     final_validation: Any  # ValidationResult
     reverted: bool = False
     exhausted: bool = False
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for logging."""
         return {
             "success": self.success,
@@ -88,8 +87,8 @@ class FeedbackLoopOrchestrator:
         max_attempts: int = 5,
         checkpoint_saving: bool = True,
         reversion_enabled: bool = True,
-        adaptive_temperature_config: Optional[Dict[str, Any]] = None,
-        message_type_transitions: Optional[Dict[str, Any]] = None,
+        adaptive_temperature_config: dict[str, Any] | None = None,
+        message_type_transitions: dict[str, Any] | None = None,
     ):
         """Initialize feedback loop orchestrator.
 
@@ -125,7 +124,7 @@ class FeedbackLoopOrchestrator:
         self,
         generator: Callable,
         validator: Callable,
-        initial_context: Dict[str, Any],
+        initial_context: dict[str, Any],
         k_node_id: str,
     ) -> RegenerationResult:
         """Execute generation with feedback loop.
@@ -321,11 +320,11 @@ class FeedbackLoopOrchestrator:
 
     def _build_regeneration_context(
         self,
-        initial_context: Dict[str, Any],
+        initial_context: dict[str, Any],
         validation_result: Any,
         previous_content: str,
         attempt: int,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Build context for regeneration with exact failure details.
 
         Args:
@@ -365,7 +364,7 @@ class FeedbackLoopOrchestrator:
 
         return context
 
-    def _build_failure_summary(self, failures: List[Any]) -> str:
+    def _build_failure_summary(self, failures: list[Any]) -> str:
         """Build human-readable failure summary for regeneration prompt.
 
         Args:
@@ -397,8 +396,8 @@ class FeedbackLoopOrchestrator:
         current_route: str,
         target_route: str,
         content: str,
-        context: Dict[str, Any],
-    ) -> Tuple[str, Dict[str, Any]]:
+        context: dict[str, Any],
+    ) -> tuple[str, dict[str, Any]]:
         """Apply message type transition logic.
 
         Args:
@@ -458,7 +457,7 @@ class FeedbackLoopOrchestrator:
         """
         report_lines = [
             f"REGENERATION FAILURE REPORT: {k_node_id}",
-            f"=" * 60,
+            "=" * 60,
             f"Status: {'REVERTED' if result.reverted else 'EXHAUSTED'}",
             f"Total Attempts: {result.attempts}",
             f"Max Attempts: {self.max_attempts}",

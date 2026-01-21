@@ -12,11 +12,11 @@ Features:
 """
 
 from __future__ import annotations
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass, field
-import time
+
 import hashlib
-import json
+import time
+from dataclasses import dataclass, field
+from typing import Any
 
 
 @dataclass
@@ -25,10 +25,10 @@ class Thought:
     thought_id: str
     content: str
     thought_type: str  # "reasoning", "observation", "conclusion", "hypothesis"
-    context: Dict[str, Any] = field(default_factory=dict)
+    context: dict[str, Any] = field(default_factory=dict)
     timestamp: float = field(default_factory=time.time)
     confidence: float = 0.8
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class ReasoningMemory:
@@ -56,7 +56,7 @@ class ReasoningMemory:
             persist: Whether to persist thoughts
             semantic_offload: Whether to offload evicted thoughts to semantic memory
         """
-        self.thoughts: List[Thought] = []
+        self.thoughts: list[Thought] = []
         self.capacity = capacity
         self.persist = persist
         self.semantic_offload = semantic_offload
@@ -82,7 +82,7 @@ class ReasoningMemory:
                 self._semantic_memory = None
         return self._semantic_memory
 
-    def store(self, thought: Dict[str, Any]) -> str:
+    def store(self, thought: dict[str, Any]) -> str:
         """
         Store a thought in memory.
 
@@ -129,7 +129,7 @@ class ReasoningMemory:
 
         return thought_id
 
-    def retrieve(self, count: int = 10) -> List[Dict[str, Any]]:
+    def retrieve(self, count: int = 10) -> list[dict[str, Any]]:
         """
         Retrieve recent thoughts.
 
@@ -142,7 +142,7 @@ class ReasoningMemory:
         self.total_retrieved += count
         return [self._thought_to_dict(t) for t in self.thoughts[-count:]]
 
-    def retrieve_relevant(self, query: str, top_k: int = 5) -> List[Dict[str, Any]]:
+    def retrieve_relevant(self, query: str, top_k: int = 5) -> list[dict[str, Any]]:
         """
         Retrieve relevant thoughts using semantic similarity.
 
@@ -171,7 +171,7 @@ class ReasoningMemory:
 
         return in_memory_results
 
-    def retrieve_by_type(self, thought_type: str, count: int = 10) -> List[Dict[str, Any]]:
+    def retrieve_by_type(self, thought_type: str, count: int = 10) -> list[dict[str, Any]]:
         """
         Retrieve thoughts by type.
 
@@ -185,7 +185,7 @@ class ReasoningMemory:
         matching = [t for t in self.thoughts if t.thought_type == thought_type]
         return [self._thought_to_dict(t) for t in matching[-count:]]
 
-    def retrieve_high_confidence(self, threshold: float = 0.9, count: int = 10) -> List[Dict[str, Any]]:
+    def retrieve_high_confidence(self, threshold: float = 0.9, count: int = 10) -> list[dict[str, Any]]:
         """
         Retrieve high-confidence thoughts.
 
@@ -199,7 +199,7 @@ class ReasoningMemory:
         matching = [t for t in self.thoughts if t.confidence >= threshold]
         return [self._thought_to_dict(t) for t in matching[-count:]]
 
-    def _keyword_search(self, query: str, top_k: int) -> List[Dict[str, Any]]:
+    def _keyword_search(self, query: str, top_k: int) -> list[dict[str, Any]]:
         """Simple keyword-based search in memory."""
         query_words = set(query.lower().split())
 
@@ -215,19 +215,19 @@ class ReasoningMemory:
 
         return [self._thought_to_dict(t) for _, t in scored[:top_k]]
 
-    def _is_duplicate(self, result: Dict, existing: Dict) -> bool:
+    def _is_duplicate(self, result: dict, existing: dict) -> bool:
         """Check if result is duplicate of existing."""
         result_content = result.get("content", result.get("text", ""))
         existing_content = existing.get("content", existing.get("text", ""))
         return result_content == existing_content
 
-    def _generate_id(self, thought: Dict) -> str:
+    def _generate_id(self, thought: dict) -> str:
         """Generate unique ID for thought."""
         content = str(thought)
         hash_val = hashlib.sha256(content.encode()).hexdigest()[:12]
         return f"thought_{self.total_stored}_{hash_val}"
 
-    def _thought_to_dict(self, thought: Thought) -> Dict[str, Any]:
+    def _thought_to_dict(self, thought: Thought) -> dict[str, Any]:
         """Convert thought object to dictionary."""
         return {
             "id": thought.thought_id,
@@ -275,7 +275,7 @@ class ReasoningMemory:
         """Clear all thoughts."""
         self.thoughts.clear()
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get memory statistics."""
         return {
             "capacity": self.capacity,

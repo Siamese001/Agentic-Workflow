@@ -18,10 +18,11 @@ from __future__ import annotations
 
 import logging
 import threading
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
-from typing import Any, Callable, Dict, List, Optional, TypeVar
+from typing import Any, TypeVar
 
 Logger = logging.getLogger(__name__)
 
@@ -49,7 +50,7 @@ class BlockReason(Enum):
 class ExecutionResult:
     """Result of an execution attempt."""
     status: ExecutionStatus
-    block_reason: Optional[BlockReason] = None
+    block_reason: BlockReason | None = None
     message: str = ""
     result: Any = None
     execution_time_ms: float = 0
@@ -97,14 +98,14 @@ class UnifiedSafetyExecutorAgent:
 
     def __init__(
         self,
-        config: Optional[ExecutorConfig] = None,
-        detector: Optional[Any] = None,
+        config: ExecutorConfig | None = None,
+        detector: Any | None = None,
     ):
         self.config = config or ExecutorConfig()
         self._detector = detector
         self._lock = threading.RLock()
-        self._gates: List[SafetyGate] = []
-        self._results: List[ExecutionResult] = []
+        self._gates: list[SafetyGate] = []
+        self._results: list[ExecutionResult] = []
         self._blocked_count = 0
         self._allowed_count = 0
 
@@ -144,7 +145,7 @@ class UnifiedSafetyExecutorAgent:
         self,
         fn: Callable[..., T],
         *args,
-        context: Optional[Dict[str, Any]] = None,
+        context: dict[str, Any] | None = None,
         **kwargs,
     ) -> ExecutionResult:
         """
@@ -210,7 +211,7 @@ class UnifiedSafetyExecutorAgent:
                 self._results.append(exec_result)
                 return exec_result
 
-    def _run_safety_checks(self, context: Dict[str, Any]) -> ExecutionResult:
+    def _run_safety_checks(self, context: dict[str, Any]) -> ExecutionResult:
         """Run safety detector checks."""
         if self._detector is None:
             return ExecutionResult(
@@ -273,7 +274,7 @@ class UnifiedSafetyExecutorAgent:
             message="Safety checks passed",
         )
 
-    def _run_gates(self, context: Dict[str, Any]) -> ExecutionResult:
+    def _run_gates(self, context: dict[str, Any]) -> ExecutionResult:
         """Run integrity gates."""
         for gate in self._gates:
             try:
@@ -308,7 +309,7 @@ class UnifiedSafetyExecutorAgent:
         self,
         input_text: str,
         source: str = "unknown",
-    ) -> Tuple[bool, str]:
+    ) -> tuple[bool, str]:
         """
         Quick check if input should be blocked.
 
@@ -338,7 +339,7 @@ class UnifiedSafetyExecutorAgent:
 
         return False, "Input passed safety checks"
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get execution statistics."""
         return {
             "allowed": self._allowed_count,
@@ -348,13 +349,12 @@ class UnifiedSafetyExecutorAgent:
             "gates_count": len(self._gates),
         }
 
-    def get_results(self) -> List[ExecutionResult]:
+    def get_results(self) -> list[ExecutionResult]:
         """Get all execution results."""
         return self._results.copy()
 
 
 # Import Tuple for type hints
-from typing import Tuple
 
 
 # Factory methods for backward compatibility

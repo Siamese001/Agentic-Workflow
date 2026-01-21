@@ -5,13 +5,14 @@ with standardized tool interfaces, execution management, and error handling.
 Follows the functional component pattern with proper logging.
 """
 
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any, Union, Tuple, Callable
 import logging
-from datetime import datetime
-from enum import Enum
 import time
 import uuid
+from collections.abc import Callable
+from dataclasses import dataclass, field
+from datetime import datetime
+from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -40,9 +41,9 @@ class ToolDefinition:
     version: str
     description: str
     execution_type: ExecutionType
-    capabilities: List[str]
-    configuration: Dict[str, Any] = field(default_factory=dict)
-    dependencies: List[str] = field(default_factory=list)
+    capabilities: list[str]
+    configuration: dict[str, Any] = field(default_factory=dict)
+    dependencies: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -51,11 +52,11 @@ class ToolExecutionRequest:
     execution_id: str
     tool_id: str
     command: str
-    parameters: Dict[str, Any]
+    parameters: dict[str, Any]
     execution_type: ExecutionType
     timeout: float = 30.0
     retry_count: int = 0
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -76,26 +77,26 @@ class ToolExecutionResult:
     tool_id: str
     command: str
     success: bool
-    output: Optional[Any] = None
-    exit_code: Optional[int] = None
-    stdout: Optional[str] = None
-    stderr: Optional[str] = None
-    metrics: Dict[str, float] = field(default_factory=dict)
-    error: Optional[str] = None
-    warnings: List[str] = field(default_factory=list)
+    output: Any | None = None
+    exit_code: int | None = None
+    stdout: str | None = None
+    stderr: str | None = None
+    metrics: dict[str, float] = field(default_factory=dict)
+    error: str | None = None
+    warnings: list[str] = field(default_factory=list)
     execution_time: float = 0.0
 
 
 class ObservabilityToolExecutor:
     """Main executor for observability tools."""
 
-    def __init__(self, config: Optional[ToolExecutionConfig] = None):
+    def __init__(self, config: ToolExecutionConfig | None = None):
         self.config = config or ToolExecutionConfig()
         self.logger = logging.getLogger(self.__class__.__name__)
-        self._registered_tools: Dict[str, ToolDefinition] = {}
-        self._tool_implementations: Dict[str, Callable] = {}
-        self._tool_status: Dict[str, ToolStatus] = {}
-        self._active_executions: Dict[str, Dict[str, Any]] = {}
+        self._registered_tools: dict[str, ToolDefinition] = {}
+        self._tool_implementations: dict[str, Callable] = {}
+        self._tool_status: dict[str, ToolStatus] = {}
+        self._active_executions: dict[str, dict[str, Any]] = {}
         self._initialize_tools()
 
     def register_tool(self, tool_def: ToolDefinition,
@@ -197,7 +198,7 @@ class ObservabilityToolExecutor:
         for chunk in implementation(request.command, request.parameters, stream=True):
             yield chunk
 
-    def execute_tools_batch(self, requests: List[ToolExecutionRequest]) -> List[ToolExecutionResult]:
+    def execute_tools_batch(self, requests: list[ToolExecutionRequest]) -> list[ToolExecutionResult]:
         """Execute multiple tools.
 
         Args:
@@ -214,7 +215,7 @@ class ObservabilityToolExecutor:
 
         return results
 
-    def list_tools(self, status: Optional[ToolStatus] = None) -> List[ToolDefinition]:
+    def list_tools(self, status: ToolStatus | None = None) -> list[ToolDefinition]:
         """List registered tools.
 
         Args:
@@ -230,7 +231,7 @@ class ObservabilityToolExecutor:
 
         return tools
 
-    def get_tool_definition(self, tool_id: str) -> Optional[ToolDefinition]:
+    def get_tool_definition(self, tool_id: str) -> ToolDefinition | None:
         """Get tool definition.
 
         Args:
@@ -241,7 +242,7 @@ class ObservabilityToolExecutor:
         """
         return self._registered_tools.get(tool_id)
 
-    def get_tool_status(self, tool_id: str) -> Optional[ToolStatus]:
+    def get_tool_status(self, tool_id: str) -> ToolStatus | None:
         """Get tool status.
 
         Args:
@@ -279,7 +280,7 @@ class ObservabilityToolExecutor:
             return True
         return False
 
-    def get_execution_status(self, execution_id: str) -> Optional[Dict[str, Any]]:
+    def get_execution_status(self, execution_id: str) -> dict[str, Any] | None:
         """Get execution status.
 
         Args:
@@ -416,7 +417,7 @@ class ObservabilityToolExecutor:
             capabilities=["collect", "filter", "parse"]
         )
 
-        def _log_collector_impl(command: str, params: Dict[str, Any], **kwargs: object) -> Dict[str, Any]:
+        def _log_collector_impl(command: str, params: dict[str, Any], **kwargs: object) -> dict[str, Any]:
             if command == "collect":
                 return {
                     "stdout": "Collected 100 log entries",
@@ -448,7 +449,7 @@ class ObservabilityToolExecutor:
             capabilities=["collect", "aggregate", "query"]
         )
 
-        def _metric_collector_impl(command: str, params: Dict[str, Any], **kwargs: object) -> Dict[str, Any]:
+        def _metric_collector_impl(command: str, params: dict[str, Any], **kwargs: object) -> dict[str, Any]:
             if command == "collect":
                 return {
                     "stdout": "Collected system metrics",
@@ -481,7 +482,7 @@ class ObservabilityToolExecutor:
             capabilities=["analyze", "correlate", "visualize"]
         )
 
-        def _trace_analyzer_impl(command: str, params: Dict[str, Any], **kwargs: object) -> Dict[str, Any]:
+        def _trace_analyzer_impl(command: str, params: dict[str, Any], **kwargs: object) -> dict[str, Any]:
             trace_id = params.get("trace_id", "default")
             return {
                 "stdout": f"Analyzed trace: {trace_id}",
@@ -521,11 +522,11 @@ def create_observability_tool_executor(
 def tool_use_observability_execution(
     tool_id: str,
     command: str,
-    parameters: Dict[str, Any],
-    execution_id: Optional[str] = None,
+    parameters: dict[str, Any],
+    execution_id: str | None = None,
     execution_type: str = "sync",
     timeout: float = 30.0
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Execute observability tool.
 
     Args:

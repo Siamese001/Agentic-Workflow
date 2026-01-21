@@ -1,11 +1,15 @@
 from __future__ import annotations
+
 import logging
+
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
-from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from typing import Any
+
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
+
 
 class McpConnectionManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
@@ -13,7 +17,7 @@ class McpConnectionManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerM
     Manages connections to Model Context Protocol (MCP) servers.
     """
 
-    def __init__(self, config: Dict[str, Any]) -> None:
+    def __init__(self, config: dict[str, Any]) -> None:
         self.config = config
         self.active_connections = {}
 
@@ -22,7 +26,7 @@ class McpConnectionManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerM
         logging.info(f'MCP: Provisioning toolset for {role}...')
         self.active_connections[role] = True
 
-    async def call_tool(self, name: str, args: Dict) -> Any:
+    async def call_tool(self, name: str, args: dict) -> Any:
         """Executes a tool call through the protocol."""
         logging.info(f"MCP: Calling tool '{name}' with args {args}")
         return f'Successfully executed {name}'
@@ -33,7 +37,7 @@ class McpConnectionManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerM
         logging.info('MCP: All tool connections severed.')
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set | None = None) -> dict[str, int]:
         """L2 execution agent - operational only."""
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository()

@@ -2,27 +2,14 @@
 Generate rename suggestions for intentional variants.
 Uses NamingAgent principles to suggest unique, descriptive names.
 """
+import re
 import sys
 from pathlib import Path
-import re
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
     SCRIPTS_DIR,
     TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
@@ -31,7 +18,7 @@ sys.path.insert(0, str(project_root))
 def read_file_content(file_path: Path) -> str:
     """Read file content."""
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, encoding='utf-8') as f:
             return f.read()
     except Exception:
         return ""
@@ -72,31 +59,31 @@ def suggest_rename_for_init_files(file_paths):
 
         # Extract meaningful context
         if 'config' in path_parts:
-            context = 'config'
+            pass
         elif 'L0_maintenance' in path_parts:
-            context = 'maintenance'
+            pass
         elif 'L1_cognition' in path_parts:
-            context = 'cognition'
+            pass
         elif 'L2_execution' in path_parts:
-            context = 'execution'
+            pass
         elif 'L3_orchestration' in path_parts:
-            context = 'orchestration'
+            pass
         elif 'L4_state' in path_parts:
-            context = 'state'
+            pass
         elif 'L5_safety' in path_parts:
-            context = 'safety'
+            pass
         elif 'observability' in path_parts:
-            context = 'observability'
+            pass
         elif APPS_LIC_DIR in path_parts:
-            context = 'lic_app'
+            pass
         elif APPS_RG_DIR in path_parts:
-            context = 'rg_app'
+            pass
         elif APPS_SHARED_DIR in path_parts:
-            context = 'shared_app'
+            pass
         elif TESTS_DIR in path_parts:
-            context = TESTS_DIR
+            pass
         else:
-            context = path_parts[0] if path_parts else 'unknown'
+            path_parts[0] if path_parts else 'unknown'
 
         # Get parent directory name
         parent = file_path.parent.name
@@ -121,7 +108,7 @@ def suggest_rename_for_init_files(file_paths):
                 'suggested_name': f'__{parent}_init__.py' if parent != SCRIPTS_DIR else '__init__.py',
                 'action': 'CONSIDER_RENAME',
                 'reason': f'Non-empty init with purpose: {purpose[:60]}...',
-                'alternative': f'Consider consolidating into parent __init__.py or extracting to separate module'
+                'alternative': 'Consider consolidating into parent __init__.py or extracting to separate module'
             }
 
         suggestions.append(suggestion)
@@ -134,7 +121,7 @@ def suggest_rename_for_canon_validator(file_paths):
     suggestions = []
 
     for file_path in file_paths:
-        content = read_file_content(file_path)
+        read_file_content(file_path)
         rel_path = file_path.relative_to(project_root)
 
         # Determine purpose from location

@@ -29,13 +29,12 @@ This file wraps those behaviors and exposes a stable API.
 
 
 
-from typing import Dict, List
 
 
 # from archives.legacy_root_folders.runtime.runtime_utils import Ranking  # DEPRECATED: Archive import removed to protect archives from validation edits
 
 
-def bm25(items: List[Dict[str, object]]) -> List[Dict[str, object]]:
+def bm25(items: list[dict[str, object]]) -> list[dict[str, object]]:
     """
     Deterministic BM25-like ranking.
 
@@ -44,14 +43,14 @@ def bm25(items: List[Dict[str, object]]) -> List[Dict[str, object]]:
     return _Ranking.bm25_rank(items)
 
 
-def dense(items: List[Dict[str, object]]) -> List[Dict[str, object]]:
+def dense(items: list[dict[str, object]]) -> list[dict[str, object]]:
     """
     Deterministic dense-score ranking (SHA-based pseudo-embedding).
     """
     return _Ranking.dense_rank(items)
 
 
-def hybrid(items: List[Dict[str, object]]) -> List[Dict[str, object]]:
+def hybrid(items: list[dict[str, object]]) -> list[dict[str, object]]:
     """
     Combined ranking (BM25 + dense).
     """
@@ -59,9 +58,9 @@ def hybrid(items: List[Dict[str, object]]) -> List[Dict[str, object]]:
 
 
 def apply_strategy(
-    items: List[Dict[str, object]],
+    items: list[dict[str, object]],
     strategy: str = "hybrid",
-) -> List[Dict[str, object]]:
+) -> list[dict[str, object]]:
     """
     Apply a ranking strategy:
 
@@ -84,7 +83,7 @@ def apply_strategy(
         ranked = hybrid(items)
 
     # Assign integer rank (1-based)
-    out: List[Dict[str, object]] = []
+    out: list[dict[str, object]] = []
     for idx, item in enumerate(ranked):
         new_item = dict(item)
         new_item["rank"] = idx + 1
@@ -93,7 +92,7 @@ def apply_strategy(
     return out
 
 
-def fuse_ranked_groups(groups: List[List[Dict[str, object]]]) -> List[Dict[str, object]]:
+def fuse_ranked_groups(groups: list[list[dict[str, object]]]) -> list[dict[str, object]]:
     """
     Fuse multiple pre-ranked lists into a single deterministic list.
 
@@ -106,7 +105,7 @@ def fuse_ranked_groups(groups: List[List[Dict[str, object]]]) -> List[Dict[str, 
 
     All behavior purely deterministic.
     """
-    flattened: List[Dict[str, object]] = []
+    flattened: list[dict[str, object]] = []
     seen: set[tuple[str, str]] = set()
 
     for group in groups or []:
@@ -131,9 +130,9 @@ def fuse_ranked_groups(groups: List[List[Dict[str, object]]]) -> List[Dict[str, 
 
 
 def rank_documents(
-    items: List[Dict[str, object]],
+    items: list[dict[str, object]],
     strategy: str = "hybrid",
-) -> List[Dict[str, object]]:
+) -> list[dict[str, object]]:
     """
     Top-level ranking support used by RAGExecutor:
 

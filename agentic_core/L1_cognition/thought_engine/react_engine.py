@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """ReAct (Reasoning and Acting) Engine implementation.
 
 Phase 1 - Pillar 6: Reasoning Models (Structured Reasoning)
@@ -9,10 +10,11 @@ The ReAct framework interleaves reasoning and action steps to solve complex task
 
 import logging
 import uuid
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Awaitable
+from typing import Any
 
 from .trace_models import ReasoningTraceModel
 
@@ -38,10 +40,10 @@ class ReActStep:
     step_number: int
     thought: str
     action: str
-    action_input: Dict[str, Any] = field(default_factory=dict)
+    action_input: dict[str, Any] = field(default_factory=dict)
     observation: str = ""
     timestamp: datetime = field(default_factory=datetime.now)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -53,13 +55,13 @@ class ReActTrace:
 
     trace_id: str
     Task: str
-    steps: List[ReActStep] = field(default_factory=list)
-    final_answer: Optional[str] = None
+    steps: list[ReActStep] = field(default_factory=list)
+    final_answer: str | None = None
     success: bool = False
-    error: Optional[str] = None
+    error: str | None = None
     started_at: datetime = field(default_factory=datetime.now)
-    completed_at: Optional[datetime] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    completed_at: datetime | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def to_reasoning_trace(self) -> ReasoningTraceModel:
         """Convert to formal Pydantic ReasoningTraceModel."""
@@ -121,10 +123,10 @@ class ReActEngine:
     async def run(
         self,
         Task: str,
-        think_fn: Callable[[str, List[ReActStep]], Awaitable[str]],
-        act_fn: Callable[[str, Dict[str, Any]], Awaitable[str]],
-        should_continue_fn: Optional[Callable[[List[ReActStep]], bool]] = None,
-        context: Optional[Dict[str, Any]] = None,
+        think_fn: Callable[[str, list[ReActStep]], Awaitable[str]],
+        act_fn: Callable[[str, dict[str, Any]], Awaitable[str]],
+        should_continue_fn: Callable[[list[ReActStep]], bool] | None = None,
+        context: dict[str, Any] | None = None,
     ) -> ReActTrace:
         """Run the ReAct reasoning loop.
 
@@ -156,7 +158,7 @@ class ReActEngine:
         Task: str,
         think_fn: Callable,
         act_fn: Callable,
-        should_continue_fn: Optional[Callable],
+        should_continue_fn: Callable | None,
         trace: ReActTrace,
         trace_id: str,
     ) -> None:
@@ -208,7 +210,7 @@ class ReActEngine:
         trace.success = False
         trace.completed_at = datetime.now()
 
-    def _parse_action(self, thought: str) -> tuple[str, Dict[str, Any]]:
+    def _parse_action(self, thought: str) -> tuple[str, dict[str, Any]]:
         """Parse action and input from thought string.
 
         Expected format:
@@ -225,7 +227,7 @@ class ReActEngine:
         action_input = {}
 
         lines = thought.split("\n")
-        for i, line in enumerate(lines):
+        for _i, line in enumerate(lines):
             if line.strip().lower().startswith("action:"):
                 action = line.split(":", 1)[1].strip()
             elif line.strip().lower().startswith("action input:"):
@@ -241,7 +243,7 @@ class ReActEngine:
     async def _self_reflect(
         self,
         trace: ReActTrace,
-        think_fn: Callable[[str, List[ReActStep]], Awaitable[str]],
+        think_fn: Callable[[str, list[ReActStep]], Awaitable[str]],
     ) -> None:
         """Perform self-reflection on reasoning quality.
 

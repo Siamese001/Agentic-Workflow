@@ -17,7 +17,6 @@ import argparse
 import ast
 import re
 from pathlib import Path
-from typing import List, Tuple, Optional, Set
 
 # Files to EXCLUDE from refactoring
 EXCLUDED_FILES = {
@@ -42,7 +41,7 @@ SAFE_FILE_IMPORT = "from agentic_core.utils.file_utils import safe_read_file, sa
 OPEN_PATTERN = re.compile(r'\bopen\s*\(')
 
 
-def find_python_files(root: Path) -> List[Path]:
+def find_python_files(root: Path) -> list[Path]:
     """Find all Python files, excluding specified directories."""
     files = []
     for path in root.rglob("*.py"):

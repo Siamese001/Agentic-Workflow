@@ -28,11 +28,11 @@ import os
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger: logging.Logger = logging.getLogger(__name__)
 
@@ -55,18 +55,18 @@ class RedSentinelAgent(SubatomicTestingMixin, HealerMixin):
         HealerMixin: Provides healing chain support.
     """
 
-    def __init__(self, llm_client: Optional[Any] = None) -> None:
+    def __init__(self, llm_client: Any | None = None) -> None:
         """Initialize the RedSentinelAgent.
 
         Args:
             llm_client: LLM client for generating hostile inputs (deprecated, uses MCP).
         """
-        self.llm_client: Optional[Any] = llm_client
+        self.llm_client: Any | None = llm_client
         self.enabled: bool = os.getenv('ENABLE_FUZZ', 'false').lower() == 'true'
         self.audit_path: Path = Path('observability/audit/fuzz_results.json')
         self.audit_path.parent.mkdir(parents=True, exist_ok=True)
 
-    async def fuzz_function(self, func_name: str, func_code: str, file_path: str) -> Dict[str, Any]:
+    async def fuzz_function(self, func_name: str, func_code: str, file_path: str) -> dict[str, Any]:
         """
         Generate hostile inputs for a function and test robustness.
 
@@ -81,10 +81,10 @@ class RedSentinelAgent(SubatomicTestingMixin, HealerMixin):
         if not self.enabled:
             return {'enabled': False, 'reason': 'ENABLE_FUZZ not set'}
         Logger.info(f'🛡️  RedSentinelAgent: Generating hostile inputs for {func_name}')
-        hostile_inputs: List[Any] = await self._generate_hostile_inputs(func_name, func_code)
-        results: Dict[str, Any] = {'function': func_name, 'file': file_path, 'timestamp': datetime.utcnow().isoformat(), 'hostile_inputs': hostile_inputs, 'vulnerabilities': [], 'crashes': []}
+        hostile_inputs: list[Any] = await self._generate_hostile_inputs(func_name, func_code)
+        results: dict[str, Any] = {'function': func_name, 'file': file_path, 'timestamp': datetime.utcnow().isoformat(), 'hostile_inputs': hostile_inputs, 'vulnerabilities': [], 'crashes': []}
         for input_data in hostile_inputs:
-            result: Dict[str, Any] = await self._test_with_input(func_name, input_data)
+            result: dict[str, Any] = await self._test_with_input(func_name, input_data)
             if result['crashed']:
                 results['crashes'].append({'input': input_data, 'error': result['error'], 'traceback': result['traceback']})
                 results['vulnerabilities'].append({'type': 'crash', 'input': input_data, 'Severity': 'HIGH'})
@@ -93,7 +93,7 @@ class RedSentinelAgent(SubatomicTestingMixin, HealerMixin):
         await self._log_fuzz_results(results)
         return {'enabled': True, 'inputs_generated': len(hostile_inputs), 'vulnerabilities_found': len(results['vulnerabilities']), 'crashes': len(results['crashes']), 'details': results}
 
-    async def _generate_hostile_inputs(self, func_name: str, func_code: str) -> List[Dict[str, Any]]:
+    async def _generate_hostile_inputs(self, func_name: str, func_code: str) -> list[dict[str, Any]]:
         """
         Generate 5 hostile inputs for a function.
         Phase 16B: Uses LLM Router MCP instead of direct google.generativeai.
@@ -124,11 +124,11 @@ class RedSentinelAgent(SubatomicTestingMixin, HealerMixin):
             LOGGER.error(f'Failed to generate hostile inputs via MCP: {e}')
             return self._get_default_hostile_inputs()
 
-    def _get_default_hostile_inputs(self) -> List[Dict[str, Any]]:
+    def _get_default_hostile_inputs(self) -> list[dict[str, Any]]:
         """Get default hostile inputs when LLM fails."""
         return [{'type': 'null_input', 'value': None}, {'type': 'empty_string', 'value': ''}, {'type': 'buffer_overflow', 'value': 'A' * 10000}, {'type': 'special_chars', 'value': '\x00\x01\x02\x03\x04\x05'}, {'type': 'extreme_number', 'value': 999999999999999999}]
 
-    async def _test_with_input(self, func_name: str, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def _test_with_input(self, func_name: str, input_data: dict[str, Any]) -> dict[str, Any]:
         """
         Test a function with hostile input (mental simulation).
 
@@ -148,15 +148,15 @@ class RedSentinelAgent(SubatomicTestingMixin, HealerMixin):
             result['crashed'] = True
             result['error'] = 'MemoryError: possible buffer overflow'
             result['traceback'] = f'Simulated crash with {len(value)} character string'
-        elif isinstance(value, str) and any((ord(c) < 32 for c in value)):
+        elif isinstance(value, str) and any(ord(c) < 32 for c in value):
             result['unexpected_behavior'] = True
             result['behavior'] = 'Special characters may cause encoding issues'
-        elif isinstance(value, (int, float)) and abs(value) > 1000000:
+        elif isinstance(value, int | float) and abs(value) > 1000000:
             result['unexpected_behavior'] = True
             result['behavior'] = 'Extreme number may cause overflow'
         return result
 
-    async def _log_fuzz_results(self, results: Dict[str, Any]) -> Any:
+    async def _log_fuzz_results(self, results: dict[str, Any]) -> Any:
         """
         Log fuzz results to audit file.
 
@@ -165,7 +165,7 @@ class RedSentinelAgent(SubatomicTestingMixin, HealerMixin):
         """
         try:
             if self.audit_path.exists():
-                with open(self.audit_path, 'r') as f:
+                with open(self.audit_path) as f:
                     log_data = json.load(f)
             else:
                 log_data = {'fuzz_tests': []}
@@ -178,7 +178,7 @@ class RedSentinelAgent(SubatomicTestingMixin, HealerMixin):
         except Exception as e:
             LOGGER.error(f'Failed to log fuzz results: {e}')
 
-    async def scan_file(self, file_path: str) -> Dict[str, Any]:
+    async def scan_file(self, file_path: str) -> dict[str, Any]:
         """
         Scan a file for public functions and fuzz them.
 
@@ -193,7 +193,7 @@ class RedSentinelAgent(SubatomicTestingMixin, HealerMixin):
             return {'enabled': False, 'reason': 'ENABLE_FUZZ not set'}
         results: Any = {'file': file_path, 'timestamp': datetime.utcnow().isoformat(), 'functions_tested': 0, 'vulnerabilities_found': 0, 'details': []}
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 content: Any = f.read()
             tree: Any = ast.parse(content)
             for node in ast.walk(tree):
@@ -217,8 +217,8 @@ class RedSentinelAgent(SubatomicTestingMixin, HealerMixin):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[Set[str]] = None
-    ) -> Dict[str, int]:
+        _call_path: set[str] | None = None
+    ) -> dict[str, int]:
         """Execute L5 safety healing operations.
 
         This is an operational agent - no repository healing required.
@@ -242,7 +242,7 @@ class RedSentinelAgent(SubatomicTestingMixin, HealerMixin):
         finally:
             _call_path.discard(agent_name)
 
-_red_sentinel: Optional[RedSentinelAgent] = None
+_red_sentinel: RedSentinelAgent | None = None
 
 
 def get_red_sentinel() -> RedSentinelAgent:
@@ -270,7 +270,7 @@ async def initialize_red_sentinel(llm_client: Any=None) -> Any:
     else:
         LOGGER.info('RedSentinelAgent initialized - Set ENABLE_FUZZ=true to enable')
 
-async def fuzz_function(func_name: str, func_code: str, file_path: str) -> Dict[str, Any]:
+async def fuzz_function(func_name: str, func_code: str, file_path: str) -> dict[str, Any]:
     """
     Generate hostile inputs for a function.
 
@@ -285,7 +285,7 @@ async def fuzz_function(func_name: str, func_code: str, file_path: str) -> Dict[
     sentinel: Any = get_red_sentinel()
     return await sentinel.fuzz_function(func_name, func_code, file_path)
 
-async def scan_file_for_vulnerabilities(file_path: str) -> Dict[str, Any]:
+async def scan_file_for_vulnerabilities(file_path: str) -> dict[str, Any]:
     """
     Scan a file for security vulnerabilities using hostile inputs.
 

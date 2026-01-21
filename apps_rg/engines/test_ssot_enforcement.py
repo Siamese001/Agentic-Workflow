@@ -18,11 +18,10 @@ This ensures:
 Usage:
   python scripts/test_ssot_enforcement.py
 """
-import sys
-import re
 import ast
+import re
+import sys
 from pathlib import Path
-from typing import List, Tuple
 
 # SSOT: Use centralized blueprint for project root discovery
 try:
@@ -33,11 +32,6 @@ except ImportError:
 
 # SSOT: Import canonical definitions to verify against
 sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
-from dashboard_ssot_definitions import (
-    COL_HEAL_CAP, COL_INVOCATION, COL_TEST, COL_HARDENED,
-    COL_COMPLEXITY_HEALTH, COL_TYPED, COL_DOCUMENTED, COL_SCHEMA_STRICTNESS,
-    COL_CANONICAL_INHERITANCE, COL_CODE_QUALITY, COL_HEALTH, COL_AVG_CC
-)
 
 # Map of hardcoded strings to their SSOT constant equivalents
 SSOT_COLUMN_MAPPINGS = {
@@ -84,7 +78,7 @@ SSOT_FIELD_MAPPINGS = {
     'cyclomatic_complexity': 'FIELD_CYCLOMATIC_COMPLEXITY'
 }
 
-def check_ssot_imports(file_path: Path) -> Tuple[bool, List[str]]:
+def check_ssot_imports(file_path: Path) -> tuple[bool, list[str]]:
     """Check if file imports SSOT definitions."""
     errors = []
     try:
@@ -109,7 +103,7 @@ def check_ssot_imports(file_path: Path) -> Tuple[bool, List[str]]:
 
     return len(errors) == 0, errors
 
-def check_hardcoded_strings(file_path: Path) -> Tuple[bool, List[str]]:
+def check_hardcoded_strings(file_path: Path) -> tuple[bool, list[str]]:
     """Check for hardcoded column/field names instead of SSOT constants."""
     errors = []
     content = file_path.read_text(encoding='utf-8')
@@ -141,7 +135,7 @@ def check_hardcoded_strings(file_path: Path) -> Tuple[bool, List[str]]:
 
     return len(errors) == 0, errors
 
-def check_calculation_duplication(file_path: Path) -> Tuple[bool, List[str]]:
+def check_calculation_duplication(file_path: Path) -> tuple[bool, list[str]]:
     """Check for duplicate calculation logic instead of SSOT functions."""
     errors = []
     content = file_path.read_text(encoding='utf-8')
@@ -165,7 +159,7 @@ def check_calculation_duplication(file_path: Path) -> Tuple[bool, List[str]]:
 
     return len(errors) == 0, errors
 
-def test_file_ssot_compliance(file_path: Path) -> Tuple[bool, List[str]]:
+def test_file_ssot_compliance(file_path: Path) -> tuple[bool, list[str]]:
     """Test a single file for SSOT compliance."""
     all_errors = []
 
@@ -198,7 +192,7 @@ def test_file_ssot_compliance(file_path: Path) -> Tuple[bool, List[str]]:
 
     return len(all_errors) == 0, all_errors
 
-def test_no_hardcoded_columns_in_js() -> Tuple[bool, List[str]]:
+def test_no_hardcoded_columns_in_js() -> tuple[bool, list[str]]:
     """Test Case 3: Ensures no hardcoded metric strings exist in JS renderers."""
     errors = []
     js_dir = PROJECT_ROOT / "agentic_core" / "L6_observability" / "dashboards" / "js" / "renderers"
@@ -239,10 +233,9 @@ def test_no_hardcoded_columns_in_js() -> Tuple[bool, List[str]]:
     return len(errors) == 0, errors
 
 
-def test_ssot_generation_integrity() -> Tuple[bool, List[str]]:
+def test_ssot_generation_integrity() -> tuple[bool, list[str]]:
     """Test Case 2: Ensures generated files match YAML source."""
     import yaml
-    import hashlib
 
     errors = []
     yaml_path = PROJECT_ROOT / "scripts" / "config" / "dashboard_ssot.yaml"
@@ -255,7 +248,7 @@ def test_ssot_generation_integrity() -> Tuple[bool, List[str]]:
 
     # Load YAML and verify generated files match
     try:
-        with open(yaml_path, 'r', encoding='utf-8') as f:
+        with open(yaml_path, encoding='utf-8') as f:
             yaml_data = yaml.safe_load(f)
 
         # Check Python constants exist
@@ -286,7 +279,7 @@ def test_ssot_generation_integrity() -> Tuple[bool, List[str]]:
     return len(errors) == 0, errors
 
 
-def test_generator_weight_validation() -> Tuple[bool, List[str]]:
+def test_generator_weight_validation() -> tuple[bool, list[str]]:
     """Test Case 1: Ensures generator validates weight sums."""
     import yaml
 
@@ -298,7 +291,7 @@ def test_generator_weight_validation() -> Tuple[bool, List[str]]:
         return False, errors
 
     try:
-        with open(yaml_path, 'r', encoding='utf-8') as f:
+        with open(yaml_path, encoding='utf-8') as f:
             yaml_data = yaml.safe_load(f)
 
         # Check health weights sum to 1.0

@@ -18,9 +18,6 @@ Strategy:
 """
 import sys
 from pathlib import Path
-import ast
-import inspect
-from typing import List, Dict, Set, Tuple
 
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
@@ -96,7 +93,7 @@ def test_{agent_class.__name__}_state_management():
     assert agent.get_state('test_key') == 'test_value'
 """
 
-    def write_test_file(self, test_name: str, test_cases: List[str], imports: List[str]):
+    def write_test_file(self, test_name: str, test_cases: list[str], imports: list[str]):
         """Write test cases to a file."""
         test_file = self.output_dir / f"test_{test_name}.py"
 
@@ -128,7 +125,9 @@ def generate_layer_tests():
 
     # L0MaintenanceBaseAgent
     try:
-        from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
+        from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import (
+            L0MaintenanceBaseAgent,
+        )
         tests = generator.generate_agent_tests(L0MaintenanceBaseAgent, "agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent")
         generator.write_test_file(
             "l0_agent",

@@ -6,21 +6,10 @@ __version__ = "13.0"
 
 import json
 import os
-from typing import Dict, List, Any, Optional
-from datetime import datetime
+from typing import Any
 
-from models_LIC import (
-    OutreachMission, ProfileAnalysis, ResearchContext, MessageScaffold,
-    Route, Archetype, ValidationResult, ValidationSeverity, RAGResult,
-    SenderGroundingWhitelists, FactualGapError, FailureClassifier
-)
+from models_LIC import FactualGapError, FailureClassifier, OutreachMission
 from state_manager_LIC import StateManager
-from memory_LIC import VectorMemoryStore
-from llm_clients import GeminiLLMClient
-from retrieval_clients import GoogleSearchClient
-from utils_LIC import CircuitBreaker
-from tools_LIC import CodeInterpreterTool, ValidationToolkit
-
 
 # ============================================================================
 # HOP-1: PROFILE ANALYSIS AGENT
@@ -36,7 +25,7 @@ class HOP1_ProfileAnalysisAgent:
     Output: state/1_profile_analysis.json
     """
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: dict[str, Any]):
         """
         Initialize with externalized configuration
 
@@ -108,7 +97,7 @@ class HOP1_ProfileAnalysisAgent:
         # Write to state
         output_path = state_mgr.write_state("HOP-1", output_state)
 
-        print(f"✓ Profile Analysis Complete")
+        print("✓ Profile Analysis Complete")
         print(f"  Archetype: {archetype}")
         print(f"  Confidence: {confidence:.2f}")
         print(f"  Reasoning: {reasoning}\n")
@@ -130,7 +119,7 @@ class HOP3_SenderGroundingAgent:
     Output: state/3_sender_grounding.json
     """
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: dict[str, Any]):
         """
         Initialize with externalized configuration
 
@@ -171,7 +160,7 @@ class HOP3_SenderGroundingAgent:
 
             print(f"  Loading: {source_file}")
 
-            with open(source_file, 'r') as f:
+            with open(source_file) as f:
                 data = json.load(f)
 
             # Extract based on file type
@@ -216,7 +205,7 @@ class HOP3_SenderGroundingAgent:
 
         output_path = state_mgr.write_state("HOP-3", output_state)
 
-        print(f"✓ Sender Grounding Complete")
+        print("✓ Sender Grounding Complete")
         print(f"  Team members: {len(grounding['team_members'])}")
         print(f"  Products: {len(grounding['products'])}")
         print(f"  Case studies: {len(grounding['case_studies'])}")
@@ -239,7 +228,7 @@ class HOP4_RoutingAgent:
     Output: state/4_routing_decision.json
     """
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: dict[str, Any]):
         """
         Initialize with externalized configuration
 
@@ -326,7 +315,7 @@ class HOP4_RoutingAgent:
         # Write to state
         output_path = state_mgr.write_state("HOP-4", output_state)
 
-        print(f"✓ Routing Decision Complete")
+        print("✓ Routing Decision Complete")
         print(f"  Route: {selected_route}")
         print(f"  Archetype: {archetype}")
         print(f"  Word range: {constraints['word_range']}")
@@ -354,7 +343,7 @@ class HOP7_GateDecisionAgent:
     - PASS: return True → proceed to output
     """
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: dict[str, Any]):
         """
         Initialize with externalized configuration
 
@@ -408,8 +397,8 @@ class HOP7_GateDecisionAgent:
 
             output_path = state_mgr.write_state("HOP-7", output_state)
 
-            print(f"✓ Gate Decision: PASS")
-            print(f"  All validations passed\n")
+            print("✓ Gate Decision: PASS")
+            print("  All validations passed\n")
 
             return output_path
 
@@ -433,7 +422,7 @@ class HOP7_GateDecisionAgent:
 
             output_path = state_mgr.write_state("HOP-7", output_state)
 
-            print(f"✓ Gate Decision: PASS (non-critical issues only)")
+            print("✓ Gate Decision: PASS (non-critical issues only)")
             return output_path
 
         # Classify failure type
@@ -524,7 +513,7 @@ class HOP7_GateDecisionAgent:
 
     def _classify_failure(
         self,
-        failures: List[Dict[str, Any]]
+        failures: list[dict[str, Any]]
     ) -> Tuple[FailureClassifier, str]:
         """
         Classify failure type to determine retry strategy
@@ -563,7 +552,7 @@ class HOPOrchestrator:
     each reading from and writing to state/ directory
     """
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: dict[str, Any]):
         """
         Initialize orchestrator with configuration
 
@@ -581,7 +570,7 @@ class HOPOrchestrator:
             "HOP-7": HOP7_GateDecisionAgent(config)
         }
 
-    def execute_workflow(self, mission: OutreachMission) -> Dict[str, Any]:
+    def execute_workflow(self, mission: OutreachMission) -> dict[str, Any]:
         """
         Execute workflow by iterating through HOPs
 
@@ -592,7 +581,7 @@ class HOPOrchestrator:
             Workflow result dictionary
         """
         print(f"\n{'='*80}")
-        print(f"HOP WORKFLOW ORCHESTRATOR v13.0")
+        print("HOP WORKFLOW ORCHESTRATOR v13.0")
         print(f"Mission ID: {mission.mission_id}")
         print(f"{'='*80}")
 
@@ -637,7 +626,7 @@ class HOPOrchestrator:
         progress = state_mgr.get_workflow_progress()
 
         print(f"\n{'='*80}")
-        print(f"WORKFLOW COMPLETE")
+        print("WORKFLOW COMPLETE")
         print(f"Completed HOPs: {', '.join(progress['completed_hops'])}")
         print(f"{'='*80}\n")
 
@@ -656,7 +645,7 @@ def test_hop_agents():
     print("\n=== Testing HOP Agents ===\n")
 
     # Load configuration
-    with open("config/agent_specs_LIC.json", 'r') as f:
+    with open("config/agent_specs_LIC.json") as f:
         config = json.load(f)
 
     # Create sample mission

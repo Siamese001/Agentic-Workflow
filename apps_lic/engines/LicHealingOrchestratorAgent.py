@@ -7,9 +7,11 @@ Extracted: 2026-01-06 (Surgical Extraction)
 Orchestrates the complete self-healing process for outreach campaigns.
 """
 from __future__ import annotations
-from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+
 import time
+from dataclasses import dataclass
+from typing import Any
+
 
 @dataclass
 class LicHealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
@@ -28,7 +30,7 @@ class LicHealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTest
 
     def __init__(
         self,
-        ctx: 'OutreachEngineContext',
+        ctx: OutreachEngineContext,
         max_cycles: int = 5,
         enable_reflection: bool = True,
     ) -> None:
@@ -43,9 +45,9 @@ class LicHealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTest
         self.ctx = ctx
         self.max_cycles: int = max_cycles
         self.enable_reflection: bool = enable_reflection
-        self.cycle_results: List['OutreachCycleResult'] = []
+        self.cycle_results: list[OutreachCycleResult] = []
 
-    async def run(self) -> 'OutreachHealingResult':
+    async def run(self) -> OutreachHealingResult:
         """
         Run the complete healing process.
 
@@ -61,7 +63,7 @@ class LicHealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTest
         print("🧬 OUTREACH SELF-HEALING ORCHESTRATOR STARTED")
         print("=" * 60)
 
-        convergence_cycle: Optional[int] = None
+        convergence_cycle: int | None = None
         budget_exhausted: bool = False
 
         for cycle_num in range(1, self.max_cycles + 1):
@@ -91,12 +93,12 @@ class LicHealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTest
             # Log cycle result
             print(f"   ✅ Passed: {len(result.passed_agents)} | ❌ Failed: {len(result.failed_agents)}")
             if result.rollback_triggered:
-                print(f"   ⏪ Rollback triggered")
+                print("   ⏪ Rollback triggered")
 
             # Check convergence
             if result.converged:
                 convergence_cycle = cycle_num
-                print(f"\n✅ CONVERGENCE ACHIEVED - Campaign ready!")
+                print("\n✅ CONVERGENCE ACHIEVED - Campaign ready!")
                 break
 
             # Check budget
@@ -137,7 +139,7 @@ class LicHealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTest
             final_campaign=self.ctx.current_campaign.copy(),
         )
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs: Any) -> Dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs: Any) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 

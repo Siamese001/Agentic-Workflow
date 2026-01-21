@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 #!/usr/bin/env python3
 """
 L6 Runtime: Void Compliance Enforcer
@@ -9,7 +10,6 @@ import logging
 import os
 import re
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
     CANON_KEY_TO_FOLDER_MAP,
@@ -20,10 +20,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     ROOT_PROTECTED_FILES,
     ROOT_WHITELIST,
     SOVEREIGN_REGISTRY,
-    VOID_COMPLIANCE_RULES,
 )
-from agentic_core.utils.sovereign_index import SovereignIndex
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 from agentic_core.utils.ssot_discovery import get_python_files
 
 Logger = logging.getLogger(__name__)
@@ -48,7 +45,7 @@ KEY_TO_FOLDER_MAP = CANON_KEY_TO_FOLDER_MAP
 # FILE NAMING CONVENTIONS (Key 49 Hardening)
 # ==============================================================================
 
-def validate_file_naming(file_path: Path, project_root: Path) -> Tuple[bool, str]:
+def validate_file_naming(file_path: Path, project_root: Path) -> tuple[bool, str]:
     """
     Enforces descriptive snake_case naming for L-layer signals.
     [KEY 49 HARDENING] Strict enforcement with correct root/nested separation.
@@ -99,7 +96,7 @@ def validate_file_naming(file_path: Path, project_root: Path) -> Tuple[bool, str
 # ==============================================================================
 
 # [KEY 40] LLM GUIDANCE: Content Heuristics for File Placement
-GUIDANCE_EXAMPLES: Dict[str, str] = {
+GUIDANCE_EXAMPLES: dict[str, str] = {
     "agentic_core/L1_cognition/strategy": "Generic reasoning loops, high-level mission goal planning, and Task decomposition.",
     "agentic_core/L3_orchestration/fission": "Logic that splits large files into smaller modules or manages atomic code shifts.",
     "agentic_core/L4_state/memory": "Interfaces for persistent vector storage (Pinecone) used for long-term meta-learning.",
@@ -132,7 +129,7 @@ def get_placement_guidance(content_preview: str) -> str:
 
     return "agentic_core/L1_cognition" # Default safe-haven for generic logic
 
-def check_span_of_two_violation(folder_path: Path) -> Tuple[bool, str]:
+def check_span_of_two_violation(folder_path: Path) -> tuple[bool, str]:
     """
     [NAMING RULE HARDENING] Enforces Minimum Span of 2.
     A Violation occurs ONLY if a folder contains exactly one meaningful child AND that child is a directory (a redundant tunnel).
@@ -171,7 +168,7 @@ STDLIB_MODULES = {
     "urllib", "http", "socket", "subprocess", "shutil"
 }
 
-def validate_import_conventions(file_path: Path, project_root: Path) -> List[str]:
+def validate_import_conventions(file_path: Path, project_root: Path) -> list[str]:
     """
     Enforces L6 import conventions + expanded circular import detection.
     Exceptions:
@@ -189,7 +186,7 @@ def validate_import_conventions(file_path: Path, project_root: Path) -> List[str
     is_init_file = filename == "__init__.py"
 
     try:
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             content = f.read()
         tree = ast.parse(content, filename=str(file_path))
     except Exception as e:
@@ -249,7 +246,7 @@ def validate_import_conventions(file_path: Path, project_root: Path) -> List[str
 # ENFORCEMENT FUNCTIONS
 # ==============================================================================
 
-def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, str]:
+def validate_file_location(file_path: Path, project_root: Path) -> tuple[bool, str]:
     """
     Validate that a file exists in an allowed root folder.
 
@@ -330,10 +327,10 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
 
     except ValueError:
         # File is outside project root
-        return False, f"VOID VIOLATION: File outside project root"
+        return False, "VOID VIOLATION: File outside project root"
 
 
-def get_applicable_keys_for_file(file_path: Path, project_root: Path) -> Set[int]:
+def get_applicable_keys_for_file(file_path: Path, project_root: Path) -> set[int]:
     """
     Determine which canon keys should apply to a given file based on its location.
 
@@ -363,9 +360,9 @@ def get_applicable_keys_for_file(file_path: Path, project_root: Path) -> Set[int
 
 
 def enforce_void_compliance(
-    files: List[Path],
+    files: list[Path],
     project_root: Path
-) -> Tuple[List[Path], List[Tuple[Path, str]]]:
+) -> tuple[list[Path], list[tuple[Path, str]]]:
     """
     Filter files to only those in allowed folders.
 
@@ -391,7 +388,7 @@ def enforce_void_compliance(
     return valid_files, violations
 
 
-def get_folder_scope_summary(project_root: Path) -> Dict[str, int]:
+def get_folder_scope_summary(project_root: Path) -> dict[str, int]:
     """
     Generate summary of files per allowed folder.
 
@@ -401,7 +398,7 @@ def get_folder_scope_summary(project_root: Path) -> Dict[str, int]:
     Returns:
         Dictionary mapping folder names to file counts
     """
-    summary = {folder: 0 for folder in ALLOWED_ROOT_FOLDERS}
+    summary = dict.fromkeys(ALLOWED_ROOT_FOLDERS, 0)
 
     all_py = get_python_files(project_root)
     for folder in ALLOWED_ROOT_FOLDERS:
@@ -432,7 +429,7 @@ def generate_ascii_tree(start_path: Path, max_depth: int = 3) -> str:
     return "\n".join(tree)
 
 
-def check_span_of_two_violations(project_root: Path) -> List[Tuple[Path, str]]:
+def check_span_of_two_violations(project_root: Path) -> list[tuple[Path, str]]:
     """
     Scans Sovereign Roots for Span of Two violations.
     Replaces the buggy total_children == 1 check to allow single-file leaves.
@@ -456,7 +453,7 @@ def check_span_of_two_violations(project_root: Path) -> List[Tuple[Path, str]]:
 
     return violations
 
-def validate_canonical_hierarchy(project_root: Path) -> List[Tuple[Path, str]]:
+def validate_canonical_hierarchy(project_root: Path) -> list[tuple[Path, str]]:
     """
     [L6 HARDENING] Validates physical folders against the CANONICAL_HIERARCHY SSOT.
     Flags:
@@ -542,7 +539,7 @@ def validate_canonical_hierarchy(project_root: Path) -> List[Tuple[Path, str]]:
     return violations
 
 
-def check_import_waterfall_violations(file_path: Path, project_root: Path) -> List[str]:
+def check_import_waterfall_violations(file_path: Path, project_root: Path) -> list[str]:
     """
     Unified Integrity Pass: Enforces Gravity (Waterfall) + Style (Conventions).
     """
@@ -587,7 +584,7 @@ def check_import_waterfall_violations(file_path: Path, project_root: Path) -> Li
 
     # Read file content once
     try:
-        with open(file_path, "r", encoding="utf-8", errors="replace") as f:
+        with open(file_path, encoding="utf-8", errors="replace") as f:
             content = f.read()
     except Exception:
         return violations  # Skip unreadable files
@@ -613,7 +610,7 @@ def check_import_waterfall_violations(file_path: Path, project_root: Path) -> Li
     return violations
 
 
-def validate_sovereign_roots(project_root: Path) -> List[Tuple[Path, str]]:
+def validate_sovereign_roots(project_root: Path) -> list[tuple[Path, str]]:
     """
     Validate that all sovereign roots exist and are properly structured.
 
