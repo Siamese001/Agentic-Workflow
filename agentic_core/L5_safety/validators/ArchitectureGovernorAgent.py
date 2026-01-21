@@ -6,6 +6,8 @@ Phase 3 Upgrade (2026-01-21): Environmental Maintenance & Root-Level Lockdown.
 Phase 4 Upgrade (2026-01-21): Deduplication & Logic Consolidation.
 Phase 6 Upgrade (2026-01-21): Universal Logic Consolidation & Healing.
 Phase 7 Upgrade (2026-01-21): Final Sovereign Lockdown & CI/CD Integration.
+Phase 9 Upgrade (2026-01-21): Golden Baseline Capture & SSOT Normalization.
+Phase 10 Upgrade (2026-01-21): Sovereign Convergence & Categorical Drift Audits.
 
 Responsibilities:
 - Validate layer boundaries (L0-L6) across ALL sovereign territories
@@ -13,6 +15,10 @@ Responsibilities:
 - Enforce naming conventions (*Agent.py suffix)
 - Detect orphaned and duplicate agents
 - Trigger cross-root deduplication audits
+- Perform Categorical Drift Audits (Phase 10)
+- Manage Immutable Project Baselines
+- Execute Automated Sovereign Purges
+- Enforce Universal Sovereignty via Phase 9 Golden Baseline
 - Enforce Universal Sovereignty via CI/CD sync verification
 - Support headless CI mode with auto_approve
 - [Phase 2] Autonomous healing via GravityLeakRepairAgent orchestration
@@ -21,6 +27,8 @@ Responsibilities:
 - [Phase 4] Cross-agent deduplication audit
 - [Phase 6] Zero-loss collision resolution via ArchivalGatekeeper
 - [Phase 7] Final CI-ready lockdown verification
+- [Phase 9] Golden Baseline capture for SSOT normalization
+- [Phase 10] Sovereign Convergence terminal command
 
 [SSOT] All territorial scope derived from SOVEREIGN_REGISTRY in structure_blueprint.py
 """
@@ -210,6 +218,16 @@ class ArchitectureGovernorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerM
                 )
             else:
                 Logger.info(f"Found {violations_found} violations, fixed {violations_fixed}")
+
+            # Phase 9/10: Categorical Audit Reporting - Shield Alert
+            if violations_found > 0 and not execute:
+                Logger.warning(
+                    f"[{agent_name}] SHIELD ALERT: {violations_found} violations blocking baseline purity."
+                )
+
+            # Phase 10: Convergence - Categorical Drift Analysis
+            if violations_found > 0:
+                self._log_categorical_drift(all_violations)
 
             # Phase 4/6: Logic Consolidation & Deduplication Audit with Resolution
             dedup_results = self._trigger_deduplication_audit(
@@ -746,3 +764,134 @@ class ArchitectureGovernorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerM
             )
 
         return is_pure, results
+
+    # =========================================================================
+    # PHASE 9: GOLDEN BASELINE CAPTURE & SSOT NORMALIZATION
+    # =========================================================================
+
+    def capture_sovereign_baseline(self) -> dict[str, Any]:
+        """
+        [PHASE 9] Captures the post-purge state as the new SSOT baseline.
+
+        This establishes the zero-violation benchmark for all future
+        CI/CD enforcement gates. Should be called after a successful
+        purge execution to lock in the clean state.
+
+        Returns:
+            Dictionary containing the baseline state with violation counts
+            and root scan results.
+
+        Usage:
+            # After purge execution
+            agent.heal_repository(execute=True, dry_run=False)
+
+            # Capture the clean state as baseline
+            baseline = agent.capture_sovereign_baseline()
+            assert baseline.get("violations_found", 0) == 0
+        """
+        agent_name = self.__class__.__name__
+        Logger.info(f"[{agent_name}] Capturing Golden Baseline...")
+
+        # Run dry-run audit to capture current state
+        baseline_state = self.heal_repository(dry_run=True)
+
+        # Extract violations from normalized result
+        raw_result = baseline_state.get("_raw_result", baseline_state)
+        violations_found = raw_result.get("violations_found", 0)
+
+        if violations_found > 0:
+            Logger.warning(
+                f"[{agent_name}] Baseline captured with {violations_found} unresolved violations."
+            )
+        else:
+            Logger.info(f"[{agent_name}] ✅ Golden Baseline captured: 0 violations")
+
+        return baseline_state
+
+    # =========================================================================
+    # PHASE 10: SOVEREIGN CONVERGENCE & CATEGORICAL DRIFT AUDITS
+    # =========================================================================
+
+    def _log_categorical_drift(self, violations: list[Any]) -> dict[str, int]:
+        """
+        [PHASE 10] Generates a diagnostic breakdown of architectural debt.
+
+        Categorizes violations by type for targeted remediation.
+
+        Args:
+            violations: List of violation objects or dictionaries
+
+        Returns:
+            Dictionary with counts per violation category
+        """
+        agent_name = self.__class__.__name__
+
+        report = {"GRAVITY": 0, "NAMING": 0, "ORPHAN": 0, "DUPLICATE": 0, "OTHER": 0}
+
+        for v in violations:
+            # Handle both dict and object violations
+            if isinstance(v, dict):
+                v_type = v.get("type", "OTHER")
+            else:
+                v_type = getattr(v, "violation_type", None)
+                if v_type:
+                    v_type = v_type.name if hasattr(v_type, "name") else str(v_type)
+                else:
+                    v_type = "OTHER"
+
+            # Normalize type name
+            v_type = str(v_type).upper()
+            if v_type in report:
+                report[v_type] += 1
+            else:
+                report["OTHER"] += 1
+
+        Logger.warning(f"[{agent_name}] Drift Analysis: {report}")
+        return report
+
+    def execute_sovereign_convergence(self) -> dict[str, Any]:
+        """
+        [PHASE 10] Final convergence: Purge all drift and seal the baseline.
+
+        This is the terminal command for the L5 safety transition.
+        Executes a full purge followed by baseline lockdown verification.
+
+        Returns:
+            Dictionary containing:
+            - purge_status: Results from heal_repository execution
+            - lockdown_status: Tuple of (is_pure, results) from lockdown
+            - final_purity: Boolean indicating if repository is clean
+
+        Usage:
+            agent = ArchitectureGovernorAgent(project_root=Path.cwd(), auto_approve=True)
+            result = agent.execute_sovereign_convergence()
+            assert result["final_purity"] is True
+        """
+        agent_name = self.__class__.__name__
+        Logger.info(f"[{agent_name}] INITIATING SOVEREIGN CONVERGENCE...")
+
+        # Step 1: Full Purge - Execute healing with auto_approve
+        purge_results = self.heal_repository(
+            execute=True,
+            dry_run=False,
+        )
+
+        # Step 2: Baseline Capture & Lockdown Verification
+        lockdown_result = self.finalize_sovereign_lockdown()
+        is_pure, lockdown_details = lockdown_result
+
+        # Step 3: Report final status
+        if is_pure:
+            Logger.info(f"[{agent_name}] ✅ SOVEREIGN CONVERGENCE COMPLETE: Repository is pure.")
+        else:
+            raw_result = lockdown_details.get("_raw_result", lockdown_details)
+            remaining = raw_result.get("violations_found", 0)
+            Logger.warning(
+                f"[{agent_name}] ⚠️ CONVERGENCE INCOMPLETE: {remaining} violations remain."
+            )
+
+        return {
+            "purge_status": purge_results,
+            "lockdown_status": lockdown_result,
+            "final_purity": is_pure,
+        }
