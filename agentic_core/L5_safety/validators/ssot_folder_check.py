@@ -69,7 +69,7 @@ Examples:
     args = parser.parse_args()
     project_root = args.path.resolve()
 
-    print(f"🔍 SSOT Folder Verification: {project_root}")
+    print(f"[SCAN] SSOT Folder Verification: {project_root}")
     print("=" * 60)
 
     agent = FilesystemSSOTReconcilerAgent(project_root)
@@ -80,7 +80,7 @@ Examples:
 
         print(json.dumps(results, indent=2))
     else:
-        print("\n📊 Results:")
+        print("\n[RESULTS]:")
         print(f"   Roots checked: {', '.join(results.get('roots_checked', []))}")
         print(f"   Hierarchy violations: {results.get('hierarchy_violations', 0)}")
         print(f"   Location violations: {results.get('location_violations', 0)}")
@@ -89,10 +89,10 @@ Examples:
     print("=" * 60)
 
     if is_compliant:
-        print("✅ SSOT Structure Verified. No violations.")
+        print("[OK] SSOT Structure Verified. No violations.")
         return 0
     else:
-        print("❌ SSOT Violations Detected.")
+        print("[FAIL] SSOT Violations Detected.")
         print("   Run 'python -m agentic_core.L5_safety.validators.HierarchyAgent --heal' to fix.")
         return 1
 

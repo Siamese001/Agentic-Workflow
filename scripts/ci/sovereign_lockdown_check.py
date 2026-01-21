@@ -62,12 +62,12 @@ def main() -> int:
         print(f"Violations Found: {violations_found}")
 
         if passed:
-            print("\n✅ Sovereign Lockdown Verified: Repository is architecture-pure.")
+            print("\n[OK] Sovereign Lockdown Verified: Repository is architecture-pure.")
             print("=" * 60)
             return 0
         else:
             # Output findings for CI logs
-            print(f"\n❌ Lockdown Failed: {violations_found} violations detected.")
+            print(f"\n[FAIL] Lockdown Failed: {violations_found} violations detected.")
 
             # Show violation details if available
             violations = raw_result.get("violations", [])
@@ -86,11 +86,11 @@ def main() -> int:
             return 1
 
     except ImportError as e:
-        print(f"❌ Import Error: {e}")
+        print(f"[ERROR] Import Error: {e}")
         print("Ensure agentic_core is properly installed.")
         return 2
     except Exception as e:
-        print(f"❌ Verification Error: {e}")
+        print(f"[ERROR] Verification Error: {e}")
         return 2
 
 
