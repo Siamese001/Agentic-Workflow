@@ -914,6 +914,82 @@ class ArchitectureGovernorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerM
             "final_purity": is_pure,
         }
 
+    def execute_cognitive_purge(
+        self,
+        checkpoint_file: str = "cognitive_checkpoint.json",
+        rate_limit_delay: float = 1.0,
+    ) -> dict[str, Any]:
+        """
+        [PHASE 13] Execute AI-driven purge using Cognitive Batch Processor.
+        
+        Processes all violations through Gemini LLM with:
+        - Rate limiting to respect API quotas
+        - Progress checkpointing for resumable execution
+        - Exponential backoff for API errors
+        
+        Args:
+            checkpoint_file: Path to checkpoint file for progress tracking
+            rate_limit_delay: Seconds to wait between API calls
+        
+        Returns:
+            Dictionary with batch processing statistics
+        """
+        agent_name = self.__class__.__name__
+        
+        Logger.info(f"[{agent_name}] INITIATING COGNITIVE PURGE...")
+        Logger.info("=" * 60)
+        
+        # Step 1: Gather all violations (dry run)
+        Logger.info(f"[{agent_name}] Scanning for violations...")
+        scan_results = self.heal_repository(dry_run=True)
+        
+        # Extract violations from results
+        violations = getattr(self, "violations", [])
+        
+        if not violations:
+            Logger.info(f"[{agent_name}] No violations found. Repository is clean.")
+            return {
+                "violations_found": 0,
+                "batch_stats": {"PROCESSED": 0, "SKIPPED": 0, "ERRORS": 0, "TOTAL": 0},
+            }
+        
+        Logger.info(f"[{agent_name}] Found {len(violations)} violations to process")
+        
+        # Step 2: Initialize Batch Processor
+        from agentic_core.L5_safety.cognition.CognitiveBatchProcessor import (
+            CognitiveBatchProcessor,
+        )
+        
+        cognitive = self._get_cognitive_agent()
+        processor = CognitiveBatchProcessor(
+            agent=cognitive,
+            checkpoint_file=checkpoint_file,
+            rate_limit_delay=rate_limit_delay,
+        )
+        
+        # Step 3: Process batch
+        Logger.info(f"[{agent_name}] Starting batch processing...")
+        batch_stats = processor.process_batch(violations)
+        
+        # Step 4: Get statistics
+        results_stats = processor.get_statistics()
+        
+        Logger.info("=" * 60)
+        Logger.info(f"[{agent_name}] COGNITIVE PURGE COMPLETE")
+        Logger.info(f"[{agent_name}] Total Analyzed: {results_stats['total']}")
+        Logger.info(f"[{agent_name}] Average Confidence: {results_stats['avg_confidence']:.2%}")
+        Logger.info(f"[{agent_name}] Actions by Type:")
+        for action, count in sorted(results_stats['by_action'].items()):
+            Logger.info(f"    {action}: {count}")
+        Logger.info("=" * 60)
+        
+        return {
+            "violations_found": len(violations),
+            "batch_stats": batch_stats,
+            "results_stats": results_stats,
+            "checkpoint_file": checkpoint_file,
+        }
+
     # =========================================================================
     # PHASE 11: COGNITIVE DISPOSITION - AI-POWERED TRIAGE
     # =========================================================================
